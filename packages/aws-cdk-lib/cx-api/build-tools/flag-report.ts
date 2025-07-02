@@ -103,7 +103,7 @@ function flagsDetails() {
       flag.introducedIn.v2
         ? [flag.introducedIn.v2, renderValue(flag.unconfiguredBehavesLike?.v2 ?? false), renderValue(flag.recommendedValue)]
         : flag.unconfiguredBehavesLike?.v2 !== undefined
-          ? ['(default in v2)', renderValue(flag.unconfiguredBehavesLike?.v2), '']
+          ? ['(not configurable in v2)', renderValue(flag.unconfiguredBehavesLike?.v2), '']
           : ['(not in v2)', '', ''],
     ]),
     ...oldBehavior(flag) ? [

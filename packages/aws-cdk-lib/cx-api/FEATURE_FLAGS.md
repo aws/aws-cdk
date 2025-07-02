@@ -17,8 +17,6 @@ Flags come in three types:
 
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
-| [@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration](#aws-cdkaws-ec2-alphauseresourceidforvpcv2migration) | When enabled, use resource IDs for VPC V2 migration | V2_NEXT | new default |
-| [@aws-cdk/aws-lambda:useCdkManagedLogGroup](#aws-cdkaws-lambdausecdkmanagedloggroup) | When enabled, CDK creates and manages loggroup for the lambda function | V2_NEXT | new default |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | fix |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | fix |
 | [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | 2.0.0 | fix |
@@ -101,8 +99,10 @@ Flags come in three types:
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | 2.189.0 | new default |
 | [@aws-cdk/core:aspectPrioritiesMutating](#aws-cdkcoreaspectprioritiesmutating) | When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING. | 2.189.1 | new default |
 | [@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions](#aws-cdks3-notificationsadds3trustkeypolicyforsnssubscriptions) | Add an S3 trust policy to a KMS key resource policy for SNS subscriptions. | 2.195.0 | fix |
+| [@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration](#aws-cdkaws-ec2-alphauseresourceidforvpcv2migration) | When enabled, use resource IDs for VPC V2 migration | 2.196.0 | new default |
 | [@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway](#aws-cdkaws-ec2requireprivatesubnetsforegressonlyinternetgateway) | When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC. | 2.196.0 | fix |
 | [@aws-cdk/aws-s3:publicAccessBlockedByDefault](#aws-cdkaws-s3publicaccessblockedbydefault) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | 2.196.0 | fix |
+| [@aws-cdk/aws-lambda:useCdkManagedLogGroup](#aws-cdkaws-lambdausecdkmanagedloggroup) | When enabled, CDK creates and manages loggroup for the lambda function | 2.200.0 | new default |
 | [@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal](#aws-cdkaws-kmsapplyimportedaliaspermissionstoprincipal) | Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition | 2.202.0 | fix |
 
 <!-- END table -->
@@ -228,6 +228,17 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 
 | Flag | Summary | Type | Since | v1 default | v2 default |
 | ----- | ----- | ----- | ----- | ----- | ----- |
+| [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | fix | 1.39.0 | `false` | `true` |
+| [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | fix | 1.58.0 | `false` | `true` |
+| [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | fix | 1.97.0 | `false` | `true` |
+| [@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId](#aws-cdkaws-apigatewayusageplankeyorderinsensitiveid) | Allow adding/removing multiple UsagePlanKeys independently | fix | 1.98.0 | `false` | `true` |
+| [@aws-cdk/aws-lambda:recognizeVersionProps](#aws-cdkaws-lambdarecognizeversionprops) | Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`. | fix | 1.106.0 | `false` | `true` |
+| [@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2\_2021](#aws-cdkaws-cloudfrontdefaultsecuritypolicytlsv12_2021) | Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default. | fix | 1.117.0 | `false` | `true` |
+| [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | new default |  | `false` | `true` |
+| [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | fix |  | `false` | `true` |
+| [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | config |  | `false` | `true` |
+| [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | new default |  | `false` | `true` |
+| [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | new default |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -236,7 +247,14 @@ Here is an example of a `cdk.json` file that restores v1 behavior for these flag
 <!-- BEGIN migratejson -->
 ```json
 {
-  "context": {}
+  "context": {
+    "@aws-cdk/core:newStyleStackSynthesis": false,
+    "@aws-cdk/core:stackRelativeExports": false,
+    "@aws-cdk/aws-rds:lowercaseDbIdentifier": false,
+    "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": false,
+    "@aws-cdk/aws-lambda:recognizeVersionProps": false,
+    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false
+  }
 }
 ```
 <!-- END migratejson -->
@@ -260,7 +278,7 @@ of the stack.
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.16.0 | `false` | `true` |
-| (not in v2) |  |  |
+| (not configurable in v2) | `true` |  |
 
 **Compatibility with old behavior:** Pass stack identifiers to the CLI instead of stack names.
 
@@ -286,7 +304,7 @@ You can override this behavior with the --fail flag:
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.19.0 | `false` | `true` |
-| (not in v2) |  |  |
+| (not configurable in v2) | `true` |  |
 
 **Compatibility with old behavior:** Specify `--fail` to the CLI.
 
@@ -308,7 +326,7 @@ users may have come to depend on it.
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.73.0 | `false` | `true` |
-| (not in v2) |  |  |
+| (not configurable in v2) | `true` |  |
 
 **Compatibility with old behavior:** Update your `.dockerignore` file to match standard Docker ignore rules, if necessary.
 
@@ -329,7 +347,7 @@ used by SecretsManager.DescribeSecret, and must be parsed by the user first (e.g
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.77.0 | `false` | `true` |
-| (not in v2) |  |  |
+| (not configurable in v2) | `true` |  |
 
 **Compatibility with old behavior:** Use `parseArn(secret.secretName).resourceName` to emulate the incorrect old parsing.
 
@@ -356,7 +374,7 @@ to the key's default policy (rather than replacing it).
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.78.0 | `false` | `true` |
-| (not in v2) |  |  |
+| (not configurable in v2) | `true` |  |
 
 **Compatibility with old behavior:** Pass `trustAccountIdentities: false` to `Key` construct to restore the old behavior.
 
@@ -377,7 +395,7 @@ on the overly-broad permissions are not broken.
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.85.0 | `false` | `true` |
-| (not in v2) |  |  |
+| (not configurable in v2) | `true` |  |
 
 **Compatibility with old behavior:** Call `bucket.grantPutAcl()` in addition to `bucket.grantWrite()` to grant ACL permissions.
 
@@ -402,7 +420,7 @@ CfnService.desiredCount and as such desiredCount will be undefined, if one is no
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.92.0 | `false` | `true` |
-| (not in v2) |  |  |
+| (not configurable in v2) | `true` |  |
 
 **Compatibility with old behavior:** You can pass `desiredCount: 1` explicitly, but you should never need this.
 
@@ -419,59 +437,9 @@ Encryption can also be configured explicitly using the `encrypted` property.
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.98.0 | `false` | `true` |
-| (not in v2) |  |  |
+| (not configurable in v2) | `true` |  |
 
 **Compatibility with old behavior:** Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.
-
-
-### @aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration
-
-*When enabled, use resource IDs for VPC V2 migration*
-
-Flag type: New default behavior
-
-When this feature flag is enabled, the VPC V2 migration will use resource IDs instead of getAtt references
-for migrating resources from VPC V1 to VPC V2. This helps ensure a smoother migration path between
-the two versions.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2_NEXT | `false` | `false` |
-
-**Compatibility with old behavior:** Disable the feature flag to use getAtt references for VPC V2 migration
-
-
-### @aws-cdk/aws-lambda:useCdkManagedLogGroup
-
-*When enabled, CDK creates and manages loggroup for the lambda function*
-
-Flag type: New default behavior
-
-When this feature flag is enabled, CDK will create a loggroup for lambda function with default properties
-which supports CDK features Tag propagation, Property Injectors, Aspects
-if the cdk app doesnt pass a 'logRetention' or 'logGroup' explicitly. 
-LogGroups created via 'logRetention' do not support Tag propagation, Property Injectors, Aspects.
-LogGroups created via 'logGroup' created in CDK support Tag propagation, Property Injectors, Aspects.
-
-When this feature flag is disabled, a loggroup is created by Lambda service on first invocation 
-of the function (existing behavior). 
-LogGroups created in this way do not support Tag propagation, Property Injectors, Aspects.
-
-DO NOT ENABLE: If you have and existing app defining a lambda function and 
-have not supplied a logGroup or logRetention prop and your lambda function has 
-executed at least once, the logGroup has been already created with the same name 
-so your deployment will start failing.
-Refer aws-lambda/README.md for more details on Customizing Log Group creation.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2_NEXT | `false` | `true` |
-
-**Compatibility with old behavior:** Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention
 
 
 ### @aws-cdk/core:newStyleStackSynthesis
@@ -487,7 +455,7 @@ default. If it is not set, they will use the `LegacyStackSynthesizer`.
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.39.0 | `false` | `true` |
-| 2.0.0 | `false` | `true` |
+| 2.0.0 | `true` | `true` |
 
 
 ### @aws-cdk/core:stackRelativeExports
@@ -505,7 +473,7 @@ into a Stage).
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.58.0 | `false` | `true` |
-| 2.0.0 | `false` | `true` |
+| 2.0.0 | `true` | `true` |
 
 
 ### @aws-cdk/aws-rds:lowercaseDbIdentifier
@@ -528,7 +496,7 @@ would lead CloudFormation to think the name was changed and would trigger a clus
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.97.0 | `false` | `true` |
-| 2.0.0 | `false` | `true` |
+| 2.0.0 | `true` | `true` |
 
 
 ### @aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId
@@ -554,7 +522,7 @@ This flag changes the logical id layout of UsagePlanKey to not be sensitive to o
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.98.0 | `false` | `true` |
-| 2.0.0 | `false` | `true` |
+| 2.0.0 | `true` | `true` |
 
 
 ### @aws-cdk/aws-lambda:recognizeVersionProps
@@ -572,7 +540,7 @@ See 'currentVersion' section in the aws-lambda module's README for more details.
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.106.0 | `false` | `true` |
-| 2.0.0 | `false` | `true` |
+| 2.0.0 | `true` | `true` |
 
 
 ### @aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021
@@ -587,7 +555,7 @@ The security policy can also be configured explicitly using the `minimumProtocol
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.117.0 | `false` | `true` |
-| 2.0.0 | `false` | `true` |
+| 2.0.0 | `true` | `true` |
 
 
 ### @aws-cdk/core:target-partitions
@@ -1513,7 +1481,7 @@ When this feature flag is disabled, it will keep the root account principal in t
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.141.0 | `false` | `true` |
+| 2.141.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to add the root account principal back
 
@@ -1591,7 +1559,7 @@ When this feature flag is enabled, specify newly introduced props 's3InputUri' a
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.156.0 | `false` | `true` |
+| 2.156.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to use input and output path fields for s3 URI
 
@@ -1784,7 +1752,7 @@ When this feature flag is enabled, a stabilization loop is run to recurse the co
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.172.0 | `false` | `true` |
+| 2.172.0 | `true` | `true` |
 
 
 ### @aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource
@@ -1961,7 +1929,7 @@ If you are providing a custom role, you will need to ensure 'roleName' is specif
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.184.0 | `false` | `true` |
+| 2.184.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to add the root account principal back
 
@@ -2062,7 +2030,7 @@ When this feature flag is disabled, it will keep the root account principal in t
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.189.0 | `false` | `true` |
+| 2.189.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to add the root account principal back
 
@@ -2126,6 +2094,25 @@ When this feature flag is enabled, a S3 trust policy will be added to the KMS ke
 | 2.195.0 | `false` | `true` |
 
 
+### @aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration
+
+*When enabled, use resource IDs for VPC V2 migration*
+
+Flag type: New default behavior
+
+When this feature flag is enabled, the VPC V2 migration will use resource IDs instead of getAtt references
+for migrating resources from VPC V1 to VPC V2. This helps ensure a smoother migration path between
+the two versions.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.196.0 | `false` | `false` |
+
+**Compatibility with old behavior:** Disable the feature flag to use getAtt references for VPC V2 migration
+
+
 ### @aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway
 
 *When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC.*
@@ -2147,7 +2134,7 @@ When this feature flag is enabled, EgressOnlyGateway resource will not be create
 
 Flag type: Backwards incompatible bugfix
 
-When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console. 
+When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console.
 The previous behavior in cdk before this feature was; if only some of the BlockPublicAccessOptions were set (not all 4), then the ones undefined would default to false.
 This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
 The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
@@ -2157,6 +2144,37 @@ The new behavior from this feature will allow a user, for example, to set 1 of t
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.196.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-lambda:useCdkManagedLogGroup
+
+*When enabled, CDK creates and manages loggroup for the lambda function*
+
+Flag type: New default behavior
+
+When this feature flag is enabled, CDK will create a loggroup for lambda function with default properties
+which supports CDK features Tag propagation, Property Injectors, Aspects
+if the cdk app doesnt pass a 'logRetention' or 'logGroup' explicitly.
+LogGroups created via 'logRetention' do not support Tag propagation, Property Injectors, Aspects.
+LogGroups created via 'logGroup' created in CDK support Tag propagation, Property Injectors, Aspects.
+
+When this feature flag is disabled, a loggroup is created by Lambda service on first invocation
+of the function (existing behavior).
+LogGroups created in this way do not support Tag propagation, Property Injectors, Aspects.
+
+DO NOT ENABLE: If you have and existing app defining a lambda function and
+have not supplied a logGroup or logRetention prop and your lambda function has
+executed at least once, the logGroup has been already created with the same name
+so your deployment will start failing.
+Refer aws-lambda/README.md for more details on Customizing Log Group creation.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.200.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention
 
 
 ### @aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal
