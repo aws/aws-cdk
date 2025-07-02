@@ -644,11 +644,11 @@ const variant1 = bedrock.PromptVariant.text({
   model: claudeModel,
   promptVariables: ['topic'],
   promptText: 'This is my first text prompt. Please summarize our conversation on: {{topic}}.',
-  inferenceConfiguration: {
+  inferenceConfiguration: new bedrock.PromptInferenceConfiguration({
     temperature: 1.0,
     topP: 0.999,
     maxTokens: 2000,
-  },
+  }),
 });
 
 const prompt1 = new bedrock.Prompt(this, 'prompt1', {
@@ -775,11 +775,11 @@ const variant1 = bedrock.PromptVariant.text({
   model: claudeModel,
   promptVariables: ['topic'],
   promptText: 'This is my first text prompt. Please summarize our conversation on: {{topic}}.',
-  inferenceConfiguration: {
+  inferenceConfiguration: new bedrock.PromptInferenceConfiguration({
     temperature: 1.0,
     topP: 0.999,
     maxTokens: 2000,
-  },
+  }),
 });
 
 const prompt1 = new bedrock.Prompt(this, 'prompt1', {
