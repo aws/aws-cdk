@@ -94,7 +94,7 @@
      ]
     },
     "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"awscdkcloudwatcheventbridgelogsEventsLogGroupPolicyawscdkcloudwatcheventbridgelogsRule939B3D0803F74D6B\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\",\"logApiResponseData\":true}",
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "EventsLogGroupPolicyawscdkcloudwatcheventbridgelogsRule939B3D08CustomResourcePolicy25D0581B"
@@ -270,6 +270,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {
