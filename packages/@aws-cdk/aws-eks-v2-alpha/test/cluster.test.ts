@@ -1557,6 +1557,7 @@ describe('cluster', () => {
       const barrier = template.Resources.ClusterKubectlReadyBarrier200052AF;
 
       expect(barrier.DependsOn).toEqual([
+        'ClusterClusterAdminRoleAccessF2BFF759',
         'Clusterfargateprofileprofile1PodExecutionRoleE85F87B5',
         'Clusterfargateprofileprofile129AEA3C6',
         'Clusterfargateprofileprofile2PodExecutionRole22670AF8',

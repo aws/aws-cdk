@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "EksClusterWithAddonStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a55d467b8f65f303d58f58697c0405ecbee85a4128a4152450ed37059db43be1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e1828531d12171263c6ab0c3d14471d09674b8c33d20a84cc4b1668c01507b6b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -172,6 +172,58 @@
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
+        "/EksClusterWithAddonStack/Vpc/PublicSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/EksClusterWithAddonStack/Vpc/PublicSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet3SubnetBE12F0B6"
+          }
+        ],
+        "/EksClusterWithAddonStack/Vpc/PublicSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet3RouteTable93458DBB"
+          }
+        ],
+        "/EksClusterWithAddonStack/Vpc/PublicSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet3RouteTableAssociation1F1EDF02"
+          }
+        ],
+        "/EksClusterWithAddonStack/Vpc/PublicSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet3DefaultRoute4697774F"
+          }
+        ],
         "/EksClusterWithAddonStack/Vpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -274,6 +326,58 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/EksClusterWithAddonStack/Vpc/PrivateSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/EksClusterWithAddonStack/Vpc/PrivateSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet3SubnetF258B56E"
+          }
+        ],
+        "/EksClusterWithAddonStack/Vpc/PrivateSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet3RouteTableD98824C7"
+          }
+        ],
+        "/EksClusterWithAddonStack/Vpc/PrivateSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet3RouteTableAssociation16BDDC43"
+          }
+        ],
+        "/EksClusterWithAddonStack/Vpc/PrivateSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet3DefaultRoute94B74F0D"
           }
         ],
         "/EksClusterWithAddonStack/Vpc/IGW": [
@@ -491,6 +595,7 @@
               "vpcSubnets": {
                 "subnets": [
                   "*",
+                  "*",
                   "*"
                 ]
               }
@@ -678,6 +783,7 @@
               "vpc": "*",
               "vpcSubnets": {
                 "subnets": [
+                  "*",
                   "*",
                   "*"
                 ]
@@ -945,5 +1051,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1015.0"
+  "minimumCliVersion": "2.1020.1"
 }

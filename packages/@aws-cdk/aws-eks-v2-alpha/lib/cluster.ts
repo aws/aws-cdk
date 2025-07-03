@@ -1278,6 +1278,9 @@ export class Cluster extends ClusterBase {
       // give the handler role admin access to the cluster
       // so it can deploy/query any resource.
       this._clusterAdminAccess = this.grantClusterAdmin('ClusterAdminRoleAccess', this._kubectlProvider?.role!.roleArn);
+
+      // Ensure kubectl is marked as ready only after admin access has been granted
+      this._kubectlReadyBarrier.node.addDependency(this._clusterAdminAccess);
     }
 
     // do not create a masters role if one is not provided. Trusting the accountRootPrincipal() is too permissive.

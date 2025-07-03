@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "aws-cdk-eks-import-cluster-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a763c932ec8ebbda77ca3d09c64f1e7554b623b13302f018298d9689dc86d146.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b0f055c35bf6ac4ef8fc16ef8eef03c0b0be89a55008f145cbeea68ce6792c14.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -174,6 +174,58 @@
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
+        "/aws-cdk-eks-import-cluster-test/Vpc/PublicSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-eks-import-cluster-test/Vpc/PublicSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet3SubnetBE12F0B6"
+          }
+        ],
+        "/aws-cdk-eks-import-cluster-test/Vpc/PublicSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet3RouteTable93458DBB"
+          }
+        ],
+        "/aws-cdk-eks-import-cluster-test/Vpc/PublicSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet3RouteTableAssociation1F1EDF02"
+          }
+        ],
+        "/aws-cdk-eks-import-cluster-test/Vpc/PublicSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet3DefaultRoute4697774F"
+          }
+        ],
         "/aws-cdk-eks-import-cluster-test/Vpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -276,6 +328,58 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/aws-cdk-eks-import-cluster-test/Vpc/PrivateSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-eks-import-cluster-test/Vpc/PrivateSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet3SubnetF258B56E"
+          }
+        ],
+        "/aws-cdk-eks-import-cluster-test/Vpc/PrivateSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet3RouteTableD98824C7"
+          }
+        ],
+        "/aws-cdk-eks-import-cluster-test/Vpc/PrivateSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet3RouteTableAssociation16BDDC43"
+          }
+        ],
+        "/aws-cdk-eks-import-cluster-test/Vpc/PrivateSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet3DefaultRoute94B74F0D"
           }
         ],
         "/aws-cdk-eks-import-cluster-test/Vpc/IGW": [
@@ -417,6 +521,7 @@
               ],
               "vpcSubnets": {
                 "subnets": [
+                  "*",
                   "*",
                   "*"
                 ]
@@ -621,6 +726,7 @@
               "vpc": "*",
               "vpcSubnets": {
                 "subnets": [
+                  "*",
                   "*",
                   "*"
                 ]
@@ -1237,5 +1343,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1015.0"
+  "minimumCliVersion": "2.1020.1"
 }
