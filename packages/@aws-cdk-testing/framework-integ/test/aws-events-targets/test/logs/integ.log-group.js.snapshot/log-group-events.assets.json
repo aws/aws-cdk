@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a": {
       "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "024ac992ae7de12c42dde5c742b11b637ca4dafd894238ae59ae7b4399ac2efb": {
+    "07975dd33d255434e96cda02e1b6b1e424befddde37813402469f522a1ef3f70": {
       "displayName": "log-group-events Template",
       "source": {
         "path": "log-group-events.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "024ac992ae7de12c42dde5c742b11b637ca4dafd894238ae59ae7b4399ac2efb.json",
+          "objectKey": "07975dd33d255434e96cda02e1b6b1e424befddde37813402469f522a1ef3f70.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

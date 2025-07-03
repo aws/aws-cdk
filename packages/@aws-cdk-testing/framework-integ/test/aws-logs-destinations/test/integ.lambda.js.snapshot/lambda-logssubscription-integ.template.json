@@ -218,7 +218,7 @@
          "Arn"
         ]
        },
-       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7\"}}"
+       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -233,12 +233,12 @@
          "Arn"
         ]
        },
-       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7\"}}"
+       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7\"},\"logApiResponseData\":true}"
       ]
      ]
     },
-    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"lambdalogssubscriptionintegEventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7F3616134\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "InstallLatestAwsSdk": false
+    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"lambdalogssubscriptionintegEventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7F3616134\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\",\"logApiResponseData\":true}",
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7CustomResourcePolicy0DA87EF1"
@@ -414,6 +414,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

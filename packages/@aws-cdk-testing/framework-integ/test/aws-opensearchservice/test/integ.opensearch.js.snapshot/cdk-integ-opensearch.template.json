@@ -43,7 +43,7 @@
          "Arn"
         ]
        },
-       "\\\"]}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"ESLogGroupPolicyc881416c4fcb1ec2b4bf7f47a5cde4097f01ec50fc\"}}"
+       "\\\"]}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"ESLogGroupPolicyc881416c4fcb1ec2b4bf7f47a5cde4097f01ec50fc\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -65,12 +65,12 @@
          "Arn"
         ]
        },
-       "\\\"]}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"ESLogGroupPolicyc881416c4fcb1ec2b4bf7f47a5cde4097f01ec50fc\"}}"
+       "\\\"]}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"ESLogGroupPolicyc881416c4fcb1ec2b4bf7f47a5cde4097f01ec50fc\"},\"logApiResponseData\":true}"
       ]
      ]
     },
-    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc881416c4fcb1ec2b4bf7f47a5cde4097f01ec50fc\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "InstallLatestAwsSdk": false
+    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc881416c4fcb1ec2b4bf7f47a5cde4097f01ec50fc\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\",\"logApiResponseData\":true}",
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "Domain1ESLogGroupPolicyc881416c4fcb1ec2b4bf7f47a5cde4097f01ec50fcCustomResourcePolicyBE9BFE5D"
@@ -202,7 +202,7 @@
        {
         "Ref": "Domain19FCBCB91"
        },
-       "AccessPolicy\"}}"
+       "AccessPolicy\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -226,7 +226,7 @@
        {
         "Ref": "Domain19FCBCB91"
        },
-       "AccessPolicy\"}}"
+       "AccessPolicy\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -369,7 +369,7 @@
          "Arn"
         ]
        },
-       "\\\"]}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"ESLogGroupPolicyc80140a7754e9c0dd4e81167ef19e15da5b55dca02\"}}"
+       "\\\"]}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"ESLogGroupPolicyc80140a7754e9c0dd4e81167ef19e15da5b55dca02\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -391,12 +391,12 @@
          "Arn"
         ]
        },
-       "\\\"]}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"ESLogGroupPolicyc80140a7754e9c0dd4e81167ef19e15da5b55dca02\"}}"
+       "\\\"]}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"ESLogGroupPolicyc80140a7754e9c0dd4e81167ef19e15da5b55dca02\"},\"logApiResponseData\":true}"
       ]
      ]
     },
-    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc80140a7754e9c0dd4e81167ef19e15da5b55dca02\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "InstallLatestAwsSdk": false
+    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc80140a7754e9c0dd4e81167ef19e15da5b55dca02\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\",\"logApiResponseData\":true}",
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "Domain2ESLogGroupPolicyc80140a7754e9c0dd4e81167ef19e15da5b55dca02CustomResourcePolicy2DB46870"
@@ -528,7 +528,7 @@
        {
         "Ref": "Domain2644FE48C"
        },
-       "AccessPolicy\"}}"
+       "AccessPolicy\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -552,7 +552,7 @@
        {
         "Ref": "Domain2644FE48C"
        },
-       "AccessPolicy\"}}"
+       "AccessPolicy\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -672,6 +672,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

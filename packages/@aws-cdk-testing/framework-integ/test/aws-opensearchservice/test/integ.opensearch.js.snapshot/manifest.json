@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4bec27bac5dca62b124e1886f3c8cb66b0b7332bed59e7df5f57aa57c8b7dd17.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/87bfd6957b837262bf8ab6f3b3b0d78616adcc367b413d95a4ff5103b1600ee0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -100,6 +100,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain1AppLogs6E8D1D67"
+          }
+        ],
+        "/cdk-integ-opensearch/Domain1/ESLogGroupPolicyc881416c4fcb1ec2b4bf7f47a5cde4097f01ec50fc": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
           }
         ],
         "/cdk-integ-opensearch/Domain1/ESLogGroupPolicyc881416c4fcb1ec2b4bf7f47a5cde4097f01ec50fc/Provider": [
@@ -479,6 +485,12 @@
             "data": "Domain2AppLogs810876E2"
           }
         ],
+        "/cdk-integ-opensearch/Domain2/ESLogGroupPolicyc80140a7754e9c0dd4e81167ef19e15da5b55dca02": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
+          }
+        ],
         "/cdk-integ-opensearch/Domain2/ESLogGroupPolicyc80140a7754e9c0dd4e81167ef19e15da5b55dca02/Provider": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -737,5 +749,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1019.2"
 }
