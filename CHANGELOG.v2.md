@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.203.1](https://github.com/aws/aws-cdk/compare/v2.203.0...v2.203.1) (2025-07-02)
+
+### Bug Fixes
+
+* "Invalid Assembly Manifest" when used with CLI 2.1017.0 and 2.1018.0 ([#34880](https://github.com/aws/aws-cdk/issues/34880)) ([32ee050](https://github.com/aws/aws-cdk/commit/32ee0504a83647a88b24361094ef76aef18e7b8b)), closes [aws/aws-cdk#34798](https://github.com/aws/aws-cdk/issues/34798)
+
 ## [2.203.0](https://github.com/aws/aws-cdk/compare/v2.202.0...v2.203.0) (2025-07-01)
 
 
