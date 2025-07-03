@@ -7,11 +7,11 @@
      "Fn::Join": [
       "",
       [
-       "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Metrics with id and visible properties\",\"region\":\"",
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Lambda Metrics with ID and Visible Properties\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
-       "\",\"metrics\":[[\"CDK/Test\",\"Metric1\",{\"label\":\"Visible metric with custom ID\",\"id\":\"custom_metric_id\",\"visible\":true}],[\"CDK/Test\",\"Metric2\",{\"label\":\"Hidden metric for calculations\",\"id\":\"hidden_metric_id\",\"visible\":false}],[\"CDK/Test\",\"Metric3\",{\"label\":\"Metric with only ID\",\"id\":\"id_only_metric\"}],[\"CDK/Test\",\"Metric4\",{\"label\":\"Metric with only visible\",\"visible\":true}],[\"CDK/Test\",\"Metric5\",{\"label\":\"Right side hidden metric\",\"id\":\"right_hidden_id\",\"visible\":false,\"yAxis\":\"right\"}]],\"yAxis\":{}}}]}"
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"test-function\",{\"label\":\"Lambda Invocations\",\"id\":\"lambda_invocations\",\"visible\":true}],[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"test-function\",{\"label\":\"Lambda Errors (Hidden for calculation)\",\"id\":\"lambda_errors\",\"visible\":false}],[\"AWS/Lambda\",\"Duration\",\"FunctionName\",\"test-function\",{\"label\":\"Lambda Duration\",\"id\":\"lambda_duration\",\"visible\":true}],[\"AWS/Lambda\",\"Throttles\",\"FunctionName\",\"test-function\",{\"label\":\"Lambda Throttles (Hidden)\",\"id\":\"lambda_throttles\",\"visible\":false}],[{\"label\":\"Error Rate (%)\",\"expression\":\"lambda_errors / lambda_invocations * 100\"}]],\"yAxis\":{}}}]}"
       ]
      ]
     }

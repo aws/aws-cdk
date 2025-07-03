@@ -1,6 +1,6 @@
 import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Dashboard, Metric, GraphWidget } from 'aws-cdk-lib/aws-cloudwatch';
+import { Dashboard, Metric, GraphWidget, MathExpression } from 'aws-cdk-lib/aws-cloudwatch';
 
 class DashboardWithMetricIdAndVisibleIntegrationTest extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
@@ -8,47 +8,55 @@ class DashboardWithMetricIdAndVisibleIntegrationTest extends Stack {
 
     const dashboard = new Dashboard(this, 'Dash');
 
+    const lambdaInvocations = new Metric({
+      namespace: 'AWS/Lambda',
+      metricName: 'Invocations',
+      dimensionsMap: { FunctionName: 'test-function' },
+      label: 'Lambda Invocations',
+      id: 'lambda_invocations',
+      visible: true,
+    });
+
+    const lambdaErrors = new Metric({
+      namespace: 'AWS/Lambda',
+      metricName: 'Errors',
+      dimensionsMap: { FunctionName: 'test-function' },
+      label: 'Lambda Errors (Hidden for calculation)',
+      id: 'lambda_errors',
+      visible: false,
+    });
+
+    const lambdaDuration = new Metric({
+      namespace: 'AWS/Lambda',
+      metricName: 'Duration',
+      dimensionsMap: { FunctionName: 'test-function' },
+      label: 'Lambda Duration',
+      id: 'lambda_duration',
+      visible: true,
+    });
+
+    const lambdaThrottles = new Metric({
+      namespace: 'AWS/Lambda',
+      metricName: 'Throttles',
+      dimensionsMap: { FunctionName: 'test-function' },
+      label: 'Lambda Throttles (Hidden)',
+      id: 'lambda_throttles',
+      visible: false,
+    });
+
+    const errorRate = new MathExpression({
+      expression: 'lambda_errors / lambda_invocations * 100',
+      label: 'Error Rate (%)',
+    });
+
     const widget = new GraphWidget({
-      title: 'Metrics with id and visible properties',
+      title: 'Lambda Metrics with ID and Visible Properties',
       left: [
-        new Metric({
-          namespace: 'CDK/Test',
-          metricName: 'Metric1',
-          label: 'Visible metric with custom ID',
-          id: 'custom_metric_id',
-          visible: true,
-        }),
-
-        new Metric({
-          namespace: 'CDK/Test',
-          metricName: 'Metric2',
-          label: 'Hidden metric for calculations',
-          id: 'hidden_metric_id',
-          visible: false,
-        }),
-
-        new Metric({
-          namespace: 'CDK/Test',
-          metricName: 'Metric3',
-          label: 'Metric with only ID',
-          id: 'id_only_metric',
-        }),
-
-        new Metric({
-          namespace: 'CDK/Test',
-          metricName: 'Metric4',
-          label: 'Metric with only visible',
-          visible: true,
-        }),
-      ],
-      right: [
-        new Metric({
-          namespace: 'CDK/Test',
-          metricName: 'Metric5',
-          label: 'Right side hidden metric',
-          id: 'right_hidden_id',
-          visible: false,
-        }),
+        lambdaInvocations,
+        lambdaErrors,
+        lambdaDuration,
+        lambdaThrottles,
+        errorRate,
       ],
     });
 

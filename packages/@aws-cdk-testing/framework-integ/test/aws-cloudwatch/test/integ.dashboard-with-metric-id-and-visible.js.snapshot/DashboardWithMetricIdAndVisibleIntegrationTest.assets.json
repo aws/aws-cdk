@@ -1,7 +1,7 @@
 {
   "version": "44.0.0",
   "files": {
-    "b8f64e28ab2f4d42074caabb4671eaeb974a9646a08a586a1c8ea5bbc56893a2": {
+    "9e3a417af8bde197a0ffcab4dbb763452e127fc23e689d7afd394bf32adecdca": {
       "displayName": "DashboardWithMetricIdAndVisibleIntegrationTest Template",
       "source": {
         "path": "DashboardWithMetricIdAndVisibleIntegrationTest.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b8f64e28ab2f4d42074caabb4671eaeb974a9646a08a586a1c8ea5bbc56893a2.json",
+          "objectKey": "9e3a417af8bde197a0ffcab4dbb763452e127fc23e689d7afd394bf32adecdca.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

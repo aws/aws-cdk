@@ -119,6 +119,31 @@ const problemPercentage = new cloudwatch.MathExpression({
 });
 ```
 
+### Metric ID Usage in Math Expressions
+
+When metrics have custom IDs, you can reference them directly in math expressions.
+
+```ts
+declare const fn: lambda.Function;
+
+const invocations = fn.metricInvocations({
+  id: 'lambda_invocations',
+});
+
+const errors = fn.metricErrors({
+  id: 'lambda_errors',
+});
+```
+
+When metrics have predefined IDs, they can be referenced directly in math expressions by their ID without requiring the `usingMetrics` property.
+
+```ts
+const errorRate = new cloudwatch.MathExpression({
+  expression: 'lambda_errors / lambda_invocations * 100',
+  label: 'Error Rate (%)',
+});
+```
+
 ### Search Expressions
 
 Math expressions also support search expressions. For example, the following
