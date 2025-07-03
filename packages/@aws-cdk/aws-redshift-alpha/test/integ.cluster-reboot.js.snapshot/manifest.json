@@ -82,7 +82,10 @@
         "/aws-cdk-redshift-cluster-create/Vpc/foobarSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcfoobarSubnet1Subnet77A7FDC6"
+            "data": "VpcfoobarSubnet1Subnet77A7FDC6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-redshift-cluster-create/Vpc/foobarSubnet1/RouteTable": [
@@ -94,7 +97,10 @@
         "/aws-cdk-redshift-cluster-create/Vpc/foobarSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcfoobarSubnet1RouteTableAssociation502CBE55"
+            "data": "VpcfoobarSubnet1RouteTableAssociation502CBE55",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-redshift-cluster-create/Vpc/foobarSubnet2": [
@@ -124,7 +130,10 @@
         "/aws-cdk-redshift-cluster-create/Vpc/foobarSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcfoobarSubnet2Subnet85B013AD"
+            "data": "VpcfoobarSubnet2Subnet85B013AD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-redshift-cluster-create/Vpc/foobarSubnet2/RouteTable": [
@@ -136,7 +145,10 @@
         "/aws-cdk-redshift-cluster-create/Vpc/foobarSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcfoobarSubnet2RouteTableAssociation5013D70B"
+            "data": "VpcfoobarSubnet2RouteTableAssociation5013D70B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-redshift-cluster-create/Vpc/foobarSubnet3": [
@@ -166,19 +178,28 @@
         "/aws-cdk-redshift-cluster-create/Vpc/foobarSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcfoobarSubnet3SubnetD8FD5DC8"
+            "data": "VpcfoobarSubnet3SubnetD8FD5DC8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/aws-cdk-redshift-cluster-create/Vpc/foobarSubnet3/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcfoobarSubnet3RouteTable5E43271A"
+            "data": "VpcfoobarSubnet3RouteTable5E43271A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/aws-cdk-redshift-cluster-create/Vpc/foobarSubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcfoobarSubnet3RouteTableAssociation20E0789D"
+            "data": "VpcfoobarSubnet3RouteTableAssociation20E0789D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/aws-cdk-redshift-cluster-create/ParameterGroup": [
@@ -653,7 +674,10 @@
         "/aws-cdk-redshift-cluster-update/Vpc/foobarSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcfoobarSubnet1Subnet77A7FDC6"
+            "data": "VpcfoobarSubnet1Subnet77A7FDC6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-redshift-cluster-update/Vpc/foobarSubnet1/RouteTable": [
@@ -665,7 +689,10 @@
         "/aws-cdk-redshift-cluster-update/Vpc/foobarSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcfoobarSubnet1RouteTableAssociation502CBE55"
+            "data": "VpcfoobarSubnet1RouteTableAssociation502CBE55",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-redshift-cluster-update/Vpc/foobarSubnet2": [
@@ -695,7 +722,10 @@
         "/aws-cdk-redshift-cluster-update/Vpc/foobarSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcfoobarSubnet2Subnet85B013AD"
+            "data": "VpcfoobarSubnet2Subnet85B013AD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-redshift-cluster-update/Vpc/foobarSubnet2/RouteTable": [
@@ -707,7 +737,10 @@
         "/aws-cdk-redshift-cluster-update/Vpc/foobarSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcfoobarSubnet2RouteTableAssociation5013D70B"
+            "data": "VpcfoobarSubnet2RouteTableAssociation5013D70B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-redshift-cluster-update/Vpc/foobarSubnet3": [
@@ -737,19 +770,28 @@
         "/aws-cdk-redshift-cluster-update/Vpc/foobarSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcfoobarSubnet3SubnetD8FD5DC8"
+            "data": "VpcfoobarSubnet3SubnetD8FD5DC8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/aws-cdk-redshift-cluster-update/Vpc/foobarSubnet3/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcfoobarSubnet3RouteTable5E43271A"
+            "data": "VpcfoobarSubnet3RouteTable5E43271A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/aws-cdk-redshift-cluster-update/Vpc/foobarSubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcfoobarSubnet3RouteTableAssociation20E0789D"
+            "data": "VpcfoobarSubnet3RouteTableAssociation20E0789D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/aws-cdk-redshift-cluster-update/ParameterGroup": [
@@ -1171,7 +1213,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/661c7248c906f5f56c6a414531725ca70d5fe0072715304943f20a29a5ee6aef.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fafd378f62e309e5d8d171909b56f726db3869aa220b6c74687f1a01a805d3db.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
