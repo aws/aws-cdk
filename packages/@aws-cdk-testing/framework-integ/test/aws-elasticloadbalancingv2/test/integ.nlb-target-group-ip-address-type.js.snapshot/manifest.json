@@ -79,7 +79,10 @@
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcPublicSubnet1SubnetEC9C8EC9"
+            "data": "Ipv4VpcPublicSubnet1SubnetEC9C8EC9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet1/RouteTable": [
@@ -91,7 +94,10 @@
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcPublicSubnet1RouteTableAssociation5FC45ABA"
+            "data": "Ipv4VpcPublicSubnet1RouteTableAssociation5FC45ABA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet1/DefaultRoute": [
@@ -131,7 +137,10 @@
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcPublicSubnet2Subnet5F5E4544"
+            "data": "Ipv4VpcPublicSubnet2Subnet5F5E4544",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet2/RouteTable": [
@@ -143,7 +152,10 @@
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcPublicSubnet2RouteTableAssociation5294334B"
+            "data": "Ipv4VpcPublicSubnet2RouteTableAssociation5294334B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet2/DefaultRoute": [
@@ -183,25 +195,37 @@
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcPublicSubnet3SubnetB34CF95E"
+            "data": "Ipv4VpcPublicSubnet3SubnetB34CF95E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet3/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcPublicSubnet3RouteTableFA8B3483"
+            "data": "Ipv4VpcPublicSubnet3RouteTableFA8B3483",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcPublicSubnet3RouteTableAssociation7253F90A"
+            "data": "Ipv4VpcPublicSubnet3RouteTableAssociation7253F90A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet3/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcPublicSubnet3DefaultRoute1BF08B26"
+            "data": "Ipv4VpcPublicSubnet3DefaultRoute1BF08B26",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet1": [
@@ -231,7 +255,10 @@
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcIsolatedSubnet1Subnet55C712BF"
+            "data": "Ipv4VpcIsolatedSubnet1Subnet55C712BF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet1/RouteTable": [
@@ -243,7 +270,10 @@
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcIsolatedSubnet1RouteTableAssociationA9CD1AEE"
+            "data": "Ipv4VpcIsolatedSubnet1RouteTableAssociationA9CD1AEE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet2": [
@@ -273,7 +303,10 @@
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcIsolatedSubnet2Subnet30A426C1"
+            "data": "Ipv4VpcIsolatedSubnet2Subnet30A426C1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet2/RouteTable": [
@@ -285,7 +318,10 @@
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcIsolatedSubnet2RouteTableAssociationD5682B3F"
+            "data": "Ipv4VpcIsolatedSubnet2RouteTableAssociationD5682B3F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet3": [
@@ -315,19 +351,28 @@
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcIsolatedSubnet3SubnetA466E22D"
+            "data": "Ipv4VpcIsolatedSubnet3SubnetA466E22D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet3/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcIsolatedSubnet3RouteTable84E8BE88"
+            "data": "Ipv4VpcIsolatedSubnet3RouteTable84E8BE88",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcIsolatedSubnet3RouteTableAssociation8CA55F37"
+            "data": "Ipv4VpcIsolatedSubnet3RouteTableAssociation8CA55F37",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IGW": [
@@ -438,7 +483,10 @@
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcPublicSubnet1Subnet345ABF6C"
+            "data": "DualstackVpcPublicSubnet1Subnet345ABF6C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet1/RouteTable": [
@@ -450,7 +498,10 @@
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcPublicSubnet1RouteTableAssociationC0CA8C6E"
+            "data": "DualstackVpcPublicSubnet1RouteTableAssociationC0CA8C6E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet1/DefaultRoute": [
@@ -504,7 +555,10 @@
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcPublicSubnet2SubnetF7BFA8A4"
+            "data": "DualstackVpcPublicSubnet2SubnetF7BFA8A4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet2/RouteTable": [
@@ -516,7 +570,10 @@
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcPublicSubnet2RouteTableAssociationB96A93FE"
+            "data": "DualstackVpcPublicSubnet2RouteTableAssociationB96A93FE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet2/DefaultRoute": [
@@ -570,31 +627,46 @@
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcPublicSubnet3Subnet459566D8"
+            "data": "DualstackVpcPublicSubnet3Subnet459566D8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet3/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcPublicSubnet3RouteTable6095845C"
+            "data": "DualstackVpcPublicSubnet3RouteTable6095845C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcPublicSubnet3RouteTableAssociationFE3A7AD6"
+            "data": "DualstackVpcPublicSubnet3RouteTableAssociationFE3A7AD6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet3/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcPublicSubnet3DefaultRoute992181A7"
+            "data": "DualstackVpcPublicSubnet3DefaultRoute992181A7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet3/DefaultRoute6": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcPublicSubnet3DefaultRoute6BAA430B7"
+            "data": "DualstackVpcPublicSubnet3DefaultRoute6BAA430B7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet1": [
@@ -624,7 +696,10 @@
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcIsolatedSubnet1SubnetDD7D99E1"
+            "data": "DualstackVpcIsolatedSubnet1SubnetDD7D99E1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet1/RouteTable": [
@@ -636,7 +711,10 @@
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcIsolatedSubnet1RouteTableAssociation86B9AE73"
+            "data": "DualstackVpcIsolatedSubnet1RouteTableAssociation86B9AE73",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet2": [
@@ -666,7 +744,10 @@
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcIsolatedSubnet2Subnet88E17746"
+            "data": "DualstackVpcIsolatedSubnet2Subnet88E17746",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet2/RouteTable": [
@@ -678,7 +759,10 @@
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcIsolatedSubnet2RouteTableAssociation8CD57CFF"
+            "data": "DualstackVpcIsolatedSubnet2RouteTableAssociation8CD57CFF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet3": [
@@ -708,19 +792,28 @@
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcIsolatedSubnet3Subnet0C58AD06"
+            "data": "DualstackVpcIsolatedSubnet3Subnet0C58AD06",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet3/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcIsolatedSubnet3RouteTableA25F8688"
+            "data": "DualstackVpcIsolatedSubnet3RouteTableA25F8688",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcIsolatedSubnet3RouteTableAssociation900706EC"
+            "data": "DualstackVpcIsolatedSubnet3RouteTableAssociation900706EC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IGW": [

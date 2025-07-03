@@ -89,7 +89,10 @@
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DummyVpcPublicSubnet1Subnet1073B36B"
+            "data": "DummyVpcPublicSubnet1Subnet1073B36B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PublicSubnet1/RouteTable": [
@@ -101,7 +104,10 @@
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DummyVpcPublicSubnet1RouteTableAssociation8BCD2CE1"
+            "data": "DummyVpcPublicSubnet1RouteTableAssociation8BCD2CE1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PublicSubnet1/DefaultRoute": [
@@ -119,7 +125,10 @@
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DummyVpcPublicSubnet1NATGateway61554370"
+            "data": "DummyVpcPublicSubnet1NATGateway61554370",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PublicSubnet2": [
@@ -153,7 +162,10 @@
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DummyVpcPublicSubnet2SubnetD8B68431"
+            "data": "DummyVpcPublicSubnet2SubnetD8B68431",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PublicSubnet2/RouteTable": [
@@ -165,7 +177,10 @@
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DummyVpcPublicSubnet2RouteTableAssociationDCE3DC57"
+            "data": "DummyVpcPublicSubnet2RouteTableAssociationDCE3DC57",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PublicSubnet2/DefaultRoute": [
@@ -205,7 +220,10 @@
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DummyVpcPrivateSubnet1SubnetAF2DFEB1"
+            "data": "DummyVpcPrivateSubnet1SubnetAF2DFEB1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PrivateSubnet1/RouteTable": [
@@ -217,7 +235,10 @@
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DummyVpcPrivateSubnet1RouteTableAssociation88B5105F"
+            "data": "DummyVpcPrivateSubnet1RouteTableAssociation88B5105F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PrivateSubnet1/DefaultRoute": [
@@ -257,7 +278,10 @@
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DummyVpcPrivateSubnet2Subnet718780F7"
+            "data": "DummyVpcPrivateSubnet2Subnet718780F7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PrivateSubnet2/RouteTable": [
@@ -269,7 +293,10 @@
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DummyVpcPrivateSubnet2RouteTableAssociationC3594446"
+            "data": "DummyVpcPrivateSubnet2RouteTableAssociationC3594446",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-fargate-cluster-test-stack1/DummyVpc/PrivateSubnet2/DefaultRoute": [

@@ -99,7 +99,10 @@
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterVpcPublicSubnet1SubnetA9F7E0A5"
+            "data": "ClusterVpcPublicSubnet1SubnetA9F7E0A5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PublicSubnet1/RouteTable": [
@@ -111,7 +114,10 @@
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterVpcPublicSubnet1RouteTableAssociation0FBEF1F4"
+            "data": "ClusterVpcPublicSubnet1RouteTableAssociation0FBEF1F4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PublicSubnet1/DefaultRoute": [
@@ -129,7 +135,10 @@
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterVpcPublicSubnet1NATGateway0693C346"
+            "data": "ClusterVpcPublicSubnet1NATGateway0693C346",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PublicSubnet2": [
@@ -171,7 +180,10 @@
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterVpcPublicSubnet2Subnet059113C4"
+            "data": "ClusterVpcPublicSubnet2Subnet059113C4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PublicSubnet2/RouteTable": [
@@ -183,7 +195,10 @@
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterVpcPublicSubnet2RouteTableAssociation8446B27D"
+            "data": "ClusterVpcPublicSubnet2RouteTableAssociation8446B27D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PublicSubnet2/DefaultRoute": [
@@ -201,7 +216,10 @@
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterVpcPublicSubnet2NATGateway00B24686"
+            "data": "ClusterVpcPublicSubnet2NATGateway00B24686",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PrivateSubnet1": [
@@ -235,7 +253,10 @@
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterVpcPrivateSubnet1SubnetA4EB481A"
+            "data": "ClusterVpcPrivateSubnet1SubnetA4EB481A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PrivateSubnet1/RouteTable": [
@@ -247,7 +268,10 @@
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterVpcPrivateSubnet1RouteTableAssociation9B8A88D9"
+            "data": "ClusterVpcPrivateSubnet1RouteTableAssociation9B8A88D9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PrivateSubnet1/DefaultRoute": [
@@ -287,7 +311,10 @@
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterVpcPrivateSubnet2SubnetBD1ECB6E"
+            "data": "ClusterVpcPrivateSubnet2SubnetBD1ECB6E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PrivateSubnet2/RouteTable": [
@@ -299,7 +326,10 @@
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterVpcPrivateSubnet2RouteTableAssociationFB21349E"
+            "data": "ClusterVpcPrivateSubnet2RouteTableAssociationFB21349E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegEcsImportedTaskDefStack/Cluster/Vpc/PrivateSubnet2/DefaultRoute": [

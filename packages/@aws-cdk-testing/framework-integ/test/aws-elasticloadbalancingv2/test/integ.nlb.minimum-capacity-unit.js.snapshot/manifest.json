@@ -87,7 +87,10 @@
         "/MinimumCapacityUnitNlbStack/Stack/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet1Subnet0AD81D22"
+            "data": "StackPublicSubnet1Subnet0AD81D22",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/MinimumCapacityUnitNlbStack/Stack/PublicSubnet1/RouteTable": [
@@ -99,7 +102,10 @@
         "/MinimumCapacityUnitNlbStack/Stack/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet1RouteTableAssociation74F1C1B6"
+            "data": "StackPublicSubnet1RouteTableAssociation74F1C1B6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/MinimumCapacityUnitNlbStack/Stack/PublicSubnet1/DefaultRoute": [
@@ -117,7 +123,10 @@
         "/MinimumCapacityUnitNlbStack/Stack/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet1NATGatewayD2E1ABF7"
+            "data": "StackPublicSubnet1NATGatewayD2E1ABF7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/MinimumCapacityUnitNlbStack/Stack/PrivateSubnet1": [
@@ -151,7 +160,10 @@
         "/MinimumCapacityUnitNlbStack/Stack/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet1Subnet47AC2BC7"
+            "data": "StackPrivateSubnet1Subnet47AC2BC7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/MinimumCapacityUnitNlbStack/Stack/PrivateSubnet1/RouteTable": [
@@ -163,7 +175,10 @@
         "/MinimumCapacityUnitNlbStack/Stack/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet1RouteTableAssociationFFE38495"
+            "data": "StackPrivateSubnet1RouteTableAssociationFFE38495",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/MinimumCapacityUnitNlbStack/Stack/PrivateSubnet1/DefaultRoute": [

@@ -89,7 +89,10 @@
         "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+            "data": "VpcPublicSubnet1Subnet5C2D37C4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet1/RouteTable": [
@@ -101,7 +104,10 @@
         "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet1/DefaultRoute": [
@@ -119,7 +125,10 @@
         "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+            "data": "VpcPublicSubnet1NATGateway4D7517AA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet2": [
@@ -153,7 +162,10 @@
         "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2Subnet691E08A3"
+            "data": "VpcPublicSubnet2Subnet691E08A3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet2/RouteTable": [
@@ -165,7 +177,10 @@
         "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet2/DefaultRoute": [
@@ -205,7 +220,10 @@
         "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1Subnet536B997A"
+            "data": "VpcPrivateSubnet1Subnet536B997A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet1/RouteTable": [
@@ -217,7 +235,10 @@
         "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet1/DefaultRoute": [
@@ -257,7 +278,10 @@
         "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+            "data": "VpcPrivateSubnet2Subnet3788AAA1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet2/RouteTable": [
@@ -269,7 +293,10 @@
         "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet2/DefaultRoute": [
