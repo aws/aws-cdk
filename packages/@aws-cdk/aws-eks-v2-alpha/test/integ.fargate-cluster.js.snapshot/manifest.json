@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "eks-fargate-cluster-test-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/48604463956184667a195b66893a75a03fc98c5aeadfe803736c72b9037d21bc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c817082ff9ec196f51d909feb9fdb0615500b7318ab224df75bd2940bad8144.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -220,6 +220,78 @@
             "data": "FargateTestClusterDefaultVpcPublicSubnet2NATGatewayB1FD6513"
           }
         ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet3Subnet69C88FEE"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet3RouteTableC984454D"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet3RouteTableAssociation7AA3E6A5"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet3DefaultRouteA74B3342"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet3/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet3EIP315792FD"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet3/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet3NATGatewayA0B0A215"
+          }
+        ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -324,6 +396,58 @@
             "data": "FargateTestClusterDefaultVpcPrivateSubnet2DefaultRouteF087CC47"
           }
         ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PrivateSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PrivateSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPrivateSubnet3Subnet68410141"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PrivateSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPrivateSubnet3RouteTable475D0F33"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PrivateSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPrivateSubnet3RouteTableAssociation2077D370"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PrivateSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPrivateSubnet3DefaultRoute7EDA5387"
+          }
+        ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
@@ -421,6 +545,7 @@
               ],
               "vpcSubnets": {
                 "subnets": [
+                  "*",
                   "*",
                   "*"
                 ]
@@ -609,6 +734,7 @@
               "vpc": "*",
               "vpcSubnets": {
                 "subnets": [
+                  "*",
                   "*",
                   "*"
                 ]
@@ -934,5 +1060,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1015.0"
+  "minimumCliVersion": "2.1020.1"
 }
