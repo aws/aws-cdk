@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a": {
       "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "1f4712e148d1231b653e900a3d380b5c0042d2a80f35458001e9bb6466dbbaf9": {
+    "c0b4a9215659a1723f1bc5530e4c3e4dd0535fc9835b98b8318ab6e4745a2ff5": {
       "displayName": "aws-iot-opensearch-integ-stack Template",
       "source": {
         "path": "aws-iot-opensearch-integ-stack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1f4712e148d1231b653e900a3d380b5c0042d2a80f35458001e9bb6466dbbaf9.json",
+          "objectKey": "c0b4a9215659a1723f1bc5530e4c3e4dd0535fc9835b98b8318ab6e4745a2ff5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

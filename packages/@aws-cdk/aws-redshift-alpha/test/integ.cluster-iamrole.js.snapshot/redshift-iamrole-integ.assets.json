@@ -1,7 +1,7 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
-    "63d6a67734fa2c9452fc730838b9f08e36eb4c8ed2c81be6980814ead5903a67": {
+    "babdad8f665c2fc4936cf07da5cf0022716e25600a336e1baaed7b03710c97a5": {
       "displayName": "redshift-iamrole-integ Template",
       "source": {
         "path": "redshift-iamrole-integ.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "63d6a67734fa2c9452fc730838b9f08e36eb4c8ed2c81be6980814ead5903a67.json",
+          "objectKey": "babdad8f665c2fc4936cf07da5cf0022716e25600a336e1baaed7b03710c97a5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

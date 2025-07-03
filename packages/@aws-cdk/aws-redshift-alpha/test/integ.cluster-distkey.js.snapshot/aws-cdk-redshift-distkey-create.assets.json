@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "60d6644ca7559903aa3a4516f84720a5f2cc1310aa4f456b1aad45a0c1e28046": {
       "displayName": "Query Redshift Database3de5bea727da479686625efb56431b5f/Code",
@@ -29,7 +29,7 @@
         }
       }
     },
-    "ceff1538623af055ef734eeb210a4f2106e0fe770008536c1891973bb970ef15": {
+    "f852fbc17b57de5797cc01416047d1a9fbfcc7e32750cfab833746866ef0c112": {
       "displayName": "aws-cdk-redshift-distkey-create Template",
       "source": {
         "path": "aws-cdk-redshift-distkey-create.template.json",
@@ -38,7 +38,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ceff1538623af055ef734eeb210a4f2106e0fe770008536c1891973bb970ef15.json",
+          "objectKey": "f852fbc17b57de5797cc01416047d1a9fbfcc7e32750cfab833746866ef0c112.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
