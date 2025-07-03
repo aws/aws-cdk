@@ -103,6 +103,19 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'AUDIT',
     'OFF'
   ],
+  'AgentCollaboratorType': [
+    'SUPERVISOR',
+    'DISABLED',
+    'SUPERVISOR_ROUTER'
+  ],
+  'AgentStepType': [
+    'PRE_PROCESSING',
+    'ORCHESTRATION',
+    'POST_PROCESSING',
+    'ROUTING_CLASSIFIER',
+    'MEMORY_SUMMARIZATION',
+    'KNOWLEDGE_BASE_RESPONSE_GENERATION'
+  ],
   'AlarmBehavior': [
     'ROLLBACK_ON_ALARM',
     'FAIL_ON_ALARM'
@@ -857,6 +870,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'FIRST_ROW',
     'GIVEN'
   ],
+  'CustomControl': [
+    'RETURN_CONTROL'
+  ],
   'CustomLambdaDeploymentConfigType': [
     'Canary',
     'Linear'
@@ -1066,6 +1082,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'terminate',
     'recover',
     'reboot'
+  ],
+  'Ec2InstanceType': [
+    'EC2',
+    'SSM_MANAGED_NODE'
   ],
   'EcsMachineImageType': [
     'ECS_AL2',
@@ -2266,6 +2286,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'HD',
     'SD'
   ],
+  'MemoryType': [
+    'SESSION_SUMMARY'
+  ],
   'MergeType': [
     'MANUAL_MERGE',
     'AUTO_MERGE'
@@ -2469,6 +2492,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'name',
     'position'
   ],
+  'OrchestrationType': [
+    'DEFAULT',
+    'CUSTOM_ORCHESTRATION'
+  ],
   'OriginAccessControlOriginType': [
     's3',
     'lambda',
@@ -2511,10 +2538,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Standard'
   ],
   'ParameterType': [
-    'String',
-    'SecureString',
-    'StringList',
-    'AWS::EC2::Image::Id'
+    'string',
+    'number',
+    'integer',
+    'boolean',
+    'array',
+    'object'
   ],
   'ParameterValueType': [
     'String',
@@ -2824,6 +2853,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'private',
     'public'
   ],
+  'RelayConversationHistoryType': [
+    'TO_COLLABORATOR',
+    'DISABLED'
+  ],
   'RemovalPolicy': [
     'destroy',
     'retain',
@@ -2865,6 +2898,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'RepositoryVisibility': [
     0,
     1
+  ],
+  'RequireConfirmation': [
+    'ENABLED',
+    'DISABLED'
   ],
   'Resolution': [
     'FULL_HD',
@@ -3643,6 +3680,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'VariableType': [
     'property',
     'pattern'
+  ],
+  'VectorType': [
+    'FLOAT32',
+    'BINARY'
   ],
   'VerificationEmailStyle': [
     'CONFIRM_WITH_CODE',

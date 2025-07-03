@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.203.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.203.0-alpha.0...v2.203.1-alpha.0) (2025-07-02)
+
+## [2.203.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.202.0-alpha.0...v2.203.0-alpha.0) (2025-07-01)
+
+
+### Features
+
+* **ec2:** support for client route enforcement for client VPN endpoint ([#34405](https://github.com/aws/aws-cdk/issues/34405)) ([063f4e7](https://github.com/aws/aws-cdk/commit/063f4e79d7416c52b622450222c5439e893ca74c))
+
+
+### Bug Fixes
+
+* **ec2:** don't use inferenceAccellerators in the constructors if not needed ([#34618](https://github.com/aws/aws-cdk/issues/34618)) ([054c6c5](https://github.com/aws/aws-cdk/commit/054c6c53982b8ba33ca31af6752b1662ed5752b8)), closes [#33505](https://github.com/aws/aws-cdk/issues/33505) [/github.com/aws/aws-cdk/issues/33505#issuecomment-2770818825](https://github.com/aws//github.com/aws/aws-cdk/issues/33505/issues/issuecomment-2770818825) [#34610](https://github.com/aws/aws-cdk/issues/34610)
+
 ## [2.202.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.201.0-alpha.0...v2.202.0-alpha.0) (2025-06-20)
 
 
