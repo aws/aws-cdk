@@ -104,11 +104,11 @@ describe('Graphs', () => {
     }]);
   });
 
-  test('label and color are respected in constructor', () => {
+  test('label, color, id and visible are respected in constructor', () => {
     // WHEN
     const stack = new Stack();
     const widget = new GraphWidget({
-      left: [new Metric({ namespace: 'CDK', metricName: 'Test', label: 'MyMetric', color: '000000' })],
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test', label: 'MyMetric', color: '000000', id: 'custom_id', visible: false })],
     });
 
     // THEN
@@ -120,7 +120,7 @@ describe('Graphs', () => {
         view: 'timeSeries',
         region: { Ref: 'AWS::Region' },
         metrics: [
-          ['CDK', 'Test', { label: 'MyMetric', color: '000000' }],
+          ['CDK', 'Test', { label: 'MyMetric', color: '000000', id: 'custom_id', visible: false }],
         ],
         yAxis: {},
       },

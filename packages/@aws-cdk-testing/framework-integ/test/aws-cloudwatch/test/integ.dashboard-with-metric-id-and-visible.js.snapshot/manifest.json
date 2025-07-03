@@ -1,28 +1,28 @@
 {
   "version": "44.0.0",
   "artifacts": {
-    "aws-cdk-cloudwatch.assets": {
+    "DashboardWithMetricIdAndVisibleIntegrationTest.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-cloudwatch.assets.json",
+        "file": "DashboardWithMetricIdAndVisibleIntegrationTest.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-cloudwatch": {
+    "DashboardWithMetricIdAndVisibleIntegrationTest": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-cloudwatch.template.json",
+        "templateFile": "DashboardWithMetricIdAndVisibleIntegrationTest.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fca62d2c6e2c9cb0235b47c9a312c26d3fa862d8dfc9161ed811df0e7dc70675.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9e3a417af8bde197a0ffcab4dbb763452e127fc23e689d7afd394bf32adecdca.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-cloudwatch.assets"
+          "DashboardWithMetricIdAndVisibleIntegrationTest.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,70 +31,13 @@
         }
       },
       "dependencies": [
-        "aws-cdk-cloudwatch.assets"
+        "DashboardWithMetricIdAndVisibleIntegrationTest.assets"
       ],
       "metadata": {
-        "/aws-cdk-cloudwatch/queue": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "queue"
-          }
-        ],
-        "/aws-cdk-cloudwatch/Alarm": [
+        "/DashboardWithMetricIdAndVisibleIntegrationTest/Dash": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "metric": {
-                "warnings": "*",
-                "warningsV2": "*"
-              },
-              "alarmName": "*",
-              "alarmDescription": "*",
-              "comparisonOperator": "*",
-              "datapointsToAlarm": "*",
-              "threshold": "*",
-              "evaluationPeriods": "*",
-              "evaluateLowSampleCountPercentile": "*",
-              "treatMissingData": "*",
-              "actionsEnabled": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Periods of metrics in 'usingMetrics' for Math expression 'm1+m2' have been overridden to 60 seconds. [ack: CloudWatch:Math:MetricsPeriodsOverridden]"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "toAnnotation": []
-            }
-          }
-        ],
-        "/aws-cdk-cloudwatch/Alarm/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Alarm7103F465"
-          }
-        ],
-        "/aws-cdk-cloudwatch/Dash": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "dashboardName": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "warnings": "*",
-                  "warningsV2": "*",
-                  "width": "*",
-                  "height": "*"
-                }
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -111,69 +54,43 @@
           },
           {
             "type": "aws:cdk:warning",
-            "data": "Periods of metrics in 'usingMetrics' for Math expression 'm1+m2' have been overridden to 60 seconds. [ack: CloudWatch:Math:MetricsPeriodsOverridden]"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "warnings": "*",
-                  "warningsV2": "*",
-                  "width": "*",
-                  "height": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "warnings": "*",
-                  "warningsV2": "*",
-                  "width": "*",
-                  "height": "*"
-                }
-              ]
-            }
+            "data": "Math expression 'lambda_errors / lambda_invocations * 100' references unknown identifiers: lambda_errors, lambda_invocations. Please add them to the 'usingMetrics' map. [ack: CloudWatch:Math:UnknownIdentifier]"
           }
         ],
-        "/aws-cdk-cloudwatch/Dash/Resource": [
+        "/DashboardWithMetricIdAndVisibleIntegrationTest/Dash/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DashCCD7F836"
           }
         ],
-        "/aws-cdk-cloudwatch/BootstrapVersion": [
+        "/DashboardWithMetricIdAndVisibleIntegrationTest/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-cloudwatch/CheckBootstrapVersion": [
+        "/DashboardWithMetricIdAndVisibleIntegrationTest/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-cloudwatch"
+      "displayName": "DashboardWithMetricIdAndVisibleIntegrationTest"
     },
-    "cdkintegmathalarmanddashboardDefaultTestDeployAssertE31ECF03.assets": {
+    "cdkintegdashboardwithmetricidandvisibleDefaultTestDeployAssert34BC1A62.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdkintegmathalarmanddashboardDefaultTestDeployAssertE31ECF03.assets.json",
+        "file": "cdkintegdashboardwithmetricidandvisibleDefaultTestDeployAssert34BC1A62.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdkintegmathalarmanddashboardDefaultTestDeployAssertE31ECF03": {
+    "cdkintegdashboardwithmetricidandvisibleDefaultTestDeployAssert34BC1A62": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdkintegmathalarmanddashboardDefaultTestDeployAssertE31ECF03.template.json",
+        "templateFile": "cdkintegdashboardwithmetricidandvisibleDefaultTestDeployAssert34BC1A62.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -182,7 +99,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdkintegmathalarmanddashboardDefaultTestDeployAssertE31ECF03.assets"
+          "cdkintegdashboardwithmetricidandvisibleDefaultTestDeployAssert34BC1A62.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -191,23 +108,23 @@
         }
       },
       "dependencies": [
-        "cdkintegmathalarmanddashboardDefaultTestDeployAssertE31ECF03.assets"
+        "cdkintegdashboardwithmetricidandvisibleDefaultTestDeployAssert34BC1A62.assets"
       ],
       "metadata": {
-        "/cdk-integ-math-alarm-and-dashboard/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/cdk-integ-dashboard-with-metric-id-and-visible/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cdk-integ-math-alarm-and-dashboard/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/cdk-integ-dashboard-with-metric-id-and-visible/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cdk-integ-math-alarm-and-dashboard/DefaultTest/DeployAssert"
+      "displayName": "cdk-integ-dashboard-with-metric-id-and-visible/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
