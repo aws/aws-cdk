@@ -840,7 +840,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7633376387df35dc59230d4039be5a7b77bfbcb6d38fa9a2c6e53ed61ab00cf0.zip"
+     "S3Key": "43465664a5a60e71cda22ef47736afa7319aaeb3cefa34180a1514b74aeef74a.zip"
     },
     "Description": "onEvent handler for EKS kubectl resource provider",
     "Environment": {
@@ -901,7 +901,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8a84a8f465fbe0c48af2c256847ec9abfe095d23781b749728b998315f3ad732.zip"
+     "S3Key": "b8ab94266984268614c3fb2824a1c3a55395746c48b28c003b08bc1d08688f3e.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1523,6 +1523,32 @@
     "Namespace": "ack-system",
     "Repository": "oci://ghcr.io/grafana-operator/helm-charts/grafana-operator",
     "CreateNamespace": true
+   },
+   "DependsOn": [
+    "ClusterKubectlReadyBarrier200052AF"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClustercharttesttakeownershipinstallationAE49062F": {
+   "Type": "Custom::AWSCDK-EKS-HelmChart",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "ClusterKubectlProviderframeworkonEvent68E0CF80",
+      "Arn"
+     ]
+    },
+    "ClusterName": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "Release": "sqs-chart-release",
+    "Chart": "sqs-chart",
+    "Version": "1.1.12",
+    "Namespace": "ask-system",
+    "Repository": "oci://public.ecr.aws/aws-controllers-k8s/sqs-chart",
+    "CreateNamespace": true,
+    "TakeOwnership": true
    },
    "DependsOn": [
     "ClusterKubectlReadyBarrier200052AF"
