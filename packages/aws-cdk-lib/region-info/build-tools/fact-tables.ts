@@ -96,7 +96,7 @@ export const PARTITION_MAP: { [region: string]: Region } = {
   'us-isob-': { partition: Partition.UsIsoB, domainSuffix: 'sc2s.sgov.gov' },
   'us-isof-': { partition: Partition.UsIsoF, domainSuffix: 'csp.hci.ic.gov' },
   'eu-isoe-': { partition: Partition.EuIsoE, domainSuffix: 'cloud.adc-e.uk' },
-  'eusc-': { partition: Partition.Eusc, domainSuffix: 'amazonaws.eu' },
+  'eusc-de-': { partition: Partition.Eusc, domainSuffix: 'amazonaws.eu' },
 };
 
 export const PARTITION_SAML_SIGN_ON_URL: Partial<Record<Partition, string>> = {
