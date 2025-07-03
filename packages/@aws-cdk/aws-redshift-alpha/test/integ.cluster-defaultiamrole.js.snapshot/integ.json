@@ -3,7 +3,7 @@
   "testCases": {
     "DefaultIamRoleInteg/DefaultTest": {
       "stacks": [
-        "redshift-defaultiamrole-integ"
+        "aws-cdk-redshift-cluster-database"
       ],
       "assertionStack": "DefaultIamRoleInteg/DefaultTest/DeployAssert",
       "assertionStackName": "DefaultIamRoleIntegDefaultTestDeployAssert161B8D72"

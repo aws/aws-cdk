@@ -11,21 +11,21 @@
     },
     "aws-cdk-redshift-cluster-database": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
+      "environment": "aws://123456789012/us-east-1",
       "properties": {
         "templateFile": "aws-cdk-redshift-cluster-database.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8da762aa01a5e61f51c124b26e3755299b427c6b2c426500fe79bf049d4240f5.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/b1da0f2d40ab0178622d2173810eb7f056f7337ea49cbe10f1f10f4b706db884.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "aws-cdk-redshift-cluster-database.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "arn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -263,17 +263,14 @@
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet3SubnetBE12F0B6",
             "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
             ]
           }
         ],
         "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet3RouteTable93458DBB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "VpcPublicSubnet3RouteTable93458DBB"
           }
         ],
         "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3/RouteTableAssociation": [
@@ -281,26 +278,20 @@
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet3RouteTableAssociation1F1EDF02",
             "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
             ]
           }
         ],
         "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet3DefaultRoute4697774F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "VpcPublicSubnet3DefaultRoute4697774F"
           }
         ],
         "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet3EIP3A666A23",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "VpcPublicSubnet3EIP3A666A23"
           }
         ],
         "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3/NATGateway": [
@@ -308,7 +299,7 @@
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet3NATGateway7640CD1D",
             "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
             ]
           }
         ],
@@ -461,17 +452,14 @@
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet3SubnetF258B56E",
             "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
             ]
           }
         ],
         "/aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet3/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet3RouteTableD98824C7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "VpcPrivateSubnet3RouteTableD98824C7"
           }
         ],
         "/aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet3/RouteTableAssociation": [
@@ -479,17 +467,14 @@
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet3RouteTableAssociation16BDDC43",
             "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
             ]
           }
         ],
         "/aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet3/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet3DefaultRoute94B74F0D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "VpcPrivateSubnet3DefaultRoute94B74F0D"
           }
         ],
         "/aws-cdk-redshift-cluster-database/Vpc/IGW": [
@@ -707,12 +692,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Table7ABB320E"
-          }
-        ],
-        "/aws-cdk-redshift-cluster-database/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-redshift-cluster-database/Query Redshift Database3de5bea727da479686625efb56431b5f": [

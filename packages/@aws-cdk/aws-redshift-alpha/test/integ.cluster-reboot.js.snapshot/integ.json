@@ -3,8 +3,8 @@
   "testCases": {
     "aws-cdk-redshift-reboot-test/DefaultTest": {
       "stacks": [
-        "aws-cdk-redshift-cluster-create",
-        "aws-cdk-redshift-cluster-update"
+        "MultiAzRedshift/aws-cdk-redshift-cluster-create",
+        "MultiAzRedshift/aws-cdk-redshift-cluster-update"
       ],
       "diffAssets": false,
       "stackUpdateWorkflow": false,

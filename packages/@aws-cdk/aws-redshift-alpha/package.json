@@ -52,7 +52,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "echo integ-runner",
+    "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
