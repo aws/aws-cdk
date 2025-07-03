@@ -78,6 +78,17 @@ export abstract class IgnoreStrategy {
    * @returns `true` if the file should be ignored
    */
   public abstract ignores(absoluteFilePath: string): boolean;
+
+  /**
+   * Determines whether a given file path should be ignored and have all of its children ignored
+   * if its a directory.
+   *
+   * @param absoluteFilePath absolute file path to be assessed against the pattern
+   * @returns `true` if the file should be ignored
+   */
+  public completelyIgnores(absoluteFilePath: string): boolean {
+    return this.ignores(absoluteFilePath);
+  }
 }
 
 /**
@@ -186,6 +197,10 @@ export class GitIgnoreStrategy extends IgnoreStrategy {
 export class DockerIgnoreStrategy extends IgnoreStrategy {
   private readonly absoluteRootPath: string;
   private readonly ignore: DockerIgnore.Ignore;
+  private readonly completeIgnore: DockerIgnore.Ignore;
+  // Follows negation rules as describe in @balena/dockerignore
+  // See https://www.npmjs.com/package/@balena/dockerignore#exclusion-patterns
+  private readonly negativeIgnoreRegex = /^\s*(\!|\/\!)(.*)/;
 
   constructor(absoluteRootPath: string, patterns: string[]) {
     super();
@@ -195,7 +210,34 @@ export class DockerIgnoreStrategy extends IgnoreStrategy {
     }
 
     this.absoluteRootPath = absoluteRootPath;
-    this.ignore = dockerIgnore().add(patterns);
+    this.completeIgnore = dockerIgnore();
+    this.ignore = dockerIgnore();
+    for (const pattern of patterns) {
+      this.add(pattern);
+    }
+  }
+
+  /**
+   * Adds the pattern to completeIgnore. If its an exclude pattern, it also adds an entry for each parent directory.
+   * This is useful in detecting folders that are ignored, but that could have children files which are not ignored.
+   *
+   * @param pattern pattern to add
+   */
+  private completelyAdd(pattern: string) {
+    this.completeIgnore.add(pattern);
+
+    const negativeMatch = pattern.match(this.negativeIgnoreRegex);
+    if (negativeMatch !== null) {
+      let dirname: string | undefined = negativeMatch[2]!;
+      while (true) {
+        dirname = path.dirname(dirname);
+        if (dirname === '/' || dirname === '.') {
+          break;
+        }
+
+        this.completeIgnore.add(negativeMatch[1]+dirname);
+      }
+    }
   }
 
   /**
@@ -204,6 +246,15 @@ export class DockerIgnoreStrategy extends IgnoreStrategy {
    */
   public add(pattern: string): void {
     this.ignore.add(pattern);
+    this.completelyAdd(pattern);
+  }
+
+  private getRelativePath(absoluteFilePath: string): string {
+    if (!path.isAbsolute(absoluteFilePath)) {
+      throw new UnscopedValidationError('DockerIgnoreStrategy.ignores() expects an absolute path');
+    }
+
+    return path.relative(this.absoluteRootPath, absoluteFilePath);
   }
 
   /**
@@ -213,12 +264,18 @@ export class DockerIgnoreStrategy extends IgnoreStrategy {
    * @returns `true` if the file should be ignored
    */
   public ignores(absoluteFilePath: string): boolean {
-    if (!path.isAbsolute(absoluteFilePath)) {
-      throw new UnscopedValidationError('DockerIgnoreStrategy.ignores() expects an absolute path');
-    }
+    return this.ignore.ignores(this.getRelativePath(absoluteFilePath));
+  }
 
-    let relativePath = path.relative(this.absoluteRootPath, absoluteFilePath);
-
-    return this.ignore.ignores(relativePath);
+  /**
+   * Determines whether a given file path should be ignored and have all of its children ignored
+   * if its a directory.
+   *
+   * @param absoluteFilePath absolute file path to be assessed against the pattern
+   * @returns `true` if the file should be ignored
+   */
+  public completelyIgnores(absoluteFilePath: string): boolean {
+    const relativePath = this.getRelativePath(absoluteFilePath);
+    return this.ignore.ignores(relativePath) && this.completeIgnore.ignores(relativePath);
   }
 }
