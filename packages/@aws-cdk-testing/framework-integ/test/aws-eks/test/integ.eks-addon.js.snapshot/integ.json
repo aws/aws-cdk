@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "testCases": {
     "EksClusterwithAddon/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "EksClusterwithAddonDefaultTestDeployAssert82CE7357"
     }
   },
-  "minimumCliVersion": "2.1017.1"
+  "minimumCliVersion": "2.1020.1"
 }

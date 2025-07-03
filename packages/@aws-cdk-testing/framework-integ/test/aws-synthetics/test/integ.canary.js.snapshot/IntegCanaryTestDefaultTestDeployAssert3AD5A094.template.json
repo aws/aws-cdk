@@ -34,7 +34,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548165"
+    "salt": "1751302028210"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -582,7 +582,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5bc7ca7323e085fed7f85a690594a53ffcd62be4651195afe166f4a2bafad9fa.zip"
+     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -831,7 +831,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5bc7ca7323e085fed7f85a690594a53ffcd62be4651195afe166f4a2bafad9fa.zip"
+     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -881,7 +881,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5bc7ca7323e085fed7f85a690594a53ffcd62be4651195afe166f4a2bafad9fa.zip"
+     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -927,7 +927,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548167"
+    "salt": "1751302028212"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1083,7 +1083,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548167"
+    "salt": "1751302028212"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1239,7 +1239,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548168"
+    "salt": "1751302028213"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1395,7 +1395,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548168"
+    "salt": "1751302028213"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1551,7 +1551,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548168"
+    "salt": "1751302028213"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1707,7 +1707,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548169"
+    "salt": "1751302028214"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1863,7 +1863,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548169"
+    "salt": "1751302028214"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2019,7 +2019,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548169"
+    "salt": "1751302028214"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2175,7 +2175,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548170"
+    "salt": "1751302028214"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2331,7 +2331,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548170"
+    "salt": "1751302028215"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2487,7 +2487,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548170"
+    "salt": "1751302028215"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2643,7 +2643,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548171"
+    "salt": "1751302028215"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2799,7 +2799,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548171"
+    "salt": "1751302028215"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2955,7 +2955,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548171"
+    "salt": "1751302028216"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -3111,7 +3111,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548172"
+    "salt": "1751302028216"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -3267,7 +3267,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548172"
+    "salt": "1751302028216"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -3423,7 +3423,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548172"
+    "salt": "1751302028216"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -3579,7 +3579,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548172"
+    "salt": "1751302028216"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -3735,7 +3735,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548173"
+    "salt": "1751302028216"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -3891,7 +3891,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1749802548173"
+    "salt": "1751302028217"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -4265,6 +4265,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {
