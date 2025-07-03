@@ -1,0 +1,14 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "PipelineAssetsTest/DefaultTest": {
+      "stacks": [
+        "pipeline-asset-stack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "PipelineAssetsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PipelineAssetsTestDefaultTestDeployAssert9AFEBA62"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}
