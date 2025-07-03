@@ -1704,6 +1704,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     } else {
       deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
         retentionPeriod: Duration.days(14),
+        enforceSSL: true,
       });
       this.addToRolePolicy(new iam.PolicyStatement({
         actions: ['sqs:SendMessage'],
