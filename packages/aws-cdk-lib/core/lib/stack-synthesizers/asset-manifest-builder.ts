@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ISynthesisSession } from './types';
@@ -174,10 +175,24 @@ export class AssetManifestBuilder {
   }
 
   private manifestEnvName(stack: Stack): string {
-    return [
-      resolvedOr(stack.account, 'current_account'),
-      resolvedOr(stack.region, 'current_region'),
-    ].join('-');
+    const account = resolvedOr(stack.account, 'current_account');
+    const region = resolvedOr(stack.region, 'current_region');
+
+    // Create a hash of all destination-relevant properties to ensure uniqueness
+    // This ensures assets with same content but different destinations are published separately
+    const destinationProps = {
+      account,
+      region,
+      stackName: stack.stackName,
+    };
+
+    // Hash the destination properties to create a unique identifier
+    const destinationHash = crypto.createHash('sha256')
+      .update(JSON.stringify(destinationProps))
+      .digest('hex')
+      .slice(0, 8);
+
+    return `${account}-${region}-${destinationHash}`;
   }
 }
 
