@@ -9,7 +9,7 @@
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
-    "integ": "integ-runner --language javascript",
+    "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
     "package": "cdk-package",
     "build+test": "yarn build && yarn test",
     "build+extract": "yarn build",
@@ -30,13 +30,13 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.187.0",
+    "@aws-cdk/integ-runner": "^2.188.2",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-sdk/client-acm": "3.632.0",
     "@aws-sdk/client-rds": "3.632.0",
     "@aws-sdk/client-s3": "3.632.0",
     "@aws-sdk/client-cognito-identity-provider": "3.632.0",
-    "axios": "1.9.0",
+    "axios": "1.10.0",
     "delay": "5.0.0"
   },
   "dependencies": {
@@ -48,7 +48,7 @@
     "@aws-cdk/lambda-layer-kubectl-v32": "^2.1.0",
     "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.0",
     "aws-cdk-lib": "0.0.0",
-    "cdk8s": "2.69.73",
+    "cdk8s": "2.69.74",
     "cdk8s-plus-27": "2.9.5",
     "constructs": "^10.0.0"
   },
