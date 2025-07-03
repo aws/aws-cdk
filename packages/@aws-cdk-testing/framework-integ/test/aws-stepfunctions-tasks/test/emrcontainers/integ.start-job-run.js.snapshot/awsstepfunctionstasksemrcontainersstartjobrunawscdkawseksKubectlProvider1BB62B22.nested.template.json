@@ -42,9 +42,6 @@
       },
       {
        "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet5042E9F4Ref"
-      },
-      {
-       "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet3Subnet0F72FDF5Ref"
       }
      ]
     }
@@ -206,9 +203,6 @@
       },
       {
        "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet5042E9F4Ref"
-      },
-      {
-       "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet3Subnet0F72FDF5Ref"
       }
      ]
     }
@@ -373,9 +367,6 @@
    "Type": "String"
   },
   "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet5042E9F4Ref": {
-   "Type": "String"
-  },
-  "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet3Subnet0F72FDF5Ref": {
    "Type": "String"
   },
   "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtestekscluster59B73E28ClusterSecurityGroupId": {

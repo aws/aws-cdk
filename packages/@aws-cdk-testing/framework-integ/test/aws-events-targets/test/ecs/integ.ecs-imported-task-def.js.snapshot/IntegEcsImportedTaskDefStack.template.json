@@ -21,7 +21,14 @@
   "ClusterVpcPublicSubnet1SubnetA9F7E0A5": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1a",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
     "CidrBlock": "10.0.0.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
@@ -122,7 +129,14 @@
   "ClusterVpcPublicSubnet2Subnet059113C4": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1b",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
     "CidrBlock": "10.0.64.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
@@ -223,7 +237,14 @@
   "ClusterVpcPrivateSubnet1SubnetA4EB481A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1a",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
     "CidrBlock": "10.0.128.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
@@ -285,7 +306,14 @@
   "ClusterVpcPrivateSubnet2SubnetBD1ECB6E": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1b",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
     "CidrBlock": "10.0.192.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6315dd3c2bc3035a957655b481149cf84bb8a430f0f399429a73cc2ebcc8eef3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/25fb5ff73b89676ddab9edfe22572f66ea93c3870f3af389df9c24d0ff331ac3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -210,96 +210,6 @@
             ]
           }
         ],
-        "/aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet3/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet3Subnet631C5E25",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet3/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet3RouteTable98AE0E14",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet3/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet3RouteTableAssociation427FE0C6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet3/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet3DefaultRouteA0D29D46",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet3/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet3EIPAD4BC883",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/aws-cdk-vpc-endpoint-dns-integ/VPC/PublicSubnet3/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet3NATGatewayD3048F5C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
         "/aws-cdk-vpc-endpoint-dns-integ/VPC/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -414,70 +324,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
-          }
-        ],
-        "/aws-cdk-vpc-endpoint-dns-integ/VPC/PrivateSubnet3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/aws-cdk-vpc-endpoint-dns-integ/VPC/PrivateSubnet3/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet3Subnet3EDCD457",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/aws-cdk-vpc-endpoint-dns-integ/VPC/PrivateSubnet3/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet3RouteTable192186F8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/aws-cdk-vpc-endpoint-dns-integ/VPC/PrivateSubnet3/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet3RouteTableAssociationC28D144E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/aws-cdk-vpc-endpoint-dns-integ/VPC/PrivateSubnet3/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet3DefaultRoute27F311AE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ],
         "/aws-cdk-vpc-endpoint-dns-integ/VPC/IGW": [
@@ -991,6 +837,96 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "VPCPublicSubnet3Subnet631C5E25": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3Subnet631C5E25",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet3RouteTable98AE0E14": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3RouteTable98AE0E14",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet3RouteTableAssociation427FE0C6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3RouteTableAssociation427FE0C6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet3DefaultRouteA0D29D46": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3DefaultRouteA0D29D46",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet3EIPAD4BC883": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3EIPAD4BC883",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet3NATGatewayD3048F5C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3NATGatewayD3048F5C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet3Subnet3EDCD457": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3Subnet3EDCD457",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet3RouteTable192186F8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3RouteTable192186F8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet3RouteTableAssociationC28D144E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3RouteTableAssociationC28D144E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet3DefaultRoute27F311AE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3DefaultRoute27F311AE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-vpc-endpoint-dns-integ"
@@ -1012,7 +948,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/68cd52963c112e80f9d989756bd9be29dce4d23b770a79bd08057f57265ffc4d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3b9b22c55d0bd37c9fd7ffbc4b8aaba16ace026d8786f45947521709792d863e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1095,5 +1031,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1020.1"
+  "minimumCliVersion": "2.1020.2"
 }

@@ -123,9 +123,6 @@
       },
       {
        "Ref": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet2Subnet9480A740Ref"
-      },
-      {
-       "Ref": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet3Subnet1B127970Ref"
       }
      ]
     }
@@ -245,9 +242,6 @@
       },
       {
        "Ref": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet2Subnet9480A740Ref"
-      },
-      {
-       "Ref": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet3Subnet1B127970Ref"
       }
      ]
     }
@@ -463,9 +457,6 @@
       },
       {
        "Ref": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet2Subnet9480A740Ref"
-      },
-      {
-       "Ref": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet3Subnet1B127970Ref"
       }
      ]
     }
@@ -672,9 +663,6 @@
       },
       {
        "Ref": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet2Subnet9480A740Ref"
-      },
-      {
-       "Ref": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet3Subnet1B127970Ref"
       }
      ]
     }
@@ -881,9 +869,6 @@
       },
       {
        "Ref": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet2Subnet9480A740Ref"
-      },
-      {
-       "Ref": "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet3Subnet1B127970Ref"
       }
      ]
     }
@@ -1229,9 +1214,6 @@
    "Type": "String"
   },
   "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet2Subnet9480A740Ref": {
-   "Type": "String"
-  },
-  "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet3Subnet1B127970Ref": {
    "Type": "String"
   }
  }

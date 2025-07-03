@@ -31,8 +31,15 @@
   "integrationtesteksclusterDefaultVpcPublicSubnet1Subnet58061317": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1a",
-    "CidrBlock": "10.0.0.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -148,8 +155,15 @@
   "integrationtesteksclusterDefaultVpcPublicSubnet2Subnet68EAAF11": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1b",
-    "CidrBlock": "10.0.32.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -262,128 +276,18 @@
     "integrationtesteksclusterDefaultVpcPublicSubnet2RouteTableAssociation62710C52"
    ]
   },
-  "integrationtesteksclusterDefaultVpcPublicSubnet3Subnet4307D52D": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": "test-region-1c",
-    "CidrBlock": "10.0.64.0/19",
-    "MapPublicIpOnLaunch": true,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Public"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Public"
-     },
-     {
-      "Key": "kubernetes.io/role/elb",
-      "Value": "1"
-     },
-     {
-      "Key": "Name",
-      "Value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
-    }
-   }
-  },
-  "integrationtesteksclusterDefaultVpcPublicSubnet3RouteTable51E9DA7C": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "kubernetes.io/role/elb",
-      "Value": "1"
-     },
-     {
-      "Key": "Name",
-      "Value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
-    }
-   }
-  },
-  "integrationtesteksclusterDefaultVpcPublicSubnet3RouteTableAssociation14A23BAF": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet3RouteTable51E9DA7C"
-    },
-    "SubnetId": {
-     "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet3Subnet4307D52D"
-    }
-   }
-  },
-  "integrationtesteksclusterDefaultVpcPublicSubnet3DefaultRouteB0117918": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Ref": "integrationtesteksclusterDefaultVpcIGW9ADAFE6F"
-    },
-    "RouteTableId": {
-     "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet3RouteTable51E9DA7C"
-    }
-   },
-   "DependsOn": [
-    "integrationtesteksclusterDefaultVpcVPCGWE4DC2204"
-   ]
-  },
-  "integrationtesteksclusterDefaultVpcPublicSubnet3EIP33828C59": {
-   "Type": "AWS::EC2::EIP",
-   "Properties": {
-    "Domain": "vpc",
-    "Tags": [
-     {
-      "Key": "kubernetes.io/role/elb",
-      "Value": "1"
-     },
-     {
-      "Key": "Name",
-      "Value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet3"
-     }
-    ]
-   }
-  },
-  "integrationtesteksclusterDefaultVpcPublicSubnet3NATGateway01B2F0F1": {
-   "Type": "AWS::EC2::NatGateway",
-   "Properties": {
-    "AllocationId": {
-     "Fn::GetAtt": [
-      "integrationtesteksclusterDefaultVpcPublicSubnet3EIP33828C59",
-      "AllocationId"
-     ]
-    },
-    "SubnetId": {
-     "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet3Subnet4307D52D"
-    },
-    "Tags": [
-     {
-      "Key": "kubernetes.io/role/elb",
-      "Value": "1"
-     },
-     {
-      "Key": "Name",
-      "Value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet3"
-     }
-    ]
-   },
-   "DependsOn": [
-    "integrationtesteksclusterDefaultVpcPublicSubnet3DefaultRouteB0117918",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3RouteTableAssociation14A23BAF"
-   ]
-  },
   "integrationtesteksclusterDefaultVpcPrivateSubnet1Subnet4E00CAFB": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1a",
-    "CidrBlock": "10.0.96.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -452,8 +356,15 @@
   "integrationtesteksclusterDefaultVpcPrivateSubnet2Subnet0C3539A8": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1b",
-    "CidrBlock": "10.0.128.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -516,76 +427,6 @@
     },
     "RouteTableId": {
      "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet2RouteTableD7E59903"
-    }
-   }
-  },
-  "integrationtesteksclusterDefaultVpcPrivateSubnet3SubnetD17D4AF1": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": "test-region-1c",
-    "CidrBlock": "10.0.160.0/19",
-    "MapPublicIpOnLaunch": false,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Private"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Private"
-     },
-     {
-      "Key": "kubernetes.io/role/internal-elb",
-      "Value": "1"
-     },
-     {
-      "Key": "Name",
-      "Value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
-    }
-   }
-  },
-  "integrationtesteksclusterDefaultVpcPrivateSubnet3RouteTableA2B42791": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "kubernetes.io/role/internal-elb",
-      "Value": "1"
-     },
-     {
-      "Key": "Name",
-      "Value": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
-    }
-   }
-  },
-  "integrationtesteksclusterDefaultVpcPrivateSubnet3RouteTableAssociationB70598F3": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet3RouteTableA2B42791"
-    },
-    "SubnetId": {
-     "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet3SubnetD17D4AF1"
-    }
-   }
-  },
-  "integrationtesteksclusterDefaultVpcPrivateSubnet3DefaultRoute6DE23E60": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "NatGatewayId": {
-     "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet3NATGateway01B2F0F1"
-    },
-    "RouteTableId": {
-     "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet3RouteTableA2B42791"
     }
    }
   },
@@ -814,10 +655,6 @@
     "integrationtesteksclusterDefaultVpcPrivateSubnet2RouteTableD7E59903",
     "integrationtesteksclusterDefaultVpcPrivateSubnet2RouteTableAssociation99F934D5",
     "integrationtesteksclusterDefaultVpcPrivateSubnet2Subnet0C3539A8",
-    "integrationtesteksclusterDefaultVpcPrivateSubnet3DefaultRoute6DE23E60",
-    "integrationtesteksclusterDefaultVpcPrivateSubnet3RouteTableA2B42791",
-    "integrationtesteksclusterDefaultVpcPrivateSubnet3RouteTableAssociationB70598F3",
-    "integrationtesteksclusterDefaultVpcPrivateSubnet3SubnetD17D4AF1",
     "integrationtesteksclusterDefaultVpcPublicSubnet1DefaultRoute33CE7FC3",
     "integrationtesteksclusterDefaultVpcPublicSubnet1EIP62A0A17B",
     "integrationtesteksclusterDefaultVpcPublicSubnet1NATGatewayC9C984F9",
@@ -830,12 +667,6 @@
     "integrationtesteksclusterDefaultVpcPublicSubnet2RouteTableA4C7B327",
     "integrationtesteksclusterDefaultVpcPublicSubnet2RouteTableAssociation62710C52",
     "integrationtesteksclusterDefaultVpcPublicSubnet2Subnet68EAAF11",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3DefaultRouteB0117918",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3EIP33828C59",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3NATGateway01B2F0F1",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3RouteTable51E9DA7C",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3RouteTableAssociation14A23BAF",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3Subnet4307D52D",
     "integrationtesteksclusterDefaultVpc395E1A86",
     "integrationtesteksclusterDefaultVpcVPCGWE4DC2204"
    ]
@@ -914,10 +745,6 @@
     "integrationtesteksclusterDefaultVpcPrivateSubnet2RouteTableD7E59903",
     "integrationtesteksclusterDefaultVpcPrivateSubnet2RouteTableAssociation99F934D5",
     "integrationtesteksclusterDefaultVpcPrivateSubnet2Subnet0C3539A8",
-    "integrationtesteksclusterDefaultVpcPrivateSubnet3DefaultRoute6DE23E60",
-    "integrationtesteksclusterDefaultVpcPrivateSubnet3RouteTableA2B42791",
-    "integrationtesteksclusterDefaultVpcPrivateSubnet3RouteTableAssociationB70598F3",
-    "integrationtesteksclusterDefaultVpcPrivateSubnet3SubnetD17D4AF1",
     "integrationtesteksclusterDefaultVpcPublicSubnet1DefaultRoute33CE7FC3",
     "integrationtesteksclusterDefaultVpcPublicSubnet1EIP62A0A17B",
     "integrationtesteksclusterDefaultVpcPublicSubnet1NATGatewayC9C984F9",
@@ -930,12 +757,6 @@
     "integrationtesteksclusterDefaultVpcPublicSubnet2RouteTableA4C7B327",
     "integrationtesteksclusterDefaultVpcPublicSubnet2RouteTableAssociation62710C52",
     "integrationtesteksclusterDefaultVpcPublicSubnet2Subnet68EAAF11",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3DefaultRouteB0117918",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3EIP33828C59",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3NATGateway01B2F0F1",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3RouteTable51E9DA7C",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3RouteTableAssociation14A23BAF",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3Subnet4307D52D",
     "integrationtesteksclusterDefaultVpc395E1A86",
     "integrationtesteksclusterDefaultVpcVPCGWE4DC2204"
    ]
@@ -969,16 +790,10 @@
         "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet2Subnet68EAAF11"
        },
        {
-        "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet3Subnet4307D52D"
-       },
-       {
         "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet1Subnet4E00CAFB"
        },
        {
         "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet2Subnet0C3539A8"
-       },
-       {
-        "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet3SubnetD17D4AF1"
        }
       ],
       "securityGroupIds": [
@@ -1012,10 +827,6 @@
     "integrationtesteksclusterDefaultVpcPrivateSubnet2RouteTableD7E59903",
     "integrationtesteksclusterDefaultVpcPrivateSubnet2RouteTableAssociation99F934D5",
     "integrationtesteksclusterDefaultVpcPrivateSubnet2Subnet0C3539A8",
-    "integrationtesteksclusterDefaultVpcPrivateSubnet3DefaultRoute6DE23E60",
-    "integrationtesteksclusterDefaultVpcPrivateSubnet3RouteTableA2B42791",
-    "integrationtesteksclusterDefaultVpcPrivateSubnet3RouteTableAssociationB70598F3",
-    "integrationtesteksclusterDefaultVpcPrivateSubnet3SubnetD17D4AF1",
     "integrationtesteksclusterDefaultVpcPublicSubnet1DefaultRoute33CE7FC3",
     "integrationtesteksclusterDefaultVpcPublicSubnet1EIP62A0A17B",
     "integrationtesteksclusterDefaultVpcPublicSubnet1NATGatewayC9C984F9",
@@ -1028,12 +839,6 @@
     "integrationtesteksclusterDefaultVpcPublicSubnet2RouteTableA4C7B327",
     "integrationtesteksclusterDefaultVpcPublicSubnet2RouteTableAssociation62710C52",
     "integrationtesteksclusterDefaultVpcPublicSubnet2Subnet68EAAF11",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3DefaultRouteB0117918",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3EIP33828C59",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3NATGateway01B2F0F1",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3RouteTable51E9DA7C",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3RouteTableAssociation14A23BAF",
-    "integrationtesteksclusterDefaultVpcPublicSubnet3Subnet4307D52D",
     "integrationtesteksclusterDefaultVpc395E1A86",
     "integrationtesteksclusterDefaultVpcVPCGWE4DC2204",
     "integrationtesteksclusterCreationRoleDefaultPolicy5417802D",
@@ -1137,9 +942,6 @@
      },
      {
       "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet2Subnet0C3539A8"
-     },
-     {
-      "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet3SubnetD17D4AF1"
      }
     ]
    }
@@ -1291,9 +1093,6 @@
      "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet2Subnet5042E9F4Ref": {
       "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet2Subnet0C3539A8"
      },
-     "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterDefaultVpcPrivateSubnet3Subnet0F72FDF5Ref": {
-      "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet3SubnetD17D4AF1"
-     },
      "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtestekscluster59B73E28ClusterSecurityGroupId": {
       "Fn::GetAtt": [
        "integrationtesteksclusterE5C0ED98",
@@ -1317,7 +1116,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/e905922f03ef46e80ada7c5815bc9abdfd6905279198becbf211a411da38b355.json"
+       "/e88cb005dab1a5b5da2af87de20bb0f83bd0490189926d675dd93520aa11ed02.json"
       ]
      ]
     }
@@ -1327,8 +1126,6 @@
     "integrationtesteksclusterDefaultVpcPrivateSubnet1RouteTableAssociation7482DD1E",
     "integrationtesteksclusterDefaultVpcPrivateSubnet2DefaultRoute50FF167F",
     "integrationtesteksclusterDefaultVpcPrivateSubnet2RouteTableAssociation99F934D5",
-    "integrationtesteksclusterDefaultVpcPrivateSubnet3DefaultRoute6DE23E60",
-    "integrationtesteksclusterDefaultVpcPrivateSubnet3RouteTableAssociationB70598F3",
     "integrationtesteksclusterKubectlHandlerRoleDefaultPolicyF274D1D0",
     "integrationtesteksclusterKubectlHandlerRole9A4C37D2"
    ],

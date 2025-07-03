@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/079b064da9532429ab112a5cde43583eddf24fb453fbf21b9985f50dca869ce4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/af50887d5795e729d6c362466d63f2af3835a5c08c5cb99224ce0aac177d794a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -188,70 +188,6 @@
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/eks-custom-addons/Vpc/PublicSubnet3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/eks-custom-addons/Vpc/PublicSubnet3/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet3SubnetBE12F0B6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/eks-custom-addons/Vpc/PublicSubnet3/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet3RouteTable93458DBB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/eks-custom-addons/Vpc/PublicSubnet3/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet3RouteTableAssociation1F1EDF02",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/eks-custom-addons/Vpc/PublicSubnet3/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet3DefaultRoute4697774F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
         "/eks-custom-addons/Vpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -366,70 +302,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute060D2087"
-          }
-        ],
-        "/eks-custom-addons/Vpc/PrivateSubnet3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/eks-custom-addons/Vpc/PrivateSubnet3/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet3SubnetF258B56E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/eks-custom-addons/Vpc/PrivateSubnet3/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet3RouteTableD98824C7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/eks-custom-addons/Vpc/PrivateSubnet3/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet3RouteTableAssociation16BDDC43",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/eks-custom-addons/Vpc/PrivateSubnet3/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet3DefaultRoute94B74F0D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ],
         "/eks-custom-addons/Vpc/IGW": [
@@ -1818,7 +1690,6 @@
               "vpcSubnets": {
                 "subnets": [
                   "*",
-                  "*",
                   "*"
                 ]
               },
@@ -1888,7 +1759,6 @@
               "vpc": "*",
               "vpcSubnets": {
                 "subnets": [
-                  "*",
                   "*",
                   "*"
                 ]
@@ -2054,12 +1924,6 @@
             "data": "referencetoekscustomaddonsVpcPrivateSubnet2Subnet94CF65CERef"
           }
         ],
-        "/eks-custom-addons/@aws-cdk--aws-eks.KubectlProvider/reference-to-ekscustomaddonsVpcPrivateSubnet3Subnet0E103185Ref": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoekscustomaddonsVpcPrivateSubnet3Subnet0E103185Ref"
-          }
-        ],
         "/eks-custom-addons/@aws-cdk--aws-eks.KubectlProvider/reference-to-ekscustomaddonsClusterD6418B14ClusterSecurityGroupId": [
           {
             "type": "aws:cdk:logicalId",
@@ -2112,6 +1976,78 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "VpcPublicSubnet3SubnetBE12F0B6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet3SubnetBE12F0B6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcPublicSubnet3RouteTable93458DBB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet3RouteTable93458DBB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcPublicSubnet3RouteTableAssociation1F1EDF02": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet3RouteTableAssociation1F1EDF02",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcPublicSubnet3DefaultRoute4697774F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet3DefaultRoute4697774F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcPrivateSubnet3SubnetF258B56E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet3SubnetF258B56E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcPrivateSubnet3RouteTableD98824C7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet3RouteTableD98824C7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcPrivateSubnet3RouteTableAssociation16BDDC43": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet3RouteTableAssociation16BDDC43",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcPrivateSubnet3DefaultRoute94B74F0D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet3DefaultRoute94B74F0D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -2172,5 +2108,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1020.1"
+  "minimumCliVersion": "2.1020.2"
 }

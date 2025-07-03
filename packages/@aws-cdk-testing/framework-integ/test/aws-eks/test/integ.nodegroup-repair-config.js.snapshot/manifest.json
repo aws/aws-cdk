@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/89e0baa34c0c3655537d6b80307e7ae1ee387b489de609de92e2e7680c61b4b4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2068267a790dad34c1b00134bb9866813cde523c3552a2b0591412cabfd898e5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -211,70 +211,6 @@
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/aws-cdk-eks-nodegroup-repair-config-test/Vpc/PublicSubnet3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/aws-cdk-eks-nodegroup-repair-config-test/Vpc/PublicSubnet3/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet3SubnetBE12F0B6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/aws-cdk-eks-nodegroup-repair-config-test/Vpc/PublicSubnet3/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet3RouteTable93458DBB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/aws-cdk-eks-nodegroup-repair-config-test/Vpc/PublicSubnet3/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet3RouteTableAssociation1F1EDF02",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/aws-cdk-eks-nodegroup-repair-config-test/Vpc/PublicSubnet3/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet3DefaultRoute4697774F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
         "/aws-cdk-eks-nodegroup-repair-config-test/Vpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -389,70 +325,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute060D2087"
-          }
-        ],
-        "/aws-cdk-eks-nodegroup-repair-config-test/Vpc/PrivateSubnet3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/aws-cdk-eks-nodegroup-repair-config-test/Vpc/PrivateSubnet3/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet3SubnetF258B56E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/aws-cdk-eks-nodegroup-repair-config-test/Vpc/PrivateSubnet3/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet3RouteTableD98824C7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/aws-cdk-eks-nodegroup-repair-config-test/Vpc/PrivateSubnet3/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet3RouteTableAssociation16BDDC43",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/aws-cdk-eks-nodegroup-repair-config-test/Vpc/PrivateSubnet3/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet3DefaultRoute94B74F0D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ],
         "/aws-cdk-eks-nodegroup-repair-config-test/Vpc/IGW": [
@@ -1955,7 +1827,6 @@
               "vpcSubnets": {
                 "subnets": [
                   "*",
-                  "*",
                   "*"
                 ]
               },
@@ -2025,7 +1896,6 @@
               "vpc": "*",
               "vpcSubnets": {
                 "subnets": [
-                  "*",
                   "*",
                   "*"
                 ]
@@ -2197,12 +2067,6 @@
             "data": "referencetoawscdkeksnodegrouprepairconfigtestVpcPrivateSubnet2Subnet91E2ACDFRef"
           }
         ],
-        "/aws-cdk-eks-nodegroup-repair-config-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksnodegrouprepairconfigtestVpcPrivateSubnet3Subnet24F89B76Ref": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksnodegrouprepairconfigtestVpcPrivateSubnet3Subnet24F89B76Ref"
-          }
-        ],
         "/aws-cdk-eks-nodegroup-repair-config-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksnodegrouprepairconfigtestCluster9013A5FEClusterSecurityGroupId": [
           {
             "type": "aws:cdk:logicalId",
@@ -2238,6 +2102,78 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "VpcPublicSubnet3SubnetBE12F0B6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet3SubnetBE12F0B6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcPublicSubnet3RouteTable93458DBB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet3RouteTable93458DBB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcPublicSubnet3RouteTableAssociation1F1EDF02": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet3RouteTableAssociation1F1EDF02",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcPublicSubnet3DefaultRoute4697774F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet3DefaultRoute4697774F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcPrivateSubnet3SubnetF258B56E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet3SubnetF258B56E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcPrivateSubnet3RouteTableD98824C7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet3RouteTableD98824C7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcPrivateSubnet3RouteTableAssociation16BDDC43": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet3RouteTableAssociation16BDDC43",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcPrivateSubnet3DefaultRoute94B74F0D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet3DefaultRoute94B74F0D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-eks-nodegroup-repair-config-test"
@@ -2259,7 +2195,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9ca804c3acc20226cefee95c7b4dff2b6c84e7a9a7d7075a323c66a7c61687af.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d146c2c220a3f6cf424cd8ff6efef8a8662c7aaf8bafdb7e44c1e595b87f5a9f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -2342,5 +2278,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1020.1"
+  "minimumCliVersion": "2.1020.2"
 }

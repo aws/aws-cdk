@@ -42,9 +42,6 @@
       },
       {
        "Ref": "referencetoekscustomaddonsVpcPrivateSubnet2Subnet94CF65CERef"
-      },
-      {
-       "Ref": "referencetoekscustomaddonsVpcPrivateSubnet3Subnet0E103185Ref"
       }
      ]
     }
@@ -206,9 +203,6 @@
       },
       {
        "Ref": "referencetoekscustomaddonsVpcPrivateSubnet2Subnet94CF65CERef"
-      },
-      {
-       "Ref": "referencetoekscustomaddonsVpcPrivateSubnet3Subnet0E103185Ref"
       }
      ]
     }
@@ -363,9 +357,6 @@
    "Type": "String"
   },
   "referencetoekscustomaddonsVpcPrivateSubnet2Subnet94CF65CERef": {
-   "Type": "String"
-  },
-  "referencetoekscustomaddonsVpcPrivateSubnet3Subnet0E103185Ref": {
    "Type": "String"
   },
   "referencetoekscustomaddonsClusterD6418B14ClusterSecurityGroupId": {

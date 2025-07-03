@@ -15,7 +15,7 @@
         }
       }
     },
-    "7b81b2b4a241c945706c711fcb052eefbe368cbd1c5e7f59ba87bde9566ae1cb": {
+    "cb783e60b4018582b1bcce7d1da6d3e783ed2bbcfbddca2d513b47d66315bb4e": {
       "displayName": "NlbSubnetMappingStack Template",
       "source": {
         "path": "NlbSubnetMappingStack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7b81b2b4a241c945706c711fcb052eefbe368cbd1c5e7f59ba87bde9566ae1cb.json",
+          "objectKey": "cb783e60b4018582b1bcce7d1da6d3e783ed2bbcfbddca2d513b47d66315bb4e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -42,9 +42,6 @@
       },
       {
        "Ref": "referencetoawscdkekshelmloggingtestVpcPrivateSubnet2Subnet911E7847Ref"
-      },
-      {
-       "Ref": "referencetoawscdkekshelmloggingtestVpcPrivateSubnet3SubnetAF02D285Ref"
       }
      ]
     }
@@ -225,9 +222,6 @@
       },
       {
        "Ref": "referencetoawscdkekshelmloggingtestVpcPrivateSubnet2Subnet911E7847Ref"
-      },
-      {
-       "Ref": "referencetoawscdkekshelmloggingtestVpcPrivateSubnet3SubnetAF02D285Ref"
       }
      ]
     }
@@ -411,9 +405,6 @@
    "Type": "String"
   },
   "referencetoawscdkekshelmloggingtestVpcPrivateSubnet2Subnet911E7847Ref": {
-   "Type": "String"
-  },
-  "referencetoawscdkekshelmloggingtestVpcPrivateSubnet3SubnetAF02D285Ref": {
    "Type": "String"
   },
   "referencetoawscdkekshelmloggingtestCluster506C290DClusterSecurityGroupId": {

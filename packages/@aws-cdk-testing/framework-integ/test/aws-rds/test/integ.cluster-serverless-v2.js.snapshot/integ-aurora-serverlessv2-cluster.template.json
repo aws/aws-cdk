@@ -18,8 +18,15 @@
   "IntegVPCPublicSubnet1SubnetE05F7E7D": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1a",
-    "CidrBlock": "10.0.0.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -119,8 +126,15 @@
   "IntegVPCPublicSubnet2Subnet9648DE97": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1b",
-    "CidrBlock": "10.0.32.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -217,112 +231,18 @@
     "IntegVPCPublicSubnet2RouteTableAssociation831EA0CC"
    ]
   },
-  "IntegVPCPublicSubnet3Subnet32999116": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": "test-region-1c",
-    "CidrBlock": "10.0.64.0/19",
-    "MapPublicIpOnLaunch": true,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Public"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Public"
-     },
-     {
-      "Key": "Name",
-      "Value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "IntegVPC2FF1AB0E"
-    }
-   }
-  },
-  "IntegVPCPublicSubnet3RouteTable7E309FBE": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "IntegVPC2FF1AB0E"
-    }
-   }
-  },
-  "IntegVPCPublicSubnet3RouteTableAssociationD690E00D": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "IntegVPCPublicSubnet3RouteTable7E309FBE"
-    },
-    "SubnetId": {
-     "Ref": "IntegVPCPublicSubnet3Subnet32999116"
-    }
-   }
-  },
-  "IntegVPCPublicSubnet3DefaultRoute8879CBF0": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Ref": "IntegVPCIGW02FC78B6"
-    },
-    "RouteTableId": {
-     "Ref": "IntegVPCPublicSubnet3RouteTable7E309FBE"
-    }
-   },
-   "DependsOn": [
-    "IntegVPCVPCGW4DD476C7"
-   ]
-  },
-  "IntegVPCPublicSubnet3EIPB65C2227": {
-   "Type": "AWS::EC2::EIP",
-   "Properties": {
-    "Domain": "vpc",
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet3"
-     }
-    ]
-   }
-  },
-  "IntegVPCPublicSubnet3NATGatewayE004FC73": {
-   "Type": "AWS::EC2::NatGateway",
-   "Properties": {
-    "AllocationId": {
-     "Fn::GetAtt": [
-      "IntegVPCPublicSubnet3EIPB65C2227",
-      "AllocationId"
-     ]
-    },
-    "SubnetId": {
-     "Ref": "IntegVPCPublicSubnet3Subnet32999116"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet3"
-     }
-    ]
-   },
-   "DependsOn": [
-    "IntegVPCPublicSubnet3DefaultRoute8879CBF0",
-    "IntegVPCPublicSubnet3RouteTableAssociationD690E00D"
-   ]
-  },
   "IntegVPCPrivateSubnet1SubnetD5B61223": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1a",
-    "CidrBlock": "10.0.96.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -383,8 +303,15 @@
   "IntegVPCPrivateSubnet2SubnetFCC4EF23": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1b",
-    "CidrBlock": "10.0.128.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -439,68 +366,6 @@
     },
     "RouteTableId": {
      "Ref": "IntegVPCPrivateSubnet2RouteTable4132D373"
-    }
-   }
-  },
-  "IntegVPCPrivateSubnet3SubnetCFE913C1": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": "test-region-1c",
-    "CidrBlock": "10.0.160.0/19",
-    "MapPublicIpOnLaunch": false,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Private"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Private"
-     },
-     {
-      "Key": "Name",
-      "Value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "IntegVPC2FF1AB0E"
-    }
-   }
-  },
-  "IntegVPCPrivateSubnet3RouteTableF9A91281": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "IntegVPC2FF1AB0E"
-    }
-   }
-  },
-  "IntegVPCPrivateSubnet3RouteTableAssociation4105621B": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "IntegVPCPrivateSubnet3RouteTableF9A91281"
-    },
-    "SubnetId": {
-     "Ref": "IntegVPCPrivateSubnet3SubnetCFE913C1"
-    }
-   }
-  },
-  "IntegVPCPrivateSubnet3DefaultRoute23DF9114": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "NatGatewayId": {
-     "Ref": "IntegVPCPublicSubnet3NATGatewayE004FC73"
-    },
-    "RouteTableId": {
-     "Ref": "IntegVPCPrivateSubnet3RouteTableF9A91281"
     }
    }
   },
@@ -660,9 +525,6 @@
      },
      {
       "Ref": "IntegVPCPrivateSubnet2SubnetFCC4EF23"
-     },
-     {
-      "Ref": "IntegVPCPrivateSubnet3SubnetCFE913C1"
      }
     ]
    }
@@ -783,9 +645,7 @@
     "IntegVPCPrivateSubnet1DefaultRoute140D7A84",
     "IntegVPCPrivateSubnet1RouteTableAssociationAD4B0EBF",
     "IntegVPCPrivateSubnet2DefaultRouteAE44E307",
-    "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6",
-    "IntegVPCPrivateSubnet3DefaultRoute23DF9114",
-    "IntegVPCPrivateSubnet3RouteTableAssociation4105621B"
+    "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -840,9 +700,6 @@
      },
      {
       "Ref": "IntegVPCPrivateSubnet2SubnetFCC4EF23"
-     },
-     {
-      "Ref": "IntegVPCPrivateSubnet3SubnetCFE913C1"
      }
     ]
    }
@@ -963,9 +820,7 @@
     "IntegVPCPrivateSubnet1DefaultRoute140D7A84",
     "IntegVPCPrivateSubnet1RouteTableAssociationAD4B0EBF",
     "IntegVPCPrivateSubnet2DefaultRouteAE44E307",
-    "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6",
-    "IntegVPCPrivateSubnet3DefaultRoute23DF9114",
-    "IntegVPCPrivateSubnet3RouteTableAssociation4105621B"
+    "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -985,9 +840,7 @@
     "IntegVPCPrivateSubnet1DefaultRoute140D7A84",
     "IntegVPCPrivateSubnet1RouteTableAssociationAD4B0EBF",
     "IntegVPCPrivateSubnet2DefaultRouteAE44E307",
-    "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6",
-    "IntegVPCPrivateSubnet3DefaultRoute23DF9114",
-    "IntegVPCPrivateSubnet3RouteTableAssociation4105621B"
+    "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1007,9 +860,7 @@
     "IntegVPCPrivateSubnet1DefaultRoute140D7A84",
     "IntegVPCPrivateSubnet1RouteTableAssociationAD4B0EBF",
     "IntegVPCPrivateSubnet2DefaultRouteAE44E307",
-    "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6",
-    "IntegVPCPrivateSubnet3DefaultRoute23DF9114",
-    "IntegVPCPrivateSubnet3RouteTableAssociation4105621B"
+    "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1064,9 +915,6 @@
      },
      {
       "Ref": "IntegVPCPrivateSubnet2SubnetFCC4EF23"
-     },
-     {
-      "Ref": "IntegVPCPrivateSubnet3SubnetCFE913C1"
      }
     ]
    }
@@ -1187,9 +1035,7 @@
     "IntegVPCPrivateSubnet1DefaultRoute140D7A84",
     "IntegVPCPrivateSubnet1RouteTableAssociationAD4B0EBF",
     "IntegVPCPrivateSubnet2DefaultRouteAE44E307",
-    "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6",
-    "IntegVPCPrivateSubnet3DefaultRoute23DF9114",
-    "IntegVPCPrivateSubnet3RouteTableAssociation4105621B"
+    "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1209,9 +1055,7 @@
     "IntegVPCPrivateSubnet1DefaultRoute140D7A84",
     "IntegVPCPrivateSubnet1RouteTableAssociationAD4B0EBF",
     "IntegVPCPrivateSubnet2DefaultRouteAE44E307",
-    "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6",
-    "IntegVPCPrivateSubnet3DefaultRoute23DF9114",
-    "IntegVPCPrivateSubnet3RouteTableAssociation4105621B"
+    "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1231,9 +1075,7 @@
     "IntegVPCPrivateSubnet1DefaultRoute140D7A84",
     "IntegVPCPrivateSubnet1RouteTableAssociationAD4B0EBF",
     "IntegVPCPrivateSubnet2DefaultRouteAE44E307",
-    "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6",
-    "IntegVPCPrivateSubnet3DefaultRoute23DF9114",
-    "IntegVPCPrivateSubnet3RouteTableAssociation4105621B"
+    "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

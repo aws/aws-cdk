@@ -42,9 +42,6 @@
       },
       {
        "Ref": "referencetoekspodidentitiesVPCPrivateSubnet2SubnetBBBF606FRef"
-      },
-      {
-       "Ref": "referencetoekspodidentitiesVPCPrivateSubnet3SubnetF9C9E9D6Ref"
       }
      ]
     }
@@ -206,9 +203,6 @@
       },
       {
        "Ref": "referencetoekspodidentitiesVPCPrivateSubnet2SubnetBBBF606FRef"
-      },
-      {
-       "Ref": "referencetoekspodidentitiesVPCPrivateSubnet3SubnetF9C9E9D6Ref"
       }
      ]
     }
@@ -373,9 +367,6 @@
    "Type": "String"
   },
   "referencetoekspodidentitiesVPCPrivateSubnet2SubnetBBBF606FRef": {
-   "Type": "String"
-  },
-  "referencetoekspodidentitiesVPCPrivateSubnet3SubnetF9C9E9D6Ref": {
    "Type": "String"
   },
   "referencetoekspodidentitiesCluster0EF41F84ClusterSecurityGroupId": {

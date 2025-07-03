@@ -76,7 +76,18 @@
         {
          "Effect": "Allow",
          "Resource": [
-          "arn:aws:ssm:us-east-2:654654605759:parameter/cdk/exports/*"
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:us-east-2:",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/cdk/exports/*"
+            ]
+           ]
+          }
          ],
          "Action": [
           "ssm:DeleteParameters",
@@ -95,7 +106,9 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-654654605759-us-east-1",
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
      "S3Key": "bbfb567dc956ce71e67ac1f96589821990e2ca48307b93a577bbb345d2de441b.zip"
     },
     "Timeout": 900,

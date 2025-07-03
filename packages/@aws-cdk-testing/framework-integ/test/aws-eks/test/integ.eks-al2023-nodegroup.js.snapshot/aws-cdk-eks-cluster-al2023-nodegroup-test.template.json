@@ -50,8 +50,15 @@
   "VpcPublicSubnet1Subnet5C2D37C4": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1a",
-    "CidrBlock": "10.0.0.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -167,8 +174,15 @@
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1b",
-    "CidrBlock": "10.0.32.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -237,84 +251,18 @@
     "VpcVPCGWBF912B6E"
    ]
   },
-  "VpcPublicSubnet3SubnetBE12F0B6": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": "test-region-1c",
-    "CidrBlock": "10.0.64.0/19",
-    "MapPublicIpOnLaunch": true,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Public"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Public"
-     },
-     {
-      "Key": "kubernetes.io/role/elb",
-      "Value": "1"
-     },
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-eks-cluster-al2023-nodegroup-test/Vpc/PublicSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
-  "VpcPublicSubnet3RouteTable93458DBB": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "kubernetes.io/role/elb",
-      "Value": "1"
-     },
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-eks-cluster-al2023-nodegroup-test/Vpc/PublicSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
-  "VpcPublicSubnet3RouteTableAssociation1F1EDF02": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet3RouteTable93458DBB"
-    },
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet3SubnetBE12F0B6"
-    }
-   }
-  },
-  "VpcPublicSubnet3DefaultRoute4697774F": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Ref": "VpcIGWD7BA715C"
-    },
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet3RouteTable93458DBB"
-    }
-   },
-   "DependsOn": [
-    "VpcVPCGWBF912B6E"
-   ]
-  },
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1a",
-    "CidrBlock": "10.0.96.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -383,8 +331,15 @@
   "VpcPrivateSubnet2Subnet3788AAA1": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1b",
-    "CidrBlock": "10.0.128.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -447,76 +402,6 @@
     },
     "RouteTableId": {
      "Ref": "VpcPrivateSubnet2RouteTableA678073B"
-    }
-   }
-  },
-  "VpcPrivateSubnet3SubnetF258B56E": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": "test-region-1c",
-    "CidrBlock": "10.0.160.0/19",
-    "MapPublicIpOnLaunch": false,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Private"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Private"
-     },
-     {
-      "Key": "kubernetes.io/role/internal-elb",
-      "Value": "1"
-     },
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-eks-cluster-al2023-nodegroup-test/Vpc/PrivateSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
-  "VpcPrivateSubnet3RouteTableD98824C7": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "kubernetes.io/role/internal-elb",
-      "Value": "1"
-     },
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-eks-cluster-al2023-nodegroup-test/Vpc/PrivateSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
-  "VpcPrivateSubnet3RouteTableAssociation16BDDC43": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet3RouteTableD98824C7"
-    },
-    "SubnetId": {
-     "Ref": "VpcPrivateSubnet3SubnetF258B56E"
-    }
-   }
-  },
-  "VpcPrivateSubnet3DefaultRoute94B74F0D": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "NatGatewayId": {
-     "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
-    },
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet3RouteTableD98824C7"
     }
    }
   },
@@ -758,10 +643,6 @@
     "VpcPrivateSubnet2RouteTableA678073B",
     "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
     "VpcPrivateSubnet2Subnet3788AAA1",
-    "VpcPrivateSubnet3DefaultRoute94B74F0D",
-    "VpcPrivateSubnet3RouteTableD98824C7",
-    "VpcPrivateSubnet3RouteTableAssociation16BDDC43",
-    "VpcPrivateSubnet3SubnetF258B56E",
     "VpcPublicSubnet1DefaultRoute3DA9E72A",
     "VpcPublicSubnet1EIPD7E02669",
     "VpcPublicSubnet1NATGateway4D7517AA",
@@ -772,10 +653,6 @@
     "VpcPublicSubnet2RouteTable94F7E489",
     "VpcPublicSubnet2RouteTableAssociationDD5762D8",
     "VpcPublicSubnet2Subnet691E08A3",
-    "VpcPublicSubnet3DefaultRoute4697774F",
-    "VpcPublicSubnet3RouteTable93458DBB",
-    "VpcPublicSubnet3RouteTableAssociation1F1EDF02",
-    "VpcPublicSubnet3SubnetBE12F0B6",
     "Vpc8378EB38",
     "VpcVPCGWBF912B6E"
    ]
@@ -854,10 +731,6 @@
     "VpcPrivateSubnet2RouteTableA678073B",
     "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
     "VpcPrivateSubnet2Subnet3788AAA1",
-    "VpcPrivateSubnet3DefaultRoute94B74F0D",
-    "VpcPrivateSubnet3RouteTableD98824C7",
-    "VpcPrivateSubnet3RouteTableAssociation16BDDC43",
-    "VpcPrivateSubnet3SubnetF258B56E",
     "VpcPublicSubnet1DefaultRoute3DA9E72A",
     "VpcPublicSubnet1EIPD7E02669",
     "VpcPublicSubnet1NATGateway4D7517AA",
@@ -868,10 +741,6 @@
     "VpcPublicSubnet2RouteTable94F7E489",
     "VpcPublicSubnet2RouteTableAssociationDD5762D8",
     "VpcPublicSubnet2Subnet691E08A3",
-    "VpcPublicSubnet3DefaultRoute4697774F",
-    "VpcPublicSubnet3RouteTable93458DBB",
-    "VpcPublicSubnet3RouteTableAssociation1F1EDF02",
-    "VpcPublicSubnet3SubnetBE12F0B6",
     "Vpc8378EB38",
     "VpcVPCGWBF912B6E"
    ]
@@ -905,16 +774,10 @@
         "Ref": "VpcPublicSubnet2Subnet691E08A3"
        },
        {
-        "Ref": "VpcPublicSubnet3SubnetBE12F0B6"
-       },
-       {
         "Ref": "VpcPrivateSubnet1Subnet536B997A"
        },
        {
         "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-       },
-       {
-        "Ref": "VpcPrivateSubnet3SubnetF258B56E"
        }
       ],
       "securityGroupIds": [
@@ -950,10 +813,6 @@
     "VpcPrivateSubnet2RouteTableA678073B",
     "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
     "VpcPrivateSubnet2Subnet3788AAA1",
-    "VpcPrivateSubnet3DefaultRoute94B74F0D",
-    "VpcPrivateSubnet3RouteTableD98824C7",
-    "VpcPrivateSubnet3RouteTableAssociation16BDDC43",
-    "VpcPrivateSubnet3SubnetF258B56E",
     "VpcPublicSubnet1DefaultRoute3DA9E72A",
     "VpcPublicSubnet1EIPD7E02669",
     "VpcPublicSubnet1NATGateway4D7517AA",
@@ -964,10 +823,6 @@
     "VpcPublicSubnet2RouteTable94F7E489",
     "VpcPublicSubnet2RouteTableAssociationDD5762D8",
     "VpcPublicSubnet2Subnet691E08A3",
-    "VpcPublicSubnet3DefaultRoute4697774F",
-    "VpcPublicSubnet3RouteTable93458DBB",
-    "VpcPublicSubnet3RouteTableAssociation1F1EDF02",
-    "VpcPublicSubnet3SubnetBE12F0B6",
     "Vpc8378EB38",
     "VpcVPCGWBF912B6E"
    ],
@@ -1143,9 +998,6 @@
      },
      {
       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-     },
-     {
-      "Ref": "VpcPrivateSubnet3SubnetF258B56E"
      }
     ]
    }
@@ -1230,9 +1082,6 @@
      },
      {
       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-     },
-     {
-      "Ref": "VpcPrivateSubnet3SubnetF258B56E"
      }
     ]
    }
@@ -1317,9 +1166,6 @@
      },
      {
       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-     },
-     {
-      "Ref": "VpcPrivateSubnet3SubnetF258B56E"
      }
     ]
    }
@@ -1404,9 +1250,6 @@
      },
      {
       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-     },
-     {
-      "Ref": "VpcPrivateSubnet3SubnetF258B56E"
      }
     ]
    }
@@ -1457,9 +1300,6 @@
      "referencetoawscdkeksclusteral2023nodegrouptestVpcPrivateSubnet2Subnet229DFC35Ref": {
       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
      },
-     "referencetoawscdkeksclusteral2023nodegrouptestVpcPrivateSubnet3Subnet2B022DB8Ref": {
-      "Ref": "VpcPrivateSubnet3SubnetF258B56E"
-     },
      "referencetoawscdkeksclusteral2023nodegrouptestCluster517CBBE0ClusterSecurityGroupId": {
       "Fn::GetAtt": [
        "Cluster9EE0221C",
@@ -1483,7 +1323,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/7d302d2c9826f7f7bd21bd64496263e7accae00676602a29590bc2bdae2cbcb3.json"
+       "/37ec36140730a3e4d9378c457fb1ec4df20aab3cc7515b8ca78f943489ed5892.json"
       ]
      ]
     }
@@ -1494,9 +1334,7 @@
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
     "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
     "VpcPrivateSubnet2DefaultRoute060D2087",
-    "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
-    "VpcPrivateSubnet3DefaultRoute94B74F0D",
-    "VpcPrivateSubnet3RouteTableAssociation16BDDC43"
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

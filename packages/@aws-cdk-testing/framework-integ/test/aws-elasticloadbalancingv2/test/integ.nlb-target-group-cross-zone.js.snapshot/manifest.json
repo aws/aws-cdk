@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9715e675ce0a4c0f87ca25f7fe25b839abfff465e8a758ea00ebade824eb4d0f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/261fe4762b67a63c86d5ff8830f7ca62815be673e622b9fba8ad8d199292687e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -208,96 +208,6 @@
             ]
           }
         ],
-        "/nlb-target-group-cross-zone-stack/Stack/PublicSubnet3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/nlb-target-group-cross-zone-stack/Stack/PublicSubnet3/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet3SubnetCC1055D9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/nlb-target-group-cross-zone-stack/Stack/PublicSubnet3/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet3RouteTable44D8F838",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/nlb-target-group-cross-zone-stack/Stack/PublicSubnet3/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet3RouteTableAssociationD026A62D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/nlb-target-group-cross-zone-stack/Stack/PublicSubnet3/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet3DefaultRouteBC0DA152",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/nlb-target-group-cross-zone-stack/Stack/PublicSubnet3/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet3EIP3201E7C8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/nlb-target-group-cross-zone-stack/Stack/PublicSubnet3/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet3NATGatewayAB6A10EF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
         "/nlb-target-group-cross-zone-stack/Stack/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -414,70 +324,6 @@
             "data": "StackPrivateSubnet2DefaultRoute22004492"
           }
         ],
-        "/nlb-target-group-cross-zone-stack/Stack/PrivateSubnet3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/nlb-target-group-cross-zone-stack/Stack/PrivateSubnet3/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet3Subnet28548F2E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/nlb-target-group-cross-zone-stack/Stack/PrivateSubnet3/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet3RouteTable9B1F2842",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/nlb-target-group-cross-zone-stack/Stack/PrivateSubnet3/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet3RouteTableAssociationC9C6644E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "/nlb-target-group-cross-zone-stack/Stack/PrivateSubnet3/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet3DefaultRoute361AE708",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
         "/nlb-target-group-cross-zone-stack/Stack/IGW": [
           {
             "type": "aws:cdk:logicalId",
@@ -543,6 +389,96 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "StackPublicSubnet3SubnetCC1055D9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3SubnetCC1055D9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPublicSubnet3RouteTable44D8F838": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3RouteTable44D8F838",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPublicSubnet3RouteTableAssociationD026A62D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3RouteTableAssociationD026A62D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPublicSubnet3DefaultRouteBC0DA152": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3DefaultRouteBC0DA152",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPublicSubnet3EIP3201E7C8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3EIP3201E7C8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPublicSubnet3NATGatewayAB6A10EF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3NATGatewayAB6A10EF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPrivateSubnet3Subnet28548F2E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet3Subnet28548F2E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPrivateSubnet3RouteTable9B1F2842": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet3RouteTable9B1F2842",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPrivateSubnet3RouteTableAssociationC9C6644E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet3RouteTableAssociationC9C6644E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPrivateSubnet3DefaultRoute361AE708": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet3DefaultRoute361AE708",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "nlb-target-group-cross-zone-stack"
@@ -602,5 +538,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1020.1"
+  "minimumCliVersion": "2.1020.2"
 }

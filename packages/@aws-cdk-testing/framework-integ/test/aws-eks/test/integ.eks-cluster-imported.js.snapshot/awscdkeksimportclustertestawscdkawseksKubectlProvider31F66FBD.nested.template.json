@@ -42,9 +42,6 @@
       },
       {
        "Ref": "referencetoawscdkeksimportclustertestVpcPrivateSubnet2SubnetA97B83DDRef"
-      },
-      {
-       "Ref": "referencetoawscdkeksimportclustertestVpcPrivateSubnet3Subnet389E78DERef"
       }
      ]
     }
@@ -206,9 +203,6 @@
       },
       {
        "Ref": "referencetoawscdkeksimportclustertestVpcPrivateSubnet2SubnetA97B83DDRef"
-      },
-      {
-       "Ref": "referencetoawscdkeksimportclustertestVpcPrivateSubnet3Subnet389E78DERef"
       }
      ]
     }
@@ -373,9 +367,6 @@
    "Type": "String"
   },
   "referencetoawscdkeksimportclustertestVpcPrivateSubnet2SubnetA97B83DDRef": {
-   "Type": "String"
-  },
-  "referencetoawscdkeksimportclustertestVpcPrivateSubnet3Subnet389E78DERef": {
    "Type": "String"
   },
   "referencetoawscdkeksimportclustertestCluster9DD2AC72ClusterSecurityGroupId": {

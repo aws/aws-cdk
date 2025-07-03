@@ -18,8 +18,15 @@
   "Ipv4VpcPublicSubnet1SubnetEC9C8EC9": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1a",
-    "CidrBlock": "10.0.0.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -83,8 +90,15 @@
   "Ipv4VpcPublicSubnet2Subnet5F5E4544": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1b",
-    "CidrBlock": "10.0.32.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -145,76 +159,18 @@
     "Ipv4VpcVPCGWF187A055"
    ]
   },
-  "Ipv4VpcPublicSubnet3SubnetB34CF95E": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": "test-region-1c",
-    "CidrBlock": "10.0.64.0/19",
-    "MapPublicIpOnLaunch": true,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Public"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Public"
-     },
-     {
-      "Key": "Name",
-      "Value": "NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Ipv4Vpc1439105D"
-    }
-   }
-  },
-  "Ipv4VpcPublicSubnet3RouteTableFA8B3483": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Ipv4Vpc1439105D"
-    }
-   }
-  },
-  "Ipv4VpcPublicSubnet3RouteTableAssociation7253F90A": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "Ipv4VpcPublicSubnet3RouteTableFA8B3483"
-    },
-    "SubnetId": {
-     "Ref": "Ipv4VpcPublicSubnet3SubnetB34CF95E"
-    }
-   }
-  },
-  "Ipv4VpcPublicSubnet3DefaultRoute1BF08B26": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Ref": "Ipv4VpcIGW9797A423"
-    },
-    "RouteTableId": {
-     "Ref": "Ipv4VpcPublicSubnet3RouteTableFA8B3483"
-    }
-   },
-   "DependsOn": [
-    "Ipv4VpcVPCGWF187A055"
-   ]
-  },
   "Ipv4VpcIsolatedSubnet1Subnet55C712BF": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1a",
-    "CidrBlock": "10.0.96.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -263,8 +219,15 @@
   "Ipv4VpcIsolatedSubnet2Subnet30A426C1": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "test-region-1b",
-    "CidrBlock": "10.0.128.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -307,56 +270,6 @@
     },
     "SubnetId": {
      "Ref": "Ipv4VpcIsolatedSubnet2Subnet30A426C1"
-    }
-   }
-  },
-  "Ipv4VpcIsolatedSubnet3SubnetA466E22D": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": "test-region-1c",
-    "CidrBlock": "10.0.160.0/19",
-    "MapPublicIpOnLaunch": false,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Isolated"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Isolated"
-     },
-     {
-      "Key": "Name",
-      "Value": "NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Ipv4Vpc1439105D"
-    }
-   }
-  },
-  "Ipv4VpcIsolatedSubnet3RouteTable84E8BE88": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Ipv4Vpc1439105D"
-    }
-   }
-  },
-  "Ipv4VpcIsolatedSubnet3RouteTableAssociation8CA55F37": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "Ipv4VpcIsolatedSubnet3RouteTable84E8BE88"
-    },
-    "SubnetId": {
-     "Ref": "Ipv4VpcIsolatedSubnet3SubnetA466E22D"
     }
    }
   },
@@ -571,8 +484,15 @@
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": true,
-    "AvailabilityZone": "test-region-1a",
-    "CidrBlock": "10.0.0.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
     "Ipv6CidrBlock": {
      "Fn::Select": [
       0,
@@ -589,7 +509,7 @@
           }
          ]
         },
-        6,
+        4,
         "64"
        ]
       }
@@ -684,8 +604,15 @@
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": true,
-    "AvailabilityZone": "test-region-1b",
-    "CidrBlock": "10.0.32.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
     "Ipv6CidrBlock": {
      "Fn::Select": [
       1,
@@ -702,7 +629,7 @@
           }
          ]
         },
-        6,
+        4,
         "64"
        ]
       }
@@ -793,12 +720,19 @@
     "DualstackVpcipv6cidr98E23615"
    ]
   },
-  "DualstackVpcPublicSubnet3Subnet459566D8": {
+  "DualstackVpcIsolatedSubnet1SubnetDD7D99E1": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": true,
-    "AvailabilityZone": "test-region-1c",
-    "CidrBlock": "10.0.64.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
     "Ipv6CidrBlock": {
      "Fn::Select": [
       2,
@@ -815,120 +749,7 @@
           }
          ]
         },
-        6,
-        "64"
-       ]
-      }
-     ]
-    },
-    "MapPublicIpOnLaunch": false,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Public"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Public"
-     },
-     {
-      "Key": "Name",
-      "Value": "NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "DualstackVpc3B16059D"
-    }
-   },
-   "DependsOn": [
-    "DualstackVpcipv6cidr98E23615"
-   ]
-  },
-  "DualstackVpcPublicSubnet3RouteTable6095845C": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "DualstackVpc3B16059D"
-    }
-   },
-   "DependsOn": [
-    "DualstackVpcipv6cidr98E23615"
-   ]
-  },
-  "DualstackVpcPublicSubnet3RouteTableAssociationFE3A7AD6": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "DualstackVpcPublicSubnet3RouteTable6095845C"
-    },
-    "SubnetId": {
-     "Ref": "DualstackVpcPublicSubnet3Subnet459566D8"
-    }
-   },
-   "DependsOn": [
-    "DualstackVpcipv6cidr98E23615"
-   ]
-  },
-  "DualstackVpcPublicSubnet3DefaultRoute992181A7": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Ref": "DualstackVpcIGWED712EFF"
-    },
-    "RouteTableId": {
-     "Ref": "DualstackVpcPublicSubnet3RouteTable6095845C"
-    }
-   },
-   "DependsOn": [
-    "DualstackVpcipv6cidr98E23615",
-    "DualstackVpcVPCGWBFA6CC4A"
-   ]
-  },
-  "DualstackVpcPublicSubnet3DefaultRoute6BAA430B7": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationIpv6CidrBlock": "::/0",
-    "GatewayId": {
-     "Ref": "DualstackVpcIGWED712EFF"
-    },
-    "RouteTableId": {
-     "Ref": "DualstackVpcPublicSubnet3RouteTable6095845C"
-    }
-   },
-   "DependsOn": [
-    "DualstackVpcipv6cidr98E23615"
-   ]
-  },
-  "DualstackVpcIsolatedSubnet1SubnetDD7D99E1": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AssignIpv6AddressOnCreation": true,
-    "AvailabilityZone": "test-region-1a",
-    "CidrBlock": "10.0.96.0/19",
-    "Ipv6CidrBlock": {
-     "Fn::Select": [
-      3,
-      {
-       "Fn::Cidr": [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::GetAtt": [
-            "DualstackVpc3B16059D",
-            "Ipv6CidrBlocks"
-           ]
-          }
-         ]
-        },
-        6,
+        4,
         "64"
        ]
       }
@@ -992,11 +813,18 @@
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": true,
-    "AvailabilityZone": "test-region-1b",
-    "CidrBlock": "10.0.128.0/19",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
     "Ipv6CidrBlock": {
      "Fn::Select": [
-      4,
+      3,
       {
        "Fn::Cidr": [
         {
@@ -1010,7 +838,7 @@
           }
          ]
         },
-        6,
+        4,
         "64"
        ]
       }
@@ -1064,88 +892,6 @@
     },
     "SubnetId": {
      "Ref": "DualstackVpcIsolatedSubnet2Subnet88E17746"
-    }
-   },
-   "DependsOn": [
-    "DualstackVpcipv6cidr98E23615"
-   ]
-  },
-  "DualstackVpcIsolatedSubnet3Subnet0C58AD06": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AssignIpv6AddressOnCreation": true,
-    "AvailabilityZone": "test-region-1c",
-    "CidrBlock": "10.0.160.0/19",
-    "Ipv6CidrBlock": {
-     "Fn::Select": [
-      5,
-      {
-       "Fn::Cidr": [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::GetAtt": [
-            "DualstackVpc3B16059D",
-            "Ipv6CidrBlocks"
-           ]
-          }
-         ]
-        },
-        6,
-        "64"
-       ]
-      }
-     ]
-    },
-    "MapPublicIpOnLaunch": false,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Isolated"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Isolated"
-     },
-     {
-      "Key": "Name",
-      "Value": "NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "DualstackVpc3B16059D"
-    }
-   },
-   "DependsOn": [
-    "DualstackVpcipv6cidr98E23615"
-   ]
-  },
-  "DualstackVpcIsolatedSubnet3RouteTableA25F8688": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet3"
-     }
-    ],
-    "VpcId": {
-     "Ref": "DualstackVpc3B16059D"
-    }
-   },
-   "DependsOn": [
-    "DualstackVpcipv6cidr98E23615"
-   ]
-  },
-  "DualstackVpcIsolatedSubnet3RouteTableAssociation900706EC": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "DualstackVpcIsolatedSubnet3RouteTableA25F8688"
-    },
-    "SubnetId": {
-     "Ref": "DualstackVpcIsolatedSubnet3Subnet0C58AD06"
     }
    },
    "DependsOn": [
