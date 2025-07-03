@@ -18,14 +18,7 @@
   "DummyVpcPublicSubnet1Subnet1073B36B": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
+    "AvailabilityZone": "test-region-1a",
     "CidrBlock": "10.0.0.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
@@ -142,14 +135,7 @@
   "DummyVpcPublicSubnet2SubnetD8B68431": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      1,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
+    "AvailabilityZone": "test-region-1b",
     "CidrBlock": "10.0.64.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
@@ -222,14 +208,7 @@
   "DummyVpcPrivateSubnet1SubnetAF2DFEB1": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
+    "AvailabilityZone": "test-region-1a",
     "CidrBlock": "10.0.128.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
@@ -299,14 +278,7 @@
   "DummyVpcPrivateSubnet2Subnet718780F7": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      1,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
+    "AvailabilityZone": "test-region-1b",
     "CidrBlock": "10.0.192.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
@@ -939,7 +911,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/597959025f60f423972b54c5c04ed5ce7157e2802f6ae52be2c6cee62ebc10bc.json"
+       "/28957dc5b3e5f50ecaa9be0139a3cfbf511c87e0a9948c4fe4a1de0d7bbcfcda.json"
       ]
      ]
     }
@@ -989,7 +961,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/6c238fc1a4a4d4f2d3cd9bae4a540ef0438abb8838de5993d561e58e24635875.json"
+       "/7168e61dd92484579e8e08028557ff0be081e7eff853f96c344ed26216f58a00.json"
       ]
      ]
     }

@@ -70,7 +70,7 @@
          "Arn"
         ]
        },
-       "\",\"service\":\"sns\",\"action\":\"CreateTopic\",\"parameters\":{\"Name\":\"TestCaseTopic\"},\"physicalResourceId\":{\"responsePath\":\"TopicArn\"},\"logApiResponseData\":true}"
+       "\",\"service\":\"sns\",\"action\":\"CreateTopic\",\"parameters\":{\"Name\":\"TestCaseTopic\"},\"physicalResourceId\":{\"responsePath\":\"TopicArn\"}}"
       ]
      ]
     },
@@ -85,7 +85,7 @@
          "Arn"
         ]
        },
-       "\",\"service\":\"sns\",\"action\":\"DeleteTopic\",\"parameters\":{\"TopicArn\":\"PHYSICAL:RESOURCEID:\"},\"logApiResponseData\":true}"
+       "\",\"service\":\"sns\",\"action\":\"DeleteTopic\",\"parameters\":{\"TopicArn\":\"PHYSICAL:RESOURCEID:\"}}"
       ]
      ]
     },

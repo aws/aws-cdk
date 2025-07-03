@@ -18,15 +18,8 @@
   "VPCPublicSubnet1SubnetB4246D30": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.0.0/18",
+    "AvailabilityZone": "test-region-1a",
+    "CidrBlock": "10.0.0.0/19",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -126,15 +119,8 @@
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      1,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.64.0/18",
+    "AvailabilityZone": "test-region-1b",
+    "CidrBlock": "10.0.32.0/19",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -195,18 +181,76 @@
     "VPCVPCGW99B986DC"
    ]
   },
+  "VPCPublicSubnet3Subnet631C5E25": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "test-region-1c",
+    "CidrBlock": "10.0.64.0/19",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "integ-globalaccelerator/VPC/PublicSubnet3"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "VPCPublicSubnet3RouteTable98AE0E14": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-globalaccelerator/VPC/PublicSubnet3"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "VPCPublicSubnet3RouteTableAssociation427FE0C6": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet3RouteTable98AE0E14"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet3Subnet631C5E25"
+    }
+   }
+  },
+  "VPCPublicSubnet3DefaultRouteA0D29D46": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet3RouteTable98AE0E14"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ]
+  },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.128.0/18",
+    "AvailabilityZone": "test-region-1a",
+    "CidrBlock": "10.0.96.0/19",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -267,15 +311,8 @@
   "VPCPrivateSubnet2SubnetCFCDAA7A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      1,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.192.0/18",
+    "AvailabilityZone": "test-region-1b",
+    "CidrBlock": "10.0.128.0/19",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -330,6 +367,68 @@
     },
     "RouteTableId": {
      "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+    }
+   }
+  },
+  "VPCPrivateSubnet3Subnet3EDCD457": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "test-region-1c",
+    "CidrBlock": "10.0.160.0/19",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "integ-globalaccelerator/VPC/PrivateSubnet3"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "VPCPrivateSubnet3RouteTable192186F8": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-globalaccelerator/VPC/PrivateSubnet3"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "VPCPrivateSubnet3RouteTableAssociationC28D144E": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet3RouteTable192186F8"
+    },
+    "SubnetId": {
+     "Ref": "VPCPrivateSubnet3Subnet3EDCD457"
+    }
+   }
+  },
+  "VPCPrivateSubnet3DefaultRoute27F311AE": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet3RouteTable192186F8"
     }
    }
   },
@@ -442,6 +541,9 @@
      },
      {
       "Ref": "VPCPublicSubnet2Subnet74179F39"
+     },
+     {
+      "Ref": "VPCPublicSubnet3Subnet631C5E25"
      }
     ],
     "Type": "application"
@@ -450,7 +552,9 @@
     "VPCPublicSubnet1DefaultRoute91CEF279",
     "VPCPublicSubnet1RouteTableAssociation0B0896DC",
     "VPCPublicSubnet2DefaultRouteB7481BBA",
-    "VPCPublicSubnet2RouteTableAssociation5A808732"
+    "VPCPublicSubnet2RouteTableAssociation5A808732",
+    "VPCPublicSubnet3DefaultRouteA0D29D46",
+    "VPCPublicSubnet3RouteTableAssociation427FE0C6"
    ]
   },
   "NLB55158F82": {
@@ -477,6 +581,9 @@
      },
      {
       "Ref": "VPCPublicSubnet2Subnet74179F39"
+     },
+     {
+      "Ref": "VPCPublicSubnet3Subnet631C5E25"
      }
     ],
     "Type": "network"
@@ -485,7 +592,9 @@
     "VPCPublicSubnet1DefaultRoute91CEF279",
     "VPCPublicSubnet1RouteTableAssociation0B0896DC",
     "VPCPublicSubnet2DefaultRouteB7481BBA",
-    "VPCPublicSubnet2RouteTableAssociation5A808732"
+    "VPCPublicSubnet2RouteTableAssociation5A808732",
+    "VPCPublicSubnet3DefaultRouteA0D29D46",
+    "VPCPublicSubnet3RouteTableAssociation427FE0C6"
    ]
   },
   "ElasticIpAddress": {
@@ -549,14 +658,7 @@
   "Instance008A4B15C": {
    "Type": "AWS::EC2::Instance",
    "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
+    "AvailabilityZone": "test-region-1a",
     "IamInstanceProfile": {
      "Ref": "Instance0InstanceProfile3A61DE71"
     },
@@ -647,14 +749,7 @@
   "Instance14BC3991D": {
    "Type": "AWS::EC2::Instance",
    "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
+    "AvailabilityZone": "test-region-1a",
     "IamInstanceProfile": {
      "Ref": "Instance1InstanceProfileC04770B7"
     },
@@ -964,6 +1059,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

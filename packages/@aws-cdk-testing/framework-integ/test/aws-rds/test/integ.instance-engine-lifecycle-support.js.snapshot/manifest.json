@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "cdk-instance-engine-lifecycle-support.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1cf375a44b61de7f3f6546ece6163df02d1242fae6da50f93a58e255b5b11892.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2f32b919aa76cffb5f9f2887d8ed02a13ef90990ccb87e45e943baad935c459d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -307,7 +307,8 @@
               },
               "instanceType": "*",
               "vpc": "*",
-              "removalPolicy": "destroy"
+              "removalPolicy": "destroy",
+              "engineLifecycleSupport": "open-source-rds-extended-support"
             }
           }
         ],
@@ -1570,7 +1571,8 @@
               },
               "instanceType": "*",
               "vpc": "*",
-              "removalPolicy": "destroy"
+              "removalPolicy": "destroy",
+              "engineLifecycleSupport": "open-source-rds-extended-support-disabled"
             }
           }
         ],
@@ -1619,7 +1621,8 @@
               "sourceDatabaseInstance": "*",
               "instanceType": "*",
               "vpc": "*",
-              "removalPolicy": "destroy"
+              "removalPolicy": "destroy",
+              "engineLifecycleSupport": "open-source-rds-extended-support-disabled"
             }
           }
         ],
@@ -1731,5 +1734,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1020.1"
 }

@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "files": {
     "2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a": {
       "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "bf2cfd38bd79cfc02cf497c4047be0ff925ff4a449d52e56464b07b3547f91c1": {
+    "f5650b66a548e81a56adae1aa23aa72e35c1bc5805cf4b6592f3390a4f321c43": {
       "displayName": "aws-cdk-customresources-vpc Template",
       "source": {
         "path": "aws-cdk-customresources-vpc.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "bf2cfd38bd79cfc02cf497c4047be0ff925ff4a449d52e56464b07b3547f91c1.json",
+          "objectKey": "f5650b66a548e81a56adae1aa23aa72e35c1bc5805cf4b6592f3390a4f321c43.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

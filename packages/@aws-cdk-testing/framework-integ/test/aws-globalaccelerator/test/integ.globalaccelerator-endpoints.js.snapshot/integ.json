@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "testCases": {
     "GlobalAcceleratorEndpoints/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "GlobalAcceleratorEndpointsDefaultTestDeployAssert3F2DB71B"
     }
   },
-  "minimumCliVersion": "2.1019.2"
+  "minimumCliVersion": "2.1020.1"
 }

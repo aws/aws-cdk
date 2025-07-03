@@ -18,15 +18,8 @@
   "StackPublicSubnet1Subnet0AD81D22": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.0.0/18",
+    "AvailabilityZone": "test-region-1a",
+    "CidrBlock": "10.0.0.0/19",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -126,15 +119,8 @@
   "StackPublicSubnet2Subnet3C7D2288": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      1,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.64.0/18",
+    "AvailabilityZone": "test-region-1b",
+    "CidrBlock": "10.0.32.0/19",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -231,18 +217,112 @@
     "StackPublicSubnet2RouteTableAssociation5E8F73F1"
    ]
   },
+  "StackPublicSubnet3SubnetCC1055D9": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "test-region-1c",
+    "CidrBlock": "10.0.64.0/19",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "alb-target-group-cross-zone-stack/Stack/PublicSubnet3"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    }
+   }
+  },
+  "StackPublicSubnet3RouteTable44D8F838": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "alb-target-group-cross-zone-stack/Stack/PublicSubnet3"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    }
+   }
+  },
+  "StackPublicSubnet3RouteTableAssociationD026A62D": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "StackPublicSubnet3RouteTable44D8F838"
+    },
+    "SubnetId": {
+     "Ref": "StackPublicSubnet3SubnetCC1055D9"
+    }
+   }
+  },
+  "StackPublicSubnet3DefaultRouteBC0DA152": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "StackIGW2F0A1126"
+    },
+    "RouteTableId": {
+     "Ref": "StackPublicSubnet3RouteTable44D8F838"
+    }
+   },
+   "DependsOn": [
+    "StackVPCGWFFCB6290"
+   ]
+  },
+  "StackPublicSubnet3EIP3201E7C8": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "alb-target-group-cross-zone-stack/Stack/PublicSubnet3"
+     }
+    ]
+   }
+  },
+  "StackPublicSubnet3NATGatewayAB6A10EF": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "StackPublicSubnet3EIP3201E7C8",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "StackPublicSubnet3SubnetCC1055D9"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "alb-target-group-cross-zone-stack/Stack/PublicSubnet3"
+     }
+    ]
+   },
+   "DependsOn": [
+    "StackPublicSubnet3DefaultRouteBC0DA152",
+    "StackPublicSubnet3RouteTableAssociationD026A62D"
+   ]
+  },
   "StackPrivateSubnet1Subnet47AC2BC7": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.128.0/18",
+    "AvailabilityZone": "test-region-1a",
+    "CidrBlock": "10.0.96.0/19",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -303,15 +383,8 @@
   "StackPrivateSubnet2SubnetA2F8EDD8": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      1,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.192.0/18",
+    "AvailabilityZone": "test-region-1b",
+    "CidrBlock": "10.0.128.0/19",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -366,6 +439,68 @@
     },
     "RouteTableId": {
      "Ref": "StackPrivateSubnet2RouteTableA5546697"
+    }
+   }
+  },
+  "StackPrivateSubnet3Subnet28548F2E": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "test-region-1c",
+    "CidrBlock": "10.0.160.0/19",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "alb-target-group-cross-zone-stack/Stack/PrivateSubnet3"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    }
+   }
+  },
+  "StackPrivateSubnet3RouteTable9B1F2842": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "alb-target-group-cross-zone-stack/Stack/PrivateSubnet3"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    }
+   }
+  },
+  "StackPrivateSubnet3RouteTableAssociationC9C6644E": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "StackPrivateSubnet3RouteTable9B1F2842"
+    },
+    "SubnetId": {
+     "Ref": "StackPrivateSubnet3Subnet28548F2E"
+    }
+   }
+  },
+  "StackPrivateSubnet3DefaultRoute361AE708": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "StackPublicSubnet3NATGatewayAB6A10EF"
+    },
+    "RouteTableId": {
+     "Ref": "StackPrivateSubnet3RouteTable9B1F2842"
     }
    }
   },
@@ -618,6 +753,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

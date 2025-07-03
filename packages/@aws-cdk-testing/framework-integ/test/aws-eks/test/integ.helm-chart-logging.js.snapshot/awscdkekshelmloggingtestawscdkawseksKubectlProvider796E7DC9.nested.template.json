@@ -42,6 +42,9 @@
       },
       {
        "Ref": "referencetoawscdkekshelmloggingtestVpcPrivateSubnet2Subnet911E7847Ref"
+      },
+      {
+       "Ref": "referencetoawscdkekshelmloggingtestVpcPrivateSubnet3SubnetAF02D285Ref"
       }
      ]
     }
@@ -73,7 +76,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1b2c92f2cd21c170884393633bd4c732676df6290562199b6e3ca5e2a1be7d18.zip"
+     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -222,6 +225,9 @@
       },
       {
        "Ref": "referencetoawscdkekshelmloggingtestVpcPrivateSubnet2Subnet911E7847Ref"
+      },
+      {
+       "Ref": "referencetoawscdkekshelmloggingtestVpcPrivateSubnet3SubnetAF02D285Ref"
       }
      ]
     }
@@ -334,6 +340,9 @@
    "eu-west-3": {
     "value": "nodejs22.x"
    },
+   "eusc-de-east-1": {
+    "value": "nodejs22.x"
+   },
    "il-central-1": {
     "value": "nodejs22.x"
    },
@@ -402,6 +411,9 @@
    "Type": "String"
   },
   "referencetoawscdkekshelmloggingtestVpcPrivateSubnet2Subnet911E7847Ref": {
+   "Type": "String"
+  },
+  "referencetoawscdkekshelmloggingtestVpcPrivateSubnet3SubnetAF02D285Ref": {
    "Type": "String"
   },
   "referencetoawscdkekshelmloggingtestCluster506C290DClusterSecurityGroupId": {

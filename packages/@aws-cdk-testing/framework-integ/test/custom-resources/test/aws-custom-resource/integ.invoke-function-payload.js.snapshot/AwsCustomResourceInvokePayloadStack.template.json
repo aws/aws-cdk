@@ -74,7 +74,7 @@
          "Arn"
         ]
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
@@ -93,11 +93,11 @@
          "Arn"
         ]
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "ListLambdaFunctionsCustomResourcePolicyCFFF021A"

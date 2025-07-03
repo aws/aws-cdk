@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "MinimumCapacityUnitAlbStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "a9296894a86ecdf638fb5f4c7ef4a36c24c07db5b6684d418fb1744e913f1dea": {
+    "f1945ebe5d009614a442acf312bdae7ccd5a2ecb78c661ef2e3084b3bdfd85ee": {
       "displayName": "MinimumCapacityUnitAlbStack Template",
       "source": {
         "path": "MinimumCapacityUnitAlbStack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a9296894a86ecdf638fb5f4c7ef4a36c24c07db5b6684d418fb1744e913f1dea.json",
+          "objectKey": "f1945ebe5d009614a442acf312bdae7ccd5a2ecb78c661ef2e3084b3bdfd85ee.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

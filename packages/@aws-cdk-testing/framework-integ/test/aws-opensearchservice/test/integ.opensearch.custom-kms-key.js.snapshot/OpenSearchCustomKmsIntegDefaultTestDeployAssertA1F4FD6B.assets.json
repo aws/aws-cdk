@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "685ad955693d645b71b7db962fe6d63000cad6c36d95ac869bdd9c565434b2c7": {
+    "6985f6fec8aafb1c2dbdd3968094f3eefa656d72e27898034fcde9338903a2fc": {
       "displayName": "OpenSearchCustomKmsIntegDefaultTestDeployAssertA1F4FD6B Template",
       "source": {
         "path": "OpenSearchCustomKmsIntegDefaultTestDeployAssertA1F4FD6B.template.json",
@@ -23,7 +23,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "685ad955693d645b71b7db962fe6d63000cad6c36d95ac869bdd9c565434b2c7.json",
+          "objectKey": "6985f6fec8aafb1c2dbdd3968094f3eefa656d72e27898034fcde9338903a2fc.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

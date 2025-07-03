@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "NlbTargetGroupIpAddressTypeTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8463b60f1846e60e53e0a4f5bd3d8d4a9537f717e2b0a983c0e6fc0ee0988e8b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/753ec7d8d1bd1bd09ec7ab2b5c13fabd481adbac92288812cdbbf170cb14cf9f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -152,6 +152,58 @@
             "data": "Ipv4VpcPublicSubnet2DefaultRoute826D6EFE"
           }
         ],
+        "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcPublicSubnet3SubnetB34CF95E"
+          }
+        ],
+        "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcPublicSubnet3RouteTableFA8B3483"
+          }
+        ],
+        "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcPublicSubnet3RouteTableAssociation7253F90A"
+          }
+        ],
+        "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcPublicSubnet3DefaultRoute1BF08B26"
+          }
+        ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -234,6 +286,48 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Ipv4VpcIsolatedSubnet2RouteTableAssociationD5682B3F"
+          }
+        ],
+        "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          }
+        ],
+        "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcIsolatedSubnet3SubnetA466E22D"
+          }
+        ],
+        "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcIsolatedSubnet3RouteTable84E8BE88"
+          }
+        ],
+        "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcIsolatedSubnet3RouteTableAssociation8CA55F37"
           }
         ],
         "/NlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IGW": [
@@ -437,6 +531,72 @@
             "data": "DualstackVpcPublicSubnet2DefaultRoute675820509"
           }
         ],
+        "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": true
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": true
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet3Subnet459566D8"
+          }
+        ],
+        "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet3RouteTable6095845C"
+          }
+        ],
+        "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet3RouteTableAssociationFE3A7AD6"
+          }
+        ],
+        "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet3DefaultRoute992181A7"
+          }
+        ],
+        "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet3/DefaultRoute6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet3DefaultRoute6BAA430B7"
+          }
+        ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -521,6 +681,48 @@
             "data": "DualstackVpcIsolatedSubnet2RouteTableAssociation8CD57CFF"
           }
         ],
+        "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": true
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": true
+            }
+          }
+        ],
+        "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcIsolatedSubnet3Subnet0C58AD06"
+          }
+        ],
+        "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcIsolatedSubnet3RouteTableA25F8688"
+          }
+        ],
+        "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcIsolatedSubnet3RouteTableAssociation900706EC"
+          }
+        ],
         "/NlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
@@ -567,15 +769,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "DualstackVpcEIGW61425E04A": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcEIGW61425E04A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
@@ -636,5 +829,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1016.1"
+  "minimumCliVersion": "2.1020.1"
 }

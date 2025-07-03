@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "1567236fb76aea332b8a1272e6b76f5b951d5bc1c642c6eb4d7601f86552b1cd": {
+    "391cb15263b3b2c013d9d43bb96cfb36290c8604583062c31f62db1921e7226d": {
       "displayName": "awscustomresourcecloudwatchDefaultTestDeployAssert1D41955C Template",
       "source": {
         "path": "awscustomresourcecloudwatchDefaultTestDeployAssert1D41955C.template.json",
@@ -23,7 +23,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1567236fb76aea332b8a1272e6b76f5b951d5bc1c642c6eb4d7601f86552b1cd.json",
+          "objectKey": "391cb15263b3b2c013d9d43bb96cfb36290c8604583062c31f62db1921e7226d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

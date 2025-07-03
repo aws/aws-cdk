@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a": {
       "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "1fa64517f886c4962cd00613021e3f35cadd794c805bf162c6dfbf499990a47f": {
+    "2e6ec514b89dc5a51fbd3679660d5442d14e2ba7321fd6956d8d1a4a647881cd": {
       "displayName": "aws-custom-resource-cloudwatch-stack Template",
       "source": {
         "path": "aws-custom-resource-cloudwatch-stack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1fa64517f886c4962cd00613021e3f35cadd794c805bf162c6dfbf499990a47f.json",
+          "objectKey": "2e6ec514b89dc5a51fbd3679660d5442d14e2ba7321fd6956d8d1a4a647881cd.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
