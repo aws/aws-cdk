@@ -1,16 +1,16 @@
 {
   "version": "44.0.0",
   "files": {
-    "fca62d2c6e2c9cb0235b47c9a312c26d3fa862d8dfc9161ed811df0e7dc70675": {
-      "displayName": "aws-cdk-cloudwatch Template",
+    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+      "displayName": "cdkintegdashboardwithmetricidandvisibleDefaultTestDeployAssert34BC1A62 Template",
       "source": {
-        "path": "aws-cdk-cloudwatch.template.json",
+        "path": "cdkintegdashboardwithmetricidandvisibleDefaultTestDeployAssert34BC1A62.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "fca62d2c6e2c9cb0235b47c9a312c26d3fa862d8dfc9161ed811df0e7dc70675.json",
+          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -3,11 +3,11 @@ coverage:
   status:
     project:
       default:
-        # require the overall project coverage to never decrease
+        # Require overall project coverage to never decrease
         target: auto
     patch:
       default:
-        # require the overall patch coverage to be at least 95%
+        # Require the patch coverage to be at least 95%
         target: 95
 
 # https://docs.codecov.com/docs/codecovyml-reference#comment
@@ -18,23 +18,22 @@ comment:
 component_management:
   default_rules:
     statuses:
-      # every component will produce its own status check that requires overall coverage doesnt decrease
       - type: project
         target: auto
-      # every component will produce its own status check that requires patch coverage of at least 95%
       - type: patch
         target: 95
   individual_components:
-    - component_id: packages_aws_cdk # identifier that should not be changed
-      name: packages/aws-cdk # display name that can change freely
+    - component_id: packages_aws_cdk
+      name: packages/aws-cdk
       paths:
         - packages/aws-cdk/**
-    - component_id: packages_aws_cdk_lib_core # identifier that should not be changed
-      name: packages/aws-cdk-lib/core # display name that can change freely
+    - component_id: packages_aws_cdk_lib_core
+      name: packages/aws-cdk-lib/core
       paths:
         - packages/aws-cdk-lib/core/**
 
 # https://docs.codecov.com/docs/ignoring-paths
 ignore:
-  - packages/aws-cdk/lib/cli.ts # we integ test this file
-  - ^(?!.*packages\/(aws-cdk|aws-cdk-lib\/core)\/).+$ # ignore anything that isn't in the cli or core
+  - packages/**
+  - "!packages/aws-cdk/**"
+  - "!packages/aws-cdk-lib/core/**"
