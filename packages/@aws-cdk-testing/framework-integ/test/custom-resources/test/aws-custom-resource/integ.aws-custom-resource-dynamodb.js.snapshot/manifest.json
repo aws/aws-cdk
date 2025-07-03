@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "aws-cdk-sdk-dynamodb.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/450f9e01ab7a2383f0c43df130cd22b2438448929fd84df721576755a80bcc08.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5c9c7f43298ecb4b4643cedfb58dc1c0c512b92d5feca91a35db32eaf74a8e0f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -296,5 +296,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1016.1"
+  "minimumCliVersion": "2.1020.1"
 }

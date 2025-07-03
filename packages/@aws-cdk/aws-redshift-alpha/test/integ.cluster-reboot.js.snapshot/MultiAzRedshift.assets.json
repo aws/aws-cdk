@@ -1,0 +1,21 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+      "displayName": "MultiAzRedshift Template",
+      "source": {
+        "path": "MultiAzRedshift.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "123456789012-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

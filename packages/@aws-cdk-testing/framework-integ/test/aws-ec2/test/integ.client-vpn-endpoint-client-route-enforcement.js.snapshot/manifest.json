@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "client-vpn-endpoint-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f18c1da5a428e21a49373e9128df00577dd4a42020ac8690d02b3bb89ae15375.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aed056bc22d5e5840efb38647c6fe1e1074331f15e76c7e9cb4aa1037d96b8b1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,7 +37,10 @@
         "/client-vpn-endpoint-stack/Certificate": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "domainName": "*",
+              "validation": "*"
+            }
           }
         ],
         "/client-vpn-endpoint-stack/Certificate/Resource": [
@@ -49,7 +52,10 @@
         "/client-vpn-endpoint-stack/ClientCertificate": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "domainName": "*",
+              "validation": "*"
+            }
           }
         ],
         "/client-vpn-endpoint-stack/ClientCertificate/Resource": [
@@ -61,7 +67,10 @@
         "/client-vpn-endpoint-stack/Vpc": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "maxAzs": "*",
+              "natGateways": "*"
+            }
           }
         ],
         "/client-vpn-endpoint-stack/Vpc/Resource": [
@@ -73,15 +82,29 @@
         "/client-vpn-endpoint-stack/Vpc/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {}
           }
         ],
         "/client-vpn-endpoint-stack/Vpc/PublicSubnet1/Subnet": [
@@ -111,15 +134,29 @@
         "/client-vpn-endpoint-stack/Vpc/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {}
           }
         ],
         "/client-vpn-endpoint-stack/Vpc/PublicSubnet2/Subnet": [
@@ -149,11 +186,25 @@
         "/client-vpn-endpoint-stack/Vpc/IsolatedSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           }
         ],
         "/client-vpn-endpoint-stack/Vpc/IsolatedSubnet1/Subnet": [
@@ -177,11 +228,25 @@
         "/client-vpn-endpoint-stack/Vpc/IsolatedSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           }
         ],
         "/client-vpn-endpoint-stack/Vpc/IsolatedSubnet2/Subnet": [
@@ -229,17 +294,32 @@
         "/client-vpn-endpoint-stack/Vpc/Endpoint": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "cidr": "*",
+              "serverCertificateArn": "*",
+              "clientCertificateArn": "*",
+              "logGroup": "*",
+              "vpc": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addAuthorizationRule": [
+                "*",
+                {
+                  "cidr": "*"
+                }
+              ]
+            }
           }
         ],
         "/client-vpn-endpoint-stack/Vpc/Endpoint/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "vpc": "*"
+            }
           }
         ],
         "/client-vpn-endpoint-stack/Vpc/Endpoint/SecurityGroup/Resource": [
@@ -269,7 +349,10 @@
         "/client-vpn-endpoint-stack/Vpc/Endpoint/AuthorizeAll": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "cidr": "*",
+              "clientVpnEndpoint": "*"
+            }
           }
         ],
         "/client-vpn-endpoint-stack/Vpc/Endpoint/AuthorizeAll/Resource": [
@@ -305,7 +388,9 @@
         "/client-vpn-endpoint-stack/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/client-vpn-endpoint-stack/LogGroup/Resource": [
@@ -384,5 +469,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1015.0"
+  "minimumCliVersion": "2.1019.2"
 }

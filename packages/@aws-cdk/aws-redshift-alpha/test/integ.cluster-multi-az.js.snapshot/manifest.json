@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "MultiAzRedshift.assets": {
       "type": "cdk:asset-manifest",
@@ -11,21 +11,21 @@
     },
     "MultiAzRedshift": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://214794239830/us-east-1",
+      "environment": "aws://123456789012/us-east-1",
       "properties": {
         "templateFile": "MultiAzRedshift.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::214794239830:role/cdk-hnb659fds-deploy-role-214794239830-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::214794239830:role/cdk-hnb659fds-cfn-exec-role-214794239830-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-214794239830-us-east-1/c2c282abac04283268fcc5f53da2bb783597d916fc0cef560cd7826453d8f439.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/c2c282abac04283268fcc5f53da2bb783597d916fc0cef560cd7826453d8f439.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "MultiAzRedshift.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::214794239830:role/cdk-hnb659fds-lookup-role-214794239830-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -34,10 +34,57 @@
         "MultiAzRedshift.assets"
       ],
       "metadata": {
+        "/MultiAzRedshift/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "restrictDefaultSecurityGroup": false,
+              "enableDnsHostnames": true,
+              "enableDnsSupport": true,
+              "maxAzs": "*"
+            }
+          }
+        ],
         "/MultiAzRedshift/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
+          }
+        ],
+        "/MultiAzRedshift/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/MultiAzRedshift/Vpc/PublicSubnet1/Subnet": [
@@ -76,6 +123,42 @@
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
+        "/MultiAzRedshift/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/MultiAzRedshift/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -110,6 +193,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/MultiAzRedshift/Vpc/PublicSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/MultiAzRedshift/Vpc/PublicSubnet3/Subnet": [
@@ -148,6 +267,34 @@
             "data": "VpcPublicSubnet3NATGateway7640CD1D"
           }
         ],
+        "/MultiAzRedshift/Vpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/MultiAzRedshift/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -172,6 +319,34 @@
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
           }
         ],
+        "/MultiAzRedshift/Vpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/MultiAzRedshift/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -194,6 +369,34 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/MultiAzRedshift/Vpc/PrivateSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/MultiAzRedshift/Vpc/PrivateSubnet3/Subnet": [
@@ -232,10 +435,31 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
+        "/MultiAzRedshift/Cluster": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/MultiAzRedshift/Cluster/Subnets": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/MultiAzRedshift/Cluster/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterSubnetsDCFA5CB7"
+          }
+        ],
+        "/MultiAzRedshift/Cluster/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
           }
         ],
         "/MultiAzRedshift/Cluster/SecurityGroup/Resource": [
@@ -244,10 +468,29 @@
             "data": "ClusterSecurityGroup0921994B"
           }
         ],
+        "/MultiAzRedshift/Cluster/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/MultiAzRedshift/Cluster/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterSecret6368BD0F"
+          }
+        ],
+        "/MultiAzRedshift/Cluster/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "target": "*"
+            }
           }
         ],
         "/MultiAzRedshift/Cluster/Secret/Attachment/Resource": [
@@ -331,5 +574,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

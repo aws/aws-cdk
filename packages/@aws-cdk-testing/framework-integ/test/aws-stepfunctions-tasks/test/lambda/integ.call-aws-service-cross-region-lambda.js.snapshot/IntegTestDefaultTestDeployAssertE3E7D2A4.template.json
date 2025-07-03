@@ -29,7 +29,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1751043897586"
+    "salt": "1751560133498"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -154,7 +154,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1751043897586"
+    "salt": "1751560133499"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -477,6 +477,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

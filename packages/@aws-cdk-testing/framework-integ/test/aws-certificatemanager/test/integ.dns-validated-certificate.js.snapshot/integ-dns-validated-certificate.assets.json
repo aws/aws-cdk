@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "8dd3f997ac74aa13ef09bc8bed060ecdbe3111898c6bbc0eb4f2130c9c53233b": {
       "displayName": "Certificate/CertificateRequestorFunction/Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "6521ca10c57a0630d515e14f72a74691eec5746f03ffb8de2a50c5c9cda3466a": {
+    "a05182d7b889c85971d8f25dac70bc894af92ea34ade3589662880af37e4bd8c": {
       "displayName": "integ-dns-validated-certificate Template",
       "source": {
         "path": "integ-dns-validated-certificate.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6521ca10c57a0630d515e14f72a74691eec5746f03ffb8de2a50c5c9cda3466a.json",
+          "objectKey": "a05182d7b889c85971d8f25dac70bc894af92ea34ade3589662880af37e4bd8c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

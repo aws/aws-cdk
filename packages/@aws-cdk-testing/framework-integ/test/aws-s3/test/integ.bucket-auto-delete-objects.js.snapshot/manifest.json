@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "cdk-s3-bucket-auto-delete-objects.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b98be28be533f2bc3651e490d3fc2913f24a10f8eee359bf410dabbe5673ff5f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/44d6f3ea855b83f1c3ca0f81c0dfbbd517b05b30e178656f80ca46a95757646e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -388,5 +388,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1016.1"
+  "minimumCliVersion": "2.1020.1"
 }

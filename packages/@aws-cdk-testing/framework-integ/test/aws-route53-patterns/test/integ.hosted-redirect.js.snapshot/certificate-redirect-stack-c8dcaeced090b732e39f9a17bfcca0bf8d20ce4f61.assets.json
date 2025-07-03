@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "files": {
     "bbfb567dc956ce71e67ac1f96589821990e2ca48307b93a577bbb345d2de441b": {
       "displayName": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/Custom::CrossRegionExportWriterCustomResourceProvider Code",

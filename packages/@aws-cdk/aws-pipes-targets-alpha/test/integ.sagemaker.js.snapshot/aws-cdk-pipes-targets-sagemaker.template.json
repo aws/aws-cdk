@@ -212,15 +212,15 @@
       "Fn::Join": [
        "",
        [
-        "{\"Version\":\"2020-12-01\",\"Metadata\":{},\"Parameters\":[{\"Name\":\"ParameterName\",\"Type\":\"String\",\"DefaultValue\":\"Value\"}],\"Steps\":[{\"Name\":\"TrainingStep\",\"Type\":\"Training\",\"Arguments\":{\"AlgorithmSpecification\":{\"TrainingImage\":\"382416733822.dkr.ecr.us-east-1.amazonaws.com/linear-learner:1\",\"TrainingInputMode\":\"File\"},\"InputDataConfig\":[{\"DataSource\":{\"S3DataSource\":{\"S3Uri\":\"s3://",
+        "{\"PipelineDefinitionBody\":\"{\\\"Version\\\":\\\"2020-12-01\\\",\\\"Metadata\\\":{},\\\"Parameters\\\":[{\\\"Name\\\":\\\"ParameterName\\\",\\\"Type\\\":\\\"String\\\",\\\"DefaultValue\\\":\\\"Value\\\"}],\\\"Steps\\\":[{\\\"Name\\\":\\\"TrainingStep\\\",\\\"Type\\\":\\\"Training\\\",\\\"Arguments\\\":{\\\"AlgorithmSpecification\\\":{\\\"TrainingImage\\\":\\\"382416733822.dkr.ecr.us-east-1.amazonaws.com/linear-learner:1\\\",\\\"TrainingInputMode\\\":\\\"File\\\"},\\\"InputDataConfig\\\":[{\\\"DataSource\\\":{\\\"S3DataSource\\\":{\\\"S3Uri\\\":\\\"s3://",
         {
          "Ref": "PipelineSourceBucket23FDFC28"
         },
-        "\"}}}],\"OutputDataConfig\":{\"S3OutputPath\":\"s3://",
+        "\\\"}}}],\\\"OutputDataConfig\\\":{\\\"S3OutputPath\\\":\\\"s3://",
         {
          "Ref": "PipelineOutputBucket98EA5F71"
         },
-        "\"},\"ResourceConfig\":{\"InstanceCount\":1,\"InstanceType\":\"ml.m5.large\",\"VolumeSizeInGB\":50},\"StoppingCondition\":{\"MaxRuntimeInSeconds\":3600}}}]}"
+        "\\\"},\\\"ResourceConfig\\\":{\\\"InstanceCount\\\":1,\\\"InstanceType\\\":\\\"ml.m5.large\\\",\\\"VolumeSizeInGB\\\":50},\\\"StoppingCondition\\\":{\\\"MaxRuntimeInSeconds\\\":3600}}}]}\"}"
        ]
       ]
      }
@@ -503,6 +503,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

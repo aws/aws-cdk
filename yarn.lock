@@ -74,13 +74,13 @@
     jsonschema "~1.4.1"
     semver "^7.7.2"
 
-"@aws-cdk/integ-runner@^2.188.2":
-  version "2.188.2"
-  resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.188.2.tgz#1117778c340f15481bffa637800e16ae3a27c788"
-  integrity sha512-oEyuOlyR2FgdZ1BqVt+RPYZTcACNlR9KlHs2LqAzn5EVshnC6GhZG+HWo/X0Jt1Q+bv5gHl+KkqyVe7YxXpS/Q==
+"@aws-cdk/integ-runner@^2.188.3":
+  version "2.188.3"
+  resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.188.3.tgz#11ba5df5dd15414f18f7f1cc03af9103430dee74"
+  integrity sha512-+3A+HP7Yqt2j6/wKU24AOceVr2JggM/avmEL3T+raGLKxqOL5szMBcr0x3TqNDAoIWTiETQss8ArBS28n0h7nQ==
   dependencies:
     "@aws-cdk/aws-service-spec" "0.1.84"
-    aws-cdk "2.1020.1"
+    aws-cdk "2.1020.2"
   optionalDependencies:
     fsevents "2.3.2"
 
@@ -5197,10 +5197,10 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-aws-cdk@2.1020.1:
-  version "2.1020.1"
-  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1020.1.tgz#97716539f80d3b74dc70cdf2bf38eb4232d94fa2"
-  integrity sha512-4UG9qzf6ZSDjINubcukPZChVj6PvDJAHiURAw0jYSkUhObPkX7Zo9uNUIlXzrM+hpB2N2jwRKY9b3sN+KDbtAQ==
+aws-cdk@2.1020.2:
+  version "2.1020.2"
+  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1020.2.tgz#7e0a4113666a6d162cf40b6b1ebf9e310c22dd44"
+  integrity sha512-yWdt3dJh4aPm1VNyEgfG3lozGrvddw0i7avt+Cl9KOYixmisQtAg39/aZqzVVqjzVZVEanXmz+tlhzzh75Z69A==
   optionalDependencies:
     fsevents "2.3.2"
 
