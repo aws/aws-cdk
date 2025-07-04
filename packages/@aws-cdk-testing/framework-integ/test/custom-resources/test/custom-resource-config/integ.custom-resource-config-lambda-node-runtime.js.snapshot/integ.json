@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "testCases": {
     "integ-test-custom-resource-config-lambda-node-runtime/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "integ-test-custom-resource-config-lambda-node-runtime/DefaultTest/DeployAssert",
       "assertionStackName": "integtestcustomresourceconfiglambdanoderuntimeDefaultTestDeployAssertF01B3E2D"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

@@ -2,11 +2,13 @@ import { Construct } from 'constructs';
 import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
+import { ISchemaRegistry } from './schema-registry';
 import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The type of authentication protocol or the VPC components for your event source's SourceAccessConfiguration
@@ -308,6 +310,13 @@ export interface EventSourceMappingOptions {
    * @default - Enhanced monitoring is disabled
    */
   readonly metricsConfig?: MetricsConfig;
+
+  /**
+   * Specific configuration settings for a Kafka schema registry.
+   *
+   * @default - none
+   */
+  readonly schemaRegistryConfig?: ISchemaRegistry;
 }
 
 export enum MetricType {
@@ -375,7 +384,13 @@ export interface IEventSourceMapping extends cdk.IResource {
  * The `SqsEventSource` class will automatically create the mapping, and will also
  * modify the Lambda's execution role so it can consume messages from the queue.
  */
+@propertyInjectable
 export class EventSourceMapping extends cdk.Resource implements IEventSourceMapping {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.EventSourceMapping';
+
   /**
    * Import an event source into this stack from its event source id.
    */
@@ -451,8 +466,9 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     }
 
     props.retryAttempts !== undefined && cdk.withResolved(props.retryAttempts, (attempts) => {
-      if (attempts < 0 || attempts > 10000) {
-        throw new ValidationError(`retryAttempts must be between 0 and 10000 inclusive, got ${attempts}`, this);
+      // Allow -1 for infinite retries, otherwise validate the 0-10000 range
+      if (!(attempts === -1 || (attempts >= 0 && attempts <= 10000))) {
+        throw new ValidationError(`retryAttempts must be -1 (for infinite) or between 0 and 10000 inclusive, got ${attempts}`, this);
       }
     });
 
@@ -496,7 +512,6 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     }
 
     let destinationConfig;
-
     if (props.onFailure) {
       destinationConfig = {
         onFailure: props.onFailure.bind(this, props.target),
@@ -508,7 +523,22 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       selfManagedEventSource = { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } };
     }
 
-    let consumerGroupConfig = props.kafkaConsumerGroupId ? { consumerGroupId: props.kafkaConsumerGroupId } : undefined;
+    let kafkaConfig: any;
+    if (props.kafkaConsumerGroupId || props.schemaRegistryConfig) {
+      kafkaConfig = {};
+      if (props.kafkaConsumerGroupId) {
+        kafkaConfig.consumerGroupId = props.kafkaConsumerGroupId;
+      }
+      if (props.schemaRegistryConfig) {
+        const schemaRegistry = props.schemaRegistryConfig.bind(this, props.target);
+        kafkaConfig.schemaRegistryConfig = {
+          schemaRegistryUri: schemaRegistry.schemaRegistryUri,
+          eventRecordFormat: schemaRegistry.eventRecordFormat.value,
+          accessConfigs: schemaRegistry?.accessConfigs?.map((o) => {return { type: o.type.type, uri: o.uri };}),
+          schemaValidationConfigs: schemaRegistry.schemaValidationConfigs?.map((o) => {return { attribute: o.attribute.value };}),
+        };
+      }
+    }
 
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
@@ -531,8 +561,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       selfManagedEventSource,
       filterCriteria: props.filters ? { filters: props.filters }: undefined,
       kmsKeyArn: props.filterEncryption?.keyArn,
-      selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? consumerGroupConfig : undefined,
-      amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? consumerGroupConfig : undefined,
+      selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? kafkaConfig : undefined,
+      amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? kafkaConfig : undefined,
       provisionedPollerConfig: props.provisionedPollerConfig,
       metricsConfig: props.metricsConfig,
     });

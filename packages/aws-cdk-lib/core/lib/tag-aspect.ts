@@ -1,6 +1,8 @@
 import { Construct, IConstruct } from 'constructs';
 import { Annotations } from './annotations';
-import { IAspect, Aspects, AspectPriority, AspectOptions } from './aspect';
+import { IAspect, Aspects, AspectOptions } from './aspect';
+import { UnscopedValidationError } from './errors';
+import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { ITaggable, ITaggableV2, TagManager } from './tag-manager';
 
 /**
@@ -116,7 +118,7 @@ export class Tag extends TagBase {
   constructor(key: string, value: string, props: TagProps = {}) {
     super(key, props);
     if (value === undefined) {
-      throw new Error('Tag must have a value');
+      throw new UnscopedValidationError('Tag must have a value');
     }
     this.value = value;
   }
@@ -160,7 +162,7 @@ export class Tags {
    */
   public add(key: string, value: string, props: TagProps = {}) {
     const tag = new Tag(key, value, props);
-    const options: AspectOptions = { priority: AspectPriority.MUTATING };
+    const options: AspectOptions = { priority: mutatingAspectPrio32333(this.scope) };
     Aspects.of(this.scope).add(tag, options);
   }
 
@@ -169,7 +171,7 @@ export class Tags {
    */
   public remove(key: string, props: TagProps = {}) {
     const removeTag = new RemoveTag(key, props);
-    const options: AspectOptions = { priority: AspectPriority.MUTATING };
+    const options: AspectOptions = { priority: mutatingAspectPrio32333(this.scope) };
     Aspects.of(this.scope).add(removeTag, options);
   }
 }

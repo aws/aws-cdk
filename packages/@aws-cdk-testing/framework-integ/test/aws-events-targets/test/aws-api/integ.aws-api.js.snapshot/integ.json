@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "testCases": {
     "aws-api-integ/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "aws-api-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awsapiintegDefaultTestDeployAssertBB35B14E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

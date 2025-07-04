@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "lambda-logssubscription-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/098b9a18c0df2efeb5bbc94b623971eacab69f70cf44940395248ebe566f11a3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/818e30925d7d4460e840a11d4de90aa911e2acf250de09abbb71e349b12b4622.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,109 @@
         "lambda-logssubscription-integ.assets"
       ],
       "metadata": {
+        "/lambda-logssubscription-integ/Queue": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/lambda-logssubscription-integ/Queue/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Queue4A7E3555"
           }
         ],
+        "/lambda-logssubscription-integ/MyFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*",
+              "onSuccess": "*"
+            }
+          }
+        ],
+        "/lambda-logssubscription-integ/MyFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/lambda-logssubscription-integ/MyFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/lambda-logssubscription-integ/MyFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFunctionServiceRole3C357FF2"
+          }
+        ],
+        "/lambda-logssubscription-integ/MyFunction/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/lambda-logssubscription-integ/MyFunction/ServiceRole/DefaultPolicy/Resource": [
@@ -58,16 +151,48 @@
             "data": "MyFunction3BAA72D1"
           }
         ],
+        "/lambda-logssubscription-integ/MyFunction/EventInvokeConfig": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "function": "*",
+              "onFailure": "*",
+              "onSuccess": "*",
+              "maxEventAge": "*",
+              "retryAttempts": "*"
+            }
+          }
+        ],
         "/lambda-logssubscription-integ/MyFunction/EventInvokeConfig/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFunctionEventInvokeConfig18F9BD7D"
           }
         ],
+        "/lambda-logssubscription-integ/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/lambda-logssubscription-integ/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LogGroupF5B46931"
+          }
+        ],
+        "/lambda-logssubscription-integ/Subscription": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroup": "*",
+              "destination": "*",
+              "filterPattern": {
+                "logPatternString": "*"
+              }
+            }
           }
         ],
         "/lambda-logssubscription-integ/Subscription/CanInvokeLambda": [
@@ -82,16 +207,129 @@
             "data": "Subscription391C9821"
           }
         ],
+        "/lambda-logssubscription-integ/CustomRule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "eventPattern": {
+                "source": "*",
+                "detailType": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "source": "*",
+                  "detailType": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addTarget": [
+                {}
+              ]
+            }
+          }
+        ],
         "/lambda-logssubscription-integ/CustomRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomRuleB1CBBADE"
           }
         ],
+        "/lambda-logssubscription-integ/EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7/Provider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/lambda-logssubscription-integ/EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/lambda-logssubscription-integ/EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7ACDF582E"
+          }
+        ],
+        "/lambda-logssubscription-integ/EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/lambda-logssubscription-integ/EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7/CustomResourcePolicy/Resource": [
@@ -108,12 +346,57 @@
         ],
         "/lambda-logssubscription-integ/AWS679f53fac002430cb0da5b7982bd2287": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
           },
           {
             "type": "aws:cdk:is-custom-resource-handler-runtime-family",
             "data": 0
+          }
+        ],
+        "/lambda-logssubscription-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/lambda-logssubscription-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/lambda-logssubscription-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -166,7 +449,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/23230412a42a5c8089b63984fd855f4f15b91d9abff896fdff68b5d770aa1613.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ec18247321ebead371a1fc25dae8f6a5057f73b15b75ebd46efc969aab01de9d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -183,6 +466,12 @@
         "LambdaIntegDefaultTestDeployAssert7BC530B7.assets"
       ],
       "metadata": {
+        "/LambdaInteg/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents9a20df3f29597ff1b9e82b1f34c42383/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/LambdaInteg/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents9a20df3f29597ff1b9e82b1f34c42383/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -205,6 +494,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0/Default/Default": [
@@ -240,5 +543,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

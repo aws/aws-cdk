@@ -6,7 +6,7 @@ import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
-import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
+import { Credentials, EngineLifecycleSupport, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -17,9 +17,11 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import * as cxschema from '../../cloud-assembly-schema';
+import { ArnComponents, ArnFormat, ContextProvider, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -134,6 +136,60 @@ export interface DatabaseInstanceAttributes {
  * A new or imported database instance.
  */
 export abstract class DatabaseInstanceBase extends Resource implements IDatabaseInstance {
+  /**
+   * Lookup an existing DatabaseInstance using instanceIdentifier.
+   */
+  public static fromLookup(scope: Construct, id: string, options: DatabaseInstanceLookupOptions): IDatabaseInstance {
+    const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.CC_API_PROVIDER,
+      props: {
+        typeName: 'AWS::RDS::DBInstance',
+        exactIdentifier: options.instanceIdentifier,
+        propertiesToReturn: [
+          'DBInstanceArn',
+          'Endpoint.Address',
+          'Endpoint.Port',
+          'DbiResourceId',
+          'DBSecurityGroups',
+        ],
+      } as cxschema.CcApiContextQuery,
+      dummyValue: [
+        {
+          'Identifier': 'TEST',
+          'DBInstanceArn': 'TESTARN',
+          'Endpoint.Address': 'TESTADDRESS',
+          'Endpoint.Port': '5432',
+          'DbiResourceId': 'TESTID',
+          'DBSecurityGroups': [],
+        },
+      ],
+    }).value;
+
+    // getValue returns a list of result objects.  We are expecting 1 result or Error.
+    const instance = response[0];
+
+    // Get ISecurityGroup from securityGroupId
+    let securityGroups: ec2.ISecurityGroup[] = [];
+    const dbsg: string[] = instance.DBSecurityGroups;
+    if (dbsg) {
+      securityGroups = dbsg.map(securityGroupId => {
+        return ec2.SecurityGroup.fromSecurityGroupId(
+          scope,
+          `LSG-${securityGroupId}`,
+          securityGroupId,
+        );
+      });
+    }
+
+    return this.fromDatabaseInstanceAttributes(scope, id, {
+      instanceEndpointAddress: instance['Endpoint.Address'],
+      port: instance['Endpoint.Port'],
+      instanceIdentifier: options.instanceIdentifier,
+      securityGroups: securityGroups,
+      instanceResourceId: instance.DbiResourceId,
+    });
+  }
+
   /**
    * Import an existing database instance.
    */
@@ -753,6 +809,16 @@ export interface DatabaseInstanceNewProps {
    * @default - Changes will be applied immediately
    */
   readonly applyImmediately?: boolean;
+
+  /**
+   * The life cycle type for this DB instance.
+   * This setting applies only to RDS for MySQL and RDS for PostgreSQL.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support.html
+   *
+   * @default undefined - AWS RDS default setting is `EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT`
+   */
+  readonly engineLifecycleSupport?: EngineLifecycleSupport;
 }
 
 /**
@@ -919,6 +985,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       networkType: props.networkType,
       caCertificateIdentifier: props.caCertificate ? props.caCertificate.toString() : undefined,
       applyImmediately: props.applyImmediately,
+      engineLifecycleSupport: props.engineLifecycleSupport,
     };
   }
 
@@ -1023,6 +1090,11 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     this.engine = props.engine;
 
     const engineType = props.engine.engineType;
+
+    if (props.engineLifecycleSupport && !['mysql', 'postgres'].includes(engineType)) {
+      throw new ValidationError(`'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
+    }
+
     // only Oracle and SQL Server require the import and export Roles to be the same
     const combineRoles = engineType.startsWith('oracle-') || engineType.startsWith('sqlserver-');
     let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, combineRoles);
@@ -1143,6 +1215,16 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 }
 
 /**
+ * Properties for looking up an existing DatabaseInstance.
+ */
+export interface DatabaseInstanceLookupOptions {
+  /**
+   * The instance identifier of the DatabaseInstance
+   */
+  readonly instanceIdentifier: string;
+}
+
+/**
  * Construction properties for a DatabaseInstance.
  */
 export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
@@ -1181,7 +1263,13 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
  *
  * @resource AWS::RDS::DBInstance
  */
+@propertyInjectable
 export class DatabaseInstance extends DatabaseInstanceSource implements IDatabaseInstance {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstance';
+
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
@@ -1233,8 +1321,31 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
    * The name or Amazon Resource Name (ARN) of the DB snapshot that's used to
    * restore the DB instance. If you're restoring from a shared manual DB
    * snapshot, you must specify the ARN of the snapshot.
+   * Constraints:
+   *
+   * - Can't be specified when `clusterSnapshotIdentifier` is specified.
+   * - Must be specified when `clusterSnapshotIdentifier` isn't specified.
+   *
+   * @default - None
    */
-  readonly snapshotIdentifier: string;
+  readonly snapshotIdentifier?: string;
+
+  /**
+   * The identifier for the Multi-AZ DB cluster snapshot to restore from.
+   *
+   * For more information on Multi-AZ DB clusters, see [Multi-AZ DB cluster deployments](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/multi-az-db-clusters-concepts.html) in the *Amazon RDS User Guide* .
+   *
+   * Constraints:
+   *
+   * - Can't be specified when `snapshotIdentifier` is specified.
+   * - Must be specified when `snapshotIdentifier` isn't specified.
+   * - If you are restoring from a shared manual Multi-AZ DB cluster snapshot, the `clusterSnapshotIdentifier` must be the ARN of the shared snapshot.
+   * - Can't be the identifier of an Aurora DB cluster snapshot.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromMultiAZDBClusterSnapshot.html
+   * @default - None
+   */
+  readonly clusterSnapshotIdentifier?: string;
 
   /**
    * Master user credentials.
@@ -1252,7 +1363,13 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
  *
  * @resource AWS::RDS::DBInstance
  */
+@propertyInjectable
 export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource implements IDatabaseInstance {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstanceFromSnapshot';
+
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
@@ -1264,6 +1381,13 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    if (!props.snapshotIdentifier && !props.clusterSnapshotIdentifier) {
+      throw new ValidationError('You must specify `snapshotIdentifier` or `clusterSnapshotIdentifier`', this);
+    }
+    if (props.snapshotIdentifier && props.clusterSnapshotIdentifier) {
+      throw new ValidationError('You cannot specify both `snapshotIdentifier` and `clusterSnapshotIdentifier`', this);
+    }
 
     let credentials = props.credentials;
     let secret = credentials?.secret;
@@ -1284,6 +1408,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       dbSnapshotIdentifier: props.snapshotIdentifier,
+      dbClusterSnapshotIdentifier: props.clusterSnapshotIdentifier,
       masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
@@ -1350,7 +1475,13 @@ export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewPro
  *
  * @resource AWS::RDS::DBInstance
  */
+@propertyInjectable
 export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements IDatabaseInstance {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstanceReadReplica';
+
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
@@ -1377,6 +1508,11 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       throw new ValidationError(`Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`, this);
     }
 
+    const engineType = props.sourceDatabaseInstance.engine?.engineType;
+    if (engineType && props.engineLifecycleSupport && !['mysql', 'postgres'].includes(engineType)) {
+      throw new ValidationError(`'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
+    }
+
     // The read replica instance always uses the same engine as the source instance
     // but some CF validations require the engine to be explicitly passed when some
     // properties are specified.
@@ -1388,7 +1524,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       sourceDbInstanceIdentifier: props.sourceDatabaseInstance.instanceArn,
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
-      engine: shouldPassEngine ? props.sourceDatabaseInstance.engine?.engineType : undefined,
+      engine: shouldPassEngine ? engineType : undefined,
       allocatedStorage: props.allocatedStorage?.toString(),
     });
 

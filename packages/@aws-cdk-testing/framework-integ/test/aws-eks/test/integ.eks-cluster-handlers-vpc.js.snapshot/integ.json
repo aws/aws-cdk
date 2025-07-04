@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "testCases": {
     "aws-cdk-eks-handlers-in-vpc/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "aws-cdk-eks-handlers-in-vpc/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkekshandlersinvpcDefaultTestDeployAssert40766711"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

@@ -1,9 +1,11 @@
 import { IApi } from './api';
 import { ApiMapping } from './api-mapping';
-import { DomainMappingOptions, IStage } from './stage';
+import { DomainMappingOptions, IAccessLogSettings, IStage } from './stage';
+import { AccessLogFormat } from '../../../aws-apigateway/lib';
 import * as cloudwatch from '../../../aws-cloudwatch';
-import { Resource } from '../../../core';
-import { UnscopedValidationError } from '../../../core/lib/errors';
+import { Resource, Token } from '../../../core';
+import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
+import { CfnStage } from '../apigatewayv2.generated';
 
 /**
  * Base class representing an API
@@ -28,6 +30,7 @@ export abstract class ApiBase extends Resource implements IApi {
  * @internal
  */
 export abstract class StageBase extends Resource implements IStage {
+  private stageVariables: { [key: string]: string } = {};
   public abstract readonly stageName: string;
   protected abstract readonly baseApi: IApi;
 
@@ -59,9 +62,42 @@ export abstract class StageBase extends Resource implements IStage {
     this.node.addDependency(domainMapping.domainName);
   }
 
+  /**
+   * @internal
+   */
+  protected _validateAccessLogSettings(props?: IAccessLogSettings): CfnStage.AccessLogSettingsProperty | undefined {
+    if (!props) return;
+
+    const format = props.format;
+    if (
+      format &&
+      !Token.isUnresolved(format.toString()) &&
+      !/\$context\.(?:requestId|extendedRequestId)\b/.test(format.toString())
+    ) {
+      throw new ValidationError('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`', this);
+    }
+
+    return {
+      destinationArn: props.destination.bind(this).destinationArn,
+      format: format ? format.toString() : AccessLogFormat.clf().toString(),
+    };
+  }
+
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.baseApi.metric(metricName, props).with({
       dimensionsMap: { ApiId: this.baseApi.apiId, Stage: this.stageName },
     }).attachTo(this);
+  }
+
+  public addStageVariable(name: string, value: string) {
+    this.stageVariables[name] = value;
+  }
+
+  /**
+   * Returns the stage variables for this stage.
+   * @internal
+   */
+  protected get _stageVariables(): { [key: string]: string } | undefined {
+    return Object.keys(this.stageVariables).length > 0 ? { ...this.stageVariables } : undefined;
   }
 }

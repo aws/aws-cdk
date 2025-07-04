@@ -8,7 +8,11 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import { AwsApiCall, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'aws-cdk-firehose-delivery-stream-s3-all-properties');
 
@@ -51,6 +55,7 @@ const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
     compression: firehose.Compression.GZIP,
     dataOutputPrefix: 'regularPrefix',
     errorOutputPrefix: 'errorPrefix',
+    fileExtension: '.log.gz',
     bufferingInterval: cdk.Duration.seconds(60),
     bufferingSize: cdk.Size.mebibytes(1),
     encryptionKey: key,

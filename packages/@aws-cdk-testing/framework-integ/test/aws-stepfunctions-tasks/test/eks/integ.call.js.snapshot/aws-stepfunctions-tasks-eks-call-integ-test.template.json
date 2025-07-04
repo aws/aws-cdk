@@ -7,9 +7,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a5110b475e7a506b8a1282cdfb3c2f7ae59bcf00ba96273a702339b8819dd17f.zip"
+     "S3Key": "77675805670406a68c1baf43392c7e699bee435fe9b667ef4f9f1134b8c41d0e.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.31.0; /opt/helm/helm 3.17.1",
+    "Description": "/opt/kubectl/kubectl 1.31.9; /opt/helm/helm 3.17.3",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -876,7 +876,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 4
+    "AttributesRevision": 5
    },
    "DependsOn": [
     "EksClusterDefaultVpcIGWCA6A3220",
@@ -1082,7 +1082,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/84eb391ca16e2a392dc55a6b1dd6cc1cfab4f18a20553a49cc54931dfd777207.json"
+       "/c57b7a6758c3d80cb384bc31f5c627ec6ac3272c2ee19e61b7877c5e0082412d.json"
       ]
      ]
     }
@@ -1132,7 +1132,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/9be8b08e9fa9ae6c893b4a846afac1567f3d4e5cf8f24bc2d0ea6b9d05de48ce.json"
+       "/290f4c3d0797713d08d57329387de278e8d15d86be54c83150b23fb6f6793efd.json"
       ]
      ]
     }

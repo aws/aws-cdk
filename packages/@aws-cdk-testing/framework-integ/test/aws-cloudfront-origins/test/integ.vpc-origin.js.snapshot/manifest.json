@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "integcloudfrontvpcorigincloudfrontvpcorigintestDefaultTestDeployAssert059EF4DD.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/791175d68598cf9bec4977df01b84b36a24b12bd91146f81e079bb16e14d9b96.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9954ccacce39f3e139eb355076cd5e1d0c42c3a213bf38f34d79c51b174c70a4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -35,6 +35,20 @@
         "integcloudfrontvpcorigincloudfrontvpcorigintestDefaultTestDeployAssert059EF4DD.assets"
       ],
       "metadata": {
+        "/integ-cloudfront-vpc-origin/cloudfront-vpc-origin-test/DefaultTest/DeployAssert/HttpApiCalla38465b65d78e7b83e85ad9ec8259395/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-cloudfront-vpc-origin/cloudfront-vpc-origin-test/DefaultTest/DeployAssert/HttpApiCalla38465b65d78e7b83e85ad9ec8259395/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -65,6 +79,20 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/integ-cloudfront-vpc-origin/cloudfront-vpc-origin-test/DefaultTest/DeployAssert/HttpApiCallf9aefc220d9bcb58923ae4a5d54ca207/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-cloudfront-vpc-origin/cloudfront-vpc-origin-test/DefaultTest/DeployAssert/HttpApiCallf9aefc220d9bcb58923ae4a5d54ca207/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -75,6 +103,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsHttpApiCallf9aefc220d9bcb58923ae4a5d54ca207"
+          }
+        ],
+        "/integ-cloudfront-vpc-origin/cloudfront-vpc-origin-test/DefaultTest/DeployAssert/HttpApiCalla2319194bb9b4f65d0732fec06b75d32/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-cloudfront-vpc-origin/cloudfront-vpc-origin-test/DefaultTest/DeployAssert/HttpApiCalla2319194bb9b4f65d0732fec06b75d32/Default/Default": [
@@ -121,7 +163,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4af6f3886b119fb4025a562c0b9e1e90b379e9dc128847a3d2a3947fd6ef6103.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3455d4bb4415cedd6930d05e2e6b327b8ce14b14c659738f14fb6c8c2d2f99be.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -137,10 +179,69 @@
         "integ-cloudfront-vpc-origin.assets"
       ],
       "metadata": {
+        "/integ-cloudfront-vpc-origin/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "ipAddresses": "*",
+              "natGateways": "*",
+              "subnetConfiguration": [
+                {
+                  "name": "*",
+                  "subnetType": "Public"
+                },
+                {
+                  "name": "*",
+                  "subnetType": "Private"
+                },
+                {
+                  "name": "*",
+                  "subnetType": "Isolated"
+                }
+              ]
+            }
+          }
+        ],
         "/integ-cloudfront-vpc-origin/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
+          }
+        ],
+        "/integ-cloudfront-vpc-origin/Vpc/publicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/integ-cloudfront-vpc-origin/Vpc/publicSubnet1/Subnet": [
@@ -179,6 +280,34 @@
             "data": "VpcpublicSubnet1NATGatewayA036E8A6"
           }
         ],
+        "/integ-cloudfront-vpc-origin/Vpc/publicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/integ-cloudfront-vpc-origin/Vpc/publicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -201,6 +330,34 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcpublicSubnet2DefaultRoute732F0BEB"
+          }
+        ],
+        "/integ-cloudfront-vpc-origin/Vpc/egressSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/integ-cloudfront-vpc-origin/Vpc/egressSubnet1/Subnet": [
@@ -227,6 +384,34 @@
             "data": "VpcegressSubnet1DefaultRoute6AA1A794"
           }
         ],
+        "/integ-cloudfront-vpc-origin/Vpc/egressSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/integ-cloudfront-vpc-origin/Vpc/egressSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -251,6 +436,30 @@
             "data": "VpcegressSubnet2DefaultRoute291CE386"
           }
         ],
+        "/integ-cloudfront-vpc-origin/Vpc/isolatedSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          }
+        ],
         "/integ-cloudfront-vpc-origin/Vpc/isolatedSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -267,6 +476,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcisolatedSubnet1RouteTableAssociationD259E31A"
+          }
+        ],
+        "/integ-cloudfront-vpc-origin/Vpc/isolatedSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           }
         ],
         "/integ-cloudfront-vpc-origin/Vpc/isolatedSubnet2/Subnet": [
@@ -299,6 +532,12 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
+        "/integ-cloudfront-vpc-origin/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-cloudfront-vpc-origin/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -329,6 +568,63 @@
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
+        "/integ-cloudfront-vpc-origin/Instance": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "instanceType": "*",
+              "machineImage": "*",
+              "vpcSubnets": {
+                "subnetType": "Private"
+              },
+              "userData": "*"
+            }
+          }
+        ],
+        "/integ-cloudfront-vpc-origin/Instance/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true,
+              "allowAllIpv6Outbound": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          }
+        ],
         "/integ-cloudfront-vpc-origin/Instance/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -351,6 +647,23 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceInstanceSecurityGroupfromintegcloudfrontvpcoriginVpcOriginsSecurityGroupE007430980B5564570"
+          }
+        ],
+        "/integ-cloudfront-vpc-origin/Instance/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/integ-cloudfront-vpc-origin/Instance/InstanceRole/ImportInstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-cloudfront-vpc-origin/Instance/InstanceRole/Resource": [
@@ -383,10 +696,52 @@
             "data": "ALBTG9414664F"
           }
         ],
+        "/integ-cloudfront-vpc-origin/ALB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-cloudfront-vpc-origin/ALB/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ALBAEE750D2"
+          }
+        ],
+        "/integ-cloudfront-vpc-origin/ALB/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*",
+              "allowAllOutbound": false
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
           }
         ],
         "/integ-cloudfront-vpc-origin/ALB/SecurityGroup/Resource": [
@@ -407,10 +762,46 @@
             "data": "ALBSecurityGroupfromintegcloudfrontvpcoriginVpcOriginsSecurityGroupE0074309803E56E518"
           }
         ],
+        "/integ-cloudfront-vpc-origin/ALB/HTTP": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-cloudfront-vpc-origin/ALB/HTTP/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ALBHTTP3BDC2BD0"
+          }
+        ],
+        "/integ-cloudfront-vpc-origin/NLB-SG": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
           }
         ],
         "/integ-cloudfront-vpc-origin/NLB-SG/Resource": [
@@ -431,10 +822,26 @@
             "data": "NLBTG89886EBE"
           }
         ],
+        "/integ-cloudfront-vpc-origin/NLB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-cloudfront-vpc-origin/NLB/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "NLB55158F82"
+          }
+        ],
+        "/integ-cloudfront-vpc-origin/NLB/HTTP": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-cloudfront-vpc-origin/NLB/HTTP/Resource": [
@@ -443,16 +850,106 @@
             "data": "NLBHTTP986143C9"
           }
         ],
+        "/integ-cloudfront-vpc-origin/Distribution": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "defaultBehavior": {
+                "origin": "*",
+                "cachePolicy": {
+                  "cachePolicyId": "*"
+                },
+                "originRequestPolicy": {
+                  "originRequestPolicyId": "*"
+                }
+              },
+              "additionalBehaviors": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addBehavior": [
+                "*",
+                {},
+                {
+                  "cachePolicy": {
+                    "cachePolicyId": "*"
+                  },
+                  "originRequestPolicy": {
+                    "originRequestPolicyId": "*"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addBehavior": [
+                "*",
+                {},
+                {
+                  "cachePolicy": {
+                    "cachePolicyId": "*"
+                  },
+                  "originRequestPolicy": {
+                    "originRequestPolicyId": "*"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-cloudfront-vpc-origin/Distribution/Origin1/VpcOrigin": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "endpoint": "*",
+              "vpcOriginName": "*",
+              "httpPort": "*",
+              "httpsPort": "*",
+              "protocolPolicy": "http-only",
+              "originSslProtocols": "*"
+            }
+          }
+        ],
         "/integ-cloudfront-vpc-origin/Distribution/Origin1/VpcOrigin/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DistributionOrigin1VpcOrigin1389D846"
           }
         ],
+        "/integ-cloudfront-vpc-origin/Distribution/Origin2/VpcOrigin": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "endpoint": "*",
+              "vpcOriginName": "*",
+              "httpPort": "*",
+              "httpsPort": "*",
+              "protocolPolicy": "http-only",
+              "originSslProtocols": "*"
+            }
+          }
+        ],
         "/integ-cloudfront-vpc-origin/Distribution/Origin2/VpcOrigin/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DistributionOrigin2VpcOrigin9CDFA022"
+          }
+        ],
+        "/integ-cloudfront-vpc-origin/Distribution/Origin3/VpcOrigin": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "endpoint": "*",
+              "vpcOriginName": "*",
+              "httpPort": "*",
+              "httpsPort": "*",
+              "protocolPolicy": "http-only",
+              "originSslProtocols": "*"
+            }
           }
         ],
         "/integ-cloudfront-vpc-origin/Distribution/Origin3/VpcOrigin/Resource": [
@@ -467,10 +964,93 @@
             "data": "Distribution830FAC52"
           }
         ],
+        "/integ-cloudfront-vpc-origin/GetSecurityGroup/Provider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-cloudfront-vpc-origin/GetSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-cloudfront-vpc-origin/GetSecurityGroup/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "GetSecurityGroup9A8E2D82"
+          }
+        ],
+        "/integ-cloudfront-vpc-origin/GetSecurityGroup/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/integ-cloudfront-vpc-origin/GetSecurityGroup/CustomResourcePolicy/Resource": [
@@ -481,12 +1061,57 @@
         ],
         "/integ-cloudfront-vpc-origin/AWS679f53fac002430cb0da5b7982bd2287": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
           },
           {
             "type": "aws:cdk:is-custom-resource-handler-runtime-family",
             "data": 0
+          }
+        ],
+        "/integ-cloudfront-vpc-origin/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-cloudfront-vpc-origin/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-cloudfront-vpc-origin/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -528,5 +1153,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

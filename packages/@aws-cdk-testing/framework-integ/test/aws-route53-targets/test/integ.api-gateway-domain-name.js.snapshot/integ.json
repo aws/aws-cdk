@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "testCases": {
     "apigateway-domain-name/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "apigateway-domain-name/DefaultTest/DeployAssert",
       "assertionStackName": "apigatewaydomainnameDefaultTestDeployAssertC8336909"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

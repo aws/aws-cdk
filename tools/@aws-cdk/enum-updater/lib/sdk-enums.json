@@ -117,6 +117,11 @@
       "HTTP_PROXY",
       "MOCK"
     ],
+    "RoutingMode": [
+      "BASE_PATH_MAPPING_ONLY",
+      "ROUTING_RULE_THEN_BASE_PATH_MAPPING",
+      "ROUTING_RULE_ONLY"
+    ],
     "AccessAssociationSourceType": [
       "VPCE"
     ],
@@ -164,7 +169,13 @@
       "API_KEY"
     ]
   },
-  "apigatewayv2": {},
+  "apigatewayv2": {
+    "RoutingMode": [
+      "API_MAPPING_ONLY",
+      "ROUTING_RULE_THEN_API_MAPPING",
+      "ROUTING_RULE_ONLY"
+    ]
+  },
   "appconfig": {
     "DeletionProtectionCheck": [
       "ACCOUNT_DEFAULT",
@@ -629,6 +640,7 @@
       "dynamodb:table:WriteCapacityUnits",
       "ec2:spot-fleet-request:TargetCapacity",
       "ecs:service:DesiredCount",
+      "elasticache:cache-cluster:Nodes",
       "elasticache:replication-group:NodeGroups",
       "elasticache:replication-group:Replicas",
       "elasticmapreduce:instancegroup:InstanceCount",
@@ -685,6 +697,8 @@
       "ECSServiceAverageMemoryUtilization",
       "ElastiCacheDatabaseCapacityUsageCountedForEvictPercentage",
       "ElastiCacheDatabaseMemoryUsageCountedForEvictPercentage",
+      "ElastiCacheDatabaseMemoryUsagePercentage",
+      "ElastiCacheEngineCPUUtilization",
       "ElastiCachePrimaryEngineCPUUtilization",
       "ElastiCacheReplicaEngineCPUUtilization",
       "KafkaBrokerStorageUtilization",
@@ -755,6 +769,8 @@
       "RequestBased"
     ],
     "DurationUnit": [
+      "MINUTE",
+      "HOUR",
       "DAY",
       "MONTH"
     ],
@@ -790,7 +806,8 @@
       "PHP_81",
       "RUBY_31",
       "PYTHON_311",
-      "NODEJS_18"
+      "NODEJS_18",
+      "NODEJS_22"
     ],
     "EgressType": [
       "DEFAULT",
@@ -863,6 +880,14 @@
       "ALL",
       "INFO",
       "DEBUG"
+    ],
+    "HandlerBehavior": [
+      "CODE",
+      "DIRECT"
+    ],
+    "InvokeType": [
+      "REQUEST_RESPONSE",
+      "EVENT"
     ],
     "MetricsConfig": [
       "ENABLED",
@@ -1009,10 +1034,22 @@
       "FAILED",
       "UPDATE_PENDING"
     ],
+    "Status": [
+      "CREATE_IN_PROGRESS",
+      "CREATE_COMPLETE",
+      "CREATE_FAILED",
+      "CREATE_FAILED_CLEANUP_IN_PROGRESS",
+      "CREATE_FAILED_CLEANUP_COMPLETE",
+      "CREATE_FAILED_CLEANUP_FAILED",
+      "DELETE_IN_PROGRESS",
+      "DELETE_COMPLETE",
+      "DELETE_FAILED"
+    ],
     "Type": [
       "LAMBDA",
       "GLUE",
-      "HIVE"
+      "HIVE",
+      "FEDERATED"
     ],
     "State": [
       "ENABLED",
@@ -1099,6 +1136,7 @@
     "CpuManufacturers": [
       "amazon-web-services",
       "amd",
+      "apple",
       "intel"
     ],
     "InstanceGenerations": [
@@ -1605,10 +1643,6 @@
     "RestoreTestingRecoveryPointType": [
       "SNAPSHOT",
       "CONTINUOUS"
-    ],
-    "RestoreTestingScheduleStatus": [
-      "ACTIVE",
-      "SUSPENDED"
     ]
   },
   "backupgateway": {
@@ -1759,6 +1793,12 @@
       "IN_PROGRESS",
       "FAILED"
     ],
+    "DesiredModality": [
+      "DOCUMENT",
+      "IMAGE",
+      "VIDEO",
+      "AUDIO"
+    ],
     "DocumentExtractionGranularityType": [
       "DOCUMENT",
       "PAGE",
@@ -1803,10 +1843,14 @@
       "SEMANTIC"
     ],
     "AuthType": [
-      "OAUTH2_CLIENT_CREDENTIALS"
+      "OAUTH2_CLIENT_CREDENTIALS",
+      "OAUTH2_SHAREPOINT_APP_ONLY_CLIENT_CREDENTIALS"
     ],
     "HostType": [
       "ONLINE"
+    ],
+    "ContextEnrichmentType": [
+      "BEDROCK_FOUNDATION_MODEL"
     ],
     "DataDeletionPolicy": [
       "RETAIN",
@@ -1825,6 +1869,9 @@
       "WEB",
       "CUSTOM",
       "REDSHIFT_METADATA"
+    ],
+    "EnrichmentStrategyMethod": [
+      "CHUNK_ENTITY_EXTRACTION"
     ],
     "ParsingModality": [
       "MULTIMODAL"
@@ -1851,6 +1898,11 @@
       "Object",
       "Array"
     ],
+    "FlowNodeInputCategory": [
+      "LoopCondition",
+      "ReturnValueToLoopStart",
+      "ExitLoop"
+    ],
     "FlowNodeType": [
       "Input",
       "Output",
@@ -1863,7 +1915,11 @@
       "Iterator",
       "Collector",
       "Storage",
-      "Retrieval"
+      "Retrieval",
+      "InlineCode",
+      "Loop",
+      "LoopInput",
+      "LoopController"
     ],
     "FlowStatus": [
       "Failed",
@@ -1871,9 +1927,31 @@
       "Preparing",
       "NotPrepared"
     ],
+    "PerformanceConfigurationLatency": [
+      "standard",
+      "optimized"
+    ],
     "PromptTemplateType": [
       "TEXT",
       "CHAT"
+    ],
+    "RerankingMetadataSelectionMode": [
+      "SELECTIVE",
+      "ALL"
+    ],
+    "SupportedLanguages": [
+      "Python_3"
+    ],
+    "VectorSearchRerankingConfigurationType": [
+      "BEDROCK_RERANKING_MODEL"
+    ],
+    "ConcurrencyType": [
+      "Automatic",
+      "Manual"
+    ],
+    "ContentFilterAction": [
+      "BLOCK",
+      "NONE"
     ],
     "ContentFilterType": [
       "SEXUAL",
@@ -1882,6 +1960,10 @@
       "INSULTS",
       "MISCONDUCT",
       "PROMPT_ATTACK"
+    ],
+    "ContextualGroundingAction": [
+      "BLOCK",
+      "NONE"
     ],
     "ContextualGroundingFilterType": [
       "GROUNDING",
@@ -1903,6 +1985,10 @@
     ],
     "ManagedWordsType": [
       "PROFANITY"
+    ],
+    "Modality": [
+      "TEXT",
+      "IMAGE"
     ],
     "PiiEntityType": [
       "ADDRESS",
@@ -1939,10 +2025,26 @@
     ],
     "SensitiveInformationAction": [
       "BLOCK",
-      "ANONYMIZE"
+      "ANONYMIZE",
+      "NONE"
+    ],
+    "TopicAction": [
+      "BLOCK",
+      "NONE"
     ],
     "TopicType": [
       "DENY"
+    ],
+    "WordAction": [
+      "BLOCK",
+      "NONE"
+    ],
+    "PromptRouterStatus": [
+      "AVAILABLE"
+    ],
+    "PromptRouterType": [
+      "custom",
+      "default"
     ],
     "EmbeddingDataType": [
       "FLOAT32",
@@ -1964,7 +2066,9 @@
       "OPENSEARCH_SERVERLESS",
       "PINECONE",
       "RDS",
-      "MONGO_DB_ATLAS"
+      "MONGO_DB_ATLAS",
+      "NEPTUNE_ANALYTICS",
+      "OPENSEARCH_MANAGED_CLUSTER"
     ],
     "KnowledgeBaseType": [
       "VECTOR",
@@ -2089,6 +2193,7 @@
   },
   "cassandra": {
     "RegionList": [
+      "af-south-1",
       "ap-northeast-1",
       "ap-northeast-2",
       "ap-south-1",
@@ -2151,7 +2256,8 @@
   "certificatemanager": {
     "ValidationMethod": [
       "DNS",
-      "EMAIL"
+      "EMAIL",
+      "HTTP"
     ]
   },
   "chatbot": {
@@ -2162,7 +2268,8 @@
   },
   "cleanrooms": {
     "Format": [
-      "SQL"
+      "SQL",
+      "PYSPARK_1_0"
     ],
     "Type": [
       "SOURCE",
@@ -2171,6 +2278,10 @@
     "AnalyticsEngine": [
       "CLEAN_ROOMS_SQL",
       "SPARK"
+    ],
+    "CollaborationJobLogStatus": [
+      "ENABLED",
+      "DISABLED"
     ],
     "CollaborationQueryLogStatus": [
       "ENABLED",
@@ -2182,6 +2293,7 @@
     ],
     "MemberAbility": [
       "CAN_QUERY",
+      "CAN_RUN_JOB",
       "CAN_RECEIVE_RESULTS"
     ],
     "MemberStatus": [
@@ -2206,7 +2318,9 @@
       "COUNT_DISTINCT"
     ],
     "AnalysisMethod": [
-      "DIRECT_QUERY"
+      "DIRECT_QUERY",
+      "DIRECT_JOB",
+      "MULTIPLE"
     ],
     "ConfiguredTableAnalysisRuleType": [
       "AGGREGATION",
@@ -2246,6 +2360,10 @@
       "TO_TIMESTAMP",
       "TRIM"
     ],
+    "SelectedAnalysisMethod": [
+      "DIRECT_QUERY",
+      "DIRECT_JOB"
+    ],
     "ConfiguredTableAssociationAnalysisRuleType": [
       "AGGREGATION",
       "LIST",
@@ -2254,6 +2372,10 @@
     "IdNamespaceType": [
       "SOURCE",
       "TARGET"
+    ],
+    "MembershipJobLogStatus": [
+      "ENABLED",
+      "DISABLED"
     ],
     "MembershipQueryLogStatus": [
       "ENABLED",
@@ -2387,6 +2509,10 @@
       "https-only",
       "redirect-to-https"
     ],
+    "ConnectionMode": [
+      "direct",
+      "tenant-only"
+    ],
     "Forward": [
       "all",
       "none",
@@ -2432,6 +2558,7 @@
       "http3"
     ],
     "PriceClass": [
+      "None",
       "PriceClass_100",
       "PriceClass_200",
       "PriceClass_All"
@@ -2695,8 +2822,8 @@
     ],
     "RestrictionType": [
       "blacklist",
-      "none",
-      "whitelist"
+      "whitelist",
+      "none"
     ],
     "OriginProtocolPolicy": [
       "http-only",
@@ -2720,6 +2847,22 @@
       "sni-only",
       "static-ip",
       "vip"
+    ],
+    "Status": [
+      "active",
+      "inactive"
+    ],
+    "CertificateTransparencyLoggingPreference": [
+      "enabled",
+      "disabled"
+    ],
+    "ValidationTokenHost": [
+      "cloudfront",
+      "self-hosted"
+    ],
+    "Action": [
+      "override",
+      "disable"
     ],
     "Runtime": [
       "cloudfront-js-1.0",
@@ -2766,6 +2909,10 @@
     "BillingMode": [
       "EXTENDABLE_RETENTION_PRICING",
       "FIXED_RETENTION_PRICING"
+    ],
+    "MaxEventSize": [
+      "Standard",
+      "Large"
     ],
     "InsightType": [
       "ApiCallRateInsight",
@@ -2855,7 +3002,8 @@
       "BUILD_LAMBDA_1GB",
       "BUILD_LAMBDA_2GB",
       "BUILD_LAMBDA_4GB",
-      "BUILD_LAMBDA_8GB"
+      "BUILD_LAMBDA_8GB",
+      "CUSTOM_INSTANCE_TYPE"
     ],
     "EnvironmentType": [
       "WINDOWS_SERVER_2019_CONTAINER",
@@ -2989,7 +3137,8 @@
       "Compute"
     ],
     "Type": [
-      "Schedule"
+      "PLAINTEXT",
+      "SECRETS_MANAGER"
     ],
     "ExecutionMode": [
       "QUEUED",
@@ -3112,6 +3261,10 @@
       "ALLOW_USER_SRP_AUTH",
       "CUSTOM_AUTH_FLOW_ONLY",
       "USER_PASSWORD_AUTH"
+    ],
+    "Feature": [
+      "ENABLED",
+      "DISABLED"
     ],
     "DesiredDeliveryMediums": [
       "EMAIL",
@@ -3400,6 +3553,10 @@
     ]
   },
   "customerprofiles": {
+    "Status": [
+      "HEALTHY",
+      "UNHEALTHY"
+    ],
     "RangeUnit": [
       "DAYS"
     ],
@@ -3435,10 +3592,6 @@
       "THURSDAY",
       "FRIDAY",
       "SATURDAY"
-    ],
-    "Status": [
-      "HEALTHY",
-      "UNHEALTHY"
     ],
     "State": [
       "RUNNING",
@@ -3770,7 +3923,8 @@
       "ARCHIVE"
     ],
     "AzureBlobAuthenticationType": [
-      "SAS"
+      "SAS",
+      "NONE"
     ],
     "AzureBlobType": [
       "BLOCK"
@@ -3814,14 +3968,6 @@
       "GLACIER",
       "GLACIER_INSTANT_RETRIEVAL",
       "DEEP_ARCHIVE"
-    ],
-    "ConnectivityStatus": [
-      "PASS",
-      "FAIL",
-      "UNKNOWN"
-    ],
-    "SystemType": [
-      "NetAppONTAP"
     ],
     "Status": [
       "ENABLED",
@@ -3917,6 +4063,26 @@
     ]
   },
   "datazone": {
+    "AuthenticationType": [
+      "BASIC",
+      "OAUTH2",
+      "CUSTOM"
+    ],
+    "ConnectionStatus": [
+      "CREATING",
+      "CREATE_FAILED",
+      "DELETING",
+      "DELETE_FAILED",
+      "READY",
+      "UPDATING",
+      "UPDATE_FAILED",
+      "DELETED"
+    ],
+    "OAuth2GrantType": [
+      "AUTHORIZATION_CODE",
+      "CLIENT_CREDENTIALS",
+      "JWT_BEARER"
+    ],
     "DataSourceStatus": [
       "CREATING",
       "FAILED_CREATION",
@@ -4040,6 +4206,24 @@
       "ASSIGNED",
       "NOT_ASSIGNED"
     ],
+    "EntityType": [
+      "DOMAIN_UNIT"
+    ],
+    "OverallDeploymentStatus": [
+      "PENDING_DEPLOYMENT",
+      "IN_PROGRESS",
+      "SUCCESSFUL",
+      "FAILED_VALIDATION",
+      "FAILED_DEPLOYMENT"
+    ],
+    "ProjectStatus": [
+      "ACTIVE",
+      "MOVING",
+      "DELETING",
+      "DELETE_FAILED",
+      "UPDATING",
+      "UPDATE_FAILED"
+    ],
     "MemberIdentifierType": [
       "USER_IDENTIFIER",
       "GROUP_IDENTIFIER"
@@ -4050,6 +4234,14 @@
       "PROJECT_CATALOG_VIEWER",
       "PROJECT_CATALOG_CONSUMER",
       "PROJECT_CATALOG_STEWARD"
+    ],
+    "DeploymentMode": [
+      "ON_CREATE",
+      "ON_DEMAND"
+    ],
+    "Status": [
+      "ENABLED",
+      "DISABLED"
     ],
     "UserProfileStatus": [
       "ASSIGNED",
@@ -4105,6 +4297,10 @@
     "ServiceManagedFleetOperatingSystemFamily": [
       "LINUX",
       "WINDOWS"
+    ],
+    "TagPropagationMode": [
+      "NO_PROPAGATION",
+      "PROPAGATE_TAGS_TO_WORKERS_AT_LAUNCH"
     ],
     "LicenseEndpointStatus": [
       "CREATE_IN_PROGRESS",
@@ -4248,6 +4444,7 @@
       "SECRET_ARN"
     ]
   },
+  "dsql": {},
   "dynamodb": {
     "AttributeType": [
       "B",
@@ -4263,6 +4460,10 @@
     ]
   },
   "ec2": {
+    "DeliveryPreference": [
+      "fixed",
+      "incremental"
+    ],
     "EndDateType": [
       "limited",
       "unlimited"
@@ -4510,6 +4711,8 @@
       "c7gn.medium",
       "c7gn.metal",
       "c7gn.xlarge",
+      "c7i-flex.12xlarge",
+      "c7i-flex.16xlarge",
       "c7i-flex.2xlarge",
       "c7i-flex.4xlarge",
       "c7i-flex.8xlarge",
@@ -4538,6 +4741,18 @@
       "c8g.metal-24xl",
       "c8g.metal-48xl",
       "c8g.xlarge",
+      "c8gd.12xlarge",
+      "c8gd.16xlarge",
+      "c8gd.24xlarge",
+      "c8gd.2xlarge",
+      "c8gd.48xlarge",
+      "c8gd.4xlarge",
+      "c8gd.8xlarge",
+      "c8gd.large",
+      "c8gd.medium",
+      "c8gd.metal-24xl",
+      "c8gd.metal-48xl",
+      "c8gd.xlarge",
       "cc1.4xlarge",
       "cc2.8xlarge",
       "cg1.4xlarge",
@@ -4663,6 +4878,17 @@
       "i4i.large",
       "i4i.metal",
       "i4i.xlarge",
+      "i7i.12xlarge",
+      "i7i.16xlarge",
+      "i7i.24xlarge",
+      "i7i.2xlarge",
+      "i7i.48xlarge",
+      "i7i.4xlarge",
+      "i7i.8xlarge",
+      "i7i.large",
+      "i7i.metal-24xl",
+      "i7i.metal-48xl",
+      "i7i.xlarge",
       "i7ie.12xlarge",
       "i7ie.18xlarge",
       "i7ie.24xlarge",
@@ -4671,11 +4897,14 @@
       "i7ie.48xlarge",
       "i7ie.6xlarge",
       "i7ie.large",
+      "i7ie.metal-24xl",
+      "i7ie.metal-48xl",
       "i7ie.xlarge",
       "i8g.12xlarge",
       "i8g.16xlarge",
       "i8g.24xlarge",
       "i8g.2xlarge",
+      "i8g.48xlarge",
       "i8g.4xlarge",
       "i8g.8xlarge",
       "i8g.large",
@@ -4876,6 +5105,8 @@
       "m7gd.medium",
       "m7gd.metal",
       "m7gd.xlarge",
+      "m7i-flex.12xlarge",
+      "m7i-flex.16xlarge",
       "m7i-flex.2xlarge",
       "m7i-flex.4xlarge",
       "m7i-flex.8xlarge",
@@ -4904,6 +5135,18 @@
       "m8g.metal-24xl",
       "m8g.metal-48xl",
       "m8g.xlarge",
+      "m8gd.12xlarge",
+      "m8gd.16xlarge",
+      "m8gd.24xlarge",
+      "m8gd.2xlarge",
+      "m8gd.48xlarge",
+      "m8gd.4xlarge",
+      "m8gd.8xlarge",
+      "m8gd.large",
+      "m8gd.medium",
+      "m8gd.metal-24xl",
+      "m8gd.metal-48xl",
+      "m8gd.xlarge",
       "mac1.metal",
       "mac2-m1ultra.metal",
       "mac2-m2.metal",
@@ -4921,6 +5164,7 @@
       "p5.48xlarge",
       "p5e.48xlarge",
       "p5en.48xlarge",
+      "p6-b200.48xlarge",
       "r3.2xlarge",
       "r3.4xlarge",
       "r3.8xlarge",
@@ -5125,6 +5369,18 @@
       "r8g.metal-24xl",
       "r8g.metal-48xl",
       "r8g.xlarge",
+      "r8gd.12xlarge",
+      "r8gd.16xlarge",
+      "r8gd.24xlarge",
+      "r8gd.2xlarge",
+      "r8gd.48xlarge",
+      "r8gd.4xlarge",
+      "r8gd.8xlarge",
+      "r8gd.large",
+      "r8gd.medium",
+      "r8gd.metal-24xl",
+      "r8gd.metal-48xl",
+      "r8gd.xlarge",
       "t1.micro",
       "t2.2xlarge",
       "t2.large",
@@ -5381,9 +5637,29 @@
       "stop",
       "terminate"
     ],
+    "HttpEndpoint": [
+      "disabled",
+      "enabled"
+    ],
+    "HttpProtocolIpv6": [
+      "disabled",
+      "enabled"
+    ],
+    "HttpTokens": [
+      "optional",
+      "required"
+    ],
+    "InstanceMetadataTags": [
+      "disabled",
+      "enabled"
+    ],
     "HostnameType": [
       "ip-name",
       "resource-name"
+    ],
+    "MeteredAccount": [
+      "ipam-owner",
+      "resource-owner"
     ],
     "Tier": [
       "free",
@@ -5433,21 +5709,10 @@
       "default",
       "disabled"
     ],
-    "HttpEndpoint": [
-      "disabled",
-      "enabled"
-    ],
-    "HttpProtocolIpv6": [
-      "disabled",
-      "enabled"
-    ],
-    "HttpTokens": [
-      "optional",
-      "required"
-    ],
-    "InstanceMetadataTags": [
-      "disabled",
-      "enabled"
+    "BandwidthWeighting": [
+      "default",
+      "ebs-1",
+      "vpc-1"
     ],
     "SpotInstanceType": [
       "one-time",
@@ -5498,6 +5763,14 @@
       "cluster",
       "partition",
       "spread"
+    ],
+    "PersistRoutes": [
+      "enable",
+      "disable"
+    ],
+    "PeerLivenessDetection": [
+      "bfd",
+      "bgp-keepalive"
     ],
     "SecurityGroupVpcAssociationState": [
       "associating",
@@ -5572,9 +5845,7 @@
     ],
     "IpAddressType": [
       "ipv4",
-      "ipv6",
-      "dualstack",
-      "not-specified"
+      "ipv6"
     ],
     "VpcEndpointType": [
       "Interface",
@@ -5619,6 +5890,7 @@
     "UpstreamRegistry": [
       "azure-container-registry",
       "docker-hub",
+      "ecr",
       "ecr-public",
       "github-container-registry",
       "gitlab-container-registry",
@@ -5627,6 +5899,14 @@
     ],
     "FilterType": [
       "PREFIX_MATCH"
+    ],
+    "ScanFrequency": [
+      "SCAN_ON_PUSH",
+      "CONTINUOUS_SCAN"
+    ],
+    "ScanType": [
+      "BASIC",
+      "ENHANCED"
     ],
     "ImageTagMutability": [
       "MUTABLE",
@@ -5825,6 +6105,11 @@
     ],
     "TransitionToPrimaryStorageClass": [
       "AFTER_1_ACCESS"
+    ],
+    "IpAddressType": [
+      "IPV4_ONLY",
+      "IPV6_ONLY",
+      "DUAL_STACK"
     ]
   },
   "eks": {
@@ -5850,6 +6135,7 @@
       "EXTENDED"
     ],
     "AmiType": [
+      "AL2023_ARM_64_NVIDIA",
       "AL2023_ARM_64_STANDARD",
       "AL2023_x86_64_NEURON",
       "AL2023_x86_64_NVIDIA",
@@ -5858,8 +6144,10 @@
       "AL2_x86_64",
       "AL2_x86_64_GPU",
       "BOTTLEROCKET_ARM_64",
+      "BOTTLEROCKET_ARM_64_FIPS",
       "BOTTLEROCKET_ARM_64_NVIDIA",
       "BOTTLEROCKET_x86_64",
+      "BOTTLEROCKET_x86_64_FIPS",
       "BOTTLEROCKET_x86_64_NVIDIA",
       "CUSTOM",
       "WINDOWS_CORE_2019_x86_64",
@@ -6106,6 +6394,33 @@
     "EvaluationStrategy": [
       "ALL_RULES",
       "DEFAULT_VARIATION"
+    ]
+  },
+  "evs": {
+    "VcfVersion": [
+      "VCF-5.2.1"
+    ],
+    "Type": [
+      "KEY_REUSE",
+      "KEY_COVERAGE",
+      "REACHABILITY",
+      "VCF_VERSION",
+      "HOST_COUNT"
+    ],
+    "CheckResult": [
+      "PASSED",
+      "FAILED",
+      "UNKNOWN"
+    ],
+    "EnvironmentState": [
+      "CREATING",
+      "CREATED",
+      "DELETING",
+      "DELETED",
+      "CREATE_FAILED"
+    ],
+    "InstanceType": [
+      "i4i.metal"
     ]
   },
   "finspace": {
@@ -6813,6 +7128,10 @@
     "Status": [
       "Active",
       "Inactive"
+    ],
+    "AssertionEncryptionMode": [
+      "Allowed",
+      "Required"
     ]
   },
   "identitystore": {},
@@ -6845,6 +7164,10 @@
     ],
     "Service": [
       "ECR"
+    ],
+    "DataType": [
+      "text",
+      "aws:ec2:image"
     ],
     "OnFailure": [
       "CONTINUE",
@@ -7128,6 +7451,12 @@
       "PUBLISHED",
       "DEPRECATED"
     ],
+    "SbomValidationStatus": [
+      "IN_PROGRESS",
+      "FAILED",
+      "SUCCEEDED",
+      ""
+    ],
     "ConnectionAttribute": [
       "iot:ClientId",
       "iot:Thing.ThingName"
@@ -7315,6 +7644,12 @@
       "Attribute",
       "Transform",
       "Metric"
+    ],
+    "SourceFormat": [
+      "KNOWLEDGE_BASE"
+    ],
+    "SourceType": [
+      "KENDRA"
     ],
     "CoreDeviceOperatingSystem": [
       "LINUX_AARCH64",
@@ -7681,6 +8016,16 @@
   },
   "kendraranking": {},
   "kinesis": {
+    "EnhancedMetric": [
+      "IncomingBytes",
+      "IncomingRecords",
+      "OutgoingBytes",
+      "OutgoingRecords",
+      "WriteProvisionedThroughputExceeded",
+      "ReadProvisionedThroughputExceeded",
+      "IteratorAgeMilliseconds",
+      "ALL"
+    ],
     "EncryptionType": [
       "KMS"
     ],
@@ -7920,6 +8265,14 @@
       "CLIENT_CERTIFICATE_TLS_AUTH",
       "SERVER_ROOT_CA_CERTIFICATE"
     ],
+    "EventRecordFormat": [
+      "JSON",
+      "SOURCE"
+    ],
+    "Attribute": [
+      "KEY",
+      "VALUE"
+    ],
     "Architectures": [
       "x86_64",
       "arm64"
@@ -7968,7 +8321,8 @@
       "ruby2.5",
       "ruby2.7",
       "ruby3.2",
-      "ruby3.3"
+      "ruby3.3",
+      "ruby3.4"
     ],
     "ApplicationLogLevel": [
       "TRACE",
@@ -8047,6 +8401,10 @@
     "AudioRecognitionStrategy": [
       "UseSlotValuesAsCustomVocabulary"
     ],
+    "BedrockTraceStatus": [
+      "ENABLED",
+      "DISABLED"
+    ],
     "DialogActionType": [
       "CloseIntent",
       "ConfirmIntent",
@@ -8076,11 +8434,14 @@
     ],
     "SlotValueResolutionStrategy": [
       "ORIGINAL_VALUE",
-      "TOP_RESOLUTION"
+      "TOP_RESOLUTION",
+      "CONCATENATION"
     ],
     "Engine": [
       "standard",
-      "neural"
+      "neural",
+      "long-form",
+      "generative"
     ],
     "BotAliasStatus": [
       "Creating",
@@ -8298,7 +8659,8 @@
     ],
     "LogGroupClass": [
       "STANDARD",
-      "INFREQUENT_ACCESS"
+      "INFREQUENT_ACCESS",
+      "DELIVERY"
     ],
     "RetentionInDays": [
       1,
@@ -8424,6 +8786,10 @@
       "ARCHIVE",
       "NOOP"
     ],
+    "AutomatedDiscoveryStatus": [
+      "ENABLED",
+      "DISABLED"
+    ],
     "FindingPublishingFrequency": [
       "FIFTEEN_MINUTES",
       "ONE_HOUR",
@@ -8480,6 +8846,10 @@
       "rist",
       "srt-listener",
       "srt-caller"
+    ],
+    "FlowSize": [
+      "MEDIUM",
+      "LARGE"
     ],
     "State": [
       "ENABLED",
@@ -8555,6 +8925,10 @@
       "raw",
       "smpte291",
       "pcm"
+    ],
+    "NdiState": [
+      "ENABLED",
+      "DISABLED"
     ],
     "ContentQualityAnalysisState": [
       "ENABLED",
@@ -8929,6 +9303,10 @@
       "SINGLE_PERIOD",
       "MULTI_PERIOD"
     ],
+    "StreamingMediaFileConditioning": [
+      "TRANSCODE",
+      "NONE"
+    ],
     "AccessType": [
       "S3_SIGV4",
       "SECRETS_MANAGER_ACCESS_TOKEN",
@@ -8939,6 +9317,15 @@
     "DataTieringStatus": [
       "true",
       "false"
+    ],
+    "SupportedIpDiscoveryTypes": [
+      "ipv4",
+      "ipv6"
+    ],
+    "SupportedNetworkTypes": [
+      "ipv4",
+      "ipv6",
+      "dual_stack"
     ],
     "UpdateStrategy": [
       "COORDINATED",
@@ -9216,8 +9603,24 @@
       "ACTIVE",
       "FAILED"
     ],
+    "ETagAlgorithmFamily": [
+      "MD5up",
+      "SHA256up",
+      "SHA512up"
+    ],
+    "SequenceStoreStatus": [
+      "CREATING",
+      "ACTIVE",
+      "UPDATING",
+      "DELETING",
+      "FAILED"
+    ],
     "Accelerators": [
       "GPU"
+    ],
+    "StorageType": [
+      "STATIC",
+      "DYNAMIC"
     ],
     "WorkflowEngine": [
       "WDL",
@@ -9229,10 +9632,12 @@
       "ACTIVE",
       "UPDATING",
       "DELETED",
-      "FAILED"
+      "FAILED",
+      "INACTIVE"
     ],
     "WorkflowType": [
-      "PRIVATE"
+      "PRIVATE",
+      "READY2RUN"
     ]
   },
   "opensearchserverless": {
@@ -9247,6 +9652,27 @@
     "StandbyReplicas": [
       "ENABLED",
       "DISABLED"
+    ],
+    "Engine": [
+      "nmslib",
+      "faiss",
+      "lucene"
+    ],
+    "Name": [
+      "hnsw",
+      "ivf"
+    ],
+    "SpaceType": [
+      "l2",
+      "l1",
+      "linf",
+      "cosinesimil",
+      "innerproduct",
+      "hamming"
+    ],
+    "Type": [
+      "text",
+      "knn_vector"
     ],
     "LifecyclePolicyType": [
       "retention"
@@ -9363,21 +9789,49 @@
     ]
   },
   "paymentcryptography": {
+    "DeriveKeyUsage": [
+      "TR31_B0_BASE_DERIVATION_KEY",
+      "TR31_C0_CARD_VERIFICATION_KEY",
+      "TR31_D0_SYMMETRIC_DATA_ENCRYPTION_KEY",
+      "TR31_E0_EMV_MKEY_APP_CRYPTOGRAMS",
+      "TR31_E1_EMV_MKEY_CONFIDENTIALITY",
+      "TR31_E2_EMV_MKEY_INTEGRITY",
+      "TR31_E4_EMV_MKEY_DYNAMIC_NUMBERS",
+      "TR31_E5_EMV_MKEY_CARD_PERSONALIZATION",
+      "TR31_E6_EMV_MKEY_OTHER",
+      "TR31_K0_KEY_ENCRYPTION_KEY",
+      "TR31_K1_KEY_BLOCK_PROTECTION_KEY",
+      "TR31_M3_ISO_9797_3_MAC_KEY",
+      "TR31_M1_ISO_9797_1_MAC_KEY",
+      "TR31_M6_ISO_9797_5_CMAC_KEY",
+      "TR31_M7_HMAC_KEY",
+      "TR31_P0_PIN_ENCRYPTION_KEY",
+      "TR31_P1_PIN_GENERATION_KEY",
+      "TR31_V1_IBM3624_PIN_VERIFICATION_KEY",
+      "TR31_V2_VISA_PIN_VERIFICATION_KEY"
+    ],
     "KeyAlgorithm": [
       "TDES_2KEY",
       "TDES_3KEY",
       "AES_128",
       "AES_192",
       "AES_256",
+      "HMAC_SHA256",
+      "HMAC_SHA384",
+      "HMAC_SHA512",
+      "HMAC_SHA224",
       "RSA_2048",
       "RSA_3072",
       "RSA_4096",
       "ECC_NIST_P256",
-      "ECC_NIST_P384"
+      "ECC_NIST_P384",
+      "ECC_NIST_P521"
     ],
     "KeyCheckValueAlgorithm": [
       "CMAC",
-      "ANSI_X9_24"
+      "ANSI_X9_24",
+      "HMAC",
+      "SHA_1"
     ],
     "KeyClass": [
       "SYMMETRIC_KEY",
@@ -9569,6 +10023,10 @@
       "CREATE_FAILED",
       "DELETE_FAILED",
       "UPDATE_FAILED"
+    ],
+    "Mode": [
+      "STANDARD",
+      "NONE"
     ],
     "PurchaseOption": [
       "ONDEMAND",
@@ -9764,7 +10222,8 @@
       "AWS_IAM_IDP_SAML",
       "AWS_IAM_IDP_OIDC",
       "AWS_IAM_IDC",
-      "AWS_QUICKSIGHT_IDP"
+      "AWS_QUICKSIGHT_IDP",
+      "ANONYMOUS"
     ],
     "PersonalizationControlMode": [
       "ENABLED",
@@ -9780,6 +10239,10 @@
     ],
     "AttributeValueOperator": [
       "DELETE"
+    ],
+    "AudioExtractionStatus": [
+      "ENABLED",
+      "DISABLED"
     ],
     "DataSourceStatus": [
       "PENDING_CREATION",
@@ -9806,6 +10269,10 @@
       "BEGINS_WITH"
     ],
     "ImageExtractionStatus": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "VideoExtractionStatus": [
       "ENABLED",
       "DISABLED"
     ],
@@ -10499,6 +10966,10 @@
       "PERCENT_DIFFERENCE",
       "ABSOLUTE_DIFFERENCE"
     ],
+    "TransposedColumnType": [
+      "ROW_HEADER_COLUMN",
+      "VALUE_COLUMN"
+    ],
     "URLTargetConfiguration": [
       "NEW_TAB",
       "NEW_WINDOW",
@@ -10589,6 +11060,9 @@
       "SPICE",
       "DIRECT_QUERY"
     ],
+    "DataSetUseAs": [
+      "RLS_RULES"
+    ],
     "DatasetParameterValueType": [
       "MULTI_VALUED",
       "SINGLE_VALUED"
@@ -10636,6 +11110,10 @@
       "HOUR",
       "DAY",
       "WEEK"
+    ],
+    "RefreshFailureAlertStatus": [
+      "ENABLED",
+      "DISABLED"
     ],
     "RowLevelPermissionFormatVersion": [
       "VERSION_1",
@@ -11347,6 +11825,7 @@
     "Region": [
       "af-south-1",
       "ap-east-1",
+      "ap-east-2",
       "ap-northeast-1",
       "ap-northeast-2",
       "ap-northeast-3",
@@ -11382,6 +11861,8 @@
       "us-iso-east-1",
       "us-iso-west-1",
       "us-isob-east-1",
+      "us-isof-east-1",
+      "us-isof-south-1",
       "us-west-1",
       "us-west-2"
     ],
@@ -11396,6 +11877,10 @@
   },
   "route53profiles": {},
   "route53recoverycontrol": {
+    "NetworkType": [
+      "IPV4",
+      "DUALSTACK"
+    ],
     "Status": [
       "PENDING",
       "DEPLOYED",
@@ -11471,6 +11956,16 @@
       "INBOUND",
       "OUTBOUND"
     ],
+    "Protocols": [
+      "Do53",
+      "DoH",
+      "DoH-FIPS"
+    ],
+    "ResolverEndpointType": [
+      "IPV6",
+      "IPV4",
+      "DUALSTACK"
+    ],
     "Error": [
       "NONE",
       "DESTINATION_NOT_FOUND",
@@ -11489,6 +11984,10 @@
   },
   "rum": {
     "CustomEventsStatus": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "Status": [
       "ENABLED",
       "DISABLED"
     ],
@@ -11628,6 +12127,20 @@
     ]
   },
   "s3express": {
+    "NetworkOrigin": [
+      "Internet",
+      "VPC"
+    ],
+    "Permissions": [
+      "GetObject",
+      "GetObjectAttributes",
+      "ListMultipartUploadParts",
+      "ListBucket",
+      "ListBucketMultipartUploads",
+      "PutObject",
+      "DeleteObject",
+      "AbortMultipartUpload"
+    ],
     "DataRedundancy": [
       "SingleAvailabilityZone",
       "SingleLocalZone"
@@ -11656,6 +12169,10 @@
     ]
   },
   "s3tables": {
+    "SSEAlgorithm": [
+      "AES256",
+      "aws:kms"
+    ],
     "Status": [
       "Enabled",
       "Disabled"
@@ -11781,6 +12298,169 @@
       "ENABLED",
       "DISABLED"
     ],
+    "AppInstanceType": [
+      "system",
+      "ml.t3.micro",
+      "ml.t3.small",
+      "ml.t3.medium",
+      "ml.t3.large",
+      "ml.t3.xlarge",
+      "ml.t3.2xlarge",
+      "ml.m5.large",
+      "ml.m5.xlarge",
+      "ml.m5.2xlarge",
+      "ml.m5.4xlarge",
+      "ml.m5.8xlarge",
+      "ml.m5.12xlarge",
+      "ml.m5.16xlarge",
+      "ml.m5.24xlarge",
+      "ml.m5d.large",
+      "ml.m5d.xlarge",
+      "ml.m5d.2xlarge",
+      "ml.m5d.4xlarge",
+      "ml.m5d.8xlarge",
+      "ml.m5d.12xlarge",
+      "ml.m5d.16xlarge",
+      "ml.m5d.24xlarge",
+      "ml.c5.large",
+      "ml.c5.xlarge",
+      "ml.c5.2xlarge",
+      "ml.c5.4xlarge",
+      "ml.c5.9xlarge",
+      "ml.c5.12xlarge",
+      "ml.c5.18xlarge",
+      "ml.c5.24xlarge",
+      "ml.p3.2xlarge",
+      "ml.p3.8xlarge",
+      "ml.p3.16xlarge",
+      "ml.p3dn.24xlarge",
+      "ml.g4dn.xlarge",
+      "ml.g4dn.2xlarge",
+      "ml.g4dn.4xlarge",
+      "ml.g4dn.8xlarge",
+      "ml.g4dn.12xlarge",
+      "ml.g4dn.16xlarge",
+      "ml.r5.large",
+      "ml.r5.xlarge",
+      "ml.r5.2xlarge",
+      "ml.r5.4xlarge",
+      "ml.r5.8xlarge",
+      "ml.r5.12xlarge",
+      "ml.r5.16xlarge",
+      "ml.r5.24xlarge",
+      "ml.g5.xlarge",
+      "ml.g5.2xlarge",
+      "ml.g5.4xlarge",
+      "ml.g5.8xlarge",
+      "ml.g5.12xlarge",
+      "ml.g5.16xlarge",
+      "ml.g5.24xlarge",
+      "ml.g5.48xlarge",
+      "ml.g6.xlarge",
+      "ml.g6.2xlarge",
+      "ml.g6.4xlarge",
+      "ml.g6.8xlarge",
+      "ml.g6.12xlarge",
+      "ml.g6.16xlarge",
+      "ml.g6.24xlarge",
+      "ml.g6.48xlarge",
+      "ml.g6e.xlarge",
+      "ml.g6e.2xlarge",
+      "ml.g6e.4xlarge",
+      "ml.g6e.8xlarge",
+      "ml.g6e.12xlarge",
+      "ml.g6e.16xlarge",
+      "ml.g6e.24xlarge",
+      "ml.g6e.48xlarge",
+      "ml.geospatial.interactive",
+      "ml.p4d.24xlarge",
+      "ml.p4de.24xlarge",
+      "ml.trn1.2xlarge",
+      "ml.trn1.32xlarge",
+      "ml.trn1n.32xlarge",
+      "ml.p5.48xlarge",
+      "ml.m6i.large",
+      "ml.m6i.xlarge",
+      "ml.m6i.2xlarge",
+      "ml.m6i.4xlarge",
+      "ml.m6i.8xlarge",
+      "ml.m6i.12xlarge",
+      "ml.m6i.16xlarge",
+      "ml.m6i.24xlarge",
+      "ml.m6i.32xlarge",
+      "ml.m7i.large",
+      "ml.m7i.xlarge",
+      "ml.m7i.2xlarge",
+      "ml.m7i.4xlarge",
+      "ml.m7i.8xlarge",
+      "ml.m7i.12xlarge",
+      "ml.m7i.16xlarge",
+      "ml.m7i.24xlarge",
+      "ml.m7i.48xlarge",
+      "ml.c6i.large",
+      "ml.c6i.xlarge",
+      "ml.c6i.2xlarge",
+      "ml.c6i.4xlarge",
+      "ml.c6i.8xlarge",
+      "ml.c6i.12xlarge",
+      "ml.c6i.16xlarge",
+      "ml.c6i.24xlarge",
+      "ml.c6i.32xlarge",
+      "ml.c7i.large",
+      "ml.c7i.xlarge",
+      "ml.c7i.2xlarge",
+      "ml.c7i.4xlarge",
+      "ml.c7i.8xlarge",
+      "ml.c7i.12xlarge",
+      "ml.c7i.16xlarge",
+      "ml.c7i.24xlarge",
+      "ml.c7i.48xlarge",
+      "ml.r6i.large",
+      "ml.r6i.xlarge",
+      "ml.r6i.2xlarge",
+      "ml.r6i.4xlarge",
+      "ml.r6i.8xlarge",
+      "ml.r6i.12xlarge",
+      "ml.r6i.16xlarge",
+      "ml.r6i.24xlarge",
+      "ml.r6i.32xlarge",
+      "ml.r7i.large",
+      "ml.r7i.xlarge",
+      "ml.r7i.2xlarge",
+      "ml.r7i.4xlarge",
+      "ml.r7i.8xlarge",
+      "ml.r7i.12xlarge",
+      "ml.r7i.16xlarge",
+      "ml.r7i.24xlarge",
+      "ml.r7i.48xlarge",
+      "ml.m6id.large",
+      "ml.m6id.xlarge",
+      "ml.m6id.2xlarge",
+      "ml.m6id.4xlarge",
+      "ml.m6id.8xlarge",
+      "ml.m6id.12xlarge",
+      "ml.m6id.16xlarge",
+      "ml.m6id.24xlarge",
+      "ml.m6id.32xlarge",
+      "ml.c6id.large",
+      "ml.c6id.xlarge",
+      "ml.c6id.2xlarge",
+      "ml.c6id.4xlarge",
+      "ml.c6id.8xlarge",
+      "ml.c6id.12xlarge",
+      "ml.c6id.16xlarge",
+      "ml.c6id.24xlarge",
+      "ml.c6id.32xlarge",
+      "ml.r6id.large",
+      "ml.r6id.xlarge",
+      "ml.r6id.2xlarge",
+      "ml.r6id.4xlarge",
+      "ml.r6id.8xlarge",
+      "ml.r6id.12xlarge",
+      "ml.r6id.16xlarge",
+      "ml.r6id.24xlarge",
+      "ml.r6id.32xlarge"
+    ],
     "EnableDockerAccess": [
       "ENABLED",
       "DISABLED"
@@ -11788,6 +12468,9 @@
     "ExecutionRoleIdentityConfig": [
       "USER_PROFILE_NAME",
       "DISABLED"
+    ],
+    "SageMakerImageName": [
+      "sagemaker_distribution"
     ],
     "LifecycleManagement": [
       "ENABLED",
@@ -11826,6 +12509,11 @@
     "NotebookOutputOption": [
       "Allowed",
       "Disabled"
+    ],
+    "AutoMountHomeEFS": [
+      "Enabled",
+      "Disabled",
+      "DefaultAsDomain"
     ],
     "StudioWebPortal": [
       "ENABLED",
@@ -11875,6 +12563,10 @@
       "STABLE",
       "TO_BE_ARCHIVED",
       "ARCHIVED"
+    ],
+    "InferenceComponentCapacitySizeType": [
+      "COPY_COUNT",
+      "CAPACITY_PERCENT"
     ],
     "InferenceComponentStatus": [
       "InService",
@@ -12559,6 +13251,10 @@
       "OPEN",
       "AUTH"
     ],
+    "IpType": [
+      "IPV4",
+      "DUAL_STACK"
+    ],
     "ActionFailurePolicy": [
       "CONTINUE",
       "DROP"
@@ -12566,6 +13262,14 @@
     "MailFrom": [
       "REPLACE",
       "PRESERVE"
+    ],
+    "RuleAddressListEmailAttribute": [
+      "RECIPIENT",
+      "MAIL_FROM",
+      "SENDER",
+      "FROM",
+      "TO",
+      "CC"
     ],
     "RuleBooleanEmailAttribute": [
       "READ_RECEIPT_REQUESTED",
@@ -12634,9 +13338,20 @@
       "EQUALS",
       "NOT_EQUALS"
     ],
+    "SnsNotificationEncoding": [
+      "UTF-8",
+      "BASE64"
+    ],
+    "SnsNotificationPayloadType": [
+      "CONTENT",
+      "HEADERS"
+    ],
     "AcceptAction": [
       "ALLOW",
       "DENY"
+    ],
+    "IngressAddressListEmailAttribute": [
+      "RECIPIENT"
     ],
     "IngressBooleanOperator": [
       "IS_TRUE",
@@ -12648,6 +13363,9 @@
     ],
     "IngressIpv4Attribute": [
       "SENDER_IP"
+    ],
+    "IngressIpv6Attribute": [
+      "SENDER_IPV6"
     ],
     "IngressStringEmailAttribute": [
       "RECIPIENT"
@@ -12747,10 +13465,12 @@
       "ApplicationConfigurationSchema",
       "Automation",
       "Automation.ChangeTemplate",
+      "AutoApprovalPolicy",
       "ChangeCalendar",
       "CloudFormation",
       "Command",
       "DeploymentStrategy",
+      "ManualApprovalPolicy",
       "Package",
       "Policy",
       "ProblemAnalysis",
@@ -12857,6 +13577,7 @@
       "SUN"
     ]
   },
+  "ssmguiconnect": {},
   "ssmincidents": {
     "TargetAccount": [
       "IMPACTED_ACCOUNT",
@@ -12948,6 +13669,16 @@
     "ApplicationType": [
       "HANA",
       "SAP_ABAP"
+    ],
+    "ComponentType": [
+      "HANA",
+      "HANA_NODE",
+      "ABAP",
+      "ASCS",
+      "DIALOG",
+      "WEBDISP",
+      "WD",
+      "ERS"
     ],
     "CredentialType": [
       "ADMIN"
@@ -13141,6 +13872,10 @@
       "FILE",
       "DIRECTORY"
     ],
+    "WebAppEndpointPolicy": [
+      "STANDARD",
+      "FIPS"
+    ],
     "OverwriteExisting": [
       "TRUE",
       "FALSE"
@@ -13153,6 +13888,14 @@
     "PolicyType": [
       "STATIC",
       "TEMPLATE_LINKED"
+    ],
+    "DeletionMode": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "DeletionProtection": [
+      "DISABLED",
+      "ENABLED"
     ],
     "ValidationMode": [
       "OFF",
@@ -13617,6 +14360,17 @@
       "COMMON",
       "TARGETED"
     ],
+    "DataProtectionAction": [
+      "SUBSTITUTION",
+      "HASH"
+    ],
+    "FieldType": [
+      "SINGLE_HEADER",
+      "SINGLE_COOKIE",
+      "SINGLE_QUERY_ARGUMENT",
+      "QUERY_STRING",
+      "BODY"
+    ],
     "PayloadType": [
       "JSON",
       "FORM_ENCODED"
@@ -13704,7 +14458,9 @@
     ],
     "AIPromptAPIFormat": [
       "ANTHROPIC_CLAUDE_MESSAGES",
-      "ANTHROPIC_CLAUDE_TEXT_COMPLETIONS"
+      "ANTHROPIC_CLAUDE_TEXT_COMPLETIONS",
+      "MESSAGES",
+      "TEXT_COMPLETIONS"
     ],
     "AIPromptTemplateType": [
       "TEXT"
@@ -13726,7 +14482,8 @@
       "EXTERNAL",
       "CUSTOM",
       "MESSAGE_TEMPLATES",
-      "MANAGED"
+      "MANAGED",
+      "QUICK_RESPONSES"
     ],
     "ChunkingStrategy": [
       "FIXED_SIZE",
@@ -13774,8 +14531,7 @@
     ],
     "RunningMode": [
       "ALWAYS_ON",
-      "AUTO_STOP",
-      "MANUAL"
+      "AUTO_STOP"
     ],
     "ApplicationSettingsStatus": [
       "DISABLED",

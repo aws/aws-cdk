@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "45.0.0",
   "testCases": {
     "nlb-target-group-cross-zone-test-stack/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "nlb-target-group-cross-zone-test-stack/DefaultTest/DeployAssert",
       "assertionStackName": "nlbtargetgroupcrosszoneteststackDefaultTestDeployAssert1641E699"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

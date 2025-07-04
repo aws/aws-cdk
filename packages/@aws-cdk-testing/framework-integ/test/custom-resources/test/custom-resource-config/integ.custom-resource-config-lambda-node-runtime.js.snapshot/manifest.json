@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "MyStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/528a6bd64d6a7c1ffb72bcadef55223d302da950e8e4e22a5f6d3a61f1eaa0f3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b59547bfe4bc322f1c6efa7911e95bb1ba0d1ff8c81b9abd698bef438d5eb65b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -42,6 +42,7 @@
                 "name": "*",
                 "type": "S"
               },
+              "removalPolicy": "destroy",
               "replicationRegions": "*"
             }
           }
@@ -189,8 +190,8 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
@@ -213,24 +214,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           }
@@ -247,124 +240,62 @@
             "data": "OnEventHandlerServiceRole15A26729"
           }
         ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnEventHandlerServiceRoleDefaultPolicyC57085D4"
+          }
+        ],
         "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "OnEventHandler42BEBAE0"
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-0": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-0/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OnEventHandlerinlinePolicyAddedToExecutionRole05B1C3796"
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OnEventHandlerinlinePolicyAddedToExecutionRole187629D5C"
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OnEventHandlerinlinePolicyAddedToExecutionRole28650F749"
           }
         ],
         "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler": [
@@ -504,16 +435,8 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
@@ -528,16 +451,8 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
@@ -606,6 +521,22 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -618,82 +549,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEvent83C1D0A7"
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonEventinlinePolicyAddedToExecutionRole0D6E83756"
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonEventinlinePolicyAddedToExecutionRole17772106B"
           }
         ],
         "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete": [
@@ -775,16 +630,8 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
@@ -799,16 +646,8 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           }
@@ -861,6 +700,22 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
@@ -873,82 +728,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkisComplete26D7B0CB"
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/inlinePolicyAddedToExecutionRole-0": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/inlinePolicyAddedToExecutionRole-0/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole0DA398EFB"
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/inlinePolicyAddedToExecutionRole-1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/inlinePolicyAddedToExecutionRole-1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole11B3461A6"
           }
         ],
         "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout": [
@@ -1030,16 +809,8 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
@@ -1054,16 +825,8 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           }
@@ -1116,6 +879,22 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
@@ -1128,82 +907,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonTimeout0B47CA38"
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-0": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-0/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole03D28EB24"
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole10E895C60"
           }
         ],
         "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role": [
@@ -1484,5 +1187,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

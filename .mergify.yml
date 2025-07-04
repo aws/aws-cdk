@@ -16,6 +16,7 @@ queue_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
+      - status-success=build
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -36,6 +37,7 @@ queue_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
+      - status-success=build
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -55,6 +57,7 @@ queue_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
+      - status-success=build
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -63,9 +66,9 @@ pull_request_rules:
   - name: label core
     actions:
       label:
-        add: [ contribution/core ]
+        add: [contribution/core]
     conditions:
-      - author~=^(rix0rrr|iliapolo|otaviomacedo|kaizencc|TheRealAmazonKendra|mrgrain|pahud|ashishdhingra|kellertk|moelasmar|paulhcsun|GavinZZ|xazhao|gracelu0|shikha372|QuantumNeuralCoder|godwingrs22|bergjaak|samson-keung|IanKonlog|Leo10Gama|scorbiere|jiayiwang7|saiyush|5d|iankhou|SimonCMoore)$
+      - author=@aws/aws-cdk-team
       - -label~="contribution/core"
   - name: automatic merge
     actions:
@@ -87,6 +90,7 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
+      - status-success=build
   - name: automatic priority merge
     actions:
       comment:
@@ -108,6 +112,7 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
+      - status-success=build
   - name: automatic merge (2+ approvers)
     actions:
       comment:
@@ -129,6 +134,7 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
+      - status-success=build
   - name: automatic merge (no-squash)
     actions:
       comment:
@@ -150,6 +156,7 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
+      - status-success=build
   - name: remove stale reviews
     actions:
       dismiss_reviews:
@@ -190,3 +197,15 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
+      - status-success=build
+priority_rules:
+  - name: priority for queue `default-merge`
+    conditions:
+      - -label~=(blocked|do-not-merge)
+      - label~=no-squash
+    priority: 2500
+  - name: priority for queue `priority-squash`
+    conditions:
+      - -label~=(blocked|do-not-merge|no-squash)
+      - label~=priority-pr
+    priority: 2250

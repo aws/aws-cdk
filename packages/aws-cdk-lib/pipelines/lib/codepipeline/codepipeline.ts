@@ -13,7 +13,7 @@ import * as cpa from '../../../aws-codepipeline-actions';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
-import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names, FeatureFlags, UnscopedValidationError, ValidationError } from '../../../core';
+import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names, FeatureFlags, UnscopedValidationError, ValidationError, Annotations } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
@@ -21,7 +21,6 @@ import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../help
 import { PipelineBase } from '../main';
 import { AssetSingletonRole } from '../private/asset-singleton-role';
 import { CachedFnSub } from '../private/cached-fnsub';
-import { preferredCliVersion } from '../private/cli-version';
 import { appOf, assemblyBuilderOf, embeddedAsmPath, obtainScope } from '../private/construct-internals';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../private/default-codebuild-image';
 import { toPosixPath } from '../private/fs';
@@ -33,6 +32,16 @@ import { writeTemplateConfiguration } from '../private/template-configuration';
  * Properties for a `CodePipeline`
  */
 export interface CodePipelineProps {
+  /**
+   * Type of the pipeline.
+   *
+   * @default - PipelineType.V2 if the feature flag `CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2`
+   * is true, PipelineType.V1 otherwise
+   *
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipeline-types-planning.html
+   */
+  readonly pipelineType?: cp.PipelineType;
+
   /**
    * The build step that produces the CDK Cloud Assembly
    *
@@ -65,7 +74,7 @@ export interface CodePipelineProps {
   readonly crossAccountKeys?: boolean;
 
   /**
-   * CDK CLI version to use in self-mutation and asset publishing steps
+   * CDK CLI version to use in self-mutation step
    *
    * If you want to lock the CDK CLI version used in the pipeline, by steps
    * that are automatically generated for you, specify the version here.
@@ -86,6 +95,20 @@ export interface CodePipelineProps {
    * @default - Latest version
    */
   readonly cliVersion?: string;
+
+  /**
+   * CDK CLI version to use in asset publishing steps
+   *
+   * If you want to lock the `cdk-assets` version used in the pipeline, by steps
+   * that are automatically generated for you, specify the version here.
+   *
+   * We recommend you do not specify this value, as not specifying it always
+   * uses the latest CLI version which is backwards compatible with old versions.
+   *
+   * @see https://www.npmjs.com/package/cdk-assets
+   * @default - Latest version
+   */
+  readonly cdkAssetsCliVersion?: string;
 
   /**
    * Whether the pipeline will update itself
@@ -254,6 +277,13 @@ export interface CodePipelineProps {
    * @default - no cross region replication buckets.
    */
   readonly crossRegionReplicationBuckets?: { [region: string]: s3.IBucket };
+
+  /**
+   * Use pipeline service role for actions if no action role configured
+   *
+   * @default - false
+   */
+  readonly usePipelineRoleForActions?: boolean;
 }
 
 /**
@@ -356,6 +386,11 @@ export class CodePipeline extends PipelineBase {
    * Whether SelfMutation is enabled for this CDK Pipeline
    */
   public readonly selfMutationEnabled: boolean;
+  /**
+   * Allow pipeline service role used for actions if no action role configured
+   * instead of creating a new role for each action
+   */
+  public readonly usePipelineRoleForActions: boolean;
 
   private _pipeline?: cp.Pipeline;
   private artifacts = new ArtifactMap();
@@ -381,6 +416,7 @@ export class CodePipeline extends PipelineBase {
 
   private readonly singlePublisherPerAssetType: boolean;
   private readonly cliVersion?: string;
+  private readonly cdkAssetsCliVersion: string;
 
   constructor(scope: Construct, id: string, private readonly props: CodePipelineProps) {
     super(scope, id, props);
@@ -388,9 +424,11 @@ export class CodePipeline extends PipelineBase {
     this.selfMutationEnabled = props.selfMutation ?? true;
     this.dockerCredentials = props.dockerCredentials ?? [];
     this.singlePublisherPerAssetType = !(props.publishAssetsInParallel ?? true);
-    this.cliVersion = props.cliVersion ?? preferredCliVersion();
+    this.cliVersion = props.cliVersion ?? '2';
+    this.cdkAssetsCliVersion = props.cdkAssetsCliVersion ?? 'latest';
     this.useChangeSets = props.useChangeSets ?? true;
     this.stackOutputs = new StackOutputsMap(this);
+    this.usePipelineRoleForActions = props.usePipelineRoleForActions ?? false;
   }
 
   /**
@@ -465,9 +503,13 @@ export class CodePipeline extends PipelineBase {
 
       this._pipeline = this.props.codePipeline;
     } else {
+      const isDefaultV2 = FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2);
+      if (!isDefaultV2 && this.props.pipelineType === undefined) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-codepipeline:unspecifiedPipelineType', 'V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`.');
+      }
       this._pipeline = new cp.Pipeline(this, 'Pipeline', {
         pipelineName: this.props.pipelineName,
-        pipelineType: cp.PipelineType.V1,
+        pipelineType: this.props.pipelineType ?? (isDefaultV2 ? cp.PipelineType.V2 : cp.PipelineType.V1),
         crossAccountKeys: this.props.crossAccountKeys ?? false,
         crossRegionReplicationBuckets: this.props.crossRegionReplicationBuckets,
         reuseCrossRegionSupportStacks: this.props.reuseCrossRegionSupportStacks,
@@ -477,6 +519,7 @@ export class CodePipeline extends PipelineBase {
         role: this.props.role,
         enableKeyRotation: this.props.enableKeyRotation,
         artifactBucket: this.props.artifactBucket,
+        usePipelineRoleForActions: this.usePipelineRoleForActions,
       });
     }
 
@@ -528,15 +571,28 @@ export class CodePipeline extends PipelineBase {
 
         const sharedParent = new GraphNodeCollection(flatten(tranches)).commonAncestor();
 
+        // If we produce the same action name for some actions, append a unique number
+        let namesUsed = new Set<string>();
+
         let runOrder = 1;
         for (const tranche of tranches) {
           const runOrdersConsumed = [0];
 
           for (const node of tranche) {
             const factory = this.actionFromNode(node);
-
             const nodeType = this.nodeTypeFromNode(node);
-            const name = actionName(node, sharedParent);
+
+            // Come up with a unique name for this action, incrementing a counter if necessary
+            const baseName = actionName(node, sharedParent);
+            let name = baseName;
+            for (let ctr = 1; ; ctr++) {
+              const candidate = ctr > 1 ? `${name}${ctr}` : name;
+              if (!namesUsed.has(candidate)) {
+                name = candidate;
+                break;
+              }
+            }
+            namesUsed.add(name);
 
             const variablesNamespace = node.data?.type === 'step'
               ? namespaceStepOutputs(node.data.step, pipelineStage, name)
@@ -673,6 +729,8 @@ export class CodePipeline extends PipelineBase {
             actionName: options.actionName,
             runOrder: options.runOrder,
             additionalInformation: step.comment,
+            externalEntityLink: step.reviewUrl,
+            notificationTopic: step.notificationTopic,
           }));
           return { runOrdersConsumed: 1 };
         },
@@ -838,7 +896,7 @@ export class CodePipeline extends PipelineBase {
     const script = new CodeBuildStep(node.id, {
       commands,
       installCommands: [
-        'npm install -g cdk-assets@latest',
+        `npm install -g cdk-assets@${this.cdkAssetsCliVersion}`,
       ],
       input: this._cloudAssemblyFileSet,
       buildEnvironment: {

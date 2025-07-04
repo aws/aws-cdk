@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "PreparelessPipelineStackMyStageStackMyAppStack51FBCD39.assets": {
       "type": "cdk:asset-manifest",
@@ -62,5 +62,6 @@
       },
       "displayName": "PreparelessPipelineStack/MyStage/Stack/MyApp/Stack"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

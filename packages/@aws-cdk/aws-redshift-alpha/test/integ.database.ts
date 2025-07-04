@@ -10,13 +10,23 @@ import * as redshift from '../lib';
 
 const useColumnIds = { [REDSHIFT_COLUMN_ID]: false };
 const app = new cdk.App({
-  context: useColumnIds,
   postCliContext: {
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+  context: {
+    ...useColumnIds,
+    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
   },
 });
 
-const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database');
+const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database', {
+  env: {
+    account: '123456789012',
+    region: 'us-east-1',
+  },
+});
+
 cdk.Aspects.of(stack).add({
   visit(node: constructs.IConstruct) {
     if (cdk.CfnResource.isCfnResource(node)) {

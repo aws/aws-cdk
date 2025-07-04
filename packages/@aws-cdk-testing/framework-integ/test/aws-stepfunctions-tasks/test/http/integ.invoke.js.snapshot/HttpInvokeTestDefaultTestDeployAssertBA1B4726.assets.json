@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "files": {
     "bfcf4228d6660f50e81f19efdb64c6388dda6796296eb239decdff1dbc2f4981": {
       "source": {
@@ -15,6 +15,7 @@
       }
     },
     "a0d8fdccbd7a2aeae48e07b2e49376e86afe6997d126b10c39e4739cb451045a": {
+      "displayName": "HttpInvokeTestDefaultTestDeployAssertBA1B4726 Template",
       "source": {
         "path": "HttpInvokeTestDefaultTestDeployAssertBA1B4726.template.json",
         "packaging": "file"

@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "44.0.0",
   "testCases": {
     "FlowLogs/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "FlowLogs/DefaultTest/DeployAssert",
       "assertionStackName": "FlowLogsDefaultTestDeployAssert6AFD1854"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

@@ -25,6 +25,7 @@ class RedshiftEnv extends Stack {
       },
       defaultDatabaseName: 'database',
       subnetGroup,
+      nodeType: redshift.NodeType.RA3_LARGE,
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
@@ -39,9 +40,22 @@ class RedshiftEnv extends Stack {
 const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+  context: {
+    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
   },
 });
 
+const stack = new Stack(app, 'aws-cdk-redshift-cluster-database', {
+  env: {
+    account: '123456789012',
+    region: 'us-east-1',
+  },
+});
+
+new RedshiftEnv(stack, 'redshift-exclude-characters-integ');
+
 new integ.IntegTest(app, 'ExcludeCharactersInteg', {
-  testCases: [new RedshiftEnv(app, 'redshift-exclude-characters-integ')],
+  testCases: [stack],
 });

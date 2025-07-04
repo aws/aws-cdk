@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "assembly-PreparelessPipelineStack-MyStage-Stack-MyApp": {
       "type": "cdk:cloud-assembly",
@@ -57,5 +57,6 @@
       },
       "displayName": "PreparelessPipelineStack/MyStage/Stack"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

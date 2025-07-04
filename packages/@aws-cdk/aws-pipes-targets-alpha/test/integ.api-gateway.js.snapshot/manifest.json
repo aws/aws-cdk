@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-pipes-targets-api-gw.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "aws-cdk-pipes-targets-api-gw.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/835c3c60bd15c724fcf3543cbce0e6e239077e28bbcea194a304b1b65f8fdcf9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5d19cc32a7db8d8f529d54b3aa62708735a88486aaecbe310520d3ef84133793.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -35,10 +34,48 @@
         "aws-cdk-pipes-targets-api-gw.assets"
       ],
       "metadata": {
+        "/aws-cdk-pipes-targets-api-gw/SourceQueue": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-pipes-targets-api-gw/SourceQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SourceQueue6E809DF0"
+          }
+        ],
+        "/aws-cdk-pipes-targets-api-gw/ConnectHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-api-gw/ConnectHandler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-api-gw/ConnectHandler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-pipes-targets-api-gw/ConnectHandler/ServiceRole/Resource": [
@@ -59,16 +96,64 @@
             "data": "ConnectHandlerLogRetention2F222483"
           }
         ],
+        "/aws-cdk-pipes-targets-api-gw/RestApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-pipes-targets-api-gw/RestApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RestApi0C43BF4B"
           }
         ],
+        "/aws-cdk-pipes-targets-api-gw/RestApi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/aws-cdk-pipes-targets-api-gw/RestApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RestApiDeployment180EC503faa60e2bc033df5b02cc72aec1d329ce"
+          }
+        ],
+        "/aws-cdk-pipes-targets-api-gw/RestApi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/aws-cdk-pipes-targets-api-gw/RestApi/DeploymentStage.prod/Resource": [
@@ -83,16 +168,51 @@
             "data": "RestApiEndpoint0551178A"
           }
         ],
+        "/aws-cdk-pipes-targets-api-gw/RestApi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
+          }
+        ],
         "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RestApibooksA2500ABD"
           }
         ],
+        "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/fiction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
+          }
+        ],
         "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/fiction/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RestApibooksfictionA7F01220"
+          }
+        ],
+        "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/fiction/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/fiction/GET/ApiPermission.awscdkpipestargetsapigwRestApiF13D8AB8.GET..books.fiction": [
@@ -113,10 +233,103 @@
             "data": "RestApibooksfictionGETE32E77E7"
           }
         ],
+        "/aws-cdk-pipes-targets-api-gw/Pipe": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-pipes-targets-api-gw/Pipe/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-api-gw/Pipe/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-pipes-targets-api-gw/Pipe/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipeRole7D4AFC73"
+          }
+        ],
+        "/aws-cdk-pipes-targets-api-gw/Pipe/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-pipes-targets-api-gw/Pipe/Role/DefaultPolicy/Resource": [
@@ -131,10 +344,86 @@
             "data": "Pipe7793F8A1"
           }
         ],
+        "/aws-cdk-pipes-targets-api-gw/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-api-gw/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-pipes-targets-api-gw/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/aws-cdk-pipes-targets-api-gw/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-pipes-targets-api-gw/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
@@ -197,10 +486,9 @@
         "templateFile": "integtestpipetargetapigwDefaultTestDeployAssertCBE10CAE.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c0f1d4d5bdcb4f4b9afad060344504fdac56c16e5090e7dd75b6254bfceb1e5a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/83a43905173c6f9492682e2b3d81ca501a8a8d975a6101482489edf14b008856.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -217,6 +505,12 @@
         "integtestpipetargetapigwDefaultTestDeployAssertCBE10CAE.assets"
       ],
       "metadata": {
+        "/integtest-pipe-target-api-gw/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage232c0652b606256b4f7f926410a819e3/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integtest-pipe-target-api-gw/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage232c0652b606256b4f7f926410a819e3/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -239,6 +533,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integtest-pipe-target-api-gw/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsa306905a42cf4b72cf09828b41041845/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integtest-pipe-target-api-gw/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsa306905a42cf4b72cf09828b41041845/Default/Default": [
@@ -322,5 +630,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

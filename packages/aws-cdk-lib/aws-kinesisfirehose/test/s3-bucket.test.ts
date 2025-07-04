@@ -597,4 +597,65 @@ describe('S3 destination', () => {
       });
     });
   });
+
+  describe('file extension', () => {
+    it('sets fileExtension', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        fileExtension: '.json',
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          FileExtension: '.json',
+        },
+      });
+    });
+
+    it('sets fileExtension from a token', () => {
+      const fileExtension = new cdk.CfnParameter(stack, 'FileExtension');
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        fileExtension: fileExtension.valueAsString,
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          FileExtension: { Ref: 'FileExtension' },
+        },
+      });
+    });
+
+    it('throws when fileExtension does not start with a period', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        fileExtension: 'json',
+      });
+
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow("fileExtension must start with '.'");
+    });
+
+    it('throws when fileExtension contains unallowed characters', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        fileExtension: '.json?',
+      });
+
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow("fileExtension can contain allowed characters: 0-9a-z!-_.*'()");
+    });
+  });
 });

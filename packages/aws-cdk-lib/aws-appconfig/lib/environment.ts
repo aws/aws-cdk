@@ -9,6 +9,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { Resource, IResource, Stack, ArnFormat, PhysicalName, Names, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Attributes of an existing AWS AppConfig environment to import it.
@@ -192,7 +193,11 @@ export interface EnvironmentProps extends EnvironmentOptions {
  * @resource AWS::AppConfig::Environment
  * @see https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-environment.html
  */
+@propertyInjectable
 export class Environment extends EnvironmentBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appconfig.Environment';
+
   /**
    * Imports an environment into the CDK using its Amazon Resource Name (ARN).
    *

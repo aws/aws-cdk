@@ -6,6 +6,7 @@ import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
@@ -130,7 +131,11 @@ export interface LambdaDeploymentGroupProps {
 /**
  * @resource AWS::CodeDeploy::DeploymentGroup
  */
+@propertyInjectable
 export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambdaDeploymentGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.LambdaDeploymentGroup';
+
   /**
    * Import an Lambda Deployment Group defined either outside the CDK app, or in a different AWS region.
    *
@@ -194,7 +199,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
           ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
         }),
       }),
-      autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
+      autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this, this.alarms, props.autoRollback) }),
     });
 
     this._setNameAndArn(resource, this.application);
@@ -240,7 +245,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
   @MethodMetadata()
   public addPreHook(preHook: lambda.IFunction): void {
     if (this.preHook !== undefined) {
-      throw new Error('A pre-hook function is already defined for this deployment group');
+      throw new cdk.ValidationError('A pre-hook function is already defined for this deployment group', this);
     }
     this.preHook = preHook;
     this.grantPutLifecycleEventHookExecutionStatus(this.preHook);
@@ -255,7 +260,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
   @MethodMetadata()
   public addPostHook(postHook: lambda.IFunction): void {
     if (this.postHook !== undefined) {
-      throw new Error('A post-hook function is already defined for this deployment group');
+      throw new cdk.ValidationError('A post-hook function is already defined for this deployment group', this);
     }
     this.postHook = postHook;
     this.grantPutLifecycleEventHookExecutionStatus(this.postHook);
@@ -303,7 +308,10 @@ export interface LambdaDeploymentGroupAttributes {
   readonly deploymentConfig?: ILambdaDeploymentConfig;
 }
 
+@propertyInjectable
 class ImportedLambdaDeploymentGroup extends ImportedDeploymentGroupBase implements ILambdaDeploymentGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.ImportedLambdaDeploymentGroup';
   public readonly application: ILambdaApplication;
   public readonly deploymentConfig: ILambdaDeploymentConfig;
 

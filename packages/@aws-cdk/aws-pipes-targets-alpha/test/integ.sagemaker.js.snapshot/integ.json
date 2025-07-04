@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "45.0.0",
   "testCases": {
     "integtest-pipe-target-sagemaker/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "integtest-pipe-target-sagemaker/DefaultTest/DeployAssert",
       "assertionStackName": "integtestpipetargetsagemakerDefaultTestDeployAssert7D2ED3D4"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

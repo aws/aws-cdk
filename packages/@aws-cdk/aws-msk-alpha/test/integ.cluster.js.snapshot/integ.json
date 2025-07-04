@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "testCases": {
     "MskLogging/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "MskLogging/DefaultTest/DeployAssert",
       "assertionStackName": "MskLoggingDefaultTestDeployAssertC2F074AF"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

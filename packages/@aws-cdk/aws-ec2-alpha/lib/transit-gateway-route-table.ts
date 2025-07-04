@@ -7,6 +7,7 @@ import { TransitGatewayRoute, TransitGatewayBlackholeRoute, ITransitGatewayRoute
 import { ITransitGatewayRouteTableAssociation, TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
 import { ITransitGatewayRouteTablePropagation, TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents a Transit Gateway Route Table.
@@ -101,7 +102,10 @@ abstract class TransitGatewayRouteTableBase extends Resource implements ITransit
  *
  * @resource AWS::EC2::TransitGatewayRouteTable
  */
+@propertyInjectable
 export class TransitGatewayRouteTable extends TransitGatewayRouteTableBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.TransitGatewayRouteTable';
   public readonly routeTableId: string;
   /**
    * The Transit Gateway.

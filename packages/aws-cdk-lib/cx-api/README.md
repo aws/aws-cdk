@@ -310,6 +310,20 @@ _cdk.json_
 }
 ```
 
+* `@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal`
+
+Enable grant methods on imported KMS Aliases to apply permissions scoped by the alias using the `kms:ResourceAliases` condition key. When this flag is disabled, grant* methods on `Alias.fromAliasName` remain no-ops to preserve existing behavior.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal": true
+  }
+}
+```
+
 * `@aws-cdk/aws-eks:nodegroupNameAttribute`
 
 When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix.
@@ -615,16 +629,19 @@ _cdk.json_
 
 * `@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy`
 
-When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+[Deprecated default feature] When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
 The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
 This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
+However in the current implementation, we have removed a dependency of the lambda function on the policy. In addition to this, a Role will be attached to the Policy instead of an inline policy being attached to the role. 
+This will create a data race condition in the CloudFormation template because the creation of the Lambda function no longer waits for the policy to be created. Having said that, we are not deprecating the feature (we are defaulting the feature flag to false for new stacks) since this feature can still be used to get around the circular dependency issue (issue-7016) particularly in cases where the lambda resource creation doesnt need to depend on the policy resource creation. 
+We recommend to unset the feature flag if already set which will restore the original behavior.
 
 _cdk.json_
 
 ```json
 {
   "context": {
-    "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true
+    "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false
   }
 }
 ```
@@ -655,6 +672,93 @@ _cdk.json_
 {
   "context": {
     "@aws-cdk/pipelines:reduceStageRoleTrustScope": true
+  }
+}
+```
+
+* `@aws-cdk/aws-events:requireEventBusPolicySid`
+
+When this flag is enabled:
+- Resource policies will be created with Statement IDs for service principals
+- The operation will succeed as expected
+
+When this flag is disabled:
+- A warning will be emitted
+- The grant operation will be dropped
+- No permissions will be added
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-events:requireEventBusPolicySid": true
+  }
+}
+```
+
+* `@aws-cdk/aws-dynamodb:retainTableReplica`
+
+Currently, table replica will always be deleted when stack deletes regardless of source table's deletion policy.
+When enabled, table replica will be default to the removal policy of source table unless specified otherwise.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-dynamodb:retainTableReplica": true
+  }
+}
+```
+
+* `@aws-cdk/cognito:logUserPoolClientSecretValue`
+
+When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom 
+resource lambda function logs.
+
+When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom 
+resource lambda function logs. 
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/cognito:logUserPoolClientSecretValue": true
+  }
+}
+```
+
+* `@aws-cdk/aws-s3:publicAccessBlockedByDefault`
+
+When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console.
+The previous behavior in cdk before this feature was; if only some of the BlockPublicAccessOptions were set (not all 4), then the ones undefined would default to false.
+This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
+The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true
+  }
+}
+```
+
+* `@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway`
+
+When this feature flag is enabled, EgressOnlyGateway is created only for dual-stack VPC with private subnets
+
+When this feature flag is disabled, EgressOnlyGateway resource is created for all dual-stack VPC regardless of subnet type
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true
   }
 }
 ```

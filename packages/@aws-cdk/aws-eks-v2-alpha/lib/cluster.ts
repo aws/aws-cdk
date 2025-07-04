@@ -25,6 +25,7 @@ import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack } from 'aws-cdk-lib/core';
 import { CfnCluster } from 'aws-cdk-lib/aws-eks';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -176,12 +177,6 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * /etc/eks/bootstrap.sh script. This method will configure Security Groups,
    * add the right policies to the instance role, apply the right tags, and add
    * the required user data to the instance's launch configuration.
-   *
-   * Spot instances will be labeled `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
-   * If kubectl is enabled, the
-   * [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
-   * daemon will be installed on all spot instances to handle
-   * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    *
    * Prefer to use `addAutoScalingGroupCapacity` if possible.
    *
@@ -580,7 +575,7 @@ export interface ClusterProps extends ClusterCommonOptions {
   /**
    * The default capacity type for the cluster.
    *
-   * @default NODEGROUP
+   * @default AUTOMODE
    */
   readonly defaultCapacityType?: DefaultCapacityType;
 
@@ -811,12 +806,6 @@ abstract class ClusterBase extends Resource implements ICluster {
    * add the right policies to the instance role, apply the right tags, and add
    * the required user data to the instance's launch configuration.
    *
-   * Spot instances will be labeled `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
-   * If kubectl is enabled, the
-   * [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
-   * daemon will be installed on all spot instances to handle
-   * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
-   *
    * Prefer to use `addAutoScalingGroupCapacity` if possible.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
@@ -914,7 +903,11 @@ export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAd
  * The user is still required to create the worker nodes.
  * @resource AWS::EKS::Cluster
  */
+@propertyInjectable
 export class Cluster extends ClusterBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.Cluster';
+
   /**
    * Import an existing cluster
    *
@@ -1184,8 +1177,11 @@ export class Cluster extends ClusterBase {
         enabled: autoModeEnabled,
         // If the computeConfig enabled flag is set to false when creating a cluster with Auto Mode,
         // the request must not include values for the nodeRoleArn or nodePools fields.
+        // Also, if nodePools is empty, nodeRoleArn should not be included to prevent deployment failures
         nodePools: !autoModeEnabled ? undefined : props.compute?.nodePools ?? ['system', 'general-purpose'],
-        nodeRoleArn: !autoModeEnabled ? undefined : props.compute?.nodeRole?.roleArn ?? this.addNodePoolRole(`${id}nodePoolRole`).roleArn,
+        nodeRoleArn: !autoModeEnabled || (props.compute?.nodePools && props.compute.nodePools.length === 0) ?
+          undefined :
+          props.compute?.nodeRole?.roleArn ?? this.addNodePoolRole(`${id}nodePoolRole`).roleArn,
       },
       storageConfig: {
         blockStorage: {
@@ -1425,10 +1421,6 @@ export class Cluster extends ClusterBase {
    * time without notice in case the recommended AMI for your machine image type has been updated by AWS.
    * The default behavior for `updateType` is `None`, which means only new instances will be launched using the new AMI.
    *
-   * Spot instances will be labeled `lifecycle=Ec2Spot` and tainted with `PreferNoSchedule`.
-   * In addition, the [spot interrupt handler](https://github.com/awslabs/ec2-spot-labs/tree/master/ec2-spot-eks-solution/spot-termination-handler)
-   * daemon will be installed on all spot instances to handle
-   * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    */
   @MethodMetadata()
   public addAutoScalingGroupCapacity(id: string, options: AutoScalingGroupCapacityOptions): autoscaling.AutoScalingGroup {
@@ -1900,7 +1892,10 @@ export interface AutoScalingGroupOptions {
 /**
  * Import a cluster to use in another stack
  */
+@propertyInjectable
 class ImportedCluster extends ClusterBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.ImportedCluster';
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();

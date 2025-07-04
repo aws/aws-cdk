@@ -759,12 +759,14 @@
       "endpointPublicAccess": true,
       "endpointPrivateAccess": true
      },
-     "accessConfig": {},
+     "accessConfig": {
+      "authenticationMode": "API"
+     },
      "remoteNetworkConfig": {
       "remoteNodeNetworks": [
        {
         "cidrs": [
-         "10.0.0.0/16"
+         "172.16.0.0/16"
         ]
        }
       ],
@@ -783,7 +785,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 4
+    "AttributesRevision": 5
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
@@ -844,7 +846,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/ae929a21d075a60fa1adf66934d06340b06966eab1fccbaca49a39aac5bfc216.json"
+       "/3dad8dd50a0b495bf335357b2285e36258c293f6ab19c45a993169e0d12d5bd3.json"
       ]
      ]
     }
@@ -894,7 +896,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/f7801de3899b07ce010c7a093aa0d30b2f0836f348148efbc55aa343cd8b380c.json"
+       "/89af2dd1104613b6372bb28a7d84a0c280b1b55ec9b3ef0447ca16ab3e3d7ca8.json"
       ]
      ]
     }

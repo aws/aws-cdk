@@ -258,6 +258,8 @@ const loadBalancedFargateService = new ecsPatterns.NetworkMultipleTargetGroupsFa
       listener: 'listener2',
     },
   ],
+  minHealthyPercent: 100,
+  maxHealthyPercent: 200,
 });
 ```
 
@@ -1140,6 +1142,19 @@ const networkLoadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFar
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
   minHealthyPercent: 100,
+});
+```
+
+### Set healthCheckGracePeriod for QueueProcessingFargateService
+
+```ts
+declare const vpc: ec2.Vpc;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+  vpc,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  minHealthyPercent: 100,
+  healthCheckGracePeriod: Duration.seconds(120),
 });
 ```
 

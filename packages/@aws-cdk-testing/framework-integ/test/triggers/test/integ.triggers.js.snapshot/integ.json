@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "44.0.0",
   "testCases": {
     "TriggerTest/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "TriggerTest/DefaultTest/DeployAssert",
       "assertionStackName": "TriggerTestDefaultTestDeployAssert61636546"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

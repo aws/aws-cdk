@@ -298,6 +298,29 @@ new cloudwatch.Alarm(this, 'CanaryAlarm', {
 });
 ```
 
+### Performing safe canary updates
+
+You can configure a canary to first perform a dry run before applying any updates. The `dryRunAndUpdate` property can be used to safely update canaries by validating the changes before they're applied.
+This feature is supported for canary runtime versions `syn-nodejs-puppeteer-10.0+`, `syn-nodejs-playwright-2.0+`, and `syn-python-selenium-5.1+`.
+
+When `dryRunAndUpdate` is set to `true`, CDK will execute a dry run to validate the changes before applying them to the canary.
+If the dry run succeeds, the canary will be updated with the changes.
+If the dry run fails, the CloudFormation deployment will fail with the dry run's failure reason.
+
+```ts
+const canary = new synthetics.Canary(this, 'MyCanary', {
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1,
+  dryRunAndUpdate: true, // Enable dry run before updating
+});
+```
+
+For more information, see [Performing safe canary updates](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/performing-safe-canary-upgrades.html).
+
 ### Artifacts
 
 You can pass an S3 bucket to store artifacts from canary runs. If you do not,

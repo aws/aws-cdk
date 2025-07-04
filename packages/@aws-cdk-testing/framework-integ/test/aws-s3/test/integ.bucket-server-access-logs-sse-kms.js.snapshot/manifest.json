@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-s3-server-access-logs-sse-kms.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "aws-cdk-s3-server-access-logs-sse-kms.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c8f365aa1f12b408b8778ec63464cbe24b37d17fea9f7cdab7d4417362e2791f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8b3eebee017046f61853269c8171f939d04e3fe0278e7e274649832a31004024.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -35,6 +34,25 @@
         "aws-cdk-s3-server-access-logs-sse-kms.assets"
       ],
       "metadata": {
+        "/aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "autoDeleteObjects": true,
+              "removalPolicy": "destroy",
+              "encryption": "KMS"
+            }
+          }
+        ],
+        "/aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/Key": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "enableKeyRotation": true
+            }
+          }
+        ],
         "/aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/Key/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -47,10 +65,24 @@
             "data": "ServerAccessLogsBucket05F29982"
           }
         ],
+        "/aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ServerAccessLogsBucketPolicy947BE3EE"
+          }
+        ],
+        "/aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/AutoDeleteObjectsCustomResource/Default": [
@@ -81,6 +113,16 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/aws-cdk-s3-server-access-logs-sse-kms/Bucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "serverAccessLogsBucket": "*",
+              "serverAccessLogsPrefix": "*",
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/aws-cdk-s3-server-access-logs-sse-kms/Bucket/Resource": [
@@ -119,7 +161,6 @@
         "templateFile": "ServerAccessLogsSseKmsTestDefaultTestDeployAssertB937C102.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
@@ -159,5 +200,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

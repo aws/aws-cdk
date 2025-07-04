@@ -1,6 +1,7 @@
 import { Construct, IConstruct } from 'constructs';
-import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
+import { Alarm, ComparisonOperator } from './alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Statistic, Unit } from './metric-types';
+import { CreateAlarmOptionsBase } from './private/alarm-options';
 import { dispatchMetric, metricKey } from './private/metric-util';
 import { normalizeStatistic, pairStatisticToString, parseStatistic, singleStatisticToString } from './private/statistic';
 import { Stats } from './stats';
@@ -102,6 +103,27 @@ export interface CommonMetricOptions {
    * @default - Automatic color
    */
   readonly color?: string;
+
+  /**
+   * Unique identifier for this metric when used in dashboard widgets.
+   *
+   * The id can be used as a variable to represent this metric in math expressions.
+   * Valid characters are letters, numbers, and underscore. The first character
+   * must be a lowercase letter.
+   *
+   * @default - No ID
+   */
+  readonly id?: string;
+
+  /**
+   * Whether this metric should be visible in dashboard graphs.
+   *
+   * Setting this to false is useful when you want to hide raw metrics
+   * that are used in math expressions, and show only the expression results.
+   *
+   * @default true
+   */
+  readonly visible?: boolean;
 
   /**
    * Account which this metric comes from.
@@ -291,6 +313,28 @@ export interface MathExpressionProps extends MathExpressionOptions {
  */
 export class Metric implements IMetric {
   /**
+   * Creates an anomaly detection metric from the provided metric
+   *
+   * @param props The anomaly detection alarm properties
+   * @returns An anomaly detection metric
+   */
+  public static anomalyDetectionFor(props: AnomalyDetectionMetricOptions): MathExpression {
+    // Validate stdDevs
+    if (props.stdDevs !== undefined && props.stdDevs <= 0) {
+      throw new cdk.UnscopedValidationError('stdDevs must be greater than 0');
+    }
+
+    // Create the anomaly detection band expression
+    return new MathExpression({
+      expression: `ANOMALY_DETECTION_BAND(m0, ${props.stdDevs ?? 2})`,
+      usingMetrics: { m0: props.metric },
+      period: props.period,
+      label: 'Anomaly Detection Band',
+      ...props,
+    });
+  }
+
+  /**
    * Grant permissions to the given identity to write metrics.
    *
    * @param grantee The IAM identity to give permissions to.
@@ -317,6 +361,10 @@ export class Metric implements IMetric {
   public readonly label?: string;
   /** The hex color code used when this metric is rendered on a graph. */
   public readonly color?: string;
+  /** Unique identifier for this metric when used in dashboard widgets. */
+  public readonly id?: string;
+  /** Whether this metric should be visible in dashboard graphs. */
+  public readonly visible?: boolean;
 
   /** Unit of the metric. */
   public readonly unit?: Unit;
@@ -358,11 +406,11 @@ export class Metric implements IMetric {
     if (parsedStat.type === 'generic') {
       // Unrecognized statistic, do not throw, just warn
       // There may be a new statistic that this lib does not support yet
-      const label = props.label ? `, label "${props.label}"`: '';
+      const label = props.label ? `, label "${props.label}"` : '';
 
       const warning = `Unrecognized statistic "${props.statistic}" for metric with namespace "${props.namespace}"${label} and metric name "${props.metricName}".` +
-          ' Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
-          ' You can ignore this warning if your statistic is valid but not yet supported by the `aws_cloudwatch.Stats` helper class.';
+        ' Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
+        ' You can ignore this warning if your statistic is valid but not yet supported by the `aws_cloudwatch.Stats` helper class.';
       this.warningsV2 = {
         'CloudWatch:Alarm:UnrecognizedStatistic': warning,
       };
@@ -372,6 +420,8 @@ export class Metric implements IMetric {
 
     this.label = props.label;
     this.color = props.color;
+    this.id = props.id;
+    this.visible = props.visible;
     this.unit = props.unit;
     this.#accountOverride = props.account;
     this.#regionOverride = props.region;
@@ -394,6 +444,8 @@ export class Metric implements IMetric {
     // Short-circuit creating a new object if there would be no effective change
     if ((props.label === undefined || props.label === this.label)
       && (props.color === undefined || props.color === this.color)
+      && (props.id === undefined || props.id === this.id)
+      && (props.visible === undefined || props.visible === this.visible)
       && (props.statistic === undefined || props.statistic === this.statistic)
       && (props.unit === undefined || props.unit === this.unit)
       && (props.account === undefined || props.account === this.#accountOverride)
@@ -417,6 +469,8 @@ export class Metric implements IMetric {
       unit: ifUndefined(props.unit, this.unit),
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
+      id: ifUndefined(props.id, this.id),
+      visible: ifUndefined(props.visible, this.visible),
       account: ifUndefined(props.account, this.#accountOverride),
       region: ifUndefined(props.region, this.#regionOverride),
       stackAccount: ifUndefined(props.stackAccount, this.#stackAccount),
@@ -477,6 +531,8 @@ export class Metric implements IMetric {
       renderingProperties: {
         color: this.color,
         label: this.label,
+        id: this.id,
+        visible: this.visible,
       },
     };
   }
@@ -591,7 +647,7 @@ export class Metric implements IMetric {
 
     dimsArray.map(key => {
       if (dims[key] === undefined || dims[key] === null) {
-        throw new cdk.UnscopedValidationError(`Dimension value of '${dims[key]}' is invalid`);
+        throw new cdk.UnscopedValidationError(`Dimension value of '${dims[key]}' is invalid for key: ${key}`);
       }
       if (key.length < 1 || key.length > 255) {
         throw new cdk.UnscopedValidationError(`Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
@@ -855,49 +911,7 @@ function allIdentifiersInExpression(x: string) {
 /**
  * Properties needed to make an alarm from a metric
  */
-export interface CreateAlarmOptions {
-  /**
-   * The period over which the specified statistic is applied.
-   *
-   * Cannot be used with `MathExpression` objects.
-   *
-   * @default - The period from the metric
-   * @deprecated Use `metric.with({ period: ... })` to encode the period into the Metric object
-   */
-  readonly period?: cdk.Duration;
-
-  /**
-   * What function to use for aggregating.
-   *
-   * Can be one of the following:
-   *
-   * - "Minimum" | "min"
-   * - "Maximum" | "max"
-   * - "Average" | "avg"
-   * - "Sum" | "sum"
-   * - "SampleCount | "n"
-   * - "pNN.NN"
-   *
-   * Cannot be used with `MathExpression` objects.
-   *
-   * @default - The statistic from the metric
-   * @deprecated Use `metric.with({ statistic: ... })` to encode the period into the Metric object
-   */
-  readonly statistic?: string;
-
-  /**
-   * Name of the alarm
-   *
-   * @default Automatically generated name
-   */
-  readonly alarmName?: string;
-
-  /**
-   * Description for the alarm
-   *
-   * @default No description
-   */
-  readonly alarmDescription?: string;
+export interface CreateAlarmOptions extends CreateAlarmOptionsBase {
 
   /**
    * Comparison to use to check if metric is breaching
@@ -910,45 +924,29 @@ export interface CreateAlarmOptions {
    * The value against which the specified statistic is compared.
    */
   readonly threshold: number;
+}
+
+/**
+ * Properties needed to make an anomaly detection alarm from a metric
+ */
+export interface AnomalyDetectionMetricOptions extends MathExpressionOptions {
+  /**
+   * The metric to add the alarm on
+   *
+   * Metric objects can be obtained from most resources, or you can construct
+   * custom Metric objects by instantiating one.
+   */
+  readonly metric: IMetric;
 
   /**
-   * The number of periods over which data is compared to the specified threshold.
+   * The number of standard deviations to use for the anomaly detection band. The higher the value, the wider the band.
+   *
+   * - Must be greater than 0. A value of 0 or negative values would not make sense in the context of calculating standard deviations.
+   * - There is no strict maximum value defined, as standard deviations can theoretically extend infinitely. However, in practice, values beyond 5 or 6 standard deviations are rarely used, as they would result in an extremely wide anomaly detection band, potentially missing significant anomalies.
+   *
+   * @default 2
    */
-  readonly evaluationPeriods: number;
-
-  /**
-   * Specifies whether to evaluate the data and potentially change the alarm state if there are too few data points to be statistically significant.
-   *
-   * Used only for alarms that are based on percentiles.
-   *
-   * @default - Not configured.
-   */
-  readonly evaluateLowSampleCountPercentile?: string;
-
-  /**
-   * Sets how this alarm is to handle missing data points.
-   *
-   * @default TreatMissingData.Missing
-   */
-  readonly treatMissingData?: TreatMissingData;
-
-  /**
-   * Whether the actions for this alarm are enabled
-   *
-   * @default true
-   */
-  readonly actionsEnabled?: boolean;
-
-  /**
-   * The number of datapoints that must be breaching to trigger the alarm. This is used only if you are setting an "M
-   * out of N" alarm. In that case, this value is the M. For more information, see Evaluating an Alarm in the Amazon
-   * CloudWatch User Guide.
-   *
-   * @default ``evaluationPeriods``
-   *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarm-evaluation
-   */
-  readonly datapointsToAlarm?: number;
+  readonly stdDevs?: number;
 }
 
 function ifUndefined<T>(x: T | undefined, def: T | undefined): T | undefined {
@@ -981,7 +979,7 @@ function changeAllPeriods(metrics: Record<string, IMetric>, period: cdk.Duration
  * Relies on the fact that implementations of `IMetric` are also supposed to have
  * an implementation of `with` that accepts an argument called `period`. See `IModifiableMetric`.
  */
-function changePeriod(metric: IMetric, period: cdk.Duration): { metric: IMetric; overridden: boolean} {
+function changePeriod(metric: IMetric, period: cdk.Duration): { metric: IMetric; overridden: boolean } {
   if (isModifiableMetric(metric)) {
     const overridden =
       isMetricWithPeriod(metric) && // always true, as the period property is set with a default value even if it is not specified

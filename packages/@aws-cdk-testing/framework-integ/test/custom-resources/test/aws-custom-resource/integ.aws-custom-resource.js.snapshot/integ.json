@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "testCases": {
     "AwsCustomResourceTest/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "AwsCustomResourceTest/DefaultTest/DeployAssert",
       "assertionStackName": "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

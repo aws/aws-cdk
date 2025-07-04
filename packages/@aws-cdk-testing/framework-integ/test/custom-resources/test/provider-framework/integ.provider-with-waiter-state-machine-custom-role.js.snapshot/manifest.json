@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "integ-provider-with-waiter-state-machine-custom-role.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/13001037aa3f64ce93c285aa771a46079687f5cca0ff30e6ceeed576e2239a1c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1e654fd9ae4dd442dbdd72e55b899b7425e8021bd91b873a6047876d207fc031.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -164,16 +164,8 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
@@ -188,16 +180,8 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
@@ -240,6 +224,22 @@
             "data": {
               "attachToRole": [
                 "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
               ]
             }
           },
@@ -316,16 +316,8 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
@@ -340,48 +332,24 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           }
@@ -416,6 +384,38 @@
             "data": {
               "attachToRole": [
                 "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
               ]
             }
           },
@@ -494,82 +494,6 @@
             "data": "MyProviderWithCustomRoleframeworkonEventCE6B50CD"
           }
         ],
-        "/integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyProviderWithCustomRoleframeworkonEventinlinePolicyAddedToExecutionRole004FDFBE5"
-          }
-        ],
-        "/integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole/framework-onEvent/inlinePolicyAddedToExecutionRole-1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole/framework-onEvent/inlinePolicyAddedToExecutionRole-1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyProviderWithCustomRoleframeworkonEventinlinePolicyAddedToExecutionRole1DFA8A188"
-          }
-        ],
         "/integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole/framework-isComplete": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -613,82 +537,6 @@
             "data": "MyProviderWithCustomRoleframeworkisComplete10E48A2A"
           }
         ],
-        "/integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole/framework-isComplete/inlinePolicyAddedToExecutionRole-0": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole/framework-isComplete/inlinePolicyAddedToExecutionRole-0/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyProviderWithCustomRoleframeworkisCompleteinlinePolicyAddedToExecutionRole0EB28FB28"
-          }
-        ],
-        "/integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole/framework-isComplete/inlinePolicyAddedToExecutionRole-1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole/framework-isComplete/inlinePolicyAddedToExecutionRole-1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyProviderWithCustomRoleframeworkisCompleteinlinePolicyAddedToExecutionRole10FC78DA4"
-          }
-        ],
         "/integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole/framework-onTimeout": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -730,82 +578,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProviderWithCustomRoleframeworkonTimeout1A7D4C59"
-          }
-        ],
-        "/integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole/framework-onTimeout/inlinePolicyAddedToExecutionRole-0": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole/framework-onTimeout/inlinePolicyAddedToExecutionRole-0/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyProviderWithCustomRoleframeworkonTimeoutinlinePolicyAddedToExecutionRole0F64E0BFD"
-          }
-        ],
-        "/integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole/framework-onTimeout/inlinePolicyAddedToExecutionRole-1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole/framework-onTimeout/inlinePolicyAddedToExecutionRole-1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyProviderWithCustomRoleframeworkonTimeoutinlinePolicyAddedToExecutionRole158451186"
           }
         ],
         "/integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole/waiter-state-machine/Role": [
@@ -960,6 +732,60 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "MyProviderWithCustomRoleframeworkonEventinlinePolicyAddedToExecutionRole004FDFBE5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithCustomRoleframeworkonEventinlinePolicyAddedToExecutionRole004FDFBE5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyProviderWithCustomRoleframeworkonEventinlinePolicyAddedToExecutionRole1DFA8A188": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithCustomRoleframeworkonEventinlinePolicyAddedToExecutionRole1DFA8A188",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyProviderWithCustomRoleframeworkisCompleteinlinePolicyAddedToExecutionRole0EB28FB28": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithCustomRoleframeworkisCompleteinlinePolicyAddedToExecutionRole0EB28FB28",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyProviderWithCustomRoleframeworkisCompleteinlinePolicyAddedToExecutionRole10FC78DA4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithCustomRoleframeworkisCompleteinlinePolicyAddedToExecutionRole10FC78DA4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyProviderWithCustomRoleframeworkonTimeoutinlinePolicyAddedToExecutionRole0F64E0BFD": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithCustomRoleframeworkonTimeoutinlinePolicyAddedToExecutionRole0F64E0BFD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyProviderWithCustomRoleframeworkonTimeoutinlinePolicyAddedToExecutionRole158451186": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithCustomRoleframeworkonTimeoutinlinePolicyAddedToExecutionRole158451186",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "integ-provider-with-waiter-state-machine-custom-role"
@@ -1018,5 +844,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

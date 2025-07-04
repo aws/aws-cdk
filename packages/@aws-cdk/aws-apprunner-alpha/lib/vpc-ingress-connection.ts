@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { IService } from './service';
 import { CfnVpcIngressConnection } from 'aws-cdk-lib/aws-apprunner';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties of the AppRunner VPC Ingress Connection
@@ -79,7 +80,11 @@ export interface IVpcIngressConnection extends cdk.IResource {
  *
  * @resource AWS::AppRunner::VpcIngressConnection
  */
+@propertyInjectable
 export class VpcIngressConnection extends cdk.Resource implements IVpcIngressConnection {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-apprunner-alpha.VpcIngressConnection';
+
   /**
    * Import from VPC Ingress Connection from attributes.
    */
@@ -148,14 +153,14 @@ export class VpcIngressConnection extends cdk.Resource implements IVpcIngressCon
 
     if (props.vpcIngressConnectionName !== undefined && !cdk.Token.isUnresolved(props.vpcIngressConnectionName)) {
       if (props.vpcIngressConnectionName.length < 4 || props.vpcIngressConnectionName.length > 40) {
-        throw new Error(
-          `\`vpcIngressConnectionName\` must be between 4 and 40 characters, got: ${props.vpcIngressConnectionName.length} characters.`,
+        throw new cdk.ValidationError(
+          `\`vpcIngressConnectionName\` must be between 4 and 40 characters, got: ${props.vpcIngressConnectionName.length} characters.`, this,
         );
       }
 
       if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.vpcIngressConnectionName)) {
-        throw new Error(
-          `\`vpcIngressConnectionName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.vpcIngressConnectionName}.`,
+        throw new cdk.ValidationError(
+          `\`vpcIngressConnectionName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.vpcIngressConnectionName}.`, this,
         );
       }
     }

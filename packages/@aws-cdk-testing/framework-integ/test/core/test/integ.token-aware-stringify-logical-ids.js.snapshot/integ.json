@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "45.0.0",
   "testCases": {
     "TokenAwareStringifyLogicalIds/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "TokenAwareStringifyLogicalIds/DefaultTest/DeployAssert",
       "assertionStackName": "TokenAwareStringifyLogicalIdsDefaultTestDeployAssert787DCCE3"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

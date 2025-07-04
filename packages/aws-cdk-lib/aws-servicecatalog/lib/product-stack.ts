@@ -7,6 +7,7 @@ import { ProductStackHistory } from './product-stack-history';
 import { IBucket } from '../../aws-s3';
 import { ServerSideEncryption } from '../../aws-s3-deployment';
 import * as cdk from '../../core';
+import { ValidationError } from '../../core';
 
 /**
  * Product stack props.
@@ -150,6 +151,7 @@ export class ProductStack extends cdk.Stack {
       packaging: cdk.FileAssetPackaging.FILE,
       sourceHash: templateHash,
       fileName: this.templateFile,
+      displayName: `${this.node.path} Template`,
     }).httpUrl;
 
     if (this._parentProductStackHistory) {
@@ -168,6 +170,6 @@ function findParentStack(scope: Construct): cdk.Stack {
     const parentStack = cdk.Stack.of(scope);
     return parentStack as cdk.Stack;
   } catch {
-    throw new Error('Product stacks must be defined within scope of another non-product stack');
+    throw new ValidationError('Product stacks must be defined within scope of another non-product stack', scope);
   }
 }
