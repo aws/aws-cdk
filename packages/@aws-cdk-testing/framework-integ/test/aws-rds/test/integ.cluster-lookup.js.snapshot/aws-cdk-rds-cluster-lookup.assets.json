@@ -1,0 +1,21 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "3bcd33e34603726e169ff4992b9678ec0884d78fef8095e40d73af38bf81fe04": {
+      "displayName": "aws-cdk-rds-cluster-lookup Template",
+      "source": {
+        "path": "aws-cdk-rds-cluster-lookup.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-test-region": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
+          "objectKey": "3bcd33e34603726e169ff4992b9678ec0884d78fef8095e40d73af38bf81fe04.json",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
