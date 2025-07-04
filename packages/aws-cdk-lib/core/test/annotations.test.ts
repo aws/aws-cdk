@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { getWarnings } from './util';
+import { getWarnings, getInfos } from './util';
 import { App, Stack } from '../lib';
 import { Annotations } from '../lib/annotations';
 
@@ -144,6 +144,103 @@ describe('annotations', () => {
       {
         path: '/S1/C1',
         message: expect.stringMatching(/stackId: \${Token\[AWS::StackId\.\d+\]} \[ack: MESSAGE\]/),
+      },
+    ]);
+  });
+
+  test('addInfoV2 adds an acknowledgeable info message', () => {
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+    Annotations.of(c1).addInfoV2('info1', 'This is an info message');
+    Annotations.of(c1).addInfoV2('info1', 'This is an info message');
+    Annotations.of(c1).addInfoV2('info1', 'This is an info message');
+    Annotations.of(c1).addInfoV2('info2', 'This is another info message');
+    expect(getInfos(app.synth())).toEqual([
+      {
+        path: '/S1/C1',
+        message: 'This is an info message [ack: info1]',
+      },
+      {
+        path: '/S1/C1',
+        message: 'This is another info message [ack: info2]',
+      },
+    ]);
+  });
+
+  test('acknowledgeInfo removes info message', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+
+    // WHEN
+    Annotations.of(c1).addInfoV2('INFO1', 'This is an info message');
+    Annotations.of(c1).addInfoV2('INFO2', 'This is another info message');
+    Annotations.of(c1).acknowledgeInfo('INFO2', 'I acknowledge this info');
+
+    // THEN
+    expect(getInfos(app.synth())).toEqual([
+      {
+        path: '/S1/C1',
+        message: 'This is an info message [ack: INFO1]',
+      },
+    ]);
+  });
+
+  test('acknowledgeInfo removes info message on children', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+    const c2 = new Construct(c1, 'C2');
+
+    // WHEN
+    Annotations.of(c2).addInfoV2('INFO2', 'This is an info message for child');
+    Annotations.of(c1).acknowledgeInfo('INFO2', 'I acknowledge this info');
+
+    // THEN
+    expect(getInfos(app.synth())).toEqual([]);
+  });
+
+  test('don\'t resolve the info message if tokens are included', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+
+    // WHEN
+    Annotations.of(c1).addInfoV2('INFO', `stackId: ${stack.stackId}`);
+
+    // THEN
+    expect(getInfos(app.synth())).toEqual([
+      {
+        path: '/S1/C1',
+        message: expect.stringMatching(/stackId: \${Token\[AWS::StackId\.\d+\]} \[ack: INFO\]/),
+      },
+    ]);
+  });
+
+  test('messages with same ID are treated separately across different levels', () => {
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+
+    // WHEN
+    Annotations.of(c1).addWarningV2('message1', 'This is a message');
+    Annotations.of(c1).addInfoV2('message1', 'This is another message');
+
+    // THEN
+    expect(getWarnings(app.synth())).toEqual([
+      {
+        path: '/S1/C1',
+        message: 'This is a message [ack: message1]',
+      },
+    ]);
+    expect(getInfos(app.synth())).toEqual([
+      {
+        path: '/S1/C1',
+        message: 'This is another message [ack: message1]',
       },
     ]);
   });
