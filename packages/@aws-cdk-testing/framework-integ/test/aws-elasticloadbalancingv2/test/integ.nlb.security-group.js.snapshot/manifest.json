@@ -1,0 +1,377 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "NlbSecurityGroupStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "NlbSecurityGroupStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "NlbSecurityGroupStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "NlbSecurityGroupStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bf8a5de3415a39f0319d85dcc99004908fc66b5838258282e041aa2b965bc4ac.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "NlbSecurityGroupStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "NlbSecurityGroupStack.assets"
+      ],
+      "metadata": {
+        "/NlbSecurityGroupStack/Stack": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/NlbSecurityGroupStack/Stack/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Stack8A423254"
+          }
+        ],
+        "/NlbSecurityGroupStack/Stack/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/NlbSecurityGroupStack/Stack/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet1Subnet0AD81D22"
+          }
+        ],
+        "/NlbSecurityGroupStack/Stack/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet1RouteTable5057189D"
+          }
+        ],
+        "/NlbSecurityGroupStack/Stack/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet1RouteTableAssociation74F1C1B6"
+          }
+        ],
+        "/NlbSecurityGroupStack/Stack/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet1DefaultRoute16154E3D"
+          }
+        ],
+        "/NlbSecurityGroupStack/Stack/IsolatedSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/NlbSecurityGroupStack/Stack/IsolatedSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackIsolatedSubnet1Subnet2151DD06"
+          }
+        ],
+        "/NlbSecurityGroupStack/Stack/IsolatedSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackIsolatedSubnet1RouteTable2D6067DB"
+          }
+        ],
+        "/NlbSecurityGroupStack/Stack/IsolatedSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackIsolatedSubnet1RouteTableAssociationB89E65E5"
+          }
+        ],
+        "/NlbSecurityGroupStack/Stack/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackIGW2F0A1126"
+          }
+        ],
+        "/NlbSecurityGroupStack/Stack/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackVPCGWFFCB6290"
+          }
+        ],
+        "/NlbSecurityGroupStack/Stack/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/NlbSecurityGroupStack/Stack/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackRestrictDefaultSecurityGroupCustomResource804DC9E2"
+          }
+        ],
+        "/NlbSecurityGroupStack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/NlbSecurityGroupStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/NlbSecurityGroupStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/NlbSecurityGroupStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/NlbSecurityGroupStack/NlbWithSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/NlbSecurityGroupStack/NlbWithSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NlbWithSecurityGroup8AA6FD5A"
+          }
+        ],
+        "/NlbSecurityGroupStack/NlbWithSecurityGroup/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/NlbSecurityGroupStack/NlbWithSecurityGroup/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NlbWithSecurityGroup11C7D70D"
+          }
+        ],
+        "/NlbSecurityGroupStack/NlbWithSecurityGroup/SecurityGroup/to NlbSecurityGroupStackSecurityGroup8C77E785:1229": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NlbWithSecurityGrouptoNlbSecurityGroupStackSecurityGroup8C77E7851229778883C8"
+          }
+        ],
+        "/NlbSecurityGroupStack/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/NlbSecurityGroupStack/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroupDD263621"
+          }
+        ],
+        "/NlbSecurityGroupStack/SecurityGroup/from NlbSecurityGroupStackNlbWithSecurityGroupD9AAE7DE:1229": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroupfromNlbSecurityGroupStackNlbWithSecurityGroupD9AAE7DE12296F676D9E"
+          }
+        ],
+        "/NlbSecurityGroupStack/NlbWithSecurityGroup2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/NlbSecurityGroupStack/NlbWithSecurityGroup2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NlbWithSecurityGroup235636123"
+          }
+        ],
+        "/NlbSecurityGroupStack/NlbWithoutSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/NlbSecurityGroupStack/NlbWithoutSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NlbWithoutSecurityGroup82D9E764"
+          }
+        ],
+        "/NlbSecurityGroupStack/Exports/Output{\"Ref\":\"NlbWithSecurityGroup8AA6FD5A\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefNlbWithSecurityGroup8AA6FD5A445BAFDC"
+          }
+        ],
+        "/NlbSecurityGroupStack/Exports/Output{\"Ref\":\"NlbWithSecurityGroup235636123\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefNlbWithSecurityGroup2356361239BA6467E"
+          }
+        ],
+        "/NlbSecurityGroupStack/Exports/Output{\"Ref\":\"NlbWithoutSecurityGroup82D9E764\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefNlbWithoutSecurityGroup82D9E764BD43884F"
+          }
+        ],
+        "/NlbSecurityGroupStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/NlbSecurityGroupStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "NlbSecurityGroupStack"
+    },
+    "NlbSecurityGroupIntegDefaultTestDeployAssertD87A91AD.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "NlbSecurityGroupIntegDefaultTestDeployAssertD87A91AD.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "NlbSecurityGroupIntegDefaultTestDeployAssertD87A91AD": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "NlbSecurityGroupIntegDefaultTestDeployAssertD87A91AD.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/61957f65ef9d24b662ded35664c814470289444f5d41aa6a6da6731c6e0b6a72.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "NlbSecurityGroupIntegDefaultTestDeployAssertD87A91AD.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "NlbSecurityGroupStack",
+        "NlbSecurityGroupIntegDefaultTestDeployAssertD87A91AD.assets"
+      ],
+      "metadata": {
+        "/NlbSecurityGroupInteg/DefaultTest/DeployAssert/AwsApiCallelastic-load-balancing-v2describeLoadBalancersf7e9260de6322af2c929a6a6b2f8b607/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/NlbSecurityGroupInteg/DefaultTest/DeployAssert/AwsApiCallelastic-load-balancing-v2describeLoadBalancersf7e9260de6322af2c929a6a6b2f8b607/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallelasticloadbalancingv2describeLoadBalancersf7e9260de6322af2c929a6a6b2f8b607"
+          }
+        ],
+        "/NlbSecurityGroupInteg/DefaultTest/DeployAssert/AwsApiCallelastic-load-balancing-v2describeLoadBalancersf7e9260de6322af2c929a6a6b2f8b607/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallelasticloadbalancingv2describeLoadBalancersf7e9260de6322af2c929a6a6b2f8b607"
+          }
+        ],
+        "/NlbSecurityGroupInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/NlbSecurityGroupInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/NlbSecurityGroupInteg/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/NlbSecurityGroupInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/NlbSecurityGroupInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "NlbSecurityGroupInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}
