@@ -442,6 +442,9 @@
    "eu-west-3": {
     "value": "nodejs22.x"
    },
+   "eusc-de-east-1": {
+    "value": "nodejs22.x"
+   },
    "il-central-1": {
     "value": "nodejs22.x"
    },
@@ -569,6 +572,9 @@
    },
    "eu-west-3": {
     "endpoint": "s3-website.eu-west-3.amazonaws.com"
+   },
+   "eusc-de-east-1": {
+    "endpoint": "s3-website.eusc-de-east-1.amazonaws.eu"
    },
    "il-central-1": {
     "endpoint": "s3-website.il-central-1.amazonaws.com"

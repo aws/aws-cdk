@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { CfnStage } from '.././index';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
-import { Stack } from '../../../core';
+import { Lazy, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -172,6 +172,12 @@ export class HttpStage extends HttpStageBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    if (props.stageVariables) {
+      Object.entries(props.stageVariables).forEach(([key, value]) => {
+        this.addStageVariable(key, value);
+      });
+    }
+
     new CfnStage(this, 'Resource', {
       apiId: props.httpApi.apiId,
       stageName: this.physicalName,
@@ -183,6 +189,7 @@ export class HttpStage extends HttpStageBase {
         detailedMetricsEnabled: props.detailedMetricsEnabled,
       } : undefined,
       description: props.description,
+      stageVariables: Lazy.any({ produce: () => this._stageVariables }),
     });
 
     this.stageName = this.physicalName;

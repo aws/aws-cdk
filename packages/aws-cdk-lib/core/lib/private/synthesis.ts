@@ -15,7 +15,6 @@ import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
 import { IPolicyValidationPluginBeta1 } from '../validation';
-import { generateFeatureFlagReport } from './feature-flag-report';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
 
@@ -64,8 +63,6 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
   // next, we invoke "onSynthesize" on all of our children. this will allow
   // stacks to add themselves to the synthesized cloud assembly.
   synthesizeTree(root, builder, options.validateOnSynthesis);
-
-  generateFeatureFlagReport(builder, root);
 
   const assembly = builder.buildAssembly();
 

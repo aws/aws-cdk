@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "c9e084a249774d97a978bed2e1976874a70517128a904136b8737f0792322c1f": {
       "displayName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "95cdeb0a3d42e914c8b79320661c9bace4ccddff08a36c8b330a47f756c386ff": {
+    "af8772480486b2baa0baa5ac9787981a6bb8a175d2c9d94e561e930461ce3bc7": {
       "displayName": "ChatbotLogRetentionInteg Template",
       "source": {
         "path": "ChatbotLogRetentionInteg.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "95cdeb0a3d42e914c8b79320661c9bace4ccddff08a36c8b330a47f756c386ff.json",
+          "objectKey": "af8772480486b2baa0baa5ac9787981a6bb8a175d2c9d94e561e930461ce3bc7.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
