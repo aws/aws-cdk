@@ -21,8 +21,7 @@
                     "path": "aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": []
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -67,8 +66,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": []
+                  "version": "0.0.0"
                 }
               },
               "Code": {
@@ -88,8 +86,7 @@
                     "path": "aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0",
-                      "metadata": []
+                      "version": "0.0.0"
                     }
                   }
                 },
@@ -108,7 +105,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "c071afed018660f87ece6db422ff34407d45f6940181746b4c7f99af8f032a98.zip"
+                      "s3Key": "635014de0189cac8a2849b0c53d352f1cc9c7079c6e59d2de204a40e3b86ecae.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -176,8 +173,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
-              "version": "0.0.0",
-              "metadata": []
+              "version": "0.0.0"
             }
           },
           "Authorizer": {
@@ -256,8 +252,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_apigateway.TokenAuthorizer",
-              "version": "0.0.0",
-              "metadata": []
+              "version": "0.0.0"
             }
           },
           "IntegRestApi": {
@@ -302,8 +297,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigateway.Deployment",
-                  "version": "0.0.0",
-                  "metadata": []
+                  "version": "0.0.0"
                 }
               },
               "DeploymentStage.prod": {
@@ -333,8 +327,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigateway.Stage",
-                  "version": "0.0.0",
-                  "metadata": []
+                  "version": "0.0.0"
                 }
               },
               "Endpoint": {
@@ -427,29 +420,25 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_apigateway.Method",
-                          "version": "0.0.0",
-                          "metadata": []
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_apigateway.Resource",
-                      "version": "0.0.0",
-                      "metadata": []
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigateway.ResourceBase",
-                  "version": "0.0.0",
-                  "metadata": []
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_apigateway.RestApi",
-              "version": "0.0.0",
-              "metadata": []
+              "version": "0.0.0"
             }
           },
           "Connection": {
@@ -479,8 +468,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_events.Connection",
-              "version": "0.0.0",
-              "metadata": []
+              "version": "0.0.0"
             }
           },
           "Invoke HTTP Endpoint": {
@@ -504,8 +492,7 @@
                     "path": "aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": []
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -620,15 +607,13 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0",
-                      "metadata": []
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": []
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -645,7 +630,7 @@
                           {
                             "Ref": "AWS::Partition"
                           },
-                          ":states:::http:invoke\",\"Parameters\":{\"ApiEndpoint.$\":\"States.Format('{}/{}', 'https://",
+                          ":states:::http:invoke\",\"Parameters\":{\"ApiEndpoint\":\"https://",
                           {
                             "Ref": "IntegRestApiF8B59B0D"
                           },
@@ -661,7 +646,7 @@
                           {
                             "Ref": "IntegRestApiDeploymentStageprod29E2686A"
                           },
-                          "/', '/test')\",\"Authentication\":{\"ConnectionArn\":\"",
+                          "///test\",\"Authentication\":{\"ConnectionArn\":\"",
                           {
                             "Fn::GetAtt": [
                               "Connection07624BCD",
@@ -688,8 +673,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
-              "version": "0.0.0",
-              "metadata": []
+              "version": "0.0.0"
             }
           },
           "Exports": {
@@ -707,7 +691,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.4.2"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -745,7 +729,7 @@
                 "path": "HttpInvokeTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -765,7 +749,7 @@
                             "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.4.2"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -789,8 +773,7 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0",
-                          "metadata": []
+                          "version": "0.0.0"
                         }
                       }
                     },
@@ -830,15 +813,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.4.2"
-                    }
-                  },
-                  "LatestNodeRuntimeMap": {
-                    "id": "LatestNodeRuntimeMap",
-                    "path": "HttpInvokeTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnMapping",
-                      "version": "0.0.0"
+                      "version": "10.3.0"
                     }
                   },
                   "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868": {
@@ -854,7 +829,7 @@
                             "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.4.2"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -878,8 +853,7 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0",
-                          "metadata": []
+                          "version": "0.0.0"
                         }
                       },
                       "AssertionResults": {
@@ -935,7 +909,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.4.2"
+          "version": "10.3.0"
         }
       }
     },
