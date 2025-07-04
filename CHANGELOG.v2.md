@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **apigatewayv2:** add stage variables support for HTTP and WebSocket API ([#34548](https://github.com/aws/aws-cdk/issues/34548)) ([965e055](https://github.com/aws/aws-cdk/commit/965e055acbcf7c61bdd24efae16d3949567a498c))
 * **cloudwatch:** add id and visible properties for CloudWatch Metric ([#34870](https://github.com/aws/aws-cdk/issues/34870)) ([879afd6](https://github.com/aws/aws-cdk/commit/879afd61d72757dd387f47849ac93c8126a46e40)), closes [#19876](https://github.com/aws/aws-cdk/issues/19876)
 * report feature flags into Cloud Assembly ([#34884](https://github.com/aws/aws-cdk/issues/34884)) ([f70e46c](https://github.com/aws/aws-cdk/commit/f70e46cf87f27d0132f706921736802d477a6d58)), closes [#34798](https://github.com/aws/aws-cdk/issues/34798)
+* **region-info:** add support for region eusc-de ([#34860](https://github.com/aws/aws-cdk/pull/34860))
 
 
 ### Bug Fixes
