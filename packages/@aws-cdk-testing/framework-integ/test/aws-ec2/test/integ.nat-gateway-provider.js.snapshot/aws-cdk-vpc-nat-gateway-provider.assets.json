@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "aws-cdk-vpc-nat-gateway-provider/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "087aa6e79ce341467ad26bc0913f67dc129b63e04de933cf92e478d66b779776": {
+    "f062b0bdfa4cc553cc7f8d84d6d9a893e4d2054c0be306ab44a42fd6865cc103": {
       "displayName": "aws-cdk-vpc-nat-gateway-provider Template",
       "source": {
         "path": "aws-cdk-vpc-nat-gateway-provider.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "087aa6e79ce341467ad26bc0913f67dc129b63e04de933cf92e478d66b779776.json",
+          "objectKey": "f062b0bdfa4cc553cc7f8d84d6d9a893e4d2054c0be306ab44a42fd6865cc103.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
