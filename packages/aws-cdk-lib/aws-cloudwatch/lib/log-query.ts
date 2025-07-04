@@ -26,6 +26,17 @@ export enum LogQueryVisualizationType {
    */
   PIE = 'pie',
 }
+/**
+ * Logs Query Language
+ */
+export enum LogQueryLanguage {
+  /** Logs Insights QL */
+  LOGS_INSIGHTS = 'Logs',
+  /** OpenSearch SQL */
+  SQL = 'SQL',
+  /** OpenSearch PPL */
+  PPL = 'PPL',
+}
 
 /**
  * Properties for a Query widget
@@ -61,6 +72,12 @@ export interface LogQueryWidgetProps {
    * @default - Exactly one of `queryString`, `queryLines` is required.
    */
   readonly queryLines?: string[];
+
+  /**
+   * The query language to use for the query.
+   * @default LogQueryLanguage.LOGS_INSIGHTS
+   */
+  readonly queryLanguage?: LogQueryLanguage;
 
   /**
    * The region the metrics of this widget should be taken from
@@ -124,7 +141,6 @@ export class LogQueryWidget extends ConcreteWidget {
       throw new cdk.UnscopedValidationError('Specify exactly one of \'queryString\' and \'queryLines\'');
     }
   }
-
   public toJson(): any[] {
     const sources = this.props.logGroupNames.map(l => `SOURCE '${l}'`).join(' | ');
     const query = this.props.queryLines
@@ -132,14 +148,19 @@ export class LogQueryWidget extends ConcreteWidget {
       : this.props.queryString;
 
     const properties: any = {
-      view: this.props.view? this.props.view : LogQueryVisualizationType.TABLE,
+      view: this.props.view ? this.props.view : LogQueryVisualizationType.TABLE,
       title: this.props.title,
       region: this.props.region || cdk.Aws.REGION,
       accountId: this.props.accountId,
       query: `${sources} | ${query}`,
     };
 
-    // adding stacked property in case of LINE or STACKEDAREA
+    // Add queryLanguage property if specified
+    if (this.props.queryLanguage) {
+      properties.queryLanguage = this.props.queryLanguage;
+    }
+
+    // Add stacked property in case of LINE or STACKEDAREA
     if (this.props.view === LogQueryVisualizationType.LINE || this.props.view === LogQueryVisualizationType.STACKEDAREA) {
       // assign the right native view value. both types share the same value
       properties.view = 'timeSeries',
