@@ -1,0 +1,55 @@
+{
+ "Resources": {
+  "DashCCD7F836": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Lambda Metrics with ID and Visible Properties\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"test-function\",{\"label\":\"Lambda Invocations\",\"id\":\"lambda_invocations\",\"visible\":true}],[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"test-function\",{\"label\":\"Lambda Errors (Hidden for calculation)\",\"id\":\"lambda_errors\",\"visible\":false}],[\"AWS/Lambda\",\"Duration\",\"FunctionName\",\"test-function\",{\"label\":\"Lambda Duration\",\"id\":\"lambda_duration\",\"visible\":true}],[\"AWS/Lambda\",\"Throttles\",\"FunctionName\",\"test-function\",{\"label\":\"Lambda Throttles (Hidden)\",\"id\":\"lambda_throttles\",\"visible\":false}],[{\"label\":\"Error Rate (%)\",\"expression\":\"lambda_errors / lambda_invocations * 100\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

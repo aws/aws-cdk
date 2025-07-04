@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "45.0.0",
   "testCases": {
     "AzRelocationClusterStackInteg/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "AzRelocationClusterStackInteg/DefaultTest/DeployAssert",
       "assertionStackName": "AzRelocationClusterStackIntegDefaultTestDeployAssert8A9859B5"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

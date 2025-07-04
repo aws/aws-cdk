@@ -28,7 +28,7 @@
      "Payload": "\"{\\\"channel\\\":\\\"search\\\",\\\"action\\\":\\\"pubSub\\\",\\\"authMode\\\":\\\"API_KEY\\\",\\\"eventPayload\\\":[{\\\"id\\\":\\\"2\\\"}]}\""
     },
     "flattenResponse": "false",
-    "salt": "1749672558807"
+    "salt": "1751539270412"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -136,7 +136,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d9986c6e44adb9331064dc0efb9c1ffeeb94f6d16b46c34353881608a339a107.zip"
+     "S3Key": "1bf478116a59c3d8e069e12fe42948c11b5d5233fca90d2f2b3ec9fcd695025b.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -240,6 +240,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

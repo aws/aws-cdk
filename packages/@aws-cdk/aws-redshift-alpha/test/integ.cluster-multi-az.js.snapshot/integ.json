@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "45.0.0",
   "testCases": {
     "MultiAzRedshiftTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "MultiAzRedshiftTest/DefaultTest/DeployAssert",
       "assertionStackName": "MultiAzRedshiftTestDefaultTestDeployAssert07040285"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

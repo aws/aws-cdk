@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { FileSystem, SymlinkFollowMode } from '../../lib/fs';
+import { FileSystem, IgnoreMode, SymlinkFollowMode } from '../../lib/fs';
 
 describe('fs copy', () => {
   test('Default: copies all files and subdirectories, with default follow mode is "External"', () => {
@@ -113,6 +113,31 @@ describe('fs copy', () => {
     expect(tree(outdir)).toEqual([
       'subdir2 (D)',
       '    empty-subdir (D)',
+      '    subdir3 (D)',
+      '        file3.txt',
+    ]);
+  });
+
+  test('nested exclude with docker ignore mode', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      exclude: [
+        '**',
+        '!subdir2/subdir3/*.txt',
+        '!subdir/file2.txt',
+        'subdir',
+        '!local-link.txt',
+      ],
+      ignoreMode: IgnoreMode.DOCKER,
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'local-link.txt => file1.txt',
+      'subdir2 (D)',
       '    subdir3 (D)',
       '        file3.txt',
     ]);

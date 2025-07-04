@@ -29,7 +29,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1747747524858"
+    "salt": "1751311594584"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -217,7 +217,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5b7ddd1e0b18514d45c25a44b162f82431b091da093fb35e4b814bbba093c506.zip"
+     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -286,7 +286,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5b7ddd1e0b18514d45c25a44b162f82431b091da093fb35e4b814bbba093c506.zip"
+     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -336,7 +336,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5b7ddd1e0b18514d45c25a44b162f82431b091da093fb35e4b814bbba093c506.zip"
+     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -430,6 +430,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

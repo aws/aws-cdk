@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "1f568ce391b526f6a85c9523bdcea5744ee809fec0c7c11a6f131e24921a94a7": {
       "displayName": "cdk-route53-integ-delete-existing-record-set/Custom::DeleteExistingRecordSetCustomResourceProvider Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "949062174d2e1d07ac8ca9acf66551111f84cc43af14550d5a19b0ca76a66dbe": {
+    "fb341f89280931b7f7dd98e93967887a3566560f5544b2a7e173729f8455e7c6": {
       "displayName": "cdk-route53-integ-delete-existing-record-set Template",
       "source": {
         "path": "cdk-route53-integ-delete-existing-record-set.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "949062174d2e1d07ac8ca9acf66551111f84cc43af14550d5a19b0ca76a66dbe.json",
+          "objectKey": "fb341f89280931b7f7dd98e93967887a3566560f5544b2a7e173729f8455e7c6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

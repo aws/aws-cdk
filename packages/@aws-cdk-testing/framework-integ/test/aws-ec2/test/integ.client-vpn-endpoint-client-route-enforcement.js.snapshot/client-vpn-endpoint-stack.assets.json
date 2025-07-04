@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "client-vpn-endpoint-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "f18c1da5a428e21a49373e9128df00577dd4a42020ac8690d02b3bb89ae15375": {
+    "aed056bc22d5e5840efb38647c6fe1e1074331f15e76c7e9cb4aa1037d96b8b1": {
       "displayName": "client-vpn-endpoint-stack Template",
       "source": {
         "path": "client-vpn-endpoint-stack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f18c1da5a428e21a49373e9128df00577dd4a42020ac8690d02b3bb89ae15375.json",
+          "objectKey": "aed056bc22d5e5840efb38647c6fe1e1074331f15e76c7e9cb4aa1037d96b8b1.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

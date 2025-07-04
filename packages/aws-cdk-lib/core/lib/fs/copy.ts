@@ -20,7 +20,7 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
   for (const file of files) {
     const sourceFilePath = path.join(srcDir, file);
 
-    if (ignoreStrategy.ignores(sourceFilePath)) {
+    if (ignoreStrategy.completelyIgnores(sourceFilePath)) {
       continue;
     }
 
@@ -40,19 +40,25 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
       if (shouldFollow(follow, rootDir, targetPath)) {
         stat = fs.statSync(sourceFilePath);
       } else {
-        fs.symlinkSync(target, destFilePath);
+        if (!ignoreStrategy.ignores(sourceFilePath)) {
+          fs.mkdirSync(destDir, { recursive: true });
+          fs.symlinkSync(target, destFilePath);
+        }
         stat = undefined;
       }
     }
 
     if (stat && stat.isDirectory()) {
-      fs.mkdirSync(destFilePath);
+      if (!ignoreStrategy.ignores(sourceFilePath)) fs.mkdirSync(destFilePath, { recursive: true });
       copyDirectory(sourceFilePath, destFilePath, options, rootDir);
       stat = undefined;
     }
 
     if (stat && stat.isFile()) {
-      fs.copyFileSync(sourceFilePath, destFilePath);
+      if (!ignoreStrategy.ignores(sourceFilePath)) {
+        fs.mkdirSync(destDir, { recursive: true });
+        fs.copyFileSync(sourceFilePath, destFilePath);
+      }
       stat = undefined;
     }
   }

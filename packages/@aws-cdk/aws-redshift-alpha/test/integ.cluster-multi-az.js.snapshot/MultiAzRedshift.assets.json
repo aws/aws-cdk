@@ -1,17 +1,18 @@
 {
-  "version": "36.0.0",
+  "version": "45.0.0",
   "files": {
     "c2c282abac04283268fcc5f53da2bb783597d916fc0cef560cd7826453d8f439": {
+      "displayName": "MultiAzRedshift Template",
       "source": {
         "path": "MultiAzRedshift.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "214794239830-us-east-1": {
-          "bucketName": "cdk-hnb659fds-assets-214794239830-us-east-1",
+        "123456789012-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
           "objectKey": "c2c282abac04283268fcc5f53da2bb783597d916fc0cef560cd7826453d8f439.json",
           "region": "us-east-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::214794239830:role/cdk-hnb659fds-file-publishing-role-214794239830-us-east-1"
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-east-1"
         }
       }
     }
