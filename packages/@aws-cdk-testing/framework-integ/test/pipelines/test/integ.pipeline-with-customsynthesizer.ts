@@ -57,7 +57,7 @@ export class LambdaStack extends Stack {
     new lambda.Function(this, 'LambdaFN', {
       runtime: lambda.Runtime.PYTHON_3_10,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, 'testhelpers', 'assets'))
+      code: lambda.Code.fromAsset(path.join(__dirname, 'testhelpers', 'assets')),
     });
   }
 }

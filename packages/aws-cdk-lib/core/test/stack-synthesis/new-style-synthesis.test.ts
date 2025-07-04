@@ -499,7 +499,6 @@ describe('new style synthesis', () => {
 
     // THEN
     const manifest = readAssetManifest(getAssetManifest(asm));
-    console.log(manifest.dockerImages?.['docker-asset-hash']?.destinations);
     const imageTag = manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region-bc91f5f4'].imageTag;
     expect(imageTag).toEqual('test-prefix-docker-asset-hash');
   });
