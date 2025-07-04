@@ -54,7 +54,7 @@ describe('new style synthesis', () => {
       displayName: 'Stack Template',
       source: { path: 'Stack.template.json', packaging: 'file' },
       destinations: {
-        'current_account-current_region': {
+        'current_account-current_region-b8c4ada5': {
           bucketName: 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
           objectKey: templateObjectKey,
           assumeRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}',
@@ -154,8 +154,8 @@ describe('new style synthesis', () => {
     const assetManifestJSON = readAssetManifest(assetManifest);
 
     // Validates that the image and file asset session tags were set in the asset manifest:
-    expect(assetManifestJSON.dockerImages?.dockerHash.destinations['111111111111-us-east-1'].assumeRoleAdditionalOptions?.Tags).toEqual([{ Key: 'Department', Value: 'Engineering-ImageAssetTag' }]);
-    expect(assetManifestJSON.files?.fileHash.destinations['111111111111-us-east-1'].assumeRoleAdditionalOptions?.Tags).toEqual([{ Key: 'Department', Value: 'Engineering-FileAssetTag' }]);
+    expect(assetManifestJSON.dockerImages?.dockerHash.destinations['111111111111-us-east-1-540a564a'].assumeRoleAdditionalOptions?.Tags).toEqual([{ Key: 'Department', Value: 'Engineering-ImageAssetTag' }]);
+    expect(assetManifestJSON.files?.fileHash.destinations['111111111111-us-east-1-540a564a'].assumeRoleAdditionalOptions?.Tags).toEqual([{ Key: 'Department', Value: 'Engineering-FileAssetTag' }]);
 
     // assert that lookup role options are added to the missing lookup context
     expect(asm.manifest.missing![0].props.assumeRoleAdditionalOptions).toEqual({
@@ -404,15 +404,14 @@ describe('new style synthesis', () => {
     // THEN
     const asm = myapp.synth();
     const manifest = readAssetManifest(getAssetManifest(asm));
-
-    expect(manifest.files?.['file-asset-hash']?.destinations?.['current_account-current_region']).toEqual({
+    expect(manifest.files?.['file-asset-hash']?.destinations?.['current_account-current_region-403b57cb']).toEqual({
       bucketName: 'file-asset-bucket',
       objectKey: `file-asset-hash.${ext}`,
       assumeRoleArn: 'file:role:arn',
       assumeRoleExternalId: 'file-external-id',
     });
 
-    expect(manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region']).toEqual({
+    expect(manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region-403b57cb']).toEqual({
       repositoryName: 'image-ecr-repository',
       imageTag: 'docker-asset-hash',
       assumeRoleArn: 'image:role:arn',
@@ -468,7 +467,7 @@ describe('new style synthesis', () => {
     const manifest = readAssetManifest(getAssetManifest(asm));
 
     // THEN
-    expect(manifest.files?.['file-asset-hash-with-prefix']?.destinations?.['current_account-current_region']).toEqual({
+    expect(manifest.files?.['file-asset-hash-with-prefix']?.destinations?.['current_account-current_region-fa80e083']).toEqual({
       bucketName: 'file-asset-bucket',
       objectKey: '000000000000/file-asset-hash-with-prefix.ts',
       assumeRoleArn: 'file:role:arn',
@@ -500,7 +499,8 @@ describe('new style synthesis', () => {
 
     // THEN
     const manifest = readAssetManifest(getAssetManifest(asm));
-    const imageTag = manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region'].imageTag;
+    console.log(manifest.dockerImages?.['docker-asset-hash']?.destinations);
+    const imageTag = manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region-bc91f5f4'].imageTag;
     expect(imageTag).toEqual('test-prefix-docker-asset-hash');
   });
 

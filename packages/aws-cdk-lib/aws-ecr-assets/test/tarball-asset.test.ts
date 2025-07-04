@@ -30,7 +30,7 @@ describe('image asset', () => {
     expect(Object.keys(manifest.files ?? {}).length).toBe(1);
     expect(Object.keys(manifest.dockerImages ?? {}).length).toBe(1);
 
-    expect(manifest.dockerImages?.[asset.assetHash]?.destinations?.['current_account-current_region']).toStrictEqual(
+    expect(manifest.dockerImages?.[asset.assetHash]?.destinations?.['current_account-current_region-0e246ab9']).toStrictEqual(
       {
         assumeRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}',
         imageTag: asset.assetHash,
