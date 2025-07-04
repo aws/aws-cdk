@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-stepfunctions-tasks-bedrock-invoke-model-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4cc2ac7e41c252d1a60e613c41450ef6dbd98741f4a269b82a866bedf6420fb7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/23f2c88b319b89d6f8611346d475085be5d15392d82694e83defa55e6acad40a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,7 +37,21 @@
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "natGateways": "*",
+              "subnetConfiguration": [
+                {
+                  "cidrMask": "*",
+                  "name": "*",
+                  "subnetType": "Isolated"
+                },
+                {
+                  "cidrMask": "*",
+                  "name": "*",
+                  "subnetType": "Public"
+                }
+              ]
+            }
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/Resource": [
@@ -49,11 +63,25 @@
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/IsolatedSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/IsolatedSubnet1/Subnet": [
@@ -77,11 +105,25 @@
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/IsolatedSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/IsolatedSubnet2/Subnet": [
@@ -105,15 +147,29 @@
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {}
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PublicSubnet1/Subnet": [
@@ -143,15 +199,29 @@
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {}
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PublicSubnet2/Subnet": [
@@ -229,7 +299,10 @@
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/OutputBucket": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "autoDeleteObjects": true,
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/OutputBucket/Resource": [
@@ -241,7 +314,9 @@
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/OutputBucket/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "bucket": "*"
+            }
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/OutputBucket/Policy/Resource": [
@@ -283,7 +358,10 @@
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/TrainingBucket": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "autoDeleteObjects": true,
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/TrainingBucket/Resource": [
@@ -295,7 +373,9 @@
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/TrainingBucket/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "bucket": "*"
+            }
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/TrainingBucket/Policy/Resource": [
@@ -319,7 +399,10 @@
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/ValidationBucket": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "autoDeleteObjects": true,
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/ValidationBucket/Resource": [
@@ -331,7 +414,9 @@
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/ValidationBucket/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "bucket": "*"
+            }
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/ValidationBucket/Policy/Resource": [
@@ -355,7 +440,9 @@
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/KmsKey": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/KmsKey/Resource": [
@@ -367,7 +454,9 @@
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "vpc": "*"
+            }
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/SecurityGroup/Resource": [
@@ -379,7 +468,13 @@
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1/BedrockRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*"
+            }
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1/BedrockRole/ImportBedrockRole": [
@@ -397,7 +492,13 @@
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob2/BedrockRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*"
+            }
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob2/BedrockRole/ImportBedrockRole": [
@@ -415,53 +516,101 @@
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/StateMachine": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "definitionBody": "*",
+              "timeout": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/StateMachine/Role": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/StateMachine/Role/ImportRole": [
@@ -483,27 +632,51 @@
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/StateMachine/Role/DefaultPolicy/Resource": [
@@ -556,7 +729,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/769f9ba6a1d649bb11e463601ab006986dff2bcf30f15bfa86af4b1f75bc905c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d410d37afcae65b3310cf20137720794822434a7a28f591a51ef2f0da8e7a865.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -673,5 +846,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1015.0"
+  "minimumCliVersion": "2.1019.2"
 }
