@@ -1671,9 +1671,9 @@ export const FLAGS: Record<string, FlagInfo> = {
       When disabled, the JSONPath apiEndpoint property will only support a static string value.
     `,
     introducedIn: { v2: 'V2NEXT' },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
-
 };
 
 export const CURRENT_MV = 'v2';
