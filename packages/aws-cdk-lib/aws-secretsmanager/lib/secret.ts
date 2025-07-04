@@ -401,7 +401,11 @@ abstract class SecretBase extends Resource implements ISecret {
     // See https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
     const result = iam.Grant.addToPrincipalOrResource({
       grantee,
-      actions: ['secretsmanager:PutSecretValue', 'secretsmanager:UpdateSecret'],
+      actions: [
+        'secretsmanager:PutSecretValue',
+        'secretsmanager:UpdateSecret',
+        'secretsmanager:UpdateSecretVersionStage',
+      ],
       resourceArns: [this.arnForPolicies],
       resource: this,
     });
