@@ -1,5 +1,13 @@
 {
  "Resources": {
+  "MyLogGroup5C0DAD85": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "WebSocketApi34BCF99B": {
    "Type": "AWS::ApiGatewayV2::Api",
    "Properties": {
@@ -11,6 +19,15 @@
   "WebSocketStageC46B7E43": {
    "Type": "AWS::ApiGatewayV2::Stage",
    "Properties": {
+    "AccessLogSettings": {
+     "DestinationArn": {
+      "Fn::GetAtt": [
+       "MyLogGroup5C0DAD85",
+       "Arn"
+      ]
+     },
+     "Format": "{\"extendedRequestId\":\"$context.extendedRequestId\",\"requestTime\":\"$context.requestTime\"}"
+    },
     "ApiId": {
      "Ref": "WebSocketApi34BCF99B"
     },
@@ -21,7 +38,56 @@
     },
     "Description": "My Stage",
     "StageName": "dev"
-   }
+   },
+   "DependsOn": [
+    "WebSocketStageAccount45840150"
+   ]
+  },
+  "WebSocketStageCloudWatchRole3A30BFD9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "WebSocketStageAccount45840150": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "WebSocketStageCloudWatchRole3A30BFD9",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {
