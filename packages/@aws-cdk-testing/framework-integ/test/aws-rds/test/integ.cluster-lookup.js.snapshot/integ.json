@@ -1,0 +1,26 @@
+{
+  "enableLookups": true,
+  "version": "44.0.0",
+  "testCases": {
+    "integ-rds-cluster-from-lookup/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-cluster-lookup"
+      ],
+      "hooks": {
+        "preDeploy": [
+          "aws rds create-db-cluster --db-cluster-identifier test-cluster-lookup --engine aurora-mysql --engine-version 8.0.mysql_aurora.3.09.0 --master-username admin --master-user-password Admin1234 --enable-http-endpoint --enable-iam-database-authentication --region us-east-1",
+          "aws rds create-db-instance --db-instance-identifier test-cluster-lookup-instance --db-cluster-identifier test-cluster-lookup --engine aurora-mysql --db-instance-class db.r5.large --region us-east-1",
+          "aws rds wait db-instance-available --db-instance-identifier test-cluster-lookup-instance --region us-east-1"
+        ],
+        "postDeploy": [
+          "aws rds delete-db-instance --db-instance-identifier test-cluster-lookup-instance --skip-final-snapshot --region us-east-1",
+          "aws rds delete-db-cluster --db-cluster-identifier test-cluster-lookup --skip-final-snapshot --region us-east-1"
+        ]
+      },
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integ-rds-cluster-from-lookup/DefaultTest/DeployAssert",
+      "assertionStackName": "integrdsclusterfromlookupDefaultTestDeployAssert0EEE7886"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}
