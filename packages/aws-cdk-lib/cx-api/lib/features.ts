@@ -1673,6 +1673,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.202.0' },
     recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to create log group resource policy by using a custom resource.',
   },
 };
 
