@@ -12,11 +12,11 @@ import { KubernetesManifest, KubernetesManifestOptions } from './k8s-manifest';
 import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { IKubectlProvider, KubectlProvider, KubectlProviderOptions } from './kubectl-provider';
-import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
+import { Nodegroup, NodegroupAmiType, NodegroupOptions } from './managed-nodegroup';
 import { OpenIdConnectProvider } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
-import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
+import { renderAmazonLinux2023UserData, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -64,6 +64,12 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @attribute
    */
   readonly clusterCertificateAuthorityData: string;
+
+  /**
+   * The CIDR block to assign Kubernetes service IP addresses from
+   * @attribute
+   */
+  readonly serviceIpv4Cidr?: string;
 
   /**
    * The id of the cluster security group that was created by Amazon EKS for the cluster.
@@ -677,6 +683,15 @@ export class KubernetesVersion {
   public static readonly V1_32 = KubernetesVersion.of('1.32');
 
   /**
+   * Kubernetes version 1.33
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV33Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v33`.
+   */
+  public static readonly V1_33 = KubernetesVersion.of('1.33');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -837,9 +852,18 @@ abstract class ClusterBase extends Resource implements ICluster {
     }
 
     if (bootstrapEnabled) {
-      const userData = options.machineImageType === MachineImageType.BOTTLEROCKET ?
-        renderBottlerocketUserData(this) :
-        renderAmazonLinuxUserData(this, autoScalingGroup, options.bootstrapOptions);
+      let userData = [];
+      switch (options.machineImageType) {
+        case MachineImageType.AMAZON_LINUX_2023:
+          userData = renderAmazonLinux2023UserData(this, autoScalingGroup);
+          break;
+        case MachineImageType.BOTTLEROCKET:
+          userData = renderBottlerocketUserData(this);
+          break;
+        default:
+          userData = renderAmazonLinuxUserData(this, autoScalingGroup, options.bootstrapOptions);
+          break;
+      }
       autoScalingGroup.addUserData(...userData);
     }
 
@@ -968,6 +992,11 @@ export class Cluster extends ClusterBase {
   public readonly clusterEncryptionConfigKeyArn: string;
 
   /**
+   * The CIDR block to assign Kubernetes service IP addresses from
+   */
+  public readonly serviceIpv4Cidr?: string;
+
+  /**
    * Manages connection rules (Security Group Rules) for the cluster
    *
    * @type {ec2.Connections}
@@ -1079,6 +1108,7 @@ export class Cluster extends ClusterBase {
     this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
     this.version = props.version;
+    this.serviceIpv4Cidr = props.serviceIpv4Cidr;
 
     this._kubectlProviderOptions = props.kubectlProviderOptions;
 
@@ -1305,12 +1335,25 @@ export class Cluster extends ClusterBase {
         const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
         // If defaultCapacityType is undefined, use AUTOMODE as the default
         const capacityType = props.defaultCapacityType ?? DefaultCapacityType.AUTOMODE;
+        const arch = cpuArchForInstanceType(instanceType);
+        const minorVersion = +this.version.version.split('.')[1];
 
         // Only create EC2 or Nodegroup capacity if not using AUTOMODE
         if (capacityType === DefaultCapacityType.EC2) {
-          this.defaultCapacity = this.addAutoScalingGroupCapacity('DefaultCapacity', { instanceType, minCapacity });
+          this.defaultCapacity = this.addAutoScalingGroupCapacity('DefaultCapacity', {
+            instanceType,
+            minCapacity,
+            machineImageType: minorVersion > 32 ? MachineImageType.AMAZON_LINUX_2023 : undefined,
+          });
         } else if (capacityType === DefaultCapacityType.NODEGROUP) {
-          this.defaultNodegroup = this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity });
+          this.defaultNodegroup = this.addNodegroupCapacity('DefaultCapacity', {
+            instanceTypes: [instanceType],
+            minSize: minCapacity,
+            amiType: minorVersion > 32 ? arch === CpuArch.ARM_64
+              ? NodegroupAmiType.AL2023_ARM_64_STANDARD
+              : NodegroupAmiType.AL2023_X86_64_STANDARD
+              : undefined,
+          });
         }
         // For AUTOMODE, we don't create any explicit capacity as it's managed by EKS
       }
@@ -1424,21 +1467,39 @@ export class Cluster extends ClusterBase {
    */
   @MethodMetadata()
   public addAutoScalingGroupCapacity(id: string, options: AutoScalingGroupCapacityOptions): autoscaling.AutoScalingGroup {
-    if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined) {
-      throw new Error('bootstrapOptions is not supported for Bottlerocket');
+    if (
+      (options.machineImageType === MachineImageType.BOTTLEROCKET || options.machineImageType === MachineImageType.AMAZON_LINUX_2023)
+      && options.bootstrapOptions !== undefined) {
+      throw new Error('bootstrapOptions is not supported for Bottlerocket and Amazon Linux 2023');
     }
-    const asg = new autoscaling.AutoScalingGroup(this, id, {
-      ...options,
-      vpc: this.vpc,
-      machineImage: options.machineImageType === MachineImageType.BOTTLEROCKET ?
-        new BottleRocketImage({
-          kubernetesVersion: this.version.version,
-        }) :
-        new EksOptimizedImage({
+
+    let machineImage: ec2.IMachineImage;
+    switch (options.machineImageType) {
+      case MachineImageType.AMAZON_LINUX_2023:
+        machineImage = new Eks2023OptimizedImage({
           nodeType: nodeTypeForInstanceType(options.instanceType),
           cpuArch: cpuArchForInstanceType(options.instanceType),
           kubernetesVersion: this.version.version,
-        }),
+        });
+        break;
+      case MachineImageType.BOTTLEROCKET:
+        machineImage = new BottleRocketImage({
+          kubernetesVersion: this.version.version,
+        });
+        break;
+      default:
+        machineImage = new EksOptimizedImage({
+          nodeType: nodeTypeForInstanceType(options.instanceType),
+          cpuArch: cpuArchForInstanceType(options.instanceType),
+          kubernetesVersion: this.version.version,
+        });
+        break;
+    }
+
+    const asg = new autoscaling.AutoScalingGroup(this, id, {
+      ...options,
+      vpc: this.vpc,
+      machineImage,
     });
 
     this.connectAutoScalingGroupCapacity(asg, {
@@ -2046,6 +2107,40 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   }
 }
 
+/**
+ * Construct an Amazon Linux 2023 image from the latest EKS Optimized AMI published in SSM
+ */
+export class Eks2023OptimizedImage implements ec2.IMachineImage {
+  private readonly cpuArch?: CpuArch;
+  private readonly kubernetesVersion?: string;
+  private readonly amiParameterName: string;
+
+  /**
+   * Constructs a new instance of the EksOptimizedAmi class.
+   */
+  public constructor(props: EksOptimizedImageProps = {}) {
+    this.cpuArch = props.cpuArch ?? CpuArch.X86_64;
+    this.kubernetesVersion = props.kubernetesVersion ?? LATEST_KUBERNETES_VERSION;
+
+    this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/amazon-linux-2023/`
+    + (this.cpuArch === CpuArch.ARM_64 ? 'arm64/' : 'x86_64/')
+    + 'standard/recommended/image_id';
+  }
+
+  /**
+   * Return the correct image
+   */
+  public getImage(scope: Construct): ec2.MachineImageConfig {
+    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
+
+    return {
+      imageId: ami,
+      osType: ec2.OperatingSystemType.LINUX,
+      userData: ec2.UserData.custom(''),
+    };
+  }
+}
+
 // MAINTAINERS: use ./scripts/kube_bump.sh to update LATEST_KUBERNETES_VERSION
 const LATEST_KUBERNETES_VERSION = '1.24';
 
@@ -2126,6 +2221,10 @@ export enum DefaultCapacityType {
  * The machine image type
  */
 export enum MachineImageType {
+  /**
+   * Amazon EKS-optimized Linux 2023 AMI
+   */
+  AMAZON_LINUX_2023,
   /**
    * Amazon EKS-optimized Linux AMI
    */

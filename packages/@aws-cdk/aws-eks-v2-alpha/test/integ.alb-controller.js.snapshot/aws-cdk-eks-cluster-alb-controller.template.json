@@ -402,9 +402,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6094cb0ff874f89ab5ab24fb6b9417df0fdeb6966645f90c88ec1d7e28130112.zip"
+     "S3Key": "e995b7fa13f3d9f946ff291512015444c90346ee68f0067f80037541a4b54d62.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.32.3; /opt/helm/helm 3.17.2",
+    "Description": "/opt/kubectl/kubectl 1.33.0; /opt/helm/helm 3.18.0",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -611,7 +611,7 @@
       "Enabled": true
      }
     },
-    "Version": "1.32"
+    "Version": "1.33"
    },
    "DependsOn": [
     "VpcIGWD7BA715C",
@@ -828,7 +828,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+     "S3Key": "b8ab94266984268614c3fb2824a1c3a55395746c48b28c003b08bc1d08688f3e.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1093,7 +1093,7 @@
      "Fn::Join": [
       "",
       [
-       "[{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"name\":\"hello-server-deployment-c852e88c\",\"labels\":{\"aws.cdk.eks/prune-c8979a3d59f977641193e8f98207f8eaa3c754d4ff\":\"\"}},\"spec\":{\"minReadySeconds\":0,\"progressDeadlineSeconds\":600,\"replicas\":2,\"selector\":{\"matchLabels\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"}},\"strategy\":{\"rollingUpdate\":{\"maxSurge\":\"25%\",\"maxUnavailable\":\"25%\"},\"type\":\"RollingUpdate\"},\"template\":{\"metadata\":{\"labels\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"}},\"spec\":{\"automountServiceAccountToken\":false,\"containers\":[{\"args\":[\"-text\",\"hello\"],\"image\":\"hashicorp/http-echo\",\"imagePullPolicy\":\"Always\",\"name\":\"main\",\"ports\":[{\"containerPort\":5678}],\"resources\":{\"limits\":{\"cpu\":\"1500m\",\"memory\":\"2048Mi\"},\"requests\":{\"cpu\":\"1000m\",\"memory\":\"512Mi\"}},\"securityContext\":{\"allowPrivilegeEscalation\":false,\"privileged\":false,\"readOnlyRootFilesystem\":true,\"runAsNonRoot\":true,\"runAsUser\":1005},\"startupProbe\":{\"failureThreshold\":3,\"tcpSocket\":{\"port\":5678}}}],\"dnsPolicy\":\"ClusterFirst\",\"hostNetwork\":false,\"restartPolicy\":\"Always\",\"securityContext\":{\"fsGroupChangePolicy\":\"Always\",\"runAsNonRoot\":true},\"setHostnameAsFQDN\":false,\"terminationGracePeriodSeconds\":30}}}},{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"name\":\"hello-server-deployment-service-c8fd9c61\",\"labels\":{\"aws.cdk.eks/prune-c8979a3d59f977641193e8f98207f8eaa3c754d4ff\":\"\"}},\"spec\":{\"externalIPs\":[],\"ports\":[{\"port\":5678,\"targetPort\":5678}],\"selector\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"},\"type\":\"NodePort\"}},{\"apiVersion\":\"networking.k8s.io/v1\",\"kind\":\"Ingress\",\"metadata\":{\"annotations\":{\"kubernetes.io/ingress.class\":\"alb\",\"alb.ingress.kubernetes.io/scheme\":\"internal\",\"alb.ingress.kubernetes.io/inbound-cidrs\":\"",
+       "[{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"name\":\"hello-server-deployment-c852e88c\",\"labels\":{\"aws.cdk.eks/prune-c8979a3d59f977641193e8f98207f8eaa3c754d4ff\":\"\"}},\"spec\":{\"minReadySeconds\":0,\"progressDeadlineSeconds\":600,\"replicas\":2,\"selector\":{\"matchLabels\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"}},\"strategy\":{\"rollingUpdate\":{\"maxSurge\":\"25%\",\"maxUnavailable\":\"25%\"},\"type\":\"RollingUpdate\"},\"template\":{\"metadata\":{\"labels\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"}},\"spec\":{\"automountServiceAccountToken\":false,\"containers\":[{\"args\":[\"-text\",\"hello\"],\"image\":\"hashicorp/http-echo\",\"imagePullPolicy\":\"Always\",\"name\":\"main\",\"ports\":[{\"containerPort\":5678}],\"resources\":{\"limits\":{\"cpu\":\"1500m\",\"memory\":\"2048Mi\"},\"requests\":{\"cpu\":\"1000m\",\"memory\":\"512Mi\"}},\"securityContext\":{\"allowPrivilegeEscalation\":false,\"privileged\":false,\"readOnlyRootFilesystem\":true,\"runAsNonRoot\":true,\"runAsUser\":1005},\"startupProbe\":{\"failureThreshold\":3,\"tcpSocket\":{\"port\":5678}}}],\"dnsPolicy\":\"ClusterFirst\",\"hostNetwork\":false,\"restartPolicy\":\"Always\",\"securityContext\":{\"fsGroupChangePolicy\":\"Always\",\"runAsNonRoot\":true},\"setHostnameAsFQDN\":false,\"shareProcessNamespace\":false,\"terminationGracePeriodSeconds\":30}}}},{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"name\":\"hello-server-deployment-service-c8fd9c61\",\"labels\":{\"aws.cdk.eks/prune-c8979a3d59f977641193e8f98207f8eaa3c754d4ff\":\"\"}},\"spec\":{\"externalIPs\":[],\"ports\":[{\"port\":5678,\"targetPort\":5678}],\"selector\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"},\"type\":\"NodePort\"}},{\"apiVersion\":\"networking.k8s.io/v1\",\"kind\":\"Ingress\",\"metadata\":{\"annotations\":{\"kubernetes.io/ingress.class\":\"alb\",\"alb.ingress.kubernetes.io/scheme\":\"internal\",\"alb.ingress.kubernetes.io/inbound-cidrs\":\"",
        {
         "Fn::GetAtt": [
          "Vpc8378EB38",

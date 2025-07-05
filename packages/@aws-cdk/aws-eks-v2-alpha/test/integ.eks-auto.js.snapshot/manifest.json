@@ -768,8 +768,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -814,14 +822,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -834,6 +834,44 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "helloeksclusterKubectlProviderframeworkonEvent0FAC0AEB"
+          }
+        ],
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0C64804B1"
           }
         ],
         "/eks-auto-mode-stack/hello-eks/cluster/ClusterAdminRoleAccess": [
@@ -1623,8 +1661,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -1669,14 +1715,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -1689,6 +1727,44 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "helloeksclusterKubectlProviderframeworkonEvent0FAC0AEB"
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksclusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0C64804B1"
           }
         ],
         "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/ClusterAdminRoleAccess": [
