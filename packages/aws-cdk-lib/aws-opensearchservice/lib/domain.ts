@@ -1885,7 +1885,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         principals: [new iam.ServicePrincipal('es.amazonaws.com')],
       });
 
-      if (cdk.FeatureFlags.of(this).isEnabled(cxapi.OPENSEARCHSERVICE_LOG_GROUP_RESOURCE_POLICY_WITHOUT_CUSTOM_RESOURCE)) {
+      if (cdk.FeatureFlags.of(this).isEnabled(cxapi.OPENSEARCHSERVICE_CREATE_CLOUDFORMATION_RESOURCE_POLICY)) {
         logGroupResourcePolicy = new logs.ResourcePolicy(this, `ESLogGroupPolicy${this.node.addr}`, {
           // create a cloudwatch logs resource policy name that is unique to this domain instance
           resourcePolicyName: `ESLogPolicy${this.node.addr}`,

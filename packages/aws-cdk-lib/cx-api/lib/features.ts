@@ -142,7 +142,7 @@ export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-c
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
-export const OPENSEARCHSERVICE_LOG_GROUP_RESOURCE_POLICY_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-opensearchservice:logGroupResourcePolicyWithoutCustomResource';
+export const OPENSEARCHSERVICE_CREATE_CLOUDFORMATION_RESOURCE_POLICY = '@aws-cdk/aws-opensearchservice:createCloudFormationResourcePolicy';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1663,9 +1663,9 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
-  [OPENSEARCHSERVICE_LOG_GROUP_RESOURCE_POLICY_WITHOUT_CUSTOM_RESOURCE]: {
-    type: FlagType.BugFix,
-    summary: 'When enabled, create log group resource policy without creating a custom resource.',
+  [OPENSEARCHSERVICE_CREATE_CLOUDFORMATION_RESOURCE_POLICY]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, adds a log group resource policy using AWS::Logs::ResourcePolicy, without relying on a custom resource.',
     detailsMd: `
         When this feature flag is enabled, AWS::Logs::ResourcePolicy will be used to create log group resource policy instead of creating  a custom resource internally.
 

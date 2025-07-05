@@ -950,7 +950,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
     const stackWithFlag = new Stack(app, 'StackWithFlag', {
       env: { account: '1234', region: 'testregion' },
     });
-    stackWithFlag.node.setContext(cxapi.OPENSEARCHSERVICE_LOG_GROUP_RESOURCE_POLICY_WITHOUT_CUSTOM_RESOURCE, true);
+    stackWithFlag.node.setContext(cxapi.OPENSEARCHSERVICE_CREATE_CLOUDFORMATION_RESOURCE_POLICY, true);
 
     new Domain(stackWithFlag, 'Domain', {
       version: engineVersion,

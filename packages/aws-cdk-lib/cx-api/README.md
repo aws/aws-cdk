@@ -763,7 +763,7 @@ _cdk.json_
 }
 ```
 
-* `@aws-cdk/aws-opensearchservice:logGroupResourcePolicyWithoutCustomResource`
+* `@aws-cdk/aws-opensearchservice:createCloudFormationResourcePolicy`
 
 
 When this feature flag is enabled, AWS::Logs::ResourcePolicy will be used to create log group resource policy instead of creating  a custom resource internally.
@@ -775,7 +775,7 @@ _cdk.json_
 ```json
 {
   "context": {
-    "@aws-cdk/aws-opensearchservice:logGroupResourcePolicyWithoutCustomResource": true
+    "@aws-cdk/aws-opensearchservice:createCloudFormationResourcePolicy": true
   }
 }
 ```

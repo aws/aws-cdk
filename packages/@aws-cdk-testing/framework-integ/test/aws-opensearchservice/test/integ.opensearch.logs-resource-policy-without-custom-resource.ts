@@ -1,5 +1,5 @@
 import { App, Stack, StackProps } from 'aws-cdk-lib';
-import { OPENSEARCHSERVICE_LOG_GROUP_RESOURCE_POLICY_WITHOUT_CUSTOM_RESOURCE } from 'aws-cdk-lib/cx-api';
+import { OPENSEARCHSERVICE_CREATE_CLOUDFORMATION_RESOURCE_POLICY } from 'aws-cdk-lib/cx-api';
 import { Construct } from 'constructs';
 import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
@@ -24,7 +24,7 @@ class TestStack extends Stack {
 }
 
 const app = new App({
-  context: { [OPENSEARCHSERVICE_LOG_GROUP_RESOURCE_POLICY_WITHOUT_CUSTOM_RESOURCE]: true },
+  context: { [OPENSEARCHSERVICE_CREATE_CLOUDFORMATION_RESOURCE_POLICY]: true },
 });
 const stack = new TestStack(app, 'cdk-integ-opensearch-logs-resource-policy-without-custom-resource');
 
