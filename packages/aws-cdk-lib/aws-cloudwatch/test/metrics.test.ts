@@ -399,4 +399,119 @@ describe('Metrics', () => {
     expect(parseStatistic('TM(:1000%)').type).toEqual('generic');
     expect(parseStatistic('TM(1000%:1000%)').type).toEqual('generic');
   });
+
+  test('metric stores id and visible properties correctly', () => {
+    const metricWithBothProps = new Metric({
+      namespace: 'Test',
+      metricName: 'TestMetric',
+      id: 'custom_metric_id',
+      visible: false,
+    });
+
+    expect(metricWithBothProps.id).toBe('custom_metric_id');
+    expect(metricWithBothProps.visible).toBe(false);
+
+    const metricWithId = new Metric({
+      namespace: 'Test',
+      metricName: 'TestMetric',
+      id: 'another_id',
+    });
+
+    expect(metricWithId.id).toBe('another_id');
+    expect(metricWithId.visible).toBeUndefined();
+
+    const metricWithVisible = new Metric({
+      namespace: 'Test',
+      metricName: 'TestMetric',
+      visible: true,
+    });
+
+    expect(metricWithVisible.id).toBeUndefined();
+    expect(metricWithVisible.visible).toBe(true);
+
+    const metricWithDefaults = new Metric({
+      namespace: 'Test',
+      metricName: 'TestMetric',
+    });
+
+    expect(metricWithDefaults.id).toBeUndefined();
+    expect(metricWithDefaults.visible).toBeUndefined();
+  });
+
+  test('id and visible properties are included in toMetricConfig', () => {
+    const metricWithBothProps = new Metric({
+      namespace: 'Test',
+      metricName: 'TestMetric',
+      id: 'custom_metric_id',
+      visible: false,
+    });
+
+    const configWithBoth = metricWithBothProps.toMetricConfig();
+    expect(configWithBoth.renderingProperties).toBeDefined();
+    expect(configWithBoth.renderingProperties!.id).toBe('custom_metric_id');
+    expect(configWithBoth.renderingProperties!.visible).toBe(false);
+
+    const metricWithId = new Metric({
+      namespace: 'Test',
+      metricName: 'TestMetric',
+      id: 'another_id',
+    });
+
+    const configWithId = metricWithId.toMetricConfig();
+    expect(configWithId.renderingProperties).toBeDefined();
+    expect(configWithId.renderingProperties!.id).toBe('another_id');
+    expect(configWithId.renderingProperties!.visible).toBeUndefined();
+
+    const metricWithVisible = new Metric({
+      namespace: 'Test',
+      metricName: 'TestMetric',
+      visible: true,
+    });
+
+    const configWithVisible = metricWithVisible.toMetricConfig();
+    expect(configWithVisible.renderingProperties).toBeDefined();
+    expect(configWithVisible.renderingProperties!.id).toBeUndefined();
+    expect(configWithVisible.renderingProperties!.visible).toBe(true);
+  });
+
+  test('"with" with id and visible properties', () => {
+    const originalMetric = new Metric({
+      namespace: 'Test',
+      metricName: 'TestMetric',
+      id: 'original_id',
+      visible: true,
+    });
+
+    const modifiedMetric = originalMetric.with({
+      id: 'new_id',
+      visible: false,
+    });
+
+    expect(modifiedMetric.id).toBe('new_id');
+    expect(modifiedMetric.visible).toBe(false);
+    expect(modifiedMetric).not.toEqual(originalMetric);
+
+    const metricWithModifiedId = originalMetric.with({
+      id: 'another_id',
+    });
+
+    expect(metricWithModifiedId.id).toBe('another_id');
+    expect(metricWithModifiedId.visible).toBe(true);
+    expect(metricWithModifiedId).not.toEqual(originalMetric);
+
+    const metricWithModifiedVisible = originalMetric.with({
+      visible: false,
+    });
+
+    expect(metricWithModifiedVisible.id).toBe('original_id');
+    expect(metricWithModifiedVisible.visible).toBe(false);
+    expect(metricWithModifiedVisible).not.toEqual(originalMetric);
+
+    const copyMetric = originalMetric.with({
+      id: 'original_id',
+      visible: true,
+    });
+
+    expect(copyMetric).toEqual(originalMetric);
+  });
 });

@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9b41cac1f3fda24724862de190d3c642d78bb9e5928d64f6ca18dfe3c3b6deb5.zip"
+     "S3Key": "75f7b6a23d8f39fbba91063166ea824a6b248a2b6eb9e9f6ce75ac58d33a1941.zip"
     },
     "Description": "onEvent handler for EKS cluster resource provider",
     "Environment": {
@@ -84,6 +84,25 @@
    "DependsOn": [
     "OnEventHandlerServiceRole15A26729"
    ]
+  },
+  "OnEventHandlerLogGroup54D03A56": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "OnEventHandler42BEBAE0"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "IsCompleteHandlerServiceRole5810CC58": {
    "Type": "AWS::IAM::Role",
@@ -123,7 +142,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9b41cac1f3fda24724862de190d3c642d78bb9e5928d64f6ca18dfe3c3b6deb5.zip"
+     "S3Key": "75f7b6a23d8f39fbba91063166ea824a6b248a2b6eb9e9f6ce75ac58d33a1941.zip"
     },
     "Description": "isComplete handler for EKS cluster resource provider",
     "Environment": {
@@ -157,6 +176,25 @@
    "DependsOn": [
     "IsCompleteHandlerServiceRole5810CC58"
    ]
+  },
+  "IsCompleteHandlerLogGroupC85FFE26": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "IsCompleteHandler7073F4DA"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "ProviderframeworkonEventServiceRole9FF04296": {
    "Type": "AWS::IAM::Role",
@@ -328,6 +366,25 @@
     "ProviderframeworkonEventServiceRole9FF04296"
    ]
   },
+  "ProviderframeworkonEventLogGroup683073A3": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ProviderframeworkonEvent83C1D0A7"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "ProviderframeworkisCompleteServiceRoleB1087139": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -488,6 +545,25 @@
     "ProviderframeworkisCompleteServiceRoleB1087139"
    ]
   },
+  "ProviderframeworkisCompleteLogGroupEB065F2D": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ProviderframeworkisComplete26D7B0CB"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "ProviderframeworkonTimeoutServiceRole28643D26": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -647,6 +723,25 @@
     "ProviderframeworkonTimeoutServiceRoleDefaultPolicy2688969F",
     "ProviderframeworkonTimeoutServiceRole28643D26"
    ]
+  },
+  "ProviderframeworkonTimeoutLogGroupE53BF187": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ProviderframeworkonTimeout0B47CA38"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "ProviderwaiterstatemachineRole0C7159F9": {
    "Type": "AWS::IAM::Role",
@@ -898,6 +993,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {
