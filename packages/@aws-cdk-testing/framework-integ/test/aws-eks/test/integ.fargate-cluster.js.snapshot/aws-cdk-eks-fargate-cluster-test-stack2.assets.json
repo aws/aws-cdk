@@ -85,7 +85,7 @@
         }
       }
     },
-    "d9e8eeb2aa0a7d4f1a97ba0f47ad362841f4ea437a09f2d6ee1be718e4544700": {
+    "d69594a628b938bd666388e1fa6bf9a63b940049682ad2182ebe544bec8c2570": {
       "displayName": "@aws-cdk--aws-eks.ClusterResourceProvider Nested Stack Template",
       "source": {
         "path": "awscdkeksfargateclusterteststack2awscdkawseksClusterResourceProviderDAEDBC1F.nested.template.json",
@@ -94,12 +94,12 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d9e8eeb2aa0a7d4f1a97ba0f47ad362841f4ea437a09f2d6ee1be718e4544700.json",
+          "objectKey": "d69594a628b938bd666388e1fa6bf9a63b940049682ad2182ebe544bec8c2570.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "4334625e3124beb5e132e80406d33e49d31fbded537436a1f9b8240a6d0994da": {
+    "14ab993604380d4cdba8fb5574598f3ce7d8aa62e2fb452924bbf032771e4cf5": {
       "displayName": "@aws-cdk--aws-eks.KubectlProvider Nested Stack Template",
       "source": {
         "path": "awscdkeksfargateclusterteststack2awscdkawseksKubectlProvider392CEF8A.nested.template.json",
@@ -108,12 +108,12 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4334625e3124beb5e132e80406d33e49d31fbded537436a1f9b8240a6d0994da.json",
+          "objectKey": "14ab993604380d4cdba8fb5574598f3ce7d8aa62e2fb452924bbf032771e4cf5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "b06b2c2b0ddd13a2a1187e509d21b9c9ae09cbda51bccbc8bc1ecb7989f77b50": {
+    "240b135d94ac6bd9c6af810851d6f2e78248734ff5c47cee41c2d9841563290e": {
       "displayName": "aws-cdk-eks-fargate-cluster-test-stack2 Template",
       "source": {
         "path": "aws-cdk-eks-fargate-cluster-test-stack2.template.json",
@@ -122,7 +122,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b06b2c2b0ddd13a2a1187e509d21b9c9ae09cbda51bccbc8bc1ecb7989f77b50.json",
+          "objectKey": "240b135d94ac6bd9c6af810851d6f2e78248734ff5c47cee41c2d9841563290e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

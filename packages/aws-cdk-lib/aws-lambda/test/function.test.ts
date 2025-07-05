@@ -980,7 +980,7 @@ describe('function', () => {
         ],
         Version: '2012-10-17',
       },
-      PolicyName: 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+      PolicyName: 'MyLambdainlinePolicyAddedToExecutionRole0E0144580',
       Roles: [
         {
           Ref: 'MyLambdaServiceRole4539ECB6',
@@ -1011,7 +1011,6 @@ describe('function', () => {
         FunctionName: 'OneFunctionToRuleThemAll',
       },
       DependsOn: [
-        'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
         'MyLambdaServiceRole4539ECB6',
       ],
     });
@@ -5190,6 +5189,258 @@ describe('telemetry metadata', () => {
     });
 
     expect(fn.node.metadata).toStrictEqual([]);
+  });
+});
+
+describe('addToRolePolicy with token resolution', () => {
+  test('creates separate policy when resources contain CloudFormation intrinsic functions', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false, // Feature flag disabled
+      },
+    });
+    const stack = new cdk.Stack(app);
+
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('test'),
+      runtime: lambda.Runtime.PYTHON_3_9,
+      handler: 'index.test',
+    });
+
+    // Create a parameter to use in Fn.split to ensure it remains a token
+    const bucketListParam = new cdk.CfnParameter(stack, 'BucketList', {
+      type: 'String',
+      default: 'bucket1,bucket2,bucket3',
+    });
+
+    // WHEN - Add policy with CloudFormation intrinsic function (Fn::Split)
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['s3:GetObject'],
+      resources: cdk.Fn.split(',', bucketListParam.valueAsString), // This creates tokens
+    }));
+
+    // THEN - Should create separate inline policy despite feature flag being disabled
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: Match.stringLikeRegexp('.*inlinePolicyAddedToExecutionRole.*'),
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          Action: 's3:GetObject',
+          Effect: 'Allow',
+          Resource: { 'Fn::Split': [',', { Ref: 'BucketList' }] },
+        }],
+      },
+    });
+  });
+
+  test('creates separate policy when individual resources are tokens', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new cdk.Stack(app);
+
+    const bucket = new s3.Bucket(stack, 'TestBucket');
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('test'),
+      runtime: lambda.Runtime.PYTHON_3_9,
+      handler: 'index.test',
+    });
+
+    // WHEN - Add policy with token resource (bucket ARN)
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['s3:GetObject'],
+      resources: [bucket.bucketArn], // This is a token
+    }));
+
+    // THEN - Should create separate inline policy
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: Match.stringLikeRegexp('.*inlinePolicyAddedToExecutionRole.*'),
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          Action: 's3:GetObject',
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
+        }],
+      },
+    });
+  });
+
+  test('uses default behavior when resources contain no tokens', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new cdk.Stack(app);
+
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('test'),
+      runtime: lambda.Runtime.PYTHON_3_9,
+      handler: 'index.test',
+    });
+
+    // WHEN - Add policy with static string resources (no tokens)
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['s3:GetObject'],
+      resources: ['arn:aws:s3:::my-bucket/*'], // Static string, no tokens
+    }));
+
+    // THEN - Should merge into default policy (not create separate inline policy)
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: Match.stringLikeRegexp('.*ServiceRoleDefaultPolicy.*'),
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: Match.arrayWith([{
+          Action: 's3:GetObject',
+          Effect: 'Allow',
+          Resource: 'arn:aws:s3:::my-bucket/*',
+        }]),
+      },
+    });
+  });
+
+  test('handles multiple addToRolePolicy calls with mixed token scenarios', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new cdk.Stack(app);
+
+    const bucket = new s3.Bucket(stack, 'TestBucket');
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('test'),
+      runtime: lambda.Runtime.PYTHON_3_9,
+      handler: 'index.test',
+    });
+
+    // WHEN - Add multiple policies: one with tokens, one without
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['s3:GetObject'],
+      resources: [bucket.bucketArn], // Token
+    }));
+
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['s3:ListBucket'],
+      resources: ['arn:aws:s3:::static-bucket'], // No token
+    }));
+
+    // THEN - Should create one inline policy for token case, merge other into default
+    const template = Template.fromStack(stack);
+
+    // Separate inline policy for token case
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: Match.stringLikeRegexp('.*inlinePolicyAddedToExecutionRole.*'),
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          Action: 's3:GetObject',
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
+        }],
+      },
+    });
+
+    // Default policy for non-token case
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: Match.stringLikeRegexp('.*ServiceRoleDefaultPolicy.*'),
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: Match.arrayWith([{
+          Action: 's3:ListBucket',
+          Effect: 'Allow',
+          Resource: 'arn:aws:s3:::static-bucket',
+        }]),
+      },
+    });
+  });
+
+  test('handles policy statement with no resources property correctly', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new cdk.Stack(app);
+
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('test'),
+      runtime: lambda.Runtime.PYTHON_3_9,
+      handler: 'index.test',
+    });
+
+    // WHEN - Add policy with wildcard resources (no tokens)
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['iam:ListRoles'],
+      resources: ['*'], // Wildcard, no tokens
+    }));
+
+    // THEN - Should use default behavior (merge into default policy)
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: Match.stringLikeRegexp('.*ServiceRoleDefaultPolicy.*'),
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: Match.arrayWith([{
+          Action: 'iam:ListRoles',
+          Effect: 'Allow',
+          Resource: '*',
+        }]),
+      },
+    });
+  });
+
+  test('creates separate policy when resources array itself is a token', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new cdk.Stack(app);
+
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('test'),
+      runtime: lambda.Runtime.PYTHON_3_9,
+      handler: 'index.test',
+    });
+
+    // Create a parameter for the resource list
+    const resourceListParam = new cdk.CfnParameter(stack, 'ResourceList', {
+      type: 'CommaDelimitedList',
+      default: 'arn:aws:s3:::bucket1/*,arn:aws:s3:::bucket2/*',
+    });
+
+    // WHEN - Add policy where the entire resources array is a token
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['s3:GetObject'],
+      resources: resourceListParam.valueAsList, // This is a token representing the entire array
+    }));
+
+    // THEN - Should create separate inline policy
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: Match.stringLikeRegexp('.*inlinePolicyAddedToExecutionRole.*'),
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          Action: 's3:GetObject',
+          Effect: 'Allow',
+          Resource: { Ref: 'ResourceList' },
+        }],
+      },
+    });
   });
 });
 

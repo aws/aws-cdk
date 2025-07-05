@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "aws-ecs-integ-spot.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cf00b8198a39732704b1095530660c98a6d05146b8860ce8d8630847e4c16d70.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e5676ac4c010111edcadfe82491c4ff56bb351f0a2cfa9ad4626d0ec86b56fb0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -88,7 +88,10 @@
         "/aws-ecs-integ-spot/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+            "data": "VpcPublicSubnet1Subnet5C2D37C4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ-spot/Vpc/PublicSubnet1/RouteTable": [
@@ -100,7 +103,10 @@
         "/aws-ecs-integ-spot/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ-spot/Vpc/PublicSubnet1/DefaultRoute": [
@@ -118,7 +124,10 @@
         "/aws-ecs-integ-spot/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+            "data": "VpcPublicSubnet1NATGateway4D7517AA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ-spot/Vpc/PublicSubnet2": [
@@ -160,7 +169,10 @@
         "/aws-ecs-integ-spot/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2Subnet691E08A3"
+            "data": "VpcPublicSubnet2Subnet691E08A3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ-spot/Vpc/PublicSubnet2/RouteTable": [
@@ -172,7 +184,10 @@
         "/aws-ecs-integ-spot/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ-spot/Vpc/PublicSubnet2/DefaultRoute": [
@@ -190,7 +205,10 @@
         "/aws-ecs-integ-spot/Vpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2NATGateway9182C01D"
+            "data": "VpcPublicSubnet2NATGateway9182C01D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ-spot/Vpc/PrivateSubnet1": [
@@ -224,7 +242,10 @@
         "/aws-ecs-integ-spot/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1Subnet536B997A"
+            "data": "VpcPrivateSubnet1Subnet536B997A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ-spot/Vpc/PrivateSubnet1/RouteTable": [
@@ -236,7 +257,10 @@
         "/aws-ecs-integ-spot/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ-spot/Vpc/PrivateSubnet1/DefaultRoute": [
@@ -276,7 +300,10 @@
         "/aws-ecs-integ-spot/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+            "data": "VpcPrivateSubnet2Subnet3788AAA1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ-spot/Vpc/PrivateSubnet2/RouteTable": [
@@ -288,7 +315,10 @@
         "/aws-ecs-integ-spot/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-integ-spot/Vpc/PrivateSubnet2/DefaultRoute": [
@@ -694,8 +724,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -710,8 +748,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -780,22 +826,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
@@ -834,6 +864,82 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EcsClusterasgSpotDrainECSHookFunctionTopic9648CAD4"
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole09C74CDAF"
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole18626061D"
           }
         ],
         "/aws-ecs-integ-spot/EcsCluster/asgSpot/LifecycleHookDrainHook": [
@@ -1254,8 +1360,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -1270,8 +1384,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -1340,22 +1462,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
@@ -1394,6 +1500,82 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EcsClusterasgOdDrainECSHookFunctionTopicE6BE4000"
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole094FADA95"
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole14F1028A8"
           }
         ],
         "/aws-ecs-integ-spot/EcsCluster/asgOd/LifecycleHookDrainHook": [
@@ -1587,96 +1769,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole09C74CDAF": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole09C74CDAF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole18626061D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole18626061D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole2225E6E90": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole2225E6E90",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole35C617151": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole35C617151",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole43F8D9D49": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole43F8D9D49",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole094FADA95": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole094FADA95",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole14F1028A8": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole14F1028A8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole2274F3C3D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole2274F3C3D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole35969A0F5": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole35969A0F5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole48C7C27F2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole48C7C27F2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-ecs-integ-spot"
@@ -1687,5 +1779,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }

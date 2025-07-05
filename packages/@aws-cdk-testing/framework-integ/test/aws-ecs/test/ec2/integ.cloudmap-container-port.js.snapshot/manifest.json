@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "aws-ecs-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a2e4257665d19056143c4db55344ad90c00f21a27d79890e20bf9e89bbdcb527.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/34a89de557567468c5cd440548b67c2e07abbd78266c5b174a1d7f494af5d953.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -543,8 +543,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -559,8 +567,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -629,22 +645,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
@@ -683,6 +683,82 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClustercapacityDrainECSHookFunctionTopic7D6C4884"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole0987FAD33"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole14C257275"
           }
         ],
         "/aws-ecs-integ/FargateCluster/capacity/LifecycleHookDrainHook": [
@@ -919,51 +995,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole0987FAD33": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole0987FAD33",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole14C257275": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole14C257275",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole2A1F0C369": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole2A1F0C369",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole3A85241C9": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole3A85241C9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole4DA338734": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole4DA338734",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-ecs-integ"
@@ -974,5 +1005,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }

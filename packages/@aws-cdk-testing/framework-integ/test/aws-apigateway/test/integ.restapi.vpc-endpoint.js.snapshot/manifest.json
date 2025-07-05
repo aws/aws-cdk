@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "ApiGatewayVpcEndpointTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd4e174a5a76271c6cda2394f5411af43931b1a74fbfe04085767c3a0ea49173.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/36e0cdc3c3d5875816cdd8e74f15bbabc34c69d4fe98de6ea7b9324ab14fb05c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -802,14 +802,6 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
               "attachInlinePolicy": [
                 "*"
               ]
@@ -834,42 +826,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TestFunction0ServiceRoleD0765191"
-          }
-        ],
-        "/ApiGatewayVpcEndpointTestStack/TestFunction0/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/ApiGatewayVpcEndpointTestStack/TestFunction0/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestFunction0ServiceRoleDefaultPolicy02794024"
           }
         ],
         "/ApiGatewayVpcEndpointTestStack/TestFunction0/SecurityGroup": [
@@ -908,6 +864,44 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TestFunction05BE16519"
+          }
+        ],
+        "/ApiGatewayVpcEndpointTestStack/TestFunction0/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/ApiGatewayVpcEndpointTestStack/TestFunction0/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestFunction0inlinePolicyAddedToExecutionRole00B5803B5"
           }
         ],
         "/ApiGatewayVpcEndpointTestStack/TestFunction1": [
@@ -952,14 +946,6 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
               "attachInlinePolicy": [
                 "*"
               ]
@@ -984,42 +970,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TestFunction1ServiceRoleFF9BD7F5"
-          }
-        ],
-        "/ApiGatewayVpcEndpointTestStack/TestFunction1/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/ApiGatewayVpcEndpointTestStack/TestFunction1/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestFunction1ServiceRoleDefaultPolicyEA6A8ACA"
           }
         ],
         "/ApiGatewayVpcEndpointTestStack/TestFunction1/SecurityGroup": [
@@ -1060,6 +1010,44 @@
             "data": "TestFunction11C5DC9A0"
           }
         ],
+        "/ApiGatewayVpcEndpointTestStack/TestFunction1/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/ApiGatewayVpcEndpointTestStack/TestFunction1/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestFunction1inlinePolicyAddedToExecutionRole054C03DAF"
+          }
+        ],
         "/ApiGatewayVpcEndpointTestStack/Exports/Output{\"Ref\":\"TestFunction05BE16519\"}": [
           {
             "type": "aws:cdk:logicalId",
@@ -1095,6 +1083,24 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "TestFunction0ServiceRoleDefaultPolicy02794024": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestFunction0ServiceRoleDefaultPolicy02794024",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "TestFunction1ServiceRoleDefaultPolicyEA6A8ACA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestFunction1ServiceRoleDefaultPolicyEA6A8ACA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "ApiGatewayVpcEndpointTestStack"
@@ -1116,7 +1122,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/95943c82f03c0db16af1461e37974c17ed14e8caf22ea99f34ac3beb361be810.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/970078f097bfe5282b6316038a7baaa4933c29b7017e1601a783d913deef21c1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1225,5 +1231,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1020.2"
 }

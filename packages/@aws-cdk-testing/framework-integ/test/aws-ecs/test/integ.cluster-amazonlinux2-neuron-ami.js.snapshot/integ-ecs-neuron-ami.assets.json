@@ -1,7 +1,8 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "files": {
-    "758add4abf782a712eea18984d2d3f66778882c56d0e19e18a2eb0a1c296430a": {
+    "19dc3f00d63f7e05eeeeeb60380a83a4938f6143290937baeb02ebc575b23f35": {
+      "displayName": "integ-ecs-neuron-ami Template",
       "source": {
         "path": "integ-ecs-neuron-ami.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "758add4abf782a712eea18984d2d3f66778882c56d0e19e18a2eb0a1c296430a.json",
+          "objectKey": "19dc3f00d63f7e05eeeeeb60380a83a4938f6143290937baeb02ebc575b23f35.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

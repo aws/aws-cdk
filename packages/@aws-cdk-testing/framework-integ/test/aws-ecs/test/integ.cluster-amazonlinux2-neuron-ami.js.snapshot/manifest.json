@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "integ-ecs-neuron-ami.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/758add4abf782a712eea18984d2d3f66778882c56d0e19e18a2eb0a1c296430a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/19dc3f00d63f7e05eeeeeb60380a83a4938f6143290937baeb02ebc575b23f35.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -88,7 +88,10 @@
         "/integ-ecs-neuron-ami/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+            "data": "VpcPublicSubnet1Subnet5C2D37C4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-ecs-neuron-ami/Vpc/PublicSubnet1/RouteTable": [
@@ -100,7 +103,10 @@
         "/integ-ecs-neuron-ami/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-ecs-neuron-ami/Vpc/PublicSubnet1/DefaultRoute": [
@@ -118,7 +124,10 @@
         "/integ-ecs-neuron-ami/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+            "data": "VpcPublicSubnet1NATGateway4D7517AA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-ecs-neuron-ami/Vpc/PublicSubnet2": [
@@ -160,7 +169,10 @@
         "/integ-ecs-neuron-ami/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2Subnet691E08A3"
+            "data": "VpcPublicSubnet2Subnet691E08A3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-ecs-neuron-ami/Vpc/PublicSubnet2/RouteTable": [
@@ -172,7 +184,10 @@
         "/integ-ecs-neuron-ami/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-ecs-neuron-ami/Vpc/PublicSubnet2/DefaultRoute": [
@@ -190,7 +205,10 @@
         "/integ-ecs-neuron-ami/Vpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2NATGateway9182C01D"
+            "data": "VpcPublicSubnet2NATGateway9182C01D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-ecs-neuron-ami/Vpc/PrivateSubnet1": [
@@ -224,7 +242,10 @@
         "/integ-ecs-neuron-ami/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1Subnet536B997A"
+            "data": "VpcPrivateSubnet1Subnet536B997A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-ecs-neuron-ami/Vpc/PrivateSubnet1/RouteTable": [
@@ -236,7 +257,10 @@
         "/integ-ecs-neuron-ami/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-ecs-neuron-ami/Vpc/PrivateSubnet1/DefaultRoute": [
@@ -276,7 +300,10 @@
         "/integ-ecs-neuron-ami/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+            "data": "VpcPrivateSubnet2Subnet3788AAA1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-ecs-neuron-ami/Vpc/PrivateSubnet2/RouteTable": [
@@ -288,7 +315,10 @@
         "/integ-ecs-neuron-ami/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-ecs-neuron-ami/Vpc/PrivateSubnet2/DefaultRoute": [
@@ -637,8 +667,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -653,8 +691,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -723,22 +769,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/integ-ecs-neuron-ami/ASG/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
@@ -777,6 +807,82 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ASGDrainECSHookFunctionTopicD6FC59F7"
+          }
+        ],
+        "/integ-ecs-neuron-ami/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-ecs-neuron-ami/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole00371FEB3"
+          }
+        ],
+        "/integ-ecs-neuron-ami/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-ecs-neuron-ami/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole17E852E01"
           }
         ],
         "/integ-ecs-neuron-ami/ASG/LifecycleHookDrainHook": [
@@ -917,51 +1023,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole00371FEB3": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole00371FEB3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole17E852E01": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole17E852E01",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole22C962AF2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole22C962AF2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole3E4846C2B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole3E4846C2B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole48434A97B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole48434A97B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "integ-ecs-neuron-ami"
@@ -1020,5 +1081,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }

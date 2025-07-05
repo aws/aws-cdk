@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "e6e72c2f1c71af118ab03cdf46019315073827f6005528ad5c5b0abdfc5a09fe": {
       "displayName": "lambda-event-source-confluent-schema-registry Template",

@@ -1533,16 +1533,10 @@ describe('KafkaEventSource', () => {
       expect(mskEventMapping.eventSourceMappingArn).toBeDefined();
 
       const template = Template.fromStack(stack);
+      // Glue permissions are created as separate inline policies due to complex tokens
       template.hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
-            {
-              Action: 'glue:GetRegistry',
-              Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': ['SchemaRegistry', 'Arn'],
-              },
-            },
             {
               Action: 'glue:GetSchemaVersion',
               Effect: 'Allow',
@@ -1558,6 +1552,41 @@ describe('KafkaEventSource', () => {
                 },
               ],
             },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: Match.stringLikeRegexp('FninlinePolicyAddedToExecutionRole.*'),
+        Roles: [
+          {
+            Ref: 'FnServiceRoleB9001A96',
+          },
+        ],
+      });
+
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'glue:GetRegistry',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['SchemaRegistry', 'Arn'],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: Match.stringLikeRegexp('FninlinePolicyAddedToExecutionRole.*'),
+        Roles: [
+          {
+            Ref: 'FnServiceRoleB9001A96',
+          },
+        ],
+      });
+
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
             {
               Action: [
                 'kafka:DescribeCluster',
@@ -1570,7 +1599,7 @@ describe('KafkaEventSource', () => {
           ],
           Version: '2012-10-17',
         },
-        PolicyName: 'FnServiceRoleDefaultPolicyC6A839BF',
+        PolicyName: Match.stringLikeRegexp('FninlinePolicyAddedToExecutionRole.*'),
         Roles: [
           {
             Ref: 'FnServiceRoleB9001A96',
@@ -1627,14 +1656,10 @@ describe('KafkaEventSource', () => {
       expect(mskEventMapping.eventSourceMappingArn).toBeDefined();
 
       const template = Template.fromStack(stack);
+      // Glue permissions with complex tokens are created as separate inline policies
       template.hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
-            {
-              Action: 'glue:GetRegistry',
-              Effect: 'Allow',
-              Resource: 'arn:aws:glue:us-west-2:123456789012:registry/example',
-            },
             {
               Action: 'glue:GetSchemaVersion',
               Effect: 'Allow',
@@ -1648,6 +1673,39 @@ describe('KafkaEventSource', () => {
                 },
               ],
             },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: Match.stringLikeRegexp('FninlinePolicyAddedToExecutionRole.*'),
+        Roles: [
+          {
+            Ref: 'FnServiceRoleB9001A96',
+          },
+        ],
+      });
+
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'glue:GetRegistry',
+              Effect: 'Allow',
+              Resource: 'arn:aws:glue:us-west-2:123456789012:registry/example',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: Match.stringLikeRegexp('FninlinePolicyAddedToExecutionRole.*'),
+        Roles: [
+          {
+            Ref: 'FnServiceRoleB9001A96',
+          },
+        ],
+      });
+
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
             {
               Action: [
                 'kafka:DescribeCluster',
@@ -1660,7 +1718,7 @@ describe('KafkaEventSource', () => {
           ],
           Version: '2012-10-17',
         },
-        PolicyName: 'FnServiceRoleDefaultPolicyC6A839BF',
+        PolicyName: Match.stringLikeRegexp('FninlinePolicyAddedToExecutionRole.*'),
         Roles: [
           {
             Ref: 'FnServiceRoleB9001A96',
@@ -1829,16 +1887,10 @@ describe('KafkaEventSource', () => {
 
       // THEN
       const template = Template.fromStack(stack);
+      // Glue permissions with complex tokens are created as separate inline policies
       template.hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
-            {
-              Action: 'glue:GetRegistry',
-              Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': ['SchemaRegistry', 'Arn'],
-              },
-            },
             {
               Action: 'glue:GetSchemaVersion',
               Effect: 'Allow',
@@ -1854,6 +1906,41 @@ describe('KafkaEventSource', () => {
                 },
               ],
             },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: Match.stringLikeRegexp('FninlinePolicyAddedToExecutionRole.*'),
+        Roles: [
+          {
+            Ref: 'FnServiceRoleB9001A96',
+          },
+        ],
+      });
+
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'glue:GetRegistry',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['SchemaRegistry', 'Arn'],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: Match.stringLikeRegexp('FninlinePolicyAddedToExecutionRole.*'),
+        Roles: [
+          {
+            Ref: 'FnServiceRoleB9001A96',
+          },
+        ],
+      });
+
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
             {
               Action: [
                 'secretsmanager:GetSecretValue',
@@ -1922,14 +2009,10 @@ describe('KafkaEventSource', () => {
 
       // THEN
       const template = Template.fromStack(stack);
+      // Glue permissions with complex tokens are created as separate inline policies
       template.hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
-            {
-              Action: 'glue:GetRegistry',
-              Effect: 'Allow',
-              Resource: 'arn:aws:glue:us-west-2:123456789012:registry/example',
-            },
             {
               Action: 'glue:GetSchemaVersion',
               Effect: 'Allow',
@@ -1943,6 +2026,39 @@ describe('KafkaEventSource', () => {
                 },
               ],
             },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: Match.stringLikeRegexp('FninlinePolicyAddedToExecutionRole.*'),
+        Roles: [
+          {
+            Ref: 'FnServiceRoleB9001A96',
+          },
+        ],
+      });
+
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'glue:GetRegistry',
+              Effect: 'Allow',
+              Resource: 'arn:aws:glue:us-west-2:123456789012:registry/example',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: Match.stringLikeRegexp('FninlinePolicyAddedToExecutionRole.*'),
+        Roles: [
+          {
+            Ref: 'FnServiceRoleB9001A96',
+          },
+        ],
+      });
+
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
             {
               Action: [
                 'secretsmanager:GetSecretValue',

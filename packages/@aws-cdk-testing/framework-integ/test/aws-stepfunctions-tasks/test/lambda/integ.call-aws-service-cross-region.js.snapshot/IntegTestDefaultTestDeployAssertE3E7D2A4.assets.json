@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "040060a4ce3ff736bb21d31a0d3b63e72acc0c50ab616da008e4879acdb37888": {
+    "652db628f0c7a71a8ce0f75097098c6e1f13cecfbc7fe88adcb56aa880d78782": {
       "displayName": "IntegTestDefaultTestDeployAssertE3E7D2A4 Template",
       "source": {
         "path": "IntegTestDefaultTestDeployAssertE3E7D2A4.template.json",
@@ -23,7 +23,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "040060a4ce3ff736bb21d31a0d3b63e72acc0c50ab616da008e4879acdb37888.json",
+          "objectKey": "652db628f0c7a71a8ce0f75097098c6e1f13cecfbc7fe88adcb56aa880d78782.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

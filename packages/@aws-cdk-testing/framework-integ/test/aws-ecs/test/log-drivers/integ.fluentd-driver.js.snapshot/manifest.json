@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "cdk-ecs-fluentd.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e4175e4d4e137376260401fe8b1f168da299f6adc7a81843f78544793a6bdf0e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2f1acd95a8c8eb943e8f7180f6a7fa584e6e46d7b5b74574231ac4fbb34618bb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -88,7 +88,10 @@
         "/cdk-ecs-fluentd/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+            "data": "VpcPublicSubnet1Subnet5C2D37C4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-ecs-fluentd/Vpc/PublicSubnet1/RouteTable": [
@@ -100,7 +103,10 @@
         "/cdk-ecs-fluentd/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-ecs-fluentd/Vpc/PublicSubnet1/DefaultRoute": [
@@ -118,7 +124,10 @@
         "/cdk-ecs-fluentd/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+            "data": "VpcPublicSubnet1NATGateway4D7517AA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-ecs-fluentd/Vpc/PrivateSubnet1": [
@@ -152,7 +161,10 @@
         "/cdk-ecs-fluentd/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1Subnet536B997A"
+            "data": "VpcPrivateSubnet1Subnet536B997A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-ecs-fluentd/Vpc/PrivateSubnet1/RouteTable": [
@@ -164,7 +176,10 @@
         "/cdk-ecs-fluentd/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-ecs-fluentd/Vpc/PrivateSubnet1/DefaultRoute": [
@@ -502,8 +517,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -518,8 +541,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -588,22 +619,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/cdk-ecs-fluentd/ASG/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
@@ -642,6 +657,82 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ASGDrainECSHookFunctionTopicD6FC59F7"
+          }
+        ],
+        "/cdk-ecs-fluentd/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-ecs-fluentd/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole00371FEB3"
+          }
+        ],
+        "/cdk-ecs-fluentd/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-ecs-fluentd/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole17E852E01"
           }
         ],
         "/cdk-ecs-fluentd/ASG/LifecycleHookDrainHook": [
@@ -845,51 +936,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole00371FEB3": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole00371FEB3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole17E852E01": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole17E852E01",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole22C962AF2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole22C962AF2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole3E4846C2B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole3E4846C2B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole48434A97B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole48434A97B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "cdk-ecs-fluentd"
@@ -949,5 +995,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1013.0"
+  "minimumCliVersion": "2.1020.2"
 }

@@ -51,6 +51,32 @@
     "TargetLambdaServiceRole567EC23E"
    ]
   },
+  "CrossRegionLambdaInvokeHandlerinlinePolicyAddedToExecutionRole099874868": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "TargetLambdaE6C763FE",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CrossRegionLambdaInvokeHandlerinlinePolicyAddedToExecutionRole099874868",
+    "Roles": [
+     {
+      "Ref": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
+     }
+    ]
+   }
+  },
   "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -78,32 +104,6 @@
         ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
        ]
       ]
-     }
-    ]
-   }
-  },
-  "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "TargetLambdaE6C763FE",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF",
-    "Roles": [
-     {
-      "Ref": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
      }
     ]
    }
@@ -136,7 +136,6 @@
     "Timeout": 30
    },
    "DependsOn": [
-    "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF",
     "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
    ]
   },

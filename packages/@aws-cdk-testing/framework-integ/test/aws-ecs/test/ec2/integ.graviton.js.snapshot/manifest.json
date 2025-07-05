@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "aws-ecs-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/483fcaa6452dbb760229a5b3ccdb4f7e3a95fa6077a6a30237f433220ee3650f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fb876698a708ae5c1376f56f66313099fb05e7555eff444dfd5e46391a5c80b1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -648,8 +648,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -664,8 +672,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -734,22 +750,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
@@ -788,6 +788,82 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EcsClustergravitonclusterDrainECSHookFunctionTopic65B3FD43"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole00BEEF075"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole1E7E6BDCA"
           }
         ],
         "/aws-ecs-integ/EcsCluster/graviton-cluster/LifecycleHookDrainHook": [
@@ -922,51 +998,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole00BEEF075": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole00BEEF075",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole1E7E6BDCA": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole1E7E6BDCA",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole2F61512F4": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole2F61512F4",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole395D5864D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole395D5864D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole4A01E14CA": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole4A01E14CA",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-ecs-integ"
@@ -977,5 +1008,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }
