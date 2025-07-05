@@ -1,3 +1,4 @@
+import { generateAdotArnMap } from './generate-static-data';
 /* eslint-disable @cdklabs/no-literal-partition */
 /**
  * The hosted zone Id if using an alias record in Route53.
@@ -2372,6 +2373,7 @@ const ADOT_LAMBDA_LAYER_JAVA_AUTO_INSTRUMENTATION_ARNS: {
   },
 };
 const ADOT_LAMBDA_LAYER_JAVASCRIPT_SDK_ARNS: { [version: string]: { [arch: string]: { [region: string]: string } } } = {
+
   '1.30.0': {
     x86_64: {
       'ap-northeast-1': 'arn:aws:lambda:ap-northeast-1:901920570463:layer:aws-otel-nodejs-amd64-ver-1-30-1:1',
@@ -4130,4 +4132,55 @@ export const ADOT_LAMBDA_LAYER_ARNS: { [key: string]: any } = {
   JAVASCRIPT_SDK: ADOT_LAMBDA_LAYER_JAVASCRIPT_SDK_ARNS,
   PYTHON_SDK: ADOT_LAMBDA_LAYER_PYTHON_SDK_ARNS,
   GENERIC: ADOT_LAMBDA_LAYER_GENERIC_ARNS,
+};
+
+const regions = [
+  'ap-northeast-1',
+  'ap-northeast-2',
+  'ap-south-1',
+  'ap-southeast-1',
+  'ap-southeast-2',
+  'ca-central-1',
+  'eu-central-1',
+  'eu-north-1',
+  'eu-west-1',
+  'eu-west-2',
+  'eu-west-3',
+  'sa-east-1',
+  'us-east-1',
+  'us-east-2',
+  'us-west-1',
+  'us-west-2',
+];
+
+// This is in format [version, adotVersion, layerVersion]
+// version - version identifier for fact tables
+// adotVersion - layer name with adot version
+// layerVersion - layer version of the lambda layer
+const JavaSDKVersions: [string, string, string][] = [
+  ['1.32.0-2', '1-32-0', '6'],
+];
+
+const JavaInstrumentationVersions: [string, string, string][] = [
+  ['1.32.0-2', '1-32-0', '6'],
+];
+
+const JavaScriptVersions: [string, string, string][] = [
+  ['1.30.0-1', '1-30-2', '1'],
+];
+
+const PythonVersions: [string, string, string][] = [
+  ['1.32.0', '1-32-0', '2'],
+];
+
+const GenericVersions: [string, string, string][] = [
+  ['0.117.0', '0-117-0', '1'],
+];
+
+export const ADOT_LAMBDA_LAYER_NEW_ARNS: { [key: string]: any } = {
+  JAVA_SDK: generateAdotArnMap('aws-otel-java-wrapper', JavaSDKVersions, regions),
+  JAVA_AUTO_INSTRUMENTATION: generateAdotArnMap('aws-otel-java-agent', JavaInstrumentationVersions, regions),
+  JAVASCRIPT_SDK: generateAdotArnMap('aws-otel-nodejs', JavaScriptVersions, regions),
+  PYTHON_SDK: generateAdotArnMap('aws-otel-python', PythonVersions, regions),
+  GENERIC: generateAdotArnMap('aws-otel-collector', GenericVersions, regions),
 };
