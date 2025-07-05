@@ -222,3 +222,20 @@ test('add multiple event notifications using a singleton function', () => {
     }),
   });
 });
+
+test('lambda permissions are not added when addPermissions is false', () => {
+  const stack = new Stack();
+  const bucket = new s3.Bucket(stack, 'MyBucket');
+  const fn = new lambda.Function(stack, 'MyFunction1', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('foo'),
+  });
+
+  const lambdaDestination = new s3n.LambdaDestination(fn, { addPermissions: false });
+
+  bucket.addEventNotification(s3.EventType.OBJECT_CREATED, lambdaDestination, { prefix: 'v1/' });
+
+  // expecting one permission for each function
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
+});
