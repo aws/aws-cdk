@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "version": "44.0.0",
+=======
+  "version": "45.0.0",
+>>>>>>> a23831fce5 (fix(lambda): prevent token resolution conflicts in addToRolePolicy)
   "testCases": {
     "aws-cdk-ecs-integration-test-stack/TaskDefinitionPlacementConstraints/DefaultTest": {
       "stacks": [
@@ -9,5 +13,9 @@
       "assertionStackName": "awscdkecsintegrationteststackTaskDefinitionPlacementConstraintsDefaultTestDeployAssert906A0CF3"
     }
   },
+<<<<<<< HEAD
   "minimumCliVersion": "2.1019.2"
+=======
+  "minimumCliVersion": "2.1020.1"
+>>>>>>> a23831fce5 (fix(lambda): prevent token resolution conflicts in addToRolePolicy)
 }

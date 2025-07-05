@@ -67,6 +67,29 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "StartExecutionHandlerinlinePolicyAddedToExecutionRole08677ED81": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "states:startExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "AcceptorStateMachine3C18A968"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StartExecutionHandlerinlinePolicyAddedToExecutionRole08677ED81",
+    "Roles": [
+     {
+      "Ref": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
+     }
+    ]
+   }
+  },
   "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -98,29 +121,6 @@
     ]
    }
   },
-  "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "states:startExecution",
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "AcceptorStateMachine3C18A968"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF",
-    "Roles": [
-     {
-      "Ref": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
-     }
-    ]
-   }
-  },
   "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -128,7 +128,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ea123b4e391a9f352cc5dadc2250aab676981408fc6ccb0efb0d106bbd933ae3.zip"
+     "S3Key": "e1c20a4808d556faa2fc55b65ebe08053d2625201f06e4dcf4c10f0dc1dde80e.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -149,7 +149,6 @@
     "Timeout": 30
    },
    "DependsOn": [
-    "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF",
     "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
    ]
   },

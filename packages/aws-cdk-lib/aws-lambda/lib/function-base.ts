@@ -400,7 +400,11 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return;
     }
 
-    if (useCreateNewPolicies) {
+    // Check if the statement contains nested tokens (CloudFormation intrinsic functions) in resources
+    // that would cause token resolution issues when merged with other statements
+    const hasNestedTokens = this.statementHasNestedTokens(statement);
+
+    if (useCreateNewPolicies || hasNestedTokens) {
       const policyToAdd = new iam.Policy(this, `inlinePolicyAddedToExecutionRole-${this._policyCounter++}`, {
         statements: [statement],
       });
@@ -751,6 +755,34 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   private isPrincipalWithConditions(principal: iam.IPrincipal): boolean {
     return Object.keys(principal.policyFragment.conditions).length > 0;
+  }
+
+  /**
+   * Check if a policy statement contains nested tokens (like CloudFormation intrinsic functions)
+   * that would cause issues when merged with other statements in a single policy document.
+   * @internal
+   */
+  private statementHasNestedTokens(statement: iam.PolicyStatement): boolean {
+    // Check if resources contain tokens that represent CloudFormation functions
+    const resources = statement.resources;
+    if (!resources) {
+      return false;
+    }
+
+    // Check if the entire resources array is unresolved (contains tokens)
+    // This handles cases where resources come from CloudFormation functions like Fn.split
+    if (Token.isUnresolved(resources)) {
+      return true;
+    }
+
+    // Safe to check length and individual resources only if resources is not a token
+    if (resources.length === 0) {
+      return false;
+    }
+
+    // Also check individual resources for tokens
+    // This handles cases where individual resources are tokens
+    return resources.some(resource => Token.isUnresolved(resource));
   }
 }
 

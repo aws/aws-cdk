@@ -1,7 +1,8 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "files": {
-    "034d7f988da203540ca02686cfe2cc037bc70239c1f4d051a369c99f8fa0fac1": {
+    "62284f6ab423a195bc7817f695cbde701a8d05b7497844975d998d1bb90fc8e3": {
+      "displayName": "aws-sfn-tasks-ecs-run-task Template",
       "source": {
         "path": "aws-sfn-tasks-ecs-run-task.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "034d7f988da203540ca02686cfe2cc037bc70239c1f4d051a369c99f8fa0fac1.json",
+          "objectKey": "62284f6ab423a195bc7817f695cbde701a8d05b7497844975d998d1bb90fc8e3.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -17,6 +18,7 @@
   },
   "dockerImages": {
     "d87af9b5acc567118fa529d3d3b763098200a6446a5ca64aea987729efd52534": {
+      "displayName": "TaskDef/Container/AssetImage",
       "source": {
         "directory": "asset.d87af9b5acc567118fa529d3d3b763098200a6446a5ca64aea987729efd52534"
       },

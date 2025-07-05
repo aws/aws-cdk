@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "d5ee7f500a69aad279622b83140a23bee5d92e2fc243f63612b9c2749252618d": {
       "displayName": "createIndexFunction/Code",
@@ -57,7 +57,7 @@
         }
       }
     },
-    "7f7e61c757a501b08062e328d3ac7681cd21af34b141678151fa1852796eb191": {
+    "539aaa22056c19dc16e6586d879ef1147ca85e765db56c7326db88d913631574": {
       "displayName": "EventApiOpenSearchStack Template",
       "source": {
         "path": "EventApiOpenSearchStack.template.json",
@@ -66,7 +66,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7f7e61c757a501b08062e328d3ac7681cd21af34b141678151fa1852796eb191.json",
+          "objectKey": "539aaa22056c19dc16e6586d879ef1147ca85e765db56c7326db88d913631574.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

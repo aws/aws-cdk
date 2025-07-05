@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ad867d65db3661ed3d8d3fd451aa8ff23fb0726ff102d1369744f6747ce05867.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/09d163c5f7652b72bc370d934daf6f018af1a1e03d15e6f1901ed93d3ccf5f10.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -192,78 +192,6 @@
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
-        "/MultiAzRedshift/redshift-ra3-large-integ/VPC/PublicSubnet3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/MultiAzRedshift/redshift-ra3-large-integ/VPC/PublicSubnet3/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet3Subnet631C5E25"
-          }
-        ],
-        "/MultiAzRedshift/redshift-ra3-large-integ/VPC/PublicSubnet3/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet3RouteTable98AE0E14"
-          }
-        ],
-        "/MultiAzRedshift/redshift-ra3-large-integ/VPC/PublicSubnet3/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet3RouteTableAssociation427FE0C6"
-          }
-        ],
-        "/MultiAzRedshift/redshift-ra3-large-integ/VPC/PublicSubnet3/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet3DefaultRouteA0D29D46"
-          }
-        ],
-        "/MultiAzRedshift/redshift-ra3-large-integ/VPC/PublicSubnet3/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet3EIPAD4BC883"
-          }
-        ],
-        "/MultiAzRedshift/redshift-ra3-large-integ/VPC/PublicSubnet3/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet3NATGatewayD3048F5C"
-          }
-        ],
         "/MultiAzRedshift/redshift-ra3-large-integ/VPC/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -366,58 +294,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
-          }
-        ],
-        "/MultiAzRedshift/redshift-ra3-large-integ/VPC/PrivateSubnet3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/MultiAzRedshift/redshift-ra3-large-integ/VPC/PrivateSubnet3/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet3Subnet3EDCD457"
-          }
-        ],
-        "/MultiAzRedshift/redshift-ra3-large-integ/VPC/PrivateSubnet3/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet3RouteTable192186F8"
-          }
-        ],
-        "/MultiAzRedshift/redshift-ra3-large-integ/VPC/PrivateSubnet3/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet3RouteTableAssociationC28D144E"
-          }
-        ],
-        "/MultiAzRedshift/redshift-ra3-large-integ/VPC/PrivateSubnet3/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet3DefaultRoute27F311AE"
           }
         ],
         "/MultiAzRedshift/redshift-ra3-large-integ/VPC/IGW": [
@@ -620,5 +496,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1020.1"
+  "minimumCliVersion": "2.1020.2"
 }

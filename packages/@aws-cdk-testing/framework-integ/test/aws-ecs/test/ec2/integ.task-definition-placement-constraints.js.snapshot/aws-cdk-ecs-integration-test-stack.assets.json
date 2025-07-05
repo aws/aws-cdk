@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "version": "44.0.0",
+=======
+  "version": "45.0.0",
+>>>>>>> a23831fce5 (fix(lambda): prevent token resolution conflicts in addToRolePolicy)
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "aws-cdk-ecs-integration-test-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,7 +19,11 @@
         }
       }
     },
+<<<<<<< HEAD
     "8096b9f17d6407fb8ae68c1bbec0c8f2e021964f04128be9e29c4d288748c109": {
+=======
+    "532fa5c272a6b31bc97042a7e4a7a84d3c435e27e1e6020c782e05a8494b4a1f": {
+>>>>>>> a23831fce5 (fix(lambda): prevent token resolution conflicts in addToRolePolicy)
       "displayName": "aws-cdk-ecs-integration-test-stack Template",
       "source": {
         "path": "aws-cdk-ecs-integration-test-stack.template.json",
@@ -24,7 +32,11 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+<<<<<<< HEAD
           "objectKey": "8096b9f17d6407fb8ae68c1bbec0c8f2e021964f04128be9e29c4d288748c109.json",
+=======
+          "objectKey": "532fa5c272a6b31bc97042a7e4a7a84d3c435e27e1e6020c782e05a8494b4a1f.json",
+>>>>>>> a23831fce5 (fix(lambda): prevent token resolution conflicts in addToRolePolicy)
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
