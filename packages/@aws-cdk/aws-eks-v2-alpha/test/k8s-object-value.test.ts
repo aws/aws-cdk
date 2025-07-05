@@ -130,7 +130,6 @@ describe('k8s object value', () => {
         },
         ClusterName: { Ref: 'MyCluster4C1BA579' },
         ObjectType: 'pod',
-        ObjectName: '--all-namespaces=false',
         ObjectNamespace: 'default',
         JsonPath: '.apiVersion',
         TimeoutSeconds: 300,
