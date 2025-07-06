@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.204.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.203.1-alpha.0...v2.204.0-alpha.0) (2025-07-04)
+
+
+### Features
+
+* **lambda-python-alpha:** support uv ([#33880](https://github.com/aws/aws-cdk/issues/33880)) ([ac6f136](https://github.com/aws/aws-cdk/commit/ac6f13695ba84d5358b69c0763c2f611af54e826)), closes [#31238](https://github.com/aws/aws-cdk/issues/31238) [#32413](https://github.com/aws/aws-cdk/issues/32413)
+
+## [2.203.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.203.0-alpha.0...v2.203.1-alpha.0) (2025-07-02)
+
+## [2.203.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.202.0-alpha.0...v2.203.0-alpha.0) (2025-07-01)
+
+
+### Features
+
+* **ec2:** support for client route enforcement for client VPN endpoint ([#34405](https://github.com/aws/aws-cdk/issues/34405)) ([063f4e7](https://github.com/aws/aws-cdk/commit/063f4e79d7416c52b622450222c5439e893ca74c))
+
+
+### Bug Fixes
+
+* **ec2:** don't use inferenceAccellerators in the constructors if not needed ([#34618](https://github.com/aws/aws-cdk/issues/34618)) ([054c6c5](https://github.com/aws/aws-cdk/commit/054c6c53982b8ba33ca31af6752b1662ed5752b8)), closes [#33505](https://github.com/aws/aws-cdk/issues/33505) [/github.com/aws/aws-cdk/issues/33505#issuecomment-2770818825](https://github.com/aws//github.com/aws/aws-cdk/issues/33505/issues/issuecomment-2770818825) [#34610](https://github.com/aws/aws-cdk/issues/34610)
+
+## [2.202.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.201.0-alpha.0...v2.202.0-alpha.0) (2025-06-20)
+
+
+### Features
+
+* **amplify:** add compute role support for Amplify branches ([#34708](https://github.com/aws/aws-cdk/issues/34708)) ([817a21a](https://github.com/aws/aws-cdk/commit/817a21a782da035f7878facf8cc4d938250b70e0))
+* **amplify-alpha:** support custom response headers in monorepo structures ([#31771](https://github.com/aws/aws-cdk/issues/31771)) ([aea1372](https://github.com/aws/aws-cdk/commit/aea1372ab7bc68c489cea5ee5e499233755910e8)), closes [#31758](https://github.com/aws/aws-cdk/issues/31758)
+
 ## [2.201.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.200.2-alpha.0...v2.201.0-alpha.0) (2025-06-12)
 
 
