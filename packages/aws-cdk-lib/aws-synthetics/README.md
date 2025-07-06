@@ -99,13 +99,13 @@ For more information, see [Configuring your canary to retry automatically](https
 
 ```ts
 const canary = new synthetics.Canary(this, 'MyCanary', {
-  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)), 
   test: synthetics.Test.custom({
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
-    handler: 'index.handler',
+    handler: 'canary.handler',
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0,
-  maxRetries: 2 // The canary run will retry up to 2 times on a failure
+  runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1,
+  maxRetries: 2, // The canary run will retry up to 2 times on a failure
 });
 ```
 
