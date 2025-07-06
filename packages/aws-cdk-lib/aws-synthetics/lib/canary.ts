@@ -718,9 +718,9 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     return {
       durationInSeconds: String(`${props.timeToLive?.toSeconds() ?? 0}`),
       expression: props.schedule?.expressionString ?? 'rate(5 minutes)',
-      retryConfig: {
-        maxRetries: props.maxRetries ?? 0,
-      },
+      retryConfig: props.maxRetries ? {
+        maxRetries: props.maxRetries,
+      } : undefined,
     };
   }
 
