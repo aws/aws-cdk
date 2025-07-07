@@ -1400,19 +1400,49 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
   });
 
   const result = app.synth();
-  const obj = JSON.parse(readDataFile(result, 'app-config.json'));
-  expect(obj).toStrictEqual({
-    foo: 'bar',
-    sub: {
-      hello: '<<marker:0xbaba:0>>',
-    },
-  });
+  const data = readDataFile(result, 'app-config.json');
+  expect(data).toStrictEqual('<<marker:0xbaba:0>>');
 
   // verify marker is mapped to the bucket ARN in the resource props
   Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
     SourceMarkers: [
-      { '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] } },
+      {
+        '<<marker:0xbaba:0>>': {
+          'Fn::Join': [
+            '',
+            [
+              '{"foo":"bar","sub":{"hello":"',
+              { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
+              '"}}',
+            ],
+          ],
+        },
+      },
     ],
+  });
+});
+
+test('Source.jsonData() emits no markers for non-token inputs', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const config = {
+    a: 'b',
+  };
+
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [s3deploy.Source.jsonData('app-config.json', config)],
+    destinationBucket: bucket,
+  });
+
+  const result = app.synth();
+  const data = readDataFile(result, 'app-config.json');
+  expect(data).toStrictEqual('{"a":"b"}');
+
+  // verify marker is mapped to the bucket ARN in the resource props
+  Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceMarkers: [{}],
   });
 });
 
@@ -1435,11 +1465,7 @@ test('Source.yamlData() can be used to create a file with YAML content', () => {
 
   const result = app.synth();
   const output = readDataFile(result, 'app-config.yaml');
-  expect(output.trim()).toEqual([
-    'foo: bar',
-    'sub:',
-    '  hello: <<marker:0xbaba:0>>',
-  ].join('\n'));
+  expect(output.trim()).toStrictEqual('<<marker:0xbaba:0>>');
 });
 
 test('can add sources with addSource', () => {
