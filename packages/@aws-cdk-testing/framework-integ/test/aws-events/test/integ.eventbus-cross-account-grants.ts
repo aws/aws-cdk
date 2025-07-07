@@ -103,7 +103,7 @@ const originalBus = new EventBus(crossAccountStack, 'bus', {
 });
 testingStack.addDependency(crossAccountStack);
 
-originalBus.grantPutEventsTo(new AccountPrincipal(account), 'crossAccountAccessSid');
+originalBus.grantPutEventsTo(new AccountPrincipal(account), 'cross-account-access-sid');
 
 const integ = new IntegTest(app, 'CrossAccountDeploy', {
   testCases: [
