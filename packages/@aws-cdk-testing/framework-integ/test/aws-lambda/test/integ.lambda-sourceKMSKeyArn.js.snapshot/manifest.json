@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "CMCMK-Stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/287ee49de660304ee4b58ab42db9f571763fb0b6eba3df57d6b6e9a2fe5cb7cc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/248f4d0e0b981a6d8803a8fed43447d0e036eb7922717b1f46fba25518a48d3a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -185,6 +185,10 @@
               "autoDeleteObjects": true,
               "bucketName": "*"
             }
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "options.objectVersion is not defined for S3Code.fromBucketV2(). The lambda will not be updated automatically if the code in the bucket is updated. This is because CDK/Cloudformation does not track changes on the source S3 Bucket. It is recommended to either use S3Code.fromAsset() instead or set options.objectVersion. [ack: @aws-cdk/aws-lambda:codeFromBucketObjectVersionNotSpecified]"
           }
         ],
         "/CMCMK-Stack/S3/Resource": [
@@ -590,5 +594,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1015.0"
+  "minimumCliVersion": "2.1020.1"
 }

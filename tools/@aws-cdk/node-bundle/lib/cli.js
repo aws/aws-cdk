@@ -1,0 +1,9 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const cli_main_1 = require("./cli-main");
+(0, cli_main_1.cliMain)(process.argv.slice(2))
+    .catch((err) => {
+    console.error(`Error: ${err.message}`);
+    process.exitCode = 1;
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY2xpLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vc3JjL2NsaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLHlDQUFxQztBQUVyQyxJQUFBLGtCQUFPLEVBQUMsT0FBTyxDQUFDLElBQUksQ0FBQyxLQUFLLENBQUMsQ0FBQyxDQUFDLENBQUM7S0FDM0IsS0FBSyxDQUFDLENBQUMsR0FBVSxFQUFFLEVBQUU7SUFDcEIsT0FBTyxDQUFDLEtBQUssQ0FBQyxVQUFVLEdBQUcsQ0FBQyxPQUFPLEVBQUUsQ0FBQyxDQUFDO0lBQ3ZDLE9BQU8sQ0FBQyxRQUFRLEdBQUcsQ0FBQyxDQUFDO0FBQ3ZCLENBQUMsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgY2xpTWFpbiB9IGZyb20gJy4vY2xpLW1haW4nO1xuXG5jbGlNYWluKHByb2Nlc3MuYXJndi5zbGljZSgyKSlcbiAgLmNhdGNoKChlcnI6IEVycm9yKSA9PiB7XG4gICAgY29uc29sZS5lcnJvcihgRXJyb3I6ICR7ZXJyLm1lc3NhZ2V9YCk7XG4gICAgcHJvY2Vzcy5leGl0Q29kZSA9IDE7XG4gIH0pO1xuIl19

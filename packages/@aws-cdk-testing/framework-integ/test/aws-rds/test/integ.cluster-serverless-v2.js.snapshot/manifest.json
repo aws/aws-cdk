@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "integ-aurora-serverlessv2-cluster.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8ad296c0176b22ba4868224da3e357af607cc96c37099be75b7dc0e094a57497.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5baf6844eb3760652fa1632d2e9ca8a7f06679bbf39c9380fc7ba8e2cea8ae8e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -85,7 +85,10 @@
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegVPCPublicSubnet1SubnetE05F7E7D"
+            "data": "IntegVPCPublicSubnet1SubnetE05F7E7D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet1/RouteTable": [
@@ -97,7 +100,10 @@
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegVPCPublicSubnet1RouteTableAssociation0E84800B"
+            "data": "IntegVPCPublicSubnet1RouteTableAssociation0E84800B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet1/DefaultRoute": [
@@ -115,7 +121,10 @@
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegVPCPublicSubnet1NATGateway380AC0A0"
+            "data": "IntegVPCPublicSubnet1NATGateway380AC0A0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet2": [
@@ -157,7 +166,10 @@
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegVPCPublicSubnet2Subnet9648DE97"
+            "data": "IntegVPCPublicSubnet2Subnet9648DE97",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet2/RouteTable": [
@@ -169,7 +181,10 @@
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegVPCPublicSubnet2RouteTableAssociation831EA0CC"
+            "data": "IntegVPCPublicSubnet2RouteTableAssociation831EA0CC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet2/DefaultRoute": [
@@ -187,7 +202,10 @@
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegVPCPublicSubnet2NATGateway912800A3"
+            "data": "IntegVPCPublicSubnet2NATGateway912800A3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet1": [
@@ -221,7 +239,10 @@
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegVPCPrivateSubnet1SubnetD5B61223"
+            "data": "IntegVPCPrivateSubnet1SubnetD5B61223",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet1/RouteTable": [
@@ -233,7 +254,10 @@
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegVPCPrivateSubnet1RouteTableAssociationAD4B0EBF"
+            "data": "IntegVPCPrivateSubnet1RouteTableAssociationAD4B0EBF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet1/DefaultRoute": [
@@ -273,7 +297,10 @@
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegVPCPrivateSubnet2SubnetFCC4EF23"
+            "data": "IntegVPCPrivateSubnet2SubnetFCC4EF23",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet2/RouteTable": [
@@ -285,7 +312,10 @@
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6"
+            "data": "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet2/DefaultRoute": [
@@ -896,6 +926,96 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "IntegVPCPublicSubnet3Subnet32999116": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet3Subnet32999116",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "IntegVPCPublicSubnet3RouteTable7E309FBE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet3RouteTable7E309FBE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "IntegVPCPublicSubnet3RouteTableAssociationD690E00D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet3RouteTableAssociationD690E00D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "IntegVPCPublicSubnet3DefaultRoute8879CBF0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet3DefaultRoute8879CBF0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "IntegVPCPublicSubnet3EIPB65C2227": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet3EIPB65C2227",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "IntegVPCPublicSubnet3NATGatewayE004FC73": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet3NATGatewayE004FC73",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "IntegVPCPrivateSubnet3SubnetCFE913C1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPrivateSubnet3SubnetCFE913C1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "IntegVPCPrivateSubnet3RouteTableF9A91281": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPrivateSubnet3RouteTableF9A91281",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "IntegVPCPrivateSubnet3RouteTableAssociation4105621B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPrivateSubnet3RouteTableAssociation4105621B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "IntegVPCPrivateSubnet3DefaultRoute23DF9114": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPrivateSubnet3DefaultRoute23DF9114",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "integ-aurora-serverlessv2-cluster"
@@ -955,5 +1075,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1015.0"
+  "minimumCliVersion": "2.1020.2"
 }

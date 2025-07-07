@@ -10,5 +10,5 @@
       "assertionStackName": "VpcEgressFeatureFlagTestDefaultTestDeployAssert9C3B9F44"
     }
   },
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1019.2"
 }

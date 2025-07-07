@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "cdk-integ-dashboard-with-metric-id-and-visible/DefaultTest": {
+      "stacks": [
+        "DashboardWithMetricIdAndVisibleIntegrationTest"
+      ],
+      "assertionStack": "cdk-integ-dashboard-with-metric-id-and-visible/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegdashboardwithmetricidandvisibleDefaultTestDeployAssert34BC1A62"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}
