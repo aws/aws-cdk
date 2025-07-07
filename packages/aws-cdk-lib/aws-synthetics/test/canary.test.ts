@@ -22,6 +22,7 @@ test('Basic canary properties work', () => {
     failureRetentionPeriod: Duration.days(10),
     startAfterCreation: false,
     timeToLive: Duration.minutes(30),
+    maxRetries: 2,
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
   });
 
@@ -31,7 +32,7 @@ test('Basic canary properties work', () => {
     SuccessRetentionPeriod: 10,
     FailureRetentionPeriod: 10,
     StartCanaryAfterCreation: false,
-    Schedule: Match.objectLike({ DurationInSeconds: '1800' }),
+    Schedule: Match.objectLike({ DurationInSeconds: '1800', RetryConfig: { MaxRetries: 2 } }),
     RuntimeVersion: 'syn-nodejs-puppeteer-8.0',
   });
 });
