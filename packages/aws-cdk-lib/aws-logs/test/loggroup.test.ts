@@ -577,7 +577,7 @@ describe('log group', () => {
         Version: '2021-06-01',
         Statement: [
           {
-            Sid: 'auditStatementCdk',
+            Sid: 'audit-statement-cdk',
             DataIdentifier: [
               {
                 'Fn::Join': [
@@ -597,7 +597,7 @@ describe('log group', () => {
             },
           },
           {
-            Sid: 'redactStatementCdk',
+            Sid: 'redact-statement-cdk',
             DataIdentifier: [
               {
                 'Fn::Join': [
@@ -647,7 +647,7 @@ describe('log group', () => {
         Version: '2021-06-01',
         Statement: [
           {
-            Sid: 'auditStatementCdk',
+            Sid: 'audit-statement-cdk',
             DataIdentifier: [
               {
                 'Fn::Join': [
@@ -667,7 +667,7 @@ describe('log group', () => {
             },
           },
           {
-            Sid: 'redactStatementCdk',
+            Sid: 'redact-statement-cdk',
             DataIdentifier: [
               {
                 'Fn::Join': [
@@ -722,7 +722,7 @@ describe('log group', () => {
         Version: '2021-06-01',
         Statement: [
           {
-            Sid: 'auditStatementCdk',
+            Sid: 'audit-statement-cdk',
             DataIdentifier: [
               {
                 'Fn::Join': [
@@ -756,7 +756,7 @@ describe('log group', () => {
             },
           },
           {
-            Sid: 'redactStatementCdk',
+            Sid: 'redact-statement-cdk',
             DataIdentifier: [
               {
                 'Fn::Join': [
@@ -814,7 +814,7 @@ describe('log group', () => {
         },
         Statement: [
           {
-            Sid: 'auditStatementCdk',
+            Sid: 'audit-statement-cdk',
             DataIdentifier: [
               'EmployeeId',
             ],
@@ -825,7 +825,7 @@ describe('log group', () => {
             },
           },
           {
-            Sid: 'redactStatementCdk',
+            Sid: 'redact-statement-cdk',
             DataIdentifier: [
               'EmployeeId',
             ],
@@ -874,7 +874,7 @@ describe('log group', () => {
         },
         Statement: [
           {
-            Sid: 'auditStatementCdk',
+            Sid: 'audit-statement-cdk',
             DataIdentifier: [
               'EmployeeId',
               {
@@ -895,7 +895,7 @@ describe('log group', () => {
             },
           },
           {
-            Sid: 'redactStatementCdk',
+            Sid: 'redact-statement-cdk',
             DataIdentifier: [
               'EmployeeId',
               {
