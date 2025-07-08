@@ -262,6 +262,19 @@ export class Runtime {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-1.0
    */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_10_0 = new Runtime('syn-nodejs-puppeteer-10.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-10.0` includes the following:
+   * - Lambda runtime Node.js 20.x
+   * - Puppeteer-core version 24.2.0
+   * - Chromium version 131.0.6778.264
+   *
+   * New Features:
+   * - **Bug fixes** The bug related to closing the browser that took excessively long is fixed.
+   * - **Supports dry runs** for the canary which allows for adhoc executions or performing a safe canary update.
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-9.1
+   */
   public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_1_0 = new Runtime('syn-nodejs-playwright-1.0', RuntimeFamily.NODEJS);
 
   /**
