@@ -1212,3 +1212,50 @@ test('can configure resourcesToReplicateTags', () => {
     ResourcesToReplicateTags: ['lambda-function'],
   });
 });
+
+test('resourcesToReplicateTags is not included when not specified', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    canaryName: 'mycanary',
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::Synthetics::Canary', {
+    Name: 'mycanary',
+  });
+  
+  const canaryResource = template.findResources('AWS::Synthetics::Canary');
+  const canaryProps = canaryResource[Object.keys(canaryResource)[0]].Properties;
+  expect(canaryProps.ResourcesToReplicateTags).toBeUndefined();
+});
+
+test('resourcesToReplicateTags can be empty array', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    canaryName: 'mycanary',
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
+    resourcesToReplicateTags: [],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    Name: 'mycanary',
+    ResourcesToReplicateTags: [],
+  });
+});
