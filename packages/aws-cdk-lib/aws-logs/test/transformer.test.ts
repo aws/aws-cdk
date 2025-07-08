@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import { Stack } from '../../core';
-import { LogGroup, Transformer, ProcessorFactory, ParserProcessorType, JsonMutatorType, StringMutatorType, DelimiterCharacter, DataConverterType, TypeConverterType, QuoteCharacter, VendedLogType, OCSFSourceType, OCSFVersion } from '../lib';
+import { LogGroup, Transformer, ParserProcessor, JsonMutatorProcessor, VendedLogParser, StringMutatorProcessor, DataConverterProcessor, ParserProcessorType, JsonMutatorType, StringMutatorType, DelimiterCharacter, DataConverterType, TypeConverterType, QuoteCharacter, VendedLogType, OCSFSourceType, OCSFVersion } from '../lib';
 
 describe('transformer', () => {
   // Parser Processor tests
@@ -11,7 +11,7 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
       jsonOptions: { source: 'customField' },
     });
@@ -38,7 +38,7 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const keyValueParser = ProcessorFactory.createParserProcessor(stack, 'KeyValue', {
+    const keyValueParser = new ParserProcessor(stack, 'KeyValue', {
       type: ParserProcessorType.KEY_VALUE,
       keyValueOptions: { },
     });
@@ -70,7 +70,7 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const csvParser = ProcessorFactory.createParserProcessor(stack, 'CsvParser', {
+    const csvParser = new ParserProcessor(stack, 'CsvParser', {
       type: ParserProcessorType.CSV,
       csvOptions: {
         quoteCharacter: QuoteCharacter.SINGLE_QUOTE,
@@ -104,7 +104,7 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const grokParser = ProcessorFactory.createParserProcessor(stack, 'GrokParser', {
+    const grokParser = new ParserProcessor(stack, 'GrokParser', {
       type: ParserProcessorType.GROK,
       grokOptions: { source: 'customField', match: 'custom_grok_pattern' },
     });
@@ -132,7 +132,7 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const cloudFrontParser = ProcessorFactory.createVendedLogParser(stack, 'CloudfrontParser', {
+    const cloudFrontParser = new VendedLogParser(stack, 'CloudfrontParser', {
       logType: VendedLogType.CLOUDFRONT,
     });
 
@@ -158,7 +158,7 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const vpcParser = ProcessorFactory.createVendedLogParser(stack, 'VpcParser', {
+    const vpcParser = new VendedLogParser(stack, 'VpcParser', {
       logType: VendedLogType.VPC,
     });
 
@@ -184,7 +184,7 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const wafParser = ProcessorFactory.createVendedLogParser(stack, 'WafParser', {
+    const wafParser = new VendedLogParser(stack, 'WafParser', {
       logType: VendedLogType.WAF,
     });
 
@@ -210,7 +210,7 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const route53Parser = ProcessorFactory.createVendedLogParser(stack, 'Route53Parser', {
+    const route53Parser = new VendedLogParser(stack, 'Route53Parser', {
       logType: VendedLogType.ROUTE53,
     });
 
@@ -236,7 +236,7 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const postGresParser = ProcessorFactory.createVendedLogParser(stack, 'PostGresParser', {
+    const postGresParser = new VendedLogParser(stack, 'PostGresParser', {
       logType: VendedLogType.POSTGRES,
     });
 
@@ -262,7 +262,7 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const ocsfParser = ProcessorFactory.createParserProcessor(stack, 'OCSF', {
+    const ocsfParser = new ParserProcessor(stack, 'OCSF', {
       type: ParserProcessorType.OCSF,
       parseToOCSFOptions: {
         eventSource: OCSFSourceType.CLOUD_TRAIL,
@@ -297,11 +297,11 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const addKeysProcesor = ProcessorFactory.createJsonMutator(stack, 'AddKeys', {
+    const addKeysProcesor = new JsonMutatorProcessor(stack, 'AddKeys', {
       type: JsonMutatorType.ADD_KEYS,
       addKeysOptions: {
         entries: [
@@ -345,11 +345,11 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const deleteKeysProcessor = ProcessorFactory.createJsonMutator(stack, 'DeleteKeys', {
+    const deleteKeysProcessor = new JsonMutatorProcessor(stack, 'DeleteKeys', {
       type: JsonMutatorType.DELETE_KEYS,
       deleteKeysOptions: {
         withKeys: ['test_delete_key1', 'test_delete_key2'],
@@ -383,11 +383,11 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const moveKeysProcesor = ProcessorFactory.createJsonMutator(stack, 'MoveKeys', {
+    const moveKeysProcesor = new JsonMutatorProcessor(stack, 'MoveKeys', {
       type: JsonMutatorType.MOVE_KEYS,
       moveKeysOptions: {
         entries: [
@@ -431,11 +431,11 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const renameKeysProcessor = ProcessorFactory.createJsonMutator(stack, 'RenameKeys', {
+    const renameKeysProcessor = new JsonMutatorProcessor(stack, 'RenameKeys', {
       type: JsonMutatorType.RENAME_KEYS,
       renameKeysOptions: {
         entries: [
@@ -479,11 +479,11 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const copyValueProcessor = ProcessorFactory.createJsonMutator(stack, 'CopyValue', {
+    const copyValueProcessor = new JsonMutatorProcessor(stack, 'CopyValue', {
       type: JsonMutatorType.COPY_VALUE,
       copyValueOptions: {
         entries: [
@@ -527,11 +527,11 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const listToMapProcessor = ProcessorFactory.createJsonMutator(stack, 'ListToMap', {
+    const listToMapProcessor = new JsonMutatorProcessor(stack, 'ListToMap', {
       type: JsonMutatorType.LIST_TO_MAP,
       listToMapOptions: {
         source: 'test_source1',
@@ -570,11 +570,11 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const lowercaseProcessor = ProcessorFactory.createStringMutator(stack, 'LowerCase', {
+    const lowercaseProcessor = new StringMutatorProcessor(stack, 'LowerCase', {
       type: StringMutatorType.LOWER_CASE,
       lowerCaseKeys: ['test_key1', 'test_key2'],
     });
@@ -606,11 +606,11 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const upperCaseProcessor = ProcessorFactory.createStringMutator(stack, 'UpperCase', {
+    const upperCaseProcessor = new StringMutatorProcessor(stack, 'UpperCase', {
       type: StringMutatorType.UPPER_CASE,
       upperCaseKeys: ['test_key1', 'test_key2'],
     });
@@ -642,11 +642,11 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const trimStringProcessor = ProcessorFactory.createStringMutator(stack, 'Trim', {
+    const trimStringProcessor = new StringMutatorProcessor(stack, 'Trim', {
       type: StringMutatorType.TRIM,
       trimKeys: ['test_key1', 'test_key2'],
     });
@@ -678,11 +678,11 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const splitStringProcessor = ProcessorFactory.createStringMutator(stack, 'SplitString', {
+    const splitStringProcessor = new StringMutatorProcessor(stack, 'SplitString', {
       type: StringMutatorType.SPLIT,
       splitOptions: {
         entries: [
@@ -730,11 +730,11 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const substituteStringProcessor = ProcessorFactory.createStringMutator(stack, 'SubstituteString', {
+    const substituteStringProcessor = new StringMutatorProcessor(stack, 'SubstituteString', {
       type: StringMutatorType.SUBSTITUTE,
       substituteOptions: {
         entries: [
@@ -778,11 +778,11 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const dateTimeProcessor = ProcessorFactory.createDataConverter(stack, 'DateTimeConverter', {
+    const dateTimeProcessor = new DataConverterProcessor(stack, 'DateTimeConverter', {
       type: DataConverterType.DATETIME_CONVERTER,
       dateTimeConverterOptions: {
         source: 'test_source1',
@@ -829,11 +829,11 @@ describe('transformer', () => {
     // WHEN
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const lowercaseProcessor = ProcessorFactory.createDataConverter(stack, 'TypeConverter', {
+    const lowercaseProcessor = new DataConverterProcessor(stack, 'TypeConverter', {
       type: DataConverterType.TYPE_CONVERTER,
       typeConverterOptions: {
         entries: [
@@ -893,11 +893,11 @@ describe('transformer', () => {
     const stack = new Stack();
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const trimStringProcessor = ProcessorFactory.createStringMutator(stack, 'Trim', {
+    const trimStringProcessor = new StringMutatorProcessor(stack, 'Trim', {
       type: StringMutatorType.TRIM,
       trimKeys: ['test_key1', 'test_key2'],
     });
@@ -925,11 +925,11 @@ describe('transformer', () => {
     const stack = new Stack();
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const trimStringProcessor = ProcessorFactory.createStringMutator(stack, 'Trim', {
+    const trimStringProcessor = new StringMutatorProcessor(stack, 'Trim', {
       type: StringMutatorType.TRIM,
       trimKeys: ['test_key1', 'test_key2'],
     });
@@ -950,11 +950,11 @@ describe('transformer', () => {
     const stack = new Stack();
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const cloudFrontParser = ProcessorFactory.createVendedLogParser(stack, 'CloudfrontParser', {
+    const cloudFrontParser = new VendedLogParser(stack, 'CloudfrontParser', {
       logType: VendedLogType.CLOUDFRONT,
     });
 
@@ -974,7 +974,7 @@ describe('transformer', () => {
     const stack = new Stack();
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const cloudFrontParser = ProcessorFactory.createVendedLogParser(stack, 'CloudfrontParser', {
+    const cloudFrontParser = new VendedLogParser(stack, 'CloudfrontParser', {
       logType: VendedLogType.CLOUDFRONT,
     });
 
@@ -994,11 +994,11 @@ describe('transformer', () => {
     const stack = new Stack();
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const cloudFrontParser = ProcessorFactory.createVendedLogParser(stack, 'CloudfrontParser', {
+    const cloudFrontParser = new VendedLogParser(stack, 'CloudfrontParser', {
       logType: VendedLogType.CLOUDFRONT,
     });
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
@@ -1018,7 +1018,7 @@ describe('transformer', () => {
     const stack = new Stack();
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const grokParser = ProcessorFactory.createParserProcessor(stack, 'GrokParser', {
+    const grokParser = new ParserProcessor(stack, 'GrokParser', {
       type: ParserProcessorType.GROK,
       grokOptions: { source: 'customField', match: 'custom_grok_pattern' },
     });
@@ -1039,14 +1039,14 @@ describe('transformer', () => {
     const stack = new Stack();
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const addKeysProcesor = ProcessorFactory.createJsonMutator(stack, 'AddKeys', {
+    const addKeysProcesor = new JsonMutatorProcessor(stack, 'AddKeys', {
       type: JsonMutatorType.ADD_KEYS,
       addKeysOptions: {
         entries: [{ key: 'test_key1', value: 'test_value1', overwriteIfExists: true }],
       },
     });
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
@@ -1066,7 +1066,7 @@ describe('transformer', () => {
     const stack = new Stack();
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const copyValueProcessor = ProcessorFactory.createJsonMutator(stack, 'CopyValue', {
+    const copyValueProcessor = new JsonMutatorProcessor(stack, 'CopyValue', {
       type: JsonMutatorType.COPY_VALUE,
       copyValueOptions: {
         entries: [
@@ -1075,7 +1075,7 @@ describe('transformer', () => {
       },
     });
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
@@ -1095,7 +1095,7 @@ describe('transformer', () => {
     const stack = new Stack();
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const ocsfParser = ProcessorFactory.createParserProcessor(stack, 'OCSF', {
+    const ocsfParser = new ParserProcessor(stack, 'OCSF', {
       type: ParserProcessorType.OCSF,
       parseToOCSFOptions: {
         eventSource: OCSFSourceType.CLOUD_TRAIL,
@@ -1119,11 +1119,11 @@ describe('transformer', () => {
     const stack = new Stack();
     const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-    const jsonParser = ProcessorFactory.createParserProcessor(stack, 'JsonParser', {
+    const jsonParser = new ParserProcessor(stack, 'JsonParser', {
       type: ParserProcessorType.JSON,
     });
 
-    const ocsfParser = ProcessorFactory.createParserProcessor(stack, 'OCSF', {
+    const ocsfParser = new ParserProcessor(stack, 'OCSF', {
       type: ParserProcessorType.OCSF,
       parseToOCSFOptions: {
         eventSource: OCSFSourceType.CLOUD_TRAIL,

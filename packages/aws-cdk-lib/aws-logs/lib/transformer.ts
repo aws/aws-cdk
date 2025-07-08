@@ -536,7 +536,7 @@ export interface IProcessor {
    * Returns the L1 processor configuration
    * @internal
    */
-  _bind(): any;
+  _render(): any;
 }
 
 /** Base properties for all processor types */
@@ -838,48 +838,20 @@ export interface ITransformer extends IResource {
   readonly transformerConfig: Array<IProcessor>;
 }
 
-/** Base class for all log event processor implementations */
-export abstract class ProcessorFactory {
-  /** Creates a parser processor for common data formats */
-  static createParserProcessor(scope: Construct, id: string, props: ParserProcessorProps): IProcessor {
-    return new ParserProcessor(scope, id, props);
-  }
-
-  /** Creates a parser processor for AWS vended logs */
-  static createVendedLogParser(scope: Construct, id: string, props: VendedLogParserProps): IProcessor {
-    return new VendedLogParser(scope, id, props);
-  }
-
-  /** Creates a string mutator processor */
-  static createStringMutator(scope: Construct, id: string, props: StringMutatorProps): IProcessor {
-    return new StringMutatorProcessor(scope, id, props);
-  }
-
-  /** Creates a JSON mutator processor */
-  static createJsonMutator(scope: Construct, id: string, props: JsonMutatorProps): IProcessor {
-    return new JsonMutatorProcessor(scope, id, props);
-  }
-
-  /** Creates a data converter processor */
-  static createDataConverter(scope: Construct, id: string, props: DataConverterProps): IProcessor {
-    return new DataConverterProcessor(scope, id, props);
-  }
-}
-
 /** Parser processor for common data formats */
 export class ParserProcessor implements IProcessor {
   /** The type of parser */
   type: ParserProcessorType;
   /** Options for JSON parser */
-  jsonOptions?: ParseJSONProperty;
+  private jsonOptions?: ParseJSONProperty;
   /** Options for key-value parser */
-  keyValueOptions?: ParseKeyValueProperty;
+  private keyValueOptions?: ParseKeyValueProperty;
   /** Options for CSV parser */
-  csvOptions?: CsvProperty;
+  private csvOptions?: CsvProperty;
   /** Options for Grok parser */
-  grokOptions?: GrokProperty;
+  private grokOptions?: GrokProperty;
   /** Options for OCSF parser */
-  parseToOCSFOptions?: ParseToOCSFProperty;
+  private parseToOCSFOptions?: ParseToOCSFProperty;
   /** The construct scope */
   private readonly scope: Construct;
 
@@ -948,7 +920,7 @@ export class ParserProcessor implements IProcessor {
    * Returns the L1 processor configuration for this parser
    * @internal
    */
-  public _bind(): any {
+  public _render(): any {
     switch (this.type) {
       case ParserProcessorType.JSON:
         return { parseJson: this.jsonOptions };
@@ -983,7 +955,7 @@ export class VendedLogParser implements IProcessor {
    * Returns the L1 processor configuration for this vended log parser
    * @internal
    */
-  public _bind(): any {
+  public _render(): any {
     switch (this.logType) {
       case VendedLogType.CLOUDFRONT:
         return { parseCloudfront: { } };
@@ -1006,15 +978,15 @@ export class StringMutatorProcessor implements IProcessor {
   /** The type of string mutation operation */
   type: StringMutatorType;
   /** Keys for strings to convert to lowercase */
-  lowerCaseKeys?: Array<string>;
+  private lowerCaseKeys?: Array<string>;
   /** Keys for strings to convert to uppercase */
-  upperCaseKeys?: Array<string>;
+  private upperCaseKeys?: Array<string>;
   /** Keys for strings to trim */
-  trimKeys?: Array<string>;
+  private trimKeys?: Array<string>;
   /** Options for string splitting */
-  splitOptions?: SplitStringProperty;
+  private splitOptions?: SplitStringProperty;
   /** Options for string substitution */
-  substituteOptions?: SubstituteStringProperty;
+  private substituteOptions?: SubstituteStringProperty;
   /** The construct scope */
   private readonly scope: Construct;
 
@@ -1068,7 +1040,7 @@ export class StringMutatorProcessor implements IProcessor {
    * Returns the L1 processor configuration for this string mutator
    * @internal
    */
-  public _bind(): any {
+  public _render(): any {
     switch (this.type) {
       case StringMutatorType.LOWER_CASE:
         return { lowerCaseString: { withKeys: this.lowerCaseKeys } };
@@ -1091,17 +1063,17 @@ export class JsonMutatorProcessor implements IProcessor {
   /** The type of JSON mutation operation */
   type: JsonMutatorType;
   /** Options for adding keys */
-  addKeysOptions?: AddKeysProperty;
+  private addKeysOptions?: AddKeysProperty;
   /** Keys to delete */
-  deleteKeysOptions?: ProcessorDeleteKeysProperty;
+  private deleteKeysOptions?: ProcessorDeleteKeysProperty;
   /** Options for moving keys */
-  moveKeysOptions?: MoveKeysProperty;
+  private moveKeysOptions?: MoveKeysProperty;
   /** Options for renaming keys */
-  renameKeysOptions?: RenameKeysProperty;
+  private renameKeysOptions?: RenameKeysProperty;
   /** Options for copying values */
-  copyValueOptions?: CopyValueProperty;
+  private copyValueOptions?: CopyValueProperty;
   /** Options for converting lists to maps */
-  listToMapOptions?: ListToMapProperty;
+  private listToMapOptions?: ListToMapProperty;
   /** The construct scope */
   private readonly scope: Construct;
 
@@ -1176,7 +1148,7 @@ export class JsonMutatorProcessor implements IProcessor {
    * Returns the L1 processor configuration for this JSON mutator
    * @internal
    */
-  public _bind(): any {
+  public _render(): any {
     switch (this.type) {
       case JsonMutatorType.ADD_KEYS:
         return { addKeys: this.addKeysOptions };
@@ -1201,9 +1173,9 @@ export class DataConverterProcessor implements IProcessor {
   /** The type of data conversion operation */
   type: DataConverterType;
   /** Options for type conversion */
-  typeConverterOptions?: TypeConverterProperty;
+  private typeConverterOptions?: TypeConverterProperty;
   /** Options for datetime conversion */
-  dateTimeConverterOptions?: DateTimeConverterProperty;
+  private dateTimeConverterOptions?: DateTimeConverterProperty;
   /** The construct scope */
   private readonly scope: Construct;
 
@@ -1242,7 +1214,7 @@ export class DataConverterProcessor implements IProcessor {
    * Returns the L1 processor configuration for this data converter
    * @internal
    */
-  public _bind(): any {
+  public _render(): any {
     switch (this.type) {
       case DataConverterType.TYPE_CONVERTER:
         return { typeConverter: this.typeConverterOptions };
@@ -1292,7 +1264,7 @@ export class Transformer extends Resource implements ITransformer {
     // Map the transformer configuration to the L1 CloudFormation resource
     new CfnTransformer(scope, 'ResourceTransformer', {
       logGroupIdentifier: this.logGroup.logGroupName,
-      transformerConfig: this.transformerConfig.map(processor => processor._bind()),
+      transformerConfig: this.transformerConfig.map(processor => processor._render()),
     });
   }
 
