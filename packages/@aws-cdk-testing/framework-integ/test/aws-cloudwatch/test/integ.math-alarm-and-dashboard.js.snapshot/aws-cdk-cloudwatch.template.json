@@ -96,14 +96,14 @@
          "QueueName"
         ]
        },
-       "\",{\"label\":\"Visible Messages\",\"period\":60,\"visible\":false,\"id\":\"m1\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesNotVisible\",\"QueueName\",\"",
+       "\",{\"label\":\"Visible Messages\",\"id\":\"m1\",\"visible\":false,\"period\":60}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesNotVisible\",\"QueueName\",\"",
        {
         "Fn::GetAtt": [
          "queue",
          "QueueName"
         ]
        },
-       "\",{\"label\":\"NotVisible Messages\",\"period\":60,\"visible\":false,\"id\":\"m2\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
+       "\",{\"label\":\"NotVisible Messages\",\"id\":\"m2\",\"visible\":false,\"period\":60}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
        {
         "Fn::GetAtt": [
          "queue",
@@ -146,14 +146,14 @@
          "QueueName"
         ]
        },
-       "\",{\"label\":\"Visible Messages\",\"period\":60,\"visible\":false,\"id\":\"m1\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesNotVisible\",\"QueueName\",\"",
+       "\",{\"label\":\"Visible Messages\",\"id\":\"m1\",\"visible\":false,\"period\":60}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesNotVisible\",\"QueueName\",\"",
        {
         "Fn::GetAtt": [
          "queue",
          "QueueName"
         ]
        },
-       "\",{\"label\":\"NotVisible Messages\",\"period\":60,\"visible\":false,\"id\":\"m2\"}]],\"accountId\":\"123456789012\"}}]}"
+       "\",{\"label\":\"NotVisible Messages\",\"id\":\"m2\",\"visible\":false,\"period\":60}]],\"accountId\":\"123456789012\"}}]}"
       ]
      ]
     },
