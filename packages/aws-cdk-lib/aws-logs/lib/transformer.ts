@@ -856,7 +856,7 @@ export class ParserProcessor implements IProcessor {
   private readonly scope: Construct;
 
   /** Creates a new parser processor */
-  constructor(scope: Construct, _id: string, props: ParserProcessorProps) {
+  constructor(scope: Construct, props: ParserProcessorProps) {
     this.scope = scope;
     this.type = props.type;
 
@@ -946,7 +946,7 @@ export class VendedLogParser implements IProcessor {
   private readonly scope: Construct;
 
   /** Creates a new vended log parser processor */
-  constructor(scope: Construct, _id: string, props: VendedLogParserProps) {
+  constructor(scope: Construct, props: VendedLogParserProps) {
     this.scope = scope;
     this.logType = props.logType;
   }
@@ -991,7 +991,7 @@ export class StringMutatorProcessor implements IProcessor {
   private readonly scope: Construct;
 
   /** Creates a new string mutator processor */
-  constructor(scope: Construct, _id: string, props: StringMutatorProps) {
+  constructor(scope: Construct, props: StringMutatorProps) {
     this.scope = scope;
     this.type = props.type;
 
@@ -1078,7 +1078,7 @@ export class JsonMutatorProcessor implements IProcessor {
   private readonly scope: Construct;
 
   /** Creates a new JSON mutator processor */
-  constructor(scope: Construct, _id: string, props: JsonMutatorProps) {
+  constructor(scope: Construct, props: JsonMutatorProps) {
     this.scope = scope;
     this.type = props.type;
 
@@ -1180,7 +1180,7 @@ export class DataConverterProcessor implements IProcessor {
   private readonly scope: Construct;
 
   /** Creates a new data converter processor */
-  constructor(scope: Construct, _id: string, props: DataConverterProps) {
+  constructor(scope: Construct, props: DataConverterProps) {
     this.scope = scope;
     this.type = props.type;
 

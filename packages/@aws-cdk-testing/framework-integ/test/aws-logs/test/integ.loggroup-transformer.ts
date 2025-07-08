@@ -7,12 +7,12 @@ class TransformerIntegStack extends Stack {
     super(scope, id, props);
 
     const logGroup = new LogGroup(this, 'MyLogGroup');
-    const jsonParser = new ParserProcessor(this, 'JsonParser', {
+    const jsonParser = new ParserProcessor(this, {
       type: ParserProcessorType.JSON,
       jsonOptions: { source: 'customField' },
     });
 
-    const addKeysProcesor = new JsonMutatorProcessor(this, 'AddKeys', {
+    const addKeysProcesor = new JsonMutatorProcessor(this, {
       type: JsonMutatorType.ADD_KEYS,
       addKeysOptions: {
         entries: [

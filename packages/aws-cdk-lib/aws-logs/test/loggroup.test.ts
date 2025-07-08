@@ -1009,11 +1009,11 @@ test('create a Add Key transformer against a log group', () => {
   const stack = new Stack();
   const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
 
-  const jsonParser = new ParserProcessor(stack, 'JsonParser', {
+  const jsonParser = new ParserProcessor(stack, {
     type: ParserProcessorType.JSON,
   });
 
-  const addKeysProcesor = new JsonMutatorProcessor(stack, 'AddKeys', {
+  const addKeysProcesor = new JsonMutatorProcessor(stack, {
     type: JsonMutatorType.ADD_KEYS,
     addKeysOptions: {
       entries: [

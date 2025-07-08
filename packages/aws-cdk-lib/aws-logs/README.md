@@ -517,12 +517,12 @@ Example:
 const logGroup = new logs.LogGroup(this, 'MyLogGroup');
 
 // Create a JSON parser processor
-const jsonParser = new logs.ParserProcessor(this, 'JsonParser', {
+const jsonParser = new logs.ParserProcessor(this, {
   type: logs.ParserProcessorType.JSON
 });
 
 // Create a processor to add keys
-const addKeysProcessor = new logs.JsonMutatorProcessor(this, 'AddKeys', {
+const addKeysProcessor = new logs.JsonMutatorProcessor(this, {
   type: logs.JsonMutatorType.ADD_KEYS,
   addKeysOptions: {
     entries: [{
