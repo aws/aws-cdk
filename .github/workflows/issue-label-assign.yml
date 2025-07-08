@@ -284,5 +284,10 @@ env:
             {"area":"@aws-cdk/integ-runner","keywords":["integ-runner"],"labels":["@aws-cdk/integ-runner"]},
             {"area":"@aws-cdk/app-staging-synthesizer-alpha", "keywords":["app-staging-synthesizer", "app-staging-synthesizer-alpha"],"labels":["@aws-cdk/app-staging-synthesizer-alpha"]},
             {"area":"@aws-cdk/aws-location-alpha", "keywords":["aws-location", "aws-location-alpha"],"labels":["@aws-cdk/aws-location-alpha"]},
-            {"area":"@aws-cdk/cli-lib-alpha", "keywords":["cli-lib", "cli-lib-alpha"],"labels":["@aws-cdk/cli-lib-alpha"]}
+            {"area":"@aws-cdk/cli-lib-alpha", "keywords":["cli-lib", "cli-lib-alpha"],"labels":["@aws-cdk/cli-lib-alpha"]},
+            {"area":"@aws-cdk/aws-applicationsignals-alpha", "keywords":["aws-applicationsignals", "aws-applicationsignals-alpha"],"labels":["@aws-cdk/aws-applicationsignals-alpha"]},
+            {"area":"@aws-cdk/aws-s3tables-alpha", "keywords":["aws-s3tables", "aws-s3tables-alpha"],"labels":["@aws-cdk/aws-s3tables-alpha"]},
+            {"area":"@aws-cdk/aws-pipes-enrichments-alpha", "keywords":["aws-pipes-enrichments", "aws-pipes-enrichments-alpha"],"labels":["@aws-cdk/aws-pipes-enrichments-alpha"]},
+            {"area":"@aws-cdk/aws-pipes-sources-alpha", "keywords":["aws-pipes-sources", "aws-pipes-sources-alpha"],"labels":["@aws-cdk/aws-pipes-sources-alpha"]},
+            {"area":"@aws-cdk/aws-pipes-targets-alpha", "keywords":["aws-pipes-targets", "aws-pipes-targets-alpha"],"labels":["@aws-cdk/aws-pipes-targets-alpha"]}
           ]
