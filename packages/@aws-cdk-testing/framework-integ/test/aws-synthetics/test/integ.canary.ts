@@ -102,6 +102,7 @@ const puppeteer70 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_7
 const puppeteer80 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0);
 const puppeteer90 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_0);
 const puppeteer91 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1);
+const puppeteer100 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0);
 const playwright10 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0);
 const playwright10_with_handler_name = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0, 'playwright/canary.handler');
 const playwright20 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0);
@@ -131,6 +132,7 @@ const test = new IntegTest(app, 'IntegCanaryTest', {
   puppeteer80,
   puppeteer90,
   puppeteer91,
+  puppeteer100,
   playwright10,
   playwright10_with_handler_name,
   playwright20,

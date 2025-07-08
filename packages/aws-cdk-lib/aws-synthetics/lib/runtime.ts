@@ -273,7 +273,7 @@ export class Runtime {
    * New Features:
    * - **Bug fixes** The bug related to closing the browser that took excessively long is fixed.
    * - **Supports dry runs** for the canary which allows for adhoc executions or performing a safe canary update.
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-9.1
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-10.0
    */
   public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_1_0 = new Runtime('syn-nodejs-playwright-1.0', RuntimeFamily.NODEJS);
 
