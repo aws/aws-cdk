@@ -95,7 +95,7 @@ const app = new App({
     '@aws-cdk/pipelines:reduceStageRoleTrustScope': true,
   },
 });
-const env = { region: 'us-east-1', account: process.env.CDK_DEFAULT_ACCOUNT };
+const env = { region: 'us-east-1' };
 const stack = new PipelineStack(app, 'pipeline-asset-stack', { env });
 new IntegTest(app, 'PipelineAssetsTest', {
   testCases: [stack],
