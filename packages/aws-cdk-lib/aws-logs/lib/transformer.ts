@@ -19,7 +19,7 @@
 import { Construct } from 'constructs';
 import { CfnTransformer } from '.';
 import { ILogGroup } from './log-group';
-import { IResource, Resource, Token, ValidationError, UnscopedValidationError } from '../../core';
+import { Resource, Token, ValidationError, UnscopedValidationError } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -799,21 +799,6 @@ export interface TypeConverterEntryProperty {
  * The Resource properties for AWS::Logs::Transformer resource. This
  * interface defines all configuration options for the CfnTransformer construct.
  */
-export interface TransformerAttributes {
-  /**
-   * Name of the transformer.
-   */
-  readonly transformerName: string;
-  /** Existing log group that you want to associate with this transformer. */
-  readonly logGroup: ILogGroup;
-  /** List of processors in a transformer */
-  readonly transformerConfig: Array<IProcessor>;
-}
-
-/**
- * The Resource properties for AWS::Logs::Transformer resource. This
- * interface defines all configuration options for the CfnTransformer construct.
- */
 export interface TransformerProps {
   /**
    * Name of the transformer.
@@ -822,19 +807,6 @@ export interface TransformerProps {
   /** Existing log group that you want to associate with this transformer. */
   readonly logGroup: ILogGroup;
   /** List of processors in a transformer */
-  readonly transformerConfig: Array<IProcessor>;
-}
-
-/** Interface for the L2 Transformer construct that represents AWS::Logs::Transformer CFN resource. */
-export interface ITransformer extends IResource {
-  /** Existing log group that you want to associate with this transformer. */
-  readonly logGroup: ILogGroup;
-
-  /**
-   * List of processors in a transformer
-   *
-   * @attribute
-   */
   readonly transformerConfig: Array<IProcessor>;
 }
 
@@ -1213,32 +1185,18 @@ export class DataConverterProcessor implements IProcessor {
 
 /** Represent the L2 construct for the AWS::Logs::Transformer CloudFormation resource. */
 @propertyInjectable
-export class Transformer extends Resource implements ITransformer {
+export class Transformer extends Resource {
   /**
    * The property injection ID for this resource class.
    * Used by the CDK frameworks for managing resource lifecycle.
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.Transformer';
 
-  /**
-   * Static factory to create a Transformer.
-   */
-  public static fromTransformerAttributes(scope: Construct, id: string, attrs: TransformerAttributes): ITransformer {
-    return new Transformer(scope, id, attrs);
-  }
-
-  /** Existing log group that you want to associate with this transformer. */
-  readonly logGroup: ILogGroup;
-  /** List of processors in a transformer */
-  readonly transformerConfig: Array<IProcessor>;
-
   /** The Transformer L2 construct that represents AWS::Logs::Transformer CFN resource. */
   constructor(scope: Construct, id: string, props: TransformerProps) {
     super(scope, id, {
       physicalName: props.transformerName,
     });
-    this.logGroup = props.logGroup;
-    this.transformerConfig = props.transformerConfig;
 
     // Validate the transformer configuration
     this.validateProcessorCount(props.transformerConfig);
@@ -1248,8 +1206,8 @@ export class Transformer extends Resource implements ITransformer {
 
     // Map the transformer configuration to the L1 CloudFormation resource
     new CfnTransformer(scope, 'ResourceTransformer', {
-      logGroupIdentifier: this.logGroup.logGroupName,
-      transformerConfig: this.transformerConfig.map(processor => processor._render()),
+      logGroupIdentifier: props.logGroup.logGroupName,
+      transformerConfig: props.transformerConfig.map(processor => processor._render()),
     });
   }
 
