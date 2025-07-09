@@ -62,11 +62,17 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
       if (stat.statistic && stat.statistic !== 'Average') { options.stat = stat.statistic; }
     },
 
-    withExpression(expr) {
+    withMathExpression(expr) {
       options.expression = expr.expression;
       if (expr.searchAccount) { options.accountId = accountIfDifferentFromStack(expr.searchAccount); }
       if (expr.searchRegion) { options.region = regionIfDifferentFromStack(expr.searchRegion); }
       if (expr.period && expr.period !== 300) { options.period = expr.period; }
+    },
+    withSearchExpression(searchExpr) {
+      options.expression = searchExpr.expression;
+      if (searchExpr.searchAccount) { options.accountId = accountIfDifferentFromStack(searchExpr.searchAccount); }
+      if (searchExpr.searchRegion) { options.region = regionIfDifferentFromStack(searchExpr.searchRegion); }
+      if (searchExpr.period && searchExpr.period !== 300) { options.period = searchExpr.period; }
     },
   });
 
@@ -207,6 +213,11 @@ export class MetricSet<A> {
     const conf = metric.toMetricConfig();
     if (conf.mathExpression) {
       for (const [subId, subMetric] of Object.entries(conf.mathExpression.usingMetrics)) {
+        this.addOne(subMetric, level + 1, undefined, subId);
+      }
+    }
+    if (conf.searchExpression) {
+      for (const [subId, subMetric] of Object.entries(conf.searchExpression.usingMetrics)) {
         this.addOne(subMetric, level + 1, undefined, subId);
       }
     }

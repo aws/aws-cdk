@@ -874,11 +874,21 @@ export class MathExpression implements IMetric {
         withStat() {
           // Nothing
         },
-        withExpression(expr) {
+        withMathExpression(expr) {
           for (const [id, subMetric] of Object.entries(expr.usingMetrics)) {
             const existing = seen.get(id);
             if (existing && metricKey(existing) !== metricKey(subMetric)) {
               throw new cdk.UnscopedValidationError(`The ID '${id}' used for two metrics in the expression: '${subMetric}' and '${existing}'. Rename one.`);
+            }
+            seen.set(id, subMetric);
+            visit(subMetric);
+          }
+        },
+        withSearchExpression(searchExpr) {
+          for (const [id, subMetric] of Object.entries(searchExpr.usingMetrics)) {
+            const existing = seen.get(id);
+            if (existing && metricKey(existing) !== metricKey(subMetric)) {
+              throw new cdk.UnscopedValidationError(`The ID '${id}' used for two metrics in the search expression: '${subMetric}' and '${existing}'. Rename one.`);
             }
             seen.set(id, subMetric);
             visit(subMetric);
@@ -896,6 +906,228 @@ const VARIABLE_PAT = '[a-z][a-zA-Z0-9_]*';
 
 const VALID_VARIABLE = new RegExp(`^${VARIABLE_PAT}$`);
 const FIND_VARIABLE = new RegExp(VARIABLE_PAT, 'g');
+
+/**
+ * Options for SearchExpression
+ */
+export interface SearchExpressionOptions {
+  /**
+   * Label for this search expression when added to a Graph in a Dashboard
+   *
+   * You can use [dynamic labels](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/graph-dynamic-labels.html)
+   * to show summary information about the entire displayed time series
+   * in the legend. For example, if you use:
+   *
+   * ```
+   * [max: ${MAX}] MySearchExpression
+   * ```
+   *
+   * As the search expression label, the maximum value in the visible range will
+   * be shown next to the time series name in the graph's legend.
+   *
+   * @default - No label
+   */
+  readonly label?: string;
+
+  /**
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this search expression is rendered on a graph.
+   * The `Color` class has a set of standard colors that can be used here.
+   *
+   * @default - Automatic color
+   */
+  readonly color?: string;
+
+  /**
+   * The period over which the specified statistic is applied.
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly period?: cdk.Duration;
+
+  /**
+   * Account to evaluate search expressions within.
+   *
+   * Specifying a searchAccount has no effect to the account used
+   * for metrics within the expression (passed via usingMetrics).
+   *
+   * @default - Deployment account.
+   */
+  readonly searchAccount?: string;
+
+  /**
+   * Region to evaluate search expressions within.
+   *
+   * Specifying a searchRegion has no effect to the region used
+   * for metrics within the expression (passed via usingMetrics).
+   *
+   * @default - Deployment region.
+   */
+  readonly searchRegion?: string;
+}
+
+/**
+ * Properties for a SearchExpression
+ */
+export interface SearchExpressionProps extends SearchExpressionOptions {
+  /**
+   * The search expression string.
+   *
+   * Search expressions allow you to search for and graph multiple related metrics from a single expression.
+   * A search expression can return up to 500 time series.
+   *
+   * Examples:
+   * - `SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)`
+   * - `SEARCH('{AWS/ApplicationELB,LoadBalancer} RequestCount', 'Sum', 60)`
+   * - `SEARCH('{MyNamespace,ServiceName} Errors', 'Sum')`
+   *
+   * For more information about search expression syntax, see:
+   * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/search-expression-syntax.html
+   */
+  readonly expression: string;
+}
+
+/**
+ * A CloudWatch search expression for dynamically finding and graphing multiple related metrics.
+ *
+ * Search expressions allow you to search for and graph multiple related metrics from a single expression.
+ * This is particularly useful when you have dynamic infrastructure where the exact metric names or
+ * dimensions are not known at deployment time.
+ *
+ * Example usage:
+ * ```ts
+ * import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+ *
+ * const searchExpression = new cloudwatch.SearchExpression({
+ *   expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
+ *   label: 'EC2 CPU Utilization',
+ *   period: Duration.minutes(5),
+ * });
+ *
+ * new cloudwatch.GraphWidget({
+ *   title: 'EC2 Metrics',
+ *   left: [searchExpression],
+ * });
+ * ```
+ *
+ * This class does not represent a resource, so hence is not a construct. Instead,
+ * SearchExpression is an abstraction that makes it easy to specify search expressions for use in
+ * graphs and dashboards.
+ */
+export class SearchExpression implements IMetric {
+  /**
+   * The search expression string.
+   */
+  public readonly expression: string;
+
+  /**
+   * Label for this search expression when added to a Graph.
+   */
+  public readonly label?: string;
+
+  /**
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this search expression is rendered on a graph.
+   * The `Color` class has a set of standard colors that can be used here.
+   */
+  public readonly color?: string;
+
+  /**
+   * Aggregation period of this search expression
+   */
+  public readonly period: cdk.Duration;
+
+  /**
+   * Account to evaluate search expressions within.
+   */
+  public readonly searchAccount?: string;
+
+  /**
+   * Region to evaluate search expressions within.
+   */
+  public readonly searchRegion?: string;
+
+  /**
+   * Warnings generated by this search expression
+   * @deprecated - use warningsV2
+   */
+  public readonly warnings?: string[];
+
+  /**
+   * Warnings generated by this search expression
+   */
+  public readonly warningsV2?: { [id: string]: string };
+
+  constructor(props: SearchExpressionProps) {
+    this.expression = props.expression;
+    this.label = props.label;
+    this.color = props.color;
+    this.period = props.period || cdk.Duration.minutes(5);
+    this.searchAccount = props.searchAccount;
+    this.searchRegion = props.searchRegion;
+
+    const warnings: { [id: string]: string } = {};
+
+    if (Object.keys(warnings).length > 0) {
+      this.warnings = Array.from(Object.values(warnings));
+      this.warningsV2 = warnings;
+    }
+  }
+
+  /**
+   * Return a copy of SearchExpression with properties changed.
+   *
+   * All properties except expression can be changed.
+   *
+   * @param props The set of properties to change.
+   */
+  public with(props: SearchExpressionOptions): SearchExpression {
+    if ((props.label === undefined || props.label === this.label)
+      && (props.color === undefined || props.color === this.color)
+      && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())
+      && (props.searchAccount === undefined || props.searchAccount === this.searchAccount)
+      && (props.searchRegion === undefined || props.searchRegion === this.searchRegion)) {
+      return this;
+    }
+
+    return new SearchExpression({
+      expression: this.expression,
+      label: ifUndefined(props.label, this.label),
+      color: ifUndefined(props.color, this.color),
+      period: ifUndefined(props.period, this.period),
+      searchAccount: ifUndefined(props.searchAccount, this.searchAccount),
+      searchRegion: ifUndefined(props.searchRegion, this.searchRegion),
+    });
+  }
+
+  /**
+   * @deprecated use toMetricConfig()
+   */
+  public toAlarmConfig(): MetricAlarmConfig {
+    throw new cdk.UnscopedValidationError('Using a search expression is not supported in CloudWatch Alarms. Search expressions can only be used in dashboard graphs.');
+  }
+
+  /**
+   * @deprecated use toMetricConfig()
+   */
+  public toGraphConfig(): MetricGraphConfig {
+    throw new cdk.UnscopedValidationError('Using a search expression is not supported here. Pass a \'Metric\' object instead');
+  }
+
+  public toMetricConfig(): MetricConfig {
+    return {
+      searchExpression: {
+        period: this.period.toSeconds(),
+        expression: this.expression,
+        usingMetrics: {}, // Empty for search expressions as they don't reference other metrics
+        searchAccount: this.searchAccount,
+        searchRegion: this.searchRegion,
+      },
+      renderingProperties: {
+        label: this.label,
+        color: this.color,
+      },
+    };
+  }
+}
 
 function validVariableName(x: string) {
   return VALID_VARIABLE.test(x);
@@ -1034,3 +1266,4 @@ function matchAll(x: string, re: RegExp): RegExpMatchArray[] {
   }
   return ret;
 }
+
