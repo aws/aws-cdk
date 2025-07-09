@@ -517,20 +517,20 @@ export class Alarm extends AlarmBase {
                   returnData,
                 };
               },
-              withMathExpression(expr, conf) {
-                const hasSubmetrics = mathExprHasSubmetrics(expr);
+              withMathExpression(mathExpr, conf) {
+                const hasSubmetrics = mathExprHasSubmetrics(mathExpr);
 
                 if (hasSubmetrics) {
-                  assertSubmetricsCount(self, expr);
+                  assertSubmetricsCount(self, mathExpr);
                 }
 
-                self.validateMetricExpression(expr);
+                self.validateMetricExpression(mathExpr);
 
                 return {
-                  expression: expr.expression,
+                  expression: mathExpr.expression,
                   id,
                   label: conf.renderingProperties?.label as string,
-                  period: hasSubmetrics ? undefined : expr.period,
+                  period: hasSubmetrics ? undefined : mathExpr.period,
                   returnData,
                 };
               },
@@ -614,9 +614,9 @@ function isAnomalyDetectionMetric(metric: IMetric): boolean {
       // Not an anomaly detection metric
       isAnomalyDetection = false;
     },
-    withMathExpression(expr) {
+    withMathExpression(mathExpr) {
       // Check if the expression is an anomaly detection band
-      isAnomalyDetection = expr.expression.includes('ANOMALY_DETECTION_BAND');
+      isAnomalyDetection = mathExpr.expression.includes('ANOMALY_DETECTION_BAND');
     },
     withSearchExpression() {
       // Search expressions are not anomaly detection metrics

@@ -62,11 +62,11 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
       if (stat.statistic && stat.statistic !== 'Average') { options.stat = stat.statistic; }
     },
 
-    withMathExpression(expr) {
-      options.expression = expr.expression;
-      if (expr.searchAccount) { options.accountId = accountIfDifferentFromStack(expr.searchAccount); }
-      if (expr.searchRegion) { options.region = regionIfDifferentFromStack(expr.searchRegion); }
-      if (expr.period && expr.period !== 300) { options.period = expr.period; }
+    withMathExpression(mathExpr) {
+      options.expression = mathExpr.expression;
+      if (mathExpr.searchAccount) { options.accountId = accountIfDifferentFromStack(mathExpr.searchAccount); }
+      if (mathExpr.searchRegion) { options.region = regionIfDifferentFromStack(mathExpr.searchRegion); }
+      if (mathExpr.period && mathExpr.period !== 300) { options.period = mathExpr.period; }
     },
     withSearchExpression(searchExpr) {
       options.expression = searchExpr.expression;

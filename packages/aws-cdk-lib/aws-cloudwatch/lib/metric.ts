@@ -215,7 +215,7 @@ export interface MathExpressionOptions {
   readonly color?: string;
 
   /**
-   * The period over which the expression's statistics are applied.
+   * The period over which the math expression's statistics are applied.
    *
    * This period overrides all periods in the metrics used in this
    * math expression.
@@ -874,8 +874,8 @@ export class MathExpression implements IMetric {
         withStat() {
           // Nothing
         },
-        withMathExpression(expr) {
-          for (const [id, subMetric] of Object.entries(expr.usingMetrics)) {
+        withMathExpression(mathExpr) {
+          for (const [id, subMetric] of Object.entries(mathExpr.usingMetrics)) {
             const existing = seen.get(id);
             if (existing && metricKey(existing) !== metricKey(subMetric)) {
               throw new cdk.UnscopedValidationError(`The ID '${id}' used for two metrics in the expression: '${subMetric}' and '${existing}'. Rename one.`);
@@ -912,43 +912,33 @@ const FIND_VARIABLE = new RegExp(VARIABLE_PAT, 'g');
  */
 export interface SearchExpressionOptions {
   /**
-   * Label for this search expression when added to a Graph in a Dashboard
+   * Label for this search expression when displayed in graphs or dashboards.
    *
-   * You can use [dynamic labels](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/graph-dynamic-labels.html)
-   * to show summary information about the entire displayed time series
-   * in the legend. For example, if you use:
+   * Serves as a prefix for each returned time series. For example, if the label is `X`
+   * and the expression discovers a metric instance with label `Y`, the time series will be labeled `X-Y`.
    *
-   * ```
-   * [max: ${MAX}] MySearchExpression
-   * ```
-   *
-   * As the search expression label, the maximum value in the visible range will
-   * be shown next to the time series name in the graph's legend.
-   *
-   * @default - No label
+   * @default - No label.
    */
   readonly label?: string;
 
   /**
-   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this search expression is rendered on a graph.
-   * The `Color` class has a set of standard colors that can be used here.
+   * Color to use when the time series returned by the search expression is rendered on a graph.
    *
-   * @default - Automatic color
+   * If the search expression returns multiple time series, colors are automatically assigned.
+   *
+   * @default - Automatically assigned.
    */
   readonly color?: string;
 
   /**
-   * The period over which the specified statistic is applied.
+   * The period over which the statistics are applied for the returned time series.
    *
-   * @default Duration.minutes(5)
+   * @default - Duration.minutes(5)
    */
   readonly period?: cdk.Duration;
 
   /**
    * Account to evaluate search expressions within.
-   *
-   * Specifying a searchAccount has no effect to the account used
-   * for metrics within the expression (passed via usingMetrics).
    *
    * @default - Deployment account.
    */
@@ -956,9 +946,6 @@ export interface SearchExpressionOptions {
 
   /**
    * Region to evaluate search expressions within.
-   *
-   * Specifying a searchRegion has no effect to the region used
-   * for metrics within the expression (passed via usingMetrics).
    *
    * @default - Deployment region.
    */
@@ -972,8 +959,8 @@ export interface SearchExpressionProps extends SearchExpressionOptions {
   /**
    * The search expression string.
    *
-   * Search expressions allow you to search for and graph multiple related metrics from a single expression.
-   * A search expression can return up to 500 time series.
+   * A search expression allows you to retrieve and graph multiple related metrics in a single statement.
+   * It can return up to 500 time series.
    *
    * Examples:
    * - `SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)`
@@ -990,12 +977,13 @@ export interface SearchExpressionProps extends SearchExpressionOptions {
  * A CloudWatch search expression for dynamically finding and graphing multiple related metrics.
  *
  * Search expressions allow you to search for and graph multiple related metrics from a single expression.
- * This is particularly useful when you have dynamic infrastructure where the exact metric names or
- * dimensions are not known at deployment time.
+ * This is particularly useful in dynamic environments where the exact metric names or dimensions
+ * may not be known at deployment time.
  *
- * Example usage:
+ * Example:
  * ```ts
  * import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+ * import { Duration } from 'aws-cdk-lib';
  *
  * const searchExpression = new cloudwatch.SearchExpression({
  *   expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
@@ -1009,29 +997,29 @@ export interface SearchExpressionProps extends SearchExpressionOptions {
  * });
  * ```
  *
- * This class does not represent a resource, so hence is not a construct. Instead,
- * SearchExpression is an abstraction that makes it easy to specify search expressions for use in
- * graphs and dashboards.
+ * This class does not represent a CloudFormation resource and is not a construct.
+ * Instead, `SearchExpression` is an abstraction used to simplify the use of search expressions
+ * in CloudWatch graphs and dashboards.
  */
 export class SearchExpression implements IMetric {
   /**
-   * The search expression string.
+   * The search expression to evaluate.
    */
   public readonly expression: string;
 
   /**
-   * Label for this search expression when added to a Graph.
+   *  The label is used as a prefix for the name of each time series returned by the search expression.
    */
   public readonly label?: string;
 
   /**
-   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this search expression is rendered on a graph.
-   * The `Color` class has a set of standard colors that can be used here.
+   * Color to use when rendering the resulting time series in a graph.
+   * If multiple time series are returned, colors are automatically assigned.
    */
   public readonly color?: string;
 
   /**
-   * Aggregation period of this search expression
+   * The aggregation period for the time series produced by the search expression.
    */
   public readonly period: cdk.Duration;
 
