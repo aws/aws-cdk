@@ -67,6 +67,297 @@ new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
 });
 ```
+### CloudFront SaaS Manager resources
+
+#### Multi-tenant distribution and tenant providing ACM certificates
+You can use Cloudfront to build multi-tenant distributions to house applications.
+
+To create a multi-tenant distribution w/parameters, create a Distribution construct, and then update DistributionConfig in the CfnDistribution to use connectionMode: "tenant-only"
+
+Then create a tenant
+```ts
+// Create the simple Origin
+const myBucket = new s3.Bucket(this, 'myBucket');
+const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(myBucket, {
+    originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.LIST],
+});
+
+// Create the Distribution construct
+const myMultiTenantDistribution = new cloudfront.Distribution(this, 'distribution', {
+    defaultBehavior: {
+        origin: s3Origin,
+    },
+    defaultRootObject: 'index.html', // recommended to specify
+});
+
+// Access the underlying L1 CfnDistribution to configure SaaS Manager properties which are not yet available in the L2 Distribution construct
+const cfnDistribution = myMultiTenantDistribution.node.defaultChild as cloudfront.CfnDistribution;
+
+const defaultCacheBehavior: cloudfront.CfnDistribution.DefaultCacheBehaviorProperty = {
+    targetOriginId: myBucket.bucketArn,
+    viewerProtocolPolicy: 'allow-all',
+    compress: false,
+    allowedMethods: ['GET', 'HEAD'],
+    cachePolicyId: cloudfront.CachePolicy.CACHING_OPTIMIZED.cachePolicyId
+};
+// Create the updated distributionConfig
+const distributionConfig: cloudfront.CfnDistribution.DistributionConfigProperty = {
+    defaultCacheBehavior: defaultCacheBehavior,
+    enabled: true,
+    // the properties below are optional
+    connectionMode: 'tenant-only',
+    origins: [
+        {
+            id: myBucket.bucketArn,
+            domainName: myBucket.bucketDomainName,
+            s3OriginConfig: {},
+            originPath: "/{{tenantName}}"
+        },
+    ],
+    tenantConfig: {
+        parameterDefinitions: [
+            {
+                definition: {
+                    stringSchema: {
+                        required: false,
+                        // the properties below are optional
+                        comment: 'tenantName',
+                        defaultValue: 'root',
+                    },
+                },
+                name: 'tenantName',
+            },
+        ],
+    },
+};
+
+// Override the distribution configuration to enable multi-tenancy.
+cfnDistribution.distributionConfig = distributionConfig;
+
+// Create a distribution tenant using an existing ACM certificate
+const cfnDistributionTenant = new cloudfront.CfnDistributionTenant(this, 'distribution-tenant', {
+    distributionId: myMultiTenantDistribution.distributionId,
+    domains: ['my-tenant.my.domain.com'],
+    name: 'my-tenant',
+    enabled: true,
+    parameters: [ // Override the default 'tenantName' parameter (root) defined in the multi-tenant distribution. 
+        {
+            name: 'tenantName',
+            value: 'app',
+        },
+    ],
+    customizations: {
+        certificate: {
+            arn: 'REPLACE_WITH_ARN', // Certificate must be in us-east-1 region and cover 'my-tenant.my.domain.com'
+        },
+    },
+});
+```
+
+#### Multi-tenant distribution and tenant with CloudFront-hosted certificate
+A distribution tenant with CloudFront-hosted domain validation is useful if you don't currently have traffic to the domain.
+
+Start by creating a parent multi-tenant distribution, then create the distribution tenant.
+```ts
+import * as route53 from 'aws-cdk-lib/aws-route53';
+
+// Create the simple Origin
+const myBucket = new s3.Bucket(this, 'myBucket');
+const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(myBucket, {
+    originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.LIST],
+});
+
+// Create the Distribution construct
+const myMultiTenantDistribution = new cloudfront.Distribution(this, 'cf-hosted-distribution', {
+    defaultBehavior: {
+        origin: s3Origin,
+    },
+    defaultRootObject: 'index.html', // recommended to specify
+});
+
+// Access the underlying L1 CfnDistribution to configure SaaS Manager properties which are not yet available in the L2 Distribution construct
+const cfnDistribution = myMultiTenantDistribution.node.defaultChild as cloudfront.CfnDistribution;
+
+const defaultCacheBehavior: cloudfront.CfnDistribution.DefaultCacheBehaviorProperty = {
+    targetOriginId: myBucket.bucketArn,
+    viewerProtocolPolicy: 'allow-all',
+    compress: false,
+    allowedMethods: ['GET', 'HEAD'],
+    cachePolicyId: cloudfront.CachePolicy.CACHING_OPTIMIZED.cachePolicyId
+};
+// Create the updated distributionConfig
+const distributionConfig: cloudfront.CfnDistribution.DistributionConfigProperty = {
+    defaultCacheBehavior: defaultCacheBehavior,
+    enabled: true,
+    // the properties below are optional
+    connectionMode: 'tenant-only',
+    origins: [
+        {
+            id: myBucket.bucketArn,
+            domainName: myBucket.bucketDomainName,
+            s3OriginConfig: {},
+            originPath: "/{{tenantName}}"
+        },
+    ],
+    tenantConfig: {
+        parameterDefinitions: [
+            {
+                definition: {
+                    stringSchema: {
+                        required: false,
+                        // the properties below are optional
+                        comment: 'tenantName',
+                        defaultValue: 'root',
+                    },
+                },
+                name: 'tenantName',
+            },
+        ],
+    },
+};
+
+// Override the distribution configuration to enable multi-tenancy.
+cfnDistribution.distributionConfig = distributionConfig;
+
+// Create a connection group and a cname record in an existing hosted zone to validate domain ownership
+const connectionGroup = new cloudfront.CfnConnectionGroup(this, 'cf-hosted-connection-group', {
+    enabled: true,
+    ipv6Enabled: true,
+    name: 'my-connection-group',
+});
+
+// Import the existing hosted zone info, replacing with your hostedZoneId and zoneName
+const hostedZoneId = 'YOUR_HOSTED_ZONE_ID';
+const zoneName = 'my.domain.com';
+const hostedZone = route53.HostedZone.fromHostedZoneAttributes(this, 'hosted-zone', {
+    hostedZoneId,
+    zoneName,
+});
+
+const record = new route53.CnameRecord(this, 'cname-record', {
+    domainName: connectionGroup.attrRoutingEndpoint,
+    zone: hostedZone,
+    recordName: 'cf-hosted-tenant.my.domain.com',
+});
+
+// Create the cloudfront-hosted tenant, passing in the previously created connection group
+const cloudfrontHostedTenant = new cloudfront.CfnDistributionTenant(this, 'cf-hosted-tenant', {
+    distributionId: myMultiTenantDistribution.distributionId,
+    name: 'cf-hosted-tenant',
+    domains: ['cf-hosted-tenant.my.domain.com'],
+    connectionGroupId: connectionGroup.attrId,
+    enabled: true,
+    managedCertificateRequest: {
+        validationTokenHost: 'cloudfront'
+    },
+});
+```
+
+#### Multi-tenant distribution and tenant with self-hosted certificate
+A tenant with self-hosted domain validation is useful if you already have traffic to the domain and can't tolerate downtime during migration to multi-tenant architecture.
+
+The tenant will be created, and the managed certificate will be awaiting validation of domain ownership.  You can then validate domain ownership via http redirect or token file upload.  [More details here](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/managed-cloudfront-certificates.html#complete-domain-ownership)
+
+Traffic won't be migrated until you update your hosted zone to point the tenant domain to the CloudFront RoutingEndpoint.
+
+Start by creating a parent multi-tenant distribution
+```ts
+// Create the simple Origin
+const myBucket = new s3.Bucket(this, 'myBucket');
+const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(myBucket, {
+    originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.LIST],
+});
+
+// Create the Distribution construct
+const myMultiTenantDistribution = new cloudfront.Distribution(this, 'cf-hosted-distribution', {
+    defaultBehavior: {
+        origin: s3Origin,
+    },
+    defaultRootObject: 'index.html', // recommended to specify
+});
+
+// Access the underlying L1 CfnDistribution to configure SaaS Manager properties which are not yet available in the L2 Distribution construct
+const cfnDistribution = myMultiTenantDistribution.node.defaultChild as cloudfront.CfnDistribution;
+
+const defaultCacheBehavior: cloudfront.CfnDistribution.DefaultCacheBehaviorProperty = {
+    targetOriginId: myBucket.bucketArn,
+    viewerProtocolPolicy: 'allow-all',
+    compress: false,
+    allowedMethods: ['GET', 'HEAD'],
+    cachePolicyId: cloudfront.CachePolicy.CACHING_OPTIMIZED.cachePolicyId
+};
+// Create the updated distributionConfig
+const distributionConfig: cloudfront.CfnDistribution.DistributionConfigProperty = {
+    defaultCacheBehavior: defaultCacheBehavior,
+    enabled: true,
+    // the properties below are optional
+    connectionMode: 'tenant-only',
+    origins: [
+        {
+            id: myBucket.bucketArn,
+            domainName: myBucket.bucketDomainName,
+            s3OriginConfig: {},
+            originPath: "/{{tenantName}}"
+        },
+    ],
+    tenantConfig: {
+        parameterDefinitions: [
+            {
+                definition: {
+                    stringSchema: {
+                        required: false,
+                        // the properties below are optional
+                        comment: 'tenantName',
+                        defaultValue: 'root',
+                    },
+                },
+                name: 'tenantName',
+            },
+        ],
+    },
+};
+
+// Override the distribution configuration to enable multi-tenancy.
+cfnDistribution.distributionConfig = distributionConfig;
+
+// Create a connection group so we have access to the RoutingEndpoint associated with the tenant we are about to create
+const connectionGroup = new cloudfront.CfnConnectionGroup(this, 'self-hosted-connection-group', {
+    enabled: true,
+    ipv6Enabled: true,
+    name: 'self-hosted-connection-group',
+});
+
+// Export the RoutingEndpoint, skip this step if you'd prefer to fetch it from the CloudFront console or via Cloudfront.ListConnectionGroups API 
+new CfnOutput(this, 'RoutingEndpoint', {
+    value: connectionGroup.attrRoutingEndpoint,
+    description: 'CloudFront Routing Endpoint to be added to my hosted zone CNAME records',
+});
+
+// Create a distribution tenant with a self-hosted domain.
+const selfHostedTenant = new cloudfront.CfnDistributionTenant(this, 'self-hosted-tenant', {
+    distributionId: myMultiTenantDistribution.distributionId,
+    connectionGroupId: connectionGroup.attrId,
+    name: 'self-hosted-tenant',
+    domains: ['self-hosted-tenant.my.domain.com'],
+    enabled: true,
+    managedCertificateRequest: {
+        primaryDomainName: 'self-hosted-tenant.my.domain.com',
+        validationTokenHost: 'self-hosted',
+    },
+});
+```
+While CDK is deploying, it will attempt to validate domain ownership by confirming that a validation token is served directly from your domain, or via http redirect.
+
+[follow the steps here](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/managed-cloudfront-certificates.html#complete-domain-ownership) to complete domain setup before deploying this CDK stack, or while CDK is in the waiting state during tenant creation. Refer to the section "I have existing traffic"
+
+A simple option for validating via http redirect, would be to add a rewrite rule like so to your server (Apache in this example)
+```
+RewriteEngine On
+RewriteCond %{REQUEST_URI} ^/\.well-known/pki-validation/(.+)$ [NC]
+RewriteRule ^(.*)$ https://validation.us-east-1.acm-validations.aws/%{ENV:AWS_ACCOUNT_ID}/.well-known/pki-validation/%1 [R=301,L]
+```
+
+Then, when you are ready to accept traffic, follow the steps [here](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/managed-cloudfront-certificates.html#point-domains-to-cloudfront) using the RoutingEndpoint from above to configure DNS to point to CloudFront.
 
 ### VPC origins
 
@@ -548,7 +839,7 @@ const functionVersion = lambda.Version.fromVersionArn(this, 'Version', 'arn:aws:
 
 new cloudfront.Distribution(this, 'distro', {
   defaultBehavior: {
-    origin: new origins.S3Origin(s3Bucket),
+    origin: origins.S3BucketOrigin.withOriginAccessControl(s3Bucket),
     edgeLambdas: [
       {
         functionVersion,
@@ -1246,6 +1537,31 @@ new cloudfront.KeyGroup(this, 'MyKeyGroup', {
   // comment: 'Key group containing public keys ...',
 });
 ```
+
+When using a CloudFront PublicKey, only the `comment` field can be updated after creation. Fields such as `encodedKey` and `publicKeyName` are immutable, as outlined in the [API Reference](https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_UpdatePublicKey.html). Attempting to modify these fields will result in an error:
+```
+Resource handler returned message: "Invalid request provided: AWS::CloudFront::PublicKey"
+```
+
+To update the `encodedKey`, you must change the ID of the public key resource in your template. This causes CloudFormation to create a new `cloudfront.PublicKey` resource and delete the old one during the next deployment.
+
+Example:
+
+```ts
+// Step 1: Original deployment
+const originalKey = new cloudfront.PublicKey(this, 'MyPublicKeyV1', {
+  encodedKey: '...', // contents of original public_key.pem file
+});
+```
+
+Regenerate a new key and change the construct id in the code:
+```ts
+// Step 2: In a subsequent deployment, create a new key with a different ID
+const updatedKey = new cloudfront.PublicKey(this, 'MyPublicKeyV2', {
+  encodedKey: '...', // contents of new public_key.pem file
+});
+```
+
 
 See:
 

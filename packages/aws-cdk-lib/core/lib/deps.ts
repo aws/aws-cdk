@@ -1,4 +1,5 @@
 import { CfnResource } from './cfn-resource';
+import { AssumptionError, UnscopedValidationError } from './errors';
 import { Stack } from './stack';
 import { Stage } from './stage';
 import { findLastCommonElement, pathToTopLevelStack as pathToRoot } from './util';
@@ -71,7 +72,7 @@ function operateOnDependency(operation: DependencyOperation, source: Element, ta
   const targetStage = Stage.of(targetStack);
   if (sourceStage !== targetStage) {
     // eslint-disable-next-line max-len
-    throw new Error(`You cannot have a dependency from '${source.node.path}' (in ${describeStage(sourceStage)}) to '${target.node.path}' (in ${describeStage(targetStage)}): dependency cannot cross stage boundaries`);
+    throw new UnscopedValidationError(`You cannot have a dependency from '${source.node.path}' (in ${describeStage(sourceStage)}) to '${target.node.path}' (in ${describeStage(targetStage)}): dependency cannot cross stage boundaries`);
   }
 
   // find the deepest common stack between the two elements
@@ -95,7 +96,7 @@ function operateOnDependency(operation: DependencyOperation, source: Element, ta
         break;
       }
       default: {
-        throw new Error(`Unsupported dependency operation: ${operation}`);
+        throw new AssumptionError(`Unsupported dependency operation: ${operation}`);
       }
     }
     return;
@@ -118,7 +119,7 @@ function operateOnDependency(operation: DependencyOperation, source: Element, ta
   // `source` is a direct or indirect nested stack of `target`, and this is not
   // possible (nested stacks cannot depend on their parents).
   if (commonStack === target) {
-    throw new Error(`Nested stack '${sourceStack.node.path}' cannot depend on a parent stack '${targetStack.node.path}'`);
+    throw new UnscopedValidationError(`Nested stack '${sourceStack.node.path}' cannot depend on a parent stack '${targetStack.node.path}'`);
   }
 
   // we have a common stack from which we can reach both `source` and `target`
@@ -136,7 +137,7 @@ function operateOnDependency(operation: DependencyOperation, source: Element, ta
       break;
     }
     default: {
-      throw new Error(`Unsupported dependency operation: ${operation}`);
+      throw new AssumptionError(`Unsupported dependency operation: ${operation}`);
     }
   }
 }
@@ -168,7 +169,7 @@ function resourceInCommonStackFor(element: Element, commonStack: Stack): CfnReso
   const resource: CfnResource = (Stack.isStack(element) ? element.nestedStackResource : element) as CfnResource;
   if (!resource) {
     // see "assertion" in operateOnDependency above
-    throw new Error(`Unexpected value for resource when looking at ${element}!`);
+    throw new AssumptionError(`Unexpected value for resource when looking at ${element}!`);
   }
 
   const resourceStack = Stack.of(resource);

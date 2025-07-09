@@ -31,7 +31,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import {
   Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy,
-  Names, Size, Stack, Token,
+  Names, RemovalPolicy, Size, Stack, Token,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -456,9 +456,23 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * myLogGroup.logGroupName;
    * ```
    *
+   * @deprecated use `logGroup` instead
    * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * Determine the removal policy of the log group that is auto-created by this construct.
+   *
+   * Normally you want to retain the log group so you can diagnose issues
+   * from logs even after a deployment that no longer includes the log group.
+   * In that case, use the normal date-based retention policy to age out your
+   * logs.
+   *
+   * @deprecated use `logGroup` instead
+   * @default RemovalPolicy.Retain
+   */
+  readonly logRemovalPolicy?: RemovalPolicy;
 
   /**
    * The IAM role for the Lambda function associated with the custom resource
@@ -1120,6 +1134,14 @@ export class Function extends FunctionBase {
     }
 
     // Log retention
+    if (props.logRemovalPolicy) {
+      if (props.logGroup) {
+        throw new ValidationError('Cannot use `logRemovalPolicy` and `logGroup` together. Please set the removal policy on the logGroup directly', this);
+      } else if (FeatureFlags.of(this).isEnabled(USE_CDK_MANAGED_LAMBDA_LOGGROUP)) {
+        throw new ValidationError('Cannot use `logRemovalPolicy` and `@aws-cdk/aws-lambda:useCdkManagedLogGroup` flag together. Please set the removal policy on the automatically created log group directly', this);
+      }
+    }
+
     if (props.logRetention) {
       if (props.logGroup) {
         throw new ValidationError('CDK does not support setting logRetention and logGroup', this);
@@ -1129,6 +1151,7 @@ export class Function extends FunctionBase {
         retention: props.logRetention,
         role: props.logRetentionRole,
         logRetentionRetryOptions: props.logRetentionRetryOptions as logs.LogRetentionRetryOptions,
+        removalPolicy: props.logRemovalPolicy,
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
       this._logRetention = logRetention;

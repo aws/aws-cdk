@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "eks-pod-identities.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/440c8ec37f58e217a5ee4dc6479febf89c70871e055b939122dc576bc3474eee.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/305d7879e41f44c01e06a0101e2f55ce6144e98d0ab9e1e62241337ddb75e35b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -110,7 +110,10 @@
         "/eks-pod-identities/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1SubnetB4246D30"
+            "data": "VPCPublicSubnet1SubnetB4246D30",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-pod-identities/VPC/PublicSubnet1/RouteTable": [
@@ -122,7 +125,10 @@
         "/eks-pod-identities/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-pod-identities/VPC/PublicSubnet1/DefaultRoute": [
@@ -140,7 +146,10 @@
         "/eks-pod-identities/VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1NATGatewayE0556630"
+            "data": "VPCPublicSubnet1NATGatewayE0556630",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-pod-identities/VPC/PublicSubnet2": [
@@ -174,7 +183,10 @@
         "/eks-pod-identities/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2Subnet74179F39"
+            "data": "VPCPublicSubnet2Subnet74179F39",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-pod-identities/VPC/PublicSubnet2/RouteTable": [
@@ -186,7 +198,10 @@
         "/eks-pod-identities/VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-pod-identities/VPC/PublicSubnet2/DefaultRoute": [
@@ -226,7 +241,10 @@
         "/eks-pod-identities/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-pod-identities/VPC/PrivateSubnet1/RouteTable": [
@@ -238,7 +256,10 @@
         "/eks-pod-identities/VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-pod-identities/VPC/PrivateSubnet1/DefaultRoute": [
@@ -278,7 +299,10 @@
         "/eks-pod-identities/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-pod-identities/VPC/PrivateSubnet2/RouteTable": [
@@ -290,7 +314,10 @@
         "/eks-pod-identities/VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-pod-identities/VPC/PrivateSubnet2/DefaultRoute": [
@@ -938,7 +965,10 @@
         "/eks-pod-identities/Cluster/NodegroupDefaultCapacity/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupDefaultCapacityDA0920A3"
+            "data": "ClusterNodegroupDefaultCapacityDA0920A3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-pod-identities/Cluster/AwsAuth/manifest/Resource": [
@@ -2199,6 +2229,78 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "VPCPublicSubnet3Subnet631C5E25": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3Subnet631C5E25",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet3RouteTable98AE0E14": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3RouteTable98AE0E14",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet3RouteTableAssociation427FE0C6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3RouteTableAssociation427FE0C6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet3DefaultRouteA0D29D46": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3DefaultRouteA0D29D46",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet3Subnet3EDCD457": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3Subnet3EDCD457",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet3RouteTable192186F8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3RouteTable192186F8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet3RouteTableAssociationC28D144E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3RouteTableAssociationC28D144E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet3DefaultRoute27F311AE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3DefaultRoute27F311AE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "eks-pod-identities"
@@ -2258,5 +2360,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1015.0"
+  "minimumCliVersion": "2.1020.2"
 }
