@@ -19,7 +19,7 @@
 import { Construct } from 'constructs';
 import { CfnTransformer } from '.';
 import { ILogGroup } from './log-group';
-import { IResource, Resource, Token, ValidationError } from '../../core';
+import { IResource, Resource, Token, ValidationError, UnscopedValidationError } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -852,12 +852,9 @@ export class ParserProcessor implements IProcessor {
   private grokOptions?: GrokProperty;
   /** Options for OCSF parser */
   private parseToOCSFOptions?: ParseToOCSFProperty;
-  /** The construct scope */
-  private readonly scope: Construct;
 
   /** Creates a new parser processor */
-  constructor(scope: Construct, props: ParserProcessorProps) {
-    this.scope = scope;
+  constructor(props: ParserProcessorProps) {
     this.type = props.type;
 
     switch (this.type) {
@@ -892,7 +889,7 @@ export class ParserProcessor implements IProcessor {
 
       case ParserProcessorType.GROK:
         if (!props.grokOptions || !props.grokOptions.match) {
-          throw new ValidationError('Match pattern is required for Grok parser', scope);
+          throw new UnscopedValidationError('Match pattern is required for Grok parser');
         }
         // Apply default values for Grok options
         this.grokOptions = {
@@ -903,7 +900,7 @@ export class ParserProcessor implements IProcessor {
 
       case ParserProcessorType.OCSF:
         if (!props.parseToOCSFOptions) {
-          throw new ValidationError('parseToOCSFOptions must be provided for type OCSF', scope);
+          throw new UnscopedValidationError('parseToOCSFOptions must be provided for type OCSF');
         }
         this.parseToOCSFOptions = {
           source: '@message',
@@ -912,7 +909,7 @@ export class ParserProcessor implements IProcessor {
         break;
 
       default:
-        throw new ValidationError(`Unsupported parser processor type: ${this.type}`, this.scope);
+        throw new UnscopedValidationError(`Unsupported parser processor type: ${this.type}`);
     }
   }
 
@@ -933,7 +930,7 @@ export class ParserProcessor implements IProcessor {
       case ParserProcessorType.OCSF:
         return { parseToOcsf: this.parseToOCSFOptions };
       default:
-        throw new ValidationError(`Unsupported parser processor type: ${this.type}`, this.scope);
+        throw new UnscopedValidationError(`Unsupported parser processor type: ${this.type}`);
     }
   }
 }
@@ -942,12 +939,9 @@ export class ParserProcessor implements IProcessor {
 export class VendedLogParser implements IProcessor {
   /** The type of AWS vended log */
   logType: VendedLogType;
-  /** The construct scope */
-  private readonly scope: Construct;
 
   /** Creates a new vended log parser processor */
-  constructor(scope: Construct, props: VendedLogParserProps) {
-    this.scope = scope;
+  constructor(props: VendedLogParserProps) {
     this.logType = props.logType;
   }
 
@@ -968,7 +962,7 @@ export class VendedLogParser implements IProcessor {
       case VendedLogType.POSTGRES:
         return { parsePostgres: { } };
       default:
-        throw new ValidationError(`Unsupported vended log type: ${this.logType}`, this.scope);
+        throw new UnscopedValidationError(`Unsupported vended log type: ${this.logType}`);
     }
   }
 }
@@ -987,52 +981,49 @@ export class StringMutatorProcessor implements IProcessor {
   private splitOptions?: SplitStringProperty;
   /** Options for string substitution */
   private substituteOptions?: SubstituteStringProperty;
-  /** The construct scope */
-  private readonly scope: Construct;
 
   /** Creates a new string mutator processor */
-  constructor(scope: Construct, props: StringMutatorProps) {
-    this.scope = scope;
+  constructor(props: StringMutatorProps) {
     this.type = props.type;
 
     switch (this.type) {
       case StringMutatorType.LOWER_CASE:
         if (!props.lowerCaseKeys || props.lowerCaseKeys.length === 0) {
-          throw new ValidationError('lowerCaseKeys must be provided for LOWER_CASE string mutator', scope);
+          throw new UnscopedValidationError('lowerCaseKeys must be provided for LOWER_CASE string mutator');
         }
         this.lowerCaseKeys = props.lowerCaseKeys;
         break;
 
       case StringMutatorType.UPPER_CASE:
         if (!props.upperCaseKeys || props.upperCaseKeys.length === 0) {
-          throw new ValidationError('upperCaseKeys must be provided for UPPER_CASE string mutator', scope);
+          throw new UnscopedValidationError('upperCaseKeys must be provided for UPPER_CASE string mutator');
         }
         this.upperCaseKeys = props.upperCaseKeys;
         break;
 
       case StringMutatorType.TRIM:
         if (!props.trimKeys || props.trimKeys.length === 0) {
-          throw new ValidationError('trimKeys must be provided for TRIM string mutator', scope);
+          throw new UnscopedValidationError('trimKeys must be provided for TRIM string mutator');
         }
         this.trimKeys = props.trimKeys;
         break;
 
       case StringMutatorType.SPLIT:
         if (!props.splitOptions || !props.splitOptions.entries || props.splitOptions.entries.length === 0) {
-          throw new ValidationError('splitOptions must be provided for SPLIT string mutator', scope);
+          throw new UnscopedValidationError('splitOptions must be provided for SPLIT string mutator');
         }
         this.splitOptions = props.splitOptions;
         break;
 
       case StringMutatorType.SUBSTITUTE:
         if (!props.substituteOptions || !props.substituteOptions.entries || props.substituteOptions.entries.length === 0) {
-          throw new ValidationError('substituteOptions must be provided for SUBSTITUTE string mutator', scope);
+          throw new UnscopedValidationError('substituteOptions must be provided for SUBSTITUTE string mutator');
         }
         this.substituteOptions = props.substituteOptions;
         break;
 
       default:
-        throw new ValidationError(`Unsupported string mutator type: ${this.type}`, scope);
+        throw new UnscopedValidationError(`Unsupported string mutator type: ${this.type}`);
     }
   }
 
@@ -1053,7 +1044,7 @@ export class StringMutatorProcessor implements IProcessor {
       case StringMutatorType.SUBSTITUTE:
         return { substituteString: this.substituteOptions };
       default:
-        throw new ValidationError(`Unsupported string mutator type: ${this.type}`, this.scope);
+        throw new UnscopedValidationError(`Unsupported string mutator type: ${this.type}`);
     }
   }
 }
@@ -1074,18 +1065,15 @@ export class JsonMutatorProcessor implements IProcessor {
   private copyValueOptions?: CopyValueProperty;
   /** Options for converting lists to maps */
   private listToMapOptions?: ListToMapProperty;
-  /** The construct scope */
-  private readonly scope: Construct;
 
   /** Creates a new JSON mutator processor */
-  constructor(scope: Construct, props: JsonMutatorProps) {
-    this.scope = scope;
+  constructor(props: JsonMutatorProps) {
     this.type = props.type;
 
     switch (this.type) {
       case JsonMutatorType.ADD_KEYS:
         if (!props.addKeysOptions || !props.addKeysOptions.entries || props.addKeysOptions.entries.length === 0) {
-          throw new ValidationError('addKeysOptions must be provided for ADD_KEYS JSON mutator', scope);
+          throw new UnscopedValidationError('addKeysOptions must be provided for ADD_KEYS JSON mutator');
         }
         this.addKeysOptions = {
           entries: props.addKeysOptions.entries.map(entry => { return { overwriteIfExists: false, ...entry }; }),
@@ -1094,14 +1082,14 @@ export class JsonMutatorProcessor implements IProcessor {
 
       case JsonMutatorType.DELETE_KEYS:
         if (!props.deleteKeysOptions || !props.deleteKeysOptions.withKeys || props.deleteKeysOptions.withKeys.length === 0) {
-          throw new ValidationError('deleteKeys must be provided for DELETE_KEYS JSON mutator', scope);
+          throw new UnscopedValidationError('deleteKeys must be provided for DELETE_KEYS JSON mutator');
         }
         this.deleteKeysOptions = props.deleteKeysOptions;
         break;
 
       case JsonMutatorType.MOVE_KEYS:
         if (!props.moveKeysOptions || !props.moveKeysOptions.entries || props.moveKeysOptions.entries.length === 0) {
-          throw new ValidationError('moveKeysOptions must be provided for MOVE_KEYS JSON mutator', scope);
+          throw new UnscopedValidationError('moveKeysOptions must be provided for MOVE_KEYS JSON mutator');
         }
         this.moveKeysOptions = {
           entries: props.moveKeysOptions.entries.map(entry => { return { overwriteIfExists: false, ...entry }; }),
@@ -1110,7 +1098,7 @@ export class JsonMutatorProcessor implements IProcessor {
 
       case JsonMutatorType.RENAME_KEYS:
         if (!props.renameKeysOptions || !props.renameKeysOptions.entries || props.renameKeysOptions.entries.length === 0) {
-          throw new ValidationError('renameKeysOptions must be provided for RENAME_KEYS JSON mutator', scope);
+          throw new UnscopedValidationError('renameKeysOptions must be provided for RENAME_KEYS JSON mutator');
         }
         this.renameKeysOptions = {
           entries: props.renameKeysOptions.entries.map(entry => { return { overwriteIfExists: false, ...entry }; }),
@@ -1119,7 +1107,7 @@ export class JsonMutatorProcessor implements IProcessor {
 
       case JsonMutatorType.COPY_VALUE:
         if (!props.copyValueOptions || !props.copyValueOptions.entries || props.copyValueOptions.entries.length === 0) {
-          throw new ValidationError('copyValueOptions must be provided for COPY_VALUE JSON mutator', scope);
+          throw new UnscopedValidationError('copyValueOptions must be provided for COPY_VALUE JSON mutator');
         }
         this.copyValueOptions = {
           entries: props.copyValueOptions.entries.map(entry => { return { overwriteIfExists: false, ...entry }; }),
@@ -1128,10 +1116,10 @@ export class JsonMutatorProcessor implements IProcessor {
 
       case JsonMutatorType.LIST_TO_MAP:
         if (!props.listToMapOptions || !props.listToMapOptions.source || !props.listToMapOptions.key) {
-          throw new ValidationError('listToMapOptions with source and key must be provided for LIST_TO_MAP JSON mutator', scope);
+          throw new UnscopedValidationError('listToMapOptions with source and key must be provided for LIST_TO_MAP JSON mutator');
         }
         if (props.listToMapOptions.flatten && !props.listToMapOptions.flattenedElement) {
-          throw new ValidationError('listToMapOptions flattenedElement must be provided when flatten is true for LIST_TO_MAP JSON mutator', scope);
+          throw new UnscopedValidationError('listToMapOptions flattenedElement must be provided when flatten is true for LIST_TO_MAP JSON mutator');
         }
         this.listToMapOptions = {
           flatten: false,
@@ -1140,7 +1128,7 @@ export class JsonMutatorProcessor implements IProcessor {
         break;
 
       default:
-        throw new ValidationError(`Unsupported JSON mutator type: ${this.type}`, scope);
+        throw new UnscopedValidationError(`Unsupported JSON mutator type: ${this.type}`);
     }
   }
 
@@ -1163,7 +1151,7 @@ export class JsonMutatorProcessor implements IProcessor {
       case JsonMutatorType.LIST_TO_MAP:
         return { listToMap: this.listToMapOptions };
       default:
-        throw new ValidationError(`Unsupported JSON mutator type: ${this.type}`, this.scope);
+        throw new UnscopedValidationError(`Unsupported JSON mutator type: ${this.type}`);
     }
   }
 }
@@ -1176,18 +1164,15 @@ export class DataConverterProcessor implements IProcessor {
   private typeConverterOptions?: TypeConverterProperty;
   /** Options for datetime conversion */
   private dateTimeConverterOptions?: DateTimeConverterProperty;
-  /** The construct scope */
-  private readonly scope: Construct;
 
   /** Creates a new data converter processor */
-  constructor(scope: Construct, props: DataConverterProps) {
-    this.scope = scope;
+  constructor(props: DataConverterProps) {
     this.type = props.type;
 
     switch (this.type) {
       case DataConverterType.TYPE_CONVERTER:
         if (!props.typeConverterOptions || !props.typeConverterOptions.entries || props.typeConverterOptions.entries.length === 0) {
-          throw new ValidationError('typeConverterOptions must be provided for TYPE_CONVERTER data converter', scope);
+          throw new UnscopedValidationError('typeConverterOptions must be provided for TYPE_CONVERTER data converter');
         }
         this.typeConverterOptions = props.typeConverterOptions;
         break;
@@ -1195,7 +1180,7 @@ export class DataConverterProcessor implements IProcessor {
       case DataConverterType.DATETIME_CONVERTER:
         if (!props.dateTimeConverterOptions || !props.dateTimeConverterOptions.source ||
             !props.dateTimeConverterOptions.target || !props.dateTimeConverterOptions.matchPatterns) {
-          throw new ValidationError('dateTimeConverterOptions with source, target and matchPatterns must be provided for DATETIME_CONVERTER data converter', scope);
+          throw new UnscopedValidationError('dateTimeConverterOptions with source, target and matchPatterns must be provided for DATETIME_CONVERTER data converter');
         }
         this.dateTimeConverterOptions = {
           targetFormat: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
@@ -1206,7 +1191,7 @@ export class DataConverterProcessor implements IProcessor {
         break;
 
       default:
-        throw new ValidationError(`Unsupported data converter type: ${this.type}`, scope);
+        throw new UnscopedValidationError(`Unsupported data converter type: ${this.type}`);
     }
   }
 
@@ -1221,7 +1206,7 @@ export class DataConverterProcessor implements IProcessor {
       case DataConverterType.DATETIME_CONVERTER:
         return { dateTimeConverter: this.dateTimeConverterOptions };
       default:
-        throw new ValidationError(`Unsupported data converter type: ${this.type}`, this.scope);
+        throw new UnscopedValidationError(`Unsupported data converter type: ${this.type}`);
     }
   }
 }
