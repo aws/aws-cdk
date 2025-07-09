@@ -112,7 +112,7 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
   /**
    * Returns a RuleTarget that can be used to log an event into a CloudWatch LogGroup
    */
-  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
     const resourcePolicyId = `EventsLogGroupPolicy${cdk.Names.nodeUniqueId(this.logGroup.node)}`;
 

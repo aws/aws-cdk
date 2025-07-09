@@ -617,3 +617,27 @@ test('metricIncomingBytes with MetricOptions props', () => {
   });
 });
 
+test("creates single resource policy per event rule", () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+  const rule1 = new events.Rule(stack, 'Rule1', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+  const rule2 = new events.Rule(stack, 'Rule1', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+  const rule3 = new events.Rule(stack, 'Rule3', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // WHEN
+  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup));
+  rule2.addTarget(new targets.CloudWatchLogGroup(logGroup));
+  rule3.addTarget(new targets.CloudWatchLogGroup(logGroup));
+
+  // THEN
+  Template.fromStack(stack).resourceCountIs("Custom::CloudwatchLogResourcePolicy", 1);
+});
