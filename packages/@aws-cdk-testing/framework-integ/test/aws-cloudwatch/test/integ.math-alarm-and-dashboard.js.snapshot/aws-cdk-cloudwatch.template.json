@@ -85,7 +85,7 @@
          "Arn"
         ]
        },
-       "\"]},\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"More total messages in queue with alarm annotation\",\"region\":\"",
+       "\"]},\"yAxis\":{},\"accountId\":\"123456789012\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"More total messages in queue with alarm annotation\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
@@ -96,14 +96,14 @@
          "QueueName"
         ]
        },
-       "\",{\"label\":\"Visible Messages\",\"period\":60,\"visible\":false,\"id\":\"m1\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesNotVisible\",\"QueueName\",\"",
+       "\",{\"label\":\"Visible Messages\",\"id\":\"m1\",\"visible\":false,\"period\":60}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesNotVisible\",\"QueueName\",\"",
        {
         "Fn::GetAtt": [
          "queue",
          "QueueName"
         ]
        },
-       "\",{\"label\":\"NotVisible Messages\",\"period\":60,\"visible\":false,\"id\":\"m2\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
+       "\",{\"label\":\"NotVisible Messages\",\"id\":\"m2\",\"visible\":false,\"period\":60}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
        {
         "Fn::GetAtt": [
          "queue",
@@ -117,7 +117,7 @@
          "QueueName"
         ]
        },
-       "\",{\"label\":\"NotVisible Messages\",\"period\":30,\"yAxis\":\"right\"}]],\"annotations\":{\"horizontal\":[{\"label\":\"Total Messages >= 100 for 3 datapoints within 3 minutes\",\"value\":100,\"yAxis\":\"left\"}]},\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":12,\"properties\":{\"view\":\"pie\",\"title\":\"Percentage of messages in each queue as pie chart\",\"region\":\"",
+       "\",{\"label\":\"NotVisible Messages\",\"period\":30,\"yAxis\":\"right\"}]],\"annotations\":{\"horizontal\":[{\"label\":\"Total Messages >= 100 for 3 datapoints within 3 minutes\",\"value\":100,\"yAxis\":\"left\"}]},\"yAxis\":{},\"accountId\":\"123456789012\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":12,\"properties\":{\"view\":\"pie\",\"title\":\"Percentage of messages in each queue as pie chart\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
@@ -135,7 +135,7 @@
          "QueueName"
         ]
        },
-       "\",{\"label\":\"NotVisible Messages\",\"period\":30}]],\"yAxis\":{},\"setPeriodToTimeRange\":true}},{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":18,\"properties\":{\"view\":\"singleValue\",\"title\":\"Current total messages in queue\",\"region\":\"",
+       "\",{\"label\":\"NotVisible Messages\",\"period\":30}]],\"yAxis\":{},\"setPeriodToTimeRange\":true,\"accountId\":\"123456789012\"}},{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":18,\"properties\":{\"view\":\"singleValue\",\"title\":\"Current total messages in queue\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
@@ -146,14 +146,14 @@
          "QueueName"
         ]
        },
-       "\",{\"label\":\"Visible Messages\",\"period\":60,\"visible\":false,\"id\":\"m1\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesNotVisible\",\"QueueName\",\"",
+       "\",{\"label\":\"Visible Messages\",\"id\":\"m1\",\"visible\":false,\"period\":60}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesNotVisible\",\"QueueName\",\"",
        {
         "Fn::GetAtt": [
          "queue",
          "QueueName"
         ]
        },
-       "\",{\"label\":\"NotVisible Messages\",\"period\":60,\"visible\":false,\"id\":\"m2\"}]]}}]}"
+       "\",{\"label\":\"NotVisible Messages\",\"id\":\"m2\",\"visible\":false,\"period\":60}]],\"accountId\":\"123456789012\"}}]}"
       ]
      ]
     },
