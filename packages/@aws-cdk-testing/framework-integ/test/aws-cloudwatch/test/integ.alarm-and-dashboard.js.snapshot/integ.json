@@ -1,5 +1,5 @@
 {
-  "version": "30.0.0",
+  "version": "44.0.0",
   "testCases": {
     "cdk-cloudwatch-alarms-integ-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "cdk-cloudwatch-alarms-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "cdkcloudwatchalarmsintegtestDefaultTestDeployAssertD2D0B407"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

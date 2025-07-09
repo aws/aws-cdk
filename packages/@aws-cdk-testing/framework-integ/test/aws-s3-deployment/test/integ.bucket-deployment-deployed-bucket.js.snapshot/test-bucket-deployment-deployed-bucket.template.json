@@ -161,7 +161,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8a84a8f465fbe0c48af2c256847ec9abfe095d23781b749728b998315f3ad732.zip"
+     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -442,6 +442,9 @@
    "eu-west-3": {
     "value": "nodejs22.x"
    },
+   "eusc-de-east-1": {
+    "value": "nodejs22.x"
+   },
    "il-central-1": {
     "value": "nodejs22.x"
    },
@@ -569,6 +572,9 @@
    },
    "eu-west-3": {
     "endpoint": "s3-website.eu-west-3.amazonaws.com"
+   },
+   "eusc-de-east-1": {
+    "endpoint": "s3-website.eusc-de-east-1.amazonaws.eu"
    },
    "il-central-1": {
     "endpoint": "s3-website.il-central-1.amazonaws.com"

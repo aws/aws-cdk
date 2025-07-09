@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "NlbSubnetMappingStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/97b1a05ffdd943bb5194c95aeb6494957a3fc004786cedf0ed78321b37a06265.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cb783e60b4018582b1bcce7d1da6d3e783ed2bbcfbddca2d513b47d66315bb4e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -95,7 +95,10 @@
         "/NlbSubnetMappingStack/DualStackVpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcPublicSubnet1Subnet956CEF9A"
+            "data": "DualStackVpcPublicSubnet1Subnet956CEF9A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbSubnetMappingStack/DualStackVpc/PublicSubnet1/RouteTable": [
@@ -107,7 +110,10 @@
         "/NlbSubnetMappingStack/DualStackVpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcPublicSubnet1RouteTableAssociation2ED94748"
+            "data": "DualStackVpcPublicSubnet1RouteTableAssociation2ED94748",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbSubnetMappingStack/DualStackVpc/PublicSubnet1/DefaultRoute": [
@@ -161,7 +167,10 @@
         "/NlbSubnetMappingStack/DualStackVpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcPublicSubnet2Subnet909A2064"
+            "data": "DualStackVpcPublicSubnet2Subnet909A2064",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbSubnetMappingStack/DualStackVpc/PublicSubnet2/RouteTable": [
@@ -173,7 +182,10 @@
         "/NlbSubnetMappingStack/DualStackVpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcPublicSubnet2RouteTableAssociation160D2DBF"
+            "data": "DualStackVpcPublicSubnet2RouteTableAssociation160D2DBF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbSubnetMappingStack/DualStackVpc/PublicSubnet2/DefaultRoute": [
@@ -215,7 +227,10 @@
         "/NlbSubnetMappingStack/DualStackVpc/IsolatedSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIsolatedSubnet1Subnet6E915754"
+            "data": "DualStackVpcIsolatedSubnet1Subnet6E915754",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbSubnetMappingStack/DualStackVpc/IsolatedSubnet1/RouteTable": [
@@ -227,7 +242,10 @@
         "/NlbSubnetMappingStack/DualStackVpc/IsolatedSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIsolatedSubnet1RouteTableAssociation283EEEA8"
+            "data": "DualStackVpcIsolatedSubnet1RouteTableAssociation283EEEA8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbSubnetMappingStack/DualStackVpc/IsolatedSubnet2": [
@@ -257,7 +275,10 @@
         "/NlbSubnetMappingStack/DualStackVpc/IsolatedSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIsolatedSubnet2Subnet9FF7B0E0"
+            "data": "DualStackVpcIsolatedSubnet2Subnet9FF7B0E0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbSubnetMappingStack/DualStackVpc/IsolatedSubnet2/RouteTable": [
@@ -269,7 +290,10 @@
         "/NlbSubnetMappingStack/DualStackVpc/IsolatedSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIsolatedSubnet2RouteTableAssociation0920243F"
+            "data": "DualStackVpcIsolatedSubnet2RouteTableAssociation0920243F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbSubnetMappingStack/DualStackVpc/IGW": [
@@ -282,12 +306,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DualStackVpcVPCGW7803C9BB"
-          }
-        ],
-        "/NlbSubnetMappingStack/DualStackVpc/EIGW6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcEIGW64639A9F2"
           }
         ],
         "/NlbSubnetMappingStack/DualStackVpc/RestrictDefaultSecurityGroupCustomResource": [
@@ -456,7 +474,10 @@
         "/NlbSubnetMappingStack/MyVPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVPCPublicSubnet1Subnet0C75866A"
+            "data": "MyVPCPublicSubnet1Subnet0C75866A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbSubnetMappingStack/MyVPC/PublicSubnet1/RouteTable": [
@@ -468,7 +489,10 @@
         "/NlbSubnetMappingStack/MyVPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVPCPublicSubnet1RouteTableAssociation8A950D8E"
+            "data": "MyVPCPublicSubnet1RouteTableAssociation8A950D8E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbSubnetMappingStack/MyVPC/PublicSubnet1/DefaultRoute": [
@@ -486,7 +510,10 @@
         "/NlbSubnetMappingStack/MyVPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVPCPublicSubnet1NATGateway838228A5"
+            "data": "MyVPCPublicSubnet1NATGateway838228A5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbSubnetMappingStack/MyVPC/PrivateSubnet1": [
@@ -520,7 +547,10 @@
         "/NlbSubnetMappingStack/MyVPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVPCPrivateSubnet1Subnet641543F4"
+            "data": "MyVPCPrivateSubnet1Subnet641543F4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbSubnetMappingStack/MyVPC/PrivateSubnet1/RouteTable": [
@@ -532,7 +562,10 @@
         "/NlbSubnetMappingStack/MyVPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVPCPrivateSubnet1RouteTableAssociation85DFBFBB"
+            "data": "MyVPCPrivateSubnet1RouteTableAssociation85DFBFBB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbSubnetMappingStack/MyVPC/PrivateSubnet1/DefaultRoute": [
@@ -568,7 +601,10 @@
         "/NlbSubnetMappingStack/MyVPC/IsolatedSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVPCIsolatedSubnet1Subnet2AF53E58"
+            "data": "MyVPCIsolatedSubnet1Subnet2AF53E58",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbSubnetMappingStack/MyVPC/IsolatedSubnet1/RouteTable": [
@@ -580,7 +616,10 @@
         "/NlbSubnetMappingStack/MyVPC/IsolatedSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVPCIsolatedSubnet1RouteTableAssociation31389557"
+            "data": "MyVPCIsolatedSubnet1RouteTableAssociation31389557",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/NlbSubnetMappingStack/MyVPC/IGW": [
@@ -735,5 +774,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1015.0"
+  "minimumCliVersion": "2.1020.2"
 }

@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "amplify-branch-compute-role/DefaultTest": {
+      "stacks": [
+        "cdk-amplify-branch-compute-role"
+      ],
+      "assertionStack": "amplify-branch-compute-role/DefaultTest/DeployAssert",
+      "assertionStackName": "amplifybranchcomputeroleDefaultTestDeployAssert73C754F8"
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}

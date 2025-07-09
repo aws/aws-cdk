@@ -17,7 +17,6 @@ Flags come in three types:
 
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
-| [@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration](#aws-cdkaws-ec2-alphauseresourceidforvpcv2migration) | When enabled, use resource IDs for VPC V2 migration | V2_NEXT | new default |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | fix |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | fix |
 | [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | 2.0.0 | fix |
@@ -100,8 +99,11 @@ Flags come in three types:
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | 2.189.0 | new default |
 | [@aws-cdk/core:aspectPrioritiesMutating](#aws-cdkcoreaspectprioritiesmutating) | When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING. | 2.189.1 | new default |
 | [@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions](#aws-cdks3-notificationsadds3trustkeypolicyforsnssubscriptions) | Add an S3 trust policy to a KMS key resource policy for SNS subscriptions. | 2.195.0 | fix |
+| [@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration](#aws-cdkaws-ec2-alphauseresourceidforvpcv2migration) | When enabled, use resource IDs for VPC V2 migration | 2.196.0 | new default |
 | [@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway](#aws-cdkaws-ec2requireprivatesubnetsforegressonlyinternetgateway) | When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC. | 2.196.0 | fix |
 | [@aws-cdk/aws-s3:publicAccessBlockedByDefault](#aws-cdkaws-s3publicaccessblockedbydefault) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | 2.196.0 | fix |
+| [@aws-cdk/aws-lambda:useCdkManagedLogGroup](#aws-cdkaws-lambdausecdkmanagedloggroup) | When enabled, CDK creates and manages loggroup for the lambda function | 2.200.0 | new default |
+| [@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal](#aws-cdkaws-kmsapplyimportedaliaspermissionstoprincipal) | Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition | 2.202.0 | fix |
 
 <!-- END table -->
 
@@ -145,6 +147,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
     "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
     "@aws-cdk/aws-kms:aliasNameRef": true,
+    "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal": true,
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
     "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
     "@aws-cdk/aws-efs:denyAnonymousAccess": true,
@@ -187,7 +190,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
-    "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true
+    "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
+    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true
   }
 }
 ```
@@ -271,10 +275,10 @@ file will be based on the construct path and not on the defined `stackName`
 of the stack.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.16.0 | `false` | `true` |
-| (default in v2) | `true` |  |
+| (not configurable in v2) | `true` |  |
 
 **Compatibility with old behavior:** Pass stack identifiers to the CLI instead of stack names.
 
@@ -297,10 +301,10 @@ You can override this behavior with the --fail flag:
 * `--no-fail` => status code == 0
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.19.0 | `false` | `true` |
-| (default in v2) | `true` |  |
+| (not configurable in v2) | `true` |  |
 
 **Compatibility with old behavior:** Specify `--fail` to the CLI.
 
@@ -319,10 +323,10 @@ This is a feature flag as the old behavior was technically incorrect but
 users may have come to depend on it.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.73.0 | `false` | `true` |
-| (default in v2) | `true` |  |
+| (not configurable in v2) | `true` |  |
 
 **Compatibility with old behavior:** Update your `.dockerignore` file to match standard Docker ignore rules, if necessary.
 
@@ -340,10 +344,10 @@ If this flag is not set, Secret.secretName will include the SecretsManager suffi
 used by SecretsManager.DescribeSecret, and must be parsed by the user first (e.g., Fn:Join, Fn:Select, Fn:Split).
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.77.0 | `false` | `true` |
-| (default in v2) | `true` |  |
+| (not configurable in v2) | `true` |  |
 
 **Compatibility with old behavior:** Use `parseArn(secret.secretName).resourceName` to emulate the incorrect old parsing.
 
@@ -367,10 +371,10 @@ Additionally, if this flag is not set and the user supplies a custom key policy,
 to the key's default policy (rather than replacing it).
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.78.0 | `false` | `true` |
-| (default in v2) | `true` |  |
+| (not configurable in v2) | `true` |  |
 
 **Compatibility with old behavior:** Pass `trustAccountIdentities: false` to `Key` construct to restore the old behavior.
 
@@ -388,10 +392,10 @@ Use a feature flag to make sure existing customers who might be relying
 on the overly-broad permissions are not broken.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.85.0 | `false` | `true` |
-| (default in v2) | `true` |  |
+| (not configurable in v2) | `true` |  |
 
 **Compatibility with old behavior:** Call `bucket.grantPutAcl()` in addition to `bucket.grantWrite()` to grant ACL permissions.
 
@@ -413,10 +417,10 @@ desiredCount of 1, if one is not provided. If true, a default will not be define
 CfnService.desiredCount and as such desiredCount will be undefined, if one is not provided.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.92.0 | `false` | `true` |
-| (default in v2) | `true` |  |
+| (not configurable in v2) | `true` |  |
 
 **Compatibility with old behavior:** You can pass `desiredCount: 1` explicitly, but you should never need this.
 
@@ -430,31 +434,12 @@ Flag type: New default behavior
 Encryption can also be configured explicitly using the `encrypted` property.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.98.0 | `false` | `true` |
-| (default in v2) | `true` |  |
+| (not configurable in v2) | `true` |  |
 
 **Compatibility with old behavior:** Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.
-
-
-### @aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration
-
-*When enabled, use resource IDs for VPC V2 migration*
-
-Flag type: New default behavior
-
-When this feature flag is enabled, the VPC V2 migration will use resource IDs instead of getAtt references
-for migrating resources from VPC V1 to VPC V2. This helps ensure a smoother migration path between
-the two versions.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2_NEXT | `false` | `false` |
-
-**Compatibility with old behavior:** Disable the feature flag to use getAtt references for VPC V2 migration
 
 
 ### @aws-cdk/core:newStyleStackSynthesis
@@ -467,7 +452,7 @@ If this flag is specified, all `Stack`s will use the `DefaultStackSynthesizer` b
 default. If it is not set, they will use the `LegacyStackSynthesizer`.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.39.0 | `false` | `true` |
 | 2.0.0 | `true` | `true` |
@@ -485,7 +470,7 @@ the location of the stack in the construct tree (specifically, moving the Stack
 into a Stage).
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.58.0 | `false` | `true` |
 | 2.0.0 | `true` | `true` |
@@ -508,7 +493,7 @@ would lead CloudFormation to think the name was changed and would trigger a clus
 (losing data!).
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.97.0 | `false` | `true` |
 | 2.0.0 | `true` | `true` |
@@ -534,7 +519,7 @@ In effect, there is no way to get out of this mess in a backwards compatible way
 This flag changes the logical id layout of UsagePlanKey to not be sensitive to order.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.98.0 | `false` | `true` |
 | 2.0.0 | `true` | `true` |
@@ -552,7 +537,7 @@ not constitute creating a new Version.
 See 'currentVersion' section in the aws-lambda module's README for more details.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.106.0 | `false` | `true` |
 | 2.0.0 | `true` | `true` |
@@ -567,7 +552,7 @@ Flag type: Backwards incompatible bugfix
 The security policy can also be configured explicitly using the `minimumProtocolVersion` property.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.117.0 | `false` | `true` |
 | 2.0.0 | `true` | `true` |
@@ -585,7 +570,7 @@ of unnecessary regions included in stacks without a known region.
 The type of this value should be a list of strings.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.137.0 | `false` | `["aws","aws-cn"]` |
 | 2.4.0 | `false` | `["aws","aws-cn"]` |
@@ -603,7 +588,7 @@ Enable this feature flag to configure default logging behavior for the ECS Servi
 This is a feature flag as the new behavior provides a better default experience for the users.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.140.0 | `false` | `true` |
 | 2.8.0 | `false` | `true` |
@@ -624,7 +609,7 @@ account and region, the deployments would always fail as the generated Launch Te
 The new implementation addresses this issue by generating the Launch Template name with the `Names.uniqueId` method.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.140.0 | `false` | `true` |
 | 2.8.0 | `false` | `true` |
@@ -641,7 +626,7 @@ Statements in the policies, as long as it doesn't change the meaning of the
 policy.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.150.0 | `false` | `true` |
 | 2.18.0 | `false` | `true` |
@@ -658,7 +643,7 @@ constructs that accept `SecretValue`s; otherwise, `unsafeUnwrap()` must be
 called to use it as a regular string.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.153.0 | `false` | `true` |
 | 2.21.0 | `false` | `true` |
@@ -675,7 +660,7 @@ This flag correct incorporates Lambda Layer properties into the Lambda Function 
 See 'currentVersion' section in the aws-lambda module's README for more details.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | 1.159.0 | `false` | `true` |
 | 2.27.0 | `false` | `true` |
@@ -693,7 +678,7 @@ This flag will reduce confusion and unexpected loss of data when erroneously sup
 the snapshot removal policy.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.28.0 | `false` | `true` |
@@ -715,7 +700,7 @@ the KMS key alias name created for these pipelines may be the same due to how th
 This new implementation creates a stack safe resource name for the alias using the stack name instead of the stack ID.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.29.0 | `false` | `true` |
@@ -739,7 +724,7 @@ remain in control of it.
 @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html#AWS-logs-infrastructure-S3
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.31.0 | `false` | `true` |
@@ -759,7 +744,7 @@ secure, it is a good practice to restrict the decryption further and only allow 
 the subscribed queue.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.32.0 | `false` | `true` |
@@ -779,7 +764,7 @@ This is a feature flag as the old format is still valid for existing ECS cluster
 See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.35.0 | `false` | `true` |
@@ -801,7 +786,7 @@ When this flag is enabled you should either create the ApiGateway account and Cl
 separately _or_ only enable the cloudWatchRole on a single RestApi.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.38.0 | `false` | `true` |
@@ -838,7 +823,7 @@ The intrinsic function will still be used in Stacks where no region is defined o
 is unknown.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.38.0 | `false` | `true` |
@@ -857,7 +842,7 @@ This does not change any behaviour as the default deployment controller when it 
 This is a feature flag as the new behavior provides a better default experience for the users.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.51.0 | `false` | `true` |
@@ -874,7 +859,7 @@ from the same account as the Rule can send messages. If a queue is unencrypted, 
 always apply, regardless of the value of this flag.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.51.0 | `false` | `true` |
@@ -893,7 +878,7 @@ of a role using the same default policy name.
 This new implementation creates default policy names based on the constructs node path in their stack.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.60.0 | `false` | `true` |
@@ -915,7 +900,7 @@ practices for S3.
 @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.60.0 | `false` | `true` |
@@ -935,7 +920,7 @@ The recommended setting is to disable the default installation behavior, and pas
 flag on a resource-by-resource basis to enable it if necessary.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.60.0 | `false` | `false` |
@@ -955,7 +940,7 @@ the stack in a region other than us-east-1 then you must also set `crossRegionRe
 stack.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.61.0 | `false` | `true` |
@@ -974,7 +959,7 @@ the alarms from the construct. If this flag is not set, removing all alarms from
 will still leave the alarms configured for the deployment group.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.65.0 | `false` | `true` |
@@ -995,7 +980,7 @@ If this flag is set, the default behavior is to use unique resource names for ea
 This is a feature flag as the old behavior was technically incorrect, but users may have come to depend on it.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.65.0 | `false` | `true` |
@@ -1013,7 +998,7 @@ to also include the configuration of any authorizer attached to the API in the
 calculation, so any changes made to an authorizer will create a new deployment.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.66.0 | `false` | `true` |
@@ -1030,7 +1015,7 @@ provided despite the document. If this is set, a user data is automatically defi
 according to the OS of the machine image.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.67.0 | `false` | `true` |
@@ -1054,7 +1039,7 @@ First remove all permissions granted to the Secret and deploy without the Resour
 Then you can re-add the permissions and deploy again.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.67.0 | `false` | `true` |
@@ -1079,7 +1064,7 @@ initial deployment, the columns will be dropped and recreated, causing data loss
 of the `id`s, the `name`s of the columns can be changed without data loss.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.68.0 | `false` | `true` |
@@ -1101,7 +1086,7 @@ This is a feature flag as the old behavior will be deprecated, but some resource
 intervention since they might not have the appropriate tags propagated automatically.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.72.0 | `false` | `true` |
@@ -1120,7 +1105,7 @@ If the flag is not set then only a single RequestValidator can be added in this 
 Any additional RequestValidators have to be created directly with `new RequestValidator`.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.78.0 | `false` | `true` |
@@ -1141,7 +1126,7 @@ _all_ traffic. [AWS Security best practices recommend](https://docs.aws.amazon.c
 removing these ingress/egress rules in order to restrict access to the default security group.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.78.0 | `false` | `true` |
@@ -1165,7 +1150,7 @@ If the flag is not set then a raw string is passed as the Alias name and no
 implicit dependencies will be set.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.83.0 | `false` | `true` |
@@ -1187,7 +1172,7 @@ feature flag can lead to a change in stacks' name. Changing a stack name mean re
 is not viable in some productive setups.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.84.0 | `false` | `true` |
@@ -1208,7 +1193,7 @@ attempt to set user data according to the OS of the machine image if explicit us
 provided.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.88.0 | `false` | `true` |
@@ -1229,7 +1214,7 @@ If this is set, an opensearch domain will automatically be created with
 multi-az with standby enabled.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.88.0 | `false` | `true` |
@@ -1250,7 +1235,7 @@ If this flag is not set, `efs.FileSystem` will allow all anonymous clients
 that can access over the network.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.93.0 | `false` | `true` |
@@ -1272,7 +1257,7 @@ subnets changes.
 Set this flag to false for existing mount targets.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.93.0 | `false` | `true` |
@@ -1290,7 +1275,7 @@ service. Do not use this if you your lambda function is reliant on dependencies
 shipped as part of the runtime environment.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.93.0 | `false` | `true` |
@@ -1309,7 +1294,7 @@ the GraphqlApi construct. Using the ARN allows the association to support an ass
 Note that for existing source api associations created with this flag disabled, enabling the flag will lead to a resource replacement.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.97.0 | `false` | `true` |
@@ -1329,7 +1314,7 @@ If the flag is set to false then it can only make one `AuroraClusterInstance`
 with each `InstanceParameterGroup` in the AuroraCluster.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.97.0 | `false` | `true` |
@@ -1355,7 +1340,7 @@ extra database secret when only using `snapshotCredentials` to create an RDS
 database cluster from a snapshot.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.98.0 | `false` | `true` |
@@ -1372,7 +1357,7 @@ default branch is 'master'.
 However, with the activation of this feature flag, the default branch is updated to 'main'.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.103.1 | `false` | `true` |
@@ -1392,7 +1377,7 @@ If the flag is set to false then it can only make one alarm for the Lambda with
 `LambdaAction`.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.124.0 | `false` | `true` |
@@ -1408,7 +1393,7 @@ When this feature flag is enabled, and the `crossAccountKeys` property is not pr
 construct, the construct automatically defaults the value of this property to false.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.127.0 | `false` | `true` |
@@ -1426,7 +1411,7 @@ When this feature flag is enabled, and the `pipelineType` property is not provid
 construct, the construct automatically defaults the value of this property to `PipelineType.V2`.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.133.0 | `false` | `true` |
@@ -1444,7 +1429,7 @@ When this feature flag is enabled and calling KMS key grant method, the created 
 '*' to this specific granting KMS key.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.134.0 | `false` | `true` |
@@ -1460,7 +1445,7 @@ When this feature flag is enabled, the nodegroupName attribute will be exactly t
 any prefix.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.139.0 | `false` | `true` |
@@ -1475,7 +1460,7 @@ Flag type: New default behavior
 When this featuer flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.140.0 | `false` | `true` |
@@ -1493,7 +1478,7 @@ When this feature flag is enabled, the root account principal will not be added 
 When this feature flag is disabled, it will keep the root account principal in the trust policy.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.141.0 | `true` | `true` |
@@ -1510,7 +1495,7 @@ Flag type: New default behavior
 When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.143.0 | `false` | `true` |
@@ -1534,7 +1519,7 @@ the event object, then setting this feature flag will keep this behavior. Otherw
 property from the event object.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.145.0 | `false` | `false` |
@@ -1552,7 +1537,7 @@ When this feature flag is enabled, adding notifications to a bucket in the curre
 Other notifications that are not managed by this stack will be kept.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.155.0 | `false` | `false` |
@@ -1571,7 +1556,7 @@ When this feature flag is enabled, specify newly introduced props 's3InputUri' a
 's3OutputUri' to populate S3 uri under input and output fields in state machine task definition for Bedrock invoke model.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.156.0 | `true` | `true` |
@@ -1591,7 +1576,7 @@ specified as logConfiguration and it will grant 'Resources': ['*'] to the task r
 When this feature flag is enabled, we will only grant the necessary permissions when users specify cloudwatch log group.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.159.0 | `false` | `true` |
@@ -1611,7 +1596,7 @@ only the value from 'resourceSignalTimeout' will be used.
 When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.160.0 | `false` | `true` |
@@ -1631,7 +1616,7 @@ When this feature flag is enabled, the AWS::Lambda::Permission will be properly 
 specific AppSync GraphQL API.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.161.0 | `false` | `true` |
@@ -1650,7 +1635,7 @@ When this feature flag is enabled, both '@aws-sdk/*' and '@smithy/*' packages wi
 occur between these tightly coupled dependencies when using the AWS SDK v3 in Lambda functions.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.161.0 | `false` | `true` |
@@ -1667,7 +1652,7 @@ Currently, the value of the property 'instanceResourceId' in construct 'Database
 When this feature flag is enabled, the value of that property will be as expected set to 'DbiResourceId' attribute, and that will fix the grantConnect method.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.161.0 | `false` | `true` |
@@ -1686,7 +1671,7 @@ Without enabling this feature flag, `cfn-include` will silently drop resource up
 Enabling this feature flag will make `cfn-include` throw on these templates, unless you specify the logical ID of the resource in the 'unhydratedResources' property.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.161.0 | `false` | `true` |
@@ -1704,7 +1689,7 @@ The revision number at the end will be replaced with a wildcard which it shouldn
 When this feature flag is enabled, if the task definition is created in the stack, the 'Resource' section will 'Ref' the taskDefinition.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.163.0 | `false` | `true` |
@@ -1724,7 +1709,7 @@ This will prevent you from creating a new table which has an additional replica 
 This is a feature flag as the old behavior was technically incorrect but users may have come to depend on it.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.164.0 | `false` | `true` |
@@ -1744,7 +1729,7 @@ When this feature flag is enabled, if you do not pass the machineImage property 
 the latest Amazon Linux 2023 version will be used instead of Amazon Linux 2.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.172.0 | `false` | `true` |
@@ -1764,7 +1749,7 @@ This means that the Aspects that create other Aspects are not run and Aspects th
 When this feature flag is enabled, a stabilization loop is run to recurse the construct tree multiple times when invoking Aspects.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.172.0 | `true` | `true` |
@@ -1782,7 +1767,7 @@ creates a custom resource internally, but the new method doesn't need a custom r
 If the flag is set to false then a custom resource will be created when using `UserPoolDomainTarget`.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.174.0 | `false` | `true` |
@@ -1802,7 +1787,7 @@ IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/di
 It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.175.0 | `false` | `true` |
@@ -1823,7 +1808,7 @@ guarantee the correct execution of the feature in all platforms. See [Github dis
 It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.175.0 | `false` | `false` |
@@ -1844,7 +1829,7 @@ Using a feature flag to make sure existing customers who might be relying
 on the overly restrictive permissions are not broken.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.176.0 | `false` | `true` |
@@ -1865,7 +1850,7 @@ When this feature flag is disabled, the behaviour will be the same as current an
 thumbprints from unsecure connections.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.177.0 | `false` | `true` |
@@ -1885,7 +1870,7 @@ When this feature flag is enabled, CDK expands the scope of usage data collectio
   * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.178.0 | `false` | `true` |
@@ -1905,7 +1890,7 @@ This will create a data race condition in the CloudFormation template because th
 We recommend to unset the feature flag if already set which will restore the original behavior.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.180.0 | `false` | `false` |
@@ -1922,7 +1907,7 @@ When this feature flag is enabled, a unique role name is specified only when per
 When disabled, 'CDKReplicationRole' is always specified.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.182.0 | `false` | `true` |
@@ -1941,7 +1926,7 @@ For cross-account cases, when this feature flag is enabled the trust policy will
 If you are providing a custom role, you will need to ensure 'roleName' is specified or set to PhysicalName.GENERATE_IF_NEEDED.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.184.0 | `true` | `true` |
@@ -1970,7 +1955,7 @@ When this flag is disabled:
 This fixes the issue where permissions were silently not being added for service principals.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.186.0 | `false` | `true` |
@@ -1986,7 +1971,7 @@ Currently, table replica will always be deleted when stack deletes regardless of
 When enabled, table replica will be default to the removal policy of source table unless specified otherwise.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.187.0 | `false` | `true` |
@@ -2005,7 +1990,7 @@ When this feature flag is disabled, the SDK API call response to describe user p
 resource lambda function logs.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.187.0 | `false` | `false` |
@@ -2023,7 +2008,7 @@ When this feature flag is enabled, the resultWriterV2 property is used instead o
 resultWriterV2 uses ResultWriterV2 class in StepFunctions ASL and can have either Bucket/Prefix or WriterConfig or both.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.188.0 | `false` | `true` |
@@ -2042,7 +2027,7 @@ If you are providing a custom role, you will need to ensure 'roleName' is specif
 When this feature flag is disabled, it will keep the root account principal in the trust policy.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.189.0 | `true` | `true` |
@@ -2077,7 +2062,7 @@ before version 2.172.0. Aspects introduced since that version will always
 be added with a priority of MUTATING, independent of this feature flag.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.189.1 | `false` | `true` |
@@ -2103,10 +2088,29 @@ Flag type: Backwards incompatible bugfix
 When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.195.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration
+
+*When enabled, use resource IDs for VPC V2 migration*
+
+Flag type: New default behavior
+
+When this feature flag is enabled, the VPC V2 migration will use resource IDs instead of getAtt references
+for migrating resources from VPC V1 to VPC V2. This helps ensure a smoother migration path between
+the two versions.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.196.0 | `false` | `false` |
+
+**Compatibility with old behavior:** Disable the feature flag to use getAtt references for VPC V2 migration
 
 
 ### @aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway
@@ -2118,7 +2122,7 @@ Flag type: Backwards incompatible bugfix
 When this feature flag is enabled, EgressOnlyGateway resource will not be created when you create a vpc with only public subnets.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.196.0 | `false` | `true` |
@@ -2130,16 +2134,66 @@ When this feature flag is enabled, EgressOnlyGateway resource will not be create
 
 Flag type: Backwards incompatible bugfix
 
-When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console. 
+When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console.
 The previous behavior in cdk before this feature was; if only some of the BlockPublicAccessOptions were set (not all 4), then the ones undefined would default to false.
 This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
 The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
 
 
-| Since | Default | Recommended |
+| Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.196.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-lambda:useCdkManagedLogGroup
+
+*When enabled, CDK creates and manages loggroup for the lambda function*
+
+Flag type: New default behavior
+
+When this feature flag is enabled, CDK will create a loggroup for lambda function with default properties
+which supports CDK features Tag propagation, Property Injectors, Aspects
+if the cdk app doesnt pass a 'logRetention' or 'logGroup' explicitly.
+LogGroups created via 'logRetention' do not support Tag propagation, Property Injectors, Aspects.
+LogGroups created via 'logGroup' created in CDK support Tag propagation, Property Injectors, Aspects.
+
+When this feature flag is disabled, a loggroup is created by Lambda service on first invocation
+of the function (existing behavior).
+LogGroups created in this way do not support Tag propagation, Property Injectors, Aspects.
+
+DO NOT ENABLE: If you have and existing app defining a lambda function and
+have not supplied a logGroup or logRetention prop and your lambda function has
+executed at least once, the logGroup has been already created with the same name
+so your deployment will start failing.
+Refer aws-lambda/README.md for more details on Customizing Log Group creation.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.200.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention
+
+
+### @aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal
+
+*Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition*
+
+Flag type: Backwards incompatible bugfix
+
+This flag enables the grant methods (grant, grantDecrypt, grantEncrypt, etc.) on Aliases imported
+by name to grant permissions based on the 'kms:ResourceAliases' condition rather than no-op grants.
+When disabled, grant calls on imported aliases will be dropped (no-op) to maintain compatibility.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.202.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Remove calls to the grant* methods on the aliases referenced by name
 
 
 <!-- END details -->

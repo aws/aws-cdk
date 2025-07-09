@@ -464,14 +464,6 @@
     }
    }
   },
-  "Ip6VpcDualStackEIGW6491F95B8": {
-   "Type": "AWS::EC2::EgressOnlyInternetGateway",
-   "Properties": {
-    "VpcId": {
-     "Ref": "Ip6VpcDualStack350CEE6D"
-    }
-   }
-  },
   "Ip6VpcDualStackcloudwatchLogsIAMRoleC4808C35": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -1066,6 +1058,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "AlbTargetGroupIpAddressTypeTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/040d8ab9e4e1ff288cab2aa5339fb45640be3ce62f7fe585fcfc1a3c8cb443d2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/792e316039e1359da48521d90a8bc602488e7e3165e0d2bb6a5ba1f6978a1be1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -79,7 +79,10 @@
         "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcPublicSubnet1SubnetEC9C8EC9"
+            "data": "Ipv4VpcPublicSubnet1SubnetEC9C8EC9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet1/RouteTable": [
@@ -91,7 +94,10 @@
         "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcPublicSubnet1RouteTableAssociation5FC45ABA"
+            "data": "Ipv4VpcPublicSubnet1RouteTableAssociation5FC45ABA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet1/DefaultRoute": [
@@ -131,7 +137,10 @@
         "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcPublicSubnet2Subnet5F5E4544"
+            "data": "Ipv4VpcPublicSubnet2Subnet5F5E4544",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet2/RouteTable": [
@@ -143,7 +152,10 @@
         "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcPublicSubnet2RouteTableAssociation5294334B"
+            "data": "Ipv4VpcPublicSubnet2RouteTableAssociation5294334B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet2/DefaultRoute": [
@@ -179,7 +191,10 @@
         "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcIsolatedSubnet1Subnet55C712BF"
+            "data": "Ipv4VpcIsolatedSubnet1Subnet55C712BF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet1/RouteTable": [
@@ -191,7 +206,10 @@
         "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcIsolatedSubnet1RouteTableAssociationA9CD1AEE"
+            "data": "Ipv4VpcIsolatedSubnet1RouteTableAssociationA9CD1AEE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet2": [
@@ -221,7 +239,10 @@
         "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcIsolatedSubnet2Subnet30A426C1"
+            "data": "Ipv4VpcIsolatedSubnet2Subnet30A426C1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet2/RouteTable": [
@@ -233,7 +254,10 @@
         "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipv4VpcIsolatedSubnet2RouteTableAssociationD5682B3F"
+            "data": "Ipv4VpcIsolatedSubnet2RouteTableAssociationD5682B3F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IGW": [
@@ -344,7 +368,10 @@
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcPublicSubnet1Subnet345ABF6C"
+            "data": "DualstackVpcPublicSubnet1Subnet345ABF6C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet1/RouteTable": [
@@ -356,7 +383,10 @@
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcPublicSubnet1RouteTableAssociationC0CA8C6E"
+            "data": "DualstackVpcPublicSubnet1RouteTableAssociationC0CA8C6E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet1/DefaultRoute": [
@@ -410,7 +440,10 @@
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcPublicSubnet2SubnetF7BFA8A4"
+            "data": "DualstackVpcPublicSubnet2SubnetF7BFA8A4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet2/RouteTable": [
@@ -422,7 +455,10 @@
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcPublicSubnet2RouteTableAssociationB96A93FE"
+            "data": "DualstackVpcPublicSubnet2RouteTableAssociationB96A93FE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet2/DefaultRoute": [
@@ -464,7 +500,10 @@
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcIsolatedSubnet1SubnetDD7D99E1"
+            "data": "DualstackVpcIsolatedSubnet1SubnetDD7D99E1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet1/RouteTable": [
@@ -476,7 +515,10 @@
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcIsolatedSubnet1RouteTableAssociation86B9AE73"
+            "data": "DualstackVpcIsolatedSubnet1RouteTableAssociation86B9AE73",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet2": [
@@ -506,7 +548,10 @@
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcIsolatedSubnet2Subnet88E17746"
+            "data": "DualstackVpcIsolatedSubnet2Subnet88E17746",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet2/RouteTable": [
@@ -518,7 +563,10 @@
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcIsolatedSubnet2RouteTableAssociation8CD57CFF"
+            "data": "DualstackVpcIsolatedSubnet2RouteTableAssociation8CD57CFF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IGW": [
@@ -531,12 +579,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DualstackVpcVPCGWBFA6CC4A"
-          }
-        ],
-        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/EIGW6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualstackVpcEIGW61425E04A"
           }
         ],
         "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/RestrictDefaultSecurityGroupCustomResource": [
@@ -573,6 +615,141 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "Ipv4VpcPublicSubnet3SubnetB34CF95E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcPublicSubnet3SubnetB34CF95E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Ipv4VpcPublicSubnet3RouteTableFA8B3483": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcPublicSubnet3RouteTableFA8B3483",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Ipv4VpcPublicSubnet3RouteTableAssociation7253F90A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcPublicSubnet3RouteTableAssociation7253F90A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Ipv4VpcPublicSubnet3DefaultRoute1BF08B26": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcPublicSubnet3DefaultRoute1BF08B26",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Ipv4VpcIsolatedSubnet3SubnetA466E22D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcIsolatedSubnet3SubnetA466E22D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Ipv4VpcIsolatedSubnet3RouteTable84E8BE88": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcIsolatedSubnet3RouteTable84E8BE88",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Ipv4VpcIsolatedSubnet3RouteTableAssociation8CA55F37": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcIsolatedSubnet3RouteTableAssociation8CA55F37",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DualstackVpcPublicSubnet3Subnet459566D8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet3Subnet459566D8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DualstackVpcPublicSubnet3RouteTable6095845C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet3RouteTable6095845C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DualstackVpcPublicSubnet3RouteTableAssociationFE3A7AD6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet3RouteTableAssociationFE3A7AD6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DualstackVpcPublicSubnet3DefaultRoute992181A7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet3DefaultRoute992181A7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DualstackVpcPublicSubnet3DefaultRoute6BAA430B7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet3DefaultRoute6BAA430B7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DualstackVpcIsolatedSubnet3Subnet0C58AD06": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcIsolatedSubnet3Subnet0C58AD06",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DualstackVpcIsolatedSubnet3RouteTableA25F8688": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcIsolatedSubnet3RouteTableA25F8688",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DualstackVpcIsolatedSubnet3RouteTableAssociation900706EC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcIsolatedSubnet3RouteTableAssociation900706EC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -633,5 +810,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1015.0"
+  "minimumCliVersion": "2.1020.2"
 }

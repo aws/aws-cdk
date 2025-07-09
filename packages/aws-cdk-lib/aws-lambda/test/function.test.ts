@@ -2265,6 +2265,7 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS,
       logRetention: logs.RetentionDays.ONE_MONTH,
+      logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     // THEN
@@ -2281,7 +2282,36 @@ describe('function', () => {
         ],
       },
       RetentionInDays: 30,
+      RemovalPolicy: 'destroy',
     });
+  });
+
+  test('cannot use logRemovalPolicy and logGroup', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN/THEN
+    expect(() => new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      logGroup: new logs.LogGroup(stack, 'CustomLogGroup'),
+      logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+    })).toThrow(/Cannot use `logRemovalPolicy` and `logGroup`/);
+  });
+
+  test('cannot use logRemovalPolicy and USE_CDK_MANAGED_LAMBDA_LOGGROUP', () => {
+    // GIVEN
+    const app = new cdk.App({ context: { [cxapi.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: true } });
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN/THEN
+    expect(() => new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+    })).toThrow(/Cannot use `logRemovalPolicy` and `@aws-cdk\/aws-lambda:useCdkManagedLogGroup`/);
   });
 
   test('imported lambda with imported security group and allowAllOutbound set to false', () => {
@@ -5008,6 +5038,95 @@ describe('CMCMK', () => {
       },
     });
     bockfs.restore();
+  });
+});
+
+describe('tag propagation to logGroup on FF USE_CDK_MANAGED_LAMBDA_LOGGROUP enabled', () => {
+  it('log group inherits tags from function when USE_CDK_MANAGED_LAMBDA_LOGGROUP is enabled', () => {
+    const app = new cdk.App({ context: { [cxapi.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: true } });
+    const stack = new cdk.Stack(app, 'Stack');
+
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    cdk.Tags.of(fn).add('Environment', 'Test');
+    cdk.Tags.of(fn).add('Owner', 'CDKTeam');
+
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      Tags: Match.arrayWith([
+        Match.objectLike({ Key: 'Environment', Value: 'Test' }),
+        Match.objectLike({ Key: 'Owner', Value: 'CDKTeam' }),
+      ]),
+    });
+  });
+});
+
+describe('USE_CDK_MANAGED_LAMBDA_LOGGROUP defaults to false when not specified', () => {
+  it('does not create a managed log group when context flag is not specified', () => {
+    // GIVEN
+    const app = new cdk.App(); // No context provided
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    new lambda.Function(stack, 'Function', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Logs::LogGroup', 0); // No log group should be created
+  });
+});
+
+describe('Lambda Function log group behavior', () => {
+  it('throws if both logRetention and logGroup are set', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+
+    expect(() => {
+      new lambda.Function(stack, 'TestFunction', {
+        code: lambda.Code.fromInline('exports.handler = async () => {};'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_20_X,
+        logRetention: logs.RetentionDays.ONE_WEEK,
+        logGroup: new logs.LogGroup(stack, 'CustomLogGroup'),
+      });
+    }).toThrow('CDK does not support setting logRetention and logGroup');
+  });
+
+  it('does not throw if only logRetention is set', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+
+    expect(() => {
+      new lambda.Function(stack, 'LogRetentionOnlyFunction', {
+        code: lambda.Code.fromInline('exports.handler = async () => {};'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_20_X,
+        logRetention: logs.RetentionDays.ONE_WEEK,
+      });
+    }).not.toThrow();
+  });
+
+  it('does not throw if only logGroup is set', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+
+    expect(() => {
+      new lambda.Function(stack, 'LogGroupOnlyFunction', {
+        code: lambda.Code.fromInline('exports.handler = async () => {};'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_20_X,
+        logGroup: new logs.LogGroup(stack, 'MyLogGroup'),
+      });
+    }).not.toThrow();
   });
 });
 

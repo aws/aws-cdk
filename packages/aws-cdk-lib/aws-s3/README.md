@@ -156,6 +156,22 @@ bucket.grantReadWrite(myLambda);
 Will give the Lambda's execution role permissions to read and write
 from the bucket.
 
+### Understanding "grant" Methods
+
+The S3 construct library provides several grant methods for the `Bucket` resource, but two of them have a special behavior. This two accept an `objectsKeyPattern` parameter to restrict granted permissions to specific resources:
+- `grantRead`
+- `grantReadWrite`
+
+When examining the synthesized policy, you'll notice it includes both your specified object key patterns and the bucket itself.
+This is by design. Some permissions (like `s3:ListBucket`) apply at the bucket level, while others (like `s3:GetObject`) apply to specific objects.
+
+Specifically, the [`s3:ListBucket` action operates on bucket resources](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazons3.html#amazons3-bucket)
+and requires the bucket ARN to work properly. This might be seen as a bug, giving the impression that more permissions were granted than the ones you intended, but the reality is that the policy does not ignore your `objectsKeyPattern` - object-specific actions like `s3:GetObject`
+will still be limited to the resources defined in your pattern.
+
+If you need to restrict the `s3:ListBucket` action to specific paths, you can add a `Condition` to your policy that limits the `objectsKeyPattern` to specific folders. For more details and examples, see the [AWS documentation on bucket policies](https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies.html#example-bucket-policies-folders).
+
+
 ## AWS Foundational Security Best Practices
 
 ### Enforcing SSL
@@ -941,11 +957,14 @@ To replicate objects to a destination bucket, you can specify the `replicationRu
 declare const destinationBucket1: s3.IBucket;
 declare const destinationBucket2: s3.IBucket;
 declare const replicationRole: iam.IRole;
-declare const kmsKey: kms.IKey;
+declare const encryptionKey: kms.IKey;
+declare const destinationEncryptionKey: kms.IKey;
 
 const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
   // Versioning must be enabled on both the source and destination bucket
   versioned: true,
+  // Optional. Specify the KMS key to use for encrypts objects in the source bucket.
+  encryptionKey,
   // Optional. If not specified, a new role will be created.
   replicationRole,
   replicationRules: [
@@ -970,7 +989,7 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
       // If set, metrics will be output to indicate whether replication by S3 RTC took longer than the configured time.
       metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
       // The kms key to use for the destination bucket.
-      kmsKey,
+      kmsKey: destinationEncryptionKey,
       // The storage class to use for the destination bucket.
       storageClass: s3.StorageClass.INFREQUENT_ACCESS,
       // Whether to replicate objects with SSE-KMS encryption.
@@ -996,6 +1015,20 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
       }
     },
   ],
+});
+
+// Grant permissions to the replication role.
+// This method is not required if you choose to use an auto-generated replication role or manually grant permissions.
+sourceBucket.grantReplicationPermission(replicationRole, {
+  // Optional. Specify the KMS key to use for decrypting objects in the source bucket.
+  sourceDecryptionKey: encryptionKey,
+  destinations: [
+    { bucket: destinationBucket1 },
+    { bucket: destinationBucket2, encryptionKey: destinationEncryptionKey },
+  ],
+  // The 'encryptionKey' property within the 'destinations' array is optional.
+  // If not specified for a destination bucket, this method assumes that
+  // given destination bucket is not encrypted.
 });
 ```
 

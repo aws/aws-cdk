@@ -1,3 +1,4 @@
+import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
 import { Construct } from 'constructs';
 import { Alias, AliasOptions } from './alias';
 import { Architecture } from './architecture';
@@ -207,6 +208,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       functionName: props.lambda.functionName,
       provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props),
     });
+    version.addMetadata(ArtifactMetadataEntryType.DO_NOT_REFACTOR, true);
 
     if (props.removalPolicy) {
       version.applyRemovalPolicy(props.removalPolicy, {
