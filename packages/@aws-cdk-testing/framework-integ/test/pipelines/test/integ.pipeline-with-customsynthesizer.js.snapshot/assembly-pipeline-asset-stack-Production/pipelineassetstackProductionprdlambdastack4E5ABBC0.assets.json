@@ -8,7 +8,7 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-us-east-1-9b0081d9": {
+        "current_account-us-east-1-65520044": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
           "objectKey": "a26bd817a0dac44954b5caf83f5880a96f831e43b56157224e073b49f236eb4e.zip",
           "region": "us-east-1",
@@ -23,7 +23,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-east-1-9b0081d9": {
+        "current_account-us-east-1-3305ce3d": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
           "objectKey": "cfbb99b20a27c1cbddf6bb393ab973d5a6a294d79e63f7423009366292536cbf.json",
           "region": "us-east-1",

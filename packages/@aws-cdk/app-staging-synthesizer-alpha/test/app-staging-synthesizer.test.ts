@@ -52,7 +52,7 @@ describe(AppStagingSynthesizer, () => {
       source: { path: 'Stack.template.json', packaging: 'file' },
       displayName: 'Stack Template',
       destinations: {
-        '000000000000-us-east-1-ec7c3d8f': {
+        '000000000000-us-east-1-73879080': {
           bucketName: `cdk-${APP_ID}-staging-000000000000-us-east-1`,
           objectKey: templateObjectKey,
           region: 'us-east-1',
@@ -100,7 +100,7 @@ describe(AppStagingSynthesizer, () => {
       source: { path: 'Stack2.template.json', packaging: 'file' },
       displayName: 'Stack2 Template',
       destinations: {
-        '111111111111-us-east-2-7ee0c34a': {
+        '111111111111-us-east-2-d91bfa77': {
           bucketName: `cdk-${APP_ID}-staging-111111111111-us-east-2`,
           objectKey: templateObjectKey,
           region: 'us-east-2',
@@ -219,7 +219,7 @@ describe(AppStagingSynthesizer, () => {
           path: `asset.${assetHash}`,
         },
         destinations: {
-          '000000000000-us-east-1-ec7c3d8f': {
+          '000000000000-us-east-1-daac07d9': {
             bucketName: `cdk-${APP_ID}-staging-000000000000-us-east-1`,
             objectKey: `${DEPLOY_TIME_PREFIX}${assetHash}.zip`,
             region: 'us-east-1',

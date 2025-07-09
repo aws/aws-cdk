@@ -1,4 +1,3 @@
-import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ISynthesisSession } from './types';
@@ -8,6 +7,7 @@ import { UnscopedValidationError } from '../errors';
 import { resolvedOr } from '../helpers-internal/string-specializer';
 import { Stack } from '../stack';
 import { Token } from '../token';
+import { contentHash } from './_shared';
 
 /**
  * Build an asset manifest from assets added to a stack
@@ -104,7 +104,14 @@ export class AssetManifestBuilder {
         destinations: {},
       };
     }
-    this.files[sourceHash].destinations[this.manifestEnvName(stack)] = dest;
+
+    // Create destination key by appending hash of destination properties to manifestEnvName
+    // This ensures assets with same content but different destinations are published separately
+    const baseEnvName = this.manifestEnvName(stack);
+    const destHash = contentHash(JSON.stringify(dest)).slice(0, 8);
+    const destinationKey = `${baseEnvName}-${destHash}`;
+
+    this.files[sourceHash].destinations[destinationKey] = dest;
     return dest;
   }
 
@@ -127,7 +134,14 @@ export class AssetManifestBuilder {
         destinations: {},
       };
     }
-    this.dockerImages[sourceHash].destinations[this.manifestEnvName(stack)] = dest;
+
+    // Create destination key by appending hash of destination properties to manifestEnvName
+    // This ensures assets with same content but different destinations are published separately
+    const baseEnvName = this.manifestEnvName(stack);
+    const destHash = contentHash(JSON.stringify(dest)).slice(0, 8);
+    const destinationKey = `${baseEnvName}-${destHash}`;
+
+    this.dockerImages[sourceHash].destinations[destinationKey] = dest;
     return dest;
   }
 
@@ -175,24 +189,10 @@ export class AssetManifestBuilder {
   }
 
   private manifestEnvName(stack: Stack): string {
-    const account = resolvedOr(stack.account, 'current_account');
-    const region = resolvedOr(stack.region, 'current_region');
-
-    // Create a hash of all destination-relevant properties to ensure uniqueness
-    // This ensures assets with same content but different destinations are published separately
-    const destinationProps = {
-      account,
-      region,
-      stackName: stack.stackName,
-    };
-
-    // Hash the destination properties to create a unique identifier
-    const destinationHash = crypto.createHash('sha256')
-      .update(JSON.stringify(destinationProps))
-      .digest('hex')
-      .slice(0, 8);
-
-    return `${account}-${region}-${destinationHash}`;
+    return [
+      resolvedOr(stack.account, 'current_account'),
+      resolvedOr(stack.region, 'current_region'),
+    ].join('-');
   }
 }
 
