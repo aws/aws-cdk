@@ -146,7 +146,11 @@ const errorRate = new cloudwatch.MathExpression({
 
 ### Search Expressions
 
-Math expressions also support search expressions. For example, the following
+Search expressions allow you to dynamically discover and display metrics that match specific criteria, making them ideal for monitoring dynamic infrastructure where the exact metrics aren't known in advance. A single search expression can return up to 500 time series.
+
+#### Using MathExpression for Search
+
+Math expressions support search expressions using the `SEARCH()` function. For example, the following
 search expression returns all CPUUtilization metrics that it finds, with the
 graph showing the Average statistic with an aggregation period of 5 minutes:
 
@@ -165,6 +169,72 @@ const cpuUtilization = new cloudwatch.MathExpression({
 Cross-account and cross-region search expressions are also supported. Use
 the `searchAccount` and `searchRegion` properties to specify the account
 and/or region to evaluate the search expression against.
+
+#### Using SearchExpression Class
+
+For more complex search scenarios, you can use the dedicated `SearchExpression` class, which provides a cleaner API and additional configuration options:
+
+```ts
+const ec2CpuSearch = new cloudwatch.SearchExpression({
+  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)",
+  label: 'EC2 CPU Utilization',
+  color: cloudwatch.Color.BLUE,
+});
+
+const lambdaInvocationsSearch = new cloudwatch.SearchExpression({
+  expression: "SEARCH('{AWS/Lambda,FunctionName} MetricName=\"Invocations\"', 'Sum', 300)",
+  label: 'Lambda Invocations',
+  color: cloudwatch.Color.GREEN,
+});
+```
+
+#### Search Expression Syntax
+
+Search expressions use the following syntax:
+```
+SEARCH('{Namespace,DimensionName1,DimensionName2} MetricName="MetricName"', 'Statistic', Period)
+```
+
+Examples of search patterns:
+- `'{AWS/EC2,InstanceId} MetricName="CPUUtilization"'` - All EC2 CPU metrics
+- `'{AWS/Lambda,FunctionName} MetricName="Duration"'` - All Lambda duration metrics  
+- `'{AWS/ApplicationELB,LoadBalancer} MetricName="RequestCount"'` - All ALB request counts
+- `'{MyApp,Service,Environment} MetricName="ResponseTime"'` - Custom application metrics
+
+#### Multiple Time Series Behavior
+
+When a search expression returns multiple time series, the behavior depends on how you configure labels and colors:
+
+**Labels**: Act as templates applied to all returned metrics. If you specify a label like "CPU Usage", each returned time series will use this as its display name. To show the original metric labels instead, use an empty string (`''`) for the label.
+
+**Colors**: When multiple time series are returned, CloudWatch automatically uses color variations to distinguish between them visually, even if you specify a single color.
+
+```ts
+// This will show original metric names (e.g., "i-1234567890abcdef0", "i-0987654321fedcba0")
+const searchWithOriginalLabels = new cloudwatch.SearchExpression({
+  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)",
+  label: '', // Empty string shows original labels
+});
+
+// This will show "Server CPU" for all returned time series
+const searchWithCustomLabel = new cloudwatch.SearchExpression({
+  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)",
+  label: 'Server CPU', // Custom label applied to all
+});
+```
+
+#### Cross-Account and Cross-Region Search
+
+Search expressions can query metrics from different accounts and regions:
+
+```ts
+const crossAccountSearch = new cloudwatch.SearchExpression({
+  expression: "SEARCH('{AWS/Lambda,FunctionName} MetricName=\"Invocations\"', 'Sum', 300)",
+  searchAccount: '123456789012',
+  searchRegion: 'us-west-2',
+  label: 'Production Lambda Invocations',
+});
+```
 
 ### Aggregation
 
