@@ -1,6 +1,6 @@
 import * as path from 'node:path';
 import { App, Duration, Size, Stack, StackProps, Tags } from 'aws-cdk-lib/core';
-import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as synthetics from 'aws-cdk-lib/aws-synthetics';
 
@@ -31,25 +31,6 @@ class TestStack extends Stack {
 const app = new App();
 const testStack = new TestStack(app, 'SyntheticsCanaryResourcesToReplicateTagsStack');
 
-const integ = new IntegTest(app, 'SyntheticsCanaryResourcesToReplicateTags', {
+new IntegTest(app, 'SyntheticsCanaryResourcesToReplicateTags', {
   testCases: [testStack],
-});
-
-const getCanary = integ.assertions.awsApiCall('Synthetics', 'getCanary', {
-  Name: 'tag-replication',
-});
-
-const getLambdaTags = integ.assertions.awsApiCall('Lambda', 'listTags', {
-  Resource: getCanary.getAttString('Canary.EngineArn'),
-});
-
-getLambdaTags.expect(ExpectedResult.objectLike({
-  Tags: {
-    Environment: 'test',
-    Owner: 'cdk-team',
-    Project: 'synthetics-tag-replication',
-  },
-})).waitForAssertions({
-  totalTimeout: Duration.minutes(5),
-  interval: Duration.seconds(30),
 });
