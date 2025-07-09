@@ -6,6 +6,7 @@ import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAs
 import { ISynthesisSession } from '../../lib/stack-synthesizers/types';
 import { evaluateCFN } from '../evaluate-cfn';
 import { getAssetManifest, isAssetManifest, readAssetManifest } from './_helpers';
+import { AssetManifestBuilder } from '../../lib/stack-synthesizers/asset-manifest-builder';
 
 const CFN_CONTEXT = {
   'AWS::Region': 'the_region',
@@ -570,6 +571,128 @@ test('get an exception when using tokens for parameters', () => {
       fileAssetsBucketName: `my-bucket-${Aws.REGION}`,
     });
   }).toThrow(/cannot contain tokens/);
+});
+
+describe('assets with different destinations', () => {
+  let app: App;
+  beforeEach(() => {
+    app = new App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
+      },
+    });
+  });
+
+  test('assets with different destinations get unique destination keys', () => {
+    // GIVEN - Direct test of AssetManifestBuilder
+    const builder = new AssetManifestBuilder();
+    const stack1 = new Stack(app, 'Stack1', {
+      env: { account: '111111111111', region: 'us-east-1' },
+    });
+
+    // WHEN - Add the same asset with different destinations
+    builder.addFileAsset(stack1, 'same-file-hash',
+      { path: __filename, packaging: FileAssetPackaging.FILE },
+      {
+        bucketName: 'bucket-1',
+        objectKey: 'same-file-hash.js',
+        assumeRoleArn: 'arn:aws:iam::111111111111:role/publish-role-1',
+      },
+    );
+
+    builder.addFileAsset(stack1, 'same-file-hash',
+      { path: __filename, packaging: FileAssetPackaging.FILE },
+      {
+        bucketName: 'bucket-2',
+        objectKey: 'same-file-hash.js',
+        assumeRoleArn: 'arn:aws:iam::111111111111:role/publish-role-2',
+      },
+    );
+
+    // THEN - Check the internal state of the builder
+    const files = (builder as any).files;
+    const fileAsset = files['same-file-hash'];
+    expect(fileAsset).toBeDefined();
+
+    // Should have two different destination keys
+    const destinationKeys = Object.keys(fileAsset.destinations);
+    expect(destinationKeys).toHaveLength(2);
+    expect(destinationKeys[0]).not.toEqual(destinationKeys[1]);
+  });
+
+  test('assets with same destinations does not get duplicated', () => {
+    // GIVEN - Direct test of AssetManifestBuilder
+    const builder = new AssetManifestBuilder();
+    const stack1 = new Stack(app, 'Stack1', {
+      env: { account: '111111111111', region: 'us-east-1' },
+    });
+
+    // WHEN - Add the same asset with different destinations
+    builder.addFileAsset(stack1, 'same-file-hash',
+      { path: __filename, packaging: FileAssetPackaging.FILE },
+      {
+        bucketName: 'bucket-1',
+        objectKey: 'same-file-hash.js',
+        assumeRoleArn: 'arn:aws:iam::111111111111:role/publish-role-1',
+      },
+    );
+
+    builder.addFileAsset(stack1, 'same-file-hash',
+      { path: __filename, packaging: FileAssetPackaging.FILE },
+      {
+        bucketName: 'bucket-1',
+        objectKey: 'same-file-hash.js',
+        assumeRoleArn: 'arn:aws:iam::111111111111:role/publish-role-1',
+      },
+    );
+
+    // THEN - Check the internal state of the builder
+    const files = (builder as any).files;
+    const fileAsset = files['same-file-hash'];
+    expect(fileAsset).toBeDefined();
+
+    // Should have same destination keys
+    const destinationKeys = Object.keys(fileAsset.destinations);
+    expect(destinationKeys).toHaveLength(1);
+  });
+  test('assets with same destinations does not get duplicated across stack', () => {
+    // GIVEN - Direct test of AssetManifestBuilder
+    const builder = new AssetManifestBuilder();
+    const stack1 = new Stack(app, 'Stack1', {
+      env: { account: '111111111111', region: 'us-east-1' },
+    });
+    const stack2 = new Stack(app, 'Stack2', {
+      env: { account: '111111111111', region: 'us-east-1' },
+    });
+
+    // WHEN - Add the same asset with different destinations
+    builder.addFileAsset(stack1, 'same-file-hash',
+      { path: __filename, packaging: FileAssetPackaging.FILE },
+      {
+        bucketName: 'bucket-1',
+        objectKey: 'same-file-hash.js',
+        assumeRoleArn: 'arn:aws:iam::111111111111:role/publish-role-1',
+      },
+    );
+
+    builder.addFileAsset(stack2, 'same-file-hash',
+      { path: __filename, packaging: FileAssetPackaging.FILE },
+      {
+        bucketName: 'bucket-1',
+        objectKey: 'same-file-hash.js',
+        assumeRoleArn: 'arn:aws:iam::111111111111:role/publish-role-1',
+      },
+    );
+
+    // THEN - Check the internal state of the builder
+    const files = (builder as any).files;
+    const fileAsset = files['same-file-hash'];
+    expect(fileAsset).toBeDefined();
+
+    // Should have same destination keys
+    const destinationKeys = Object.keys(fileAsset.destinations);
+    expect(destinationKeys).toHaveLength(1);
+  });
 });
 
 function last<A>(xs?: A[]): A | undefined {
