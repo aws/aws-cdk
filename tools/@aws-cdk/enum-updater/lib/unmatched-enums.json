@@ -15,6 +15,50 @@
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-apprunner-alpha/lib/service.ts"
     }
   },
+  "bedrock": {
+    "AgentCollaboratorType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent-collaborator.ts"
+    },
+    "RelayConversationHistoryType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent-collaborator.ts"
+    },
+    "CustomControl": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/api-executor.ts"
+    },
+    "ParameterType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/function-schema.ts"
+    },
+    "RequireConfirmation": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/function-schema.ts"
+    },
+    "MemoryType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/memory.ts"
+    },
+    "OrchestrationType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/orchestration-executor.ts"
+    },
+    "AgentStepType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/prompt-override.ts"
+    },
+    "VectorType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts"
+    },
+    "ParentActionGroupSignature": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/action-group.ts"
+    },
+    "ActionGroupExecutor": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/api-executor.ts"
+    },
+    "Memory": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/memory.ts"
+    },
+    "BedrockFoundationModel": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts"
+    },
+    "FoundationModelIdentifier": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-bedrock/lib/foundation-model.ts"
+    }
+  },
   "cloud9": {
     "ConnectionType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-cloud9-alpha/lib/environment.ts"
@@ -910,6 +954,9 @@
     "RevisionType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/codepipeline/invoke-action.ts"
     },
+    "Ec2InstanceType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ec2/deploy-action.ts"
+    },
     "RegistryType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ecr/build-and-publish-action.ts"
     },
@@ -1390,9 +1437,6 @@
     "InstanceType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.ts"
     },
-    "EngineLifecycleSupport": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts"
-    },
     "DBClusterStorageType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts"
     },
@@ -1407,6 +1451,9 @@
     },
     "NetworkType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.ts"
+    },
+    "EngineLifecycleSupport": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/props.ts"
     },
     "AuroraCapacityUnit": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/serverless-cluster.ts"
@@ -1900,11 +1947,6 @@
     },
     "ParameterGroupFamily": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-neptune-alpha/lib/parameter-group.ts"
-    }
-  },
-  "bedrock": {
-    "FoundationModelIdentifier": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-bedrock/lib/foundation-model.ts"
     }
   },
   "ecr-assets": {
