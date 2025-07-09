@@ -27,8 +27,9 @@
  */
 export enum RemovalPolicy {
   /**
-   * This is the default removal policy. It means that when the resource is
-   * removed from the app, it will be physically destroyed.
+   * When this removal policy is applied, the resource will be physically destroyed
+   * when it is removed from the stack or when the stack is deleted.
+   * This is not the default removal policy - most resources default to RETAIN.
    */
   DESTROY = 'destroy',
 
