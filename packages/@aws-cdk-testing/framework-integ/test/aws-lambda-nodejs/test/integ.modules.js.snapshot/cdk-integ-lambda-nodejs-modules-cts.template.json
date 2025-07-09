@@ -52,6 +52,25 @@
    "DependsOn": [
     "ctsentryServiceRole93F225D5"
    ]
+  },
+  "ctsentryLogGroupAA8AFE78": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ctsentryFE3E09C5"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Outputs": {
