@@ -139,6 +139,16 @@ export interface CanaryProps {
   readonly schedule?: Schedule;
 
   /**
+   * The amount of times the canary will automatically retry a failed run.
+   * This is only supported on the following runtimes or newer: `Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0`, `Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0`, `Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1`.
+   * Max retries can be set between 0 and 2. Canaries which time out after 10 minutes are automatically limited to one retry.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_autoretry.html
+   * @default 0
+   */
+  readonly maxRetries?: number;
+
+  /**
    * Whether or not the canary should start after creation.
    *
    * @default true
@@ -708,6 +718,9 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     return {
       durationInSeconds: String(`${props.timeToLive?.toSeconds() ?? 0}`),
       expression: props.schedule?.expressionString ?? 'rate(5 minutes)',
+      retryConfig: props.maxRetries ? {
+        maxRetries: props.maxRetries,
+      } : undefined,
     };
   }
 

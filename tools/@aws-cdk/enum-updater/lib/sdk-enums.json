@@ -3,8 +3,10 @@
   "accessanalyzer": {
     "Type": [
       "ACCOUNT",
+      "ACCOUNT_INTERNAL_ACCESS",
       "ACCOUNT_UNUSED_ACCESS",
       "ORGANIZATION",
+      "ORGANIZATION_INTERNAL_ACCESS",
       "ORGANIZATION_UNUSED_ACCESS"
     ]
   },
@@ -32,6 +34,7 @@
       "ListPermissions"
     ]
   },
+  "aiops": {},
   "amazonmq": {
     "AuthenticationStrategy": [
       "LDAP",
@@ -71,6 +74,11 @@
     "Type": [
       "AMPLIFY_MANAGED",
       "AMPLIFY_MANAGED_NO_COOKIES"
+    ],
+    "BuildComputeType": [
+      "STANDARD_8GB",
+      "LARGE_16GB",
+      "XLARGE_72GB"
     ],
     "CertificateType": [
       "AMPLIFY_MANAGED",
@@ -1608,6 +1616,30 @@
       "VERSION_5010",
       "VERSION_5010_HIPAA"
     ],
+    "LineTerminator": [
+      "CRLF",
+      "LF",
+      "CR"
+    ],
+    "WrapFormat": [
+      "SEGMENT",
+      "ONE_LINE",
+      "LINE_LENGTH"
+    ],
+    "X12FunctionalAcknowledgment": [
+      "DO_NOT_GENERATE",
+      "GENERATE_ALL_SEGMENTS",
+      "GENERATE_WITHOUT_TRANSACTION_SET_RESPONSE_LOOP"
+    ],
+    "X12GS05TimeFormat": [
+      "HHMM",
+      "HHMMSS",
+      "HHMMSSDD"
+    ],
+    "X12TechnicalAcknowledgment": [
+      "DO_NOT_GENERATE",
+      "GENERATE_ALL_SEGMENTS"
+    ],
     "Logging": [
       "ENABLED",
       "DISABLED"
@@ -1630,6 +1662,10 @@
     "TransformerStatus": [
       "active",
       "inactive"
+    ],
+    "X12SplitBy": [
+      "NONE",
+      "TRANSACTION"
     ]
   },
   "backup": {
@@ -1660,6 +1696,10 @@
     ]
   },
   "batch": {
+    "UserdataType": [
+      "EKS_BOOTSTRAP_SH",
+      "EKS_NODEADM"
+    ],
     "ResourceType": [
       "REPLENISHABLE",
       "NON_REPLENISHABLE"
@@ -2214,6 +2254,16 @@
     "ReplicationStrategy": [
       "SINGLE_REGION",
       "MULTI_REGION"
+    ],
+    "CdcStatus": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "CdcViewType": [
+      "NEW_IMAGE",
+      "OLD_IMAGE",
+      "KEYS_ONLY",
+      "NEW_AND_OLD_IMAGES"
     ],
     "OrderBy": [
       "ASC",
@@ -3378,7 +3428,10 @@
       "NUMBER_OF_INTERRUPTIONS",
       "CONTACT_DURATION",
       "AGENT_INTERACTION_DURATION",
-      "CUSTOMER_HOLD_TIME"
+      "CUSTOMER_HOLD_TIME",
+      "LONGEST_HOLD_DURATION",
+      "NUMBER_OF_HOLDS",
+      "AGENT_INTERACTION_AND_HOLD_DURATION"
     ],
     "Mode": [
       "QUESTION_ONLY",
@@ -3505,6 +3558,10 @@
       "FRIDAY",
       "SATURDAY",
       "SUNDAY"
+    ],
+    "InstanceLimitsHandling": [
+      "OPT_IN",
+      "OPT_OUT"
     ],
     "LocalTimeZoneDetectionType": [
       "ZIP_CODE",
@@ -3833,6 +3890,14 @@
       "ALL",
       "ANY",
       "NONE"
+    ],
+    "ProfileType": [
+      "ACCOUNT_PROFILE",
+      "PROFILE"
+    ],
+    "ProfileTypeDimensionType": [
+      "INCLUSIVE",
+      "EXCLUSIVE"
     ],
     "StringDimensionType": [
       "INCLUSIVE",
@@ -5780,6 +5845,17 @@
       "disassociated",
       "disassociation-failed"
     ],
+    "TrafficMirrorNetworkService": [
+      "amazon-dns"
+    ],
+    "TrafficDirection": [
+      "egress",
+      "ingress"
+    ],
+    "TrafficMirrorRuleAction": [
+      "accept",
+      "reject"
+    ],
     "ApplianceModeSupport": [
       "disable",
       "enable"
@@ -6040,6 +6116,8 @@
       "WINDOWS_SERVER_2019_FULL",
       "WINDOWS_SERVER_2022_CORE",
       "WINDOWS_SERVER_2022_FULL",
+      "WINDOWS_SERVER_2025_CORE",
+      "WINDOWS_SERVER_2025_FULL",
       "WINDOWS_SERVER_20H2_CORE"
     ],
     "Name": [
@@ -6557,6 +6635,9 @@
       "NEW",
       "CHANGED",
       "DELETED"
+    ],
+    "Type": [
+      "POSIX"
     ]
   },
   "gamelift": {
@@ -6649,7 +6730,8 @@
     ],
     "ApplyCapacity": [
       "ON_UPDATE",
-      "ON_CREATE_AND_UPDATE"
+      "ON_CREATE_AND_UPDATE",
+      "ON_CREATE_AND_UPDATE_WITH_AUTOSCALING"
     ],
     "ComputeType": [
       "EC2",
@@ -7978,7 +8060,8 @@
       "CONFLUENCE",
       "GOOGLEDRIVE",
       "WEBCRAWLER",
-      "WORKDOCS"
+      "WORKDOCS",
+      "TEMPLATE"
     ],
     "WebCrawlerMode": [
       "HOST_ONLY",
@@ -8206,7 +8289,10 @@
       "HMAC_256",
       "HMAC_384",
       "HMAC_512",
-      "SM2"
+      "SM2",
+      "ML_DSA_44",
+      "ML_DSA_65",
+      "ML_DSA_87"
     ],
     "KeyUsage": [
       "ENCRYPT_DECRYPT",
@@ -8723,6 +8809,16 @@
     "Distribution": [
       "Random",
       "ByLogStream"
+    ],
+    "EventSource": [
+      "CloudTrail",
+      "Route53Resolver",
+      "VPCFlow",
+      "EKSAudit",
+      "AWSWAF"
+    ],
+    "OcsfVersion": [
+      "V1.1"
     ],
     "FlattenedElement": [
       "first",
@@ -9303,6 +9399,10 @@
       "SINGLE_PERIOD",
       "MULTI_PERIOD"
     ],
+    "InsertionMode": [
+      "STITCHED_ONLY",
+      "PLAYER_SELECT"
+    ],
     "StreamingMediaFileConditioning": [
       "TRANSCODE",
       "NONE"
@@ -9336,6 +9436,7 @@
       "iam"
     ]
   },
+  "mpa": {},
   "msk": {
     "EnhancedMonitoring": [
       "DEFAULT",
@@ -9407,6 +9508,10 @@
     "WebserverAccessMode": [
       "PRIVATE_ONLY",
       "PUBLIC_ONLY"
+    ],
+    "WorkerReplacementStrategy": [
+      "FORCED",
+      "GRACEFUL"
     ]
   },
   "neptune": {},
@@ -9746,7 +9851,8 @@
       "TAG_POLICY",
       "CHATBOT_POLICY",
       "RESOURCE_CONTROL_POLICY",
-      "DECLARATIVE_POLICY_EC2"
+      "DECLARATIVE_POLICY_EC2",
+      "SECURITYHUB_POLICY"
     ]
   },
   "osis": {
@@ -11783,8 +11889,7 @@
     ],
     "TrustAnchorType": [
       "AWS_ACM_PCA",
-      "CERTIFICATE_BUNDLE",
-      "SELF_SIGNED_REPOSITORY"
+      "CERTIFICATE_BUNDLE"
     ]
   },
   "route53": {
@@ -11954,6 +12059,7 @@
     ],
     "Direction": [
       "INBOUND",
+      "INBOUND_DELEGATION",
       "OUTBOUND"
     ],
     "Protocols": [
@@ -12510,6 +12616,10 @@
       "Allowed",
       "Disabled"
     ],
+    "StudioWebPortalAccess": [
+      "ENABLED",
+      "DISABLED"
+    ],
     "AutoMountHomeEFS": [
       "Enabled",
       "Disabled",
@@ -12689,6 +12799,15 @@
       "ml.c6i.8xlarge",
       "ml.c6i.large",
       "ml.c6i.xlarge",
+      "ml.c6in.12xlarge",
+      "ml.c6in.16xlarge",
+      "ml.c6in.24xlarge",
+      "ml.c6in.2xlarge",
+      "ml.c6in.32xlarge",
+      "ml.c6in.4xlarge",
+      "ml.c6in.8xlarge",
+      "ml.c6in.large",
+      "ml.c6in.xlarge",
       "ml.c7g.12xlarge",
       "ml.c7g.16xlarge",
       "ml.c7g.2xlarge",
@@ -12705,6 +12824,16 @@
       "ml.c7i.8xlarge",
       "ml.c7i.large",
       "ml.c7i.xlarge",
+      "ml.c8g.12xlarge",
+      "ml.c8g.16xlarge",
+      "ml.c8g.24xlarge",
+      "ml.c8g.2xlarge",
+      "ml.c8g.48xlarge",
+      "ml.c8g.4xlarge",
+      "ml.c8g.8xlarge",
+      "ml.c8g.large",
+      "ml.c8g.medium",
+      "ml.c8g.xlarge",
       "ml.dl1.24xlarge",
       "ml.g4dn.12xlarge",
       "ml.g4dn.16xlarge",
@@ -12793,6 +12922,16 @@
       "ml.m7i.8xlarge",
       "ml.m7i.large",
       "ml.m7i.xlarge",
+      "ml.m8g.12xlarge",
+      "ml.m8g.16xlarge",
+      "ml.m8g.24xlarge",
+      "ml.m8g.2xlarge",
+      "ml.m8g.48xlarge",
+      "ml.m8g.4xlarge",
+      "ml.m8g.8xlarge",
+      "ml.m8g.large",
+      "ml.m8g.medium",
+      "ml.m8g.xlarge",
       "ml.p2.16xlarge",
       "ml.p2.8xlarge",
       "ml.p2.xlarge",
@@ -12804,6 +12943,8 @@
       "ml.p5.48xlarge",
       "ml.p5e.48xlarge",
       "ml.p5en.48xlarge",
+      "ml.p6-b200.48xlarge",
+      "ml.p6e-gb200.36xlarge",
       "ml.r5.12xlarge",
       "ml.r5.24xlarge",
       "ml.r5.2xlarge",
@@ -12839,6 +12980,14 @@
       "ml.r6i.8xlarge",
       "ml.r6i.large",
       "ml.r6i.xlarge",
+      "ml.r7gd.12xlarge",
+      "ml.r7gd.16xlarge",
+      "ml.r7gd.2xlarge",
+      "ml.r7gd.4xlarge",
+      "ml.r7gd.8xlarge",
+      "ml.r7gd.large",
+      "ml.r7gd.medium",
+      "ml.r7gd.xlarge",
       "ml.r7i.12xlarge",
       "ml.r7i.16xlarge",
       "ml.r7i.24xlarge",
@@ -13090,12 +13239,18 @@
   "sdb": {},
   "secretsmanager": {},
   "securityhub": {
+    "RegionLinkingMode": [
+      "ALL_REGIONS",
+      "ALL_REGIONS_EXCEPT_SPECIFIED",
+      "SPECIFIED_REGIONS"
+    ],
     "RuleStatus": [
       "ENABLED",
       "DISABLED"
     ],
     "Type": [
-      "FINDING_FIELDS_UPDATE"
+      "FINDING_FIELDS_UPDATE",
+      "EXTERNAL_INTEGRATION"
     ],
     "VerificationState": [
       "UNKNOWN",
@@ -13128,14 +13283,58 @@
       "ENABLED",
       "FAILED"
     ],
+    "AllowedOperators": [
+      "AND",
+      "OR"
+    ],
+    "FieldName": [
+      "activity_id",
+      "compliance.status_id",
+      "confidence_score",
+      "severity_id",
+      "status_id",
+      "finding_info.related_events_count"
+    ],
+    "OcsfStringField": [
+      "metadata.uid",
+      "activity_name",
+      "cloud.account.name",
+      "cloud.account.uid",
+      "cloud.provider",
+      "cloud.region",
+      "compliance.assessments.category",
+      "compliance.assessments.name",
+      "compliance.control",
+      "compliance.status",
+      "compliance.standards",
+      "finding_info.desc",
+      "finding_info.src_url",
+      "finding_info.title",
+      "finding_info.types",
+      "finding_info.uid",
+      "finding_info.related_events.uid",
+      "finding_info.related_events.product.uid",
+      "finding_info.related_events.title",
+      "metadata.product.feature.uid",
+      "metadata.product.name",
+      "metadata.product.uid",
+      "metadata.product.vendor_name",
+      "remediation.desc",
+      "remediation.references",
+      "resources.cloud_partition",
+      "resources.name",
+      "resources.region",
+      "resources.type",
+      "resources.uid",
+      "severity",
+      "status",
+      "comment",
+      "vulnerabilities.fix_coverage",
+      "class_name"
+    ],
     "ValueType": [
       "DEFAULT",
       "CUSTOM"
-    ],
-    "RegionLinkingMode": [
-      "ALL_REGIONS",
-      "ALL_REGIONS_EXCEPT_SPECIFIED",
-      "SPECIFIED_REGIONS"
     ],
     "AutoEnableStandards": [
       "DEFAULT",
@@ -14375,11 +14574,24 @@
       "JSON",
       "FORM_ENCODED"
     ],
+    "ALBLowReputationMode": [
+      "ACTIVE_UNDER_DDOS",
+      "ALWAYS_ON"
+    ],
+    "SensitivityToAct": [
+      "LOW",
+      "MEDIUM",
+      "HIGH"
+    ],
     "SizeInspectionLimit": [
       "KB_16",
       "KB_32",
       "KB_48",
       "KB_64"
+    ],
+    "UsageOfAction": [
+      "ENABLED",
+      "DISABLED"
     ]
   },
   "wisdom": {
@@ -14536,6 +14748,90 @@
     "ApplicationSettingsStatus": [
       "DISABLED",
       "ENABLED"
+    ]
+  },
+  "workspacesinstances": {
+    "VolumeType": [
+      "standard",
+      "io1",
+      "io2",
+      "gp2",
+      "sc1",
+      "st1",
+      "gp3"
+    ],
+    "ResourceType": [
+      "instance",
+      "volume",
+      "spot-instances-request",
+      "network-interface"
+    ],
+    "DisassociateMode": [
+      "FORCE",
+      "NO_FORCE"
+    ],
+    "ProvisionState": [
+      "ALLOCATING",
+      "ALLOCATED",
+      "DEALLOCATING",
+      "DEALLOCATED",
+      "ERROR_ALLOCATING",
+      "ERROR_DEALLOCATING"
+    ],
+    "CapacityReservationPreference": [
+      "capacity-reservations-only",
+      "open",
+      "none"
+    ],
+    "CpuCredits": [
+      "standard",
+      "unlimited"
+    ],
+    "AutoRecovery": [
+      "disabled",
+      "default"
+    ],
+    "MarketType": [
+      "spot",
+      "capacity-block"
+    ],
+    "HttpEndpoint": [
+      "enabled",
+      "disabled"
+    ],
+    "HttpProtocolIpv6": [
+      "enabled",
+      "disabled"
+    ],
+    "HttpTokens": [
+      "optional",
+      "required"
+    ],
+    "InstanceMetadataTags": [
+      "enabled",
+      "disabled"
+    ],
+    "BandwidthWeighting": [
+      "default",
+      "vpc-1",
+      "ebs-1"
+    ],
+    "Tenancy": [
+      "default",
+      "dedicated",
+      "host"
+    ],
+    "HostnameType": [
+      "ip-name",
+      "resource-name"
+    ],
+    "InstanceInterruptionBehavior": [
+      "hibernate",
+      "stop"
+    ],
+    "SpotInstanceType": [
+      "one-time",
+      "persistent"
     ]
   },
   "workspacesthinclient": {

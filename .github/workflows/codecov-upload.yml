@@ -20,6 +20,8 @@ jobs:
       github.event.workflow_run.conclusion == 'success'
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
