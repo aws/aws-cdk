@@ -34,10 +34,6 @@ export function metricKey(metric: IMetric): string {
   }
   if (conf.searchExpression) {
     parts.push(conf.searchExpression.expression);
-    for (const id of Object.keys(conf.searchExpression.usingMetrics).sort()) {
-      parts.push(id);
-      parts.push(metricKey(conf.searchExpression.usingMetrics[id]));
-    }
     if (conf.searchExpression.searchRegion) {
       parts.push(conf.searchExpression.searchRegion);
     }

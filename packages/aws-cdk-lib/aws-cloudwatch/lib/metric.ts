@@ -885,13 +885,9 @@ export class MathExpression implements IMetric {
           }
         },
         withSearchExpression(searchExpr) {
-          for (const [id, subMetric] of Object.entries(searchExpr.usingMetrics)) {
-            const existing = seen.get(id);
-            if (existing && metricKey(existing) !== metricKey(subMetric)) {
-              throw new cdk.UnscopedValidationError(`The ID '${id}' used for two metrics in the search expression: '${subMetric}' and '${existing}'. Rename one.`);
-            }
-            seen.set(id, subMetric);
-            visit(subMetric);
+          // search expression should not contain anything inside  `usingMetric
+          if(Object.entries(searchExpr.usingMetrics).length > 0) {
+            throw new cdk.UnscopedValidationError(`Search expression '${searchExpr.expression}' should not contain any 'usingMetrics'.`);
           }
         },
       });
@@ -914,7 +910,7 @@ export interface SearchExpressionOptions {
   /**
    * Label for this search expression when displayed in graphs or dashboards.
    *
-   * Serves as a prefix for each returned time series. For example, if the label is `X`
+   * Serves as a prefix for the title of each returned time series. For example, if the label is `X`
    * and the expression discovers a metric instance with label `Y`, the time series will be labeled `X-Y`.
    *
    * @default - No label.
@@ -1090,14 +1086,14 @@ export class SearchExpression implements IMetric {
    * @deprecated use toMetricConfig()
    */
   public toAlarmConfig(): MetricAlarmConfig {
-    throw new cdk.UnscopedValidationError('Using a search expression is not supported in CloudWatch Alarms. Search expressions can only be used in dashboard graphs.');
+    throw new cdk.UnscopedValidationError('Using a search expression is not supported in CloudWatch Alarms.');
   }
 
   /**
    * @deprecated use toMetricConfig()
    */
   public toGraphConfig(): MetricGraphConfig {
-    throw new cdk.UnscopedValidationError('Using a search expression is not supported here. Pass a \'Metric\' object instead');
+    throw new cdk.UnscopedValidationError("`toGraphConfig()` is deprecated, use `toMetricConfig()`");
   }
 
   public toMetricConfig(): MetricConfig {

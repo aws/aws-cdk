@@ -35,6 +35,20 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
   const ret: any[] = [];
   const options: any = { ...config.renderingProperties };
 
+  // The options for both search expression and math expression are same. Thus, can be handled by a common function.
+  const applyExpressionOptions = (exprConfig: MetricExpressionConfig) => {
+    options.expression = exprConfig.expression;
+    if (exprConfig.searchAccount) {
+      options.accountId = accountIfDifferentFromStack(exprConfig.searchAccount);
+    }
+    if (exprConfig.searchRegion) {
+      options.region = regionIfDifferentFromStack(exprConfig.searchRegion);
+    }
+    if (exprConfig.period && exprConfig.period !== 300) {
+      options.period = exprConfig.period;
+    }
+  };
+
   dispatchMetric(metric, {
     withStat(stat) {
       ret.push(
@@ -63,16 +77,10 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
     },
 
     withMathExpression(mathExpr) {
-      options.expression = mathExpr.expression;
-      if (mathExpr.searchAccount) { options.accountId = accountIfDifferentFromStack(mathExpr.searchAccount); }
-      if (mathExpr.searchRegion) { options.region = regionIfDifferentFromStack(mathExpr.searchRegion); }
-      if (mathExpr.period && mathExpr.period !== 300) { options.period = mathExpr.period; }
+      applyExpressionOptions(mathExpr);
     },
     withSearchExpression(searchExpr) {
-      options.expression = searchExpr.expression;
-      if (searchExpr.searchAccount) { options.accountId = accountIfDifferentFromStack(searchExpr.searchAccount); }
-      if (searchExpr.searchRegion) { options.region = regionIfDifferentFromStack(searchExpr.searchRegion); }
-      if (searchExpr.period && searchExpr.period !== 300) { options.period = searchExpr.period; }
+      applyExpressionOptions(searchExpr);
     },
   });
 
@@ -213,11 +221,6 @@ export class MetricSet<A> {
     const conf = metric.toMetricConfig();
     if (conf.mathExpression) {
       for (const [subId, subMetric] of Object.entries(conf.mathExpression.usingMetrics)) {
-        this.addOne(subMetric, level + 1, undefined, subId);
-      }
-    }
-    if (conf.searchExpression) {
-      for (const [subId, subMetric] of Object.entries(conf.searchExpression.usingMetrics)) {
         this.addOne(subMetric, level + 1, undefined, subId);
       }
     }
