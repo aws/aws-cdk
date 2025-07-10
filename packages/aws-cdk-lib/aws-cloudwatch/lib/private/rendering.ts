@@ -3,7 +3,7 @@ import { accountIfDifferentFromStack, regionIfDifferentFromStack } from './env-t
 import { dispatchMetric, metricKey } from './metric-util';
 import { dropUndefined } from './object';
 import { UnscopedValidationError } from '../../../core';
-import { IMetric } from '../metric-types';
+import { IMetric, MetricExpressionConfig } from '../metric-types';
 
 /**
  * Return the JSON structure which represents these metrics in a graph.
