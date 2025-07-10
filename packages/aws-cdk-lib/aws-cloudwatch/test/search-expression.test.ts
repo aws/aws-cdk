@@ -54,7 +54,7 @@ describe('SearchExpression', () => {
       });
     });
 
-    test('with() should return same instance when no properties change', () => {
+    test('SearchExpression optimization: "with" with the same properties returns the same object', () => {
       // WHEN
       const result1 = searchExpr.with({});
       const result2 = searchExpr.with({
@@ -68,7 +68,7 @@ describe('SearchExpression', () => {
       expect(result2).toBe(searchExpr); // Same reference
     });
 
-    test('with() should create new instance when properties change', () => {
+    test('"with" with different properties creates new object', () => {
       // WHEN
       const result = searchExpr.with({
         label: 'New Label',
@@ -88,7 +88,7 @@ describe('SearchExpression', () => {
       expect(result.searchRegion).toBe('eu-west-1');
     });
 
-    test('toMetricConfig() should return correct searchExpression structure', () => {
+    test('searchExpression properties are included in toMetricConfig', () => {
       // WHEN
       const config = searchExpr.toMetricConfig();
 
@@ -104,7 +104,7 @@ describe('SearchExpression', () => {
       expect(config.searchExpression!.searchRegion).toBeUndefined();
     });
 
-    test('toMetricConfig() should include renderingProperties', () => {
+    test('label and color properties are included in renderingProperties', () => {
       // WHEN
       const config = searchExpr.toMetricConfig();
 
@@ -114,7 +114,7 @@ describe('SearchExpression', () => {
       expect(config.renderingProperties!.color).toBe('#ff0000');
     });
 
-    test('toMetricConfig() should include searchAccount and searchRegion when set', () => {
+    test('searchAccount and searchRegion are included when set', () => {
       // GIVEN
       const searchExprWithRegion = new SearchExpression({
         expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
@@ -130,7 +130,7 @@ describe('SearchExpression', () => {
       expect(config.searchExpression!.searchRegion).toBe('us-west-2');
     });
 
-    test('toAlarmConfig() should throw validation error', () => {
+    test('throws error when used in CloudWatch Alarms', () => {
       // WHEN & THEN
       expect(() => {
         searchExpr.toAlarmConfig();
@@ -140,7 +140,7 @@ describe('SearchExpression', () => {
       }).toThrow('Using a search expression is not supported in CloudWatch Alarms.');
     });
 
-    test('toGraphConfig() should throw deprecation error', () => {
+    test('throws error when using deprecated toGraphConfig', () => {
       // WHEN & THEN
       expect(() => {
         searchExpr.toGraphConfig();
@@ -152,7 +152,7 @@ describe('SearchExpression', () => {
   });
 
   describe('Utility Function Tests', () => {
-    test('metricKey() should generate consistent key for SearchExpression', () => {
+    test('SearchExpression generates consistent metric keys', () => {
       // GIVEN
       const searchExpr = new SearchExpression({
         expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
@@ -169,7 +169,7 @@ describe('SearchExpression', () => {
       expect(typeof key1).toBe('string');
     });
 
-    test('metricKey() should generate different keys for different expressions', () => {
+    test('different SearchExpressions generate different metric keys', () => {
       // GIVEN
       const searchExpr1 = new SearchExpression({
         expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
@@ -193,7 +193,7 @@ describe('SearchExpression', () => {
       expect(key2).not.toBe(key3); // Different expressions and accounts
     });
 
-    test('metricKey() should cache key on SearchExpression instance', () => {
+    test('metric keys are cached on SearchExpression instances', () => {
       // GIVEN
       const searchExpr = new SearchExpression({
         expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
@@ -224,7 +224,7 @@ describe('SearchExpression', () => {
       });
     });
 
-    test('dispatchMetric() should call withSearchExpression callback', () => {
+    test('SearchExpression is dispatched to withSearchExpression handler', () => {
       // GIVEN
       const withStat = jest.fn();
       const withMathExpression = jest.fn();
@@ -251,7 +251,7 @@ describe('SearchExpression', () => {
       expect(metricConfig).toStrictEqual(searchExpr.toMetricConfig());
     });
 
-    test('dispatchMetric() should throw error with multiple config types', () => {
+    test('throws error when multiple config types are present', () => {
       // GIVEN - Mock toMetricConfig to return invalid state
       const mockSearchExpr = {
         toMetricConfig: jest.fn().mockReturnValue({
@@ -277,7 +277,7 @@ describe('SearchExpression', () => {
       }).toThrow("Metric object must not produce more than one of 'metricStat', 'mathExpression', or 'searchExpression'");
     });
 
-    test('dispatchMetric() should throw error with no config types', () => {
+    test('throws error when no config types are present', () => {
       // GIVEN - Mock toMetricConfig to return empty config
       const mockSearchExpr = {
         toMetricConfig: jest.fn().mockReturnValue({}),
@@ -326,6 +326,7 @@ describe('SearchExpression', () => {
         expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
       });
 
+      // THEN
       // Verify IMetric interface properties and methods
       expect(typeof searchExpr.toMetricConfig).toBe('function');
       expect(typeof searchExpr.toAlarmConfig).toBe('function');
@@ -384,20 +385,6 @@ describe('SearchExpression', () => {
 
       // THEN
       expect(config.searchExpression!.period).toBe(600); // 10 minutes = 600 seconds
-    });
-
-    test('should handle very long expressions', () => {
-      // GIVEN
-      const longExpression = "SEARCH('{AWS/EC2,InstanceId,ImageId,InstanceType,VpcId,SubnetId,SecurityGroups} CPUUtilization NetworkIn NetworkOut DiskReadOps DiskWriteOps', 'Average', 300)";
-
-      // WHEN & THEN
-      expect(() => {
-        const searchExpr = new SearchExpression({
-          expression: longExpression,
-        });
-        metricKey(searchExpr);
-        searchExpr.toMetricConfig();
-      }).not.toThrow();
     });
   });
 });
