@@ -617,7 +617,7 @@ test('metricIncomingBytes with MetricOptions props', () => {
   });
 });
 
-test("creates single resource policy per event rule", () => {
+test('creates single resource policy per event rule', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
@@ -639,5 +639,5 @@ test("creates single resource policy per event rule", () => {
   rule3.addTarget(new targets.CloudWatchLogGroup(logGroup));
 
   // THEN
-  Template.fromStack(stack).resourceCountIs("Custom::CloudwatchLogResourcePolicy", 1);
+  Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
 });
