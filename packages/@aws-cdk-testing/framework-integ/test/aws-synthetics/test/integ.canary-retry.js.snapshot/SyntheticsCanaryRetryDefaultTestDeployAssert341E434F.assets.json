@@ -2,15 +2,9 @@
   "version": "45.0.0",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-synthetics/test/integ.canary-retry.js.snapshot/SyntheticsCanaryRetryDefaultTestDeployAssert341E434F.assets.json
       "displayName": "SyntheticsCanaryRetryDefaultTestDeployAssert341E434F Template",
       "source": {
         "path": "SyntheticsCanaryRetryDefaultTestDeployAssert341E434F.template.json",
-========
-      "displayName": "integtestDefaultTestDeployAssert24D5C536 Template",
-      "source": {
-        "path": "integtestDefaultTestDeployAssert24D5C536.template.json",
->>>>>>>> origin/main:packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.custom-permissions-boundary-aspect.js.snapshot/integtestDefaultTestDeployAssert24D5C536.assets.json
         "packaging": "file"
       },
       "destinations": {

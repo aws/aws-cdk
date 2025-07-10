@@ -1,27 +1,16 @@
 {
   "version": "44.0.0",
   "files": {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-amplify-alpha/test/integ.branch-compute-role.js.snapshot/cdk-amplify-branch-compute-role.assets.json
-    "f36fc6222700fa77a2a49b0330ff2709209927219fcb5052339ae7e3f927d592": {
-      "displayName": "cdk-amplify-branch-compute-role Template",
-      "source": {
-        "path": "cdk-amplify-branch-compute-role.template.json",
-========
     "edb50c3173aa2deaf3ca8aba79303f3d0010212ca32f2ce63417113f2e0ec766": {
       "displayName": "aws-cdk-kms Template",
       "source": {
         "path": "aws-cdk-kms.template.json",
->>>>>>>> origin/main:packages/@aws-cdk-testing/framework-integ/test/aws-kms/test/integ.alias-from-alias-name.js.snapshot/aws-cdk-kms.assets.json
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-<<<<<<<< HEAD:packages/@aws-cdk/aws-amplify-alpha/test/integ.branch-compute-role.js.snapshot/cdk-amplify-branch-compute-role.assets.json
-          "objectKey": "f36fc6222700fa77a2a49b0330ff2709209927219fcb5052339ae7e3f927d592.json",
-========
           "objectKey": "edb50c3173aa2deaf3ca8aba79303f3d0010212ca32f2ce63417113f2e0ec766.json",
->>>>>>>> origin/main:packages/@aws-cdk-testing/framework-integ/test/aws-kms/test/integ.alias-from-alias-name.js.snapshot/aws-cdk-kms.assets.json
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
