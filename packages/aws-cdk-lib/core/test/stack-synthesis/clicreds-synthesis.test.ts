@@ -47,7 +47,7 @@ describe('CLI creds synthesis', () => {
       displayName: 'Stack Template',
       source: { path: 'Stack.template.json', packaging: 'file' },
       destinations: {
-        'current_account-current_region': {
+        'current_account-current_region-bfe35b61': {
           bucketName: 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
           objectKey: templateObjectKey,
         },
@@ -134,13 +134,12 @@ describe('CLI creds synthesis', () => {
     // THEN
     const asm = myapp.synth();
     const manifest = readAssetManifest(getAssetManifest(asm));
-
-    expect(manifest.files?.['file-asset-hash']?.destinations?.['current_account-current_region']).toEqual({
+    expect(manifest.files?.['file-asset-hash']?.destinations?.['current_account-current_region-aec82aca']).toEqual({
       bucketName: 'file-asset-bucket',
       objectKey: `file-asset-hash.${ext}`,
     });
 
-    expect(manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region']).toEqual({
+    expect(manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region-ea1af612']).toEqual({
       repositoryName: 'image-ecr-repository',
       imageTag: 'docker-asset-hash',
     });
@@ -175,7 +174,7 @@ describe('CLI creds synthesis', () => {
     const manifest = readAssetManifest(getAssetManifest(asm));
 
     // THEN
-    expect(manifest.files?.['file-asset-hash-with-prefix']?.destinations?.['current_account-current_region']).toEqual({
+    expect(manifest.files?.['file-asset-hash-with-prefix']?.destinations?.['current_account-current_region-c48d5465']).toEqual({
       bucketName: 'file-asset-bucket',
       objectKey: `000000000000/file-asset-hash-with-prefix.${ext}`,
     });
@@ -205,7 +204,7 @@ describe('CLI creds synthesis', () => {
 
     // THEN
     const manifest = readAssetManifest(getAssetManifest(asm));
-    const imageTag = manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region'].imageTag;
+    const imageTag = manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region-f8ff7181'].imageTag;
     expect(imageTag).toEqual('test-prefix-docker-asset-hash');
   });
 
