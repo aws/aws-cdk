@@ -136,11 +136,7 @@
   },
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
-<<<<<<< HEAD
-    "@aws-cdk/aws-service-spec": "^0.1.81",
-=======
     "@aws-cdk/aws-service-spec": "^0.1.84",
->>>>>>> origin/main
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -515,7 +511,6 @@
     "./core/lib/helpers-internal": "./core/lib/helpers-internal/index.js",
     "./core/lib/metadata-resource": "./core/lib/metadata-resource.js",
     "./core/lib/prop-injectable": "./core/lib/prop-injectable.js",
-    "./core/lib/errors": "./core/lib/errors.js",
     "./custom-resources": "./custom-resources/index.js",
     "./custom-resources/lib/helpers-internal": "./custom-resources/lib/helpers-internal/index.js",
     "./cx-api": "./cx-api/index.js",
