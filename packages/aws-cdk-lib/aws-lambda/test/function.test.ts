@@ -5193,7 +5193,7 @@ describe('telemetry metadata', () => {
   });
 });
 
-describe('addToRolePolicy smart conflict detection', () => {
+describe('addToRolePolicy token conflict detection', () => {
   test('consolidates homogeneous array token statements into ServiceRoleDefaultPolicy', () => {
     // GIVEN
     const app = new cdk.App({
