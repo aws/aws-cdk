@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4b5e46dd6d910a7f3b3a80b002f4430d97635faacd166974de5d6a066d216524.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c35338e759cb7b167163ce93f5cf7ab7ebe6f12001444ffc3672083bd8245ee2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -78,6 +78,20 @@
             "data": "DefaultMemoryFunctionAC6D5374"
           }
         ],
+        "/aws-cdk-bedrock-memory-1/DefaultMemoryFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/DefaultMemoryFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultMemoryFunctionLogGroupD9F7BD3F"
+          }
+        ],
         "/aws-cdk-bedrock-memory-1/DefaultMemoryFunction/LambdaInvocationPolicy-c809bacfbaa9d9a5": [
           {
             "type": "aws:cdk:logicalId",
@@ -126,6 +140,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomMemoryFunctionB4B5CB9A"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/CustomMemoryFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/CustomMemoryFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomMemoryFunctionLogGroup61F2359A"
           }
         ],
         "/aws-cdk-bedrock-memory-1/CustomMemoryFunction/LambdaInvocationPolicy-c8492664c8e1cb16": [
@@ -416,5 +444,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1017.1"
+  "minimumCliVersion": "2.1019.2"
 }

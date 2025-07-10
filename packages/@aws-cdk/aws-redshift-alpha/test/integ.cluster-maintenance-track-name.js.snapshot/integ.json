@@ -1,13 +1,11 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "testCases": {
-    "RedshiftMaintenanceTrackNameInteg/DefaultTest": {
-      "stacks": [
-        "RedshiftMaintenanceTrackNameIntegStack"
-      ],
-      "assertionStack": "RedshiftMaintenanceTrackNameInteg/DefaultTest/DeployAssert",
-      "assertionStackName": "RedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert73097553"
+    "aws-cdk-redshift-cluster-database/RedshiftMaintenanceTrackNameInteg/DefaultTest": {
+      "stacks": [],
+      "assertionStack": "aws-cdk-redshift-cluster-database/RedshiftMaintenanceTrackNameInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkredshiftclusterdatabaseRedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert9E5BD3B5"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1020.1"
 }
