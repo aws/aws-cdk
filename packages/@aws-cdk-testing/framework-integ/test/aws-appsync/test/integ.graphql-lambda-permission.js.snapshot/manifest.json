@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "44.0.0",
   "artifacts": {
     "aws-graphql-lambda-permissions.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "aws-graphql-lambda-permissions.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/88f8b6f143ea53b46d93da4b1faa520ca524dd12b86713226337cbcf866bcae6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9e940a849c907d4a0ad3d9f249828c1fd08e1bd84721d1aa7957cc917ad213e9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -35,6 +34,38 @@
         "aws-graphql-lambda-permissions.assets"
       ],
       "metadata": {
+        "/aws-graphql-lambda-permissions/AuthorizerFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "code": "*",
+              "handler": "*"
+            }
+          }
+        ],
+        "/aws-graphql-lambda-permissions/AuthorizerFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-graphql-lambda-permissions/AuthorizerFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-graphql-lambda-permissions/AuthorizerFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -47,13 +78,41 @@
             "data": "AuthorizerFunctionB4DBAA43"
           }
         ],
+        "/aws-graphql-lambda-permissions/AuthorizerFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-graphql-lambda-permissions/AuthorizerFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuthorizerFunctionLogGroupB47801AB"
+          }
+        ],
         "/aws-graphql-lambda-permissions/AuthorizerFunction/api-appsync": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AuthorizerFunctionapiappsync4E3369BF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "AuthorizerFunctionapiappsync4E3369BF"
+          }
+        ],
+        "/aws-graphql-lambda-permissions/api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "name": "*",
+              "definition": "*",
+              "authorizationConfig": {
+                "defaultAuthorization": {
+                  "authorizationType": "*",
+                  "lambdaAuthorizerConfig": {
+                    "handler": "*"
+                  }
+                }
+              }
+            }
           }
         ],
         "/aws-graphql-lambda-permissions/api/Resource": [
@@ -98,7 +157,6 @@
         "templateFile": "GraphqlApiLambdaPermissionTestDefaultTestDeployAssert7720B39B.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
@@ -138,5 +196,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

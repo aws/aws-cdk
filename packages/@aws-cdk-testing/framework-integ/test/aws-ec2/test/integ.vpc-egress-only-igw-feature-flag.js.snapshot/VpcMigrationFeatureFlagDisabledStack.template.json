@@ -289,6 +289,12 @@
   "VpcDisabledEIGW6B9DA8E59": {
    "Type": "AWS::EC2::EgressOnlyInternetGateway",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VpcMigrationFeatureFlagDisabledStack/VpcDisabled"
+     }
+    ],
     "VpcId": {
      "Ref": "VpcDisabled51C226D6"
     }
@@ -500,6 +506,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {
