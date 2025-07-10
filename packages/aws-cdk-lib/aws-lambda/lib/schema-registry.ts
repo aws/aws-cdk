@@ -3,10 +3,10 @@ import { IFunction } from './function-base';
 
 /**
  * Specifies the format in which Kafka message data should be delivered to Lambda after deserialization.
- * 
- * When using Schema Registry integration, this enum determines how the deserialized data 
+ *
+ * When using Schema Registry integration, this enum determines how the deserialized data
  * is formatted before being passed to your Lambda function.
- * 
+ *
  * @example
  * schemaRegistryConfig: new ConfluentSchemaRegistry({
  *   // ...
@@ -16,7 +16,7 @@ import { IFunction } from './function-base';
 export class EventRecordFormat {
   /**
    * The target function will receive records as JSON objects.
-   * 
+   *
    * This format is ideal for general-purpose processing where your Lambda function
    * needs to access the data in a flexible, language-agnostic format.
    */
@@ -25,16 +25,16 @@ export class EventRecordFormat {
   /**
    * The target function will receive records in the same format as the schema source,
    * with schema metadata removed.
-   * 
+   *
    * This format is recommended when using Avro or ProtoBuf generated classes to handle the data,
    * as it makes it easier to construct language-specific objects.
    */
   public static readonly SOURCE = new EventRecordFormat('SOURCE');
 
-  /** 
+  /**
    * Define a custom event record format.
-   * 
-   * @param name - The name of the custom format 
+   *
+   * @param name - The name of the custom format
    */
   public static of(name: string): EventRecordFormat {
     return new EventRecordFormat(name);
@@ -52,10 +52,10 @@ export class EventRecordFormat {
 
 /**
  * Defines the authentication methods for accessing a Schema Registry.
- * 
+ *
  * Different Schema Registry providers and configurations require different authentication methods.
  * This enum specifies the supported authentication types for Schema Registry integration.
- * 
+ *
  * @example
  * schemaRegistryConfig: new ConfluentSchemaRegistry({
  *   // ...
