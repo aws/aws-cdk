@@ -127,6 +127,16 @@ export interface ServiceManagedEBSVolumeConfiguration {
    * @default - No tags are specified.
    */
   readonly tagSpecifications?: EBSTagSpecification[];
+
+  /**
+   * Specifies the Amazon EBS Provisioned Rate for Volume Initialization (volume initialization rate),
+   * at which to download the snapshot blocks from Amazon S3 to the volume.
+   *
+   * Valid range is between 100 and 300 MiB/s.
+   *
+   * @default undefined - The volume initialization rate is not set.
+   */
+  readonly volumeInitializationRate?: Size;
 }
 
 /**
