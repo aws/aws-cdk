@@ -1184,14 +1184,15 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
     Without this feature flag enabled, if tags are added to a Stack using
     \`Tags.of(scope).add(...)\`, they will be added to both the stack and all resources
-    in the Stack.
+    in the stack template.
+
+    That leads to the tags being applied twice: once in the template, and once
+    again automatically by CloudFormation, which will apply all stack tags to
+    all resources in the stack. This leads to loss of control, as the
+    \`excludeResourceTypes\` option of the Tags API will not have any effect.
 
     With this flag enabled, tags added to a stack using \`Tags.of(...)\` are ignored,
     and Stack tags must be configured explicitly on the Stack object.
-
-    Tags configured on the Stack will be propagated to all resources automatically
-    by CloudFormation, so there is no need for the automatic propagation that
-    \`Tags.of(...)\` does.
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,

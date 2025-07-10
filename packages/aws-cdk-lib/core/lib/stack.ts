@@ -121,15 +121,15 @@ export interface StackProps {
   readonly stackName?: string;
 
   /**
-   * Stack tags that will be applied to the stack
+   * Tags that will be applied to the Stack
    *
-   * The behavior of this property depends on the `@aws-cdk/core:explicitStackTags` feature
-   * flag:
+   * These tags are applied to the CloudFormation Stack itself. They will not
+   * appear in the CloudFormation template.
    *
-   * - If unset, tags are applied to all resources in the stack by CDK (changing
-   *   the template).
-   * - If set, tags are applied to all resources in the stack by CloudFormation (the
-   *   template will not contain them).
+   * However, at deployment time, CloudFormation will apply these tags to all
+   * resources in the stack that support tagging. You will not be able to exempt
+   * resources from tagging (using the `excludeResourceTypes` property of
+   * `Tags.of(...).add()`) for tags applied in this way.
    *
    * @default {}
    */
@@ -265,12 +265,6 @@ export class Stack extends Construct implements ITaggable {
 
   /**
    * Tags to be applied to the stack.
-   *
-   * The behavior of the TagManager, and tags applied using `Tags.of()` in
-   * general, depends on the `@aws-cdk/core:explicitStackTags` feature flag.
-   *
-   * If `@aws-cdk/core:explicitStackTags` is set, tags set on this tag manager
-   * are ignored.
    */
   public readonly tags: TagManager;
 
@@ -429,16 +423,6 @@ export class Stack extends Construct implements ITaggable {
    */
   private readonly _suppressTemplateIndentation: boolean;
 
-  /**
-   * The value of the "explicit stack tags" feature flag.
-   */
-  private readonly _explicitStackTags: boolean;
-
-  /**
-   * A copy of the stack tags
-   */
-  private readonly _stackTags: Record<string, string> = {};
-
   private _terminationProtection: boolean;
 
   /**
@@ -473,7 +457,6 @@ export class Stack extends Construct implements ITaggable {
     this.templateOptions = { };
     this._crossRegionReferences = !!props.crossRegionReferences;
     this._suppressTemplateIndentation = props.suppressTemplateIndentation ?? this.node.tryGetContext(SUPPRESS_TEMPLATE_INDENTATION_CONTEXT) ?? false;
-    this._explicitStackTags = FeatureFlags.of(this).isEnabled(cxapi.EXPLICIT_STACK_TAGS) ?? false;
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
@@ -499,7 +482,6 @@ export class Stack extends Construct implements ITaggable {
     if (this._stackName.length > 128) {
       throw new ValidationError(`Stack name must be <= 128 characters. Stack name: '${this._stackName}'`, this);
     }
-    this._stackTags = { ...props.tags };
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
 
     for (const notificationArn of props.notificationArns ?? []) {
@@ -1637,34 +1619,20 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Returns the stack tags
-   *
-   * These tags are applied to the stack, and CloudFormation will apply
-   * them to all resources in the stack.
-   */
-  public get stackTags(): Record<string, string> {
-    if (this._explicitStackTags) {
-      // New behavior, only return the explicit stack tags
-      return { ...this._stackTags };
-    } else {
-      // Old behavior, return the accumulated tags from the TagManager
-      return this.tags.tagValues();
-    }
-  }
-
-  /**
    * Configure a stack tag
+   *
+   * At deploy time, CloudFormation will automatically apply all stack tags to all resources in the stack.
    */
   public addStackTag(tagName: string, tagValue: string) {
-    this._stackTags[tagName] = tagValue;
     this.tags.setTag(tagName, tagValue);
   }
 
   /**
    * Remove a stack tag
+   *
+   * At deploy time, CloudFormation will automatically apply all stack tags to all resources in the stack.
    */
   public removeStackTag(tagName: string) {
-    delete this._stackTags[tagName];
     this.tags.removeTag(tagName, 0);
   }
 }
