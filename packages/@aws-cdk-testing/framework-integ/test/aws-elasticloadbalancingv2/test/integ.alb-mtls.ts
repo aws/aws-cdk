@@ -20,37 +20,37 @@ import { Construct } from 'constructs';
  *    `openssl req -x509 -CA rootCA_cert.pem -CAkey rootCA_key.pem -days 7 -new -nodes -keyout client_key.pem -out client_cert.pem`
  *
  * 3. Create OpenSSL configuration file (openssl.cnf):
-```
-cat << EOF > openssl.cnf
-[ ca ]
-default_ca = CA_default
-
-[ CA_default ]
-dir = .
-database = \$dir/index.txt
-new_certs_dir = \$dir/newcerts
-certificate = \$dir/rootCA_cert.pem
-serial = \$dir/serial
-private_key = \$dir/rootCA_key.pem
-RANDFILE = \$dir/private/.rand
-default_crl_days = 30
-default_md = sha256
-preserve = no
-policy = policy_match
-crl_extensions = crl_ext
-
-[ policy_match ]
-countryName = optional
-stateOrProvinceName = optional
-organizationName = optional
-organizationalUnitName = optional
-commonName = supplied
-emailAddress = optional
-
-[ crl_ext ]
-authorityKeyIdentifier=keyid:always
-EOF
-```
+ * ```
+ * cat << EOF > openssl.cnf
+ * [ ca ]
+ * default_ca = CA_default
+ *
+ * [ CA_default ]
+ * dir = .
+ * database = \$dir/index.txt
+ * new_certs_dir = \$dir/newcerts
+ * certificate = \$dir/rootCA_cert.pem
+ * serial = \$dir/serial
+ * private_key = \$dir/rootCA_key.pem
+ * RANDFILE = \$dir/private/.rand
+ * default_crl_days = 30
+ * default_md = sha256
+ * preserve = no
+ * policy = policy_match
+ * crl_extensions = crl_ext
+ *
+ * [ policy_match ]
+ * countryName = optional
+ * stateOrProvinceName = optional
+ * organizationName = optional
+ * organizationalUnitName = optional
+ * commonName = supplied
+ * emailAddress = optional
+ *
+ * [ crl_ext ]
+ * authorityKeyIdentifier=keyid:always
+ * EOF
+ * ```
  *
  * 4. Generate Certificate Revocation List (CRL) (valid for 30 days):
  *    `openssl ca -config openssl.cnf -gencrl -out crl.pem -crldays 30 -md sha256`
@@ -121,6 +121,7 @@ class MutualTls extends Stack {
       protocol: elbv2.ApplicationProtocol.HTTPS,
       certificates: [certificate],
       mutualAuthentication: {
+        advertiseTrustStoreCaNames: true,
         ignoreClientCertificateExpiry: false,
         mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
         trustStore,
@@ -140,7 +141,7 @@ class MutualTls extends Stack {
  * In order to test this you need to have a valid public hosted zone that you can use
  * to request certificates for.
  *
-*/
+ */
 const hostedZoneId = process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_ZONE_ID;
 if (!hostedZoneId) throw new Error('For this test you must provide your own HostedZoneId as an env var "HOSTED_ZONE_ID". See framework-integ/README.md for details.');
 const hostedZoneName = process.env.CDK_INTEG_HOSTED_ZONE_NAME ?? process.env.HOSTED_ZONE_NAME;
@@ -148,7 +149,11 @@ if (!hostedZoneName) throw new Error('For this test you must provide your own Ho
 const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
 if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME". See framework-integ/README.md for details.');
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new MutualTls(app, 'alb-mtls-test-stack', {
   hostedZoneId,
   hostedZoneName,

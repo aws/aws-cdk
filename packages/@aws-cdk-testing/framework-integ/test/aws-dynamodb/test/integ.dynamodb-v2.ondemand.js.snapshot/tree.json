@@ -231,7 +231,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.TableBaseV2",
+              "fqn": "aws-cdk-lib.aws_dynamodb.TableV2",
               "version": "0.0.0"
             }
           },
@@ -270,7 +270,7 @@
                 "path": "aws-cdk-global-table-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -316,7 +316,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

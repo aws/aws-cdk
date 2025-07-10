@@ -149,6 +149,23 @@ new logs.SubscriptionFilter(this, 'Subscription', {
 });
 ```
 
+When you use `FirehoseDestination`, you can choose the method used to
+distribute log data to the destination by setting the `distribution` property.
+
+```ts
+import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+
+declare const deliveryStream: firehose.IDeliveryStream;
+declare const logGroup: logs.LogGroup;
+
+new logs.SubscriptionFilter(this, 'Subscription', {
+  logGroup,
+  destination: new destinations.FirehoseDestination(deliveryStream),
+  filterPattern: logs.FilterPattern.allEvents(),
+});
+```
+
 ## Metric Filters
 
 CloudWatch Logs can extract and emit metrics based on a textual log stream.
@@ -182,6 +199,7 @@ the name `Namespace/MetricName`.
 
 You can expose a metric on a metric filter by calling the `MetricFilter.metric()` API.
 This has a default of `statistic = 'avg'` if the statistic is not set in the `props`.
+Additionally, if the metric filter was created with a dimension map, those dimensions will be included in the metric.
 
 ```ts
 declare const logGroup: logs.LogGroup;
@@ -205,6 +223,29 @@ new cloudwatch.Alarm(this, 'alarm from metric filter', {
   metric,
   threshold: 100,
   evaluationPeriods: 2,
+});
+```
+
+### Metrics for IncomingLogs and IncomingBytes
+Metric methods have been defined for IncomingLogs and IncomingBytes within LogGroups. These metrics allow for the creation of alarms on log ingestion, ensuring that the log ingestion process is functioning correctly.
+
+To define an alarm based on these metrics, you can use the following template:
+```ts
+const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+const incomingEventsMetric = logGroup.metricIncomingLogEvents();
+new cloudwatch.Alarm(this, 'HighLogVolumeAlarm', {
+  metric: incomingEventsMetric,
+  threshold: 1000,
+  evaluationPeriods: 1,
+});
+```
+```ts
+const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+const incomingBytesMetric = logGroup.metricIncomingBytes();
+new cloudwatch.Alarm(this, 'HighDataVolumeAlarm', {
+  metric: incomingBytesMetric,
+  threshold: 5000000,  // 5 MB
+  evaluationPeriods: 1,
 });
 ```
 
@@ -272,6 +313,8 @@ and then descending into it, such as `$.field` or `$.list[0].field`.
 
 * `FilterPattern.stringValue(field, comparison, string)`: matches if the given
   field compares as indicated with the given string value.
+* `FilterPattern.regexValue(field, comparison, string)`: matches if the given
+  field compares as indicated with the given regex pattern.
 * `FilterPattern.numberValue(field, comparison, number)`: matches if the given
   field compares as indicated with the given numerical value.
 * `FilterPattern.isNull(field)`: matches if the given field exists and has the
@@ -301,6 +344,7 @@ const pattern = logs.FilterPattern.all(
     logs.FilterPattern.booleanValue('$.error', true),
     logs.FilterPattern.numberValue('$.latency', '>', 1000),
   ),
+  logs.FilterPattern.regexValue('$.message', '=', 'bind address already in use'),
 );
 ```
 
@@ -383,18 +427,17 @@ Each policy may consist of a log group, S3 bucket, and/or Firehose delivery stre
 Example:
 
 ```ts
-import * as kinesisfirehose from '@aws-cdk/aws-kinesisfirehose-alpha';
-import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations-alpha';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 const logGroupDestination = new logs.LogGroup(this, 'LogGroupLambdaAudit', {
   logGroupName: 'auditDestinationForCDK',
 });
 
 const bucket = new s3.Bucket(this, 'audit-bucket');
-const s3Destination = new destinations.S3Bucket(bucket);
+const s3Destination = new firehose.S3Bucket(bucket);
 
-const deliveryStream = new kinesisfirehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [s3Destination],
+const deliveryStream = new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: s3Destination,
 });
 
 const dataProtectionPolicy = new logs.DataProtectionPolicy({
@@ -412,6 +455,29 @@ const dataProtectionPolicy = new logs.DataProtectionPolicy({
 new logs.LogGroup(this, 'LogGroupLambda', {
   logGroupName: 'cdkIntegLogGroup',
   dataProtectionPolicy: dataProtectionPolicy,
+});
+```
+
+## Field Index Policies
+
+Creates or updates a field index policy for the specified log group. You can use field index policies to create field indexes on fields found in log events in the log group. Creating field indexes lowers the costs for CloudWatch Logs Insights queries that reference those field indexes, because these queries attempt to skip the processing of log events that are known to not match the indexed field. Good fields to index are fields that you often need to query for and fields that have high cardinality of values.
+
+For more information, see [Create field indexes to improve query performance and reduce costs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatchLogs-Field-Indexing.html).
+
+Only log groups in the Standard log class support field index policies.
+Currently, this array supports only one field index policy object.
+
+Example:
+
+```ts
+
+const fieldIndexPolicy = new logs.FieldIndexPolicy({
+  fields: ['Operation', 'RequestId'],
+});
+
+new logs.LogGroup(this, 'LogGroup', {
+  logGroupName: 'cdkIntegLogGroup',
+  fieldIndexPolicies: [fieldIndexPolicy],
 });
 ```
 

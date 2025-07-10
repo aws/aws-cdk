@@ -4,7 +4,6 @@ import { App, Stack } from '../../core';
 import { Function, FunctionCode, FunctionRuntime, KeyValueStore } from '../lib';
 
 describe('CloudFront Function', () => {
-
   test('minimal example', () => {
     const app = new App();
     const stack = new Stack(app, 'Stack', {

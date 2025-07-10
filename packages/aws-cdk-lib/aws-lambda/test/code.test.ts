@@ -1,7 +1,8 @@
 import * as child_process from 'child_process';
 import * as path from 'path';
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as ecr from '../../aws-ecr';
+import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
@@ -445,7 +446,7 @@ describe('code', () => {
       // then
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.da491b551a48a7aaf33f41a3bfe7eb269112a87ba24651a2ff8f2d526ca4466c',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.94589594a9968c9eeb447189c1c5b83b4f8b95f12c392a82749abcd36ecbbfb8',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: dockerfilePath,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY]: dockerBuildArgs,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY]: dockerBuildSsh,
@@ -470,7 +471,7 @@ describe('code', () => {
       // then
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.05ed717106fc60c50f9e1b4b59a33e1c218fbcb03d11f78f5bef460c40a90b74',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.1abd5e50b7a576ba32f8d038dfcd3665b4c34aa82ed17576969830142a99f254',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: 'Dockerfile',
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code.ImageUri',
         },
@@ -503,7 +504,7 @@ describe('code', () => {
       // then
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.da491b551a48a7aaf33f41a3bfe7eb269112a87ba24651a2ff8f2d526ca4466c',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.94589594a9968c9eeb447189c1c5b83b4f8b95f12c392a82749abcd36ecbbfb8',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: dockerfilePath,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY]: dockerBuildArgs,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY]: dockerBuildSsh,
@@ -613,6 +614,96 @@ describe('code', () => {
 
       // then
       expect(cpMock).toHaveBeenCalledWith('/my/image/path/.', undefined);
+    });
+  });
+
+  describe('lambda.Code.fromBucket', () => {
+    test('fromBucket warns when no objectVersion is set', () => {
+      // given
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromBucket(bucket, 'Object'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      // then
+      Annotations.fromStack(stack).hasWarning(
+        '/Stack/Bucket',
+        'objectVersion is not defined for S3Code.fromBucket(). The lambda will not be updated automatically if the code in the bucket is updated. ' +
+        'This is because CDK/Cloudformation does not track changes on the source S3 Bucket. It is recommended to either use S3Code.fromAsset() instead or set objectVersion. ' +
+        '[ack: @aws-cdk/aws-lambda:codeFromBucketObjectVersionNotSpecified]',
+      );
+    });
+
+    test('fromBucket does not warn when an objectVersion is set', () => {
+      // given
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromBucket(bucket, 'Object', 'v1'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      // then
+      Annotations.fromStack(stack).hasNoWarning(
+        '/Stack/Bucket',
+        'objectVersion is not defined for S3Code.fromBucket(). The lambda will not be updated automatically if the code in the bucket is updated. ' +
+        'This is because CDK/Cloudformation does not track changes on the source S3 Bucket. It is recommended to either use S3Code.fromAsset() instead or set objectVersion. ' +
+        '[ack: @aws-cdk/aws-lambda:codeFromBucketObjectVersionNotSpecified]',
+      );
+    });
+
+    test('fromBucketV2 warns when no objectVersion is set', () => {
+      // given
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromBucketV2(bucket, 'Object'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      // then
+      Annotations.fromStack(stack).hasWarning(
+        '/Stack/Bucket',
+        'options.objectVersion is not defined for S3Code.fromBucketV2(). The lambda will not be updated automatically if the code in the bucket is updated. ' +
+        'This is because CDK/Cloudformation does not track changes on the source S3 Bucket. It is recommended to either use S3Code.fromAsset() instead or set options.objectVersion. ' +
+        '[ack: @aws-cdk/aws-lambda:codeFromBucketObjectVersionNotSpecified]',
+      );
+    });
+
+    test('fromBucketV2 does not warn when an objectVersion is set', () => {
+      // given
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromBucketV2(bucket, 'Object', { objectVersion: 'v1' }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      // then
+      Annotations.fromStack(stack).hasNoWarning(
+        '/Stack/Bucket',
+        'options.objectVersion is not defined for S3Code.fromBucketV2(). The lambda will not be updated automatically if the code in the bucket is updated. ' +
+        'This is because CDK/Cloudformation does not track changes on the source S3 Bucket. It is recommended to either use S3Code.fromAsset() instead or set options.objectVersion. ' +
+        '[ack: @aws-cdk/aws-lambda:codeFromBucketObjectVersionNotSpecified]',
+      );
     });
   });
 });

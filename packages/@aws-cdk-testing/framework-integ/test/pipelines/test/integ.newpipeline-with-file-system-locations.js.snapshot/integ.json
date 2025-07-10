@@ -1,5 +1,5 @@
 {
-  "version": "36.0.24",
+  "version": "44.0.0",
   "testCases": {
     "cdk-integ-codepipeline-with-file-system-locations/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "cdk-integ-codepipeline-with-file-system-locations/DefaultTest/DeployAssert",
       "assertionStackName": "cdkintegcodepipelinewithfilesystemlocationsDefaultTestDeployAssert3E26E748"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

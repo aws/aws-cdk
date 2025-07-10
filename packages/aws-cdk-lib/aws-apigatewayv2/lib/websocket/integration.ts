@@ -4,6 +4,9 @@ import { IWebSocketRoute } from './route';
 import { CfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
 import { Duration, Resource } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IIntegration } from '../common';
 
 /**
@@ -164,15 +167,20 @@ export interface WebSocketIntegrationProps {
  * The integration for an API route.
  * @resource AWS::ApiGatewayV2::Integration
  */
+@propertyInjectable
 export class WebSocketIntegration extends Resource implements IWebSocketIntegration {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.WebSocketIntegration';
   public readonly integrationId: string;
   public readonly webSocketApi: IWebSocketApi;
 
   constructor(scope: Construct, id: string, props: WebSocketIntegrationProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.timeout && !props.timeout.isUnresolved() && (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 29000)) {
-      throw new Error('Integration timeout must be between 50 milliseconds and 29 seconds.');
+      throw new ValidationError('Integration timeout must be between 50 milliseconds and 29 seconds.', scope);
     }
 
     const integ = new CfnIntegration(this, 'Resource', {
@@ -228,7 +236,7 @@ export abstract class WebSocketRouteIntegration {
    */
   public _bindToRoute(options: WebSocketRouteIntegrationBindOptions): { readonly integrationId: string } {
     if (this.integration && this.integration.webSocketApi.node.addr !== options.route.webSocketApi.node.addr) {
-      throw new Error('A single integration cannot be associated with multiple APIs.');
+      throw new ValidationError('A single integration cannot be associated with multiple APIs.', options.scope);
     }
 
     if (!this.integration) {

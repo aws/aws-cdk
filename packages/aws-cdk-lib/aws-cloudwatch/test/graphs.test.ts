@@ -8,6 +8,7 @@ import {
   GraphWidget,
   GraphWidgetView,
   LegendPosition,
+  LogQueryLanguage,
   LogQueryVisualizationType,
   LogQueryWidget,
   Metric,
@@ -27,6 +28,7 @@ describe('Graphs', () => {
     const widget = new GraphWidget({
       title: 'Test widget',
       stacked: true,
+      accountId: '123456789012',
     });
 
     // THEN
@@ -40,9 +42,9 @@ describe('Graphs', () => {
         region: { Ref: 'AWS::Region' },
         stacked: true,
         yAxis: {},
+        accountId: '123456789012',
       },
     }]);
-
   });
 
   test('add metrics to graphs on either axis', () => {
@@ -74,7 +76,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
   });
 
   test('add metrics to graphs on either axis lazily', () => {
@@ -102,14 +103,13 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
   });
 
-  test('label and color are respected in constructor', () => {
+  test('label, color, id and visible are respected in constructor', () => {
     // WHEN
     const stack = new Stack();
     const widget = new GraphWidget({
-      left: [new Metric({ namespace: 'CDK', metricName: 'Test', label: 'MyMetric', color: '000000' })],
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test', label: 'MyMetric', color: '000000', id: 'custom_id', visible: false })],
     });
 
     // THEN
@@ -121,12 +121,11 @@ describe('Graphs', () => {
         view: 'timeSeries',
         region: { Ref: 'AWS::Region' },
         metrics: [
-          ['CDK', 'Test', { label: 'MyMetric', color: '000000' }],
+          ['CDK', 'Test', { label: 'MyMetric', color: '000000', id: 'custom_id', visible: false }],
         ],
         yAxis: {},
       },
     }]);
-
   });
 
   test('bar view', () => {
@@ -149,7 +148,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
   });
 
   test('singlevalue widget', () => {
@@ -160,6 +158,7 @@ describe('Graphs', () => {
     // WHEN
     const widget = new SingleValueWidget({
       metrics: [metric],
+      accountId: '123456789012',
     });
 
     // THEN
@@ -173,9 +172,9 @@ describe('Graphs', () => {
         metrics: [
           ['CDK', 'Test'],
         ],
+        accountId: '123456789012',
       },
     }]);
-
   });
 
   test('query result widget', () => {
@@ -203,7 +202,6 @@ describe('Graphs', () => {
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
-
   });
 
   test('query result widget - bar', () => {
@@ -219,6 +217,7 @@ describe('Graphs', () => {
         'fields @message',
         'filter @message like /Error/',
       ],
+      accountId: '123456789012',
     });
 
     // THEN
@@ -230,9 +229,9 @@ describe('Graphs', () => {
         view: 'bar',
         region: { Ref: 'AWS::Region' },
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+        accountId: '123456789012',
       },
     }]);
-
   });
 
   test('query result widget - pie', () => {
@@ -261,7 +260,6 @@ describe('Graphs', () => {
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
-
   });
 
   test('query result widget - line', () => {
@@ -291,7 +289,6 @@ describe('Graphs', () => {
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
-
   });
 
   test('query result widget - stackedarea', () => {
@@ -321,7 +318,62 @@ describe('Graphs', () => {
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
+  });
 
+  test('query result widget - sql', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = { logGroupName: 'my-log-group' };
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      view: LogQueryVisualizationType.STACKEDAREA,
+      queryString: "SELECT count(*) as count FROM 'my-log-group'",
+      queryLanguage: LogQueryLanguage.SQL,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        stacked: true,
+        region: { Ref: 'AWS::Region' },
+        query: "SOURCE 'my-log-group' | SELECT count(*) as count FROM 'my-log-group'",
+        queryLanguage: 'SQL',
+      },
+    }]);
+  });
+
+  test('query result widget - ppl', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = { logGroupName: 'my-log-group' };
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      view: LogQueryVisualizationType.STACKEDAREA,
+      queryString: 'fields `@message`\ | sort - `@timestamp`',
+      queryLanguage: LogQueryLanguage.PPL,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        stacked: true,
+        region: { Ref: 'AWS::Region' },
+        query: "SOURCE 'my-log-group' | fields `@message`\ | sort - `@timestamp`",
+        queryLanguage: 'PPL',
+      },
+    }]);
   });
 
   test('alarm widget', () => {
@@ -336,6 +388,7 @@ describe('Graphs', () => {
     // WHEN
     const widget = new AlarmWidget({
       alarm,
+      accountId: '123456789012',
     });
 
     // THEN
@@ -350,9 +403,9 @@ describe('Graphs', () => {
           alarms: [{ 'Fn::GetAtt': ['Alarm7103F465', 'Arn'] }],
         },
         yAxis: {},
+        accountId: '123456789012',
       },
     }]);
-
   });
 
   test('custom widget basic', () => {
@@ -460,7 +513,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
   });
 
   test('add vertical annotations to graph', () => {
@@ -561,7 +613,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
   });
 
   test('add yAxis to graph', () => {
@@ -605,7 +656,6 @@ describe('Graphs', () => {
         },
       },
     }]);
-
   });
 
   test('specify liveData property on graph', () => {
@@ -635,7 +685,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
   });
 
   test('can use imported alarm with graph', () => {
@@ -650,7 +699,6 @@ describe('Graphs', () => {
     });
 
     // THEN: Compiles
-
   });
 
   test('add setPeriodToTimeRange to singleValueWidget', () => {
@@ -678,7 +726,6 @@ describe('Graphs', () => {
         setPeriodToTimeRange: true,
       },
     }]);
-
   });
 
   test('add sparkline to singleValueWidget', () => {
@@ -706,7 +753,6 @@ describe('Graphs', () => {
         sparkline: true,
       },
     }]);
-
   });
 
   test('throws if setPeriodToTimeRange and sparkline is set on singleValueWidget', () => {
@@ -752,7 +798,6 @@ describe('Graphs', () => {
         singleValueFullPrecision: true,
       },
     }]);
-
   });
 
   test('add period to singleValueWidget', () => {
@@ -780,7 +825,6 @@ describe('Graphs', () => {
         period: 172800,
       },
     }]);
-
   });
 
   test('allows overriding custom values of dashboard widgets', () => {
@@ -802,7 +846,6 @@ describe('Graphs', () => {
 
     expect(stack.resolve(widget.toJson())[0].properties.metrics[0])
       .toEqual(['CDK', 'Test', { visible: false }]);
-
   });
 
   test('GraphColor is correctly converted into the correct hexcode', () => {
@@ -822,7 +865,6 @@ describe('Graphs', () => {
 
     expect(stack.resolve(widget.toJson())[0].properties.metrics[0]).toEqual(['CDK', 'Test', { color: '#1f77b4' }]);
     expect(stack.resolve(widget.toJson())[0].properties.annotations.horizontal[0]).toEqual({ yAxis: 'left', value: 100, color: '#d62728' });
-
   });
 
   test('legend position is respected in constructor', () => {
@@ -850,7 +892,6 @@ describe('Graphs', () => {
         },
       },
     }]);
-
   });
 
   test('add setPeriodToTimeRange to GraphWidget', () => {
@@ -884,6 +925,7 @@ describe('Graphs', () => {
     const stack = new Stack();
     const widget = new GaugeWidget({
       metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      accountId: '123456789012',
     });
 
     // THEN
@@ -903,6 +945,7 @@ describe('Graphs', () => {
             max: 100,
           },
         },
+        accountId: '123456789012',
       },
     }]);
   });

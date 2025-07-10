@@ -124,7 +124,7 @@ new go.GoFunction(this, 'handler', {
 
 ## Local Bundling
 
-If `Go` is installed locally and the version is >= `go1.11` then it will be used to bundle your code in your environment. Otherwise, bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-go1.x) with the Docker platform based on the target architecture of the Lambda function.
+If `Go` is installed locally and the version is >= `go1.11` then it will be used to bundle your code in your environment. Otherwise, bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-provided.al2023) with the Docker platform based on the target architecture of the Lambda function.
 
 For macOS the recommended approach is to install `Go` as Docker volume performance is really poor.
 

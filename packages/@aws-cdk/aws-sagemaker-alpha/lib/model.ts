@@ -5,6 +5,8 @@ import { Construct } from 'constructs';
 import { ContainerImage } from './container-image';
 import { ModelData } from './model-data';
 import { CfnModel } from 'aws-cdk-lib/aws-sagemaker';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Interface that defines a Model resource.
@@ -103,7 +105,7 @@ abstract class ModelBase extends cdk.Resource implements IModel {
       return;
     }
 
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 }
 
@@ -222,7 +224,11 @@ export interface ModelProps {
 /**
  * Defines a SageMaker Model.
  */
+@propertyInjectable
 export class Model extends ModelBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-sagemaker-alpha.Model';
+
   /**
    * Imports a Model defined either outside the CDK or in a different CDK stack.
    * @param scope the Construct scope.
@@ -307,6 +313,8 @@ export class Model extends ModelBase {
     super(scope, id, {
       physicalName: props.modelName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this._connections = this.configureNetworking(props);
     this.subnets = (props.vpc) ? props.vpc.selectSubnets(props.vpcSubnets) : undefined;
@@ -346,6 +354,7 @@ export class Model extends ModelBase {
    *
    * @param container The container definition to add.
    */
+  @MethodMetadata()
   public addContainer(container: ContainerDefinition): void {
     this.containers.push(this.renderContainer(container));
   }

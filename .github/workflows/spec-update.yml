@@ -2,8 +2,8 @@ name: AWS Service Spec Update
 
 on:
   schedule:
-    # Every Monday at 13:37 UTC
-    - cron: 37 13 * * 1
+    # Every Monday at 10:15 UTC since dependency releases are on Fridays : https://github.com/cdklabs/awscdk-service-spec/releases?q=-spec&expanded=true
+    - cron: 15 10 * * 1
   workflow_dispatch: {}
 
 jobs:
@@ -154,7 +154,7 @@ jobs:
           # Pull Request details
           title: "feat: update L1 CloudFormation resource definitions"
           body-path: ${{ runner.temp }}/PR.md
-          labels: contribution/core,dependencies,auto-approve,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test
+          labels: contribution/core,dependencies,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test
           team-reviewers: aws-cdk-team
           # Github prevents further Github actions to be run if the default Github token is used.
           # Instead use a privileged token here, so further GH actions can be triggered on this PR.

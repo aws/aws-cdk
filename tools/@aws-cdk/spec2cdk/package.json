@@ -32,19 +32,20 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-cdk/aws-service-spec": "^0.1.23",
-    "@aws-cdk/service-spec-importers": "^0.0.47",
-    "@aws-cdk/service-spec-types": "^0.0.90",
+    "@aws-cdk/aws-service-spec": "^0.1.84",
+    "@aws-cdk/service-spec-importers": "^0.0.82",
+    "@aws-cdk/service-spec-types": "^0.0.150",
     "@cdklabs/tskb": "^0.0.3",
-    "@cdklabs/typewriter": "^0.0.3",
+    "@cdklabs/typewriter": "^0.0.5",
     "camelcase": "^6",
     "fs-extra": "^9",
+    "p-limit": "^3.1.0",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^29.5.14",
     "@types/node": "^18",
     "jest": "^29.7.0"
   },

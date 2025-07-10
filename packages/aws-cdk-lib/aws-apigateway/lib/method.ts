@@ -14,8 +14,10 @@ import { validateHttpMethod } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { Annotations, ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID } from '../../cx-api';
-
 export interface MethodOptions {
   /**
    * A friendly operation name for the method. For example, you can assign the
@@ -162,7 +164,13 @@ export interface MethodProps {
   readonly options?: MethodOptions;
 }
 
+@propertyInjectable
 export class Method extends Resource {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.Method';
+
   /** @attribute */
   public readonly methodId: string;
 
@@ -177,6 +185,8 @@ export class Method extends Resource {
 
   constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.resource = props.resource;
     this.api = props.resource.api;
@@ -308,6 +318,7 @@ export class Method extends Resource {
    * for historical reasons, but will add a warning if this happens. If you do, your Method
    * will nondeterministically use one of the responses, and ignore the rest.
    */
+  @MethodMetadata()
   public addMethodResponse(methodResponse: MethodResponse): void {
     const mr = this.methodResponses.find((x) => x.statusCode === methodResponse.statusCode);
     if (mr) {
@@ -330,8 +341,8 @@ export class Method extends Resource {
 
     // if the authorizer defines an authorization type and we also have an explicit option set, check that they are the same
     if (authorizerAuthType && optionsAuthType && authorizerAuthType !== optionsAuthType) {
-      throw new Error(`${this.resource}/${this.httpMethod} - Authorization type is set to ${optionsAuthType} ` +
-        `which is different from what is required by the authorizer [${authorizerAuthType}]`);
+      throw new ValidationError(`${this.resource}/${this.httpMethod} - Authorization type is set to ${optionsAuthType} ` +
+        `which is different from what is required by the authorizer [${authorizerAuthType}]`, this);
     }
 
     return finalAuthType;
@@ -408,7 +419,7 @@ export class Method extends Resource {
 
   private requestValidatorId(options: MethodOptions): string | undefined {
     if (options.requestValidator && options.requestValidatorOptions) {
-      throw new Error('Only one of \'requestValidator\' or \'requestValidatorOptions\' must be specified.');
+      throw new ValidationError('Only one of \'requestValidator\' or \'requestValidatorOptions\' must be specified.', this);
     }
 
     if (options.requestValidatorOptions) {
@@ -427,6 +438,7 @@ export class Method extends Resource {
   /**
    * Returns the given named metric for this API method
    */
+  @MethodMetadata()
   public metric(metricName: string, stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/ApiGateway',
@@ -441,6 +453,7 @@ export class Method extends Resource {
    *
    * @default - sum over 5 minutes
    */
+  @MethodMetadata()
   public metricClientError(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics._4XxErrorSum, stage, props);
   }
@@ -450,6 +463,7 @@ export class Method extends Resource {
    *
    * @default - sum over 5 minutes
    */
+  @MethodMetadata()
   public metricServerError(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics._5XxErrorSum, stage, props);
   }
@@ -459,6 +473,7 @@ export class Method extends Resource {
    *
    * @default - sum over 5 minutes
    */
+  @MethodMetadata()
   public metricCacheHitCount(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.cacheHitCountSum, stage, props);
   }
@@ -469,6 +484,7 @@ export class Method extends Resource {
    *
    * @default - sum over 5 minutes
    */
+  @MethodMetadata()
   public metricCacheMissCount(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.cacheMissCountSum, stage, props);
   }
@@ -478,6 +494,7 @@ export class Method extends Resource {
    *
    * @default - sample count over 5 minutes
    */
+  @MethodMetadata()
   public metricCount(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.countSum, stage, {
       statistic: 'SampleCount',
@@ -491,6 +508,7 @@ export class Method extends Resource {
    *
    * @default - average over 5 minutes.
    */
+  @MethodMetadata()
   public metricIntegrationLatency(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.integrationLatencyAverage, stage, props);
   }
@@ -502,6 +520,7 @@ export class Method extends Resource {
    *
    * @default - average over 5 minutes.
    */
+  @MethodMetadata()
   public metricLatency(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.latencyAverage, stage, props);
   }
@@ -511,6 +530,7 @@ export class Method extends Resource {
    *
    * @param grantee the principal
    */
+  @MethodMetadata()
   public grantExecute(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,

@@ -1,6 +1,8 @@
 import { Construct } from 'constructs';
 import { CfnPublicKey } from './cloudfront.generated';
-import { IResource, Names, Resource, Token } from '../../core';
+import { IResource, Names, Resource, Token, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a Public Key
@@ -43,7 +45,10 @@ export interface PublicKeyProps {
  *
  * @resource AWS::CloudFront::PublicKey
  */
+@propertyInjectable
 export class PublicKey extends Resource implements IPublicKey {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.PublicKey';
 
   /** Imports a Public Key from its id. */
   public static fromPublicKeyId(scope: Construct, id: string, publicKeyId: string): IPublicKey {
@@ -56,9 +61,11 @@ export class PublicKey extends Resource implements IPublicKey {
 
   constructor(scope: Construct, id: string, props: PublicKeyProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!Token.isUnresolved(props.encodedKey) && !/^-----BEGIN PUBLIC KEY-----/.test(props.encodedKey)) {
-      throw new Error(`Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${props.encodedKey}`);
+      throw new ValidationError(`Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${props.encodedKey}`, scope);
     }
 
     const resource = new CfnPublicKey(this, 'Resource', {

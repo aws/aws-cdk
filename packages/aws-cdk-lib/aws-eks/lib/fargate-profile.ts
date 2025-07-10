@@ -4,7 +4,7 @@ import { FARGATE_PROFILE_RESOURCE_TYPE } from './cluster-resource-handler/consts
 import { ClusterResourceProvider } from './cluster-resource-provider';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { Annotations, CustomResource, ITaggable, Lazy, TagManager, TagType } from '../../core';
+import { Annotations, CustomResource, ITaggable, Lazy, TagManager, TagType, ValidationError } from '../../core';
 
 /**
  * Options for defining EKS Fargate Profiles.
@@ -112,7 +112,6 @@ export interface Selector {
  * match a selector in that profile in order to be scheduled onto Fargate.
  */
 export class FargateProfile extends Construct implements ITaggable {
-
   /**
    * The full Amazon Resource Name (ARN) of the Fargate profile.
    *
@@ -165,11 +164,11 @@ export class FargateProfile extends Construct implements ITaggable {
     }
 
     if (props.selectors.length < 1) {
-      throw new Error('Fargate profile requires at least one selector');
+      throw new ValidationError('Fargate profile requires at least one selector', this);
     }
 
     if (props.selectors.length > 5) {
-      throw new Error('Fargate profile supports up to five selectors');
+      throw new ValidationError('Fargate profile supports up to five selectors', this);
     }
 
     this.tags = new TagManager(TagType.MAP, 'AWS::EKS::FargateProfile');

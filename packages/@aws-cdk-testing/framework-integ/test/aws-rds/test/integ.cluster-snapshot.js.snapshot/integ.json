@@ -1,13 +1,19 @@
 {
-  "version": "36.0.5",
+  "version": "44.0.0",
   "testCases": {
     "ClusterSnapshotInteg/DefaultTest": {
       "stacks": [
         "cdk-integ-cluster-snapshot"
       ],
+      "hooks": {
+        "postDestroy": [
+          "aws rds delete-db-cluster-snapshot --db-cluster-snapshot-identifier cdk-integ-cluster-snapshot"
+        ]
+      },
       "diffAssets": true,
       "assertionStack": "ClusterSnapshotInteg/DefaultTest/DeployAssert",
       "assertionStackName": "ClusterSnapshotIntegDefaultTestDeployAssert647D4685"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

@@ -3,7 +3,7 @@ import * as vpc from '../lib/vpc-v2';
 import * as subnet from '../lib/subnet-v2';
 import { CfnEIP, GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
 import * as route from '../lib/route';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 
 describe('EC2 Routing', () => {
   let stack: cdk.Stack;
@@ -305,11 +305,7 @@ describe('EC2 Routing', () => {
       },
     });
     // EIP should be created when not provided
-    template.hasResource('AWS::EC2::EIP', {
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
-    });
+    template.hasResource('AWS::EC2::EIP', {});
   });
 
   test('Route to public NAT Gateway with provided EIP', () => {
@@ -398,11 +394,33 @@ describe('EC2 Routing', () => {
       },
     });
     // EIP should be created when not provided
-    template.hasResource('AWS::EC2::EIP', {
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+    template.hasResource('AWS::EC2::EIP', {});
+  });
+
+  test('NatGW throws error if both VPC and allocationID is not provided', () => {
+    expect(() => new route.NatGateway(stack, 'TestNATGW', {
+      subnet: mySubnet,
+      connectivityType: route.NatConnectivityType.PUBLIC,
+      maxDrainDuration: cdk.Duration.seconds(2001),
+    })).toThrow('Either provide vpc or allocationId');
+  });
+
+  test('NatGW does not create EIP or use allocationId in case of private NAT gateway', () => {
+    // WHEN
+    new route.NatGateway(stack, 'NGW', {
+      vpc: myVpc,
+      subnet: mySubnet,
+      connectivityType: route.NatConnectivityType.PRIVATE,
     });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::EIP', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+      ConnectivityType: 'private',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', Match.not({
+      AllocationId: Match.anyValue(),
+    }));
   });
 
   test('Route to DynamoDB Endpoint', () => {
@@ -513,4 +531,204 @@ describe('EC2 Routing', () => {
     });
   });
 
+  test('Route throws error if no target is specified', () => {
+    expect(() => {
+      routeTable.addRoute('testRoute', '0.0.0.0', {});
+    }).toThrow('Exactly one of `gateway` or `endpoint` must be specified.');
+  });
+
+  test('Route throws error if both endpoint and gateway is specified as target', () => {
+    const eigw = new route.EgressOnlyInternetGateway(stack, 'TestEIGW', {
+      vpc: myVpc,
+    });
+
+    const dynamodb = new GatewayVpcEndpoint(stack, 'TestDB', {
+      vpc: myVpc,
+      service: GatewayVpcEndpointAwsService.DYNAMODB,
+    });
+    expect(() => {
+      routeTable.addRoute('testRoute', '::/0', {
+        gateway: eigw,
+        endpoint: dynamodb,
+      });
+    }).toThrow('Exactly one of `gateway` or `endpoint` must be specified.');
+  });
+
+  test('EIGW throws error in case destination is set to an IPv4 address', () => {
+    const eigw = new route.EgressOnlyInternetGateway(stack, 'TestEIGW', {
+      vpc: myVpc,
+    });
+    expect(() => {
+      routeTable.addRoute('testRoute', '0.0.0.0', {
+        gateway: eigw,
+      });
+    }).toThrow('Egress only internet gateway does not support IPv4 routing');
+  });
+});
+
+describe('VPCPeeringConnection', () => {
+  let stackA: cdk.Stack;
+  let stackB: cdk.Stack;
+  let stackC: cdk.Stack;
+
+  let vpcA: vpc.VpcV2;
+  let vpcB: vpc.VpcV2;
+  let vpcC: vpc.VpcV2;
+  let vpcD: vpc.VpcV2;
+
+  beforeEach(() => {
+    const app = new cdk.App({
+      context: {
+        '@aws-cdk/core:newStyleStackSynthesis': false,
+      },
+    });
+
+    stackA = new cdk.Stack(app, 'VpcStackA', { env: { account: '234567890123', region: 'us-east-1' } });
+    stackB = new cdk.Stack(app, 'VpcStackB', { env: { account: '123456789012', region: 'us-east-1' } });
+    stackC = new cdk.Stack(app, 'VpcStackC', { env: { account: '123456789012', region: 'us-west-2' }, crossRegionReferences: true });
+
+    vpcA = new vpc.VpcV2(stackA, 'VpcA', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.1.0.0/16', { cidrBlockName: 'TempSecondaryBlock' })],
+    });
+    vpcB = new vpc.VpcV2(stackB, 'VpcB', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
+    });
+    vpcC = new vpc.VpcV2(stackC, 'VpcC', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+    });
+    // Same Account VPC
+    vpcD = new vpc.VpcV2(stackC, 'VpcD', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.3.0.0/16'),
+    });
+  });
+
+  test('Creates a same account VPC peering connection', () => {
+    // Create VPC peering connection between vpcC and vpcD in same account
+    new route.VPCPeeringConnection(stackC, 'TestPeeringConnection', {
+      requestorVpc: vpcC,
+      acceptorVpc: vpcD,
+    });
+
+    const template = Template.fromStack(stackC);
+    template.hasResourceProperties('AWS::EC2::VPCPeeringConnection', {
+      VpcId: {
+        'Fn::GetAtt': ['VpcC211819BA', 'VpcId'],
+      },
+      PeerVpcId: {
+        'Fn::GetAtt': ['VpcD66D5BFD0', 'VpcId'],
+      },
+      PeerRegion: 'us-west-2',
+    });
+  });
+
+  test('Creates a cross account VPC peering connection', () => {
+    const importedVpcB = vpc.VpcV2.fromVpcV2Attributes(stackA, 'VpcB', {
+      vpcId: 'mockVpcBId', // cross account stack references are not supported
+      vpcCidrBlock: '10.2.0.0/16',
+      region: vpcB.env.region,
+      ownerAccountId: '123456789012',
+    });
+
+    new route.VPCPeeringConnection(stackA, 'TestPeeringConnection', {
+      requestorVpc: vpcA,
+      acceptorVpc: importedVpcB,
+      peerRoleArn: 'arn:aws:iam::012345678910:role/VpcPeeringRole',
+    });
+    const template = Template.fromStack(stackA);
+    template.hasResourceProperties('AWS::EC2::VPCPeeringConnection', {
+      PeerRoleArn: 'arn:aws:iam::012345678910:role/VpcPeeringRole',
+      VpcId: {
+        'Fn::GetAtt': ['VpcAAD85CA4C', 'VpcId'],
+      },
+      PeerVpcId: 'mockVpcBId',
+      PeerOwnerId: '123456789012',
+      PeerRegion: 'us-east-1',
+    });
+  });
+
+  test('Creates a cross region VPC peering connection', () => {
+    const importedVpcC = vpc.VpcV2.fromVpcV2Attributes(stackA, 'VpcB', {
+      vpcId: 'mockVpcCId', // cross account stack references are not supported
+      vpcCidrBlock: '10.3.0.0/16',
+      region: vpcC.env.region,
+      ownerAccountId: '123456789012',
+    });
+
+    new route.VPCPeeringConnection(stackB, 'TestCrossRegionPeeringConnection', {
+      requestorVpc: vpcB,
+      acceptorVpc: importedVpcC,
+    });
+
+    Template.fromStack(stackB).hasResourceProperties('AWS::EC2::VPCPeeringConnection', {
+      VpcId: {
+        'Fn::GetAtt': ['VpcB98A08B07', 'VpcId'],
+      },
+      PeerVpcId: 'mockVpcCId',
+      PeerOwnerId: '123456789012',
+      PeerRegion: 'us-west-2',
+    });
+  });
+
+  test('Throws error when peerRoleArn is not provided for cross-account peering', () => {
+    expect(() => {
+      new route.VPCPeeringConnection(stackA, 'TestCrossAccountPeeringConnection', {
+        requestorVpc: vpcA,
+        acceptorVpc: vpcB,
+      });
+    }).toThrow(/Cross account VPC peering requires peerRoleArn/);
+  });
+
+  test('Throws error when peerRoleArn is provided for same account peering', () => {
+    expect(() => {
+      new route.VPCPeeringConnection(stackB, 'TestPeeringConnection', {
+        requestorVpc: vpcB,
+        acceptorVpc: vpcC,
+        peerRoleArn: 'arn:aws:iam::123456789012:role/unnecessary-role',
+      });
+    }).toThrow(/peerRoleArn is not needed for same account peering/);
+  });
+
+  test('CIDR block overlap with secondary CIDR block should throw error', () => {
+    expect(() => {
+      new route.VPCPeeringConnection(stackA, 'TestPeering', {
+        requestorVpc: vpcA,
+        acceptorVpc: vpcC,
+        peerRoleArn: 'arn:aws:iam::012345678910:role/VpcPeeringRole',
+      });
+    }).toThrow(/CIDR block should not overlap with each other for establishing a peering connection/);
+  });
+
+  test('CIDR block overlap with primary CIDR block should throw error', () => {
+    const testVpc = new vpc.VpcV2(stackA, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
+    });
+    expect(() => {
+      new route.VPCPeeringConnection(stackA, 'TestPeering', {
+        requestorVpc: vpcA,
+        acceptorVpc: testVpc,
+      });
+    }).toThrow(/CIDR block should not overlap with each other for establishing a peering connection/);
+  });
+
+  test('Can create route for VPC peering connection as a target', () => {
+    const peering = new route.VPCPeeringConnection(stackC, 'TestPeering', {
+      requestorVpc: vpcC,
+      acceptorVpc: vpcD,
+    });
+
+    const routeTable = new route.RouteTable(stackC, 'TestRouteTable', {
+      vpc: vpcD,
+    });
+
+    routeTable.addRoute('TestRoute', '172.16.0.0/16', {
+      gateway: peering,
+    });
+    const template = Template.fromStack(stackC);
+    template.hasResourceProperties('AWS::EC2::Route', {
+      VpcPeeringConnectionId: { 'Fn::GetAtt': ['TestPeeringVPCPeeringConnection0E2D1596', 'Id'] },
+      RouteTableId: { 'Fn::GetAtt': ['TestRouteTableC34C2E1C', 'RouteTableId'] },
+      DestinationCidrBlock: '172.16.0.0/16',
+    });
+  });
 });

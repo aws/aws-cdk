@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { UserPoolIdentityProviderProps } from './base';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
  * Properties to initialize UserPoolFacebookIdentityProvider
@@ -33,11 +35,16 @@ export interface UserPoolIdentityProviderFacebookProps extends UserPoolIdentityP
  * Represents an identity provider that integrates with Facebook Login
  * @resource AWS::Cognito::UserPoolIdentityProvider
  */
+@propertyInjectable
 export class UserPoolIdentityProviderFacebook extends UserPoolIdentityProviderBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito.UserPoolIdentityProviderFacebook';
   public readonly providerName: string;
 
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderFacebookProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const scopes = props.scopes ?? ['public_profile'];
 

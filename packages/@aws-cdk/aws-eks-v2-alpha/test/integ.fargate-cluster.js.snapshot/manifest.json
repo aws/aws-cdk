@@ -1,0 +1,938 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "eks-fargate-cluster-test-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "eks-fargate-cluster-test-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "eks-fargate-cluster-test-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "eks-fargate-cluster-test-stack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2e1ca75ebfa0b107c8b4d925f2b8624fdaf00c28805dec809a44b56c7c4d78a8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "eks-fargate-cluster-test-stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "eks-fargate-cluster-test-stack.assets"
+      ],
+      "metadata": {
+        "/eks-fargate-cluster-test-stack/kubectlLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/kubectlLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "kubectlLayer44321E08"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcEA353EBF"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet1Subnet5D09A042"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet1RouteTableB500F1D5"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet1RouteTableAssociation632447AB"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet1DefaultRouteA7BEA095"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet1EIPC3787A01"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet1NATGatewayC7755095"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet2SubnetDFD56340"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet2RouteTable4195A330"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet2RouteTableAssociation691A8AE1"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet2DefaultRouteEB9FBE25"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet2EIP0C04AB7C"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPublicSubnet2NATGatewayB1FD6513"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPrivateSubnet1Subnet974738F7"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPrivateSubnet1RouteTableC927E408"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPrivateSubnet1RouteTableAssociationD89FE653"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPrivateSubnet1DefaultRoute35B62A47"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPrivateSubnet2SubnetAEE82747"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPrivateSubnet2RouteTableEE3ED096"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPrivateSubnet2RouteTableAssociation946F8D20"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcPrivateSubnet2DefaultRouteF087CC47"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcIGW5D07D60C"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcVPCGWAB7FFCE3"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/DefaultVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterDefaultVpcRestrictDefaultSecurityGroupCustomResource6DC9344A"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterRoleCB15D0DE"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/ControlPlaneSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*"
+            }
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/ControlPlaneSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterControlPlaneSecurityGroup9A9D3DD9"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterCAF9262D"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlReadyBarrier": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterKubectlReadyBarrier724731D5"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "timeout": "*",
+              "description": "*",
+              "memorySize": "*",
+              "environment": "*",
+              "role": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*",
+              "vpc": "*",
+              "securityGroups": [
+                "*"
+              ],
+              "vpcSubnets": {
+                "subnets": [
+                  "*",
+                  "*"
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Handler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                },
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterKubectlProviderHandlerServiceRoleB8FACFEE"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Handler/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterKubectlProviderHandlerServiceRoleDefaultPolicyD43FC73D"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Handler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterKubectlProviderHandler57BDDF1A"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Handler/HasEcrPublic": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterKubectlProviderHandlerHasEcrPublicD54723EB"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/AwsCliLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterKubectlProviderAwsCliLayer89D35680"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Provider/framework-onEvent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "description": "*",
+              "runtime": "*",
+              "handler": "*",
+              "timeout": "*",
+              "logGroup": "*",
+              "vpc": "*",
+              "vpcSubnets": {
+                "subnets": [
+                  "*",
+                  "*"
+                ]
+              },
+              "securityGroups": [
+                "*"
+              ],
+              "role": "*",
+              "functionName": "*",
+              "environmentEncryption": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Provider/framework-onEvent/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                },
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterKubectlProviderframeworkonEventServiceRole7B0EE1EE"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterKubectlProviderframeworkonEventServiceRoleDefaultPolicy84061E77"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Provider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterKubectlProviderframeworkonEvent76159DCE"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0885AE23E"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/ClusterAdminRoleAccess": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/ClusterAdminRoleAccess/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterClusterAdminRoleAccess9EFE9888"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/CoreDnsComputeTypePatch/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/CoreDnsComputeTypePatch/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterCoreDnsComputeTypePatch423C0C1E"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/fargate-profile-default/PodExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/fargate-profile-default/PodExecutionRole/ImportPodExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/fargate-profile-default/PodExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterfargateprofiledefaultPodExecutionRole36251E64"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/fargate-profile-default/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterfargateprofiledefault120EDDF6"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "eks-fargate-cluster-test-stack"
+    },
+    "eksfargateclusterDefaultTestDeployAssertAA8FD90E.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "eksfargateclusterDefaultTestDeployAssertAA8FD90E.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "eksfargateclusterDefaultTestDeployAssertAA8FD90E": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "eksfargateclusterDefaultTestDeployAssertAA8FD90E.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "eksfargateclusterDefaultTestDeployAssertAA8FD90E.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "eksfargateclusterDefaultTestDeployAssertAA8FD90E.assets"
+      ],
+      "metadata": {
+        "/eks-fargate-cluster/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/eks-fargate-cluster/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "eks-fargate-cluster/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

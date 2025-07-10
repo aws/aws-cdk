@@ -3,6 +3,8 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnMatchmakingRuleSet } from 'aws-cdk-lib/aws-gamelift';
 import { RuleSetContent } from './matchmaking-ruleset-body';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents a Gamelift matchmaking ruleset
@@ -133,7 +135,11 @@ export abstract class MatchmakingRuleSetBase extends cdk.Resource implements IMa
  *
  * @resource AWS::GameLift::MatchmakingRuleSet
  */
+@propertyInjectable
 export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-gamelift-alpha.MatchmakingRuleSet';
+
   /**
    * Import a ruleSet into CDK using its name
    */
@@ -195,6 +201,8 @@ export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
     super(scope, id, {
       physicalName: props.matchmakingRuleSetName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!cdk.Token.isUnresolved(props.matchmakingRuleSetName)) {
       if (props.matchmakingRuleSetName.length > 128) {

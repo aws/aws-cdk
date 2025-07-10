@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "lambda-circular/DefaultTest": {
+      "stacks": [
+        "aws-cdk-lambda-1"
+      ],
+      "assertionStack": "lambda-circular/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdacircularDefaultTestDeployAssertEAADF4F8"
+    }
+  }
+}

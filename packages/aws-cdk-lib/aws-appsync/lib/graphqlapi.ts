@@ -8,7 +8,9 @@ import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token } from '../../core';
+import { CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token, ValidationError } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -232,13 +234,13 @@ export interface LogConfig {
   readonly role?: IRole;
 
   /**
-  * The number of days log events are kept in CloudWatch Logs.
-  * By default AppSync keeps the logs infinitely. When updating this property,
-  * unsetting it doesn't remove the log retention policy.
-  * To remove the retention policy, set the value to `INFINITE`
-  *
-  * @default RetentionDays.INFINITE
-  */
+   * The number of days log events are kept in CloudWatch Logs.
+   * By default AppSync keeps the logs infinitely. When updating this property,
+   * unsetting it doesn't remove the log retention policy.
+   * To remove the retention policy, set the value to `INFINITE`
+   *
+   * @default RetentionDays.INFINITE
+   */
   readonly retention?: RetentionDays;
 }
 
@@ -276,7 +278,7 @@ export interface SourceApiOptions {
 
 /**
  * Configuration of source API
-*/
+ */
 export interface SourceApi {
   /**
    * Source API that is associated with the merged API
@@ -439,6 +441,15 @@ export interface GraphqlApiProps {
    * @default - No environment variables.
    */
   readonly environmentVariables?: { [key: string]: string };
+
+  /**
+   * The owner contact information for an API resource.
+   *
+   * This field accepts any string input with a length of 0 - 256 characters.
+   *
+   * @default - No owner contact.
+   */
+  readonly ownerContact?: string;
 }
 
 /**
@@ -499,7 +510,13 @@ export enum IntrospectionConfig {
  *
  * @resource AWS::AppSync::GraphQLApi
  */
+@propertyInjectable
 export class GraphqlApi extends GraphqlApiBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appsync.GraphqlApi';
+
   /**
    * Import a GraphQL API through this function
    *
@@ -520,7 +537,7 @@ export class GraphqlApi extends GraphqlApiBase {
       // this value is only needed to construct event rules.
       public readonly graphQLEndpointArn = attrs.graphQLEndpointArn ?? '';
       public readonly visibility = attrs.visibility ?? Visibility.GLOBAL;
-      public readonly modes = attrs.modes ?? []
+      public readonly modes = attrs.modes ?? [];
 
       constructor(s: Construct, i: string) {
         super(s, i);
@@ -569,7 +586,7 @@ export class GraphqlApi extends GraphqlApiBase {
     if (this.definition.schema) {
       return this.definition.schema;
     }
-    throw new Error('Schema does not exist for AppSync merged APIs.');
+    throw new ValidationError('Schema does not exist for AppSync merged APIs.', this);
   }
 
   /**
@@ -599,6 +616,8 @@ export class GraphqlApi extends GraphqlApiBase {
 
   constructor(scope: Construct, id: string, props: GraphqlApiProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const defaultMode = props.authorizationConfig?.defaultAuthorization ??
       { authorizationType: AuthorizationType.API_KEY };
@@ -610,16 +629,19 @@ export class GraphqlApi extends GraphqlApiBase {
     this.validateAuthorizationProps(modes);
 
     if (!props.schema && !props.definition) {
-      throw new Error('You must specify a GraphQL schema or source APIs in property definition.');
+      throw new ValidationError('You must specify a GraphQL schema or source APIs in property definition.', this);
     }
     if ((props.schema !== undefined) === (props.definition !== undefined)) {
-      throw new Error('You cannot specify both properties schema and definition.');
+      throw new ValidationError('You cannot specify both properties schema and definition.', this);
     }
     if (props.queryDepthLimit !== undefined && (props.queryDepthLimit < 0 || props.queryDepthLimit > 75)) {
-      throw new Error('You must specify a query depth limit between 0 and 75.');
+      throw new ValidationError('You must specify a query depth limit between 0 and 75.', this);
     }
     if (props.resolverCountLimit !== undefined && (props.resolverCountLimit < 0 || props.resolverCountLimit > 10000)) {
-      throw new Error('You must specify a resolver count limit between 0 and 10000.');
+      throw new ValidationError('You must specify a resolver count limit between 0 and 10000.', this);
+    }
+    if (!Token.isUnresolved(props.ownerContact) && props.ownerContact !== undefined && (props.ownerContact.length > 256)) {
+      throw new ValidationError('You must specify `ownerContact` as a string of 256 characters or less.', this);
     }
 
     this.definition = props.schema ? Definition.fromSchema(props.schema) : props.definition!;
@@ -653,6 +675,7 @@ export class GraphqlApi extends GraphqlApiBase {
       queryDepthLimit: props.queryDepthLimit,
       resolverCountLimit: props.resolverCountLimit,
       environmentVariables: Lazy.any({ produce: () => this.renderEnvironmentVariables() }),
+      ownerContact: props.ownerContact,
     });
 
     this.apiId = this.api.attrApiId;
@@ -696,10 +719,19 @@ export class GraphqlApi extends GraphqlApiBase {
       const config = modes.find((mode: AuthorizationMode) => {
         return mode.authorizationType === AuthorizationType.LAMBDA && mode.lambdaAuthorizerConfig;
       })?.lambdaAuthorizerConfig;
-      config?.handler.addPermission(`${id}-appsync`, {
-        principal: new ServicePrincipal('appsync.amazonaws.com'),
-        action: 'lambda:InvokeFunction',
-      });
+
+      if (FeatureFlags.of(this).isEnabled(cxapi.APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION)) {
+        config?.handler.addPermission(`${id}-appsync`, {
+          principal: new ServicePrincipal('appsync.amazonaws.com'),
+          action: 'lambda:InvokeFunction',
+          sourceArn: this.arn,
+        });
+      } else {
+        config?.handler.addPermission(`${id}-appsync`, {
+          principal: new ServicePrincipal('appsync.amazonaws.com'),
+          action: 'lambda:InvokeFunction',
+        });
+      }
     }
 
     const logGroupName = `/aws/appsync/apis/${this.apiId}`;
@@ -713,7 +745,6 @@ export class GraphqlApi extends GraphqlApiBase {
     } else {
       this.logGroup = LogGroup.fromLogGroupName(this, 'LogGroup', logGroupName);
     }
-
   }
 
   private setupSourceApiAssociations() {
@@ -764,24 +795,24 @@ export class GraphqlApi extends GraphqlApiBase {
 
   private validateAuthorizationProps(modes: AuthorizationMode[]) {
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.LAMBDA).length > 1) {
-      throw new Error('You can only have a single AWS Lambda function configured to authorize your API.');
+      throw new ValidationError('You can only have a single AWS Lambda function configured to authorize your API.', this);
     }
     modes.map((mode) => {
       if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
-        throw new Error('Missing OIDC Configuration');
+        throw new ValidationError('Missing OIDC Configuration', this);
       }
       if (mode.authorizationType === AuthorizationType.USER_POOL && !mode.userPoolConfig) {
-        throw new Error('Missing User Pool Configuration');
+        throw new ValidationError('Missing User Pool Configuration', this);
       }
       if (mode.authorizationType === AuthorizationType.LAMBDA && !mode.lambdaAuthorizerConfig) {
-        throw new Error('Missing Lambda Configuration');
+        throw new ValidationError('Missing Lambda Configuration', this);
       }
     });
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {
-      throw new Error('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+      throw new ValidationError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html', this);
     }
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.IAM).length > 1) {
-      throw new Error('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+      throw new ValidationError('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html', this);
     }
   }
 
@@ -790,28 +821,30 @@ export class GraphqlApi extends GraphqlApiBase {
    *
    * @param construct the dependee
    */
+  @MethodMetadata()
   public addSchemaDependency(construct: CfnResource): boolean {
     if (this.schemaResource) {
       construct.addDependency(this.schemaResource);
-    };
+    }
     return true;
   }
 
   /**
    * Add an environment variable to the construct.
    */
+  @MethodMetadata()
   public addEnvironmentVariable(key: string, value: string) {
     if (this.definition.sourceApiOptions) {
-      throw new Error('Environment variables are not supported for merged APIs');
+      throw new ValidationError('Environment variables are not supported for merged APIs', this);
     }
     if (!Token.isUnresolved(key) && !/^[A-Za-z]+\w*$/.test(key)) {
-      throw new Error(`Key '${key}' must begin with a letter and can only contain letters, numbers, and underscores`);
+      throw new ValidationError(`Key '${key}' must begin with a letter and can only contain letters, numbers, and underscores`, this);
     }
     if (!Token.isUnresolved(key) && (key.length < 2 || key.length > 64)) {
-      throw new Error(`Key '${key}' must be between 2 and 64 characters long, got ${key.length}`);
+      throw new ValidationError(`Key '${key}' must be between 2 and 64 characters long, got ${key.length}`, this);
     }
     if (!Token.isUnresolved(value) && value.length > 512) {
-      throw new Error(`Value for '${key}' is too long. Values can be up to 512 characters long, got ${value.length}`);
+      throw new ValidationError(`Value for '${key}' is too long. Values can be up to 512 characters long, got ${value.length}`, this);
     }
 
     this.environmentVariables[key] = value;
@@ -904,7 +937,7 @@ export class GraphqlApi extends GraphqlApiBase {
    */
   public get appSyncDomainName(): string {
     if (!this.domainNameResource) {
-      throw new Error('Cannot retrieve the appSyncDomainName without a domainName configuration');
+      throw new ValidationError('Cannot retrieve the appSyncDomainName without a domainName configuration', this);
     }
     return this.domainNameResource.attrAppSyncDomainName;
   }

@@ -10,7 +10,7 @@ import { App, CfnOutput, CustomResource, CustomResourceProvider, CustomResourceP
 import { Construct } from 'constructs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-/* eslint-disable @aws-cdk/no-core-construct */
+/* eslint-disable @cdklabs/no-core-construct */
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {

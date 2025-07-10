@@ -582,7 +582,7 @@
    "CreationPolicy": {
     "ResourceSignal": {
      "Count": 1,
-     "Timeout": "PT30M"
+     "Timeout": "PT10M"
     }
    },
    "Metadata": {

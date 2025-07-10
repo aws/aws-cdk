@@ -8,6 +8,8 @@ import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFr
 import { AttachedPolicies } from './private/util';
 import { IUser } from './user';
 import { Annotations, ArnFormat, Lazy, Resource, Stack } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an IAM Group.
@@ -127,7 +129,11 @@ abstract class GroupBase extends Resource implements IGroup {
  *
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html
  */
+@propertyInjectable
 export class Group extends GroupBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.Group';
+
   /**
    * Import an external group by ARN.
    *
@@ -183,6 +189,8 @@ export class Group extends GroupBase {
     super(scope, id, {
       physicalName: props.groupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.managedPolicies.push(...props.managedPolicies || []);
 
@@ -210,6 +218,7 @@ export class Group extends GroupBase {
    * for quota of managed policies attached to an IAM group.
    * @param policy The managed policy to attach.
    */
+  @MethodMetadata()
   public addManagedPolicy(policy: IManagedPolicy) {
     if (this.managedPolicies.find(mp => mp === policy)) { return; }
     this.managedPolicies.push(policy);

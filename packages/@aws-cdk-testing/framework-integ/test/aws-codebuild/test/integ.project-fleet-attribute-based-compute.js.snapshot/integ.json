@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "AttributeBasedComputeFleetIntegTest/DefaultTest": {
+      "stacks": [
+        "AttributeBasedComputeFleetIntegStack0",
+        "AttributeBasedComputeFleetIntegStack1"
+      ],
+      "assertionStack": "AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AttributeBasedComputeFleetIntegTestDefaultTestDeployAssertDD94353E"
+    }
+  }
+}

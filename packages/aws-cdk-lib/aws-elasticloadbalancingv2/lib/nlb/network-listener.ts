@@ -4,10 +4,13 @@ import { NetworkListenerCertificate } from './network-listener-certificate';
 import { INetworkLoadBalancer } from './network-load-balancer';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Duration, Resource, Lazy } from '../../../core';
+import { Duration, Resource, Lazy, Token } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { AlpnPolicy, IpAddressType, Protocol, SslPolicy } from '../shared/enums';
+import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
 import { IListenerCertificate } from '../shared/listener-certificate';
 import { validateNetworkProtocol } from '../shared/util';
 
@@ -76,6 +79,13 @@ export interface BaseNetworkListenerProps {
    * @default - None
    */
   readonly alpnPolicy?: AlpnPolicy;
+
+  /**
+   * The load balancer TCP idle timeout.
+   *
+   * @default Duration.seconds(350)
+   */
+  readonly tcpIdleTimeout?: Duration;
 }
 
 /**
@@ -114,7 +124,13 @@ export interface NetworkListenerLookupOptions extends BaseListenerLookupOptions 
  *
  * @resource AWS::ElasticLoadBalancingV2::Listener
  */
+@propertyInjectable
 export class NetworkListener extends BaseListener implements INetworkListener {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.NetworkListener';
+
   /**
    * Looks up a network listener
    */
@@ -177,22 +193,15 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     validateNetworkProtocol(proto);
 
     if (proto === Protocol.TLS && certs.filter(v => v != null).length === 0) {
-      throw new Error('When the protocol is set to TLS, you must specify certificates');
+      throw new ValidationError('When the protocol is set to TLS, you must specify certificates', scope);
     }
 
     if (proto !== Protocol.TLS && certs.length > 0) {
-      throw new Error('Protocol must be TLS when certificates have been specified');
+      throw new ValidationError('Protocol must be TLS when certificates have been specified', scope);
     }
 
     if (proto !== Protocol.TLS && props.alpnPolicy) {
-      throw new Error('Protocol must be TLS when alpnPolicy have been specified');
-    }
-
-    if (
-      props.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK &&
-      (props.protocol === Protocol.UDP || props.protocol === Protocol.TCP_UDP)
-    ) {
-      throw new Error('UDP or TCP_UDP listeners cannot be added to a dualstack network load balancer.');
+      throw new ValidationError('Protocol must be TLS when alpnPolicy have been specified', scope);
     }
 
     super(scope, id, {
@@ -203,6 +212,8 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
       alpnPolicy: props.alpnPolicy ? [props.alpnPolicy] : undefined,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.certificateArns = [];
     this.loadBalancer = props.loadBalancer;
@@ -212,7 +223,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       this.addCertificates('DefaultCertificates', certs);
     }
     if (props.defaultAction && props.defaultTargetGroups) {
-      throw new Error('Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'');
+      throw new ValidationError('Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'', this);
     }
 
     if (props.defaultAction) {
@@ -221,6 +232,24 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
     if (props.defaultTargetGroups) {
       this.setDefaultAction(NetworkListenerAction.forward(props.defaultTargetGroups));
+    }
+
+    if (props.tcpIdleTimeout !== undefined && !Token.isUnresolved(props.tcpIdleTimeout)) {
+      if (props.tcpIdleTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
+        throw new ValidationError(`\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${props.tcpIdleTimeout.toMilliseconds()} milliseconds.`, this);
+      }
+
+      const tcpIdleTimeoutSeconds = props.tcpIdleTimeout.toSeconds();
+
+      if (proto === Protocol.UDP) {
+        throw new ValidationError('\`tcpIdleTimeout\` cannot be set when `protocol` is `Protocol.UDP`.', this);
+      }
+
+      if (tcpIdleTimeoutSeconds < 60 || tcpIdleTimeoutSeconds > 6000) {
+        throw new ValidationError(`\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${tcpIdleTimeoutSeconds} seconds.`, this);
+      }
+
+      this.setAttribute('tcp.idle_timeout.seconds', tcpIdleTimeoutSeconds.toString());
     }
   }
 
@@ -231,6 +260,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    * resources since cloudformation requires the certificates array on the
    * listener resource to have a length of 1.
    */
+  @MethodMetadata()
   public addCertificates(id: string, certificates: IListenerCertificate[]): void {
     const additionalCerts = [...certificates];
     if (this.certificateArns.length === 0 && additionalCerts.length > 0) {
@@ -253,6 +283,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    * All target groups will be load balanced to with equal weight and without
    * stickiness. For a more complex configuration than that, use `addAction()`.
    */
+  @MethodMetadata()
   public addTargetGroups(_id: string, ...targetGroups: INetworkTargetGroup[]): void {
     this.setDefaultAction(NetworkListenerAction.forward(targetGroups));
   }
@@ -264,6 +295,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    * including weighted forwarding. See the `NetworkListenerAction` class for
    * all options.
    */
+  @MethodMetadata()
   public addAction(_id: string, props: AddNetworkActionProps): void {
     this.setDefaultAction(props.action);
   }
@@ -282,10 +314,11 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    *
    * @returns The newly created target group
    */
+  @MethodMetadata()
   public addTargets(id: string, props: AddNetworkTargetsProps): NetworkTargetGroup {
     if (!this.loadBalancer.vpc) {
       // eslint-disable-next-line max-len
-      throw new Error('Can only call addTargets() when using a constructed Load Balancer or imported Load Balancer with specified VPC; construct a new TargetGroup and use addTargetGroup');
+      throw new ValidationError('Can only call addTargets() when using a constructed Load Balancer or imported Load Balancer with specified VPC; construct a new TargetGroup and use addTargetGroup', this);
     }
 
     const group = new NetworkTargetGroup(this, id + 'Group', {

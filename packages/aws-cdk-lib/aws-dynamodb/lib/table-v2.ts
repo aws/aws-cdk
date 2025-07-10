@@ -1,18 +1,41 @@
 import { Construct } from 'constructs';
+
 import { Billing } from './billing';
 import { Capacity } from './capacity';
 import { CfnGlobalTable } from './dynamodb.generated';
 import { TableEncryptionV2 } from './encryption';
+
 import {
+  Attribute,
+  BillingMode,
+  LocalSecondaryIndexProps,
+  ProjectionType,
+  SecondaryIndexProps,
   StreamViewType,
-  Attribute, TableClass, LocalSecondaryIndexProps,
-  SecondaryIndexProps, BillingMode, ProjectionType,
+  PointInTimeRecoverySpecification,
+  TableClass,
+  WarmThroughput,
 } from './shared';
-import { TableBaseV2, ITableV2 } from './table-v2-base';
+import { ITableV2, TableBaseV2 } from './table-v2-base';
 import { PolicyDocument } from '../../aws-iam';
 import { IStream } from '../../aws-kinesis';
 import { IKey, Key } from '../../aws-kms';
-import { ArnFormat, CfnTag, Lazy, PhysicalName, RemovalPolicy, Stack, Token } from '../../core';
+import {
+  ArnFormat,
+  CfnTag,
+  FeatureFlags,
+  Lazy,
+  PhysicalName,
+  RemovalPolicy,
+  Stack,
+  TagManager,
+  TagType,
+  Token,
+} from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as cxapi from '../../cx-api';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -102,6 +125,13 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
    * @default - inherited from the primary table.
    */
   readonly maxWriteRequestUnits?: number;
+
+  /**
+   * The warm throughput configuration for the global secondary index.
+   *
+   * @default - no warm throughput is configured
+   */
+  readonly warmThroughput?: WarmThroughput;
 }
 
 /**
@@ -124,10 +154,18 @@ export interface TableOptionsV2 {
 
   /**
    * Whether point-in-time recovery is enabled.
-   *
-   * @default false
+   * @deprecated use `pointInTimeRecoverySpecification` instead
+   * @default false - point in time recovery is not enabled.
    */
   readonly pointInTimeRecovery?: boolean;
+
+  /**
+   * Whether point-in-time recovery is enabled
+   * and recoveryPeriodInDays is set.
+   *
+   * @default - point in time recovery is not enabled.
+   */
+  readonly pointInTimeRecoverySpecification?: PointInTimeRecoverySpecification;
 
   /**
    * The table class.
@@ -144,7 +182,7 @@ export interface TableOptionsV2 {
   readonly kinesisStream?: IStream;
 
   /**
-   * Tags to be applied to the table or replica table
+   * Tags to be applied to the primary table (default replica table).
    *
    * @default - no tags
    */
@@ -177,7 +215,7 @@ export interface ReplicaTableProps extends TableOptionsV2 {
   readonly readCapacity?: Capacity;
 
   /**
-   * The maxium read request units.
+   * The maximum read request units.
    *
    * Note: This can only be configured if the primary table billing is PAY_PER_REQUEST.
    *
@@ -282,6 +320,13 @@ export interface TablePropsV2 extends TableOptionsV2 {
    * @default TableEncryptionV2.dynamoOwnedKey()
    */
   readonly encryption?: TableEncryptionV2;
+
+  /**
+   * The warm throughput configuration for the table.
+   *
+   * @default - no warm throughput is configured
+   */
+  readonly warmThroughput?: WarmThroughput;
 }
 
 /**
@@ -361,7 +406,13 @@ export interface TableAttributesV2 {
 /**
  * A DynamoDB Table.
  */
+@propertyInjectable
 export class TableV2 extends TableBaseV2 {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-dynamodb.TableV2';
+
   /**
    * Creates a Table construct that represents an external table via table name.
    *
@@ -410,7 +461,7 @@ export class TableV2 extends TableBaseV2 {
 
         const resourceRegion = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).region;
         if (!resourceRegion) {
-          throw new Error('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>');
+          throw new ValidationError('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>', this);
         }
 
         this.region = resourceRegion;
@@ -428,7 +479,7 @@ export class TableV2 extends TableBaseV2 {
     const stack = Stack.of(scope);
     if (!attrs.tableArn) {
       if (!attrs.tableName) {
-        throw new Error('At least one of `tableArn` or `tableName` must be provided');
+        throw new ValidationError('At least one of `tableArn` or `tableName` must be provided', scope);
       }
 
       tableName = attrs.tableName;
@@ -439,13 +490,13 @@ export class TableV2 extends TableBaseV2 {
       });
     } else {
       if (attrs.tableName) {
-        throw new Error('Only one of `tableArn` or `tableName` can be provided, but not both');
+        throw new ValidationError('Only one of `tableArn` or `tableName` can be provided, but not both', scope);
       }
 
       tableArn = attrs.tableArn;
       const resourceName = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (!resourceName) {
-        throw new Error('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>');
+        throw new ValidationError('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>', scope);
       }
       tableName = resourceName;
     }
@@ -482,6 +533,8 @@ export class TableV2 extends TableBaseV2 {
 
   protected readonly region: string;
 
+  protected readonly tags: TagManager;
+
   private readonly billingMode: string;
   private readonly partitionKey: Attribute;
   private readonly hasSortKey: boolean;
@@ -510,11 +563,14 @@ export class TableV2 extends TableBaseV2 {
 
   public constructor(scope: Construct, id: string, props: TablePropsV2) {
     super(scope, id, { physicalName: props.tableName ?? PhysicalName.GENERATE_IF_NEEDED });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.tableOptions = props;
     this.partitionKey = props.partitionKey;
     this.hasSortKey = props.sortKey !== undefined;
     this.region = this.stack.region;
+    this.tags = new TagManager(TagType.STANDARD, CfnGlobalTable.CFN_RESOURCE_TYPE_NAME);
 
     this.encryption = props.encryption;
     this.encryptionKey = this.encryption?.tableKey;
@@ -524,6 +580,8 @@ export class TableV2 extends TableBaseV2 {
     if (props.sortKey) {
       this.addKey(props.sortKey, RANGE_KEY_TYPE);
     }
+
+    this.validatePitr(props);
 
     if (props.billing?.mode === BillingMode.PAY_PER_REQUEST || props.billing?.mode === undefined) {
       this.maxReadRequestUnits = props.billing?._renderReadCapacity();
@@ -557,6 +615,7 @@ export class TableV2 extends TableBaseV2 {
       timeToLiveSpecification: props.timeToLiveAttribute
         ? { attributeName: props.timeToLiveAttribute, enabled: true }
         : undefined,
+      warmThroughput: props.warmThroughput ?? undefined,
     });
     resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -583,6 +642,7 @@ export class TableV2 extends TableBaseV2 {
    *
    * @param props the properties of the replica table to add
    */
+  @MethodMetadata()
   public addReplica(props: ReplicaTableProps) {
     this.validateReplica(props);
 
@@ -607,6 +667,7 @@ export class TableV2 extends TableBaseV2 {
    *
    * @param props the properties of the global secondary index
    */
+  @MethodMetadata()
   public addGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2) {
     this.validateGlobalSecondaryIndex(props);
     const globalSecondaryIndex = this.configureGlobalSecondaryIndex(props);
@@ -620,6 +681,7 @@ export class TableV2 extends TableBaseV2 {
    *
    * @param props the properties of the local secondary index
    */
+  @MethodMetadata()
   public addLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
     this.validateLocalSecondaryIndex(props);
     const localSecondaryIndex = this.configureLocalSecondaryIndex(props);
@@ -633,13 +695,14 @@ export class TableV2 extends TableBaseV2 {
    *
    * @param region the region of the replica table
    */
+  @MethodMetadata()
   public replica(region: string): ITableV2 {
     if (Token.isUnresolved(this.stack.region)) {
-      throw new Error('Replica tables are not supported in a region agnostic stack');
+      throw new ValidationError('Replica tables are not supported in a region agnostic stack', this);
     }
 
     if (Token.isUnresolved(region)) {
-      throw new Error('Provided `region` cannot be a token');
+      throw new ValidationError('Provided `region` cannot be a token', this);
     }
 
     if (region === this.stack.region) {
@@ -647,7 +710,7 @@ export class TableV2 extends TableBaseV2 {
     }
 
     if (!this.replicaTables.has(region)) {
-      throw new Error(`No replica table exists in region ${region}`);
+      throw new ValidationError(`No replica table exists in region ${region}`, this);
     }
 
     const replicaTableArn = this.replicaTableArns.find(arn => arn.includes(region));
@@ -662,9 +725,40 @@ export class TableV2 extends TableBaseV2 {
   }
 
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
-    const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
     const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
-    const resourcePolicy = props.resourcePolicy ?? this.tableOptions.resourcePolicy;
+
+    // Determine if Point-In-Time Recovery (PITR) is enabled based on the provided property or table options (deprecated options).
+    const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
+
+    /* Construct the PointInTimeRecoverySpecification object to configure PITR settings.
+    * 1. Explicitly provided specification via props.pointInTimeRecoverySpecification.
+    * 2. Fallback to default specification from tableOptions.pointInTimeRecoverySpecification.
+    * 3. Derive the specification based on pointInTimeRecovery if it's defined.
+    */
+    const pointInTimeRecoverySpecification: PointInTimeRecoverySpecification | undefined =
+      props.pointInTimeRecoverySpecification ??
+      this.tableOptions.pointInTimeRecoverySpecification ??
+      (pointInTimeRecovery !== undefined
+        ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
+        : undefined);
+
+    /*
+    * Feature flag set as the following may be a breaking change.
+    * @see https://github.com/aws/aws-cdk/pull/31097
+    * @see https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/FEATURE_FLAGS.md
+    */
+    const resourcePolicy = FeatureFlags.of(this).isEnabled(cxapi.DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA)
+      ? (props.region === this.region ? this.tableOptions.resourcePolicy : props.resourcePolicy) || undefined
+      : props.resourcePolicy ?? this.tableOptions.resourcePolicy;
+
+    const propTags: Record<string, string> = (props.tags ?? []).reduce((p, item) =>
+      ({ ...p, [item.key]: item.value }), {},
+    );
+
+    const tags: CfnTag[] = Object.entries({
+      ...this.tags.tagValues(),
+      ...propTags,
+    }).map(([k, v]) => ({ key: k, value: v }));
 
     return {
       region: props.region,
@@ -678,13 +772,11 @@ export class TableV2 extends TableBaseV2 {
       contributorInsightsSpecification: contributorInsights !== undefined
         ? { enabled: contributorInsights }
         : undefined,
-      pointInTimeRecoverySpecification: pointInTimeRecovery !== undefined
-        ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
-        : undefined,
+      pointInTimeRecoverySpecification: pointInTimeRecoverySpecification,
       readProvisionedThroughputSettings: props.readCapacity
         ? props.readCapacity._renderReadCapacity()
         : this.readProvisioning,
-      tags: props.tags,
+      tags: tags.length === 0 ? undefined : tags,
       readOnDemandThroughputSettings: props.maxReadRequestUnits
         ? { maxReadRequestUnits: props.maxReadRequestUnits }
         : this.maxReadRequestUnits
@@ -705,6 +797,8 @@ export class TableV2 extends TableBaseV2 {
 
     props.maxReadRequestUnits && this.globalSecondaryIndexMaxReadUnits.set(props.indexName, props.maxReadRequestUnits);
 
+    const warmThroughput = props.warmThroughput ?? undefined;
+
     const writeOnDemandThroughputSettings: CfnGlobalTable.WriteOnDemandThroughputSettingsProperty | undefined = props.maxWriteRequestUnits
       ? { maxWriteRequestUnits: props.maxWriteRequestUnits }
       : undefined;
@@ -715,6 +809,7 @@ export class TableV2 extends TableBaseV2 {
       projection,
       writeProvisionedThroughputSettings,
       writeOnDemandThroughputSettings,
+      warmThroughput,
     };
   }
 
@@ -786,7 +881,7 @@ export class TableV2 extends TableBaseV2 {
 
     props.nonKeyAttributes?.forEach(attr => this.nonKeyAttributes.add(attr));
     if (this.nonKeyAttributes.size > MAX_NON_KEY_ATTRIBUTES) {
-      throw new Error(`The maximum number of 'nonKeyAttributes' across all secondary indexes is ${MAX_NON_KEY_ATTRIBUTES}`);
+      throw new ValidationError(`The maximum number of 'nonKeyAttributes' across all secondary indexes is ${MAX_NON_KEY_ATTRIBUTES}`, this);
     }
 
     return {
@@ -850,7 +945,7 @@ export class TableV2 extends TableBaseV2 {
 
     const existingAttributeDef = this.attributeDefinitions.find(def => def.attributeName === name);
     if (existingAttributeDef && existingAttributeDef.attributeType !== type) {
-      throw new Error(`Unable to specify ${name} as ${type} because it was already defined as ${existingAttributeDef.attributeType}`);
+      throw new ValidationError(`Unable to specify ${name} as ${type} because it was already defined as ${existingAttributeDef.attributeType}`, this);
     }
 
     if (!existingAttributeDef) {
@@ -864,29 +959,29 @@ export class TableV2 extends TableBaseV2 {
 
   private validateIndexName(indexName: string) {
     if (this.globalSecondaryIndexes.has(indexName) || this.localSecondaryIndexes.has(indexName)) {
-      throw new Error(`Duplicate secondary index name, ${indexName}, is not allowed`);
+      throw new ValidationError(`Duplicate secondary index name, ${indexName}, is not allowed`, this);
     }
   }
 
   private validateIndexProjection(props: SecondaryIndexProps) {
     if (props.projectionType === ProjectionType.INCLUDE && !props.nonKeyAttributes) {
-      throw new Error(`Non-key attributes should be specified when using ${ProjectionType.INCLUDE} projection type`);
+      throw new ValidationError(`Non-key attributes should be specified when using ${ProjectionType.INCLUDE} projection type`, this);
     }
 
     if (props.projectionType !== ProjectionType.INCLUDE && props.nonKeyAttributes) {
-      throw new Error(`Non-key attributes should not be specified when not using ${ProjectionType.INCLUDE} projection type`);
+      throw new ValidationError(`Non-key attributes should not be specified when not using ${ProjectionType.INCLUDE} projection type`, this);
     }
   }
 
   private validateReplicaIndexOptions(options: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions }) {
     for (const indexName of Object.keys(options)) {
       if (!this.globalSecondaryIndexes.has(indexName)) {
-        throw new Error(`Cannot configure replica global secondary index, ${indexName}, because it is not defined on the primary table`);
+        throw new ValidationError(`Cannot configure replica global secondary index, ${indexName}, because it is not defined on the primary table`, this);
       }
 
       const replicaGsiOptions = options[indexName];
       if (this.billingMode === BillingMode.PAY_PER_REQUEST && replicaGsiOptions.readCapacity) {
-        throw new Error(`Cannot configure 'readCapacity' for replica global secondary index, ${indexName}, because billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+        throw new ValidationError(`Cannot configure 'readCapacity' for replica global secondary index, ${indexName}, because billing mode is ${BillingMode.PAY_PER_REQUEST}`, this);
       }
     }
   }
@@ -894,23 +989,23 @@ export class TableV2 extends TableBaseV2 {
   private validateReplica(props: ReplicaTableProps) {
     const stackRegion = this.stack.region;
     if (Token.isUnresolved(stackRegion)) {
-      throw new Error('Replica tables are not supported in a region agnostic stack');
+      throw new ValidationError('Replica tables are not supported in a region agnostic stack', this);
     }
 
     if (Token.isUnresolved(props.region)) {
-      throw new Error('Replica table region must not be a token');
+      throw new ValidationError('Replica table region must not be a token', this);
     }
 
     if (props.region === this.stack.region) {
-      throw new Error(`You cannot add a replica table in the same region as the primary table - the primary table region is ${this.region}`);
+      throw new ValidationError(`You cannot add a replica table in the same region as the primary table - the primary table region is ${this.region}`, this);
     }
 
     if (this.replicaTables.has(props.region)) {
-      throw new Error(`Duplicate replica table region, ${props.region}, is not allowed`);
+      throw new ValidationError(`Duplicate replica table region, ${props.region}, is not allowed`, this);
     }
 
     if (this.billingMode === BillingMode.PAY_PER_REQUEST && props.readCapacity) {
-      throw new Error(`You cannot provide 'readCapacity' on a replica table when the billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+      throw new ValidationError(`You cannot provide 'readCapacity' on a replica table when the billing mode is ${BillingMode.PAY_PER_REQUEST}`, this);
     }
   }
 
@@ -918,11 +1013,11 @@ export class TableV2 extends TableBaseV2 {
     this.validateIndexName(props.indexName);
 
     if (this.globalSecondaryIndexes.size === MAX_GSI_COUNT) {
-      throw new Error(`You may not provide more than ${MAX_GSI_COUNT} global secondary indexes`);
+      throw new ValidationError(`You may not provide more than ${MAX_GSI_COUNT} global secondary indexes`, this);
     }
 
     if (this.billingMode === BillingMode.PAY_PER_REQUEST && (props.readCapacity || props.writeCapacity)) {
-      throw new Error(`You cannot configure 'readCapacity' or 'writeCapacity' on a global secondary index when the billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+      throw new ValidationError(`You cannot configure 'readCapacity' or 'writeCapacity' on a global secondary index when the billing mode is ${BillingMode.PAY_PER_REQUEST}`, this);
     }
   }
 
@@ -930,11 +1025,27 @@ export class TableV2 extends TableBaseV2 {
     this.validateIndexName(props.indexName);
 
     if (!this.hasSortKey) {
-      throw new Error('The table must have a sort key in order to add a local secondary index');
+      throw new ValidationError('The table must have a sort key in order to add a local secondary index', this);
     }
 
     if (this.localSecondaryIndexes.size === MAX_LSI_COUNT) {
-      throw new Error(`You may not provide more than ${MAX_LSI_COUNT} local secondary indexes`);
+      throw new ValidationError(`You may not provide more than ${MAX_LSI_COUNT} local secondary indexes`, this);
+    }
+  }
+
+  private validatePitr(props: TablePropsV2) {
+    const recoveryPeriodInDays = props.pointInTimeRecoverySpecification?.recoveryPeriodInDays;
+
+    if (props.pointInTimeRecovery !== undefined && props.pointInTimeRecoverySpecification !== undefined) {
+      throw new ValidationError('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.', this);
+    }
+
+    if (!props.pointInTimeRecoverySpecification?.pointInTimeRecoveryEnabled && recoveryPeriodInDays) {
+      throw new ValidationError('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.', this);
+    }
+
+    if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35 )) {
+      throw new ValidationError('`recoveryPeriodInDays` must be a value between `1` and `35`.', this);
     }
   }
 }

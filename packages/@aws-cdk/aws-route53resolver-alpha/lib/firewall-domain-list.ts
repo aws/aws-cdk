@@ -4,6 +4,8 @@ import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { IResource, Resource, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnFirewallDomainList } from 'aws-cdk-lib/aws-route53resolver';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * A Firewall Domain List
@@ -113,7 +115,6 @@ export abstract class FirewallDomains {
         return { domainFileUrl: asset.s3ObjectUrl };
       },
     };
-
   }
 
   /** Binds the domains to a domain list */
@@ -144,7 +145,11 @@ export interface DomainsConfig {
 /**
  * A Firewall Domain List
  */
+@propertyInjectable
 export class FirewallDomainList extends Resource implements IFirewallDomainList {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-route53resolver-alpha.FirewallDomainList';
+
   /**
    * Import an existing Firewall Rule Group
    */
@@ -164,51 +169,53 @@ export class FirewallDomainList extends Resource implements IFirewallDomainList 
   public readonly firewallDomainListArn: string;
 
   /**
-    * The date and time that the domain list was created
-    * @attribute
-    */
+   * The date and time that the domain list was created
+   * @attribute
+   */
   public readonly firewallDomainListCreationTime: string;
 
   /**
-    * The creator request ID
-    * @attribute
-    */
+   * The creator request ID
+   * @attribute
+   */
   public readonly firewallDomainListCreatorRequestId: string;
 
   /**
-    * The number of domains in the list
-    * @attribute
-    */
+   * The number of domains in the list
+   * @attribute
+   */
   public readonly firewallDomainListDomainCount: number;
 
   /**
-    * The owner of the list, used only for lists that are not managed by you.
-    * For example, the managed domain list `AWSManagedDomainsMalwareDomainList`
-    * has the managed owner name `Route 53 Resolver DNS Firewall`.
-    * @attribute
-    */
+   * The owner of the list, used only for lists that are not managed by you.
+   * For example, the managed domain list `AWSManagedDomainsMalwareDomainList`
+   * has the managed owner name `Route 53 Resolver DNS Firewall`.
+   * @attribute
+   */
   public readonly firewallDomainListManagedOwnerName: string;
 
   /**
-    * The date and time that the domain list was last modified
-    * @attribute
-    */
+   * The date and time that the domain list was last modified
+   * @attribute
+   */
   public readonly firewallDomainListModificationTime: string;
 
   /**
-    * The status of the domain list
-    * @attribute
-    */
+   * The status of the domain list
+   * @attribute
+   */
   public readonly firewallDomainListStatus: string;
 
   /**
-    * Additional information about the status of the rule group
-    * @attribute
-    */
+   * Additional information about the status of the rule group
+   * @attribute
+   */
   public readonly firewallDomainListStatusMessage: string;
 
   constructor(scope: Construct, id: string, props: FirewallDomainListProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.name && !Token.isUnresolved(props.name) && !/^[\w-.]{1,128}$/.test(props.name)) {
       throw new Error(`Invalid domain list name: ${props.name}. The name must have 1-128 characters. Valid characters: A-Z, a-z, 0-9, _, -, .`);

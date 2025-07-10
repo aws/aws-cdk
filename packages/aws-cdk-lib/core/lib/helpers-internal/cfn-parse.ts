@@ -1,3 +1,4 @@
+import { CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS } from '../../../cx-api';
 import { CfnCondition } from '../cfn-condition';
 import { CfnElement } from '../cfn-element';
 import { Fn } from '../cfn-fn';
@@ -9,10 +10,13 @@ import {
   CfnCreationPolicy, CfnDeletionPolicy, CfnResourceAutoScalingCreationPolicy, CfnResourceSignal, CfnUpdatePolicy,
 } from '../cfn-resource-policy';
 import { CfnTag } from '../cfn-tag';
+import { UnscopedValidationError } from '../errors';
+import { FeatureFlags } from '../feature-flags';
 import { Lazy } from '../lazy';
 import { CfnReference, ReferenceRendering } from '../private/cfn-reference';
 import { IResolvable } from '../resolvable';
 import { Validator } from '../runtime';
+import { Stack } from '../stack';
 import { isResolvableObject, Token } from '../token';
 import { undefinedIfAllValuesAreEmpty } from '../util';
 
@@ -86,13 +90,13 @@ export class FromCloudFormation {
     return new FromCloudFormationResult(value);
   }
 
-  public static getBoolean(value: any): FromCloudFormationResult<boolean | IResolvable> {
+  public static getBoolean(this: void, value: any): FromCloudFormationResult<boolean | IResolvable> {
     if (typeof value === 'string') {
       // CloudFormation allows passing strings as boolean
       switch (value) {
         case 'true': return new FromCloudFormationResult(true);
         case 'false': return new FromCloudFormationResult(false);
-        default: throw new Error(`Expected 'true' or 'false' for boolean value, got: '${value}'`);
+        default: throw new UnscopedValidationError(`Expected 'true' or 'false' for boolean value, got: '${value}'`);
       }
     }
 
@@ -119,7 +123,7 @@ export class FromCloudFormation {
 
   // won't always return a string; if the input can't be resolved to a string,
   // the input will be returned.
-  public static getString(value: any): FromCloudFormationResult<string> {
+  public static getString(this: void, value: any): FromCloudFormationResult<string> {
     // if the string is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
       return new FromCloudFormationResult(value.toString());
@@ -144,7 +148,7 @@ export class FromCloudFormation {
 
   // won't always return a number; if the input can't be parsed to a number,
   // the input will be returned.
-  public static getNumber(value: any): FromCloudFormationResult<number> {
+  public static getNumber(this: void, value: any): FromCloudFormationResult<number> {
     // if the string is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
       return new FromCloudFormationResult(Token.asNumber(value));
@@ -163,17 +167,17 @@ export class FromCloudFormation {
     return new FromCloudFormationResult(value);
   }
 
-  public static getStringArray(value: any): FromCloudFormationResult<string[]> {
+  public static getStringArray(this: void, value: any): FromCloudFormationResult<string[]> {
     // if the array is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
       return new FromCloudFormationResult(Token.asList(value));
     }
 
     // in all other cases, delegate to the standard mapping logic
-    return this.getArray(this.getString)(value);
+    return FromCloudFormation.getArray(FromCloudFormation.getString)(value);
   }
 
-  public static getArray<T>(mapper: (arg: any) => FromCloudFormationResult<T>): (x: any) => FromCloudFormationResult<T[]> {
+  public static getArray<T>(this: void, mapper: (arg: any) => FromCloudFormationResult<T>): (x: any) => FromCloudFormationResult<T[]> {
     return (value: any) => {
       if (!Array.isArray(value)) {
         // break the type system, and just return the given value,
@@ -195,7 +199,7 @@ export class FromCloudFormation {
     };
   }
 
-  public static getMap<T>(mapper: (arg: any) => FromCloudFormationResult<T>): (x: any) => FromCloudFormationResult<{ [key: string]: T }> {
+  public static getMap<T>(this: void, mapper: (arg: any) => FromCloudFormationResult<T>): (x: any) => FromCloudFormationResult<{ [key: string]: T }> {
     return (value: any) => {
       if (typeof value !== 'object') {
         // if the input is not a map (= object in JS land),
@@ -216,7 +220,7 @@ export class FromCloudFormation {
     };
   }
 
-  public static getCfnTag(tag: any): FromCloudFormationResult<CfnTag | IResolvable> {
+  public static getCfnTag(this: void, tag: any): FromCloudFormationResult<CfnTag | IResolvable> {
     if (isResolvableObject(tag)) { return new FromCloudFormationResult(tag); }
     return tag == null
       ? new FromCloudFormationResult({ } as any) // break the type system - this should be detected at runtime by a tag validator
@@ -229,7 +233,7 @@ export class FromCloudFormation {
   /**
    * Return a function that, when applied to a value, will return the first validly deserialized one
    */
-  public static getTypeUnion(validators: Validator[], mappers: Array<(x: any) => FromCloudFormationResult<any>>):
+  public static getTypeUnion(this: void, validators: Validator[], mappers: Array<(x: any) => FromCloudFormationResult<any>>):
   (x: any) => FromCloudFormationResult<any> {
     return (value: any) => {
       for (let i = 0; i < validators.length; i++) {
@@ -343,6 +347,7 @@ export interface ParseCfnOptions {
  */
 export class CfnParser {
   private readonly options: ParseCfnOptions;
+  private stack?: Stack;
 
   constructor(options: ParseCfnOptions) {
     this.options = options;
@@ -350,20 +355,30 @@ export class CfnParser {
 
   public handleAttributes(resource: CfnResource, resourceAttributes: any, logicalId: string): void {
     const cfnOptions = resource.cfnOptions;
+    this.stack = Stack.of(resource);
 
-    cfnOptions.creationPolicy = this.parseCreationPolicy(resourceAttributes.CreationPolicy);
-    cfnOptions.updatePolicy = this.parseUpdatePolicy(resourceAttributes.UpdatePolicy);
+    const creationPolicy = this.parseCreationPolicy(resourceAttributes.CreationPolicy, logicalId);
+    const updatePolicy = this.parseUpdatePolicy(resourceAttributes.UpdatePolicy, logicalId);
+    cfnOptions.creationPolicy = creationPolicy.value;
+    cfnOptions.updatePolicy = updatePolicy.value;
     cfnOptions.deletionPolicy = this.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
     cfnOptions.updateReplacePolicy = this.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
     cfnOptions.version = this.parseValue(resourceAttributes.Version);
     cfnOptions.description = this.parseValue(resourceAttributes.Description);
     cfnOptions.metadata = this.parseValue(resourceAttributes.Metadata);
 
+    for (const [key, value] of Object.entries(creationPolicy.extraProperties)) {
+      resource.addOverride(`CreationPolicy.${key}`, value);
+    }
+    for (const [key, value] of Object.entries(updatePolicy.extraProperties)) {
+      resource.addOverride(`UpdatePolicy.${key}`, value);
+    }
+
     // handle Condition
     if (resourceAttributes.Condition) {
       const condition = this.finder.findCondition(resourceAttributes.Condition);
       if (!condition) {
-        throw new Error(`Resource '${logicalId}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`);
+        throw new UnscopedValidationError(`Resource '${logicalId}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`);
       }
       cfnOptions.condition = condition;
     }
@@ -375,94 +390,100 @@ export class CfnParser {
     for (const dep of dependencies) {
       const depResource = this.finder.findResource(dep);
       if (!depResource) {
-        throw new Error(`Resource '${logicalId}' depends on '${dep}' that doesn't exist`);
+        throw new UnscopedValidationError(`Resource '${logicalId}' depends on '${dep}' that doesn't exist`);
       }
       resource.node.addDependency(depResource);
     }
   }
 
-  private parseCreationPolicy(policy: any): CfnCreationPolicy | undefined {
-    if (typeof policy !== 'object') { return undefined; }
+  private parseCreationPolicy(policy: any, logicalId: string): FromCloudFormationResult<CfnCreationPolicy | undefined> {
+    if (typeof policy !== 'object') { return new FromCloudFormationResult(undefined); }
+    this.throwIfIsIntrinsic(policy, logicalId);
+    const self = this;
 
-    // change simple JS values to their CDK equivalents
-    policy = this.parseValue(policy);
+    const creaPol = new ObjectParser<CfnCreationPolicy>(this.parseValue(policy));
+    creaPol.parseCase('autoScalingCreationPolicy', parseAutoScalingCreationPolicy);
+    creaPol.parseCase('resourceSignal', parseResourceSignal);
+    return creaPol.toResult();
 
-    return undefinedIfAllValuesAreEmpty({
-      autoScalingCreationPolicy: parseAutoScalingCreationPolicy(policy.AutoScalingCreationPolicy),
-      resourceSignal: parseResourceSignal(policy.ResourceSignal),
-    });
+    function parseAutoScalingCreationPolicy(p: any): FromCloudFormationResult<CfnResourceAutoScalingCreationPolicy | undefined> {
+      self.throwIfIsIntrinsic(p, logicalId);
+      if (typeof p !== 'object') { return new FromCloudFormationResult(undefined); }
 
-    function parseAutoScalingCreationPolicy(p: any): CfnResourceAutoScalingCreationPolicy | undefined {
-      if (typeof p !== 'object') { return undefined; }
-
-      return undefinedIfAllValuesAreEmpty({
-        minSuccessfulInstancesPercent: FromCloudFormation.getNumber(p.MinSuccessfulInstancesPercent).value,
-      });
+      const autoPol = new ObjectParser<CfnResourceAutoScalingCreationPolicy>(p);
+      autoPol.parseCase('minSuccessfulInstancesPercent', FromCloudFormation.getNumber);
+      return autoPol.toResult();
     }
 
-    function parseResourceSignal(p: any): CfnResourceSignal | undefined {
-      if (typeof p !== 'object') { return undefined; }
+    function parseResourceSignal(p: any): FromCloudFormationResult<CfnResourceSignal | undefined> {
+      if (typeof p !== 'object') { return new FromCloudFormationResult(undefined); }
+      self.throwIfIsIntrinsic(p, logicalId);
 
-      return undefinedIfAllValuesAreEmpty({
-        count: FromCloudFormation.getNumber(p.Count).value,
-        timeout: FromCloudFormation.getString(p.Timeout).value,
-      });
+      const sig = new ObjectParser<CfnResourceSignal>(p);
+      sig.parseCase('count', FromCloudFormation.getNumber);
+      sig.parseCase('timeout', FromCloudFormation.getString);
+      return sig.toResult();
     }
   }
 
-  private parseUpdatePolicy(policy: any): CfnUpdatePolicy | undefined {
-    if (typeof policy !== 'object') { return undefined; }
+  private parseUpdatePolicy(policy: any, logicalId: string): FromCloudFormationResult<CfnUpdatePolicy | undefined> {
+    if (typeof policy !== 'object') { return new FromCloudFormationResult(undefined); }
+    this.throwIfIsIntrinsic(policy, logicalId);
+    const self = this;
 
     // change simple JS values to their CDK equivalents
-    policy = this.parseValue(policy);
+    const uppol = new ObjectParser<CfnUpdatePolicy>(this.parseValue(policy));
+    uppol.parseCase('autoScalingReplacingUpdate', parseAutoScalingReplacingUpdate);
+    uppol.parseCase('autoScalingRollingUpdate', parseAutoScalingRollingUpdate);
+    uppol.parseCase('autoScalingScheduledAction', parseAutoScalingScheduledAction);
+    uppol.parseCase('codeDeployLambdaAliasUpdate', parseCodeDeployLambdaAliasUpdate);
+    uppol.parseCase('enableVersionUpgrade', (x) => FromCloudFormation.getBoolean(x) as any);
+    uppol.parseCase('useOnlineResharding', (x) => FromCloudFormation.getBoolean(x) as any);
+    return uppol.toResult();
 
-    return undefinedIfAllValuesAreEmpty({
-      autoScalingReplacingUpdate: parseAutoScalingReplacingUpdate(policy.AutoScalingReplacingUpdate),
-      autoScalingRollingUpdate: parseAutoScalingRollingUpdate(policy.AutoScalingRollingUpdate),
-      autoScalingScheduledAction: parseAutoScalingScheduledAction(policy.AutoScalingScheduledAction),
-      codeDeployLambdaAliasUpdate: parseCodeDeployLambdaAliasUpdate(policy.CodeDeployLambdaAliasUpdate),
-      enableVersionUpgrade: FromCloudFormation.getBoolean(policy.EnableVersionUpgrade).value,
-      useOnlineResharding: FromCloudFormation.getBoolean(policy.UseOnlineResharding).value,
-    });
+    function parseAutoScalingReplacingUpdate(p: any): FromCloudFormationResult<CfnAutoScalingReplacingUpdate | undefined> {
+      if (typeof p !== 'object') { return new FromCloudFormationResult(undefined); }
+      self.throwIfIsIntrinsic(p, logicalId);
 
-    function parseAutoScalingReplacingUpdate(p: any): CfnAutoScalingReplacingUpdate | undefined {
-      if (typeof p !== 'object') { return undefined; }
-
-      return undefinedIfAllValuesAreEmpty({
-        willReplace: p.WillReplace,
-      });
+      const repUp = new ObjectParser<CfnAutoScalingReplacingUpdate>(p);
+      repUp.parseCase('willReplace', (x) => x);
+      return repUp.toResult();
     }
 
-    function parseAutoScalingRollingUpdate(p: any): CfnAutoScalingRollingUpdate | undefined {
-      if (typeof p !== 'object') { return undefined; }
+    function parseAutoScalingRollingUpdate(p: any): FromCloudFormationResult<CfnAutoScalingRollingUpdate | undefined> {
+      if (typeof p !== 'object') { return new FromCloudFormationResult(undefined); }
+      self.throwIfIsIntrinsic(p, logicalId);
 
-      return undefinedIfAllValuesAreEmpty({
-        maxBatchSize: FromCloudFormation.getNumber(p.MaxBatchSize).value,
-        minInstancesInService: FromCloudFormation.getNumber(p.MinInstancesInService).value,
-        minSuccessfulInstancesPercent: FromCloudFormation.getNumber(p.MinSuccessfulInstancesPercent).value,
-        pauseTime: FromCloudFormation.getString(p.PauseTime).value,
-        suspendProcesses: FromCloudFormation.getStringArray(p.SuspendProcesses).value,
-        waitOnResourceSignals: FromCloudFormation.getBoolean(p.WaitOnResourceSignals).value,
-      });
+      const rollUp = new ObjectParser<CfnAutoScalingRollingUpdate>(p);
+      rollUp.parseCase('maxBatchSize', FromCloudFormation.getNumber);
+      rollUp.parseCase('minInstancesInService', FromCloudFormation.getNumber);
+      rollUp.parseCase('minSuccessfulInstancesPercent', FromCloudFormation.getNumber);
+      rollUp.parseCase('minActiveInstancesPercent', FromCloudFormation.getNumber);
+      rollUp.parseCase('pauseTime', FromCloudFormation.getString);
+      rollUp.parseCase('suspendProcesses', FromCloudFormation.getStringArray);
+      rollUp.parseCase('waitOnResourceSignals', FromCloudFormation.getBoolean);
+      return rollUp.toResult();
     }
 
-    function parseCodeDeployLambdaAliasUpdate(p: any): CfnCodeDeployLambdaAliasUpdate | undefined {
-      if (typeof p !== 'object') { return undefined; }
+    function parseCodeDeployLambdaAliasUpdate(p: any): FromCloudFormationResult<CfnCodeDeployLambdaAliasUpdate | undefined> {
+      if (typeof p !== 'object') { return new FromCloudFormationResult(undefined); }
+      self.throwIfIsIntrinsic(p, logicalId);
 
-      return {
-        beforeAllowTrafficHook: FromCloudFormation.getString(p.BeforeAllowTrafficHook).value,
-        afterAllowTrafficHook: FromCloudFormation.getString(p.AfterAllowTrafficHook).value,
-        applicationName: FromCloudFormation.getString(p.ApplicationName).value,
-        deploymentGroupName: FromCloudFormation.getString(p.DeploymentGroupName).value,
-      };
+      const cdUp = new ObjectParser<CfnCodeDeployLambdaAliasUpdate>(p);
+      cdUp.parseCase('beforeAllowTrafficHook', FromCloudFormation.getString);
+      cdUp.parseCase('afterAllowTrafficHook', FromCloudFormation.getString);
+      cdUp.parseCase('applicationName', FromCloudFormation.getString);
+      cdUp.parseCase('deploymentGroupName', FromCloudFormation.getString);
+      return cdUp.toResult();
     }
 
-    function parseAutoScalingScheduledAction(p: any): CfnAutoScalingScheduledAction | undefined {
-      if (typeof p !== 'object') { return undefined; }
+    function parseAutoScalingScheduledAction(p: any): FromCloudFormationResult<CfnAutoScalingScheduledAction | undefined> {
+      if (typeof p !== 'object') { return new FromCloudFormationResult(undefined); }
+      self.throwIfIsIntrinsic(p, logicalId);
 
-      return undefinedIfAllValuesAreEmpty({
-        ignoreUnmodifiedGroupSizeProperties: FromCloudFormation.getBoolean(p.IgnoreUnmodifiedGroupSizeProperties).value,
-      });
+      const schedUp = new ObjectParser<CfnAutoScalingScheduledAction>(p);
+      schedUp.parseCase('ignoreUnmodifiedGroupSizeProperties', FromCloudFormation.getBoolean);
+      return schedUp.toResult();
     }
   }
 
@@ -480,7 +501,7 @@ export class CfnParser {
         policy = this.parseValue(policy);
         return policy;
       } else {
-        throw new Error(`Unrecognized DeletionPolicy '${policy}'`);
+        throw new UnscopedValidationError(`Unrecognized DeletionPolicy '${policy}'`);
       }
     }
   }
@@ -531,7 +552,7 @@ export class CfnParser {
         } else {
           const refElement = this.finder.findRefTarget(refTarget);
           if (!refElement) {
-            throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' not found`);
+            throw new UnscopedValidationError(`Element used in Ref expression with logical ID: '${refTarget}' not found`);
           }
           return CfnReference.for(refElement, 'Ref');
         }
@@ -544,7 +565,7 @@ export class CfnParser {
           // ...in which case the logical ID and the attribute name are separated with '.'
           const dotIndex = value.indexOf('.');
           if (dotIndex === -1) {
-            throw new Error(`Short-form Fn::GetAtt must contain a '.' in its string argument, got: '${value}'`);
+            throw new UnscopedValidationError(`Short-form Fn::GetAtt must contain a '.' in its string argument, got: '${value}'`);
           }
           logicalId = value.slice(0, dotIndex);
           attributeName = value.slice(dotIndex + 1); // the +1 is to skip the actual '.'
@@ -557,7 +578,7 @@ export class CfnParser {
         }
         const target = this.finder.findResource(logicalId);
         if (!target) {
-          throw new Error(`Resource used in GetAtt expression with logical ID: '${logicalId}' not found`);
+          throw new UnscopedValidationError(`Resource used in GetAtt expression with logical ID: '${logicalId}' not found`);
         }
         return CfnReference.for(target, attributeName, stringForm ? ReferenceRendering.GET_ATT_STRING : undefined);
       }
@@ -587,7 +608,7 @@ export class CfnParser {
         } else {
           const mapping = this.finder.findMapping(value[0]);
           if (!mapping) {
-            throw new Error(`Mapping used in FindInMap expression with name '${value[0]}' was not found in the template`);
+            throw new UnscopedValidationError(`Mapping used in FindInMap expression with name '${value[0]}' was not found in the template`);
           }
           mappingName = mapping.logicalId;
         }
@@ -623,7 +644,7 @@ export class CfnParser {
         const value = this.parseValue(object[key]);
         const condition = this.finder.findCondition(value[0]);
         if (!condition) {
-          throw new Error(`Condition '${value[0]}' used in an Fn::If expression does not exist in the template`);
+          throw new UnscopedValidationError(`Condition '${value[0]}' used in an Fn::If expression does not exist in the template`);
         }
         return Fn.conditionIf(condition.logicalId, value[1], value[2]);
       }
@@ -661,7 +682,7 @@ export class CfnParser {
         // a reference to a Condition from another Condition
         const condition = this.finder.findCondition(object[key]);
         if (!condition) {
-          throw new Error(`Referenced Condition with name '${object[key]}' was not found in the template`);
+          throw new UnscopedValidationError(`Referenced Condition with name '${object[key]}' was not found in the template`);
         }
         return { Condition: condition.logicalId };
       }
@@ -669,8 +690,22 @@ export class CfnParser {
         if (this.options.context === CfnParsingContext.RULES) {
           return this.handleRulesIntrinsic(key, object);
         } else {
-          throw new Error(`Unsupported CloudFormation function '${key}'`);
+          throw new UnscopedValidationError(`Unsupported CloudFormation function '${key}'`);
         }
+    }
+  }
+
+  private throwIfIsIntrinsic(object: object, logicalId: string): void {
+    // Top-level parsing functions check before we call `parseValue`, which requires
+    // calling `looksLikeCfnIntrinsic`. Helper parsing functions check after we call
+    // `parseValue`, which requires calling `isResolvableObject`.
+    if (!this.stack) {
+      throw new UnscopedValidationError('cannot call this method before handleAttributes!');
+    }
+    if (FeatureFlags.of(this.stack).isEnabled(CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS)) {
+      if (isResolvableObject(object ?? {}) || this.looksLikeCfnIntrinsic(object ?? {})) {
+        throw new UnscopedValidationError(`Cannot convert resource '${logicalId}' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify '${logicalId}' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output.`);
+      }
     }
   }
 
@@ -683,8 +718,8 @@ export class CfnParser {
 
     const key = objectKeys[0];
     return key === 'Ref' || key.startsWith('Fn::') ||
-        // special intrinsic only available in the 'Conditions' section
-        (this.options.context === CfnParsingContext.CONDITIONS && key === 'Condition')
+    // special intrinsic only available in the 'Conditions' section
+    (this.options.context === CfnParsingContext.CONDITIONS && key === 'Condition')
       ? key
       : undefined;
   }
@@ -749,14 +784,14 @@ export class CfnParser {
       if (isRef) {
         const refElement = self.finder.findRefTarget(refTarget);
         if (!refElement) {
-          throw new Error(`Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`);
+          throw new UnscopedValidationError(`Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`);
         }
         return leftHalf + CfnReference.for(refElement, 'Ref', ReferenceRendering.FN_SUB).toString() + go(rightHalf);
       } else {
         const targetId = refTarget.substring(0, dotIndex);
         const refResource = self.finder.findResource(targetId);
         if (!refResource) {
-          throw new Error(`Resource referenced in Fn::Sub expression with logical ID: '${targetId}' was not found in the template`);
+          throw new UnscopedValidationError(`Resource referenced in Fn::Sub expression with logical ID: '${targetId}' was not found in the template`);
         }
         const attribute = refTarget.substring(dotIndex + 1);
         return leftHalf + CfnReference.for(refResource, attribute, ReferenceRendering.FN_SUB).toString() + go(rightHalf);
@@ -776,11 +811,11 @@ export class CfnParser {
         if (parameterName in this.parameters) {
           // since ValueOf returns the value of a specific attribute,
           // fail here - this substitution is not allowed
-          throw new Error(`Cannot substitute parameter '${parameterName}' used in Fn::ValueOf expression with attribute '${value[1]}'`);
+          throw new UnscopedValidationError(`Cannot substitute parameter '${parameterName}' used in Fn::ValueOf expression with attribute '${value[1]}'`);
         }
         const param = this.finder.findRefTarget(parameterName);
         if (!param) {
-          throw new Error(`Rule references parameter '${parameterName}' which was not found in the template`);
+          throw new UnscopedValidationError(`Rule references parameter '${parameterName}' which was not found in the template`);
         }
         // create an explicit IResolvable,
         // as Fn.valueOf() returns a string,
@@ -824,3 +859,70 @@ export class CfnParser {
     return this.options.parameters || {};
   }
 }
+
+class ObjectParser<T extends object> {
+  private readonly parsed: Record<string, unknown> = {};
+  private readonly unparsed: Record<string, unknown> = {};
+
+  constructor(input: Record<string, unknown>) {
+    this.unparsed = { ...input };
+  }
+
+  /**
+   * Parse a single field from the object into the target object
+   *
+   * The source key will be assumed to be the exact same as the
+   * target key, but with an uppercase first letter.
+   */
+  public parseCase<K extends keyof T>(targetKey: K, parser: (x: any) => T[K] | FromCloudFormationResult<T[K] | IResolvable>) {
+    const sourceKey = ucfirst(String(targetKey));
+    this.parse(targetKey, sourceKey, parser);
+  }
+
+  public parse<K extends keyof T>(targetKey: K, sourceKey: string, parser: (x: any) => T[K] | FromCloudFormationResult<T[K] | IResolvable>) {
+    if (!(sourceKey in this.unparsed)) {
+      return;
+    }
+
+    const value = parser(this.unparsed[sourceKey]);
+    delete this.unparsed[sourceKey];
+
+    if (value instanceof FromCloudFormationResult) {
+      for (const [k, v] of Object.entries(value.extraProperties ?? {})) {
+        this.unparsed[`${sourceKey}.${k}`] = v;
+      }
+      this.parsed[targetKey as any] = value.value;
+    } else {
+      this.parsed[targetKey as any] = value;
+    }
+  }
+
+  public toResult(): FromCloudFormationResult<T | undefined> {
+    const ret = new FromCloudFormationResult(undefinedIfAllValuesAreEmpty(this.parsed as any));
+    for (const [k, v] of Object.entries(this.unparsedKeys)) {
+      ret.extraProperties[k] = v;
+    }
+    return ret;
+  }
+
+  private get unparsedKeys(): Record<string, unknown> {
+    const unparsed = { ...this.unparsed };
+
+    for (const [k, v] of Object.entries(this.unparsed)) {
+      if (v instanceof FromCloudFormationResult) {
+        for (const [k2, v2] of Object.entries(v.extraProperties ?? {})) {
+          unparsed[`${k}.${k2}`] = v2;
+        }
+      } else {
+        unparsed[k] = v;
+      }
+    }
+
+    return unparsed;
+  }
+}
+
+function ucfirst(x: string) {
+  return x.slice(0, 1).toUpperCase() + x.slice(1);
+}
+

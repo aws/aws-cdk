@@ -28,4 +28,15 @@ new route53.ARecord(stack, 'ExistingGlobalAcceleratorAlias', {
   zone,
 });
 
+new route53.ARecord(stack, 'LocalGlobalAcceleratorAliasWithHealthCheck', {
+  comment: 'Alias to the locally created Global Accelerator with health check',
+  target: route53.RecordTarget.fromAlias(
+    new targets.GlobalAcceleratorTarget(accelerator, {
+      evaluateTargetHealth: true,
+    }),
+  ),
+  recordName: 'test-local-health',
+  zone,
+});
+
 app.synth();

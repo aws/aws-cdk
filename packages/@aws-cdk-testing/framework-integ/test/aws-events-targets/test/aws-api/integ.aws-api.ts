@@ -5,7 +5,12 @@ import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Key } from 'aws-cdk-lib/aws-kms';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 
 class AwsApi extends cdk.Stack {
   public parameterUnderTest: StringParameter;
@@ -90,7 +95,6 @@ class AwsApi extends cdk.Stack {
         Plaintext: events.EventField.fromPath('$.detail.Plaintext'),
       },
     }));
-
   }
 }
 

@@ -1,5 +1,17 @@
+import { Role } from 'aws-cdk-lib/aws-iam';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
-import { EnrichmentParametersConfig, IEnrichment, ILogDestination, IPipe, ISource, ITarget, LogDestinationConfig, SourceConfig, SourceParameters } from '../lib';
+import { ITopic, Topic } from 'aws-cdk-lib/aws-sns';
+import { IQueue, Queue } from 'aws-cdk-lib/aws-sqs';
+import {
+  EnrichmentParametersConfig,
+  IEnrichment,
+  IPipe,
+  ISource,
+  ITarget,
+  SourceConfig,
+  SourceParameters,
+  SourceWithDeadLetterTarget,
+} from '../lib';
 
 export class TestSource implements ISource {
   readonly sourceArn = 'source-arn';
@@ -15,6 +27,30 @@ export class TestSource implements ISource {
   bind(_pipe: IPipe): SourceConfig {
     return {
       sourceParameters: this.sourceParameters,
+    };
+  }
+}
+
+export class TestSourceWithDeadLetterTarget extends SourceWithDeadLetterTarget {
+  deadLetterTarget?: IQueue | ITopic;
+  public grantRead = jest.fn();
+
+  constructor(deadLetterTarget: IQueue | ITopic) {
+    super('source-arn', deadLetterTarget);
+    this.deadLetterTarget = deadLetterTarget;
+  }
+
+  grantPush(grantee: Role, deadLetterTarget?: IQueue | ITopic) {
+    if (deadLetterTarget instanceof Queue) {
+      deadLetterTarget.grantSendMessages(grantee);
+    } else if (deadLetterTarget instanceof Topic) {
+      deadLetterTarget.grantPublish(grantee);
+    }
+  }
+
+  bind(_pipe: IPipe): SourceConfig {
+    return {
+      sourceParameters: {},
     };
   }
 }
@@ -35,7 +71,7 @@ export class TestTarget implements ITarget {
 }
 
 export class TestEnrichment implements IEnrichment {
-  readonly enrichmentArn= 'enrichment-arn'
+  readonly enrichmentArn= 'enrichment-arn';
   private enrichmentParameters = {};
   public grantInvoke = jest.fn();
 
@@ -47,20 +83,4 @@ export class TestEnrichment implements IEnrichment {
   bind = (_pipe: IPipe)=>({
     enrichmentParameters: this.enrichmentParameters,
   });
-}
-
-export class TestLogDestination implements ILogDestination {
-  logDestinationArn = 'log-destination-arn';
-  parameters = {
-    cloudwatchLogsLogDestination: {
-      logGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/events/pipes/TestPipe',
-    },
-  };
-  public grantPush = jest.fn();
-  bind(_pipe: IPipe): LogDestinationConfig {
-    return {
-      parameters: this.parameters,
-    };
-  }
-
 }

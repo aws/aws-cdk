@@ -53,11 +53,14 @@ class GaStack extends Stack {
     });
 
     alb.connections.allowFrom(group.connectionsPeer('Peer', vpc), ec2.Port.tcp(443));
-
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new GaStack(app, 'integ-globalaccelerator');
 new IntegTest(app, 'GlobalAcceleratorInteg', {
   testCases: [stack],

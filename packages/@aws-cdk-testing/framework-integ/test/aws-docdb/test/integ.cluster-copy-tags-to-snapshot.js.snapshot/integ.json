@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "testCases": {
     "ClusterTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "ClusterTest/DefaultTest/DeployAssert",
       "assertionStackName": "ClusterTestDefaultTestDeployAssert6A1BBA9D"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

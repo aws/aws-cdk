@@ -1,4 +1,4 @@
-/* eslint-disable @aws-cdk/no-literal-partition */
+/* eslint-disable @cdklabs/no-literal-partition */
 import { Construct } from 'constructs';
 import { CfnApplication } from './appconfig.generated';
 import { HostedConfiguration, HostedConfigurationOptions, SourcedConfiguration, SourcedConfigurationOptions } from './configuration';
@@ -6,6 +6,8 @@ import { Environment, EnvironmentOptions, IEnvironment } from './environment';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import * as ecs from '../../aws-ecs';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Defines the platform for the AWS AppConfig Lambda extension.
@@ -145,6 +147,15 @@ export interface IApplication extends cdk.IResource {
    * @param options Options for the extension
    */
   onDeploymentRolledBack(eventDestination: IEventDestination, options?: ExtensionOptions): void;
+
+  /**
+   * Adds an AT_DEPLOYMENT_TICK extension with the provided event destination and
+   * also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions): void;
 
   /**
    * Adds an extension association to the application.
@@ -298,6 +309,17 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication, IEx
   }
 
   /**
+   * Adds an AT_DEPLOYMENT_TICK extension with the provided event destination and
+   * also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  public atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions) {
+    this.extensible.atDeploymentTick(eventDestination, options);
+  }
+
+  /**
    * Adds an extension association to the application.
    *
    * @param extension The extension to create an association for
@@ -313,7 +335,11 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication, IEx
  * @resource AWS::AppConfig::Application
  * @see https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-application.html
  */
+@propertyInjectable
 export class Application extends ApplicationBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appconfig.Application';
+
   /**
    * Imports an AWS AppConfig application into the CDK using its Amazon Resource Name (ARN).
    *
@@ -325,7 +351,7 @@ export class Application extends ApplicationBase {
     const parsedArn = cdk.Stack.of(scope).splitArn(applicationArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
     const applicationId = parsedArn.resourceName;
     if (!applicationId) {
-      throw new Error('Missing required application id from application ARN');
+      throw new cdk.ValidationError('Missing required application id from application ARN', scope);
     }
 
     class Import extends ApplicationBase {
@@ -413,6 +439,8 @@ export class Application extends ApplicationBase {
 
   constructor(scope: Construct, id: string, props: ApplicationProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.description = props.description;
     this.name = props.applicationName || cdk.Names.uniqueResourceName(this, {

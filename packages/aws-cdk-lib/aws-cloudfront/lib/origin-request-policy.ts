@@ -1,6 +1,8 @@
 import { Construct } from 'constructs';
 import { CfnOriginRequestPolicy } from './cloudfront.generated';
-import { Names, Resource, Token } from '../../core';
+import { Names, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a Origin Request Policy
@@ -54,8 +56,10 @@ export interface OriginRequestPolicyProps {
  *
  * @resource AWS::CloudFront::OriginRequestPolicy
  */
+@propertyInjectable
 export class OriginRequestPolicy extends Resource implements IOriginRequestPolicy {
-
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.OriginRequestPolicy';
   /** This policy includes only the User-Agent and Referer headers. It doesn’t include any query strings or cookies. */
   public static readonly USER_AGENT_REFERER_HEADERS = OriginRequestPolicy.fromManagedOriginRequestPolicy('acba4595-bd28-49b8-b9fe-13317c0390fa');
   /** This policy includes the header that enables cross-origin resource sharing (CORS) requests when the origin is a custom origin. */
@@ -91,10 +95,12 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
     super(scope, id, {
       physicalName: props.originRequestPolicyName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const originRequestPolicyName = props.originRequestPolicyName ?? Names.uniqueId(this);
     if (!Token.isUnresolved(originRequestPolicyName) && !originRequestPolicyName.match(/^[\w-]+$/i)) {
-      throw new Error(`'originRequestPolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.originRequestPolicyName}'`);
+      throw new ValidationError(`'originRequestPolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.originRequestPolicyName}'`, this);
     }
 
     const cookies = props.cookieBehavior ?? OriginRequestCookieBehavior.none();
@@ -141,7 +147,7 @@ export class OriginRequestCookieBehavior {
   /** All cookies except the provided `cookies` are included in requests that CloudFront sends to the origin. */
   public static denyList(...cookies: string[]) {
     if (cookies.length === 0) {
-      throw new Error('At least one cookie to deny must be provided');
+      throw new UnscopedValidationError('At least one cookie to deny must be provided');
     }
     return new OriginRequestCookieBehavior('allExcept', cookies);
   }
@@ -149,7 +155,7 @@ export class OriginRequestCookieBehavior {
   /** Only the provided `cookies` are included in requests that CloudFront sends to the origin. */
   public static allowList(...cookies: string[]) {
     if (cookies.length === 0) {
-      throw new Error('At least one cookie to allow must be provided');
+      throw new UnscopedValidationError('At least one cookie to allow must be provided');
     }
     return new OriginRequestCookieBehavior('whitelist', cookies);
   }
@@ -183,7 +189,7 @@ export class OriginRequestHeaderBehavior {
   public static all(...cloudfrontHeaders: string[]) {
     if (cloudfrontHeaders.length > 0) {
       if (!cloudfrontHeaders.every(header => header.startsWith('CloudFront-'))) {
-        throw new Error('additional CloudFront headers passed to `OriginRequestHeaderBehavior.all()` must begin with \'CloudFront-\'');
+        throw new UnscopedValidationError('additional CloudFront headers passed to `OriginRequestHeaderBehavior.all()` must begin with \'CloudFront-\'');
       }
       return new OriginRequestHeaderBehavior('allViewerAndWhitelistCloudFront', cloudfrontHeaders);
     } else {
@@ -194,10 +200,10 @@ export class OriginRequestHeaderBehavior {
   /** Listed headers are included in requests that CloudFront sends to the origin. */
   public static allowList(...headers: string[]) {
     if (headers.length === 0) {
-      throw new Error('At least one header to allow must be provided');
+      throw new UnscopedValidationError('At least one header to allow must be provided');
     }
     if (headers.map(header => header.toLowerCase()).some(header => ['authorization', 'accept-encoding'].includes(header))) {
-      throw new Error('you cannot pass `Authorization` or `Accept-Encoding` as header values; use a CachePolicy to forward these headers instead');
+      throw new UnscopedValidationError('you cannot pass `Authorization` or `Accept-Encoding` as header values; use a CachePolicy to forward these headers instead');
     }
     return new OriginRequestHeaderBehavior('whitelist', headers);
   }
@@ -205,7 +211,7 @@ export class OriginRequestHeaderBehavior {
   /** All headers except the provided `headers` are included in requests that CloudFront sends to the origin. */
   public static denyList(...headers: string[]) {
     if (headers.length === 0) {
-      throw new Error('At least one header to deny must be provided');
+      throw new UnscopedValidationError('At least one header to deny must be provided');
     }
     return new OriginRequestHeaderBehavior('allExcept', headers);
   }
@@ -238,7 +244,7 @@ export class OriginRequestQueryStringBehavior {
   /** Only the provided `queryStrings` are included in requests that CloudFront sends to the origin. */
   public static allowList(...queryStrings: string[]) {
     if (queryStrings.length === 0) {
-      throw new Error('At least one query string to allow must be provided');
+      throw new UnscopedValidationError('At least one query string to allow must be provided');
     }
     return new OriginRequestQueryStringBehavior('whitelist', queryStrings);
   }
@@ -246,7 +252,7 @@ export class OriginRequestQueryStringBehavior {
   /** All query strings except the provided `queryStrings` are included in requests that CloudFront sends to the origin. */
   public static denyList(...queryStrings: string[]) {
     if (queryStrings.length === 0) {
-      throw new Error('At least one query string to deny must be provided');
+      throw new UnscopedValidationError('At least one query string to deny must be provided');
     }
     return new OriginRequestQueryStringBehavior('allExcept', queryStrings);
   }

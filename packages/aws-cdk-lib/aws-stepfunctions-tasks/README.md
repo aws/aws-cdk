@@ -34,8 +34,10 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [SubmitJob](#submitjob)
   - [Bedrock](#bedrock)
     - [InvokeModel](#invokemodel)
+    - [createModelCustomizationJob](#createmodelcustomizationjob)
   - [CodeBuild](#codebuild)
     - [StartBuild](#startbuild)
+    - [StartBuildBatch](#startbuildbatch)
   - [DynamoDB](#dynamodb)
     - [GetItem](#getitem)
     - [PutItem](#putitem)
@@ -45,6 +47,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [RunTask](#runtask)
       - [EC2](#ec2)
       - [Fargate](#fargate)
+      - [ECS enable Exec](#ecs-enable-exec)
   - [EMR](#emr)
     - [Create Cluster](#create-cluster)
     - [Termination Protection](#termination-protection)
@@ -62,8 +65,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [EventBridge](#eventbridge)
     - [Put Events](#put-events)
   - [Glue](#glue)
-    - [Start Job Run](#start-job-run)
-    - [Start Crawler Run](#startcrawlerrun)
+    - [StartJobRun](#startjobrun)
+    - [StartCrawlerRun](#startcrawlerrun)
   - [Glue DataBrew](#glue-databrew)
     - [Start Job Run](#start-job-run-1)
   - [Lambda](#lambda)
@@ -155,6 +158,21 @@ const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(this, 'Call REST API'
 });
 ```
 
+By default, the API endpoint URI will be constructed using the AWS region of
+the stack in which the provided `api` is created.
+
+To construct the endpoint with a different region, use the `region` parameter:
+```ts
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+const restApi = new apigateway.RestApi(this, 'MyRestApi');
+const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(this, 'Call REST API', {
+  api: restApi,
+  stageName: 'prod',
+  method: tasks.HttpMethod.GET,
+  region: 'us-west-2',
+});
+```
+
 Be aware that the header values must be arrays. When passing the Task Token
 in the headers field `WAIT_FOR_TASK_TOKEN` integration, use
 `JsonPath.array()` to wrap the token in an array:
@@ -239,7 +257,7 @@ const detectLabels = new tasks.CallAwsService(this, 'DetectLabels', {
   additionalIamStatements: [
     new iam.PolicyStatement({
       actions: ['s3:getObject'],
-      resources: ['arn:aws:s3:::my-bucket/*'],
+      resources: ['arn:aws:s3:::amzn-s3-demo-bucket/*'],
     }),
   ],
 });
@@ -265,6 +283,8 @@ const getObject = new tasks.CallAwsServiceCrossRegion(this, 'GetObject', {
 
 Other properties such as `additionalIamStatements` can be used in the same way as the `CallAwsService` task.
 
+Note that when you use `integrationPattern.WAIT_FOR_TASK_TOKEN`, the output path changes under `Payload` property.
+
 ## Athena
 
 Step Functions supports [Athena](https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html) through the service integration pattern.
@@ -284,7 +304,7 @@ const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start 
       encryptionOption: tasks.EncryptionOption.S3_MANAGED,
     },
     outputLocation: {
-      bucketName: 'query-results-bucket',
+      bucketName: 'amzn-s3-demo-bucket',
       objectKey: 'folder',
     },
   },
@@ -483,6 +503,60 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model with guardrail', {
   guardrail: tasks.Guardrail.enable('guardrailId', 1),
   resultSelector: {
     names: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
+  },
+});
+```
+
+### createModelCustomizationJob
+
+The [CreateModelCustomizationJob](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_CreateModelCustomizationJob.html) API creates a fine-tuning job to customize a base model.
+
+```ts
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const outputBucket: s3.IBucket;
+declare const trainingBucket: s3.IBucket;
+declare const validationBucket: s3.IBucket;
+declare const kmsKey: kms.IKey;
+declare const vpc: ec2.IVpc;
+
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
+const task = new tasks.BedrockCreateModelCustomizationJob(this, 'CreateModelCustomizationJob', {
+  baseModel: model,
+  clientRequestToken: 'MyToken',
+  customizationType: tasks.CustomizationType.FINE_TUNING,
+  customModelKmsKey: kmsKey,
+  customModelName: 'MyCustomModel', // required
+  customModelTags: [{ key: 'key1', value: 'value1' }],
+  hyperParameters: {
+    batchSize: '10',
+  },
+  jobName: 'MyCustomizationJob', // required
+  jobTags: [{ key: 'key2', value: 'value2' }],
+  outputData: {
+    bucket: outputBucket, // required
+    path: 'output-data/',
+  },
+  trainingData: {
+    bucket: trainingBucket,
+    path: 'training-data/data.json',
+  }, // required
+  // If you don't provide validation data, you have to specify `Evaluation percentage` hyperparameter.
+  validationData: [
+    {
+      bucket: validationBucket,
+      path: 'validation-data/data.json',
+    },
+  ],
+  vpcConfig: {
+    securityGroups: [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc })],
+    subnets: vpc.privateSubnets,
   },
 });
 ```
@@ -1241,10 +1315,12 @@ The following code snippet includes a Task state that uses eks:call to list the 
 
 ```ts
 import * as eks from 'aws-cdk-lib/aws-eks';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 
 const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_32,
   clusterName: 'myEksCluster',
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 
 new tasks.EksCall(this, 'Call a EKS Endpoint', {
@@ -1287,6 +1363,61 @@ new tasks.EventBridgePutEvents(this, 'Send an event to EventBridge', {
 });
 ```
 
+## EventBridge Scheduler
+
+You can call EventBridge Scheduler APIs from a `Task` state.
+Read more about calling Scheduler APIs [here](https://docs.aws.amazon.com/scheduler/latest/APIReference/API_Operations.html)
+
+### Create Scheduler
+
+The [CreateSchedule](https://docs.aws.amazon.com/scheduler/latest/APIReference/API_CreateSchedule.html) API creates a new schedule.
+
+Here is an example of how to create a schedule that puts an event to SQS queue every 5 minutes:
+
+```ts
+import * as scheduler from 'aws-cdk-lib/aws-scheduler';
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const key: kms.Key;
+declare const scheduleGroup: scheduler.CfnScheduleGroup;
+declare const targetQueue: sqs.Queue;
+declare const deadLetterQueue: sqs.Queue;
+
+const schedulerRole = new iam.Role(this, 'SchedulerRole', {
+  assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
+});
+// To send the message to the queue
+// This policy changes depending on the type of target.
+schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({
+  actions: ['sqs:SendMessage'],
+  resources: [targetQueue.queueArn],
+}));
+
+const createScheduleTask1 = new tasks.EventBridgeSchedulerCreateScheduleTask(this, 'createSchedule', {
+  scheduleName: 'TestSchedule',
+  actionAfterCompletion: tasks.ActionAfterCompletion.NONE,
+  clientToken: 'testToken',
+  description: 'TestDescription',
+  startDate: new Date(),
+  endDate: new Date(new Date().getTime() + 1000 * 60 * 60),
+  flexibleTimeWindow: Duration.minutes(5),
+  groupName: scheduleGroup.ref,
+  kmsKey: key,
+  schedule: tasks.Schedule.rate(Duration.minutes(5)),
+  timezone: 'UTC',
+  enabled: true,
+  target: new tasks.EventBridgeSchedulerTarget({
+    arn: targetQueue.queueArn,
+    role: schedulerRole,
+    retryPolicy: {
+      maximumRetryAttempts: 2,
+      maximumEventAge: Duration.minutes(5),
+    },
+    deadLetterQueue,
+  }),
+});
+```
+
 ## Glue
 
 Step Functions supports [AWS Glue](https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html) through the service integration pattern.
@@ -1305,14 +1436,31 @@ new tasks.GlueStartJobRun(this, 'Task', {
   notifyDelayAfter: Duration.minutes(5),
 });
 ```
-You can configure workers by setting the `workerType` and `numberOfWorkers` properties.
+
+You can configure workers by setting the `workerTypeV2` and `numberOfWorkers` properties.
+`workerType` is deprecated and no longer recommended. Use `workerTypeV2` which is
+a ENUM-like class for more powerful worker configuration around using pre-defined values or
+dynamic values.
 
 ```ts
 new tasks.GlueStartJobRun(this, 'Task', {
   glueJobName: 'my-glue-job',
   workerConfiguration: {
-    workerType: tasks.WorkerType.G_1X, // Worker type
+    workerTypeV2: tasks.WorkerTypeV2.G_1X, // Worker type
     numberOfWorkers: 2, // Number of Workers
+  },
+});
+```
+
+To configure the worker type or number of workers dynamically from StateMachine's input,
+you can configure it using JSON Path values using `workerTypeV2` like this:
+
+```ts
+new tasks.GlueStartJobRun(this, 'Glue Job Task', {
+  glueJobName: 'my-glue-job',
+  workerConfiguration: {
+    workerTypeV2: tasks.WorkerTypeV2.of(sfn.JsonPath.stringAt('$.glue_jobs_configs.executor_type')),
+    numberOfWorkers: sfn.JsonPath.numberAt('$.glue_jobs_configs.max_number_workers'),
   },
 });
 ```
@@ -1593,7 +1741,7 @@ new tasks.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
     },
   }],
   outputDataConfig: {
-    s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(this, 'Bucket', 'mybucket'), 'myoutputpath'),
+    s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(this, 'Bucket', 'amzn-s3-demo-bucket'), 'myoutputpath'),
   },
   resourceConfig: {
     instanceCount: 1,

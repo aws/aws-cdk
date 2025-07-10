@@ -18,7 +18,7 @@
 
 ## Overview
 
-This library is meant to be used in combination with the [integ-runner](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-runner) CLI
+This library is meant to be used in combination with the [integ-runner](https://github.com/aws/aws-cdk-cli/tree/main/packages/%40aws-cdk/integ-runner) CLI
 to enable users to write and execute integration tests for AWS CDK Constructs.
 
 An integration test should be defined as a CDK application, and
@@ -345,6 +345,23 @@ apiCall.provider.addToRolePolicy({
 });
 ```
 
+When executing `waitForAssertion()`, it is necessary to add an IAM policy using `waiterProvider.addToRolePolicy()`.
+Because `IApiCall` does not have a `waiterProvider` property, you need to cast it to `AwsApiCall`.
+
+```ts
+declare const integ: IntegTest;
+
+const apiCall = integ.assertions.awsApiCall('S3', 'listObjectsV2', {
+  Bucket: 'mybucket',
+}).waitForAssertions() as AwsApiCall;
+
+apiCall.waiterProvider?.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['s3:GetObject', 's3:ListBucket'],
+  Resource: ['*'],
+});
+```
+
 Note that addToRolePolicy() uses direct IAM JSON policy blobs, not a iam.PolicyStatement
 object like you will see in the rest of the CDK.
 
@@ -500,11 +517,11 @@ need to do is add a dependency between the calls. There is an helper method `nex
 declare const integ: IntegTest;
 
 integ.assertions.awsApiCall('S3', 'putObject', {
-  Bucket: 'my-bucket',
+  Bucket: 'amzn-s3-demo-bucket',
   Key: 'my-key',
   Body: 'helloWorld',
 }).next(integ.assertions.awsApiCall('S3', 'getObject', {
-  Bucket: 'my-bucket',
+  Bucket: 'amzn-s3-demo-bucket',
   Key: 'my-key',
 }));
 ```

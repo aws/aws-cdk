@@ -72,7 +72,6 @@ export interface BundlingProps extends BundlingOptions {
  * Bundling
  */
 export class Bundling implements cdk.BundlingOptions {
-
   public static bundle(options: BundlingProps): AssetCode {
     const bundling = new Bundling(options);
 
@@ -107,7 +106,7 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly command: string[];
   public readonly environment?: { [key: string]: string };
   public readonly local?: cdk.ILocalBundling;
-  public readonly entrypoint?: string[]
+  public readonly entrypoint?: string[];
   public readonly volumes?: cdk.DockerVolume[];
   public readonly volumesFrom?: string[];
   public readonly workingDirectory?: string;
@@ -166,7 +165,6 @@ export class Bundling implements cdk.BundlingOptions {
 
     // Local bundling
     if (!props.forcedDockerBundling) { // only if Docker is not forced
-
       const osPlatform = os.platform();
       const createLocalCommand = (outputDir: string) => this.createBundlingCommand(projectRoot, outputDir, osPlatform);
 

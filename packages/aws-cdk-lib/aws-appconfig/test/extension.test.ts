@@ -33,6 +33,7 @@ describe('extension', () => {
           actionPoints: [
             ActionPoint.ON_DEPLOYMENT_COMPLETE,
             ActionPoint.ON_DEPLOYMENT_ROLLED_BACK,
+            ActionPoint.AT_DEPLOYMENT_TICK,
           ],
           eventDestination: new LambdaDestination(func),
         }),
@@ -50,6 +51,13 @@ describe('extension', () => {
           },
         ],
         ON_DEPLOYMENT_ROLLED_BACK: [
+          {
+            Name: 'MyExtension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyExtensionRole467D6FCDEEFA5', 'Arn'] },
+            Uri: { 'Fn::GetAtt': ['MyFunction3BAA72D1', 'Arn'] },
+          },
+        ],
+        AT_DEPLOYMENT_TICK: [
           {
             Name: 'MyExtension-0',
             RoleArn: { 'Fn::GetAtt': ['MyExtensionRole467D6FCDEEFA5', 'Arn'] },

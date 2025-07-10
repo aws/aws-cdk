@@ -5,6 +5,8 @@ import { renderMeshOwner } from './private/utils';
 import { IVirtualNode } from './virtual-node';
 import { IVirtualRouter } from './virtual-router';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents the interface which all VirtualService based classes MUST implement
@@ -58,7 +60,11 @@ export interface VirtualServiceProps {
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_services.html
  */
+@propertyInjectable
 export class VirtualService extends cdk.Resource implements IVirtualService {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appmesh.VirtualService';
+
   /**
    * Import an existing VirtualService given an ARN
    */
@@ -105,6 +111,8 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
     super(scope, id, {
       physicalName: props.virtualServiceName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const providerConfig = props.virtualServiceProvider.bind(this);
     this.mesh = providerConfig.mesh;

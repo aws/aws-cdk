@@ -3,6 +3,8 @@ import { CfnInstanceProfile } from './iam.generated';
 import { ServicePrincipal } from './principals';
 import { IRole, Role } from './role';
 import { Resource, Arn, Stack, IResource, PhysicalName } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an IAM Instance Profile
@@ -102,7 +104,11 @@ abstract class InstanceProfileBase extends Resource implements IInstanceProfile 
 /**
  * IAM Instance Profile
  */
+@propertyInjectable
 export class InstanceProfile extends InstanceProfileBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.InstanceProfile';
+
   /**
    * Import an existing InstanceProfile from an InstanceProfile name.
    *
@@ -169,6 +175,8 @@ export class InstanceProfile extends InstanceProfileBase {
 
   constructor(scope: Construct, id: string, props: InstanceProfileProps = {}) {
     super(scope, id, { physicalName: props.instanceProfileName });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this._role = props.role || new Role(this, 'InstanceRole', {
       roleName: PhysicalName.GENERATE_IF_NEEDED,

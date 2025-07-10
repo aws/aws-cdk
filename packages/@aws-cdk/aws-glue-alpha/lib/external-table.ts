@@ -4,6 +4,8 @@ import { Construct } from 'constructs';
 import { IConnection } from './connection';
 import { Column } from './schema';
 import { PartitionIndex, TableBase, TableBaseProps } from './table-base';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 export interface ExternalTableProps extends TableBaseProps {
   /**
@@ -27,7 +29,10 @@ export interface ExternalTableProps extends TableBaseProps {
  * A Glue table that targets an external data location (e.g. A table in a Redshift Cluster).
  * @resource AWS::Glue::Table
  */
+@propertyInjectable
 export class ExternalTable extends TableBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.ExternalTable';
   /**
    * Name of this table.
    */
@@ -52,6 +57,8 @@ export class ExternalTable extends TableBase {
 
   constructor(scope: Construct, id: string, props: ExternalTableProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.connection = props.connection;
     this.tableResource = new CfnTable(this, 'Table', {
       catalogId: props.database.catalogId,
@@ -115,6 +122,7 @@ export class ExternalTable extends TableBase {
    *
    * @param grantee the principal
    */
+  @MethodMetadata()
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, readPermissions);
     return ret;
@@ -125,6 +133,7 @@ export class ExternalTable extends TableBase {
    *
    * @param grantee the principal
    */
+  @MethodMetadata()
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, writePermissions);
     return ret;
@@ -135,6 +144,7 @@ export class ExternalTable extends TableBase {
    *
    * @param grantee the principal
    */
+  @MethodMetadata()
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
     return ret;

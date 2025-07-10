@@ -3,9 +3,11 @@ import { Construct } from 'constructs';
 import * as ecr from '../../aws-ecr';
 import * as ecr_assets from '../../aws-ecr-assets';
 import * as iam from '../../aws-iam';
+import { IKey } from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 
 /**
  * Represents the Lambda Handler Code.
@@ -13,12 +15,46 @@ import * as cdk from '../../core';
 export abstract class Code {
   /**
    * Lambda handler code as an S3 object.
+   *
+   * Note: If `objectVersion` is not defined, the lambda will not be updated automatically if the code in the bucket is updated.
+   * This is because CDK/Cloudformation does not track changes on the source S3 Bucket. It is recommended to either use S3Code.fromAsset() instead or set objectVersion.
    * @param bucket The S3 bucket
    * @param key The object key
    * @param objectVersion Optional S3 object version
    */
   public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
+    if (objectVersion === undefined) {
+      cdk.Annotations.of(bucket).addWarningV2(
+        '@aws-cdk/aws-lambda:codeFromBucketObjectVersionNotSpecified',
+        'objectVersion is not defined for S3Code.fromBucket(). The lambda will not be updated automatically if the code in the bucket is updated. ' +
+        'This is because CDK/Cloudformation does not track changes on the source S3 Bucket. It is recommended to either use S3Code.fromAsset() instead or set objectVersion.',
+      );
+    }
+
     return new S3Code(bucket, key, objectVersion);
+  }
+
+  /**
+   * Lambda handler code as an S3 object.
+   *
+   * Note: If `options.objectVersion` is not defined, the lambda will not be updated automatically if the code in the bucket is updated.
+   * This is because CDK/Cloudformation does not track changes on the source S3 Bucket. It is recommended to either use S3Code.fromAsset() instead or set objectVersion.
+   * @param bucket The S3 bucket
+   * @param key The object key
+   * @param options Optional parameters for setting the code, current optional parameters to set here are
+   * 1. `objectVersion` to set S3 object version
+   * 2. `sourceKMSKey` to set KMS Key for encryption of code
+   */
+  public static fromBucketV2 (bucket: s3.IBucket, key: string, options?: BucketOptions): S3CodeV2 {
+    if (options?.objectVersion === undefined) {
+      cdk.Annotations.of(bucket).addWarningV2(
+        '@aws-cdk/aws-lambda:codeFromBucketObjectVersionNotSpecified',
+        'options.objectVersion is not defined for S3Code.fromBucketV2(). The lambda will not be updated automatically if the code in the bucket is updated. ' +
+        'This is because CDK/Cloudformation does not track changes on the source S3 Bucket. It is recommended to either use S3Code.fromAsset() instead or set options.objectVersion.',
+      );
+    }
+
+    return new S3CodeV2(bucket, key, options);
   }
 
   /**
@@ -32,7 +68,7 @@ export abstract class Code {
   /**
    * Inline code for Lambda handler
    * @returns `LambdaInlineCode` with inline code.
-   * @param code The actual handler code (limited to 4KiB)
+   * @param code The actual handler code (the resulting zip file cannot exceed 4MB)
    */
   public static fromInline(code: string): InlineCode {
     return new InlineCode(code);
@@ -70,7 +106,7 @@ export abstract class Code {
     options?: CustomCommandOptions,
   ): AssetCode {
     if (command.length === 0) {
-      throw new Error('command must contain at least one argument. For example, ["node", "buildFile.js"].');
+      throw new UnscopedValidationError('command must contain at least one argument. For example, ["node", "buildFile.js"].');
     }
 
     const cmd = command[0];
@@ -81,10 +117,10 @@ export abstract class Code {
       : spawnSync(cmd, commandArguments, options.commandOptions);
 
     if (proc.error) {
-      throw new Error(`Failed to execute custom command: ${proc.error}`);
+      throw new UnscopedValidationError(`Failed to execute custom command: ${proc.error}`);
     }
     if (proc.status !== 0) {
-      throw new Error(`${command.join(' ')} exited with status: ${proc.status}\n\nstdout: ${proc.stdout?.toString().trim()}\n\nstderr: ${proc.stderr?.toString().trim()}`);
+      throw new UnscopedValidationError(`${command.join(' ')} exited with status: ${proc.status}\n\nstdout: ${proc.stdout?.toString().trim()}\n\nstderr: ${proc.stderr?.toString().trim()}`);
     }
 
     return new AssetCode(output, options);
@@ -208,6 +244,12 @@ export interface CodeConfig {
    * @default - code is not an ECR container image
    */
   readonly image?: CodeImageConfig;
+
+  /**
+   * The ARN of the KMS key used to encrypt the handler code.
+   * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
+   */
+  readonly sourceKMSKeyArn?: string;
 }
 
 /**
@@ -256,7 +298,7 @@ export class S3Code extends Code {
     super();
 
     if (!bucket.bucketName) {
-      throw new Error('bucketName is undefined for the provided bucket');
+      throw new ValidationError('bucketName is undefined for the provided bucket', bucket);
     }
 
     this.bucketName = bucket.bucketName;
@@ -274,6 +316,34 @@ export class S3Code extends Code {
 }
 
 /**
+ * Lambda code from an S3 archive. With option to set KMSKey for encryption.
+ */
+export class S3CodeV2 extends Code {
+  public readonly isInline = false;
+  private bucketName: string;
+
+  constructor(bucket: s3.IBucket, private key: string, private options?: BucketOptions) {
+    super();
+    if (!bucket.bucketName) {
+      throw new ValidationError('bucketName is undefined for the provided bucket', bucket);
+    }
+
+    this.bucketName = bucket.bucketName;
+  }
+
+  public bind(_scope: Construct): CodeConfig {
+    return {
+      s3Location: {
+        bucketName: this.bucketName,
+        objectKey: this.key,
+        objectVersion: this.options?.objectVersion,
+      },
+      sourceKMSKeyArn: this.options?.sourceKMSKey?.keyArn,
+    };
+  }
+}
+
+/**
  * Lambda code from an inline string.
  */
 export class InlineCode extends Code {
@@ -283,7 +353,7 @@ export class InlineCode extends Code {
     super();
 
     if (code.length === 0) {
-      throw new Error('Lambda inline code cannot be empty');
+      throw new UnscopedValidationError('Lambda inline code cannot be empty');
     }
   }
 
@@ -317,12 +387,12 @@ export class AssetCode extends Code {
         ...this.options,
       });
     } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
-      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
-        'Create a new Code instance for every stack.');
+      throw new ValidationError(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+        'Create a new Code instance for every stack.', scope);
     }
 
     if (!this.asset.isZipArchive) {
-      throw new Error(`Asset must be a .zip file or a directory (${this.path})`);
+      throw new ValidationError(`Asset must be a .zip file or a directory (${this.path})`, scope);
     }
 
     return {
@@ -330,12 +400,13 @@ export class AssetCode extends Code {
         bucketName: this.asset.s3BucketName,
         objectKey: this.asset.s3ObjectKey,
       },
+      sourceKMSKeyArn: this.options.sourceKMSKey?.keyArn,
     };
   }
 
   public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
     if (!this.asset) {
-      throw new Error('bindToResource() must be called after bind()');
+      throw new ValidationError('bindToResource() must be called after bind()', resource);
     }
 
     const resourceProperty = options.resourceProperty || 'Code';
@@ -375,6 +446,11 @@ export interface CfnParametersCodeProps {
    * @default a new parameter will be created
    */
   readonly objectKeyParam?: cdk.CfnParameter;
+  /**
+   * The ARN of the KMS key used to encrypt the handler code.
+   * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
+   */
+  readonly sourceKMSKey?: IKey;
 }
 
 /**
@@ -387,12 +463,14 @@ export class CfnParametersCode extends Code {
   public readonly isInline = false;
   private _bucketNameParam?: cdk.CfnParameter;
   private _objectKeyParam?: cdk.CfnParameter;
+  private _sourceKMSKey?: IKey;
 
   constructor(props: CfnParametersCodeProps = {}) {
     super();
 
     this._bucketNameParam = props.bucketNameParam;
     this._objectKeyParam = props.objectKeyParam;
+    this._sourceKMSKey = props.sourceKMSKey;
   }
 
   public bind(scope: Construct): CodeConfig {
@@ -413,6 +491,7 @@ export class CfnParametersCode extends Code {
         bucketName: this._bucketNameParam.valueAsString,
         objectKey: this._objectKeyParam.valueAsString,
       },
+      sourceKMSKeyArn: this._sourceKMSKey?.keyArn,
     };
   }
 
@@ -439,7 +518,7 @@ export class CfnParametersCode extends Code {
     if (this._bucketNameParam) {
       return this._bucketNameParam.logicalId;
     } else {
-      throw new Error('Pass CfnParametersCode to a Lambda Function before accessing the bucketNameParam property');
+      throw new UnscopedValidationError('Pass CfnParametersCode to a Lambda Function before accessing the bucketNameParam property');
     }
   }
 
@@ -447,7 +526,7 @@ export class CfnParametersCode extends Code {
     if (this._objectKeyParam) {
       return this._objectKeyParam.logicalId;
     } else {
-      throw new Error('Pass CfnParametersCode to a Lambda Function before accessing the objectKeyParam property');
+      throw new UnscopedValidationError('Pass CfnParametersCode to a Lambda Function before accessing the objectKeyParam property');
     }
   }
 }
@@ -493,6 +572,7 @@ export interface EcrImageCodeProps {
    * @default 'latest'
    */
   readonly tagOrDigest?: string;
+
 }
 
 /**
@@ -569,8 +649,8 @@ export class AssetImageCode extends Code {
       });
       this.asset.repository.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com'));
     } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
-      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
-        'Create a new Code instance for every stack.');
+      throw new ValidationError(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+        'Create a new Code instance for every stack.', scope);
     }
 
     return {
@@ -585,7 +665,7 @@ export class AssetImageCode extends Code {
 
   public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
     if (!this.asset) {
-      throw new Error('bindToResource() must be called after bind()');
+      throw new ValidationError('bindToResource() must be called after bind()', resource);
     }
 
     const resourceProperty = options.resourceProperty || 'Code.ImageUri';
@@ -626,4 +706,19 @@ export interface CustomCommandOptions extends s3_assets.AssetOptions {
    * @default: see `child_process.SpawnSyncOptions` (https://nodejs.org/api/child_process.html#child_processspawnsynccommand-args-options).
    */
   readonly commandOptions?: { [options: string]: any };
+}
+
+/**
+ * Optional parameters for creating code using bucket
+ */
+export interface BucketOptions {
+  /**
+   * Optional S3 object version
+   */
+  readonly objectVersion?: string;
+  /**
+   * The ARN of the KMS key used to encrypt the handler code.
+   * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
+   */
+  readonly sourceKMSKey?: IKey;
 }

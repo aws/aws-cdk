@@ -1,0 +1,14 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "SchemaRegistryInteg/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-glue-schema-registry",
+        "lambda-event-source-confluent-schema-registry"
+      ],
+      "assertionStack": "SchemaRegistryInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "SchemaRegistryIntegDefaultTestDeployAssertC190A9FD"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

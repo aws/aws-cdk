@@ -4,6 +4,8 @@ import { HttpCodeTarget } from './application-load-balancer';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import { Aws, Annotations, Duration, Token } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
@@ -106,6 +108,20 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#automatic-target-weights
    */
   readonly enableAnomalyMitigation?: boolean;
+
+  /**
+   * Indicates whether the target group supports multi-value headers.
+   *
+   * If the value is true, the request and response headers exchanged between
+   * the load balancer and the Lambda function include arrays of values or strings.
+   *
+   * Only applicable for Lambda targets.
+   *
+   * @default false
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-attributes
+   */
+  readonly multiValueHeadersEnabled?: boolean;
 }
 
 /**
@@ -290,7 +306,13 @@ class ApplicationTargetGroupMetrics implements IApplicationTargetGroupMetrics {
 /**
  * Define an Application Target Group
  */
+@propertyInjectable
 export class ApplicationTargetGroup extends TargetGroupBase implements IApplicationTargetGroup {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.ApplicationTargetGroup';
+
   /**
    * Import an existing target group
    */
@@ -346,12 +368,12 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       if (props.slowStart !== undefined) {
         // 0 is allowed and disables slow start
         if ((props.slowStart.toSeconds() < 30 && props.slowStart.toSeconds() !== 0) || props.slowStart.toSeconds() > 900) {
-          throw new Error('Slow start duration value must be between 30 and 900 seconds, or 0 to disable slow start.');
+          throw new ValidationError('Slow start duration value must be between 30 and 900 seconds, or 0 to disable slow start.', this);
         }
         this.setAttribute('slow_start.duration_seconds', props.slowStart.toSeconds().toString());
 
         if (isWeightedRandomAlgorithm) {
-          throw new Error('The weighted random routing algorithm can not be used with slow start mode.');
+          throw new ValidationError('The weighted random routing algorithm can not be used with slow start mode.', this);
         }
       }
 
@@ -364,11 +386,20 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       if (props.loadBalancingAlgorithmType) {
         this.setAttribute('load_balancing.algorithm.type', props.loadBalancingAlgorithmType);
       }
+
+      if (props.multiValueHeadersEnabled) {
+        if (this.targetType === TargetType.LAMBDA) {
+          this.setAttribute('lambda.multi_value_headers.enabled', 'true');
+        } else {
+          throw new ValidationError('multiValueHeadersEnabled is only supported for Lambda targets.', this);
+        }
+      }
+
       this.addTarget(...(props.targets || []));
 
       if (props.enableAnomalyMitigation !== undefined) {
         if (props.enableAnomalyMitigation && !isWeightedRandomAlgorithm) {
-          throw new Error('Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.');
+          throw new ValidationError('Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.', this);
         }
         this.setAttribute('load_balancing.algorithm.anomaly_mitigation', props.enableAnomalyMitigation ? 'on' : 'off');
       }
@@ -406,14 +437,14 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    */
   public enableCookieStickiness(duration: Duration, cookieName?: string) {
     if (duration.toSeconds() < 1 || duration.toSeconds() > 604800) {
-      throw new Error('Stickiness cookie duration value must be between 1 second and 7 days (604800 seconds).');
+      throw new ValidationError('Stickiness cookie duration value must be between 1 second and 7 days (604800 seconds).', this);
     }
     if (cookieName !== undefined) {
       if (!Token.isUnresolved(cookieName) && (cookieName.startsWith('AWSALB') || cookieName.startsWith('AWSALBAPP') || cookieName.startsWith('AWSALBTG'))) {
-        throw new Error('App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they\'re reserved for use by the load balancer.');
+        throw new ValidationError('App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they\'re reserved for use by the load balancer.', this);
       }
       if (cookieName === '') {
-        throw new Error('App cookie name cannot be an empty string.');
+        throw new ValidationError('App cookie name cannot be an empty string.', this);
       }
     }
     this.setAttribute('stickiness.enabled', 'true');
@@ -463,7 +494,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    */
   public get firstLoadBalancerFullName(): string {
     if (this.listeners.length === 0) {
-      throw new Error('The TargetGroup needs to be attached to a LoadBalancer before you can call this method');
+      throw new ValidationError('The TargetGroup needs to be attached to a LoadBalancer before you can call this method', this);
     }
     return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
   }
@@ -681,16 +712,16 @@ class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements 
       const result = target.attachToApplicationTargetGroup(this);
 
       if (result.targetJson !== undefined) {
-        throw new Error('Cannot add a non-self registering target to an imported TargetGroup. Create a new TargetGroup instead.');
+        throw new ValidationError('Cannot add a non-self registering target to an imported TargetGroup. Create a new TargetGroup instead.', this);
       }
     }
   }
 
   public get metrics(): IApplicationTargetGroupMetrics {
     if (!this._metrics) {
-      throw new Error(
+      throw new ValidationError(
         'The imported ApplicationTargetGroup needs the associated ApplicationBalancer to be able to provide metrics. ' +
-        'Please specify the ARN value when importing it.');
+        'Please specify the ARN value when importing it.', this);
     }
     return this._metrics;
   }

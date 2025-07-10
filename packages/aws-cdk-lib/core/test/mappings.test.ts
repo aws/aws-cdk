@@ -147,7 +147,7 @@ describe('mappings', () => {
           'us-east-1': 12,
         },
       },
-    })).toThrowError(/Attribute name 'us-east-1' must contain only alphanumeric characters./);
+    })).toThrow(/Attribute name 'us-east-1' must contain only alphanumeric characters./);
   });
 
   test('using the value of a mapping in a different stack copies the mapping to the consuming stack', () => {
@@ -261,9 +261,9 @@ describe('lazy mapping', () => {
 
   it('throws if keys can be resolved but are not found in mapping', () => {
     expect(() => mapping.findInMap('NonExistentKey', 'SecondLevelKey1'))
-      .toThrowError(/Mapping doesn't contain top-level key .*/);
+      .toThrow(/Mapping doesn't contain top-level key .*/);
     expect(() => mapping.findInMap('TopLevelKey1', 'NonExistentKey'))
-      .toThrowError(/Mapping doesn't contain second-level key .*/);
+      .toThrow(/Mapping doesn't contain second-level key .*/);
   });
 });
 

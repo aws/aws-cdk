@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "44.0.0",
   "testCases": {
     "aws-cdk-dynamodb-global-replicas-provisioned-test/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "aws-cdk-dynamodb-global-replicas-provisioned-test/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkdynamodbglobalreplicasprovisionedtestDefaultTestDeployAssertE7F91F54"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

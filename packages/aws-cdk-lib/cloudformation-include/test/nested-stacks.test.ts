@@ -743,6 +743,77 @@ describe('CDK Include for nested stacks', () => {
       });
     });
   });
+
+  describe('dehydrated resources', () => {
+    let parentStack: core.Stack;
+    let childStack: core.Stack;
+
+    beforeEach(() => {
+      parentStack = new core.Stack();
+    });
+
+    test('dehydrated resources are included in child templates, even if they are otherwise invalid', () => {
+      const parentTemplate = new inc.CfnInclude(parentStack, 'ParentStack', {
+        templateFile: testTemplateFilePath('parent-dehydrated.json'),
+        dehydratedResources: ['ASG'],
+        loadNestedStacks: {
+          'ChildStack': {
+            templateFile: testTemplateFilePath('child-dehydrated.json'),
+            dehydratedResources: ['ChildASG'],
+          },
+        },
+      });
+      childStack = parentTemplate.getNestedStack('ChildStack').stack;
+
+      Template.fromStack(childStack).templateMatches({
+        "Conditions": {
+          "SomeCondition": {
+            "Fn::Equals": [
+              2,
+              2,
+            ],
+          },
+        },
+        "Resources": {
+          "ChildStackChildASGF815DFE9": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+              "MaxSize": 10,
+              "MinSize": 1,
+            },
+            "UpdatePolicy": {
+              "AutoScalingScheduledAction": {
+                "Fn::If": [
+                  "SomeCondition",
+                  {
+                    "IgnoreUnmodifiedGroupSizeProperties": true,
+                  },
+                  {
+                    "IgnoreUnmodifiedGroupSizeProperties": false,
+                  },
+                ],
+              },
+            },
+          },
+        },
+      });
+    });
+
+    test('throws if a nested stack is marked dehydrated', () => {
+      expect(() => {
+        new inc.CfnInclude(parentStack, 'ParentStack', {
+          templateFile: testTemplateFilePath('parent-dehydrated.json'),
+          dehydratedResources: ['ChildStack'],
+          loadNestedStacks: {
+            'ChildStack': {
+              templateFile: testTemplateFilePath('child-dehydrated.json'),
+              dehydratedResources: ['ChildASG'],
+            },
+          },
+        });
+      }).toThrow(/nested stack 'ChildStack' was marked as dehydrated - nested stacks cannot be dehydrated/);
+    });
+  });
 });
 
 function loadTestFileToJsObject(testTemplate: string): any {

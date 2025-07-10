@@ -1,6 +1,21 @@
-/*eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
+/* eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
 
-import { ISubnet } from 'aws-cdk-lib/aws-ec2';
+import { ISubnet, SubnetType } from 'aws-cdk-lib/aws-ec2';
+
+/**
+ * The default names for every subnet type
+ */
+export function defaultSubnetName(type: SubnetType) {
+  switch (type) {
+    case SubnetType.PUBLIC: return 'Public';
+    case SubnetType.PRIVATE_WITH_NAT:
+    case SubnetType.PRIVATE_WITH_EGRESS:
+      return 'Private';
+    case SubnetType.PRIVATE_ISOLATED:
+      return 'Isolated';
+  }
+  return undefined;
+}
 
 /**
  * Return a subnet name from its construct ID
@@ -16,6 +31,29 @@ export function subnetGroupNameFromConstructId(subnet: ISubnet) {
  */
 export function subnetId(name: string, i: number) {
   return `${name}Subnet${i + 1}`;
+}
+
+/**
+ * The status of a Transit Gateway feature.
+ */
+export enum TransitGatewayFeatureStatus {
+  /**
+   * The feature is enabled.
+   */
+  ENABLE = 'enable',
+
+  /**
+   * The feature is disabled.
+   */
+  DISABLE = 'disable',
+}
+
+export function getFeatureStatus(status?: boolean): TransitGatewayFeatureStatus | undefined {
+  if (status === undefined) {
+    return undefined;
+  } else {
+    return status ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE;
+  }
 }
 
 /**
@@ -39,7 +77,6 @@ export function flatten<A>(xs: A[][]): A[] {
  * NetworkUtils contains helpers to work with network constructs (subnets/ranges)
  */
 export class NetworkUtils {
-
   /**
    * Validates an IPv4 address string.
    *
@@ -116,7 +153,6 @@ export class NetworkUtils {
  * and CIDR validation
  */
 export class CidrBlock {
-
   /**
    * Calculates the netmask for a given CIDR mask
    *
@@ -260,7 +296,7 @@ export class CidrBlock {
   }
 
   /**
-   * Checks if two IP address ranges overlap.
+   * Checks if two IPv4 address ranges overlap.
    *
    * @param range1 The first IP address range represented as an array [start, end].
    * @param range2 The second IP address range represented as an array [start, end].
@@ -269,13 +305,11 @@ export class CidrBlock {
    * Note: This method assumes that the start and end addresses are valid IPv4 addresses.
    */
   public rangesOverlap(range1: [string, string], range2: [string, string]): boolean {
-    const [start1, end1] = range1;
-    const [start2, end2] = range2;
-
+    const [start1, end1] = range1.map(ip => NetworkUtils.ipToNum(ip));
+    const [start2, end2] = range2.map(ip => NetworkUtils.ipToNum(ip));
     // Check if ranges overlap
     return start1 <= end2 && start2 <= end1;
   }
-
 }
 
 /**
@@ -286,7 +320,6 @@ export class CidrBlock {
  * IP addresses in a CIDR block, and checking if two CIDR blocks overlap.
  */
 export class CidrBlockIpv6 {
-
   /**
    * Ipv6 CIDR range
    */
@@ -324,13 +357,54 @@ export class CidrBlockIpv6 {
   }
 
   /**
-   * @returns Maximum IPv6 address for a provided CIDR
+   * Calculates the maximum IPv6 address in the CIDR block
+   * @returns The maximum IPv6 address as a string
    */
   public maxIp(): string {
+    /**
+     * Calculate how many 16-bit blocks are needed for the network portion
+     * e.g. for /56, networkPartLength = ceil(56/16) = 4 blocks
+     */
+    const networkPartLength = Math.ceil(this.cidrPrefix / 16);
+    /**
+     * Calculate remaining bits in last network block
+     * e.g. for /56, remainingBits = 56 % 16 = 8 bits
+     */
+    const remainingBits = this.cidrPrefix % 16;
+    /**
+     * Create copy of network portion of address
+     * e.g. [2001, db8, 0, 0] for 2001:db8::/56
+     */
     const endIP = [...this.networkPart];
-    const hostPart = Array(8 - this.networkPart.length).fill(BigInt(0xffff));
-    endIP.push(...hostPart);
 
+    /**
+     * If there are remaining bits in last network block,
+     * create appropriate bitmask and apply to last network block
+     * e.g. for /56: mask = (1 << (16-8)) - 1 = 0x00FF
+     */
+    if (remainingBits > 0) {
+      const lastNetworkIndex = networkPartLength - 1;
+      const mask = (BigInt(1) << BigInt(16 - remainingBits)) - BigInt(1);
+      /**
+       * Apply bitmask to last network block using bitwise OR
+       * e.g. if lastNetworkIndex=3 and mask=0x00FF:
+       * networkPart[3]=0x0000 | 0x00FF = 0x00FF
+       */
+      endIP[lastNetworkIndex] = this.networkPart[lastNetworkIndex] | mask;
+    }
+
+    /**
+     * Fill remaining blocks with maximum value 0xFFFF
+     * e.g. [2001, db8, 0, ff, ffff, ffff, ffff, ffff]
+     */
+    for (let i = networkPartLength; i < 8; i++) {
+      endIP.push(BigInt('0xffff'));
+    }
+
+    /**
+     * Convert blocks to hex strings and join with colons
+     * e.g. 2001:db8:0:ff:ffff:ffff:ffff:ffff
+     */
     return endIP.map(this.formatIPv6Part).join(':');
   }
 
@@ -343,30 +417,21 @@ export class CidrBlockIpv6 {
    * @returns true if two ranges overlap, false otherwise
    */
   public rangesOverlap(range1: string, range2: string): boolean {
-    const [start1, end1] = this.getIPv6Range(range1);
-    const [start2, end2] = this.getIPv6Range(range2);
+    // Create new CidrBlockIpv6 instances for both ranges
+    const cidr1 = new CidrBlockIpv6(range1);
+    const cidr2 = new CidrBlockIpv6(range2);
 
+    // Convert min and max IPs to numeric values for comparison
+    const start1 = this.ipv6ToNumber(cidr1.minIp());
+    const end1 = this.ipv6ToNumber(cidr1.maxIp());
+    const start2 = this.ipv6ToNumber(cidr2.minIp());
+    const end2 = this.ipv6ToNumber(cidr2.maxIp());
+
+    // Check for overlap
     return (start1 <= end2) && (start2 <= end1);
   }
 
   /**
-   *
-   * @param cidr
-   * @returns Range in the from of big int number [start, end]
-   */
-  private getIPv6Range(cidr: string): [bigint, bigint] {
-    const [ipv6Address, prefixLength] = cidr.split('/');
-    const ipv6Number = this.ipv6ToNumber(ipv6Address);
-    const mask = (BigInt(1) << BigInt(128 - Number(prefixLength))) - BigInt(1);
-    const networkPrefix = ipv6Number & ~mask;
-    const start = networkPrefix;
-    const end = networkPrefix | mask;
-
-    return [start, end];
-  }
-
-  /**
-   * @param ipv6Address
    * @returns Converts given ipv6 address range to big int number
    */
   private ipv6ToNumber(ipv6Address: string): bigint {
@@ -379,4 +444,3 @@ export class CidrBlockIpv6 {
     return ipv6Number;
   }
 }
-

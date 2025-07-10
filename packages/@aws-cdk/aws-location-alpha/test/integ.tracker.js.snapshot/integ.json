@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "TrackerTest/DefaultTest": {
+      "stacks": [
+        "cdk-integ-location-tracker"
+      ],
+      "assertionStack": "TrackerTest/DefaultTest/DeployAssert",
+      "assertionStackName": "TrackerTestDefaultTestDeployAssert0E17BB8B"
+    }
+  }
+}

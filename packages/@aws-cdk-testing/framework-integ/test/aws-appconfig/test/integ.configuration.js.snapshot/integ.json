@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "44.0.0",
   "testCases": {
     "appconfig-configuration/DefaultTest": {
       "stacks": [
@@ -15,5 +15,6 @@
       "assertionStack": "appconfig-configuration/DefaultTest/DeployAssert",
       "assertionStackName": "appconfigconfigurationDefaultTestDeployAssert6752CD38"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

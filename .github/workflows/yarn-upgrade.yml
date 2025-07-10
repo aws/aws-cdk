@@ -39,10 +39,6 @@ jobs:
       - name: Install Tools
         run: |-
           npm -g install lerna npm-check-updates
-      - name: Build Integ Runner
-        run: |
-          export NODE_OPTIONS="--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
-          npx lerna run build --scope @aws-cdk/integ-runner
       - name: List Mono-Repo Packages
         id: list-packages
         # These need to be ignored from the `ncu` runs!
@@ -62,7 +58,7 @@ jobs:
           ncu --upgrade --reject=@types/node,@types/prettier,constructs,jsii,jsii-rosetta,typescript --target=minor
           # Upgrade all the packages
           lerna exec --parallel ncu -- --upgrade --filter=jsii,jsii-rosetta,typescript --target=patch
-          lerna exec --parallel ncu -- --upgrade --reject='@types/conventional-commits-parser,@types/node,@types/prettier,constructs,jsii,jsii-rosetta,typescript,aws-sdk-mock,@aws-sdk/*,@aws-cdk/aws-service-spec,@aws-cdk/service-spec-types,${{ steps.list-packages.outputs.list }}' --target=minor
+          lerna exec --parallel ncu -- --upgrade --reject='@aws-cdk/asset-awscli-v1,@types/conventional-commits-parser,@types/node,@types/prettier,constructs,jsii,jsii-rosetta,typescript,aws-sdk-mock,@aws-sdk/*,@aws-cdk/aws-service-spec,@aws-cdk/service-spec-types,${{ steps.list-packages.outputs.list }}' --target=minor
           # Upgrade package.json files in init templates
           for pj in $(find packages/aws-cdk/lib/init-templates -name package.json); do
             (cd $(dirname $pj) && ncu --upgrade --reject='constructs,${{ steps.list-packages.outputs.list }}')
@@ -76,11 +72,6 @@ jobs:
 
       - name: Run "yarn upgrade"
         run: yarn upgrade
-
-      - name: Regenerate CLI attributions
-        run: cd packages/aws-cdk && yarn pkglint
-      - name: Regenerate Integ Runner attributions
-        run: cd packages/@aws-cdk/integ-runner && yarn pkglint
 
       # Next, create and upload the changes as a patch file. This will later be downloaded to create a pull request
       # Creating a pull request requires write permissions and it's best to keep write privileges isolated.

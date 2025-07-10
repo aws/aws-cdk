@@ -6,10 +6,16 @@
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-routev2-alpha/default"
+     }
+    ]
    }
   },
-  "defaultAmazonIpv6C7A4D665": {
+  "defaultAmazonIpv6D524D7D5": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -35,7 +41,6 @@
   "defaultSubnetDFB3A3B6": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-east-1a",
     "CidrBlock": "10.0.0.0/24",
     "Ipv6CidrBlock": {
@@ -49,6 +54,12 @@
       }
      ]
     },
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "defaultC974F9E3",
@@ -57,7 +68,7 @@
     }
    },
    "DependsOn": [
-    "defaultAmazonIpv6C7A4D665"
+    "defaultAmazonIpv6D524D7D5"
    ]
   },
   "defaultSubnetRouteTableAssociationF1D85D29": {
@@ -74,7 +85,7 @@
     }
    },
    "DependsOn": [
-    "defaultAmazonIpv6C7A4D665"
+    "defaultAmazonIpv6D524D7D5"
    ]
   }
  },

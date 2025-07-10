@@ -9,8 +9,15 @@ import * as kplus from 'cdk8s-plus-27';
 import { BucketPinger } from './bucket-pinger/bucket-pinger';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
+import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 const stack = new Stack(app, 'aws-eks-service-account-sdk-calls-test');
 
 // this bucket gets created by a kubernetes pod.

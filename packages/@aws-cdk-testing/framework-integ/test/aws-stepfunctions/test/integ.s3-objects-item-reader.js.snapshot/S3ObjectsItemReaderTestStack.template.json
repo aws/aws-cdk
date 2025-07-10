@@ -1,0 +1,633 @@
+{
+ "Resources": {
+  "S3ObjectsItemReaderTestBucket7B2E5D7A": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "bucket-item-reader-path-",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       "-",
+       {
+        "Ref": "AWS::Region"
+       }
+      ]
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "S3ObjectsItemReaderTestBucketPolicy7C87DA11": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "S3ObjectsItemReaderTestBucket7B2E5D7A"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "S3ObjectsItemReaderTestBucket7B2E5D7A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "S3ObjectsItemReaderTestBucket7B2E5D7A",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "S3ObjectsItemReaderTestBucketAutoDeleteObjectsCustomResource8DD65116": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "S3ObjectsItemReaderTestBucket7B2E5D7A"
+    }
+   },
+   "DependsOn": [
+    "S3ObjectsItemReaderTestBucketPolicy7C87DA11"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "S3ObjectsItemReaderTestBucket7B2E5D7A"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ]
+  },
+  "S3ObjectsItemReaderTestStateMachineDynamicRole1C87327D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "S3ObjectsItemReaderTestStateMachineDynamicRoleDefaultPolicyC67E192F": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:ListBucket",
+       "Effect": "Allow",
+       "Resource": [
+        "*",
+        {
+         "Fn::GetAtt": [
+          "S3ObjectsItemReaderTestBucket7B2E5D7A",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "s3:GetObject",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "S3ObjectsItemReaderTestBucket7B2E5D7A",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "S3ObjectsItemReaderTestStateMachineDynamicRoleDefaultPolicyC67E192F",
+    "Roles": [
+     {
+      "Ref": "S3ObjectsItemReaderTestStateMachineDynamicRole1C87327D"
+     }
+    ]
+   }
+  },
+  "S3ObjectsItemReaderTestStateMachineDynamicA0EE584C": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"S3ObjectsItemReaderTestDynamicMap\",\"States\":{\"S3ObjectsItemReaderTestDynamicMap\":{\"Type\":\"Map\",\"End\":true,\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"DISTRIBUTED\",\"ExecutionType\":\"STANDARD\"},\"StartAt\":\"S3ObjectsItemReaderTestDynamicPass\",\"States\":{\"S3ObjectsItemReaderTestDynamicPass\":{\"Type\":\"Pass\",\"End\":true}}},\"ItemReader\":{\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::s3:listObjectsV2\",\"Parameters\":{\"Bucket.$\":\"$.bucketName\",\"Prefix.$\":\"$.prefix\"}}}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "S3ObjectsItemReaderTestStateMachineDynamicRole1C87327D",
+      "Arn"
+     ]
+    },
+    "StateMachineName": "S3ObjectsItemReaderTestStateMachineDynamic"
+   },
+   "DependsOn": [
+    "S3ObjectsItemReaderTestStateMachineDynamicRoleDefaultPolicyC67E192F",
+    "S3ObjectsItemReaderTestStateMachineDynamicRole1C87327D"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "S3ObjectsItemReaderTestStateMachineDynamicDistributedMapPolicy78C957C3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "states:StartExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "S3ObjectsItemReaderTestStateMachineDynamicA0EE584C"
+       }
+      },
+      {
+       "Action": [
+        "states:DescribeExecution",
+        "states:StopExecution"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Ref": "S3ObjectsItemReaderTestStateMachineDynamicA0EE584C"
+          },
+          ":*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "S3ObjectsItemReaderTestStateMachineDynamicDistributedMapPolicy78C957C3",
+    "Roles": [
+     {
+      "Ref": "S3ObjectsItemReaderTestStateMachineDynamicRole1C87327D"
+     }
+    ]
+   }
+  },
+  "S3ObjectsItemReaderTestStateMachineStaticRole145DBAF2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "S3ObjectsItemReaderTestStateMachineStaticRoleDefaultPolicy0FDD8C1C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:ListBucket",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "S3ObjectsItemReaderTestBucket7B2E5D7A",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "s3:GetObject",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "S3ObjectsItemReaderTestBucket7B2E5D7A",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "S3ObjectsItemReaderTestStateMachineStaticRoleDefaultPolicy0FDD8C1C",
+    "Roles": [
+     {
+      "Ref": "S3ObjectsItemReaderTestStateMachineStaticRole145DBAF2"
+     }
+    ]
+   }
+  },
+  "S3ObjectsItemReaderTestStateMachineStaticA6D1B6C2": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"S3ObjectsItemReaderTestStaticMap\",\"States\":{\"S3ObjectsItemReaderTestStaticMap\":{\"Type\":\"Map\",\"End\":true,\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"DISTRIBUTED\",\"ExecutionType\":\"STANDARD\"},\"StartAt\":\"S3ObjectsItemReaderTestStaticPass\",\"States\":{\"S3ObjectsItemReaderTestStaticPass\":{\"Type\":\"Pass\",\"End\":true}}},\"ItemReader\":{\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::s3:listObjectsV2\",\"Parameters\":{\"Bucket\":\"",
+       {
+        "Ref": "S3ObjectsItemReaderTestBucket7B2E5D7A"
+       },
+       "\",\"Prefix.$\":\"$.prefix\"}}}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "S3ObjectsItemReaderTestStateMachineStaticRole145DBAF2",
+      "Arn"
+     ]
+    },
+    "StateMachineName": "S3ObjectsItemReaderTestStateMachineStatic"
+   },
+   "DependsOn": [
+    "S3ObjectsItemReaderTestStateMachineStaticRoleDefaultPolicy0FDD8C1C",
+    "S3ObjectsItemReaderTestStateMachineStaticRole145DBAF2"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "S3ObjectsItemReaderTestStateMachineStaticDistributedMapPolicy60032339": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "states:StartExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "S3ObjectsItemReaderTestStateMachineStaticA6D1B6C2"
+       }
+      },
+      {
+       "Action": [
+        "states:DescribeExecution",
+        "states:StopExecution"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Ref": "S3ObjectsItemReaderTestStateMachineStaticA6D1B6C2"
+          },
+          ":*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "S3ObjectsItemReaderTestStateMachineStaticDistributedMapPolicy60032339",
+    "Roles": [
+     {
+      "Ref": "S3ObjectsItemReaderTestStateMachineStaticRole145DBAF2"
+     }
+    ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs22.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs22.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs22.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs22.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs22.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
+    "value": "nodejs22.x"
+   },
+   "il-central-1": {
+    "value": "nodejs22.x"
+   },
+   "me-central-1": {
+    "value": "nodejs22.x"
+   },
+   "me-south-1": {
+    "value": "nodejs22.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs22.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-east-2": {
+    "value": "nodejs22.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs22.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs22.x"
+   },
+   "us-west-2": {
+    "value": "nodejs22.x"
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefS3ObjectsItemReaderTestBucket7B2E5D7AA6C634CA": {
+   "Value": {
+    "Ref": "S3ObjectsItemReaderTestBucket7B2E5D7A"
+   },
+   "Export": {
+    "Name": "S3ObjectsItemReaderTestStack:ExportsOutputRefS3ObjectsItemReaderTestBucket7B2E5D7AA6C634CA"
+   }
+  },
+  "ExportsOutputRefS3ObjectsItemReaderTestStateMachineDynamicA0EE584C7702E69C": {
+   "Value": {
+    "Ref": "S3ObjectsItemReaderTestStateMachineDynamicA0EE584C"
+   },
+   "Export": {
+    "Name": "S3ObjectsItemReaderTestStack:ExportsOutputRefS3ObjectsItemReaderTestStateMachineDynamicA0EE584C7702E69C"
+   }
+  },
+  "ExportsOutputRefS3ObjectsItemReaderTestStateMachineStaticA6D1B6C28B435428": {
+   "Value": {
+    "Ref": "S3ObjectsItemReaderTestStateMachineStaticA6D1B6C2"
+   },
+   "Export": {
+    "Name": "S3ObjectsItemReaderTestStack:ExportsOutputRefS3ObjectsItemReaderTestStateMachineStaticA6D1B6C28B435428"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -102,12 +102,14 @@ Auto build and pull request preview are enabled by default.
 Add custom rules for redirection:
 
 ```ts
+import { CustomRule } from '@aws-cdk/aws-amplify-alpha';
+
 declare const amplifyApp: amplify.App;
-amplifyApp.addCustomRule({
+amplifyApp.addCustomRule(new CustomRule({
   source: '/docs/specific-filename.html',
   target: '/documents/different-filename.html',
   status: amplify.RedirectStatus.TEMPORARY_REDIRECT,
-});
+}));
 ```
 
 When working with a single page application (SPA), use the
@@ -236,6 +238,68 @@ const amplifyApp = new amplify.App(this, 'App', {
 });
 ```
 
+If the app uses a monorepo structure, define which appRoot from the build spec the custom response headers should apply to by using the `appRoot` property:
+
+```ts
+import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+
+const amplifyApp = new amplify.App(this, 'App', {
+  sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+    owner: '<user>',
+    repository: '<repo>',
+    oauthToken: SecretValue.secretsManager('my-github-token'),
+  }),
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+    version: '1.0',
+    applications: [
+      {
+        appRoot: 'frontend',
+        frontend: {
+          phases: {
+            preBuild: {
+              commands: ['npm install'],
+            },
+            build: {
+              commands: ['npm run build'],
+            },
+          },
+        },
+      },
+      {
+        appRoot: 'backend',
+        backend: {
+          phases: {
+            preBuild: {
+              commands: ['npm install'],
+            },
+            build: {
+              commands: ['npm run build'],
+            },
+          },
+        },
+      },
+    ],
+  }),
+  customResponseHeaders: [
+    {
+      appRoot: 'frontend',
+      pattern: '*.json',
+      headers: {
+        'custom-header-name-1': 'custom-header-value-1',
+        'custom-header-name-2': 'custom-header-value-2',
+      },
+    },
+    {
+      appRoot: 'backend',
+      pattern: '/path/*',
+      headers: {
+        'custom-header-name-1': 'custom-header-value-2',
+      },
+    },
+  ],
+});
+```
+
 ## Configure server side rendering when hosting app
 
 Setting the `platform` field on the Amplify `App` construct can be used to control whether the app will host only static assets or server side rendered assets in addition to static. By default, the value is set to `WEB` (static only), however, server side rendering can be turned on by setting to `WEB_COMPUTE` as follows:
@@ -246,11 +310,40 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
 });
 ```
 
+## Compute role
+
+This integration, enables you to assign an IAM role to the Amplify SSR Compute service to allow your server-side rendered (SSR) application to securely access specific AWS resources based on the role's permissions.
+
+For example, you can allow your app's SSR compute functions to securely access other AWS services or resources, such as Amazon Bedrock or an Amazon S3 bucket, based on the permissions defined in the assigned IAM role.
+
+For more information, see [Adding an SSR Compute role to allow access to AWS resources](https://docs.aws.amazon.com/amplify/latest/userguide/amplify-SSR-compute-role.html).
+
+By default, a new role is created when `platform` is `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.
+If you want to assign an IAM role to the APP, set `compute` to the role:
+
+```ts
+declare const computeRole: iam.Role;
+
+const amplifyApp = new amplify.App(this, 'MyApp', {
+  platform: amplify.Platform.WEB_COMPUTE,
+  computeRole,
+});
+```
+
+It is also possible to override the compute role for a specific branch by setting `computeRole` in `Branch`:
+
+```ts
+declare const computeRole: iam.Role;
+declare const amplifyApp: amplify.App
+
+const branch = amplifyApp.addBranch("dev", { computeRole });
+```
+
 ## Cache Config
 
 Amplify uses Amazon CloudFront to manage the caching configuration for your hosted applications. A cache configuration is applied to each app to optimize for the best performance.
 
-Setting the `cacheConfigType` field on the Amplify `App` construct can be used to control cache configguration. By default, the value is set to `AMPLIFY_MANAGED`. If you want to exclude all cookies from the cache key, set `AMPLIFY_MANAGED_NO_COOKIES`.
+Setting the `cacheConfigType` field on the Amplify `App` construct can be used to control cache configuration. By default, the value is set to `AMPLIFY_MANAGED`. If you want to exclude all cookies from the cache key, set `AMPLIFY_MANAGED_NO_COOKIES`.
 
 For more information, see [Managing the cache configuration for an app](https://docs.aws.amazon.com/amplify/latest/userguide/caching.html).
 
@@ -270,4 +363,18 @@ import * as assets from 'aws-cdk-lib/aws-s3-assets';
 declare const asset: assets.Asset;
 declare const amplifyApp: amplify.App;
 const branch = amplifyApp.addBranch("dev", { asset: asset });
+```
+
+## Skew protection for Amplify Deployments
+
+Deployment skew protection is available to Amplify applications to eliminate version skew issues between client and servers in web applications.
+When you apply skew protection to an Amplify application, you can ensure that your clients always interact with the correct version of server-side assets, regardless of when a deployment occurs.
+
+For more information, see [Skew protection for Amplify deployments](https://docs.aws.amazon.com/amplify/latest/userguide/skew-protection.html).
+
+To enable skew protection, set the `skewProtection` property to `true`:
+
+```ts
+declare const amplifyApp: amplify.App;
+const branch = amplifyApp.addBranch("dev", { skewProtection: true });
 ```

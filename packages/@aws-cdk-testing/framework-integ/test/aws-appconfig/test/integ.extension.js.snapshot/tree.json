@@ -356,7 +356,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appconfig-alpha.Environment",
+                  "fqn": "aws-cdk-lib.aws_appconfig.Environment",
                   "version": "0.0.0"
                 }
               },
@@ -373,7 +373,7 @@
                         "path": "aws-appconfig-extension/MyApplication/appconfig-extension/DefaultTest/Default",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       },
                       "DeployAssert": {
@@ -416,7 +416,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appconfig-alpha.Application",
+              "fqn": "aws-cdk-lib.aws_appconfig.Application",
               "version": "0.0.0"
             }
           },
@@ -530,6 +530,23 @@
                             ]
                           }
                         }
+                      ],
+                      "AT_DEPLOYMENT_TICK": [
+                        {
+                          "Name": "awsappconfigextension-MyLambdaExtension-68C15290-0",
+                          "Uri": {
+                            "Fn::GetAtt": [
+                              "MyFunction3BAA72D1",
+                              "Arn"
+                            ]
+                          },
+                          "RoleArn": {
+                            "Fn::GetAtt": [
+                              "MyLambdaExtensionRoleBC958D3F13B04",
+                              "Arn"
+                            ]
+                          }
+                        }
                       ]
                     },
                     "name": "awsappconfigextension-MyLambdaExtension-68C15290"
@@ -542,7 +559,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appconfig-alpha.Extension",
+              "fqn": "aws-cdk-lib.aws_appconfig.Extension",
               "version": "0.0.0"
             }
           },
@@ -670,7 +687,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appconfig-alpha.Extension",
+              "fqn": "aws-cdk-lib.aws_appconfig.Extension",
               "version": "0.0.0"
             }
           },
@@ -792,7 +809,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appconfig-alpha.Extension",
+              "fqn": "aws-cdk-lib.aws_appconfig.Extension",
               "version": "0.0.0"
             }
           },
@@ -860,7 +877,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appconfig-alpha.Extension",
+              "fqn": "aws-cdk-lib.aws_appconfig.Extension",
               "version": "0.0.0"
             }
           },
@@ -888,7 +905,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appconfig-alpha.DeploymentStrategy",
+              "fqn": "aws-cdk-lib.aws_appconfig.DeploymentStrategy",
               "version": "0.0.0"
             }
           },
@@ -965,7 +982,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-appconfig-alpha.HostedConfiguration",
+              "fqn": "aws-cdk-lib.aws_appconfig.HostedConfiguration",
               "version": "0.0.0"
             }
           },
@@ -996,7 +1013,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

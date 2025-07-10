@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { CfnAddon } from './eks.generated';
 import { ArnFormat, IResource, Resource, Stack, Fn } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an Amazon EKS Add-On.
@@ -28,7 +30,7 @@ export interface AddonProps {
    */
   readonly addonName: string;
   /**
-   * Version of the Add-On. You can check all available versions with describe-addon-versons.
+   * Version of the Add-On. You can check all available versions with describe-addon-versions.
    * For example, this lists all available versions for the `eks-pod-identity-agent` addon:
    * $ aws eks describe-addon-versions --addon-name eks-pod-identity-agent \
    * --query 'addons[*].addonVersions[*].addonVersion'
@@ -47,6 +49,13 @@ export interface AddonProps {
    * @default true
    */
   readonly preserveOnDelete?: boolean;
+
+  /**
+   * The configuration values for the Add-on.
+   *
+   * @default - Use default configuration.
+   */
+  readonly configurationValues?: Record<string, any>;
 }
 
 /**
@@ -67,7 +76,11 @@ export interface AddonAttributes {
 /**
  * Represents an Amazon EKS Add-On.
  */
+@propertyInjectable
 export class Addon extends Resource implements IAddon {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.Addon';
+
   /**
    * Creates an `IAddon` instance from the given addon attributes.
    *
@@ -126,6 +139,8 @@ export class Addon extends Resource implements IAddon {
     super(scope, id, {
       physicalName: props.addonName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.clusterName = props.cluster.clusterName;
     this.addonName = props.addonName;
@@ -135,6 +150,7 @@ export class Addon extends Resource implements IAddon {
       clusterName: this.clusterName,
       addonVersion: props.addonVersion,
       preserveOnDelete: props.preserveOnDelete,
+      configurationValues: this.stack.toJsonString(props.configurationValues),
     });
 
     this.addonName = this.getResourceNameAttribute(resource.ref);

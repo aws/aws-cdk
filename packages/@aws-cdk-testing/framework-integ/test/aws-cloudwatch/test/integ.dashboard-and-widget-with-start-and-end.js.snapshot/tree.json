@@ -26,15 +26,15 @@
                           {
                             "Ref": "AWS::Region"
                           },
-                          "\",\"metrics\":[[\"CDK/Test\",\"Metric\"]],\"start\":\"-P7D\",\"end\":\"2018-12-17T06:00:00.000Z\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":3,\"properties\":{\"view\":\"timeSeries\",\"region\":\"",
+                          "\",\"metrics\":[[\"CDK/Test\",\"Metric\",{\"accountId\":\"1234\",\"region\":\"us-north-5\"}]],\"start\":\"-P7D\",\"end\":\"2018-12-17T06:00:00.000Z\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":3,\"properties\":{\"view\":\"timeSeries\",\"region\":\"",
                           {
                             "Ref": "AWS::Region"
                           },
-                          "\",\"metrics\":[[\"CDK/Test\",\"Metric\"]],\"yAxis\":{},\"start\":\"-P7D\",\"end\":\"2018-12-17T06:00:00.000Z\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":9,\"properties\":{\"view\":\"gauge\",\"region\":\"",
+                          "\",\"metrics\":[[\"CDK/Test\",\"Metric\",{\"accountId\":\"1234\",\"region\":\"us-north-5\"}]],\"yAxis\":{},\"start\":\"-P7D\",\"end\":\"2018-12-17T06:00:00.000Z\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":9,\"properties\":{\"view\":\"gauge\",\"region\":\"",
                           {
                             "Ref": "AWS::Region"
                           },
-                          "\",\"metrics\":[[\"CDK/Test\",\"Metric\"]],\"yAxis\":{\"left\":{\"min\":0,\"max\":100}},\"start\":\"-P7D\",\"end\":\"2018-12-17T06:00:00.000Z\"}}]}"
+                          "\",\"metrics\":[[\"CDK/Test\",\"Metric\",{\"accountId\":\"1234\",\"region\":\"us-north-5\"}]],\"yAxis\":{\"left\":{\"min\":0,\"max\":100}},\"start\":\"-P7D\",\"end\":\"2018-12-17T06:00:00.000Z\"}}]}"
                         ]
                       ]
                     }
@@ -86,7 +86,7 @@
                 "path": "cdk-integ-dashboard-and-widget-with-start-and-end/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -132,7 +132,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.4.2"
         }
       }
     },

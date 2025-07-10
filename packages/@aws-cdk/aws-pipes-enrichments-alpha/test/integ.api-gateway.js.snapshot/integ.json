@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "integtest-pipe-enrichments-api-gateway/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-enrichments-api-gateway"
+      ],
+      "assertionStack": "integtest-pipe-enrichments-api-gateway/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipeenrichmentsapigatewayDefaultTestDeployAssertA630AACD"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

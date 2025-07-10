@@ -7,6 +7,8 @@ import { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface which all VirtualNode based classes must implement
@@ -132,7 +134,13 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_nodes.html
  */
+@propertyInjectable
 export class VirtualNode extends VirtualNodeBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appmesh.VirtualNode';
+
   /**
    * Import an existing VirtualNode given an ARN
    */
@@ -184,6 +192,8 @@ export class VirtualNode extends VirtualNodeBase {
     super(scope, id, {
       physicalName: props.virtualNodeName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.mesh = props.mesh;
     this.serviceDiscoveryConfig = props.serviceDiscovery?.bind(this);
@@ -231,9 +241,10 @@ export class VirtualNode extends VirtualNodeBase {
    *
    * @see https://github.com/aws/aws-app-mesh-roadmap/issues/120
    */
+  @MethodMetadata()
   public addListener(listener: VirtualNodeListener) {
     if (!this.serviceDiscoveryConfig) {
-      throw new Error('Service discovery information is required for a VirtualNode with a listener.');
+      throw new cdk.ValidationError('Service discovery information is required for a VirtualNode with a listener.', this);
     }
     this.listeners.push(listener.bind(this));
   }
@@ -241,6 +252,7 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * Add a Virtual Services that this node is expected to send outbound traffic to
    */
+  @MethodMetadata()
   public addBackend(backend: Backend) {
     this.backends.push(backend.bind(this).virtualServiceBackend);
   }

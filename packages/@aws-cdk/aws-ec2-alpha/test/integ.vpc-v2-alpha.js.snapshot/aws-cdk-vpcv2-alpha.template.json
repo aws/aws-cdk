@@ -6,10 +6,16 @@
     "CidrBlock": "10.1.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+     }
+    ]
    }
   },
-  "VPCintegtest1SecondaryAddress256BAC1D3": {
+  "VPCintegtest1SecondaryAddress2B60D56E9": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "CidrBlock": "10.2.0.0/16",
@@ -21,7 +27,7 @@
     }
    }
   },
-  "VPCintegtest1AmazonProvidedE0445E5C": {
+  "VPCintegtest1AmazonProvided48C2076B": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -33,7 +39,7 @@
     }
    }
   },
-  "VPCintegtest1SecondaryAddress3BCA08E40": {
+  "VPCintegtest1SecondaryAddress35E910ECB": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "CidrBlock": "10.3.0.0/16",
@@ -68,6 +74,12 @@
       ]
      ]
     },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+     }
+    ],
     "VpcEndpointType": "Gateway",
     "VpcId": {
      "Fn::GetAtt": [
@@ -116,6 +128,12 @@
       "ToPort": 443
      }
     ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",
@@ -156,6 +174,12 @@
       "Ref": "testsubnetSubnetDD417829"
      }
     ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+     }
+    ],
     "VpcEndpointType": "Interface",
     "VpcId": {
      "Fn::GetAtt": [
@@ -168,6 +192,12 @@
   "VPCintegtest1EgressOnlyGWEIGW440911B4": {
    "Type": "AWS::EC2::EgressOnlyInternetGateway",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",
@@ -200,6 +230,12 @@
   "VPCintegtest1VpnGatewayIGWBC493574": {
    "Type": "AWS::EC2::VPNGateway",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+     }
+    ],
     "Type": "ipsec.1"
    }
   },
@@ -243,7 +279,15 @@
    ]
   },
   "VPCintegtest1InternetGatewayIGWAA29FB02": {
-   "Type": "AWS::EC2::InternetGateway"
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+     }
+    ]
+   }
   },
   "VPCintegtest1InternetGatewayGWAttachment69B1C71E": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
@@ -284,13 +328,19 @@
     "VPCintegtest1InternetGatewayIGWAA29FB02"
    ]
   },
-  "VPCintegtest1NATGateway31DAF7F4": {
+  "VPCintegtest1NATGatewaytestsbubnetNATGateway3A015DE6": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
     "ConnectivityType": "private",
     "SubnetId": {
      "Ref": "testsbubnetSubnet77337845"
-    }
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+     }
+    ]
    },
    "DependsOn": [
     "testsbubnetRouteTableAssociationD6D083FA",
@@ -302,9 +352,14 @@
   "testsbubnetSubnet77337845": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.1.0.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",
@@ -313,14 +368,20 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "testsbubnetRouteTableD0136BEA": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",
@@ -329,9 +390,9 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "testsbubnetRouteTableAssociationD6D083FA": {
@@ -348,17 +409,22 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "testsubnetSubnetDD417829": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2b",
     "CidrBlock": "10.2.0.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",
@@ -367,14 +433,20 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "testsubnetRouteTable682580B2": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",
@@ -383,9 +455,9 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "testsubnetRouteTableAssociationC106676D": {
@@ -402,17 +474,22 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "validateIpv6Subnet07BD40AE": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2b",
     "CidrBlock": "10.3.0.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",
@@ -421,14 +498,20 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "validateIpv6RouteTable09389F8D": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",
@@ -437,9 +520,9 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "validateIpv6RouteTableAssociationD6330457": {
@@ -456,9 +539,9 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "routeTableRouteTable23B79F0B": {

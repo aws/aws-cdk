@@ -38,20 +38,30 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "86891c59c6b1eb9b0ec971a6dfc2007af1a03467fd9157a78d28c154968b2980.zip"
+     "S3Key": "3ca3899fd89ffddaa38e2f556f7357f6e178b0d94502b5dc21dce70490ed642f.zip"
     },
+    "Handler": "bootstrap",
     "Role": {
      "Fn::GetAtt": [
       "gohandlerdockerServiceRole70394790",
       "Arn"
      ]
     },
-    "Handler": "bootstrap",
     "Runtime": "provided.al2"
    },
    "DependsOn": [
     "gohandlerdockerServiceRole70394790"
    ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefgohandlerdockerAE04F1B886D55427": {
+   "Value": {
+    "Ref": "gohandlerdockerAE04F1B8"
+   },
+   "Export": {
+    "Name": "cdk-integ-lambda-golang:ExportsOutputRefgohandlerdockerAE04F1B886D55427"
+   }
   }
  },
  "Parameters": {

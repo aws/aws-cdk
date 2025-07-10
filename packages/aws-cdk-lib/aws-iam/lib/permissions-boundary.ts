@@ -2,6 +2,7 @@ import { IConstruct } from 'constructs';
 import { CfnRole, CfnUser } from './iam.generated';
 import { IManagedPolicy } from './managed-policy';
 import { Aspects, CfnResource } from '../../core';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 
 /**
  * Modify the Permissions Boundaries of Users and Roles in a construct tree
@@ -40,6 +41,8 @@ export class PermissionsBoundary {
           node.addPropertyOverride('PermissionsBoundary', boundaryPolicy.managedPolicyArn);
         }
       },
+    }, {
+      priority: mutatingAspectPrio32333(this.scope),
     });
   }
 
@@ -56,6 +59,8 @@ export class PermissionsBoundary {
           node.addPropertyDeletionOverride('PermissionsBoundary');
         }
       },
+    }, {
+      priority: mutatingAspectPrio32333(this.scope),
     });
   }
 }

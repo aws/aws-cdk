@@ -1,11 +1,10 @@
 import { Construct, IConstruct } from 'constructs';
 import { ICluster, Cluster } from './cluster';
 import * as iam from '../../aws-iam';
-import { Duration, Stack, NestedStack, Names, CfnCondition, Fn, Aws } from '../../core';
+import { Duration, Stack, NestedStack, Names, CfnCondition, Fn, Aws, ValidationError } from '../../core';
 import { KubectlFunction } from '../../custom-resource-handlers/dist/aws-eks/kubectl-provider.generated';
 import * as cr from '../../custom-resources';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
-import { KubectlLayer } from '../../lambda-layer-kubectl';
 
 /**
  * Properties for a KubectlProvider
@@ -61,7 +60,6 @@ export interface IKubectlProvider extends IConstruct {
  * Implementation of Kubectl Lambda
  */
 export class KubectlProvider extends NestedStack implements IKubectlProvider {
-
   /**
    * Take existing provider or create new based on cluster
    *
@@ -123,11 +121,11 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     const cluster = props.cluster;
 
     if (!cluster.kubectlRole) {
-      throw new Error('"kubectlRole" is not defined, cannot issue kubectl commands against this cluster');
+      throw new ValidationError('"kubectlRole" is not defined, cannot issue kubectl commands against this cluster', this);
     }
 
     if (cluster.kubectlPrivateSubnets && !cluster.kubectlSecurityGroup) {
-      throw new Error('"kubectlSecurityGroup" is required if "kubectlSubnets" is specified');
+      throw new ValidationError('"kubectlSecurityGroup" is required if "kubectlSubnets" is specified', this);
     }
 
     const memorySize = cluster.kubectlMemory ? cluster.kubectlMemory.toMebibytes() : 1024;
@@ -151,7 +149,9 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
     // allow user to customize the layers with the tools we need
     handler.addLayers(props.cluster.awscliLayer ?? new AwsCliLayer(this, 'AwsCliLayer'));
-    handler.addLayers(props.cluster.kubectlLayer ?? new KubectlLayer(this, 'KubectlLayer'));
+    if (props.cluster.kubectlLayer) {
+      handler.addLayers(props.cluster.kubectlLayer);
+    }
 
     this.handlerRole = handler.role!;
 
@@ -200,11 +200,9 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     this.serviceToken = provider.serviceToken;
     this.roleArn = cluster.kubectlRole.roleArn;
   }
-
 }
 
 class ImportedKubectlProvider extends Construct implements IKubectlProvider {
-
   /**
    * The custom resource provider's service token.
    */

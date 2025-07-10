@@ -597,6 +597,34 @@ describe('rule', () => {
     expect(importedRule.ruleName).toEqual('example');
   });
 
+  test('can specify roleArn', () => {
+    const stack = new cdk.Stack();
+
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new iam.ServicePrincipal('nobody'),
+    });
+
+    new Rule(stack, 'MyRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(10)),
+      role,
+    });
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'MyRuleA44AB831': {
+          'Type': 'AWS::Events::Rule',
+          'Properties': {
+            'ScheduleExpression': 'rate(10 minutes)',
+            'State': 'ENABLED',
+            'RoleArn': {
+              'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'],
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('sets account for imported rule env by fromEventRuleArn', () => {
     const stack = new cdk.Stack();
     const importedRule = Rule.fromEventRuleArn(stack, 'Imported', 'arn:aws:events:us-west-2:999999999999:rule/example');
@@ -1194,7 +1222,7 @@ describe('rule', () => {
 });
 
 class SomeTarget implements IRuleTarget {
-  // eslint-disable-next-line @aws-cdk/no-core-construct
+  // eslint-disable-next-line @cdklabs/no-core-construct
   public constructor(private readonly id?: string, private readonly resource?: IConstruct) {
   }
 

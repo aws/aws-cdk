@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "45.0.0",
   "testCases": {
     "aws-cdk-eks-helm/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "aws-cdk-eks-helm/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkekshelmDefaultTestDeployAssert044A589A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

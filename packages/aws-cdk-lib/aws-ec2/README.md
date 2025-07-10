@@ -269,6 +269,23 @@ new ec2.Vpc(this, 'TheVPC', {
 provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.HTTP);
 ```
 
+### Associate Public IP Address to NAT Instance
+
+You can choose to associate public IP address to a NAT instance V2 by specifying `associatePublicIpAddress`
+like the following:
+
+```ts
+const natGatewayProvider = ec2.NatProvider.instanceV2({
+  instanceType: new ec2.InstanceType('t3.small'),
+  associatePublicIpAddress: true,
+});
+```
+
+In certain scenarios where the public subnet has set `mapPublicIpOnLaunch` to `false`, NAT instances does not
+get public IP addresses assigned which would result in non-working NAT instance as NAT instance requires a public
+IP address to enable outbound internet connectivity. Users can specify `associatePublicIpAddress` to `true` to
+solve this problem.
+
 ### Ip Address Management
 
 The VPC spans a supernet IP range, which contains the non-overlapping IPs of its contained subnets. Possible sources for this IP range are:
@@ -446,7 +463,7 @@ DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
 
 #### Dual Stack Configurations
 
-Here is a break down of IPv4 and IPv6 specifc `subnetConfiguration` properties in a dual stack VPC:
+Here is a break down of IPv4 and IPv6 specific `subnetConfiguration` properties in a dual stack VPC:
 
 ```ts
 const vpc = new ec2.Vpc(this, 'TheVPC', {
@@ -590,6 +607,14 @@ can reuse a VPC defined in one Stack in another by simply passing the VPC
 instance around:
 
 [sharing VPCs between stacks](test/integ.share-vpcs.lit.ts)
+
+> Note: If you encounter an error like "Delete canceled. Cannot delete export ..."
+> when using a cross-stack reference to a VPC, it's likely due to CloudFormation
+> export/import constraints. In such cases, it's safer to use Vpc.fromLookup()
+> in the consuming stack instead of directly referencing the VPC object, more details
+> is provided in [Importing an existing VPC](#importing-an-existing-vpc). This
+> avoids creating CloudFormation exports and gives more flexibility, especially
+> when stacks need to be deleted or updated independently.
 
 ### Importing an existing VPC
 
@@ -746,7 +771,6 @@ let peer = ec2.Peer.ipv4('10.0.0.0/16');
 peer = ec2.Peer.anyIpv4();
 peer = ec2.Peer.ipv6('::0/0');
 peer = ec2.Peer.anyIpv6();
-peer = ec2.Peer.prefixList('pl-12345');
 appFleet.connections.allowTo(peer, ec2.Port.HTTPS, 'Allow outbound HTTPS');
 ```
 
@@ -761,6 +785,15 @@ declare const appFleet: autoscaling.AutoScalingGroup;
 fleet1.connections.allowTo(fleet2, ec2.Port.HTTP, 'Allow between fleets');
 
 appFleet.connections.allowFromAnyIpv4(ec2.Port.HTTP, 'Allow from load balancer');
+```
+
+A managed prefix list is also a connection peer:
+
+``` ts
+declare const appFleet: autoscaling.AutoScalingGroup;
+
+const prefixList = new ec2.PrefixList(this, 'PrefixList', { maxEntries: 10 });
+appFleet.connections.allowFrom(prefixList, ec2.Port.HTTPS);
 ```
 
 ### Port Ranges
@@ -849,7 +882,10 @@ If the security group ID is known and configuration details are unknown, use met
 const sg = ec2.SecurityGroup.fromLookupById(this, 'SecurityGroupLookup', 'sg-1234');
 ```
 
-The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be written to a file called `cdk.context.json`. You must commit this file to source control so that the lookup values are available in non-privileged environments such as CI build steps, and to ensure your template builds are repeatable.
+The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be
+written to a file called `cdk.context.json`. 
+You must commit this file to source control so that the lookup values are available in non-privileged
+environments such as CI build steps, and to ensure your template builds are repeatable.
 
 ### Cross Stack Connections
 
@@ -936,6 +972,13 @@ examples of images you might want to use:
 > `cdk.context.json`, or use the `cdk context` command. For more information, see
 > [Runtime Context](https://docs.aws.amazon.com/cdk/latest/guide/context.html) in the CDK
 > developer guide.
+> 
+> To customize the cache key, use the `additionalCacheKey` parameter.
+> This allows you to have multiple lookups with the same parameters
+> cache their values separately. This can be useful if you want to
+> scope the context variable to a construct (ie, using `additionalCacheKey: this.node.path`),
+> so that if the value in the cache needs to be updated, it does not need to be updated
+> for all constructs at the same time.
 >
 > `MachineImage.genericLinux()`, `MachineImage.genericWindows()` will use `CfnMapping` in
 > an agnostic stack.
@@ -1075,6 +1118,31 @@ myEndpoint.connections.allowDefaultPortFromAnyIpv4();
 
 Alternatively, existing security groups can be used by specifying the `securityGroups` prop.
 
+#### IPv6 and Dualstack support
+
+As IPv4 addresses are running out, many AWS services are adding support for IPv6 or Dualstack (IPv4 and IPv6 support) for their VPC Endpoints.
+
+IPv6 and Dualstack address types can be configured by using:
+
+```ts fixture=with-vpc
+vpc.addInterfaceEndpoint('ExampleEndpoint', {
+  service: ec2.InterfaceVpcEndpointAwsService.ECR,
+  ipAddressType: ec2.VpcEndpointIpAddressType.IPV6,
+  dnsRecordIpType: ec2.VpcEndpointDnsRecordIpType.IPV6,
+});
+```
+The possible values for `ipAddressType` are:
+* `IPV4` This option is supported only if all selected subnets have IPv4 address ranges and the endpoint service accepts IPv4 requests.
+* `IPV6` This option is supported only if all selected subnets are IPv6 only subnets and the endpoint service accepts IPv6 requests.
+* `DUALSTACK` Assign both IPv4 and IPv6 addresses to the endpoint network interfaces. This option is supported only if all selected subnets have both IPv4 and IPv6 address ranges and the endpoint service accepts both IPv4 and IPv6 requests.
+  The possible values for `dnsRecordIpType` are:
+* `IPV4` Create A records for the private, Regional, and zonal DNS names. `ipAddressType` MUST be `IPV4` or `DUALSTACK`
+* `IPV6` Create AAAA records for the private, Regional, and zonal DNS names. `ipAddressType` MUST be `IPV6` or `DUALSTACK`
+* `DUALSTACK` Create A and AAAA records for the private, Regional, and zonal DNS names. `ipAddressType` MUST be `DUALSTACK`
+* `SERVICE_DEFINED` Create A records for the private, Regional, and zonal DNS names and AAAA records for the Regional and zonal DNS names. `ipAddressType` MUST be `DUALSTACK`
+  We can only configure dnsRecordIpType when ipAddressType is specified and private DNS must be enabled to use any DNS related features. To avoid complications, it is recommended to always set `privateDnsEnabled` to true (defaults to true) and set the `ipAddressType` and `dnsRecordIpType` explicitly when needing specific IP type behavior. Furthermore, check that the VPC being used supports the IP address type that is being configued.
+  More documentation on compatibility and specifications can be found [here](https://docs.aws.amazon.com/vpc/latest/privatelink/create-endpoint-service.html#connect-to-endpoint-service)
+
 ### VPC endpoint services
 
 A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via allowed principals (anything that extends ArnPrincipal), and require that new connections be manually accepted. You can also enable Contributor Insight rules.
@@ -1099,6 +1167,33 @@ declare const networkLoadBalancer: elbv2.NetworkLoadBalancer;
 new ec2.VpcEndpointService(this, 'EndpointService', {
   vpcEndpointServiceLoadBalancers: [networkLoadBalancer],
   allowedPrincipals: [new iam.ArnPrincipal('ec2.amazonaws.com')],
+});
+```
+
+You can specify which IP address types (IPv4, IPv6, or both) are supported for your VPC endpoint service:
+
+```ts
+declare const networkLoadBalancer: elbv2.NetworkLoadBalancer;
+
+new ec2.VpcEndpointService(this, 'EndpointService', {
+  vpcEndpointServiceLoadBalancers: [networkLoadBalancer],
+  // Support both IPv4 and IPv6 connections to the endpoint service
+  supportedIpAddressTypes: [
+    ec2.IpAddressType.IPV4,
+    ec2.IpAddressType.IPV6,
+  ],
+});
+```
+
+You can restrict access to your endpoint service to specific AWS regions:
+
+```ts
+declare const networkLoadBalancer: elbv2.NetworkLoadBalancer;
+
+new ec2.VpcEndpointService(this, 'EndpointService', {
+  vpcEndpointServiceLoadBalancers: [networkLoadBalancer],
+  // Allow service consumers from these regions only
+  allowedRegions: ['us-east-1', 'eu-west-1'],
 });
 ```
 
@@ -1185,6 +1280,19 @@ endpoint.addRoute('Route', {
 ```
 
 Use the `connections` object of the endpoint to allow traffic to other security groups.
+
+To enable [client route enforcement](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-cre.html), configure the `clientRouteEnforcementOptions.enforced` prop to `true`:
+
+```ts fixture=client-vpn
+const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
+  cidr: '10.100.0.0/16',
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
+  clientCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/client-certificate-id',
+  clientRouteEnforcementOptions: {
+    enforced: true,
+  },
+});
+```
 
 ## Instances
 
@@ -1276,6 +1384,31 @@ new ec2.Instance(this, 'LatestAl2023', {
   // context cache is turned on by default
   machineImage: new ec2.AmazonLinux2023ImageSsmParameter(),
 });
+
+// or
+new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023({
+    cachedInContext: true,
+    // creates a distinct context variable for this image, instead of resolving to the same
+    // value anywhere this lookup is done in your app
+    additionalCacheKey: this.node.path,
+  }),
+});
+
+// or
+new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  // context cache is turned on by default
+  machineImage: new ec2.AmazonLinux2023ImageSsmParameter({
+    // creates a distinct context variable for this image, instead of resolving to the same
+    // value anywhere this lookup is done in your app
+    additionalCacheKey: this.node.path,
+  }),
+});
+
 ```
 
 #### Kernel Versions
@@ -1521,6 +1654,19 @@ const host = new ec2.BastionHostLinux(this, 'BastionHost', {
 });
 ```
 
+It's recommended to set the `@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault`
+[feature flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html) to `true` to use Amazon Linux 2023 as the
+bastion host AMI. Without this flag set, the bastion host will default to Amazon Linux 2, which will be unsupported in
+June 2025.
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true
+  }
+}
+```
+
 ### Placement Group
 
 Specify `placementGroup` to enable the placement group support:
@@ -1744,6 +1890,25 @@ new ec2.Volume(this, 'Volume', {
   throughput: 125,
 });
 ```
+
+#### Volume initialization rate
+
+When creating an EBS volume from a snapshot, you can specify the [volume initialization rate](https://docs.aws.amazon.com/ebs/latest/userguide/initalize-volume.html#volume-initialization-rate) at which the snapshot blocks are downloaded from Amazon S3 to the volume.
+Specifying a volume initialization rate ensures that the volume is initialized at a predictable and consistent rate after creation.
+
+```ts
+new ec2.Volume(this, 'Volume', {
+  availabilityZone: 'us-east-1a',
+  size: Size.gibibytes(500),
+  snapshotId: 'snap-1234567890abcdef0',
+  volumeInitializationRate: Size.mebibytes(250),
+});
+```
+
+The `volumeInitializationRate` must be:
+
+* Between 100 and 300 MiB/s
+* Only specified when creating a volume from a snapshot
 
 ### Configuring Instance Metadata Service (IMDS)
 
@@ -1992,6 +2157,22 @@ const instance = new ec2.Instance(this, 'Instance', {
 > NOTE: You must use an instance type and operating system that support Nitro Enclaves.
 > For more information, see [Requirements](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html#nitro-enclave-reqs).
 
+### Enabling Termination Protection
+
+You can enable [Termination Protection](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_ChangingDisableAPITermination.html) for
+your EC2 instances by setting the `disableApiTermination` property to `true`. Termination Protection controls whether the instance can be terminated using the AWS Management Console, AWS Command Line Interface (AWS CLI), or API.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const instance = new ec2.Instance(this, 'Instance', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
+  machineImage: new ec2.AmazonLinuxImage(),
+  vpc: vpc,
+  disableApiTermination: true,
+});
+```
+
 ### Enabling Instance Hibernation
 
 You can enable [Instance Hibernation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html) for
@@ -2156,7 +2337,7 @@ new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
 });
 ```
 
-*Kinesis Data Firehose*
+*Amazon Data Firehose*
 
 ```ts
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
@@ -2381,6 +2562,24 @@ const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
 });
 ```
 
+### Placement Group
+
+Specify `placementGroup` to enable the placement group support:
+
+```ts fixture=with-vpc
+declare const instanceType: ec2.InstanceType;
+
+const pg = new ec2.PlacementGroup(this, 'test-pg', {
+  strategy: ec2.PlacementGroupStrategy.SPREAD,
+});
+
+new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  instanceType,
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  placementGroup: pg,
+});
+```
+
 Please note this feature does not support Launch Configurations.
 
 ## Detailed Monitoring
@@ -2455,4 +2654,35 @@ new ec2.PrefixList(this, 'PrefixList', {
 });
 ```
 
-For more information see [Work with customer-managed prefix lists](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-managed-prefix-lists.html)
+To import AWS-managed prefix list, you can use `PrefixList.fromLookup()`.
+
+``` ts
+ec2.PrefixList.fromLookup(this, 'PrefixListFromName', {
+  prefixListName: 'com.amazonaws.global.cloudfront.origin-facing',
+});
+```
+
+For more information see [Work with customer-managed prefix lists](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-managed-prefix-lists.html).
+
+### IAM instance profile
+
+Use `instanceProfile` to apply specific IAM Instance Profile. Cannot be used with role
+
+```ts
+declare const instanceType: ec2.InstanceType;
+declare const vpc: ec2.Vpc;
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+});
+const instanceProfile = new iam.InstanceProfile(this, 'InstanceProfile', {
+  role,
+});
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  instanceProfile,
+});
+```

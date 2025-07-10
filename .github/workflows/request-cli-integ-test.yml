@@ -13,28 +13,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           fetch-depth: 0
           persist-credentials: false
       - name: Find changed cli files
         id: changed-cli-files
-        uses: tj-actions/changed-files@e9772d140489982e0e3704fea5ee93d536f1e275
+        uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94
         with:
           base_sha: ${{ github.event.pull_request.base.sha }}
           files_yaml: |
             cli:
-              - packages/aws-cdk/bin/**
-              - packages/aws-cdk/lib/**
-              - packages/aws-cdk/test/**
-              - packages/@aws-cdk/cloudformation-diff/lib/**
-              - packages/@aws-cdk/cloudformation-diff/test/**
-              - packages/@aws-cdk-testing/cli-integ/bin/**
-              - packages/@aws-cdk-testing/cli-integ/entrypoints/**
-              - packages/@aws-cdk-testing/cli-integ/lib/**
-              - packages/@aws-cdk-testing/cli-integ/resources/**
-              - packages/@aws-cdk-testing/cli-integ/test/**
-              - packages/@aws-cdk-testing/cli-integ/tests/**
+              - packages/aws-cdk-lib/cx-api/lib/features.ts
   submit-to-test-pipeline:
     environment: test-pipeline
     needs: cli-changes
@@ -54,13 +44,13 @@ jobs:
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
           git push --force --atomic https://github.com/${{ github.repository }}.git FETCH_HEAD:test-main-pipeline
       - name: Explain next steps
-        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b
         with:
           message: |
             :arrow_right: **PR build request submitted to `test-main-pipeline`** :arrow_left:
 
             A maintainer must now check the pipeline and add the `pr-linter/cli-integ-tested` label once the pipeline succeeds.
-          comment_tag: request-cli-integ-test
+          comment-tag: request-cli-integ-test
           mode: recreate
           # Post as our automation user
-          GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}

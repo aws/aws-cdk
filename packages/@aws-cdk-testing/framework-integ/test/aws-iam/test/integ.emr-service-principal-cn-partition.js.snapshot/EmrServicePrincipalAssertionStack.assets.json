@@ -1,0 +1,34 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "30e7020514effbaf2e0bf3983c7c37c6733aec254148a8f866da92fbbd7a4fb6": {
+      "source": {
+        "path": "asset.30e7020514effbaf2e0bf3983c7c37c6733aec254148a8f866da92fbbd7a4fb6.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-cn-north-1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-cn-north-1",
+          "objectKey": "30e7020514effbaf2e0bf3983c7c37c6733aec254148a8f866da92fbbd7a4fb6.zip",
+          "region": "cn-north-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-cn-north-1"
+        }
+      }
+    },
+    "dd96d229fa04078c755ff58366e559b691326e0ef6c79419b7e1325b44e47849": {
+      "source": {
+        "path": "EmrServicePrincipalAssertionStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-cn-north-1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-cn-north-1",
+          "objectKey": "dd96d229fa04078c755ff58366e559b691326e0ef6c79419b7e1325b44e47849.json",
+          "region": "cn-north-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-cn-north-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

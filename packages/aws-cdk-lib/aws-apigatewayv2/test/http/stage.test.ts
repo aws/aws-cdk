@@ -1,16 +1,23 @@
 import { Template } from '../../../assertions';
+import * as apigateway from '../../../aws-apigateway';
 import { Certificate } from '../../../aws-certificatemanager';
 import { Metric } from '../../../aws-cloudwatch';
-import { Stack } from '../../../core';
-import { DomainName, HttpApi, HttpStage } from '../../lib';
+import * as logs from '../../../aws-logs';
+import { Lazy, Stack } from '../../../core';
+import { DomainName, HttpApi, HttpStage, LogGroupLogDestination } from '../../lib';
+
+let stack: Stack;
+let api: HttpApi;
+
+beforeEach(() => {
+  stack = new Stack();
+  api = new HttpApi(stack, 'Api', {
+    createDefaultStage: false,
+  });
+});
 
 describe('HttpStage', () => {
   test('default', () => {
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: false,
-    });
-
     new HttpStage(stack, 'Stage', {
       httpApi: api,
     });
@@ -22,11 +29,6 @@ describe('HttpStage', () => {
   });
 
   test('import', () => {
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: false,
-    });
-
     const stage = new HttpStage(stack, 'Stage', {
       httpApi: api,
     });
@@ -40,11 +42,6 @@ describe('HttpStage', () => {
   });
 
   test('url returns the correct path', () => {
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: false,
-    });
-
     const defaultStage = new HttpStage(stack, 'DefaultStage', {
       httpApi: api,
     });
@@ -60,10 +57,6 @@ describe('HttpStage', () => {
 
   test('get metric', () => {
     // GIVEN
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'test-api', {
-      createDefaultStage: false,
-    });
     const stage = new HttpStage(stack, 'Stage', {
       httpApi: api,
     });
@@ -86,10 +79,6 @@ describe('HttpStage', () => {
 
   test('Exercise metrics', () => {
     // GIVEN
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'test-api', {
-      createDefaultStage: false,
-    });
     const stage = new HttpStage(stack, 'Stage', {
       httpApi: api,
     });
@@ -116,6 +105,178 @@ describe('HttpStage', () => {
     const metricNames = metrics.map(m => m.metricName);
     expect(metricNames).toEqual(['4xx', '5xx', 'DataProcessed', 'Latency', 'IntegrationLatency', 'Count']);
   });
+
+  test('if only the custom log destination log group is set', () => {
+    // WHEN
+    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+    new HttpStage(stack, 'my-stage', {
+      httpApi: api,
+      accessLogSettings: {
+        destination: new LogGroupLogDestination(testLogGroup),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      AccessLogSettings: {
+        DestinationArn: {
+          'Fn::GetAtt': [
+            'LogGroupF5B46931',
+            'Arn',
+          ],
+        },
+        Format: '$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId',
+      },
+    });
+  });
+
+  test('if the custom log destination log group and format is set', () => {
+    // WHEN
+    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+    const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields();
+    new HttpStage(stack, 'my-stage', {
+      httpApi: api,
+      accessLogSettings: {
+        destination: new LogGroupLogDestination(testLogGroup),
+        format: testFormat,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      AccessLogSettings: {
+        DestinationArn: {
+          'Fn::GetAtt': [
+            'LogGroupF5B46931',
+            'Arn',
+          ],
+        },
+        Format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}',
+      },
+    });
+  });
+
+  describe('access log check', () => {
+    test('fails when access log format does not contain `contextRequestId()` or `contextExtendedRequestId()', () => {
+      // WHEN
+      const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+      const testFormat = apigateway.AccessLogFormat.custom('');
+
+      // THEN
+      expect(() => new HttpStage(stack, 'my-stage', {
+        httpApi: api,
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(testLogGroup),
+          format: testFormat,
+        },
+      })).toThrow('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`');
+    });
+
+    test('succeeds when access log format contains `contextRequestId()`', () => {
+      // WHEN
+      const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+      const testFormat = apigateway.AccessLogFormat.custom(JSON.stringify({
+        requestId: apigateway.AccessLogField.contextRequestId(),
+      }));
+
+      // THEN
+      expect(() => new HttpStage(stack, 'my-stage', {
+        httpApi: api,
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(testLogGroup),
+          format: testFormat,
+        },
+      })).not.toThrow();
+    });
+
+    test('succeeds when access log format contains `contextExtendedRequestId()`', () => {
+      // WHEN
+      const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+      const testFormat = apigateway.AccessLogFormat.custom(JSON.stringify({
+        extendedRequestId: apigateway.AccessLogField.contextExtendedRequestId(),
+      }));
+
+      // THEN
+      expect(() => new HttpStage(stack, 'my-stage', {
+        httpApi: api,
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(testLogGroup),
+          format: testFormat,
+        },
+      })).not.toThrow();
+    });
+
+    test('succeeds when access log format contains both `contextRequestId()` and `contextExtendedRequestId`', () => {
+      // WHEN
+      const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+      const testFormat = apigateway.AccessLogFormat.custom(JSON.stringify({
+        requestId: apigateway.AccessLogField.contextRequestId(),
+        extendedRequestId: apigateway.AccessLogField.contextExtendedRequestId(),
+      }));
+
+      // THEN
+      expect(() => new HttpStage(stack, 'my-stage', {
+        httpApi: api,
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(testLogGroup),
+          format: testFormat,
+        },
+      })).not.toThrow();
+    });
+
+    test('fails when access log format contains `contextRequestIdXxx`', () => {
+      // WHEN
+      const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+      const testFormat = apigateway.AccessLogFormat.custom(JSON.stringify({
+        requestIdXxx: '$context.requestIdXxx',
+      }));
+
+      // THEN
+      expect(() => new HttpStage(stack, 'my-stage', {
+        httpApi: api,
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(testLogGroup),
+          format: testFormat,
+        },
+      })).toThrow('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`');
+    });
+
+    test('does not fail when access log format is a token', () => {
+      // WHEN
+      const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+      const testFormat = apigateway.AccessLogFormat.custom(Lazy.string({ produce: () => 'test' }));
+
+      // THEN
+      expect(() => new HttpStage(stack, 'my-stage', {
+        httpApi: api,
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(testLogGroup),
+          format: testFormat,
+        },
+      })).not.toThrow();
+    });
+  });
+  test('can add stage variables after creation', () => {
+    // WHEN
+    const stage = new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+      stageVariables: {
+        env: 'prod',
+      },
+    });
+
+    stage.addStageVariable('timeout', '300');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: '$default',
+      StageVariables: {
+        env: 'prod',
+        timeout: '300',
+      },
+    });
+  });
 });
 
 describe('HttpStage with domain mapping', () => {
@@ -123,11 +284,6 @@ describe('HttpStage with domain mapping', () => {
   const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
 
   test('domainUrl returns the correct path', () => {
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: false,
-    });
-
     const dn = new DomainName(stack, 'DN', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
@@ -148,11 +304,6 @@ describe('HttpStage with domain mapping', () => {
   });
 
   test('domainUrl throws error if domainMapping is not configured', () => {
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: false,
-    });
-
     const stage = new HttpStage(stack, 'DefaultStage', {
       httpApi: api,
     });
@@ -165,12 +316,6 @@ describe('HttpStage with domain mapping', () => {
   });
 
   test('correctly sets throttle settings', () => {
-    // GIVEN
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: false,
-    });
-
     // WHEN
     new HttpStage(stack, 'DefaultStage', {
       httpApi: api,
@@ -191,13 +336,47 @@ describe('HttpStage with domain mapping', () => {
     });
   });
 
-  test('specify description', () => {
-    // GIVEN
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'Api', {
-      createDefaultStage: false,
+  test('correctly sets details metrics settings', () => {
+    // WHEN
+    new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+      detailedMetricsEnabled: true,
     });
 
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: '$default',
+      DefaultRouteSettings: {
+        DetailedMetricsEnabled: true,
+      },
+    });
+  });
+
+  test('correctly sets route settings', () => {
+    // WHEN
+    new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+      throttle: {
+        burstLimit: 1000,
+        rateLimit: 1000,
+      },
+      detailedMetricsEnabled: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: '$default',
+      DefaultRouteSettings: {
+        ThrottlingBurstLimit: 1000,
+        ThrottlingRateLimit: 1000,
+        DetailedMetricsEnabled: true,
+      },
+    });
+  });
+
+  test('specify description', () => {
     // WHEN
     new HttpStage(stack, 'DefaultStage', {
       httpApi: api,

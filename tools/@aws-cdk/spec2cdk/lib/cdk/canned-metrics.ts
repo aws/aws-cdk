@@ -137,6 +137,10 @@ export class MetricsClass extends ClassType {
       returnType: Type.fromName(this.scope, this.returnType.name, [dimensionsType]),
       parameters: [
         {
+          name: 'this',
+          type: Type.VOID,
+        },
+        {
           name: 'dimensions',
           type: dimensionsType,
         },

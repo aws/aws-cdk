@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "44.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "restapi-metrics.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "restapi-metrics.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/45405a85f5be16f0067d5c72c0a6187ab36bf813d770e4272d7aa68f5e5eff9c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2186358e2348b6db5b865bbe1d1586d8b251cc4185f4aa4728c33fe1e82b652d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,10 +34,48 @@
         "restapi-metrics.assets"
       ],
       "metadata": {
+        "/restapi-metrics/Api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cloudWatchRole": true
+            }
+          }
+        ],
         "/restapi-metrics/Api/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiF70053CD"
+          }
+        ],
+        "/restapi-metrics/Api/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "retain"
+              ]
+            }
+          }
+        ],
+        "/restapi-metrics/Api/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/restapi-metrics/Api/CloudWatchRole/Resource": [
@@ -57,10 +90,36 @@
             "data": "ApiAccountA18C9B29"
           }
         ],
+        "/restapi-metrics/Api/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/restapi-metrics/Api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiDeploymentB17BE62Df672ad8455f9678e4a3db5854bdb8d73"
+          }
+        ],
+        "/restapi-metrics/Api/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/restapi-metrics/Api/DeploymentStage.prod/Resource": [
@@ -75,10 +134,47 @@
             "data": "ApiEndpoint4F160690"
           }
         ],
+        "/restapi-metrics/Api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/restapi-metrics/Api/Default/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "metricServerError": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/restapi-metrics/Api/Default/GET/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiGET9257B917"
+          }
+        ],
+        "/restapi-metrics/RestApiAlarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*"
+              },
+              "evaluationPeriods": "*",
+              "threshold": "*"
+            }
           }
         ],
         "/restapi-metrics/RestApiAlarm/Resource": [
@@ -87,10 +183,34 @@
             "data": "RestApiAlarm9B915321"
           }
         ],
+        "/restapi-metrics/MethodAlarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*"
+              },
+              "evaluationPeriods": "*",
+              "threshold": "*"
+            }
+          }
+        ],
         "/restapi-metrics/MethodAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MethodAlarm14370C32"
+          }
+        ],
+        "/restapi-metrics/StageAlarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*"
+              },
+              "evaluationPeriods": "*",
+              "threshold": "*"
+            }
           }
         ],
         "/restapi-metrics/StageAlarm/Resource": [
@@ -127,6 +247,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "MetricsTestDefaultTestDeployAssertEA4ED73F.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -160,6 +281,13 @@
         ]
       },
       "displayName": "MetricsTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

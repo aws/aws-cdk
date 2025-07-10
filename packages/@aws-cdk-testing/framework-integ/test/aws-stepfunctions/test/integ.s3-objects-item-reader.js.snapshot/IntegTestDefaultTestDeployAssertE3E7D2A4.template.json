@@ -1,0 +1,1011 @@
+{
+ "Resources": {
+  "AwsApiCallS3putObjectf5a0e65dd3078874de655ab8482365ea": {
+   "Type": "Custom::DeployAssert@SdkCallS3putObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "putObject",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "S3ObjectsItemReaderTestStack:ExportsOutputRefS3ObjectsItemReaderTestBucket7B2E5D7AA6C634CA"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"testPrefixObject1\"",
+     "Body": "\"object1\""
+    },
+    "flattenResponse": "false",
+    "salt": "1751312007916"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "s3:PutObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:PutObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:PutObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:DescribeExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:DescribeExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallS3putObject061241d996e2da10acd3a733bf1d0824": {
+   "Type": "Custom::DeployAssert@SdkCallS3putObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "putObject",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "S3ObjectsItemReaderTestStack:ExportsOutputRefS3ObjectsItemReaderTestBucket7B2E5D7AA6C634CA"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"testPrefixObject2\"",
+     "Body": "\"object2\""
+    },
+    "flattenResponse": "false",
+    "salt": "1751312007917"
+   },
+   "DependsOn": [
+    "AwsApiCallS3putObjectf5a0e65dd3078874de655ab8482365ea"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3putObject8ec029ce0f75e35688a113e465fdc40b": {
+   "Type": "Custom::DeployAssert@SdkCallS3putObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "putObject",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "S3ObjectsItemReaderTestStack:ExportsOutputRefS3ObjectsItemReaderTestBucket7B2E5D7AA6C634CA"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"otherObject\"",
+     "Body": "\"object3\""
+    },
+    "flattenResponse": "false",
+    "salt": "1751312007917"
+   },
+   "DependsOn": [
+    "AwsApiCallS3putObject061241d996e2da10acd3a733bf1d0824"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallStepFunctionsstartExecutiond238f28138fd4cb79e05478b1d7a72b5": {
+   "Type": "Custom::DeployAssert@SdkCallStepFunctionsstartExecution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "StepFunctions",
+    "api": "startExecution",
+    "parameters": {
+     "input": {
+      "Fn::Join": [
+       "",
+       [
+        "\"{\\\"bucketName\\\":\\\"",
+        {
+         "Fn::ImportValue": "S3ObjectsItemReaderTestStack:ExportsOutputRefS3ObjectsItemReaderTestBucket7B2E5D7AA6C634CA"
+        },
+        "\\\",\\\"prefix\\\":\\\"testPrefix\\\"}\""
+       ]
+      ]
+     },
+     "stateMachineArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "S3ObjectsItemReaderTestStack:ExportsOutputRefS3ObjectsItemReaderTestStateMachineDynamicA0EE584C7702E69C"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "executionArn"
+    ],
+    "salt": "1751312007917"
+   },
+   "DependsOn": [
+    "AwsApiCallS3putObject8ec029ce0f75e35688a113e465fdc40b"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5": {
+   "Type": "Custom::DeployAssert@SdkCallStepFunctionsdescribeExecution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "StepFunctions",
+    "api": "describeExecution",
+    "expected": "{\"$ObjectLike\":{\"status\":\"SUCCEEDED\"}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForEBC2A22B"
+    },
+    "parameters": {
+     "executionArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::GetAtt": [
+          "AwsApiCallStepFunctionsstartExecutiond238f28138fd4cb79e05478b1d7a72b5",
+          "apiCallResponse.executionArn"
+         ]
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1751312007918"
+   },
+   "DependsOn": [
+    "AwsApiCallStepFunctionsstartExecutiond238f28138fd4cb79e05478b1d7a72b5"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForIsCompleteProviderInvoke38329D78": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForRoleD45B0A03",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallStepFunctionsstartExecutiond238f28138fd4cb79e05478b1d7a72b5"
+   ]
+  },
+  "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForTimeoutProviderInvokeC7BB0029": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForRoleD45B0A03",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallStepFunctionsstartExecutiond238f28138fd4cb79e05478b1d7a72b5"
+   ]
+  },
+  "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForRoleD45B0A03": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "AwsApiCallStepFunctionsstartExecutiond238f28138fd4cb79e05478b1d7a72b5"
+   ]
+  },
+  "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForEBC2A22B": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":10,\"MaxAttempts\":12,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForRoleD45B0A03",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForRoleD45B0A03",
+    "AwsApiCallStepFunctionsstartExecutiond238f28138fd4cb79e05478b1d7a72b5"
+   ]
+  },
+  "AwsApiCallStepFunctionsstartExecution3751398145ebcc4d475cb54e81e58118": {
+   "Type": "Custom::DeployAssert@SdkCallStepFunctionsstartExecution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "StepFunctions",
+    "api": "startExecution",
+    "parameters": {
+     "input": "\"{\\\"prefix\\\":\\\"testPrefix\\\"}\"",
+     "stateMachineArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "S3ObjectsItemReaderTestStack:ExportsOutputRefS3ObjectsItemReaderTestStateMachineStaticA6D1B6C28B435428"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "executionArn"
+    ],
+    "salt": "1751312007918"
+   },
+   "DependsOn": [
+    "AwsApiCallS3putObject8ec029ce0f75e35688a113e465fdc40b"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallStepFunctionsdescribeExecution57ea746d26675a0717eada97fe1f3d2e": {
+   "Type": "Custom::DeployAssert@SdkCallStepFunctionsdescribeExecution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "StepFunctions",
+    "api": "describeExecution",
+    "expected": "{\"$ObjectLike\":{\"status\":\"SUCCEEDED\"}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallStepFunctionsdescribeExecution57ea746d26675a0717eada97fe1f3d2eWaitFor4D1452A4"
+    },
+    "parameters": {
+     "executionArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::GetAtt": [
+          "AwsApiCallStepFunctionsstartExecution3751398145ebcc4d475cb54e81e58118",
+          "apiCallResponse.executionArn"
+         ]
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1751312007918"
+   },
+   "DependsOn": [
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForIsCompleteProviderInvoke38329D78",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForEBC2A22B",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForRoleD45B0A03",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForTimeoutProviderInvokeC7BB0029",
+    "AwsApiCallStepFunctionsstartExecution3751398145ebcc4d475cb54e81e58118"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallStepFunctionsdescribeExecution57ea746d26675a0717eada97fe1f3d2eWaitForIsCompleteProviderInvokeF7EF4C9E": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallStepFunctionsdescribeExecution57ea746d26675a0717eada97fe1f3d2eWaitForRoleBB0D49F8",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForIsCompleteProviderInvoke38329D78",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForEBC2A22B",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForRoleD45B0A03",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForTimeoutProviderInvokeC7BB0029",
+    "AwsApiCallStepFunctionsstartExecution3751398145ebcc4d475cb54e81e58118"
+   ]
+  },
+  "AwsApiCallStepFunctionsdescribeExecution57ea746d26675a0717eada97fe1f3d2eWaitForTimeoutProviderInvoke244F71F4": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallStepFunctionsdescribeExecution57ea746d26675a0717eada97fe1f3d2eWaitForRoleBB0D49F8",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForIsCompleteProviderInvoke38329D78",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForEBC2A22B",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForRoleD45B0A03",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForTimeoutProviderInvokeC7BB0029",
+    "AwsApiCallStepFunctionsstartExecution3751398145ebcc4d475cb54e81e58118"
+   ]
+  },
+  "AwsApiCallStepFunctionsdescribeExecution57ea746d26675a0717eada97fe1f3d2eWaitForRoleBB0D49F8": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForIsCompleteProviderInvoke38329D78",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForEBC2A22B",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForRoleD45B0A03",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForTimeoutProviderInvokeC7BB0029",
+    "AwsApiCallStepFunctionsstartExecution3751398145ebcc4d475cb54e81e58118"
+   ]
+  },
+  "AwsApiCallStepFunctionsdescribeExecution57ea746d26675a0717eada97fe1f3d2eWaitFor4D1452A4": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":10,\"MaxAttempts\":12,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallStepFunctionsdescribeExecution57ea746d26675a0717eada97fe1f3d2eWaitForRoleBB0D49F8",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallStepFunctionsdescribeExecution57ea746d26675a0717eada97fe1f3d2eWaitForRoleBB0D49F8",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForIsCompleteProviderInvoke38329D78",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForEBC2A22B",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForRoleD45B0A03",
+    "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5WaitForTimeoutProviderInvokeC7BB0029",
+    "AwsApiCallStepFunctionsstartExecution3751398145ebcc4d475cb54e81e58118"
+   ]
+  },
+  "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "states:DescribeExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:DescribeExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.isComplete",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.onTimeout",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs22.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs22.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs22.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs22.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs22.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
+    "value": "nodejs22.x"
+   },
+   "il-central-1": {
+    "value": "nodejs22.x"
+   },
+   "me-central-1": {
+    "value": "nodejs22.x"
+   },
+   "me-south-1": {
+    "value": "nodejs22.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs22.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-east-2": {
+    "value": "nodejs22.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs22.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs22.x"
+   },
+   "us-west-2": {
+    "value": "nodejs22.x"
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallStepFunctionsdescribeExecution99ba23594a6704aff217ac90dd3799f5",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallStepFunctionsdescribeExecution57ea746d26675a0717eada97fe1f3d2e": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallStepFunctionsdescribeExecution57ea746d26675a0717eada97fe1f3d2e",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

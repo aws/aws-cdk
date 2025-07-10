@@ -2,7 +2,7 @@ import { Match, Template } from '../../assertions';
 import { Key } from '../../aws-kms';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
-import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition, FilterRule, FilterCriteria } from '../lib';
+import { Code, EventSourceMapping, Function, Alias, StartingPosition, FilterRule, FilterCriteria } from '../lib';
 
 let stack: cdk.Stack;
 let fn: Function;
@@ -97,12 +97,12 @@ describe('event source mapping', () => {
     })).toThrow(/maxRecordAge must be between 60 seconds and 7 days inclusive/);
   });
 
-  test('throws if retryAttempts is negative', () => {
+  test('accepts retryAttempts = -1 for infinite retries', () => {
     expect(() => new EventSourceMapping(stack, 'test', {
       target: fn,
       eventSourceArn: '',
       retryAttempts: -1,
-    })).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got -1/);
+    })).not.toThrow();
   });
 
   test('throws if retryAttempts is over 10000', () => {
@@ -110,7 +110,7 @@ describe('event source mapping', () => {
       target: fn,
       eventSourceArn: '',
       retryAttempts: 10001,
-    })).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got 10001/);
+    })).toThrow(/retryAttempts must be -1 \(for infinite\) or between 0 and 10000 inclusive, got 10001/);
   });
 
   test('accepts if retryAttempts is a token', () => {
@@ -368,7 +368,6 @@ describe('event source mapping', () => {
       },
       KmsKeyArn: 'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
     });
-
   });
 
   test('adding filter criteria encryption without filter criteria', () => {
@@ -491,5 +490,116 @@ describe('event source mapping', () => {
       startingPosition: StartingPosition.LATEST,
       startingPositionTimestamp: 1640995200,
     })).toThrow(/startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP/);
+  });
+
+  test('adding metrics config', () => {
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+      metricsConfig: {
+        metrics: [],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      StartingPosition: 'AT_TIMESTAMP',
+      StartingPositionTimestamp: 1640995200,
+      MetricsConfig: {
+        Metrics: [],
+      },
+    });
+  });
+
+  test('adding metrics config', () => {
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+      metricsConfig: {
+        metrics: [lambda.MetricType.EVENT_COUNT],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      StartingPosition: 'AT_TIMESTAMP',
+      StartingPositionTimestamp: 1640995200,
+      MetricsConfig: {
+        Metrics: ['EventCount'],
+      },
+    });
+  });
+
+  test('provisioned pollers is set', () => {
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+      provisionedPollerConfig: {
+        minimumPollers: 1,
+        maximumPollers: 3,
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      StartingPosition: 'AT_TIMESTAMP',
+      StartingPositionTimestamp: 1640995200,
+      ProvisionedPollerConfig: {
+        MinimumPollers: 1,
+        MaximumPollers: 3,
+      },
+    });
+  });
+
+  test('minimum provisioned poller is out of limit', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+      provisionedPollerConfig: {
+        minimumPollers: 0,
+      },
+    })).toThrow(/Minimum provisioned pollers must be between 1 and 200 inclusive/);
+  });
+
+  test('maximum provisioned poller is out of limit', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+      provisionedPollerConfig: {
+        maximumPollers: 2001,
+      },
+    })).toThrow(/Maximum provisioned pollers must be between 1 and 2000 inclusive/);
+  });
+
+  test('only maximum provisioned poller is out of limit', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+      provisionedPollerConfig: {
+        minimumPollers: 1,
+        maximumPollers: 2001,
+      },
+    })).toThrow(/Maximum provisioned pollers must be between 1 and 2000 inclusive/);
+  });
+
+  test('Minimum provisioned poller greater than maximum provisioned poller', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+      provisionedPollerConfig: {
+        minimumPollers: 3,
+        maximumPollers: 2,
+      },
+    })).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
   });
 });

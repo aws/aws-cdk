@@ -5,6 +5,7 @@ import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { Annotations } from '../../../core';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { AwsCustomResourceSingletonFunction } from '../../../custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated';
 import * as cxapi from '../../../cx-api';
 import { awsSdkToIamAction } from '../helpers-internal/sdk-info';
@@ -38,7 +39,6 @@ export class PhysicalResourceIdReference implements cdk.IResolvable {
  * Physical ID of the custom resource.
  */
 export class PhysicalResourceId {
-
   /**
    * Extract the physical resource id from the path (dot notation) to the data in the API call response.
    */
@@ -228,7 +228,6 @@ export interface SdkCallsPolicyOptions {
  * The IAM Policy that will be applied to the different calls.
  */
 export class AwsCustomResourcePolicy {
-
   /**
    * Use this constant to configure access to any resource.
    */
@@ -265,7 +264,7 @@ export class AwsCustomResourcePolicy {
    * @param statements statements for explicit policy.
    * @param resources resources for auto-generated from SDK calls.
    */
-  private constructor(public readonly statements: iam.PolicyStatement[], public readonly resources?: string[]) {}
+  private constructor(public readonly statements: iam.PolicyStatement[], public readonly resources?: string[]) { }
 }
 
 /**
@@ -370,7 +369,7 @@ export interface AwsCustomResourceProps {
   readonly logGroup?: logs.ILogGroup;
 
   /**
-   * Whether to install the latest AWS SDK v2.
+   * Whether to install the latest AWS SDK v3.
    *
    * If not specified, this uses whatever JavaScript SDK version is the default in
    * AWS Lambda at the time of execution.
@@ -417,6 +416,20 @@ export interface AwsCustomResourceProps {
    * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * The maximum time that can elapse before a custom resource operation times out.
+   *
+   * You should not need to set this property. It is intended to allow quick turnaround
+   * even if the implementor of the custom resource forgets to include a `try/catch`.
+   * We have included the `try/catch`, and AWS service calls usually do not take an hour
+   * to complete.
+   *
+   * The value must be between 1 second and 3600 seconds.
+   *
+   * @default Duration.seconds(3600)
+   */
+  readonly serviceTimeout?: cdk.Duration;
 }
 
 /**
@@ -427,20 +440,24 @@ export interface AwsCustomResourceProps {
  * You can specify exactly which calls are invoked for the 'CREATE', 'UPDATE' and 'DELETE' life cycle events.
  *
  */
+@propertyInjectable
 export class AwsCustomResource extends Construct implements iam.IGrantable {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-custom-resources.AwsCustomResource';
+
   /**
    * The uuid of the custom resource provider singleton lambda function.
    */
   public static readonly PROVIDER_FUNCTION_UUID = '679f53fa-c002-430c-b0da-5b7982bd2287';
 
   private static breakIgnoreErrorsCircuit(sdkCalls: Array<AwsSdkCall | undefined>, caller: string) {
-
     for (const call of sdkCalls) {
       if (call?.ignoreErrorCodesMatching) {
-        throw new Error(`\`${caller}\`` + ' cannot be called along with `ignoreErrorCodesMatching`.');
+        throw new cdk.UnscopedValidationError(`\`${caller}\`` + ' cannot be called along with `ignoreErrorCodesMatching`.');
       }
     }
-
   }
 
   public readonly grantPrincipal: iam.IPrincipal;
@@ -454,19 +471,19 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     super(scope, id);
 
     if (!props.onCreate && !props.onUpdate && !props.onDelete) {
-      throw new Error('At least `onCreate`, `onUpdate` or `onDelete` must be specified.');
+      throw new cdk.ValidationError('At least `onCreate`, `onUpdate` or `onDelete` must be specified.', this);
     }
 
     if (!props.role && !props.policy) {
-      throw new Error('At least one of `policy` or `role` (or both) must be specified.');
+      throw new cdk.ValidationError('At least one of `policy` or `role` (or both) must be specified.', this);
     }
 
     if (props.onCreate && !props.onCreate.physicalResourceId) {
-      throw new Error("'physicalResourceId' must be specified for 'onCreate' call.");
+      throw new cdk.ValidationError("'physicalResourceId' must be specified for 'onCreate' call.", this);
     }
 
     if (!props.onCreate && props.onUpdate && !props.onUpdate.physicalResourceId) {
-      throw new Error("'physicalResourceId' must be specified for 'onUpdate' call when 'onCreate' is omitted.");
+      throw new cdk.ValidationError("'physicalResourceId' must be specified for 'onUpdate' call when 'onCreate' is omitted.", this);
     }
 
     for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
@@ -476,7 +493,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     }
 
     if (includesPhysicalResourceIdRef(props.onCreate?.parameters)) {
-      throw new Error('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.');
+      throw new cdk.ValidationError('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.', this);
     }
 
     this.props = props;
@@ -520,6 +537,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     this.customResource = new cdk.CustomResource(this, 'Resource', {
       resourceType: props.resourceType || 'Custom::AWS',
       serviceToken: provider.functionArn,
+      serviceTimeout: props.serviceTimeout,
       pascalCaseProperties: true,
       removalPolicy: props.removalPolicy,
       properties: {

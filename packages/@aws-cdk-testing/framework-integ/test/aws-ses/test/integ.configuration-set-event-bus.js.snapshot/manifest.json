@@ -1,0 +1,204 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "ses-configuration-set-event-bus.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ses-configuration-set-event-bus.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ses-configuration-set-event-bus": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ses-configuration-set-event-bus.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/998b57e37bcf994290ce68c0286b8d944276f023124cc7ced134c74bfb41c5fd.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ses-configuration-set-event-bus.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ses-configuration-set-event-bus.assets"
+      ],
+      "metadata": {
+        "/ses-configuration-set-event-bus/ConfigurationSet": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxDeliveryDuration": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventDestination": [
+                "*",
+                {
+                  "destination": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/ses-configuration-set-event-bus/ConfigurationSet/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigurationSet3DD38186"
+          }
+        ],
+        "/ses-configuration-set-event-bus/ConfigurationSet/EventBridge": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "destination": "*",
+              "configurationSet": "*"
+            }
+          }
+        ],
+        "/ses-configuration-set-event-bus/ConfigurationSet/EventBridge/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigurationSetEventBridgeABB541C9"
+          }
+        ],
+        "/ses-configuration-set-event-bus/EventBus": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/ses-configuration-set-event-bus/Exports/Output{\"Ref\":\"ConfigurationSet3DD38186\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefConfigurationSet3DD381867BBB7945"
+          }
+        ],
+        "/ses-configuration-set-event-bus/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ses-configuration-set-event-bus/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ses-configuration-set-event-bus"
+    },
+    "sesconfigurationseteventbustestDefaultTestDeployAssert4DB105E9.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "sesconfigurationseteventbustestDefaultTestDeployAssert4DB105E9.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "sesconfigurationseteventbustestDefaultTestDeployAssert4DB105E9": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "sesconfigurationseteventbustestDefaultTestDeployAssert4DB105E9.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eb9b20add4daa06d9547e15d09aa0a65f746086c34f28dc098a5ccbe0ee67e95.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "sesconfigurationseteventbustestDefaultTestDeployAssert4DB105E9.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ses-configuration-set-event-bus",
+        "sesconfigurationseteventbustestDefaultTestDeployAssert4DB105E9.assets"
+      ],
+      "metadata": {
+        "/ses-configuration-set-event-bus-test/DefaultTest/DeployAssert/AwsApiCallsesv2getConfigurationSetEventDestinations6050644aa744334f21cb892a4182a824/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/ses-configuration-set-event-bus-test/DefaultTest/DeployAssert/AwsApiCallsesv2getConfigurationSetEventDestinations6050644aa744334f21cb892a4182a824/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallsesv2getConfigurationSetEventDestinations6050644aa744334f21cb892a4182a824"
+          }
+        ],
+        "/ses-configuration-set-event-bus-test/DefaultTest/DeployAssert/AwsApiCallsesv2getConfigurationSetEventDestinations6050644aa744334f21cb892a4182a824/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallsesv2getConfigurationSetEventDestinations6050644aa744334f21cb892a4182a824"
+          }
+        ],
+        "/ses-configuration-set-event-bus-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/ses-configuration-set-event-bus-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/ses-configuration-set-event-bus-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/ses-configuration-set-event-bus-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ses-configuration-set-event-bus-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ses-configuration-set-event-bus-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

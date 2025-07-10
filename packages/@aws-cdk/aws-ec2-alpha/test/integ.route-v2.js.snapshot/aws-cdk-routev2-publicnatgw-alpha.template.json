@@ -6,10 +6,16 @@
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-routev2-publicnatgw-alpha/natgw_pub"
+     }
+    ]
    }
   },
-  "natgwpubAmazonIpv625B947F8": {
+  "natgwpubAmazonIpv6204D6A95": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -48,24 +54,11 @@
       "RouteTableId"
      ]
     }
-   }
-  },
-  "TestRoottablenatGwRouteGWAttachment1D9CDF77": {
-   "Type": "AWS::EC2::VPCGatewayAttachment",
-   "Properties": {
-    "InternetGatewayId": {
-     "Fn::GetAtt": [
-      "testNATgwIGW6AC97E9A",
-      "InternetGatewayId"
-     ]
-    },
-    "VpcId": {
-     "Fn::GetAtt": [
-      "natgwpub2FB85986",
-      "VpcId"
-     ]
-    }
-   }
+   },
+   "DependsOn": [
+    "testNATgwIGWGWAttachment63DC9091",
+    "testNATgwIGW6AC97E9A"
+   ]
   },
   "TestRoottablenatGwPubRoute0463E2F5": {
    "Type": "AWS::EC2::Route",
@@ -83,12 +76,15 @@
       "RouteTableId"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "testNATgwEIP1C260FAD",
+    "testNATgwNATGateway1533420D"
+   ]
   },
   "natgwpubSubnet79D316E5": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-east-1a",
     "CidrBlock": "10.0.0.0/24",
     "Ipv6CidrBlock": {
@@ -102,6 +98,12 @@
       }
      ]
     },
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "natgwpub2FB85986",
@@ -110,7 +112,7 @@
     }
    },
    "DependsOn": [
-    "natgwpubAmazonIpv625B947F8"
+    "natgwpubAmazonIpv6204D6A95"
    ]
   },
   "natgwpubSubnetRouteTableAssociation019CE26A": {
@@ -127,25 +129,40 @@
     }
    },
    "DependsOn": [
-    "natgwpubAmazonIpv625B947F8"
+    "natgwpubAmazonIpv6204D6A95"
    ]
   },
   "testNATgwIGW6AC97E9A": {
    "Type": "AWS::EC2::InternetGateway"
   },
-  "testNATgwEIP1C260FAD": {
-   "Type": "AWS::EC2::EIP",
+  "testNATgwIGWGWAttachment63DC9091": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "Domain": {
+    "InternetGatewayId": {
+     "Fn::GetAtt": [
+      "testNATgwIGW6AC97E9A",
+      "InternetGatewayId"
+     ]
+    },
+    "VpcId": {
      "Fn::GetAtt": [
       "natgwpub2FB85986",
       "VpcId"
      ]
     }
-   },
-   "DependsOn": [
-    "natgwpubSubnetRouteTableAssociation019CE26A"
-   ]
+   }
+  },
+  "testNATgwEIP1C260FAD": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-routev2-publicnatgw-alpha/natgw_pubSubnet"
+     }
+    ]
+   }
   },
   "testNATgwNATGateway1533420D": {
    "Type": "AWS::EC2::NatGateway",
@@ -158,7 +175,13 @@
     },
     "SubnetId": {
      "Ref": "natgwpubSubnet79D316E5"
-    }
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-routev2-publicnatgw-alpha/natgw_pubSubnet"
+     }
+    ]
    },
    "DependsOn": [
     "natgwpubSubnetRouteTableAssociation019CE26A"

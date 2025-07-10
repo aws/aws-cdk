@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "45.0.0",
   "testCases": {
     "ElasticsearchCustomKmsInteg/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert",
       "assertionStackName": "ElasticsearchCustomKmsIntegDefaultTestDeployAssertFEEBA45B"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

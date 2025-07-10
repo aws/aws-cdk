@@ -1,0 +1,110 @@
+{
+ "Resources": {
+  "acceptorVpc5B7D1670": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VpcPeeringSameAccountIntegStack/acceptorVpc"
+     }
+    ]
+   }
+  },
+  "requestorVpcSameAccountF27E91F7": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.1.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VpcPeeringSameAccountIntegStack/requestorVpcSameAccount"
+     }
+    ]
+   }
+  },
+  "requestorVpcSameAccountsameAccountPeeringVPCPeeringConnection4E07C8CD": {
+   "Type": "AWS::EC2::VPCPeeringConnection",
+   "Properties": {
+    "PeerOwnerId": {
+     "Ref": "AWS::AccountId"
+    },
+    "PeerRegion": {
+     "Ref": "AWS::Region"
+    },
+    "PeerVpcId": {
+     "Fn::GetAtt": [
+      "acceptorVpc5B7D1670",
+      "VpcId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VpcPeeringSameAccountIntegStack/requestorVpcSameAccount"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "requestorVpcSameAccountF27E91F7",
+      "VpcId"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttrequestorVpcSameAccountsameAccountPeeringVPCPeeringConnection4E07C8CDIdCEF66BF2": {
+   "Value": {
+    "Fn::GetAtt": [
+     "requestorVpcSameAccountsameAccountPeeringVPCPeeringConnection4E07C8CD",
+     "Id"
+    ]
+   },
+   "Export": {
+    "Name": "VpcPeeringSameAccountIntegStack:ExportsOutputFnGetAttrequestorVpcSameAccountsameAccountPeeringVPCPeeringConnection4E07C8CDIdCEF66BF2"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

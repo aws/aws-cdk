@@ -1,0 +1,12 @@
+{
+  "version": "36.0.24",
+  "testCases": {
+    "aws-cdk-dynamodb-contributor-insights-for-gsi-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-dynamodb-contributor-insights-for-gsi"
+      ],
+      "assertionStack": "aws-cdk-dynamodb-contributor-insights-for-gsi-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkdynamodbcontributorinsightsforgsitestDefaultTestDeployAssert9D8EC318"
+    }
+  }
+}

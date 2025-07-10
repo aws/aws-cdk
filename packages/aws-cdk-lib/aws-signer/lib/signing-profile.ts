@@ -1,6 +1,8 @@
 import { Construct } from 'constructs';
 import { CfnSigningProfile } from './signer.generated';
 import { Duration, IResource, Resource, Stack } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Platforms that are allowed with signing config.
@@ -130,7 +132,11 @@ export interface SigningProfileAttributes {
  *
  * @resource AWS::Signer::SigningProfile
  */
+@propertyInjectable
 export class SigningProfile extends Resource implements ISigningProfile {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-signer.SigningProfile';
+
   /**
    * Creates a Signing Profile construct that represents an external Signing Profile.
    *
@@ -173,6 +179,8 @@ export class SigningProfile extends Resource implements ISigningProfile {
     super(scope, id, {
       physicalName: props.signingProfileName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnSigningProfile( this, 'Resource', {
       platformId: props.platform.platformId,

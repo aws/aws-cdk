@@ -10,6 +10,8 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for a newly created singleton Lambda
@@ -45,7 +47,10 @@ export interface SingletonFunctionProps extends FunctionProps {
  *
  * @resource AWS::Lambda::Function
  */
+@propertyInjectable
 export class SingletonFunction extends FunctionBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.SingletonFunction';
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly functionName: string;
   public readonly functionArn: string;
@@ -58,12 +63,20 @@ export class SingletonFunction extends FunctionBase {
    */
   public readonly runtime: Runtime;
 
+  /**
+   * The name of the singleton function. It acts as a unique ID within its CDK stack.
+   * */
+  public readonly constructName: string;
+
   protected readonly canCreatePermissions: boolean;
   private lambdaFunction: LambdaFunction;
 
   constructor(scope: Construct, id: string, props: SingletonFunctionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
+    this.constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
     this.lambdaFunction = this.ensureLambda(props);
     this.permissionsNode = this.lambdaFunction.node;
     this.architecture = this.lambdaFunction.architecture;
@@ -74,7 +87,7 @@ export class SingletonFunction extends FunctionBase {
     this.runtime = this.lambdaFunction.runtime;
     this.grantPrincipal = this.lambdaFunction.grantPrincipal;
 
-    this.canCreatePermissions = true; // Doesn't matter, addPermission is overriden anyway
+    this.canCreatePermissions = true; // Doesn't matter, addPermission is overridden anyway
   }
 
   /**
@@ -119,7 +132,7 @@ export class SingletonFunction extends FunctionBase {
 
   public get resourceArnsForGrantInvoke() {
     return [this.functionArn, `${this.functionArn}:*`];
-  };
+  }
 
   /**
    * Adds an environment variable to this Lambda function.
@@ -128,6 +141,7 @@ export class SingletonFunction extends FunctionBase {
    * @param value The environment variable's value.
    * @param options Environment variable options.
    */
+  @MethodMetadata()
   public addEnvironment(key: string, value: string, options?: EnvironmentOptions) {
     return this.lambdaFunction.addEnvironment(key, value, options);
   }
@@ -139,10 +153,12 @@ export class SingletonFunction extends FunctionBase {
    *
    * @throws if there are already 5 layers on this function, or the layer is incompatible with this function's runtime.
    */
+  @MethodMetadata()
   public addLayers(...layers: ILayerVersion[]) {
     return this.lambdaFunction.addLayers(...layers);
   }
 
+  @MethodMetadata()
   public addPermission(name: string, permission: Permission) {
     return this.lambdaFunction.addPermission(name, permission);
   }
@@ -151,6 +167,7 @@ export class SingletonFunction extends FunctionBase {
    * Using node.addDependency() does not work on this method as the underlying lambda function is modeled
    * as a singleton across the stack. Use this method instead to declare dependencies.
    */
+  @MethodMetadata()
   public addDependency(...up: IDependable[]) {
     this.lambdaFunction.node.addDependency(...up);
   }
@@ -159,6 +176,7 @@ export class SingletonFunction extends FunctionBase {
    * Use this method to write to the construct tree.
    * The metadata entries are written to the Cloud Assembly Manifest if the `treeMetadata` property is specified in the props of the App that contains this Construct.
    */
+  @MethodMetadata()
   public addMetadata(type: string, data: any, options?: MetadataOptions) {
     this.lambdaFunction.node.addMetadata(type, data, options);
   }
@@ -167,6 +185,7 @@ export class SingletonFunction extends FunctionBase {
    * The SingletonFunction construct cannot be added as a dependency of another construct using
    * node.addDependency(). Use this method instead to declare this as a dependency of another construct.
    */
+  @MethodMetadata()
   public dependOn(down: IConstruct) {
     down.node.addDependency(this.lambdaFunction);
   }
@@ -185,14 +204,13 @@ export class SingletonFunction extends FunctionBase {
   }
 
   private ensureLambda(props: SingletonFunctionProps): LambdaFunction {
-    const constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
-    const existing = cdk.Stack.of(this).node.tryFindChild(constructName);
+    const existing = cdk.Stack.of(this).node.tryFindChild(this.constructName);
     if (existing) {
       // Just assume this is true
       return existing as LambdaFunction;
     }
 
-    return new LambdaFunction(cdk.Stack.of(this), constructName, props);
+    return new LambdaFunction(cdk.Stack.of(this), this.constructName, props);
   }
 }
 

@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { IPipe, ISource, InputTransformation, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import { InputTransformation, IPipe, ISource, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { SqsTarget } from '../lib';
@@ -9,6 +9,8 @@ const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 const targetQueue = new cdk.aws_sqs.Queue(stack, 'TargetQueue');
 
+// When this module is promoted from alpha, TestSource should
+// be replaced with SqsSource from @aws-cdk/aws-pipes-sources-alpha
 class TestSource implements ISource {
   sourceArn: string;
   sourceParameters = undefined;

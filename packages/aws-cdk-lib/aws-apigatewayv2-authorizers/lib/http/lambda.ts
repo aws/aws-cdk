@@ -10,6 +10,7 @@ import {
 import { ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
 import { Stack, Duration, Names } from '../../../core';
+import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 
 /**
  * Specifies the type responses the lambda returns
@@ -69,6 +70,11 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
   private httpApi?: IHttpApi;
 
   /**
+   * The authorizationType used for Lambda Authorizer
+   */
+  public readonly authorizationType = 'CUSTOM';
+
+  /**
    * Initialize a lambda authorizer to be bound with HTTP route.
    * @param id The id of the underlying construct
    * @param pool The lambda function handler to use for authorization
@@ -80,9 +86,21 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
     private readonly props: HttpLambdaAuthorizerProps = {}) {
   }
 
+  /**
+   * Return the id of the authorizer if it's been constructed
+   */
+  public get authorizerId(): string {
+    if (!this.authorizer) {
+      throw new UnscopedValidationError(
+        'Cannot access authorizerId until authorizer is attached to a HttpRoute',
+      );
+    }
+    return this.authorizer.authorizerId;
+  }
+
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     if (this.httpApi && (this.httpApi.apiId !== options.route.httpApi.apiId)) {
-      throw new Error('Cannot attach the same authorizer to multiple Apis');
+      throw new ValidationError('Cannot attach the same authorizer to multiple Apis', options.scope);
     }
 
     if (!this.authorizer) {
@@ -116,7 +134,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
 
     return {
       authorizerId: this.authorizer.authorizerId,
-      authorizationType: 'CUSTOM',
+      authorizationType: this.authorizationType,
     };
   }
 }

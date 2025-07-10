@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Token, TokenComparison } from '../../../core';
+import { Token, TokenComparison, ValidationError } from '../../../core';
 import { CfnVirtualNode } from '../appmesh.generated';
 import { GrpcGatewayRouteMatch } from '../gateway-route-spec';
 import { HeaderMatch } from '../header-match';
@@ -97,45 +97,45 @@ export function renderMeshOwner(resourceAccount: string, meshAccount: string) : 
 /**
  * This is the helper method to validate the length of HTTP match array when it is specified.
  */
-export function validateHttpMatchArrayLength(headers?: HeaderMatch[], queryParameters?: QueryParameterMatch[]) {
+export function validateHttpMatchArrayLength(scope: Construct, headers?: HeaderMatch[], queryParameters?: QueryParameterMatch[]) {
   const MIN_LENGTH = 1;
   const MAX_LENGTH = 10;
 
   if (headers && (headers.length < MIN_LENGTH || headers.length > MAX_LENGTH)) {
-    throw new Error(`Number of headers provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${headers.length}`);
+    throw new ValidationError(`Number of headers provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${headers.length}`, scope);
   }
 
   if (queryParameters && (queryParameters.length < MIN_LENGTH || queryParameters.length > MAX_LENGTH)) {
-    throw new Error(`Number of query parameters provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${queryParameters.length}`);
+    throw new ValidationError(`Number of query parameters provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${queryParameters.length}`, scope);
   }
 }
 
 /**
  * This is the helper method to validate the length of gRPC match array when it is specified.
  */
-export function validateGrpcMatchArrayLength(metadata?: HeaderMatch[]): void {
+export function validateGrpcMatchArrayLength(scope: Construct, metadata?: HeaderMatch[]): void {
   const MIN_LENGTH = 1;
   const MAX_LENGTH = 10;
 
   if (metadata && (metadata.length < MIN_LENGTH || metadata.length > MAX_LENGTH)) {
-    throw new Error(`Number of metadata provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${metadata.length}`);
+    throw new ValidationError(`Number of metadata provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${metadata.length}`, scope);
   }
 }
 
 /**
  * This is the helper method to validate at least one of gRPC route match type is defined.
  */
-export function validateGrpcRouteMatch(match: GrpcRouteMatch): void {
+export function validateGrpcRouteMatch(scope: Construct, match: GrpcRouteMatch): void {
   if (match.serviceName === undefined && match.metadata === undefined && match.methodName === undefined && match.port === undefined) {
-    throw new Error('At least one gRPC route match property must be provided');
+    throw new ValidationError('At least one gRPC route match property must be provided', scope);
   }
 }
 
 /**
  * This is the helper method to validate at least one of gRPC gateway route match type is defined.
  */
-export function validateGrpcGatewayRouteMatch(match: GrpcGatewayRouteMatch): void {
+export function validateGrpcGatewayRouteMatch(scope: Construct, match: GrpcGatewayRouteMatch): void {
   if (match.serviceName === undefined && match.metadata === undefined && match.hostname === undefined && match.port === undefined) {
-    throw new Error('At least one gRPC gateway route match property beside rewriteRequestHostname must be provided');
+    throw new ValidationError('At least one gRPC gateway route match property beside rewriteRequestHostname must be provided', scope);
   }
 }

@@ -101,7 +101,7 @@ and is not compliant with `S3EventSource`. If this is the case, please consider 
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { S3EventSourceV2 } from 'aws-cdk-lib/aws-lambda-event-sources';
 
-const bucket = s3.Bucket.fromBucketName(this, 'Bucket', 'bucket-name');
+const bucket = s3.Bucket.fromBucketName(this, 'Bucket', 'amzn-s3-demo-bucket');
 declare const fn: lambda.Function;
 
 fn.addEventSource(new S3EventSourceV2(bucket, {
@@ -163,7 +163,7 @@ and add it to your Lambda function. The following parameters will impact Amazon 
 * __reportBatchItemFailures__: Allow functions to return partially successful responses for a batch of records.
 * __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of delayed processing.
 * __maxRecordAge__: The maximum age of a record that will be sent to the function for processing. Records that exceed the max age will be treated as failures.
-* __onFailure__: In the event a record fails after all retries or if the record age has exceeded the configured value, the record will be sent to SQS queue or SNS topic that is specified here
+* __onFailure__: In the event a record fails after all retries or if the record age has exceeded the configured value, the record will be sent to S3 bucket, SQS queue or SNS topic that is specified here
 * __parallelizationFactor__: The number of batches to concurrently process on each shard.
 * __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
@@ -229,13 +229,13 @@ behavior:
 * __reportBatchItemFailures__: Allow functions to return partially successful responses for a batch of records.
 * __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of possibly delaying processing.
 * __maxRecordAge__: The maximum age of a record that will be sent to the function for processing. Records that exceed the max age will be treated as failures.
-* __onFailure__: In the event a record fails and consumes all retries, the record will be sent to SQS queue or SNS topic that is specified here
+* __onFailure__: In the event a record fails and consumes all retries, the record will be sent to S3 bucket, SQS queue or SNS topic that is specified here
 * __parallelizationFactor__: The number of batches to concurrently process on each shard.
 * __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
-* __startingPosition__: Will determine where to begin consumption. 'LATEST' will start at the most recent record and ignore all records that arrived prior to attaching the event source, 'TRIM_HORIZON' will start at the oldest record and ensure you process all available data, while 'AT_TIMESTAMP' will start reading records from a specified time stamp. Note that 'AT_TIMESTAMP' is only supported for Amazon Kinesis streams.
+* __startingPosition__: Will determine where to begin consumption. 'LATEST' will start at the most recent record and ignore all records that arrived prior to attaching the event source, 'TRIM_HORIZON' will start at the oldest record and ensure you process all available data, while 'AT_TIMESTAMP' will start reading records from a specified time stamp.
 * __startingPositionTimestamp__: The time stamp from which to start reading. Used in conjunction with __startingPosition__ when set to 'AT_TIMESTAMP'.
 * __tumblingWindow__: The duration in seconds of a processing window when using streams.
-* __enabled__: If the DynamoDB Streams event source mapping should be enabled. The default is true.
+* __enabled__: If the event source mapping should be enabled. The default is true.
 
 ```ts
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
@@ -250,9 +250,35 @@ myFunction.addEventSource(new KinesisEventSource(stream, {
 }));
 ```
 
+To use a dedicated-throughput consumer with enhanced fan-out
+
+```ts
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+import { KinesisConsumerEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+const stream = new kinesis.Stream(this, 'MyStream');
+const streamConsumer = new kinesis.StreamConsumer(this, 'MyStreamConsumer', {
+  stream,
+  streamConsumerName: 'MyStreamConsumer',
+});
+
+declare const myFunction: lambda.Function;
+myFunction.addEventSource(new KinesisConsumerEventSource(streamConsumer, {
+  batchSize: 100, // default
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+}));
+```
+
 ## Kafka
 
-You can write Lambda functions to process data either from [Amazon MSK](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html) or a [self managed Kafka](https://docs.aws.amazon.com/lambda/latest/dg/kafka-smaa.html) cluster.
+You can write Lambda functions to process data either from [Amazon MSK](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html) or a [self-managed Kafka](https://docs.aws.amazon.com/lambda/latest/dg/kafka-smaa.html) cluster. The following parameters will impact to the polling behavior:
+
+* __startingPosition__: Will determine where to begin consumption. 'LATEST' will start at the most recent record and ignore all records that arrived prior to attaching the event source, 'TRIM_HORIZON' will start at the oldest record and ensure you process all available data, while 'AT_TIMESTAMP' will start reading records from a specified time stamp.
+* __startingPositionTimestamp__: The time stamp from which to start reading. Used in conjunction with __startingPosition__ when set to 'AT_TIMESTAMP'.
+* __batchSize__: Determines how many records are buffered before invoking your lambda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
+* __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of possibly delaying processing.
+* __onFailure__: In the event a record fails and consumes all retries, the record will be sent to SQS queue or SNS topic that is specified here
+* __enabled__: If the Kafka event source mapping should be enabled. The default is true.
 
 The following code sets up Amazon MSK as an event source for a lambda function. Credentials will need to be configured to access the
 MSK cluster, as described in [Username/Password authentication](https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html).
@@ -393,6 +419,97 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
   topic,
   startingPosition: lambda.StartingPosition.TRIM_HORIZON,
   onFailure: s3OnFailureDestination,
+}));
+```
+
+Set configuration for provisioned pollers that read from the event source.
+
+```ts
+import { ManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+// Your MSK cluster arn
+declare const clusterArn: string
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic';
+
+declare const myFunction: lambda.Function;
+myFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn,
+  topic,
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  provisionedPollerConfig: {
+    minimumPollers: 1,
+    maximumPollers: 3,
+  },
+}));
+```
+
+Set a confluent or self-managed schema registry to de-serialize events from the event source. Note, this will similarly work for `SelfManagedKafkaEventSource` but the example only shows setup for `ManagedKafkaEventSource`.
+
+```ts
+import { ManagedKafkaEventSource, ConfluentSchemaRegistry } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+
+// Your MSK cluster arn
+declare const clusterArn: string;
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic';
+
+const secret = new Secret(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+
+declare const myFunction: lambda.Function;
+myFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn,
+  topic,
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  provisionedPollerConfig: {
+    minimumPollers: 1,
+    maximumPollers: 3,
+  },
+  schemaRegistryConfig: new ConfluentSchemaRegistry({
+    schemaRegistryUri: 'https://example.com',
+    eventRecordFormat: lambda.EventRecordFormat.JSON,
+    authenticationType: lambda.KafkaSchemaRegistryAccessConfigType.BASIC_AUTH,
+    secret: secret,
+    schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.KEY }],
+  }),
+}));
+```
+
+Set Glue schema registry to de-serialize events from the event source. Note, this will similarly work for `SelfManagedKafkaEventSource` but the example only shows setup for `ManagedKafkaEventSource`.
+
+```ts
+import { CfnRegistry } from 'aws-cdk-lib/aws-glue';
+import { ManagedKafkaEventSource, GlueSchemaRegistry } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+// Your MSK cluster arn
+declare const clusterArn: string;
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic';
+
+// Your Glue Schema Registry
+const glueRegistry = new CfnRegistry(this, 'Registry', {
+  name: 'schema-registry',
+  description: 'Schema registry for event source',
+});
+
+declare const myFunction: lambda.Function;
+myFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn,
+  topic,
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  provisionedPollerConfig: {
+    minimumPollers: 1,
+    maximumPollers: 3,
+  },
+  schemaRegistryConfig: new GlueSchemaRegistry({
+    schemaRegistry: glueRegistry,
+    eventRecordFormat: lambda.EventRecordFormat.JSON,
+    schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.KEY }],
+  }),
 }));
 ```
 

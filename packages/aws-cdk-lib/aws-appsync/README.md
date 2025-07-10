@@ -1,15 +1,17 @@
 # AWS AppSync Construct Library
 
 The `aws-cdk-lib/aws-appsync` package contains constructs for building flexible
-APIs that use GraphQL.
+APIs that use [GraphQL](https://docs.aws.amazon.com/appsync/latest/devguide/what-is-appsync.html) and [Events](https://docs.aws.amazon.com/appsync/latest/eventapi/event-api-welcome.html).
 
 ```ts nofixture
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 ```
 
-## Example
+## GraphQL
 
-### DynamoDB
+### Example
+
+#### DynamoDB
 
 Example of a GraphQL API with `AWS_IAM` [authorization](#authorization) resolving into a DynamoDb
 backend data source.
@@ -23,6 +25,7 @@ type demo {
 }
 type Query {
   getDemos: [ demo! ]
+  getDemosConsistent: [demo!]
 }
 input DemoInput {
   version: String!
@@ -85,13 +88,13 @@ demoDS.createResolver('QueryGetDemosConsistentResolver', {
 });
 ```
 
-### Aurora Serverless
+#### Aurora Serverless
 
 AppSync provides a data source for executing SQL commands against Amazon Aurora
 Serverless clusters. You can use AppSync resolvers to execute SQL statements
 against the Data API with GraphQL queries, mutations, and subscriptions.
 
-#### Aurora Serverless V1 Cluster
+##### Aurora Serverless V1 Cluster
 
 ```ts
 // Create username and password secret for DB Cluster
@@ -155,7 +158,7 @@ rdsDS.createResolver('MutationAddDemoRdsResolver', {
 });
 ```
 
-#### Aurora Serverless V2 Cluster
+##### Aurora Serverless V2 Cluster
 
 ```ts
 // Create username and password secret for DB Cluster
@@ -223,7 +226,7 @@ rdsDS.createResolver('MutationAddDemoRdsResolver', {
 });
 ```
 
-### HTTP Endpoints
+#### HTTP Endpoints
 
 GraphQL schema file `schema.graphql`:
 
@@ -239,6 +242,10 @@ input DemoInput {
 
 type Mutation {
   callStepFunction(input: DemoInput!): job
+}
+
+type Query {
+  _placeholder: String
 }
 ```
 
@@ -299,7 +306,7 @@ httpDs.createResolver('MutationCallStepFunctionResolver', {
 });
 ```
 
-### EventBridge
+#### EventBridge
 
 Integrating AppSync with EventBridge enables developers to use EventBridge rules to route commands for GraphQL mutations
 that need to perform any one of a variety of asynchronous tasks. More broadly, it enables teams to expose an event bus
@@ -389,7 +396,7 @@ dataSource.createResolver('EventResolver', {
 });
 ```
 
-### Amazon OpenSearch Service
+#### Amazon OpenSearch Service
 
 AppSync has builtin support for Amazon OpenSearch Service (successor to Amazon
 Elasticsearch Service) from domains that are provisioned through your AWS account. You can
@@ -434,7 +441,7 @@ ds.createResolver('QueryGetTestsResolver', {
 });
 ```
 
-## Merged APIs
+### Merged APIs
 
 AppSync supports [Merged APIs](https://docs.aws.amazon.com/appsync/latest/devguide/merged-api.html) which can be used to merge multiple source APIs into a single API.
 
@@ -471,7 +478,7 @@ const mergedApi = new appsync.GraphqlApi(this, 'MergedAPI', {
 });
 ```
 
-## Merged APIs Across Different Stacks
+### Merged APIs Across Different Stacks
 
 The SourceApiAssociation construct allows you to define a SourceApiAssociation to a Merged API in a different stack or account. This allows a source API owner the ability to associate it to an existing Merged API itself.
 
@@ -495,12 +502,12 @@ new appsync.SourceApiAssociation(this, 'SourceApiAssociation2', {
 });
 ```
 
-## Merge Source API Update Within CDK Deployment
+### Merge Source API Update Within CDK Deployment
 
 The SourceApiAssociationMergeOperation construct available in the [awscdk-appsync-utils](https://github.com/cdklabs/awscdk-appsync-utils) package provides the ability to merge a source API to a Merged API via a custom
 resource. If the merge operation fails with a conflict, the stack update will fail and rollback the changes to the source API in the stack in order to prevent merge conflicts and ensure the source API changes are always propagated to the Merged API.
 
-## Custom Domain Names
+### Custom Domain Names
 
 For many use cases you may want to associate a custom domain name with your
 GraphQL API. This can be done during the API creation.
@@ -539,7 +546,7 @@ new route53.CnameRecord(this, `CnameApiRecord`, {
 });
 ```
 
-## Log Group
+### Log Group
 
 AppSync automatically create a log group with the name `/aws/appsync/apis/<graphql_api_id>` upon deployment with
 log data set to never expire. If you want to set a different expiration period, use the `logConfig.retention` property.
@@ -565,7 +572,7 @@ new appsync.GraphqlApi(this, 'api', {
 });
 ```
 
-## Schema
+### Schema
 
 You can define a schema using from a local file using `Definition.fromFile`
 
@@ -576,13 +583,13 @@ const api = new appsync.GraphqlApi(this, 'api', {
 });
 ```
 
-### ISchema
+#### ISchema
 
 Alternative schema sources can be defined by implementing the `ISchema`
 interface. An example of this is the `CodeFirstSchema` class provided in
 [awscdk-appsync-utils](https://github.com/cdklabs/awscdk-appsync-utils)
 
-## Imports
+### Imports
 
 Any GraphQL Api that has been created outside the stack can be imported from
 another stack into your CDK app. Utilizing the `fromXxx` function, you have
@@ -602,7 +609,7 @@ If you don't specify `graphqlArn` in `fromXxxAttributes`, CDK will autogenerate
 the expected `arn` for the imported api, given the `apiId`. For creating data
 sources and resolvers, an `apiId` is sufficient.
 
-## Private APIs
+### Private APIs
 
 By default all AppSync GraphQL APIs are public and can be accessed from the internet.
 For customers that want to limit access to be from their VPC, the optional API `visibility` property can be set to `Visibility.PRIVATE`
@@ -622,7 +629,7 @@ const api = new appsync.GraphqlApi(this, 'api', {
 See [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/using-private-apis.html)
 for more details about Private APIs
 
-## Authorization
+### Authorization
 
 There are multiple authorization types available for GraphQL API to cater to different
 access use cases. They are:
@@ -657,7 +664,7 @@ new appsync.GraphqlApi(this, 'api', {
 });
 ```
 
-## Permissions
+### Permissions
 
 When using `AWS_IAM` as the authorization type for GraphQL API, an IAM Role
 with correct permissions must be used for access to API.
@@ -709,7 +716,7 @@ declare const api: appsync.IGraphqlApi;
 api.grant(role, appsync.IamResource.custom('types/Mutation/fields/updateExample'), 'appsync:GraphQL');
 ```
 
-### IamResource
+#### IamResource
 
 In order to use the `grant` functions, you need to use the class `IamResource`.
 
@@ -719,7 +726,7 @@ In order to use the `grant` functions, you need to use the class `IamResource`.
 
 - `IamResource.all()` permits ALL resources.
 
-### Generic Permissions
+#### Generic Permissions
 
 Alternatively, you can use more generic `grant` functions to accomplish the same usage.
 
@@ -740,7 +747,7 @@ api.grantMutation(role, 'updateExample');
 api.grant(role, appsync.IamResource.ofType('Mutation', 'updateExample'), 'appsync:GraphQL');
 ```
 
-## Pipeline Resolvers and AppSync Functions
+### Pipeline Resolvers and AppSync Functions
 
 AppSync Functions are local functions that perform certain operations onto a
 backend data source. Developers can compose operations (Functions) and execute
@@ -792,7 +799,7 @@ const pipelineResolver = new appsync.Resolver(this, 'pipeline', {
 });
 ```
 
-### JS Functions and Resolvers
+#### JS Functions and Resolvers
 
 JS Functions and resolvers are also supported. You can use a `.js` file within your CDK project, or specify your function code inline.
 
@@ -830,7 +837,7 @@ new appsync.Resolver(this, 'PipelineResolver', {
 
 Learn more about Pipeline Resolvers and AppSync Functions [here](https://docs.aws.amazon.com/appsync/latest/devguide/pipeline-resolvers.html).
 
-## Introspection
+### Introspection
 
 By default, AppSync allows you to use introspection queries.
 
@@ -845,7 +852,7 @@ const api = new appsync.GraphqlApi(this, 'api', {
 });
 ```
 
-## Query Depth Limits
+### Query Depth Limits
 
 By default, queries are able to process an unlimited amount of nested levels.
 Limiting queries to a specified amount of nested levels has potential implications for the performance and flexibility of your project.
@@ -858,7 +865,7 @@ const api = new appsync.GraphqlApi(this, 'api', {
 });
 ```
 
-## Resolver Count Limits
+### Resolver Count Limits
 
 You can control how many resolvers each query can process.
 By default, each query can process up to 10000 resolvers.
@@ -872,7 +879,7 @@ const api = new appsync.GraphqlApi(this, 'api', {
 });
 ```
 
-## Environment Variables
+### Environment Variables
 
 To use environment variables in resolvers, you can use the `environmentVariables` property and
 the `addEnvironmentVariable` method.
@@ -889,7 +896,7 @@ const api = new appsync.GraphqlApi(this, 'api', {
 api.addEnvironmentVariable('EnvKey2', 'non-empty-2');
 ```
 
-## Configure an EventBridge target that invokes an AppSync GraphQL API
+### Configure an EventBridge target that invokes an AppSync GraphQL API
 
 Configuring the target relies on the `graphQLEndpointArn` property.
 
@@ -911,4 +918,506 @@ rule.addTarget(new targets.AppSync(api, {
     message: 'hello world',
   }),
 }));
+```
+
+### Owner Contact
+
+You can set the owner contact information for an API resource.
+This field accepts any string input with a length of 0 - 256 characters.
+
+```ts
+const api = new appsync.GraphqlApi(this, 'OwnerContact', {
+    name: 'OwnerContact',
+    definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+    ownerContact: 'test-owner-contact',
+});
+```
+
+## Events
+
+### Example
+AWS AppSync Events lets you create secure and performant serverless WebSocket APIs that can broadcast real-time event data to millions of subscribers, without you having to manage connections or resource scaling.
+
+```ts
+const apiKeyProvider: appsync.AppSyncAuthProvider = {
+  authorizationType: appsync.AppSyncAuthorizationType.API_KEY,
+};
+
+const api = new appsync.EventApi(this, 'api', {
+  apiName: 'Api',
+  ownerContact: 'OwnerContact',
+  authorizationConfig: {
+    authProviders: [
+      apiKeyProvider,
+    ],
+    connectionAuthModeTypes: [
+      appsync.AppSyncAuthorizationType.API_KEY,
+    ],
+    defaultPublishAuthModeTypes: [
+      appsync.AppSyncAuthorizationType.API_KEY,
+    ],
+    defaultSubscribeAuthModeTypes: [
+      appsync.AppSyncAuthorizationType.API_KEY,
+    ],
+  },
+});
+
+api.addChannelNamespace('default');
+```
+
+### Authorization
+
+AWS AppSync Events offers the following authorization types to secure Event APIs: API keys, Lambda, IAM, OpenID Connect, and Amazon Cognito user pools.
+Each option provides a different method of security:
+
+- API Keys (`AppSyncAuthorizationType.API_KEY`)
+- Amazon Cognito User Pools (`AppSyncAuthorizationType.USER_POOL`)
+- OpenID Connect (`AppSyncAuthorizationType.OIDC`)
+- AWS Identity and Access Management (`AppSyncAuthorizationType.IAM`)
+- AWS Lambda (`AppSyncAuthorizationType.LAMBDA`)
+
+When you define your API, you configure the authorization mode to connect to your Event API WebSocket.
+You also configure the default authorization modes to use when publishing and subscribing to messages.
+If you don't specify any authorization providers, an API key will be created for you as the authorization mode for the API.
+
+For mor information, see [Configuring authorization and authentication to secure Event APIs](https://docs.aws.amazon.com/appsync/latest/eventapi/configure-event-api-auth.html).
+
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+declare const handler: lambda.Function;
+
+const iamProvider: appsync.AppSyncAuthProvider = {
+  authorizationType: appsync.AppSyncAuthorizationType.IAM,
+};
+
+const apiKeyProvider: appsync.AppSyncAuthProvider = {
+  authorizationType: appsync.AppSyncAuthorizationType.API_KEY,
+};
+
+const lambdaProvider: appsync.AppSyncAuthProvider = {
+  authorizationType: appsync.AppSyncAuthorizationType.LAMBDA,
+  lambdaAuthorizerConfig: {
+    handler,
+    resultsCacheTtl: Duration.minutes(6),
+    validationRegex: 'test',
+  },
+};
+
+const api = new appsync.EventApi(this, 'api', {
+  apiName: 'api',
+  authorizationConfig: {
+    // set auth providers
+    authProviders: [
+      iamProvider,
+      apiKeyProvider,
+      lambdaProvider,
+    ],
+    connectionAuthModeTypes: [
+      appsync.AppSyncAuthorizationType.IAM,  // IAM authorization to connect
+    ],
+    defaultPublishAuthModeTypes: [
+      appsync.AppSyncAuthorizationType.API_KEY,  // API key authorization to publish
+    ],
+    defaultSubscribeAuthModeTypes: [
+      appsync.AppSyncAuthorizationType.LAMBDA,  // Lambda authorization to subscribe
+    ],
+  }
+});
+
+api.addChannelNamespace('default');
+```
+
+If you don't specify any overrides for the `connectionAuthModeTypes`, `defaultPublishAuthModeTypes`, and `defaultSubscribeAuthModeTypes` parameters then all `authProviders` defined are included as default authorization mode types for connection, publish, and subscribe.
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+declare const handler: lambda.Function;
+
+const iamProvider: appsync.AppSyncAuthProvider = {
+  authorizationType: appsync.AppSyncAuthorizationType.IAM,
+};
+
+const apiKeyProvider: appsync.AppSyncAuthProvider = {
+  authorizationType: appsync.AppSyncAuthorizationType.API_KEY,
+};
+
+/* API with IAM and API Key providers.
+ * Connection, default publish and default subscribe
+ * can be done with either IAM and API Key.
+ */
+const api = new appsync.EventApi(this, 'api', {
+  apiName: 'api',
+  authorizationConfig: {
+    // set auth providers
+    authProviders: [
+      iamProvider,
+      apiKeyProvider,
+    ],
+  }
+});
+
+api.addChannelNamespace('default');
+```
+
+### Data Sources
+
+With AWS AppSync Events, you can configure data source integrations with Amazon DynamoDB, Amazon Aurora Serverless, Amazon EventBridge, Amazon Bedrock Runtime, AWS Lambda, Amazon OpenSearch Service, and HTTP endpoints. The Event API can be associated with the data source and you can use the data source as an integration in your channel namespace event handlers for `onPublish` and `onSubscribe` operations.
+
+Below are examples for how you add the various data sources to you Event API.
+
+#### Amazon DynamoDB
+
+```ts
+const api = new appsync.EventApi(this, 'EventApiDynamoDB', {
+  apiName: 'DynamoDBEventApi',
+});
+
+const table = new dynamodb.Table(this, 'table', {
+  tableName: 'event-messages',
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+});
+
+const dataSource = api.addDynamoDbDataSource('ddbsource', table);
+```
+
+#### Amazon Aurora Serverless
+
+```ts
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
+declare const vpc: ec2.Vpc;
+const databaseName = 'mydb';
+const cluster = new rds.DatabaseCluster(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_6 }),
+  writer: rds.ClusterInstance.serverlessV2('writer'),
+  vpc: vpc,
+  credentials: { username: 'clusteradmin' },
+  defaultDatabaseName: databaseName,
+  enableDataApi: true,
+});
+
+const secret = secretsmanager.Secret.fromSecretNameV2(this, 'Secret', 'db-secretName');
+
+const api = new appsync.EventApi(this, 'EventApiRds', {
+  apiName: 'RdsEventApi',
+});
+
+const dataSource = api.addRdsDataSource('rdsds', cluster, secret, databaseName);
+```
+
+#### Amazon EventBridge
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+
+const api = new appsync.EventApi(this, 'EventApiEventBridge', {
+  apiName: 'EventBridgeEventApi',
+});
+
+const eventBus = new events.EventBus(this, 'test-bus');
+
+const dataSource = api.addEventBridgeDataSource('eventbridgeds', eventBus);
+```
+
+#### AWS Lambda
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const lambdaDs: lambda.Function;
+
+const api = new appsync.EventApi(this, 'EventApiLambda', {
+  apiName: 'LambdaEventApi',
+});
+
+const dataSource = api.addLambdaDataSource('lambdads', lambdaDs);
+```
+
+#### Amazon OpenSearch Service
+
+```ts
+import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
+
+const domain = new opensearch.Domain(this, 'Domain', {
+  version: opensearch.EngineVersion.OPENSEARCH_2_17,
+  encryptionAtRest: {
+    enabled: true,
+  },
+  nodeToNodeEncryption: true,
+  enforceHttps: true,
+  capacity: {
+    multiAzWithStandbyEnabled: false,
+  },
+  ebs: {
+    enabled: true,
+    volumeSize: 10,
+  },
+});
+const api = new appsync.EventApi(this, 'EventApiOpenSearch', {
+  apiName: 'OpenSearchEventApi',
+});
+
+const dataSource = api.addOpenSearchDataSource('opensearchds', domain);
+```
+
+#### HTTP Endpoints
+
+```ts
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
+
+const api = new appsync.EventApi(this, 'EventApiHttp', {
+  apiName: 'HttpEventApi',
+});
+
+const randomApi = new apigw.RestApi(this, 'RandomApi');
+const randomRoute = randomApi.root.addResource('random');
+randomRoute.addMethod('GET', new apigw.MockIntegration({
+  integrationResponses: [{
+    statusCode: '200',
+    responseTemplates: {
+      'application/json': 'my-random-value',
+    },
+  }],
+  passthroughBehavior: apigw.PassthroughBehavior.NEVER,
+  requestTemplates: {
+    'application/json': '{ "statusCode": 200 }',
+  },
+}), {
+  methodResponses: [{ statusCode: '200' }],
+});
+
+const dataSource = api.addHttpDataSource('httpsource', `https://${randomApi.restApiId}.execute-api.${this.region}.amazonaws.com`);
+```
+
+### Custom Domain Names
+
+With AWS AppSync, you can use custom domain names to configure a single, memorable domain that works for your Event APIs.
+You can set custom domain by setting `domainName`. Also you can get custom HTTP/Realtime endpoint by `customHttpEndpoint`, `customRealtimeEndpoint`.
+
+For more information, see [Configuring custom domain names for Event APIs](https://docs.aws.amazon.com/appsync/latest/eventapi/event-api-custom-domains.html).
+
+
+```ts
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+import * as route53 from 'aws-cdk-lib/aws-route53';
+
+const myDomainName = 'api.example.com';
+const certificate = new acm.Certificate(this, 'cert', { domainName: myDomainName });
+
+const apiKeyProvider: appsync.AppSyncAuthProvider = {
+  authorizationType: appsync.AppSyncAuthorizationType.API_KEY,
+};
+
+const api = new appsync.EventApi(this, 'api', {
+  apiName: 'Api',
+  ownerContact: 'OwnerContact',
+  authorizationConfig: {
+    authProviders: [
+      apiKeyProvider,
+    ],
+    connectionAuthModeTypes: [
+      appsync.AppSyncAuthorizationType.API_KEY,
+    ],
+    defaultPublishAuthModeTypes: [
+      appsync.AppSyncAuthorizationType.API_KEY,
+    ],
+    defaultSubscribeAuthModeTypes: [
+      appsync.AppSyncAuthorizationType.API_KEY,
+    ],
+  },
+  // Custom Domain Settings
+  domainName: {
+    certificate,
+    domainName: myDomainName,
+  },
+});
+
+api.addChannelNamespace('default');
+
+// You can get custom HTTP/Realtime endpoint
+new CfnOutput(this, 'AWS AppSync Events HTTP endpoint', { value: api.customHttpEndpoint });
+new CfnOutput(this, 'AWS AppSync Events Realtime endpoint', { value: api.customRealtimeEndpoint });
+```
+
+### Log Group
+
+AppSync automatically create a log group with the name `/aws/appsync/apis/<api_id>` upon deployment with log data set to never expire.
+If you want to set a different expiration period, use the `logConfig.retention` property.
+
+Also you can choose the log level by setting the `logConfig.fieldLogLevel` property.
+
+For more information, see [Configuring CloudWatch Logs on Event APIs](https://docs.aws.amazon.com/appsync/latest/eventapi/event-api-monitoring-cw-logs.html).
+
+To obtain the Event API's log group as a `logs.ILogGroup` use the `logGroup` property of the
+`Api` construct.
+
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+const apiKeyProvider: appsync.AppSyncAuthProvider = {
+  authorizationType: appsync.AppSyncAuthorizationType.API_KEY,
+};
+
+const api = new appsync.EventApi(this, 'api', {
+  apiName: 'Api',
+  ownerContact: 'OwnerContact',
+  authorizationConfig: {
+    authProviders: [
+      apiKeyProvider,
+    ],
+    connectionAuthModeTypes: [
+      appsync.AppSyncAuthorizationType.API_KEY,
+    ],
+    defaultPublishAuthModeTypes: [
+      appsync.AppSyncAuthorizationType.API_KEY,
+    ],
+    defaultSubscribeAuthModeTypes: [
+      appsync.AppSyncAuthorizationType.API_KEY,
+    ],
+  },
+  logConfig: {
+    fieldLogLevel: appsync.AppSyncFieldLogLevel.INFO,
+    retention: logs.RetentionDays.ONE_WEEK,
+  },
+});
+
+api.addChannelNamespace('default');
+```
+
+### WAF Protection
+
+You can use AWS WAF to protect your AppSync API from common web exploits, such as SQL injection and cross-site scripting (XSS) attacks.
+These could affect API availability and performance, compromise security, or consume excessive resources.
+
+For more information, see [Using AWS WAF to protect AWS AppSync Event APIs](https://docs.aws.amazon.com/appsync/latest/eventapi/using-waf-protect-apis.html).
+
+```ts
+declare const api: appsync.EventApi;
+declare const webAcl: wafv2.CfnWebACL;
+
+// Associate waf with Event API
+new wafv2.CfnWebACLAssociation(this, 'WafAssociation', {
+  resourceArn: api.apiArn,
+  webAclArn: webAcl.attrArn,
+});
+```
+
+### Channel namespaces
+Channel namespaces define the channels that are available on your Event API, and the capabilities and behaviors of these channels.
+Channel namespaces provide a scalable approach to managing large numbers of channels.
+
+Instead of configuring each channel individually, developers can apply settings across an entire namespace.
+
+Channel namespace can optionally interact with data sources configured on the Event API by defining optional event handler code or using direct integrations with the data source where applicable.
+
+For more information, see [Understanding channel namespaces](https://docs.aws.amazon.com/appsync/latest/eventapi/channel-namespaces.html).
+
+```ts
+declare const api: appsync.EventApi;
+
+// create a channel namespace
+new appsync.ChannelNamespace(this, 'Namespace', {
+  api,
+});
+
+// You can also create a namespace through the addChannelNamespace method
+api.addChannelNamespace('AnotherNameSpace', {});
+```
+
+The API's publishing and subscribing authorization configuration is automatically applied to all namespaces.
+You can override this configuration at the namespace level. **Note**: the authorization type you select for a namespace must be defined as an authorization provider at the API level.
+
+```ts
+declare const api: appsync.EventApi;
+
+new appsync.ChannelNamespace(this, 'Namespace', {
+  api,
+  authorizationConfig: {
+    // Override publishing authorization to API Key
+    publishAuthModeTypes: [appsync.AppSyncAuthorizationType.API_KEY],
+    // Override subscribing authorization to Lambda
+    subscribeAuthModeTypes: [appsync.AppSyncAuthorizationType.LAMBDA],
+  },
+});
+```
+
+You can define event handlers on channel namespaces. Event handlers are functions that run on AWS AppSync's JavaScript runtime and enable you to run custom business logic.
+You can use an event handler to process published events or process and authorize subscribe requests.
+
+For more information, see [Channel namespace handlers and event processing](https://docs.aws.amazon.com/appsync/latest/eventapi/channel-namespace-handlers.html).
+
+```ts
+declare const api: appsync.EventApi;
+
+new appsync.ChannelNamespace(this, 'Namespace', {
+  api,
+  // set a handler from inline code
+  code: appsync.Code.fromInline('/* event handler code here.*/'),
+});
+
+new appsync.ChannelNamespace(this, 'Namespace', {
+  api,
+  // set a handler from an asset
+  code: appsync.Code.fromAsset('directory/function_code.js'),
+});
+```
+
+You can define an integration in your event handler for `onPublish` and/or `onSubscribe` operations. When defining integrations on your channel namespace, you write code in the event handler to submit requests to and process responses from your data source. For example, if you configure an integration with Amazon DynamoDB for `onPublish` operations, you can persist those events to DynamoDB using a `batchPut` operation in the `request` method, and then return the events as normal in the `response` method. For an integration with Amazon OpenSearch Service, you may use this for `onPublish` operations to enrich the events.
+
+When using the AWS Lambda data source integration, you can either invoke the Lambda function using the event handler code or you can directly invoke the Lambda function, bypassing the event handler code all together. When using direct invoke, you can choose to invoke the Lambda function synchronously or asynchronously by specifying the `invokeType` as `REQUEST_RESPONSE` or `EVENT` respectively.
+
+Below are examples using Amazon DynamoDB, Amazon EventBridge, and AWS Lambda. You can leverage any supported data source in the same way.
+
+#### Amazon DynamoDB & Amazon EventBridge
+
+```ts
+declare const api: appsync.EventApi;
+declare const ddbDataSource: appsync.AppSyncDynamoDbDataSource;
+declare const ebDataSource: appsync.AppSyncEventBridgeDataSource;
+
+// DynamoDB data source for publish handler
+api.addChannelNamespace('ddb-eb-ns', {
+  code: appsync.Code.fromInline('/* event handler code here.*/'),
+  publishHandlerConfig: {
+    dataSource: ddbDataSource,
+  },
+  subscribeHandlerConfig: {
+    dataSource: ebDataSource,
+  },
+});
+```
+
+#### AWS Lambda
+
+```ts
+declare const api: appsync.EventApi;
+declare const lambdaDataSource: appsync.AppSyncLambdaDataSource;
+
+// Lambda data source for publish handler
+api.addChannelNamespace('lambda-ns', {
+  code: appsync.Code.fromInline('/* event handler code here.*/'),
+  publishHandlerConfig: {
+    dataSource: lambdaDataSource,
+  },
+});
+
+// Direct Lambda data source for publish handler
+api.addChannelNamespace('lambda-direct-ns', {
+  publishHandlerConfig: {
+    dataSource: lambdaDataSource,
+    direct: true,
+  },
+});
+
+api.addChannelNamespace('lambda-direct-async-ns', {
+  publishHandlerConfig: {
+    dataSource: lambdaDataSource,
+    direct: true,
+    lambdaInvokeType: appsync.LambdaInvokeType.EVENT,
+  },
+});
 ```

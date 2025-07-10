@@ -1,0 +1,15 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "EmrServicePrincipalIntegTesting/DefaultTest": {
+      "stacks": [
+        "EmrServicePrincipalTestingStack"
+      ],
+      "regions": [
+        "cn-north-1"
+      ],
+      "assertionStack": "EmrServicePrincipalAssertionStack",
+      "assertionStackName": "EmrServicePrincipalAssertionStack"
+    }
+  }
+}

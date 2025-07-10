@@ -1,0 +1,14 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "aws-cdk-cluster-alb-controller-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster-alb-controller"
+      ],
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-cluster-alb-controller-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkclusteralbcontrollerintegDefaultTestDeployAssert5A4A7C6A"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

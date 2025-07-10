@@ -3,8 +3,8 @@
   "Accelerator8EB0B6B1": {
    "Type": "AWS::GlobalAccelerator::Accelerator",
    "Properties": {
-    "Name": "aws-cdk-globalaccelerator-integ",
-    "Enabled": true
+    "Enabled": true,
+    "Name": "aws-cdk-globalaccelerator-integ"
    }
   },
   "HostedZoneDB99F866": {
@@ -16,8 +16,6 @@
   "LocalGlobalAcceleratorAlias18B4A87A": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
-    "Name": "test-local.test.public.",
-    "Type": "A",
     "AliasTarget": {
      "DNSName": {
       "Fn::GetAtt": [
@@ -30,14 +28,14 @@
     "Comment": "Alias to the locally created Global Accelerator",
     "HostedZoneId": {
      "Ref": "HostedZoneDB99F866"
-    }
+    },
+    "Name": "test-local.test.public.",
+    "Type": "A"
    }
   },
   "ExistingGlobalAcceleratorAlias7ACF888C": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
-    "Name": "test-existing.test.public.",
-    "Type": "A",
     "AliasTarget": {
      "DNSName": "someexisting.awsglobalaccelerator.com",
      "HostedZoneId": "Z2BJ6XQ5FK7U4H"
@@ -45,7 +43,30 @@
     "Comment": "Alias to the an existing Global Accelerator",
     "HostedZoneId": {
      "Ref": "HostedZoneDB99F866"
-    }
+    },
+    "Name": "test-existing.test.public.",
+    "Type": "A"
+   }
+  },
+  "LocalGlobalAcceleratorAliasWithHealthCheckA9960D95": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "Accelerator8EB0B6B1",
+       "DnsName"
+      ]
+     },
+     "EvaluateTargetHealth": true,
+     "HostedZoneId": "Z2BJ6XQ5FK7U4H"
+    },
+    "Comment": "Alias to the locally created Global Accelerator with health check",
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "test-local-health.test.public.",
+    "Type": "A"
    }
   }
  },

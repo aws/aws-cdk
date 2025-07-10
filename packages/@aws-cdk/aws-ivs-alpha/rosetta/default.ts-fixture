@@ -2,6 +2,7 @@
 import { Duration, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ivs from '@aws-cdk/aws-ivs-alpha';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 
 class Fixture extends Stack {
   constructor(scope: Construct, id: string) {

@@ -13,8 +13,7 @@ class RedshiftEnv extends Stack {
     const vpc = new ec2.Vpc(this, 'VPC', { restrictDefaultSecurityGroup: false });
     const defaultRole = new iam.Role(this, 'IAM', {
       assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
-    },
-    );
+    });
 
     // Adding default role on cluster creation
     new redshift.Cluster(this, 'Cluster1', {
@@ -47,10 +46,22 @@ class RedshiftEnv extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  context: {
+    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+  },
+});
+const stack = new Stack(app, 'aws-cdk-redshift-cluster-database', {
+  env: {
+    account: '123456789012',
+    region: 'us-east-1',
+  },
+});
+
+new RedshiftEnv(stack, 'redshift-defaultiamrole-integ');
 
 new integ.IntegTest(app, 'DefaultIamRoleInteg', {
-  testCases: [new RedshiftEnv(app, 'redshift-defaultiamrole-integ')],
+  testCases: [stack],
 });
 
 app.synth();

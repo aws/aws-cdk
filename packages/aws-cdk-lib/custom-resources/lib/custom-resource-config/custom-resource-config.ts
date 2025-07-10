@@ -3,6 +3,7 @@ import * as cloudformation from '../../../aws-cloudformation';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import { Aspects, IAspect, RemovalPolicy } from '../../../core/lib';
+import { mutatingAspectPrio32333 } from '../../../core/lib/private/aspect-prio';
 
 /* This is duplicated in @aws-cdk/custom-resource-handlers/lib/custom-resources-framework/config.ts */
 export const CUSTOM_RESOURCE_PROVIDER = 'aws:cdk:is-custom-resource-handler-customResourceProvider';
@@ -31,8 +32,10 @@ export class CustomResourceConfig {
    *
    * This feature is currently experimental.
    */
-  public addLogRetentionLifetime(rentention: logs.RetentionDays) {
-    Aspects.of(this.scope).add(new CustomResourceLogRetention(rentention));
+  public addLogRetentionLifetime(retention: logs.RetentionDays) {
+    Aspects.of(this.scope).add(new CustomResourceLogRetention(retention), {
+      priority: mutatingAspectPrio32333(this.scope),
+    });
   }
 
   /**
@@ -41,7 +44,9 @@ export class CustomResourceConfig {
    * This feature is currently experimental.
    */
   public addRemovalPolicy(removalPolicy: RemovalPolicy) {
-    Aspects.of(this.scope).add(new CustomResourceRemovalPolicy(removalPolicy));
+    Aspects.of(this.scope).add(new CustomResourceRemovalPolicy(removalPolicy), {
+      priority: mutatingAspectPrio32333(this.scope),
+    });
   }
 
   /**
@@ -50,9 +55,10 @@ export class CustomResourceConfig {
    * This feature is currently experimental.
    */
   public addLambdaRuntime(lambdaRuntime: lambda.Runtime) {
-    Aspects.of(this.scope).add(new CustomResourceLambdaRuntime(lambdaRuntime));
+    Aspects.of(this.scope).add(new CustomResourceLambdaRuntime(lambdaRuntime), {
+      priority: mutatingAspectPrio32333(this.scope),
+    });
   }
-
 }
 
 /**

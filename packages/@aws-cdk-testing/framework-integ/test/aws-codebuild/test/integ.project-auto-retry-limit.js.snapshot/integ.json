@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "AutoRetryLimit/DefaultTest": {
+      "stacks": [
+        "codebuild-auto-retry-limit"
+      ],
+      "stackUpdateWorkflow": true,
+      "assertionStack": "AutoRetryLimit/DefaultTest/DeployAssert",
+      "assertionStackName": "AutoRetryLimitDefaultTestDeployAssertF296FC2B"
+    }
+  }
+}

@@ -18,14 +18,19 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 - [Amazon Cognito Construct Library](#amazon-cognito-construct-library)
   - [Table of Contents](#table-of-contents)
   - [User Pools](#user-pools)
+    - [User pool feature plans](#user-pool-feature-plans)
     - [Sign Up](#sign-up)
+      - [Code Verification](#code-verification)
+      - [Link Verification](#link-verification)
     - [Sign In](#sign-in)
+      - [Choice-based authentication](#choice-based-authentication-passwordless-sign-in--passkey-sign-in)
     - [Attributes](#attributes)
     - [Attribute verification](#attribute-verification)
     - [Security](#security)
       - [Multi-factor Authentication (MFA)](#multi-factor-authentication-mfa)
       - [Account Recovery Settings](#account-recovery-settings)
       - [Advanced Security Mode](#advanced-security-mode)
+      - [Threat Protection](#threat-protection)
     - [Emails](#emails)
     - [Device Tracking](#device-tracking)
     - [Lambda Triggers](#lambda-triggers)
@@ -36,6 +41,9 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Resource Servers](#resource-servers)
     - [Domains](#domains)
     - [Deletion protection](#deletion-protection)
+    - [Analytics Configuration](#analytics-configuration)
+      - [When specifying a Pinpoint application from the same account](#when-specifying-a-pinpoint-application-from-the-same-account)
+      - [When specifying a Pinpoint application from a different account](#when-specifying-a-pinpoint-application-from-a-different-account)
 
 ## User Pools
 
@@ -72,6 +80,20 @@ const role = new iam.Role(this, 'role', {
 });
 userPool.grant(role, 'cognito-idp:AdminCreateUser');
 ```
+
+### User pool feature plans
+
+Amazon Cognito has feature plans for user pools. Each plan has a set of features and a monthly cost per active user. Each feature plan unlocks access to more features than the one before it.
+Learn more about [feature plans here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-feature-plans.html).
+
+- *Lite* - a low-cost feature plan for user pools with lower numbers of monthly active users.
+- *Essentials* - all of the latest user pool authentication features.
+- *Plus* - includes everything in the Essentials plan and adds advanced security features that protect your users.
+
+The default feature plan is Essentials for newly create user pools.
+For the existing user pools, Lite plan is automatically set.
+
+Previously, some user pool features were included in [an advanced security features](#advanced-security-mode) pricing structure. The features that were included in this structure are now under either the Essentials or Plus plan.
 
 ### Sign Up
 
@@ -191,6 +213,84 @@ new cognito.UserPool(this, 'myuserpool', {
 A user pool can optionally ignore case when evaluating sign-ins. When `signInCaseSensitive` is false, Cognito will not
 check the capitalization of the alias when signing in. Default is true.
 
+#### Choice-based authentication: passwordless sign-in / passkey sign-in
+
+User pools can be configured to allow the following authentication methods in choice-based authentication:
+- Passwordless sign-in with email message one-time password
+- Passwordless sign-in with SMS message one-time password
+- Passkey (WebAuthn) sign-in
+
+To use choice-based authentication, [User pool feature plan](#user-pool-feature-plans) should be Essentials or higher.
+
+For details of authentication methods and client implementation, see [Manage authentication methods in AWS SDKs](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flows-selection-sdk.html).
+
+The following code configures a user pool with choice-based authentication enabled:
+
+```ts
+const userPool = new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: {
+      password: true, // password authentication must be enabled
+      emailOtp: true, // enables email message one-time password
+      smsOtp: true,   // enables SMS message one-time password
+      passkey: true,  // enables passkey sign-in
+    },
+  },
+});
+
+// You should also configure the user pool client with USER_AUTH authentication flow allowed
+userPool.addClient('myclient', {
+  authFlows: { user: true },
+});
+```
+
+⚠️ Enabling SMS message one-time password requires the AWS account be activated to SMS message sending.
+Learn more about [SMS message settings for Amazon Cognito user pools](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-sms-settings.html).
+
+When enabling passkey sign-in, you should specify the authentication domain used as the relying party ID.
+Learn more about [passkey sign-in of user pools](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow-methods.html#amazon-cognito-user-pools-authentication-flow-methods-passkey) and [Web Authentication API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API).
+
+```ts
+// Use the hosted Amazon Cognito domain as the relying party ID
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true, passkey: true },
+  },
+  passkeyRelyingPartyId: 'myclientname.auth.region-name.amazoncognito.com',
+});
+
+// Use the custom domain as the relying party ID
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true, passkey: true },
+  },
+  passkeyRelyingPartyId: 'auth.example.com',
+});
+```
+
+You can configure user verification to be preferred (default) or required. When you set user verification to preferred, users can set up authenticators that don't have the user verification capability, and registration and authentication operations can succeed without user verification. To mandate user verification in passkey registration and authentication, specify `passkeyUserVerification` to `PasskeyUserVerification.REQUIRED`.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true, passkey: true },
+  },
+  passkeyRelyingPartyId: 'auth.example.com',
+  passkeyUserVerification: cognito.PasskeyUserVerification.REQUIRED,
+});
+```
+
+To disable choice-based authentication explicitly, specify `password` only.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true },
+  },
+  featurePlan: cognito.FeaturePlan.LITE,
+});
+```
+
 ### Attributes
 
 Attributes represent the various properties of each user that's collected and stored in the user pool. Cognito
@@ -306,6 +406,9 @@ configure an MFA token and use it for sign in. It also allows for the users to u
 [time-based one time password
 (TOTP)](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-totp.html).
 
+If you want to enable email-based MFA, set `email` property to the Amazon SES email-sending configuration and set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.
+For more information, see [SMS and email message MFA](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-sms-email-message.html).
+
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
   // ...
@@ -313,6 +416,7 @@ new cognito.UserPool(this, 'myuserpool', {
   mfaSecondFactor: {
     sms: true,
     otp: true,
+    email: false, // email-based MFA
   },
 });
 ```
@@ -323,6 +427,10 @@ character sets that they must contain.
 Further to this, it can also be configured with the validity of the auto-generated temporary password. A temporary
 password is generated by the user pool either when an admin signs up a user or when a password reset is requested.
 The validity of this password dictates how long to give the user to use this password before expiring it.
+
+You can also set a policy for password reuse by setting the `passwordHistorySize` property.
+You can prevent a user from resetting their password to a new password that matches their current password or any of up to 23 additional previous passwords, for a maximum total of 24.
+The `passwordHistorySize` property can not be set when `featurePlan` is `FeaturePlan.LITE`.
 
 The following code snippet configures these properties -
 
@@ -359,6 +467,8 @@ A user will not be allowed to reset their password via phone if they are also us
 
 #### Advanced Security Mode
 
+⚠️ Advanced Security Mode is deprecated in favor of [Threat Protection](#threat-protection).
+
 User pools can be configured to use Advanced security. You can turn the user pool advanced security features on, and customize the actions that are taken in response to different risks. Or you can use audit mode to gather metrics on detected risks without taking action. In audit mode, the advanced security features publish metrics to Amazon CloudWatch. See the [documentation on Advanced security](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security.html) to learn more.
 
 ```ts
@@ -367,6 +477,16 @@ new cognito.UserPool(this, 'myuserpool', {
   advancedSecurityMode: cognito.AdvancedSecurityMode.ENFORCED,
 });
 ```
+
+### Threat Protection
+
+This feature is only available if your Feature Plan is set to PLUS. 
+
+Threat Protection can be set to configure enforcement levels and automatic responses for users in password-based and custom-challenge authentication flows.
+For configuration, there are 2 options for standard authentication and custom authentication.
+These are represented with properties `standardThreatProtectionMode` and `customThreatProtectionMode`.
+See the [documentation on Threat Protection](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-threat-protection.html)
+
 
 ### Emails
 
@@ -493,7 +613,8 @@ userpool.addTrigger(cognito.UserPoolOperation.USER_MIGRATION, new lambda.Functio
 }));
 ```
 
-Additionally, only the pre token generation Lambda trigger supports trigger events with lambda version V2.0:
+Additionally, only the pre token generation Lambda trigger supports trigger events with lambda version V2.0 or V3.0.
+For details, see [Pre Token Generation Lambda Trigger](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html).
 
 ```ts
 declare const userpool: cognito.UserPool;
@@ -693,6 +814,9 @@ Custom authentication protocols can be configured by setting the `custom` proper
 functions for the corresponding user pool [triggers](#lambda-triggers). Learn more at [Custom Authentication
 Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow.html#amazon-cognito-user-pools-custom-authentication-flow).
 
+Choice-based authentication can be configured by setting the `user` property under `authFlow`. This enables the
+`USER_AUTH` authentication flow. Learn more at [Choice-based authentication](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flows-selection-sdk.html#authentication-flows-selection-choice).
+
 In addition to these authentication mechanisms, Cognito user pools also support using OAuth 2.0 framework for
 authenticating users. User pool clients can be configured with OAuth 2.0 authorization flows and scopes. Learn more
 about the [OAuth 2.0 authorization framework](https://tools.ietf.org/html/rfc6749) and [Cognito user pool's
@@ -824,7 +948,7 @@ const pool = new cognito.UserPool(this, 'Pool');
 
 const clientWriteAttributes = (new cognito.ClientAttributes())
   .withStandardAttributes({fullname: true, email: true})
-  .withCustomAttributes('favouritePizza', 'favouriteBeverage');
+  .withCustomAttributes('favoritePizza', 'favoriteBeverage');
 
 const clientReadAttributes = clientWriteAttributes
   .withStandardAttributes({emailVerified: true})
@@ -921,7 +1045,6 @@ const fullAccessClient = pool.addClient('full-access-client', {
 });
 ```
 
-
 ### Domains
 
 After setting up an [app client](#app-clients), the address for the user pool's sign-up and sign-in webpages can be
@@ -955,6 +1078,29 @@ pool.addDomain('CustomDomain', {
 Read more about [Using the Amazon Cognito
 Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain-prefix.html) and [Using Your Own
 Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html).
+
+
+You can use the [managed login](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-managed-login.html) page provided by Amazon Cognito to sign in users. The managed login page has two versions: a classic version and a new version. You can switch between the two versions by using the `managedLoginVersion` property.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+
+// Use the new managed login page
+pool.addDomain('CognitoDomainWithBlandingDesignManagedLogin', {
+  cognitoDomain: {
+    domainPrefix: 'blanding-design-ui',
+  },
+  managedLoginVersion: cognito.ManagedLoginVersion.NEWER_MANAGED_LOGIN,
+});
+
+// Use the classic hosted UI
+pool.addDomain('DomainWithClassicHostedUi', {
+  cognitoDomain: {
+    domainPrefix: 'classic-hosted-ui',
+  },
+  managedLoginVersion: cognito.ManagedLoginVersion.CLASSIC_HOSTED_UI,
+});
+```
 
 The `signInUrl()` methods returns the fully qualified URL to the login page for the user pool. This page comes from the
 hosted UI configured with Cognito. Learn more at [Hosted UI with the Amazon Cognito
@@ -990,6 +1136,21 @@ Existing domains can be imported into CDK apps using `UserPoolDomain.fromDomainN
 const myUserPoolDomain = cognito.UserPoolDomain.fromDomainName(this, 'my-user-pool-domain', 'domain-name');
 ```
 
+To get the domain name of the CloudFront distribution associated with the user pool domain, use `cloudFrontEndpoint` method.
+
+```ts
+const userpool = new cognito.UserPool(this, 'UserPool');
+const domain = userpool.addDomain('Domain', {
+  cognitoDomain: {
+    domainPrefix: 'my-awesome-app',
+  },
+});
+
+new CfnOutput(this, 'CloudFrontEndpoint', {
+  value: domain.cloudFrontEndpoint,
+});
+```
+
 ### Deletion protection
 
 Deletion protection can be enabled on a user pool to prevent accidental deletion:
@@ -1002,3 +1163,109 @@ const userpool = new cognito.UserPool(this, 'UserPool', {
 ```
 
 By default deletion protection is disabled.
+
+### `email_verified` Attribute Mapping
+
+If you use a third-party identity provider, you can specify the `email_verified` attribute in attributeMapping.
+
+```typescript
+const userpool = new cognito.UserPool(this, 'Pool');
+
+new cognito.UserPoolIdentityProviderGoogle(this, 'google', {
+  userPool: userpool,
+  clientId: 'google-client-id',
+  attributeMapping: {
+    email: cognito.ProviderAttribute.GOOGLE_EMAIL,
+    emailVerified: cognito.ProviderAttribute.GOOGLE_EMAIL_VERIFIED, // you can mapping the `email_verified` attribute.
+  },
+});
+```
+
+### User Pool Group
+
+Support for groups in Amazon Cognito user pools enables you to create and manage groups and add users to groups.
+Use groups to create collections of users to manage their permissions or to represent different types of users.
+
+You can assign an AWS Identity and Access Management (IAM) role to a group to define the permissions for members of a group.
+
+For more information, see [Adding groups to a user pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-user-groups.html).
+
+```ts
+declare const userPool: cognito.UserPool;
+declare const role: iam.Role;
+
+new cognito.UserPoolGroup(this, 'UserPoolGroup', {
+  userPool,
+  groupName: 'my-group-name',
+  precedence: 1,
+  role,  // assign IAM Role
+});
+
+// You can also add a group by using addGroup method.
+userPool.addGroup('AnotherUserPoolGroup', {
+  groupName: 'another-group-name'
+});
+```
+
+### Analytics Configuration
+
+User pool clients can be configured with Amazon Pinpoint analytics to collect user activity metrics. This integration enables you to track user engagement and campaign effectiveness.
+
+📝 Note: Amazon Pinpoint isn't available in all AWS Regions. For a list of available Regions, see [Amazon Cognito and Amazon Pinpoint Region availability](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-pinpoint-integration.html#cognito-user-pools-find-region-mappings).
+
+The following example shows how to configure analytics for a user pool client:
+
+#### When specifying a Pinpoint application from the same account
+
+If you specify the `application` property, do not specify the `applicationId`, `externalId`, or `roleArn` properties.
+
+```ts
+import * as pinpoint from 'aws-cdk-lib/aws-pinpoint';
+
+declare const userPool: cognito.UserPool;
+declare const pinpointApp: pinpoint.CfnApp;
+declare const pinpointRole: iam.Role;
+
+new cognito.UserPoolClient(this, 'Client', {
+  userPool,
+  analytics: {
+    // Your Pinpoint project
+    application: pinpointApp,
+
+    // Whether to include user data in analytics events
+    shareUserData: true,
+  },
+});
+```
+
+#### When specifying a Pinpoint application from a different account
+
+If you specify the `applicationId`, `externalId`, or `roleArn` properties, do not specify the `application` property.  
+(In this case, the `applicationId`, `externalId`, and `roleArn` must all be specified.)
+
+Those three attributes are for the cases when Cognito user pool need to be connected to Pinpoint app in other account.
+
+```ts
+import * as pinpoint from 'aws-cdk-lib/aws-pinpoint';
+
+declare const userPool: cognito.UserPool;
+declare const pinpointApp: pinpoint.CfnApp;
+declare const pinpointRole: iam.Role;
+
+new cognito.UserPoolClient(this, 'Client', {
+  userPool,
+  analytics: {
+    // Your Pinpoint project ID
+    applicationId: pinpointApp.ref,
+
+    // External ID for the IAM role
+    externalId: "sample-external-id",
+
+    // IAM role that Cognito can assume to publish to Pinpoint
+    role: pinpointRole,
+
+    // Whether to include user data in analytics events
+    shareUserData: true,
+  },
+});
+```

@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { DataProtectionPolicy } from './data-protection-policy';
+import { FieldIndexPolicy } from './field-index-policy';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -9,7 +10,9 @@ import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Annotations, Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { Annotations, Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface ILogGroup extends iam.IResourceWithPolicy {
   /**
@@ -84,6 +87,32 @@ export interface ILogGroup extends iam.IResourceWithPolicy {
    * Public method to get the physical name of this log group
    */
   logGroupPhysicalName(): string;
+
+  /**
+   * Return the given named metric for this Log Group
+   *
+   * @param metricName The name of the metric
+   * @param props Properties for the metric
+   */
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of log events uploaded to CloudWatch Logs.
+   * When used with the LogGroupName dimension, this is the number of
+   * log events uploaded to the log group.
+   *
+   * @param props Properties for the Cloudwatch metric
+   */
+  metricIncomingLogEvents(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The volume of log events in uncompressed bytes uploaded to CloudWatch Logs.
+   * When used with the LogGroupName dimension, this is the volume of log events
+   * in uncompressed bytes uploaded to the log group.
+   *
+   * @param props Properties for the Cloudwatch metric
+   */
+  metricIncomingBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -244,6 +273,78 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
     }
 
     return principal;
+  }
+
+  /**
+   * Creates a CloudWatch metric for the number of incoming log events to this log group.
+   *
+   * @param props - Optional. Configuration options for the metric.
+   * @returns A CloudWatch Metric object representing the IncomingLogEvents metric.
+   *
+   * This method allows you to monitor the rate at which log events are being ingested
+   * into the log group. It's useful for understanding the volume of logging activity
+   * and can help in capacity planning or detecting unusual spikes in logging.
+   *
+   * Example usage:
+   * ```
+   * const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+   * logGroup.metricIncomingLogEvents().createAlarm(stack, 'IncomingEventsPerInstanceAlarm', {
+   * threshold: 1,
+   * evaluationPeriods: 1,
+   * });
+   * ```
+   */
+  public metricIncomingLogEvents(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('IncomingLogs', props);
+  }
+
+  /**
+   * Creates a CloudWatch metric for the volume of incoming log data in bytes to this log group.
+   *
+   * @param props - Optional. Configuration options for the metric.
+   * @returns A CloudWatch Metric object representing the IncomingBytes metric.
+   *
+   * This method allows you to monitor the volume of data being ingested into the log group.
+   * It's useful for understanding the size of your logs, which can impact storage costs
+   * and help in identifying unexpectedly large log entries.
+   *
+   * Example usage:
+   * ```
+   * const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+   * logGroup.metricIncomingBytes().createAlarm(stack, 'IncomingBytesPerInstanceAlarm', {
+   *   threshold: 1,
+   *   evaluationPeriods: 1,
+   * });
+   * ```
+   */
+  public metricIncomingBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('IncomingBytes', props);
+  }
+
+  /**
+   * Creates a CloudWatch metric for this log group.
+   *
+   * @param metricName - The name of the metric to create.
+   * @param props - Optional. Additional properties to configure the metric.
+   * @returns A CloudWatch Metric object representing the specified metric for this log group.
+   *
+   * This method creates a CloudWatch Metric object with predefined settings for the log group.
+   * It sets the namespace to 'AWS/Logs' and the statistic to 'Sum' by default.
+   *
+   * The created metric is automatically associated with this log group using the `attachTo` method.
+   *
+   * Common metric names for log groups include:
+   * - 'IncomingBytes': The volume of log data in bytes ingested into the log group.
+   * - 'IncomingLogEvents': The number of log events ingested into the log group.
+   * ```
+   */
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/Logs',
+      metricName,
+      statistic: 'Sum',
+      ...props,
+    }).attachTo(this);
   }
 }
 
@@ -408,6 +509,13 @@ export interface LogGroupProps {
   readonly dataProtectionPolicy?: DataProtectionPolicy;
 
   /**
+   * Field Index Policies for this log group.
+   *
+   * @default - no field index policies for this log group.
+   */
+  readonly fieldIndexPolicies?: FieldIndexPolicy[];
+
+  /**
    * How long, in days, the log contents will be retained.
    *
    * To retain all logs, set this value to RetentionDays.INFINITE.
@@ -458,7 +566,13 @@ export enum Distribution {
 /**
  * Define a CloudWatch Log Group
  */
+@propertyInjectable
 export class LogGroup extends LogGroupBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-log.LogGroup';
+
   /**
    * Import an existing LogGroup given its ARN
    */
@@ -508,13 +622,15 @@ export class LogGroup extends LogGroupBase {
     super(scope, id, {
       physicalName: props.logGroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     let retentionInDays = props.retention;
     if (retentionInDays === undefined) { retentionInDays = RetentionDays.TWO_YEARS; }
     if (retentionInDays === Infinity || retentionInDays === RetentionDays.INFINITE) { retentionInDays = undefined; }
 
     if (retentionInDays !== undefined && !Token.isUnresolved(retentionInDays) && retentionInDays <= 0) {
-      throw new Error(`retentionInDays must be positive, got ${retentionInDays}`);
+      throw new ValidationError(`retentionInDays must be positive, got ${retentionInDays}`, this);
     }
 
     let logGroupClass = props.logGroupClass;
@@ -528,12 +644,27 @@ export class LogGroup extends LogGroupBase {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-logs:propertyNotSupported', `The LogGroupClass property is not supported in the following regions: ${logGroupClassUnsupportedRegions}`);
     }
 
+    const dataProtectionPolicy = props.dataProtectionPolicy?._bind(this);
+    const fieldIndexPolicies: any[] = [];
+    if (props.fieldIndexPolicies) {
+      props.fieldIndexPolicies.forEach((fieldIndexPolicy) => {
+        fieldIndexPolicies.push(fieldIndexPolicy._bind(this));
+      });
+    }
+
     const resource = new CfnLogGroup(this, 'Resource', {
       kmsKeyId: props.encryptionKey?.keyArn,
       logGroupClass,
       logGroupName: this.physicalName,
       retentionInDays,
-      dataProtectionPolicy: props.dataProtectionPolicy?._bind(this),
+      dataProtectionPolicy: dataProtectionPolicy ? {
+        Name: dataProtectionPolicy?.name,
+        Description: dataProtectionPolicy?.description,
+        Version: dataProtectionPolicy?.version,
+        Statement: dataProtectionPolicy?.statement,
+        Configuration: dataProtectionPolicy?.configuration,
+      } : undefined,
+      ...(props.fieldIndexPolicies && { fieldIndexPolicies: fieldIndexPolicies }),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);

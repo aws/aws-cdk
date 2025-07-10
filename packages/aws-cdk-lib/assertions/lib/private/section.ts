@@ -38,7 +38,6 @@ export function matchSection(section: any, props: any): MatchSuccess | MatchFail
 function eachEntryInSection(
   section: any,
   cb: (logicalId: string, entry: { [key: string]: any }) => void): void {
-
   for (const logicalId of Object.keys(section ?? {})) {
     const resource: { [key: string]: any } = section[logicalId];
     cb(logicalId, resource);

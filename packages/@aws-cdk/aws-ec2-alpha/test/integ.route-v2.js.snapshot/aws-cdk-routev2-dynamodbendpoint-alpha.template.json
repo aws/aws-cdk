@@ -6,10 +6,16 @@
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-routev2-dynamodbendpoint-alpha/dynamodb"
+     }
+    ]
    }
   },
-  "dynamodbAmazonIpv6698EF571": {
+  "dynamodbAmazonIpv68E00810B": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -35,7 +41,6 @@
   "dynamodbSubnet81957A26": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-east-1a",
     "CidrBlock": "10.0.0.0/24",
     "Ipv6CidrBlock": {
@@ -49,6 +54,12 @@
       }
      ]
     },
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "dynamodbC0A56799",
@@ -57,7 +68,7 @@
     }
    },
    "DependsOn": [
-    "dynamodbAmazonIpv6698EF571"
+    "dynamodbAmazonIpv68E00810B"
    ]
   },
   "dynamodbSubnetRouteTableAssociationC38B30F3": {
@@ -74,7 +85,7 @@
     }
    },
    "DependsOn": [
-    "dynamodbAmazonIpv6698EF571"
+    "dynamodbAmazonIpv68E00810B"
    ]
   },
   "testDynamoEndpoint03D5BDE5": {

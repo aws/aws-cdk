@@ -1,7 +1,7 @@
 {
-  "version": "36.0.5",
+  "version": "38.0.1",
   "files": {
-    "b6d22af12502fb22f7fee80b3981c8767eb09e8e9f4ab927a380544cdcdc384b": {
+    "582882a43e46336bf196e3d6ce641f77b803ad0beb1c85f9944a32aca0947480": {
       "source": {
         "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b6d22af12502fb22f7fee80b3981c8767eb09e8e9f4ab927a380544cdcdc384b.json",
+          "objectKey": "582882a43e46336bf196e3d6ce641f77b803ad0beb1c85f9944a32aca0947480.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

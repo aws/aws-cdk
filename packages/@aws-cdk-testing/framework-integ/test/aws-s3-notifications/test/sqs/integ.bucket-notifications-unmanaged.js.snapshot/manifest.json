@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "integ-sqs-bucket-notifications.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d9e7a28b7fa100ee39e206cf39be455dac56225ef0dc87d20addc13f4f098af5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5910a8d5861f376ba3b2a8024fb70e7369d36dfd10f33b55e344581c3af7bd59.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,39 @@
         "integ-sqs-bucket-notifications.assets"
       ],
       "metadata": {
+        "/integ-sqs-bucket-notifications/Bucket1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "autoDeleteObjects": true,
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/integ-sqs-bucket-notifications/Bucket1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Bucket12520700A"
           }
         ],
+        "/integ-sqs-bucket-notifications/Bucket1/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/integ-sqs-bucket-notifications/Bucket1/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Bucket1Policy65042C0B"
+          }
+        ],
+        "/integ-sqs-bucket-notifications/Bucket1/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-sqs-bucket-notifications/Bucket1/AutoDeleteObjectsCustomResource/Default": [
@@ -56,6 +79,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-sqs-bucket-notifications/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/integ-sqs-bucket-notifications/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
@@ -82,10 +111,26 @@
             "data": "Construct2IntegUnmanagedBucket2Notifications950BFEEC"
           }
         ],
+        "/integ-sqs-bucket-notifications/IntegQueue1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-sqs-bucket-notifications/IntegQueue1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegQueue16691AAFF"
+          }
+        ],
+        "/integ-sqs-bucket-notifications/IntegQueue1/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "queues": [
+                "*"
+              ]
+            }
           }
         ],
         "/integ-sqs-bucket-notifications/IntegQueue1/Policy/Resource": [
@@ -94,10 +139,26 @@
             "data": "IntegQueue1Policy53174001"
           }
         ],
+        "/integ-sqs-bucket-notifications/IntegQueue2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-sqs-bucket-notifications/IntegQueue2/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegQueue2DA51259C"
+          }
+        ],
+        "/integ-sqs-bucket-notifications/IntegQueue2/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "queues": [
+                "*"
+              ]
+            }
           }
         ],
         "/integ-sqs-bucket-notifications/IntegQueue2/Policy/Resource": [
@@ -106,10 +167,123 @@
             "data": "IntegQueue2Policy109EC112"
           }
         ],
+        "/integ-sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/integ-sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+          }
+        ],
+        "/integ-sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/integ-sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource": [
@@ -174,7 +348,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/db5278202b4c96ee74057698a8732a2165526d34299bff880d5b279c81760209.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/81dbd7e99b4854f961cc307ab63f68df69679c1aba4eeb4603e4316d5c2b1b58.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -191,6 +365,12 @@
         "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E.assets"
       ],
       "metadata": {
+        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue9dee3c309fd35c8e9de6a283d5a45696/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue9dee3c309fd35c8e9de6a283d5a45696/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -215,10 +395,22 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue3dbc33339559b3b0ad9846209312d812/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue3dbc33339559b3b0ad9846209312d812/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallSQSpurgeQueue3dbc33339559b3b0ad9846209312d812"
+          }
+        ],
+        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObjectba38728e762569a855acb7c5fc7c4adf/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObjectba38728e762569a855acb7c5fc7c4adf/Default/Default": [
@@ -227,10 +419,30 @@
             "data": "AwsApiCallS3putObjectba38728e762569a855acb7c5fc7c4adf"
           }
         ],
+        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObject6e450f6e95fe6d25da5bf5102c1ebad4/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObject6e450f6e95fe6d25da5bf5102c1ebad4/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallS3putObject6e450f6e95fe6d25da5bf5102c1ebad4"
+          }
+        ],
+        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a/Default/Default": [
@@ -243,6 +455,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a"
+          }
+        ],
+        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessagea37e53065313eefe09c34224f0e93eb6/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessagea37e53065313eefe09c34224f0e93eb6/Default/Default": [
@@ -278,5 +504,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

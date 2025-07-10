@@ -1,12 +1,15 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "testCases": {
     "LambdaEventSourceS3OnFailureDestinationInteg/DefaultTest": {
       "stacks": [
-        "lambda-event-source-s3ofd"
+        "lambda-event-source-s3ofd",
+        "kinesis-with-s3ofd",
+        "dynamo-with-s3ofd"
       ],
       "assertionStack": "LambdaEventSourceS3OnFailureDestinationInteg/DefaultTest/DeployAssert",
       "assertionStackName": "LambdaEventSourceS3OnFailureDestinationIntegDefaultTestDeployAssert62366951"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

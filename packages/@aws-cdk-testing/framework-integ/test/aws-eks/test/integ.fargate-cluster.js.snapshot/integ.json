@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "45.0.0",
   "testCases": {
     "aws-cdk-eks-fargate-cluster/DefaultTest": {
       "stacks": [
@@ -10,5 +10,6 @@
       "assertionStack": "aws-cdk-eks-fargate-cluster/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksfargateclusterDefaultTestDeployAssert7DCC5E4C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

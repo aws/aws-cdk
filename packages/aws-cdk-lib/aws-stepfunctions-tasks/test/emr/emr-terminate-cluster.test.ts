@@ -39,6 +39,36 @@ test('Terminate cluster with static ClusterId', () => {
   });
 });
 
+test('Terminate cluster with static ClusterId - using JSONata', () => {
+  // WHEN
+  const task = tasks.EmrTerminateCluster.jsonata(stack, 'Task', {
+    clusterId: 'ClusterId',
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:terminateCluster.sync',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      ClusterId: 'ClusterId',
+    },
+  });
+});
+
 test('task policies are generated', () => {
   // WHEN
   const task = new tasks.EmrTerminateCluster(stack, 'Task', {

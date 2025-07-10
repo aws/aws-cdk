@@ -6,10 +6,16 @@
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-routev2-networkif-alpha/nif"
+     }
+    ]
    }
   },
-  "nifAmazonIpv6CF4BF46B": {
+  "nifAmazonIpv675574C2F": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -35,7 +41,6 @@
   "nifSubnetAEB60456": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-east-1a",
     "CidrBlock": "10.0.0.0/24",
     "Ipv6CidrBlock": {
@@ -49,6 +54,12 @@
       }
      ]
     },
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "nif44200315",
@@ -57,7 +68,7 @@
     }
    },
    "DependsOn": [
-    "nifAmazonIpv6CF4BF46B"
+    "nifAmazonIpv675574C2F"
    ]
   },
   "nifSubnetRouteTableAssociationE4036B9F": {
@@ -74,7 +85,7 @@
     }
    },
    "DependsOn": [
-    "nifAmazonIpv6CF4BF46B"
+    "nifAmazonIpv675574C2F"
    ]
   }
  },

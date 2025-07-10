@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { UserPoolIdentityProviderProps } from './base';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
  * Properties to initialize UserPoolAmazonIdentityProvider
@@ -29,11 +31,16 @@ export interface UserPoolIdentityProviderAmazonProps extends UserPoolIdentityPro
  * Represents an identity provider that integrates with Login with Amazon
  * @resource AWS::Cognito::UserPoolIdentityProvider
  */
+@propertyInjectable
 export class UserPoolIdentityProviderAmazon extends UserPoolIdentityProviderBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito.UserPoolIdentityProviderAmazon';
   public readonly providerName: string;
 
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderAmazonProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const scopes = props.scopes ?? ['profile'];
 

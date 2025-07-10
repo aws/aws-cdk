@@ -22,21 +22,25 @@ import { FlagInfo, FlagType } from './private/flag-modeling';
 //
 // There are three types of flags: ApiDefault, BugFix, and VisibleContext flags.
 //
-// - ApiDefault flags: change the behavior or defaults of the construct library. When
-//   set, the infrastructure that is generated may be different but there is
-//   a way to get the old infrastructure setup by using the API in a different way.
+// - ApiDefault flags: change the behavior or defaults of the construct library.
+//   It is still possible to achieve the old behavior via the official API
+//   but changes are necessary (e.g. passing a boolean flag).
 //
-// - BugFix flags: the old infra we used to generate is no longer recommended,
-//   and there is no way to achieve that result anymore except by making sure the
-//   flag is unset, or set to `false`. Mostly used for infra-impacting bugfixes or
-//   enhanced security defaults.
+//   Implications for future Major Version:
+//   - The recommended value will become the default value.
+//   - Flags of this type will be removed (code changes will become mandatory).
+//
+// - BugFix flags: the old infra we used to generate is no longer recommended.
+//   The old behavior cannot be achieved anymore using the official API (only
+//   by making sure the feature flag is unset). Mostly used for infra-impacting
+//   bugfixes or enhanced security defaults.
+//
+//   Implications for future Major Version:
+//   - The recommended value will become the default value.
+//   - Flag will never be removed (no other way to achieve legacy behavior).
 //
 // - VisibleContext flags: not really a feature flag, but configurable context which is
 //   advertised by putting the context in the `cdk.json` file of new projects.
-//
-// In future major versions, the "newProjectValues" will become the version
-// default for both DefaultBehavior and BugFix flags, and DefaultBehavior flags
-// will be removed (i.e., their new behavior will become the *only* behavior).
 //
 // See https://github.com/aws/aws-cdk-rfcs/blob/master/text/0055-feature-flags.md
 // --------------------------------------------------------------------------------
@@ -87,6 +91,7 @@ export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDef
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
 export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
+export const KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL = '@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal';
 export const EFS_DENY_ANONYMOUS_ACCESS = '@aws-cdk/aws-efs:denyAnonymousAccess';
 export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID = '@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId';
 export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
@@ -108,6 +113,36 @@ export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-reso
 export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
 export const EXPLICIT_STACK_TAGS = '@aws-cdk/core:explicitStackTags';
+export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS = '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions';
+export const DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA = '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica';
+export const EC2_SUM_TIMEOUT_ENABLED = '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled';
+export const APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION = '@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission';
+export const USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY = '@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId';
+export const CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS = '@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics';
+export const LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES = '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages';
+export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy';
+export const STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2 = '@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2';
+export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT = '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault';
+export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
+export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
+export const Enable_IMDS_Blocking_Deprecated_Feature = '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature';
+export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlocking';
+export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault';
+export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections';
+export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditionalMetadataCollection';
+export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy';
+export const SET_UNIQUE_REPLICATION_ROLE_NAME = '@aws-cdk/aws-s3:setUniqueReplicationRoleName';
+export const PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceStageRoleTrustScope';
+export const EVENTBUS_POLICY_SID_REQUIRED = '@aws-cdk/aws-events:requireEventBusPolicySid';
+export const ASPECT_PRIORITIES_MUTATING = '@aws-cdk/core:aspectPrioritiesMutating';
+export const DYNAMODB_TABLE_RETAIN_TABLE_REPLICA = '@aws-cdk/aws-dynamodb:retainTableReplica';
+export const LOG_USER_POOL_CLIENT_SECRET_VALUE = '@aws-cdk/cognito:logUserPoolClientSecretValue';
+export const PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope';
+export const S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS = '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions';
+export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway';
+export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
+export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
+export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -121,7 +156,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       of the stack.`,
     recommendedValue: true,
     introducedIn: { v1: '1.16.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     compatibilityWithOldBehaviorMd: 'Pass stack identifiers to the CLI instead of stack names.',
   },
 
@@ -141,7 +176,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       * \`--fail\` => status code == 1
       * \`--no-fail\` => status code == 0`,
     introducedIn: { v1: '1.19.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Specify `--fail` to the CLI.',
   },
@@ -154,7 +189,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       If this flag is specified, all \`Stack\`s will use the \`DefaultStackSynthesizer\` by
       default. If it is not set, they will use the \`LegacyStackSynthesizer\`.`,
     introducedIn: { v1: '1.39.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -168,7 +203,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       the location of the stack in the construct tree (specifically, moving the Stack
       into a Stage).`,
     introducedIn: { v1: '1.58.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -184,7 +219,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       This is a feature flag as the old behavior was technically incorrect but
       users may have come to depend on it.`,
     introducedIn: { v1: '1.73.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Update your `.dockerignore` file to match standard Docker ignore rules, if necessary.',
   },
@@ -200,7 +235,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       If this flag is not set, Secret.secretName will include the SecretsManager suffix, which cannot be directly
       used by SecretsManager.DescribeSecret, and must be parsed by the user first (e.g., Fn:Join, Fn:Select, Fn:Split).`,
     introducedIn: { v1: '1.77.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Use `parseArn(secret.secretName).resourceName` to emulate the incorrect old parsing.',
   },
@@ -222,7 +257,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Additionally, if this flag is not set and the user supplies a custom key policy, this will be appended
       to the key's default policy (rather than replacing it).`,
     introducedIn: { v1: '1.78.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `trustAccountIdentities: false` to `Key` construct to restore the old behavior.',
   },
@@ -238,7 +273,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Use a feature flag to make sure existing customers who might be relying
       on the overly-broad permissions are not broken.`,
     introducedIn: { v1: '1.85.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Call `bucket.grantPutAcl()` in addition to `bucket.grantWrite()` to grant ACL permissions.',
   },
@@ -258,7 +293,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       desiredCount of 1, if one is not provided. If true, a default will not be defined for
       CfnService.desiredCount and as such desiredCount will be undefined, if one is not provided.`,
     introducedIn: { v1: '1.92.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'You can pass `desiredCount: 1` explicitly, but you should never need this.',
   },
@@ -278,7 +313,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       would lead CloudFormation to think the name was changed and would trigger a cluster replacement
       (losing data!).`,
     introducedIn: { v1: '1.97.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -300,7 +335,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       In effect, there is no way to get out of this mess in a backwards compatible way, while supporting existing stacks.
       This flag changes the logical id layout of UsagePlanKey to not be sensitive to order.`,
     introducedIn: { v1: '1.98.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -312,7 +347,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Encryption can also be configured explicitly using the \`encrypted\` property.
       `,
     introducedIn: { v1: '1.98.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.',
   },
@@ -327,7 +362,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       See 'currentVersion' section in the aws-lambda module's README for more details.`,
     introducedIn: { v1: '1.106.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -350,7 +385,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       The security policy can also be configured explicitly using the \`minimumProtocolVersion\` property.`,
     introducedIn: { v1: '1.117.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -522,7 +557,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [ENABLE_PARTITION_LITERALS]: {
     type: FlagType.BugFix,
     summary: 'Make ARNs concrete if AWS partition is known',
-    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    // eslint-disable-next-line @cdklabs/no-literal-partition
     detailsMd: `
       Enable this feature flag to get partition names as string literals in Stacks with known regions defined in
       their environment, such as "aws" or "aws-cn".  Previously the CloudFormation intrinsic function
@@ -813,6 +848,20 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
+  [KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL]: {
+    type: FlagType.BugFix,
+    summary: 'Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition',
+    detailsMd: `
+      This flag enables the grant methods (grant, grantDecrypt, grantEncrypt, etc.) on Aliases imported
+      by name to grant permissions based on the 'kms:ResourceAliases' condition rather than no-op grants.
+      When disabled, grant calls on imported aliases will be dropped (no-op) to maintain compatibility.
+    `,
+    introducedIn: { v2: '2.202.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Remove calls to the grant* methods on the aliases referenced by name',
+  },
+
+  //////////////////////////////////////////////////////////////////////
   [AUTOSCALING_GENERATE_LAUNCH_TEMPLATE]: {
     type: FlagType.BugFix,
     summary: 'Generate a launch template when creating an AutoScalingGroup',
@@ -1037,7 +1086,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is disabled, it will keep the root account principal in the trust policy.
     `,
     introducedIn: { v2: '2.141.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
@@ -1123,7 +1172,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
     `,
     introducedIn: { v2: '2.156.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to use input and output path fields for s3 URI',
   },
@@ -1148,9 +1197,492 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Configure stack-level tags using `new Stack(..., { tags: { ... } })`.',
   },
+  [Enable_IMDS_Blocking_Deprecated_Feature]: {
+    type: FlagType.Temporary,
+    summary: 'When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated ' +
+      'commands will be added to UserData to block container accessing IMDS. ' +
+      '**Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**',
+    detailsMd: `
+    In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
+    accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this
+    feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot
+    guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
+    It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
+    `,
+    introducedIn: { v2: '2.175.0' },
+    recommendedValue: false,
+    compatibilityWithOldBehaviorMd: 'Set this flag to false in order to continue using old and outdated commands. ' +
+      'However, it is **not** recommended.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [Disable_ECS_IMDS_Blocking]: {
+    type: FlagType.Temporary,
+    summary: 'When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false.' +
+      ' **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**',
+    detailsMd: `
+    In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
+    accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
+    to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the
+    IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
+
+    It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
+    `,
+    introducedIn: { v2: '2.175.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'It is strongly recommended to set this flag to true. However, if necessary, set ' +
+      'this flag to false to continue using the old implementation.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration',
+    detailsMd: `
+    Currently, we automatically add a number of cloudwatch permissions to the task role when no cloudwatch log group is
+    specified as logConfiguration and it will grant 'Resources': ['*'] to the task role.
+
+    When this feature flag is enabled, we will only grant the necessary permissions when users specify cloudwatch log group.
+    `,
+    introducedIn: { v2: '2.159.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to continue grant permissions to log group when no log group is specified',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled will allow you to specify a resource policy per replica, and not copy the source table policy to all replicas',
+    detailsMd: `
+      If this flag is not set, the default behavior for \`TableV2\` is to use a different \`resourcePolicy\` for each replica.
+
+      If this flag is set to false, the behavior is that each replica shares the same \`resourcePolicy\` as the source table.
+      This will prevent you from creating a new table which has an additional replica and a resource policy.
+
+      This is a feature flag as the old behavior was technically incorrect but users may have come to depend on it.`,
+    introducedIn: { v2: '2.164.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EC2_SUM_TIMEOUT_ENABLED]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.',
+    detailsMd: `
+      Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance,
+      only the value from 'resourceSignalTimeout' will be used.
+
+      When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
+      `,
+    recommendedValue: true,
+    introducedIn: { v2: '2.160.0' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn.',
+    detailsMd: `
+        Currently, when using a Lambda authorizer with an AppSync GraphQL API, the AWS CDK automatically generates the necessary AWS::Lambda::Permission
+        to allow the AppSync API to invoke the Lambda authorizer. This permission is overly permissive because it lacks a SourceArn, meaning
+        it allows invocations from any source.
+
+        When this feature flag is enabled, the AWS::Lambda::Permission will be properly scoped with the SourceArn corresponding to the
+        specific AppSync GraphQL API.
+        `,
+    recommendedValue: true,
+    introducedIn: { v2: '2.161.0' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn`',
+    detailsMd: `
+      Currently, the value of the property 'instanceResourceId' in construct 'DatabaseInstanceReadReplica' is not correct, and set to 'DbInstanceArn' which is not correct when it is used to create the IAM Policy in the grantConnect method.
+
+      When this feature flag is enabled, the value of that property will be as expected set to 'DbiResourceId' attribute, and that will fix the grantConnect method.
+    `,
+    introducedIn: { v2: '2.161.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to use `DbInstanceArn` as value for property `instanceResourceId`',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values.',
+    detailsMd: `
+    Without enabling this feature flag, \`cfn-include\` will silently drop resource update or create policies that contain CFN Intrinsics if they include non-primitive values.
+
+    Enabling this feature flag will make \`cfn-include\` throw on these templates, unless you specify the logical ID of the resource in the 'unhydratedResources' property.
+    `,
+    recommendedValue: true,
+    introducedIn: { v2: '2.161.0' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, both `@aws-sdk` and `@smithy` packages will be excluded from the Lambda Node.js 18.x runtime to prevent version mismatches in bundled applications.',
+    detailsMd: `
+      Currently, when bundling Lambda functions with the non-latest runtime that supports AWS SDK JavaScript (v3), only the '@aws-sdk/*' packages are excluded by default.
+      However, this can cause version mismatches between the '@aws-sdk/*' and '@smithy/*' packages, as they are tightly coupled dependencies in AWS SDK v3.
+
+      When this feature flag is enabled, both '@aws-sdk/*' and '@smithy/*' packages will be excluded during the bundling process. This ensures that no mismatches
+      occur between these tightly coupled dependencies when using the AWS SDK v3 in Lambda functions.
+    `,
+    introducedIn: { v2: '2.161.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the resource of IAM Run Ecs policy generated by SFN EcsRunTask will reference the definition, instead of constructing ARN.',
+    detailsMd: `
+      Currently, in the IAM Run Ecs policy generated by SFN EcsRunTask(), CDK will construct the ARN with wildcard attached at the end.
+      The revision number at the end will be replaced with a wildcard which it shouldn't.
+
+      When this feature flag is enabled, if the task definition is created in the stack, the 'Resource' section will 'Ref' the taskDefinition.
+    `,
+    introducedIn: { v2: '2.163.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, the BastionHost construct will use the latest Amazon Linux 2023 AMI, instead of Amazon Linux 2.',
+    detailsMd: `
+      Currently, if the machineImage property of the BastionHost construct defaults to using the latest Amazon Linux 2
+      AMI. Amazon Linux 2 hits end-of-life in June 2025, so using Amazon Linux 2023 by default is a more future-proof
+      and secure option.
+
+      When this feature flag is enabled, if you do not pass the machineImage property to the BastionHost construct,
+      the latest Amazon Linux 2023 version will be used instead of Amazon Linux 2.
+    `,
+    introducedIn: { v2: '2.172.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag or explicitly pass an Amazon Linux 2 machine image to the BastionHost construct.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ASPECT_STABILIZATION]: {
+    type: FlagType.VisibleContext,
+    summary: 'When enabled, a stabilization loop will be run when invoking Aspects during synthesis.',
+    detailsMd: `
+      Currently, when Aspects are invoked in one single pass of the construct tree.
+      This means that the Aspects that create other Aspects are not run and Aspects that create new nodes of the tree sometimes do not inherit their parent Aspects.
+
+      When this feature flag is enabled, a stabilization loop is run to recurse the construct tree multiple times when invoking Aspects.
+    `,
+    unconfiguredBehavesLike: { v2: true },
+    introducedIn: { v2: '2.172.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.',
+    detailsMd: `
+    When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
+    creates a custom resource internally, but the new method doesn't need a custom resource.
+
+    If the flag is set to false then a custom resource will be created when using \`UserPoolDomainTarget\`.
+    `,
+    introducedIn: { v2: '2.174.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere',
+    detailsMd: `
+      For internet facing ALBs with 'dualstack-without-public-ipv4' IP address type, the default security group rules
+      will allow IPv6 ingress from anywhere (::/0). Previously, the default security group rules would only allow IPv4 ingress.
+
+      Using a feature flag to make sure existing customers who might be relying
+      on the overly restrictive permissions are not broken.`,
+    introducedIn: { v2: '2.176.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to only allow IPv4 ingress in the default security group rules.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the default behaviour of OIDC provider will reject unauthorized connections',
+    detailsMd: `
+      When this feature flag is enabled, the default behaviour of OIDC Provider's custom resource handler will
+      default to reject unauthorized connections when downloading CA Certificates.
+
+      When this feature flag is disabled, the behaviour will be the same as current and will allow downloading
+      thumbprints from unsecure connections.`,
+    introducedIn: { v2: '2.177.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to allow unsecure OIDC connection.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ENABLE_ADDITIONAL_METADATA_COLLECTION]: {
+    type: FlagType.VisibleContext,
+    summary: 'When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues.',
+    detailsMd: `
+    When this feature flag is enabled, CDK expands the scope of usage data collection to include the following:
+      * L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
+      * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted.
+      * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
+    `,
+    introducedIn: { v2: '2.178.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: {
+    type: FlagType.BugFix,
+    summary: '[Deprecated] When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement',
+    detailsMd: `
+      [Deprecated default feature] When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy.
+      The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
+      This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
+      However in the current implementation, we have removed a dependency of the lambda function on the policy. In addition to this, a Role will be attached to the Policy instead of an inline policy being attached to the role.
+      This will create a data race condition in the CloudFormation template because the creation of the Lambda function no longer waits for the policy to be created. Having said that, we are not deprecating the feature (we are defaulting the feature flag to false for new stacks) since this feature can still be used to get around the circular dependency issue (issue-7016) particularly in cases where the lambda resource creation doesnt need to depend on the policy resource creation.
+      We recommend to unset the feature flag if already set which will restore the original behavior.
+    `,
+    introducedIn: { v2: '2.180.0' },
+    recommendedValue: false,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [SET_UNIQUE_REPLICATION_ROLE_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, CDK will automatically generate a unique role name that is used for s3 object replication.',
+    detailsMd: `
+      When performing cross-account S3 replication, we need to explicitly specify a role name for the replication execution role.
+      When this feature flag is enabled, a unique role name is specified only when performing cross-account replication.
+      When disabled, 'CDKReplicationRole' is always specified.
+    `,
+    introducedIn: { v2: '2.182.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE]: {
+    type: FlagType.ApiDefault,
+    summary: 'Remove the root account principal from Stage addActions trust policy',
+    detailsMd: `
+      When this feature flag is enabled, the root account principal will not be added to the trust policy of stage role.
+      When this feature flag is disabled, it will keep the root account principal in the trust policy.
+
+      For cross-account cases, when this feature flag is enabled the trust policy will be scoped to the role only.
+      If you are providing a custom role, you will need to ensure 'roleName' is specified or set to PhysicalName.GENERATE_IF_NEEDED.
+    `,
+    introducedIn: { v2: '2.184.0' },
+    unconfiguredBehavesLike: { v2: true },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EVENTBUS_POLICY_SID_REQUIRED]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.',
+    detailsMd: `
+      Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails
+      because service principals require resource policies with Statement IDs.
+
+      When this flag is enabled:
+      - Resource policies will be created with Statement IDs for service principals
+      - The operation will succeed as expected
+
+      When this flag is disabled:
+      - A warning will be emitted
+      - The grant operation will be dropped
+      - No permissions will be added
+
+      This fixes the issue where permissions were silently not being added for service principals.
+    `,
+    introducedIn: { v2: '2.186.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ASPECT_PRIORITIES_MUTATING]: {
+    type: FlagType.ApiDefault,
+    summary: 'When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING.',
+    detailsMd: `
+      Custom Aspects you add have a priority of DEFAULT (500) if you don't
+      assign a more specific priority, which is higher than MUTATING (200). This
+      is relevant if a custom Aspect you add and an Aspect added by CDK try to
+      configure the same value.
+
+      If this flag is set to false (old behavior), Aspects added by CDK are also
+      added with a priority of DEFAULT; because their priorities are equal, the
+      Aspects that is closest to the target construct executes last (either
+      yours or the Aspect added by the CDK).
+
+      If this flag is set to true (recommended behavior), Aspects added by CDK are added
+      with a priority of MUTATING, and custom Aspects you add with DEFAULT
+      priority will always execute last and "win" the write. If you need Aspects
+      added by CDK to run after yours, your Aspect needs to have a priority of
+      MUTATING or lower.
+
+      This setting only applies to Aspects that were already being added for you
+      before version 2.172.0. Aspects introduced since that version will always
+      be added with a priority of MUTATING, independent of this feature flag.
+    `,
+    introducedIn: { v2: '2.189.1' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: `
+      To add mutating Aspects controlling construct values that can be overridden
+      by Aspects added by CDK, give them MUTATING priority:
+
+      \`\`\`
+      Aspects.of(stack).add(new MyCustomAspect(), {
+        priority: AspectPriority.MUTATING,
+      });
+      \`\`\`
+    `,
+  },
+  [DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, table replica will be default to the removal policy of source table unless specified otherwise.',
+    detailsMd: `
+      Currently, table replica will always be deleted when stack deletes regardless of source table's deletion policy.
+      When enabled, table replica will be default to the removal policy of source table unless specified otherwise.
+    `,
+    introducedIn: { v2: '2.187.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LOG_USER_POOL_CLIENT_SECRET_VALUE]: {
+    type: FlagType.ApiDefault,
+    summary: 'When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.',
+    detailsMd: `
+      When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom
+      resource lambda function logs.
+
+      When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom
+      resource lambda function logs.
+    `,
+    introducedIn: { v2: '2.187.0' },
+    unconfiguredBehavesLike: { v2: false },
+    recommendedValue: false,
+    compatibilityWithOldBehaviorMd: 'Enable the feature flag to keep the old behavior and log the client secret values',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, scopes down the trust policy for the cross-account action role',
+    detailsMd: `
+        When this feature flag is enabled, the trust policy of the cross-account action role will be scoped to the pipeline role.
+        If you are providing a custom role, you will need to ensure 'roleName' is specified or set to PhysicalName.GENERATE_IF_NEEDED.
+        When this feature flag is disabled, it will keep the root account principal in the trust policy.
+      `,
+    introducedIn: { v2: '2.189.0' },
+    unconfiguredBehavesLike: { v2: true },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, the resultWriterV2 property of DistributedMap will be used insted of resultWriter',
+    detailsMd: `
+      When this feature flag is enabled, the resultWriterV2 property is used instead of resultWriter in DistributedMap class.
+      resultWriterV2 uses ResultWriterV2 class in StepFunctions ASL and can have either Bucket/Prefix or WriterConfig or both.
+    `,
+    introducedIn: { v2: '2.188.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag and set resultWriter in DistributedMap',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS]: {
+    type: FlagType.BugFix,
+    summary: 'Add an S3 trust policy to a KMS key resource policy for SNS subscriptions.',
+    detailsMd: `
+      When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
+          `,
+    introducedIn: { v2: '2.195.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC.',
+    detailsMd: `
+      When this feature flag is enabled, EgressOnlyGateway resource will not be created when you create a vpc with only public subnets.
+          `,
+    introducedIn: { v2: '2.196.0' },
+    recommendedValue: true,
+  },
+
+  /// ///////////////////////////////////////////////////////////////////
+  [USE_RESOURCEID_FOR_VPCV2_MIGRATION]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, use resource IDs for VPC V2 migration',
+    detailsMd: `
+        When this feature flag is enabled, the VPC V2 migration will use resource IDs instead of getAtt references
+        for migrating resources from VPC V1 to VPC V2. This helps ensure a smoother migration path between
+        the two versions.
+      `,
+    introducedIn: { v2: '2.196.0' },
+    recommendedValue: false,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to use getAtt references for VPC V2 migration',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined.',
+    detailsMd: `
+      When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console.
+      The previous behavior in cdk before this feature was; if only some of the BlockPublicAccessOptions were set (not all 4), then the ones undefined would default to false.
+      This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
+      The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
+    `,
+    introducedIn: { v2: '2.196.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, CDK creates and manages loggroup for the lambda function',
+    detailsMd: `
+        When this feature flag is enabled, CDK will create a loggroup for lambda function with default properties
+        which supports CDK features Tag propagation, Property Injectors, Aspects
+        if the cdk app doesnt pass a 'logRetention' or 'logGroup' explicitly.
+        LogGroups created via 'logRetention' do not support Tag propagation, Property Injectors, Aspects.
+        LogGroups created via 'logGroup' created in CDK support Tag propagation, Property Injectors, Aspects.
+
+        When this feature flag is disabled, a loggroup is created by Lambda service on first invocation
+        of the function (existing behavior).
+        LogGroups created in this way do not support Tag propagation, Property Injectors, Aspects.
+
+        DO NOT ENABLE: If you have and existing app defining a lambda function and
+        have not supplied a logGroup or logRetention prop and your lambda function has
+        executed at least once, the logGroup has been already created with the same name
+        so your deployment will start failing.
+        Refer aws-lambda/README.md for more details on Customizing Log Group creation.
+      `,
+    introducedIn: { v2: '2.200.0' },
+    unconfiguredBehavesLike: { v2: false },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
+  },
 };
 
-const CURRENT_MV = 'v2';
+export const CURRENT_MV = 'v2';
 
 /**
  * The list of future flags that are now expired. This is going to be used to identify
@@ -1166,31 +1698,36 @@ export const CURRENT_VERSION_EXPIRED_FLAGS: string[] = Object.entries(FLAGS)
  * Add a flag in here (typically with the value `true`), to enable
  * backwards-breaking behavior changes only for new projects.  New projects
  * generated through `cdk init` will include these flags in their generated
+ * project config.
  *
  * Tests must cover the default (disabled) case and the future (enabled) case.
+ *
+ * Going forward, this should *NOT* be consumed directly anymore.
  */
-export const NEW_PROJECT_CONTEXT = Object.fromEntries(
+export const CURRENTLY_RECOMMENDED_FLAGS = Object.fromEntries(
   Object.entries(FLAGS)
-    .filter(([_, flag]) => flag.recommendedValue !== flag.defaults?.[CURRENT_MV] && flag.introducedIn[CURRENT_MV])
+    .filter(([_, flag]) => flag.recommendedValue !== flag.unconfiguredBehavesLike?.[CURRENT_MV] && flag.introducedIn[CURRENT_MV])
     .map(([name, flag]) => [name, flag.recommendedValue]),
 );
 
 /**
  * The default values of each of these flags in the current major version.
  *
- * This is the effective value of the flag, unless it's overriden via
+ * This is the effective value of the flag, unless it's overridden via
  * context.
  *
  * Adding new flags here is only allowed during the pre-release period of a new
  * major version!
  */
 export const CURRENT_VERSION_FLAG_DEFAULTS = Object.fromEntries(Object.entries(FLAGS)
-  .filter(([_, flag]) => flag.defaults?.[CURRENT_MV] !== undefined)
-  .map(([name, flag]) => [name, flag.defaults?.[CURRENT_MV]]));
+  .filter(([_, flag]) => flag.unconfiguredBehavesLike?.[CURRENT_MV] !== undefined)
+  .map(([name, flag]) => [name, flag.unconfiguredBehavesLike?.[CURRENT_MV]]));
 
 export function futureFlagDefault(flag: string): boolean {
   const value = CURRENT_VERSION_FLAG_DEFAULTS[flag] ?? false;
   if (typeof value !== 'boolean') {
+    // This should never happen, if this error is thrown it's a bug
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
     throw new Error(`futureFlagDefault: default type of flag '${flag}' should be boolean, got '${typeof value}'`);
   }
   return value;
@@ -1201,10 +1738,10 @@ export function futureFlagDefault(flag: string): boolean {
 /** @deprecated use CURRENT_VERSION_EXPIRED_FLAGS instead */
 export const FUTURE_FLAGS_EXPIRED = CURRENT_VERSION_EXPIRED_FLAGS;
 
-/** @deprecated use NEW_PROJECT_CONTEXT instead */
-export const FUTURE_FLAGS = Object.fromEntries(Object.entries(NEW_PROJECT_CONTEXT)
+/** @deprecated do not use at all! */
+export const FUTURE_FLAGS = Object.fromEntries(Object.entries(CURRENTLY_RECOMMENDED_FLAGS)
   .filter(([_, v]) => typeof v === 'boolean'));
 
-/** @deprecated use NEW_PROJECT_CONTEXT instead */
-export const NEW_PROJECT_DEFAULT_CONTEXT = Object.fromEntries(Object.entries(NEW_PROJECT_CONTEXT)
+/** @deprecated do not use at all! */
+export const NEW_PROJECT_DEFAULT_CONTEXT = Object.fromEntries(Object.entries(CURRENTLY_RECOMMENDED_FLAGS)
   .filter(([_, v]) => typeof v !== 'boolean'));

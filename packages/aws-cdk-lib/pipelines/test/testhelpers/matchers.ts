@@ -65,7 +65,7 @@ class Sorter extends Matcher {
 }
 
 class StringLengthMatcher extends Matcher {
-  public name: string = 'StringLength'
+  public name: string = 'StringLength';
 
   constructor(private readonly length: number) {
     super();

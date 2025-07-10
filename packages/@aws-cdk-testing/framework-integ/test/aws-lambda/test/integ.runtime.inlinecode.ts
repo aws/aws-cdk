@@ -1,5 +1,6 @@
 import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { Function, InlineCode, Runtime } from 'aws-cdk-lib/aws-lambda';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 
 // CloudFormation supports InlineCode only for a subset of runtimes. This integration test
 // is used to verify that the ones marked in the CDK are in fact supported by CloudFormation.
@@ -11,16 +12,13 @@ import { Function, InlineCode, Runtime } from 'aws-cdk-lib/aws-lambda';
 //
 // If successful, the output will contain "success"
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new Stack(app, 'aws-cdk-lambda-runtime-inlinecode');
-
-const python37 = new Function(stack, 'PYTHON_3_7', {
-  code: new InlineCode('def handler(event, context):\n  return "success"'),
-  handler: 'index.handler',
-  runtime: Runtime.PYTHON_3_7,
-});
-new CfnOutput(stack, 'PYTHON_3_7-functionName', { value: python37.functionName });
 
 const python38 = new Function(stack, 'PYTHON_3_8', {
   code: new InlineCode('def handler(event, context):\n  return "success"'),
@@ -50,19 +48,12 @@ const python312 = new Function(stack, 'PYTHON_3_12', {
 });
 new CfnOutput(stack, 'PYTHON_3_12-functionName', { value: python312.functionName });
 
-const node14xfn = new Function(stack, 'NODEJS_14_X', {
-  code: new InlineCode('exports.handler = async function(event) { return "success" }'),
+const python313 = new Function(stack, 'PYTHON_3_13', {
+  code: new InlineCode('def handler(event, context):\n  return "success"'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_14_X,
+  runtime: Runtime.PYTHON_3_13,
 });
-new CfnOutput(stack, 'NODEJS_14_X-functionName', { value: node14xfn.functionName });
-
-const node16xfn = new Function(stack, 'NODEJS_16_X', {
-  code: new InlineCode('exports.handler = async function(event) { return "success" }'),
-  handler: 'index.handler',
-  runtime: Runtime.NODEJS_16_X,
-});
-new CfnOutput(stack, 'NODEJS_16_X-functionName', { value: node16xfn.functionName });
+new CfnOutput(stack, 'PYTHON_3_13-functionName', { value: python313.functionName });
 
 const node18xfn = new Function(stack, 'NODEJS_18_X', {
   code: new InlineCode('exports.handler = async function(event) { return "success" }'),
@@ -78,4 +69,13 @@ const node20xfn = new Function(stack, 'NODEJS_20_X', {
 });
 new CfnOutput(stack, 'NODEJS_20_X-functionName', { value: node20xfn.functionName });
 
-app.synth();
+const node22xfn = new Function(stack, 'NODEJS_22_X', {
+  code: new InlineCode('exports.handler = async function(event) { return "success" }'),
+  handler: 'index.handler',
+  runtime: Runtime.NODEJS_22_X,
+});
+new CfnOutput(stack, 'NODEJS_22_X-functionName', { value: node22xfn.functionName });
+
+new integ.IntegTest(app, 'lambda-runtime-inlinecode', {
+  testCases: [stack],
+});

@@ -14,7 +14,21 @@ import * as redshift from '../lib';
  * The diff assets flag (used when testing custom resources) has been commented out due to snapshots not properly verifying in CodeBuild.
  */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+  context: {
+    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+  },
+});
+
+const stack = new cdk.Stack(app, 'MultiAzRedshift', {
+  env: {
+    account: '123456789012',
+    region: 'us-east-1',
+  },
+});
 
 interface RedshiftRebootStackProps extends cdk.StackProps {
   parameterGroupParams: { [name: string]: string };
@@ -25,7 +39,6 @@ const requiredStackName: Partial<cdk.StackProps> = {
 };
 
 class RedshiftRebootStack extends cdk.Stack {
-
   readonly cluster: redshift.Cluster;
   readonly parameterGroup: redshift.ClusterParameterGroup;
 
@@ -56,11 +69,11 @@ class RedshiftRebootStack extends cdk.Stack {
   }
 }
 
-const createStack = new RedshiftRebootStack(app, 'aws-cdk-redshift-cluster-create', {
+const createStack = new RedshiftRebootStack(stack, 'aws-cdk-redshift-cluster-create', {
   parameterGroupParams: { enable_user_activity_logging: 'true' },
 });
 
-const updateStack = new RedshiftRebootStack(app, 'aws-cdk-redshift-cluster-update', {
+const updateStack = new RedshiftRebootStack(stack, 'aws-cdk-redshift-cluster-update', {
   parameterGroupParams: { enable_user_activity_logging: 'false', use_fips_ssl: 'true' },
 });
 
@@ -121,5 +134,3 @@ describeEngineDefaultParams.expect(integ.ExpectedResult.objectLike({
     Match.objectLike({ ParameterName: 'wlm_json_configuration', ParameterValue: '[{"auto_wlm":true}]' }),
   ]),
 }));
-
-app.synth();

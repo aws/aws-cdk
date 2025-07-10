@@ -35,7 +35,7 @@ export abstract class Code {
   /**
    * Inline code for AppSync function
    * @returns `InlineCode` with inline code.
-   * @param code The actual handler code (limited to 4KiB)
+   * @param code The actual handler code (the resulting zip file cannot exceed 4MB)
    */
   public static fromInline(code: string): InlineCode {
     return new InlineCode(code);
@@ -68,8 +68,8 @@ export class AssetCode extends Code {
         ...this.options,
       });
     } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
-      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
-        'Create a new Code instance for every stack.');
+      throw new cdk.ValidationError(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+        'Create a new Code instance for every stack.', scope);
     }
 
     return {
@@ -86,7 +86,7 @@ export class InlineCode extends Code {
     super();
 
     if (code.length === 0) {
-      throw new Error('AppSync Inline code cannot be empty');
+      throw new cdk.UnscopedValidationError('AppSync Inline code cannot be empty');
     }
   }
 

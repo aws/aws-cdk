@@ -1,6 +1,5 @@
 # AWS CodePipeline Actions
 
-
 This package contains Actions that can be used in a CodePipeline.
 
 ```ts nofixture
@@ -112,7 +111,7 @@ const eventPattern = {
   },
 };
 declare const repo: codecommit.Repository;
-declare const lambdaFuntion: lambda.Function;
+declare const lambdaFunction: lambda.Function;
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
   actionName: 'CodeCommit',
@@ -120,7 +119,7 @@ const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
   output: sourceOutput,
   customEventRule: {
     eventPattern,
-    target: new targets.LambdaFunction(lambdaFuntion),
+    target: new targets.LambdaFunction(lambdaFunction),
   }
 });
 ```
@@ -278,7 +277,7 @@ you can specify the region explicitly:
 
 ```ts
 const sourceBucket = s3.Bucket.fromBucketAttributes(this, 'SourceBucket', {
-  bucketName: 'my-bucket',
+  bucketName: 'amzn-s3-demo-bucket',
   region: 'ap-southeast-1',
 });
 ```
@@ -613,6 +612,54 @@ const buildAction = new codepipeline_actions.JenkinsAction({
 });
 ```
 
+## Build
+
+### ECR Build And Publish
+
+This build action `ECRBuildAndPublish` allows you to automate building and pushing a new image when a change occurs in your source.
+
+This action builds based on a specified Docker file location and pushes the image. This build action is not the
+same as the Amazon ECR source action in CodePipeline, which triggers pipeline when a change occurs in your
+Amazon ECR source repository.
+
+For information about the `ECRBuildAndPublish` build action,
+see [ECRBuildAndPublish build action reference](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECRBuildAndPublish.html).
+
+```ts
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+
+declare const pipeline: codepipeline.Pipeline;
+declare const repository: ecr.IRepository;
+
+const sourceOutput = new codepipeline.Artifact();
+// your source repository
+const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
+  actionName: 'CodeStarConnectionsSourceAction',
+  output: sourceOutput,
+  connectionArn: 'your-connection-arn',
+  owner: 'your-owner',
+  repo: 'your-repo',
+});
+
+const buildAction = new codepipeline_actions.EcrBuildAndPublishAction({
+  actionName: 'EcrBuildAndPublishAction',
+  repositoryName: repository.repositoryName,
+  registryType: codepipeline_actions.RegistryType.PRIVATE,
+  dockerfileDirectoryPath: './my-dir', // The path indicates ./my-dir/Dockerfile in the source repository
+  imageTags: ['my-tag-1', 'my-tag-2'],
+  input: sourceOutput,
+});
+
+pipeline.addStage({
+  stageName: 'Source',
+  actions: [sourceAction],
+});
+pipeline.addStage({
+  stageName: 'Build',
+  actions: [buildAction],
+});
+```
+
 ## Deploy
 
 ### AWS CloudFormation
@@ -880,6 +927,40 @@ Here's an example:
 
 [example ECS pipeline for an application in a separate source code repository](test/integ.pipeline-ecs-separate-source.lit.ts)
 
+### Amazon EC2
+
+To deploy application code to Amazon EC2 Linux instances or Linux SSM-managed nodes:
+
+> **Note**
+> This action is only supported for V2 type pipelines.
+
+```ts
+const sourceOutput = new codepipeline.Artifact();
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
+  pipelineType: codepipeline.PipelineType.V2,
+});
+const deployAction = new codepipeline_actions.Ec2DeployAction({
+  actionName: 'Ec2Deploy',
+  input: sourceOutput,
+  instanceType: codepipeline_actions.Ec2InstanceType.EC2,
+  instanceTagKey: 'Name',
+  instanceTagValue: 'MyInstance',
+  deploySpecifications: codepipeline_actions.Ec2DeploySpecifications.inline({
+    targetDirectory: '/home/ec2-user/deploy',
+    preScript: 'scripts/pre-deploy.sh',
+    postScript: 'scripts/post-deploy.sh',
+  }),
+});
+const deployStage = pipeline.addStage({
+  stageName: 'Deploy',
+  actions: [deployAction],
+});
+```
+
+To learn more about using the EC2 deploy action in your pipeline, visit [tutorial](https://docs.aws.amazon.com/codepipeline/latest/userguide/tutorials-ec2-deploy.html) and [documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-EC2Deploy.html).
+
+
 ### AWS S3 Deployment
 
 To use an S3 Bucket as a deployment target in CodePipeline:
@@ -1080,6 +1161,7 @@ const manualApprovalAction = new codepipeline_actions.ManualApprovalAction({
     'some_email@example.com',
   ], // optional
   additionalInformation: 'additional info', // optional
+  timeout: Duration.minutes(10), // optional
 });
 approveStage.addAction(manualApprovalAction);
 // `manualApprovalAction.notificationTopic` can be used to access the Topic
@@ -1257,3 +1339,205 @@ pipeline.addStage({
 
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-StepFunctions.html)
 for information on Action structure reference.
+
+### Pipeline
+
+This module contains an Action that allows you to invoke another pipeline execution in a pipeline:
+
+```ts
+import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const targetPipeline = codepipeline.Pipeline.fromPipelineArn(this, 'Pipeline',
+    'arn:aws:codepipeline:us-east-1:123456789012:InvokePipelineAction'); // If targetPipeline is not created by cdk, import from arn.
+pipeline.addStage({
+  stageName: 'stageName',
+  actions: [new cpactions.PipelineInvokeAction({
+  actionName: 'Invoke',
+  targetPipeline,
+  variables: [{
+    name: 'name1',
+    value: 'value1',
+  }],
+  sourceRevisions: [{
+    actionName: 'Source',
+    revisionType: cpactions.RevisionType.S3_OBJECT_VERSION_ID,
+    revisionValue: 'testRevisionValue',
+    }],
+  })],
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-PipelineInvoke.html)
+for information on Action structure reference.
+
+## Invoke
+
+### Inspector
+
+Amazon Inspector is a vulnerability management service that automatically discovers workloads and continually scans them
+for software vulnerabilities and unintended network exposure.
+
+The actions `InspectorSourceCodeScanAction` and `InspectorEcrImageScanAction` automate detecting and fixing security
+vulnerabilities in your open source code. The actions are managed compute actions with security scanning capabilities.
+You can use the actions with application source code in your third-party repository, such as GitHub or Bitbucket Cloud,
+or with images for container applications.
+
+Your actions will scan and report on vulnerability levels and alerts that you configure.
+
+#### Inspector Source Code Scan
+
+The `InspectorSourceCodeScanAction` allows you to scan the application source code for vulnerabilities in your repository.
+
+```ts
+declare const pipeline: codepipeline.Pipeline;
+
+const sourceOutput = new codepipeline.Artifact();
+const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
+  actionName: 'CodeStarConnectionsSourceAction',
+  output: sourceOutput,
+  connectionArn: 'your-connection-arn',
+  owner: 'your-owner',
+  repo: 'your-repo',
+});
+
+const scanOutput = new codepipeline.Artifact();
+const scanAction = new codepipeline_actions.InspectorSourceCodeScanAction({
+  actionName: 'InspectorSourceCodeScanAction',
+  input: sourceOutput,
+  output: scanOutput,
+});
+
+pipeline.addStage({
+  stageName: 'Source',
+  actions: [sourceAction],
+});
+pipeline.addStage({
+  stageName: 'Scan',
+  actions: [scanAction],
+});
+```
+
+#### Inspector ECR Image Scan
+
+The `InspectorEcrImageScanAction` allows you to scan the image for vulnerabilities in your container applications.
+
+```ts
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+
+declare const pipeline: codepipeline.Pipeline;
+declare const repository: ecr.IRepository;
+
+const scanOutput = new codepipeline.Artifact();
+const scanAction = new codepipeline_actions.InspectorEcrImageScanAction({
+  actionName: 'InspectorEcrImageScanAction',
+  output: scanOutput,
+  repository: repository,
+});
+
+pipeline.addStage({
+  stageName: 'Scan',
+  actions: [scanAction],
+});
+```
+
+## Compute
+
+### Commands
+
+The Commands action allows you to run shell commands in a virtual compute instance. When you run the action, commands
+specified in the action configuration are run in a separate container. All artifacts that are specified as input
+artifacts to a CodeBuild action are available inside of the container running the commands. This action allows you
+to specify commands without first creating a CodeBuild project.
+
+```ts
+// Source action
+const bucket = new s3.Bucket(this, 'SourceBucket', {
+  versioned: true,
+});
+const sourceArtifact = new codepipeline.Artifact('SourceArtifact');
+const sourceAction = new codepipeline_actions.S3SourceAction({
+  actionName: 'Source',
+  output: sourceArtifact,
+  bucket,
+  bucketKey: 'my.zip',
+});
+
+// Commands action
+const outputArtifact = new codepipeline.Artifact('OutputArtifact');
+const commandsAction = new codepipeline_actions.CommandsAction({
+  actionName: 'Commands',
+  commands: [
+    'echo "some commands"',
+  ],
+  input: sourceArtifact,
+  output: outputArtifact,
+});
+
+const pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Commands',
+      actions: [commandsAction],
+    },
+  ],
+});
+```
+
+If you want to filter the files to be included in the output artifact, you can specify their paths as the second
+argument to `Artifact`.
+
+```ts
+declare const sourceArtifact: codepipeline.Artifact;
+
+// filter files to be included in the output artifact
+const outputArtifact = new codepipeline.Artifact('OutputArtifact', ['my-dir/**/*']);
+const commandsAction = new codepipeline_actions.CommandsAction({
+  actionName: 'Commands',
+  commands: [
+    'mkdir -p my-dir',
+    'echo "HelloWorld" > my-dir/file.txt',
+  ],
+  input: sourceArtifact,
+  output: outputArtifact,
+});
+```
+
+You can also specify the `outputVariables` property in the `CommandsAction` to emit environment variables that can be used
+in subsequent actions. The variables are those defined in your shell commands or exported as defaults by the CodeBuild service.
+For a reference of CodeBuild environment variables, see
+[Environment variables in build environments](https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html)
+in the CodeBuild User Guide.
+
+To use the output variables in a subsequent action, you can use the `variable` method on the action:
+
+```ts
+declare const sourceArtifact: codepipeline.Artifact;
+declare const outputArtifact: codepipeline.Artifact;
+
+const commandsAction = new codepipeline_actions.CommandsAction({
+  actionName: 'Commands',
+  commands: [
+    'export MY_OUTPUT=my-key',
+  ],
+  input: sourceArtifact,
+  output: outputArtifact,
+  outputVariables: ['MY_OUTPUT', 'CODEBUILD_BUILD_ID'], // CODEBUILD_BUILD_ID is a variable defined by CodeBuild
+});
+
+// Deploy action
+const deployAction = new codepipeline_actions.S3DeployAction({
+  actionName: 'DeployAction',
+  extract: true,
+  input: outputArtifact,
+  bucket: new s3.Bucket(this, 'DeployBucket'),
+  objectKey: commandsAction.variable('MY_OUTPUT'), // the variable emitted by the Commands action
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-Commands.html)
+for more details about using Commands action in CodePipeline.

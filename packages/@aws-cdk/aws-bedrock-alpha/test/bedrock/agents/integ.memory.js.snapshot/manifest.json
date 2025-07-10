@@ -1,0 +1,448 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "aws-cdk-bedrock-memory-1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-bedrock-memory-1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-bedrock-memory-1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-bedrock-memory-1.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c35338e759cb7b167163ce93f5cf7ab7ebe6f12001444ffc3672083bd8245ee2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-bedrock-memory-1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-bedrock-memory-1.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-bedrock-memory-1/DefaultMemoryFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/DefaultMemoryFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/DefaultMemoryFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/DefaultMemoryFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultMemoryFunctionServiceRoleD8C5CDAF"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/DefaultMemoryFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultMemoryFunctionAC6D5374"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/DefaultMemoryFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/DefaultMemoryFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultMemoryFunctionLogGroupD9F7BD3F"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/DefaultMemoryFunction/LambdaInvocationPolicy-c809bacfbaa9d9a5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultMemoryFunctionLambdaInvocationPolicyc809bacfbaa9d9a5AC2FFF6B"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/CustomMemoryFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/CustomMemoryFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/CustomMemoryFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/CustomMemoryFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomMemoryFunctionServiceRoleA64B0AD5"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/CustomMemoryFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomMemoryFunctionB4B5CB9A"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/CustomMemoryFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/CustomMemoryFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomMemoryFunctionLogGroup61F2359A"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/CustomMemoryFunction/LambdaInvocationPolicy-c8492664c8e1cb16": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomMemoryFunctionLambdaInvocationPolicyc8492664c8e1cb16AC1ED6E1"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/AgentWithDefaultMemory/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/AgentWithDefaultMemory/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/AgentWithDefaultMemory/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AgentWithDefaultMemoryRole0AEE1FD1"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/AgentWithDefaultMemory/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/AgentWithDefaultMemory/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AgentWithDefaultMemoryRoleDefaultPolicyCF8B3F25"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/AgentWithDefaultMemory/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AgentWithDefaultMemoryA1F31830"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/AgentWithCustomMemory/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/AgentWithCustomMemory/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/AgentWithCustomMemory/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AgentWithCustomMemoryRole3B7BD09F"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/AgentWithCustomMemory/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/AgentWithCustomMemory/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AgentWithCustomMemoryRoleDefaultPolicyB8F9AA78"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/AgentWithCustomMemory/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AgentWithCustomMemoryD0BD498B"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-bedrock-memory-1/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-bedrock-memory-1"
+    },
+    "BedrockMemoryDefaultTestDeployAssert5AD90360.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "BedrockMemoryDefaultTestDeployAssert5AD90360.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "BedrockMemoryDefaultTestDeployAssert5AD90360": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "BedrockMemoryDefaultTestDeployAssert5AD90360.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "BedrockMemoryDefaultTestDeployAssert5AD90360.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "BedrockMemoryDefaultTestDeployAssert5AD90360.assets"
+      ],
+      "metadata": {
+        "/BedrockMemory/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/BedrockMemory/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "BedrockMemory/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "45.0.0",
   "testCases": {
     "AwsCustomResourceDynamoDBTest/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "AwsCustomResourceDynamoDBTest/DefaultTest/DeployAssert",
       "assertionStackName": "AwsCustomResourceDynamoDBTestDefaultTestDeployAssertB351282D"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

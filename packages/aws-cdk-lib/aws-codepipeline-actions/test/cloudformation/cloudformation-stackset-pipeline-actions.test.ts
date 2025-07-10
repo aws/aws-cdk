@@ -29,7 +29,7 @@ describe('StackSetAction', () => {
       template: cpactions.StackSetTemplate.fromArtifactPath(stack.sourceOutput.atPath('template.yaml')),
       parameters: cpactions.StackSetParameters.fromArtifactPath(stack.sourceOutput.atPath('parameters.json')),
     };
-  };
+  }
 
   describe('self-managed mode', () => {
     test('creates admin role if not specified', () => {
@@ -354,7 +354,7 @@ describe('StackInstancesAction', () => {
       failureTolerancePercentage: 50,
       maxAccountConcurrencyPercentage: 25,
     };
-  };
+  }
 
   test('simple', () => {
     stack.deployStage.addAction(new cpactions.CloudFormationDeployStackInstancesAction({

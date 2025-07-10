@@ -91,3 +91,104 @@ new iot.Logging(this, 'Logging', {
 ```
 
 **Note**: All logs are forwarded to the `AWSIotLogsV2` log group in CloudWatch.
+
+## Audit
+
+An [AWS IoT Device Defender audit looks](https://docs.aws.amazon.com/iot-device-defender/latest/devguide/device-defender-audit.html) at account- and device-related settings and policies to ensure security measures are in place.
+An audit can help you detect any drifts from security best practices or access policies.
+
+### Account Audit Configuration
+
+The IoT audit includes [various audit checks](https://docs.aws.amazon.com/iot-device-defender/latest/devguide/device-defender-audit-checks.html), and it is necessary to configure settings to enable those checks.
+
+You can enable an account audit configuration with the following code:
+
+```ts
+// Audit notification are sent to the SNS topic
+declare const targetTopic: sns.ITopic;
+
+new iot.AccountAuditConfiguration(this, 'AuditConfiguration', {
+  targetTopic,
+});
+```
+
+By default, all audit checks are enabled, but it is also possible to enable only specific audit checks.
+
+```ts
+new iot.AccountAuditConfiguration(this, 'AuditConfiguration', {
+  checkConfiguration: {
+    // enabled
+    authenticatedCognitoRoleOverlyPermissiveCheck: true,
+    // enabled by default
+    caCertificateExpiringCheck: undefined,
+    // disabled
+    caCertificateKeyQualityCheck: false,
+    conflictingClientIdsCheck: false,
+    deviceCertificateAgeCheck: false,
+    deviceCertificateExpiringCheck: false,
+    deviceCertificateKeyQualityCheck: false,
+    deviceCertificateSharedCheck: false,
+    intermediateCaRevokedForActiveDeviceCertificatesCheck: false,
+    ioTPolicyPotentialMisConfigurationCheck: false,
+    iotPolicyOverlyPermissiveCheck: false,
+    iotRoleAliasAllowsAccessToUnusedServicesCheck: false,
+    iotRoleAliasOverlyPermissiveCheck: false,
+    loggingDisabledCheck: false,
+    revokedCaCertificateStillActiveCheck: false,
+    revokedDeviceCertificateStillActiveCheck: false,
+    unauthenticatedCognitoRoleOverlyPermissiveCheck: false,
+  },
+});
+```
+
+To configure [the device certificate age check](https://docs.aws.amazon.com/iot-device-defender/latest/devguide/device-certificate-age-check.html), you can specify the duration for the check:
+
+```ts
+import { Duration } from 'aws-cdk-lib';
+
+new iot.AccountAuditConfiguration(this, 'AuditConfiguration', {
+  checkConfiguration: {
+    deviceCertificateAgeCheck: true,
+    // The default value is 365 days
+    // Valid values range from 30 days (minimum) to 3652 days (10 years, maximum)
+    deviceCertificateAgeCheckDuration: Duration.days(365),
+  },
+});
+```
+
+### Scheduled Audit
+
+You can create a [scheduled audit](https://docs.aws.amazon.com/iot-device-defender/latest/devguide/AuditCommands.html#device-defender-AuditCommandsManageSchedules) that is run at a specified time interval. Checks must be enabled for your account by creating `AccountAuditConfiguration`.
+
+```ts
+declare const config: iot.AccountAuditConfiguration;
+
+// Daily audit
+const dailyAudit = new iot.ScheduledAudit(this, 'DailyAudit', {
+  accountAuditConfiguration: config,
+  frequency: iot.Frequency.DAILY,
+  auditChecks: [
+    iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK,
+  ],
+})
+
+// Weekly audit
+const weeklyAudit = new iot.ScheduledAudit(this, 'WeeklyAudit', {
+  accountAuditConfiguration: config,
+  frequency: iot.Frequency.WEEKLY,
+  dayOfWeek: iot.DayOfWeek.SUNDAY,
+  auditChecks: [
+    iot.AuditCheck.CA_CERTIFICATE_EXPIRING_CHECK,
+  ],
+});
+
+// Monthly audit
+const monthlyAudit = new iot.ScheduledAudit(this, 'MonthlyAudit', {
+  accountAuditConfiguration: config,
+  frequency: iot.Frequency.MONTHLY,
+  dayOfMonth: iot.DayOfMonth.of(1),
+  auditChecks: [
+    iot.AuditCheck.CA_CERTIFICATE_KEY_QUALITY_CHECK,
+  ],
+});
+```

@@ -391,6 +391,23 @@
     }
    }
   },
+  "SpotFleetRole6D4F7558": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "batch.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
   "minimalPropsFargateSecurityGroupA8D5CDD1": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
@@ -748,23 +765,6 @@
     "UpdatePolicy": {
      "JobExecutionTimeoutMinutes": 60,
      "TerminateJobsOnUpdate": false
-    }
-   }
-  },
-  "SpotFleetRole6D4F7558": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "batch.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
     }
    }
   },
@@ -1220,12 +1220,145 @@
     "Type": "managed",
     "UpdatePolicy": {}
    }
+  },
+  "ParamertizedManagedCESecurityGroup772BD71B": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "batch-stack/ParamertizedManagedCE/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "ParamertizedManagedCEInstanceProfileRoleB54B7F8B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ParamertizedManagedCEInstanceProfileDF9CB175": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "ParamertizedManagedCEInstanceProfileRoleB54B7F8B"
+     }
+    ]
+   }
+  },
+  "ParamertizedManagedCE07932AA8": {
+   "Type": "AWS::Batch::ComputeEnvironment",
+   "Properties": {
+    "ComputeResources": {
+     "AllocationStrategy": "SPOT_PRICE_CAPACITY_OPTIMIZED",
+     "BidPercentage": {
+      "Ref": "SpotBidPercentageParameter"
+     },
+     "Ec2Configuration": [
+      {
+       "ImageIdOverride": {
+        "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+       },
+       "ImageType": "ECS_AL2"
+      }
+     ],
+     "InstanceRole": {
+      "Fn::GetAtt": [
+       "ParamertizedManagedCEInstanceProfileDF9CB175",
+       "Arn"
+      ]
+     },
+     "InstanceTypes": [
+      "optimal"
+     ],
+     "MaxvCpus": {
+      "Ref": "MaxVCpuParameter"
+     },
+     "MinvCpus": {
+      "Ref": "MinVCpuParameter"
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "ParamertizedManagedCESecurityGroup772BD71B",
+        "GroupId"
+       ]
+      }
+     ],
+     "SpotIamFleetRole": {
+      "Fn::GetAtt": [
+       "SpotFleetRole6D4F7558",
+       "Arn"
+      ]
+     },
+     "Subnets": [
+      {
+       "Ref": "vpcPrivateSubnet1Subnet934893E8"
+      },
+      {
+       "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+      }
+     ],
+     "Type": "SPOT"
+    },
+    "ReplaceComputeEnvironment": false,
+    "State": "ENABLED",
+    "Type": "managed",
+    "UpdatePolicy": {}
+   }
   }
  },
  "Parameters": {
   "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
    "Default": "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
+  },
+  "MinVCpuParameter": {
+   "Type": "Number",
+   "Default": 512,
+   "MinValue": 0
+  },
+  "MaxVCpuParameter": {
+   "Type": "Number",
+   "Default": 512,
+   "MinValue": 1
+  },
+  "SpotBidPercentageParameter": {
+   "Type": "Number",
+   "Default": 100,
+   "MinValue": 1
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

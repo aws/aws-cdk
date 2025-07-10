@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "cluster-replication-integ/DefaultTest": {
+      "stacks": [
+        "cluster-replication"
+      ],
+      "assertionStack": "cluster-replication-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "clusterreplicationintegDefaultTestDeployAssert7E5188AB"
+    }
+  }
+}

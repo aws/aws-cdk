@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { CfnProfilingGroup } from './codeguruprofiler.generated';
 import { Grant, IGrantable } from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The compute platform of the profiling group.
@@ -65,7 +67,6 @@ export interface IProfilingGroup extends IResource {
 }
 
 abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
-
   public abstract readonly profilingGroupName: string;
 
   public abstract readonly profilingGroupArn: string;
@@ -107,7 +108,6 @@ abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
       resourceArns: [this.profilingGroupArn],
     });
   }
-
 }
 
 /**
@@ -133,7 +133,10 @@ export interface ProfilingGroupProps {
 /**
  * A new Profiling Group.
  */
+@propertyInjectable
 export class ProfilingGroup extends ProfilingGroupBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codeguruprofiler.ProfilingGroup';
 
   /**
    * Import an existing Profiling Group provided a Profiling Group Name.
@@ -188,6 +191,8 @@ export class ProfilingGroup extends ProfilingGroupBase {
     super(scope, id, {
       physicalName: props.profilingGroupName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const profilingGroup = new CfnProfilingGroup(this, 'ProfilingGroup', {
       profilingGroupName: this.physicalName,
@@ -210,5 +215,4 @@ export class ProfilingGroup extends ProfilingGroupBase {
     }
     return name;
   }
-
 }

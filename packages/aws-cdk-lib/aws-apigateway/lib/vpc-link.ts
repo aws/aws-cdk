@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { CfnVpcLink } from './apigateway.generated';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { IResource, Lazy, Names, Resource } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an API Gateway VpcLink
@@ -43,7 +45,11 @@ export interface VpcLinkProps {
  * Define a new VPC Link
  * Specifies an API Gateway VPC link for a RestApi to access resources in an Amazon Virtual Private Cloud (VPC).
  */
+@propertyInjectable
 export class VpcLink extends Resource implements IVpcLink {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.VpcLink';
+
   /**
    * Import a VPC Link by its Id
    */
@@ -68,6 +74,8 @@ export class VpcLink extends Resource implements IVpcLink {
       physicalName: props.vpcLinkName ||
         Lazy.string({ produce: () => Names.nodeUniqueId(this.node) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const cfnResource = new CfnVpcLink(this, 'Resource', {
       name: this.physicalName,
@@ -84,6 +92,7 @@ export class VpcLink extends Resource implements IVpcLink {
     this.node.addValidation({ validate: () => this.validateVpcLink() });
   }
 
+  @MethodMetadata()
   public addTargets(...targets: elbv2.INetworkLoadBalancer[]) {
     this._targets.push(...targets);
   }

@@ -65,22 +65,23 @@ new python.PythonFunction(this, 'MyFunction', {
 
 ## Packaging
 
-If `requirements.txt`, `Pipfile` or `poetry.lock` exists at the entry path, the construct will handle installing all required modules in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-python3.7) according to the `runtime` and with the Docker platform based on the target architecture of the Lambda function.
+If `requirements.txt`, `Pipfile`, `uv.lock` or `poetry.lock` exists at the entry path, the construct will handle installing all required modules in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-python3.13) according to the `runtime` and with the Docker platform based on the target architecture of the Lambda function.
 
 Python bundles are only recreated and published when a file in a source directory has changed.
 Therefore (and as a general best-practice), it is highly recommended to commit a lockfile with a
 list of all transitive dependencies and their exact versions. This will ensure that when any dependency version is updated, the bundle asset is recreated and uploaded.
 
-To that end, we recommend using [`pipenv`] or [`poetry`] which have lockfile support.
+To that end, we recommend using [`pipenv`], [`uv`] or [`poetry`] which have lockfile support.
 
 - [`pipenv`](https://pipenv-fork.readthedocs.io/en/latest/basics.html#example-pipfile-lock)
 - [`poetry`](https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control)
+- [`uv`](https://docs.astral.sh/uv/concepts/projects/sync/#exporting-the-lockfile)
 
 Packaging is executed using the `Packaging` class, which:
 
 1. Infers the packaging type based on the files present.
-2. If it sees a `Pipfile` or a `poetry.lock` file, it exports it to a compatible `requirements.txt` file with credentials (if they're available in the source files or in the bundling container).
-3. Installs dependencies using `pip`.
+2. If it sees a `Pipfile`, `uv.lock` or a `poetry.lock` file, it exports it to a compatible `requirements.txt` file with credentials (if they're available in the source files or in the bundling container).
+3. Installs dependencies using `pip` or `uv`.
 4. Copies the dependencies into an asset that is bundled for the Lambda package.
 
 **Lambda with a requirements.txt**
@@ -107,6 +108,18 @@ Packaging is executed using the `Packaging` class, which:
 ├── lambda_function.py # exports a function named 'handler'
 ├── pyproject.toml # your poetry project definition
 ├── poetry.lock # your poetry lock file has to be present at the entry path
+```
+
+**Lambda with a uv.lock**
+
+Reference: https://docs.astral.sh/uv/concepts/projects/layout/
+
+```plaintext
+.
+├── lambda_function.py # exports a function named 'handler'
+├── pyproject.toml # your poetry project definition
+├── uv.lock # your uv lock file has to be present at the entry path
+├── .python-version # this file is ignored, python version is configured via Runtime
 ```
 
 **Excluding source files**
@@ -233,7 +246,7 @@ new python.PythonFunction(this, 'function', {
 });
 ```
 
-The index URL or the token are only used during bundling and thus not included in the final asset. Setting only environment variable for `PIP_INDEX_URL` or `PIP_EXTRA_INDEX_URL` should work for accesing private Python repositories with `pip`, `pipenv` and `poetry` based dependencies.
+The index URL or the token are only used during bundling and thus not included in the final asset. Setting only environment variable for `PIP_INDEX_URL` or `PIP_EXTRA_INDEX_URL` should work for accessing private Python repositories with `pip`, `pipenv` and `poetry` based dependencies.
 
 If you also want to use the Code Artifact repo for building the base Docker image for bundling, use `buildArgs`. However, note that setting custom build args for bundling will force the base bundling image to be rebuilt every time (i.e. skip the Docker cache). Build args can be customized as:
 
@@ -299,7 +312,7 @@ container for Docker bundling or on the host OS for local bundling.
 ## Docker based bundling in complex Docker configurations
 
 By default the input and output of Docker based bundling is handled via bind mounts.
-In situtations where this does not work, like Docker-in-Docker setups or when using a remote Docker socket, you can configure an alternative, but slower, variant that also works in these situations.
+In situations where this does not work, like Docker-in-Docker setups or when using a remote Docker socket, you can configure an alternative, but slower, variant that also works in these situations.
 
 ```ts
 const entry = '/path/to/function';

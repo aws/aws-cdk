@@ -1,3 +1,4 @@
+
 import { Construct } from 'constructs';
 import {
   ApplicationConfigPropertyToJson,
@@ -9,18 +10,11 @@ import {
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import { ValidationError } from '../../../core';
 import { ENABLE_EMR_SERVICE_POLICY_V2 } from '../../../cx-api';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for EmrCreateCluster
- *
- * See the RunJobFlow API for complete documentation on input parameters
- *
- * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_RunJobFlow.html
- *
- */
-export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
+interface EmrCreateClusterOptions {
   /**
    * A specification of the number and type of Amazon EC2 instances.
    */
@@ -166,6 +160,24 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for calling an AWS service's API action using JSONPath from your
+ * state machine across regions.
+ */
+export interface EmrCreateClusterJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrCreateClusterOptions {}
+
+/**
+ * Properties for calling an AWS service's API action using JSONata from your
+ * state machine across regions.
+ */
+export interface EmrCreateClusterJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrCreateClusterOptions {}
+
+/**
+ * Properties for calling an AWS service's API action from your
+ * state machine across regions.
+ */
+export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps, EmrCreateClusterOptions {}
+
+/**
  * A Step Functions Task to create an EMR Cluster.
  *
  * The ClusterConfiguration is defined as Parameters in the state machine definition.
@@ -174,6 +186,26 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
  *
  */
 export class EmrCreateCluster extends sfn.TaskStateBase {
+  /**
+   * A Step Functions task using JSONPath to create an EMR Cluster.
+   *
+   * This task creates a Lambda function to call cross-region AWS API and invokes it.
+   */
+  public static jsonPath(scope: Construct, id: string, props: EmrCreateClusterJsonPathProps) {
+    return new EmrCreateCluster(scope, id, props);
+  }
+  /**
+   * A Step Functions task using JSONata to create an EMR Cluster.
+   *
+   * This task creates a Lambda function to call cross-region AWS API and invokes it.
+   */
+  public static jsonata(scope: Construct, id: string, props: EmrCreateClusterJsonataProps) {
+    return new EmrCreateCluster(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
+
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -216,7 +248,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
       this._autoScalingRole = this._autoScalingRole || this.createAutoScalingRole();
       // If InstanceFleets are used and an AutoScaling Role is specified, throw an error
     } else if (this._autoScalingRole !== undefined) {
-      throw new Error('Auto Scaling roles can not be specified with instance fleets.');
+      throw new ValidationError('Auto Scaling roles can not be specified with instance fleets.', this);
     }
 
     this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
@@ -227,12 +259,12 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
     if (this.props.stepConcurrencyLevel !== undefined && !cdk.Token.isUnresolved(this.props.stepConcurrencyLevel)) {
       if (this.props.stepConcurrencyLevel < 1 || this.props.stepConcurrencyLevel > 256) {
-        throw new Error(`Step concurrency level must be in range [1, 256], but got ${this.props.stepConcurrencyLevel}.`);
+        throw new ValidationError(`Step concurrency level must be in range [1, 256], but got ${this.props.stepConcurrencyLevel}.`, this);
       }
       if (this.props.releaseLabel && this.props.stepConcurrencyLevel !== 1) {
         const [major, minor] = this.props.releaseLabel.slice(4).split('.');
         if (Number(major) < 5 || (Number(major) === 5 && Number(minor) < 28)) {
-          throw new Error(`Step concurrency is only supported in EMR release version 5.28.0 and above but got ${this.props.releaseLabel}.`);
+          throw new ValidationError(`Step concurrency is only supported in EMR release version 5.28.0 and above but got ${this.props.releaseLabel}.`, this);
         }
       }
     }
@@ -241,7 +273,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
       const idletimeOutSeconds = this.props.autoTerminationPolicyIdleTimeout.toSeconds();
 
       if (idletimeOutSeconds < 60 || idletimeOutSeconds > 604800) {
-        throw new Error(`\`autoTerminationPolicyIdleTimeout\` must be between 60 and 604800 seconds, got ${idletimeOutSeconds} seconds.`);
+        throw new ValidationError(`\`autoTerminationPolicyIdleTimeout\` must be between 60 and 604800 seconds, got ${idletimeOutSeconds} seconds.`, this);
       }
     }
   }
@@ -253,7 +285,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    */
   public get serviceRole(): iam.IRole {
     if (this._serviceRole === undefined) {
-      throw new Error('role not available yet--use the object in a Task first');
+      throw new ValidationError('role not available yet--use the object in a Task first', this);
     }
     return this._serviceRole;
   }
@@ -265,7 +297,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    */
   public get clusterRole(): iam.IRole {
     if (this._clusterRole === undefined) {
-      throw new Error('role not available yet--use the object in a Task first');
+      throw new ValidationError('role not available yet--use the object in a Task first', this);
     }
     return this._clusterRole;
   }
@@ -277,7 +309,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    */
   public get autoScalingRole(): iam.IRole {
     if (this._autoScalingRole === undefined) {
-      throw new Error('role not available yet--use the object in a Task first');
+      throw new ValidationError('role not available yet--use the object in a Task first', this);
     }
     return this._autoScalingRole;
   }
@@ -285,10 +317,11 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('elasticmapreduce', 'createCluster', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         Instances: InstancesConfigPropertyToJson(this.props.instances),
         JobFlowRole: cdk.stringToCloudFormation(this._clusterRole.roleName),
         Name: cdk.stringToCloudFormation(this.props.name),
@@ -311,7 +344,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         AutoTerminationPolicy: this.props.autoTerminationPolicyIdleTimeout
           ? { IdleTimeout: this.props.autoTerminationPolicyIdleTimeout.toSeconds() }
           : undefined,
-      }),
+      }, queryLanguage),
     };
   }
 
@@ -451,7 +484,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     const prefix = releaseLabel.slice(0, 4);
     const versions = releaseLabel.slice(4).split('.');
     if (prefix !== 'emr-' || versions.length !== 3 || versions.some((e) => isNotANumber(e))) {
-      throw new Error(`The release label must be in the format 'emr-x.x.x' but got ${releaseLabel}`);
+      throw new ValidationError(`The release label must be in the format 'emr-x.x.x' but got ${releaseLabel}`, this);
     }
     return releaseLabel;
 
@@ -870,7 +903,7 @@ export namespace EmrCreateCluster {
      * For a master instance fleet, only one of `targetSpotCapacity` and `targetOnDemandCapacity` can be specified, and its value
      * must be 1.
      *
-    * @default No targetSpotCapacity
+     * @default No targetSpotCapacity
      */
     readonly targetSpotCapacity?: number;
   }

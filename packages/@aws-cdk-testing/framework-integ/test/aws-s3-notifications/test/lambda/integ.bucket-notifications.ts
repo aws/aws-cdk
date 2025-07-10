@@ -6,7 +6,12 @@ import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 import * as constructs from 'constructs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-s3:keepNotificationInImportedBucket': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'cdk-integ-lambda-bucket-s3-notifications');
 

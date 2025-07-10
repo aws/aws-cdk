@@ -8,7 +8,10 @@ import { ListenerCondition } from './conditions';
 import { ITrustStore } from './trust-store';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Duration, Lazy, Resource, Token } from '../../../core';
+import { Annotations, Duration, FeatureFlags, Lazy, Resource, Token } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
@@ -137,6 +140,13 @@ export interface MutualAuthentication {
    * @default false
    */
   readonly ignoreClientCertificateExpiry?: boolean;
+
+  /**
+   * Indicates whether trust store CA names are advertised
+   *
+   * @default false
+   */
+  readonly advertiseTrustStoreCaNames?: boolean;
 }
 
 /**
@@ -191,13 +201,19 @@ export interface ApplicationListenerLookupOptions extends BaseListenerLookupOpti
  *
  * @resource AWS::ElasticLoadBalancingV2::Listener
  */
+@propertyInjectable
 export class ApplicationListener extends BaseListener implements IApplicationListener {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.ApplicationListener';
+
   /**
    * Look up an ApplicationListener.
    */
   public static fromLookup(scope: Construct, id: string, options: ApplicationListenerLookupOptions): IApplicationListener {
     if (Token.isUnresolved(options.listenerArn)) {
-      throw new Error('All arguments to look up a load balancer listener must be concrete (no Tokens)');
+      throw new ValidationError('All arguments to look up a load balancer listener must be concrete (no Tokens)', scope);
     }
 
     let listenerProtocol: cxschema.LoadBalancerListenerProtocol | undefined;
@@ -235,7 +251,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
   /**
    * The port of the listener.
-  */
+   */
   public readonly port: number;
 
   /**
@@ -251,10 +267,15 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   constructor(scope: Construct, id: string, props: ApplicationListenerProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
     if (protocol === undefined || port === undefined) {
-      throw new Error('At least one of \'port\' or \'protocol\' is required');
+      throw new ValidationError('At least one of \'port\' or \'protocol\' is required', scope);
     }
 
-    validateMutualAuthentication(props.mutualAuthentication);
+    validateMutualAuthentication(scope, props.mutualAuthentication);
+
+    let advertiseTrustStoreCaNames: string | undefined;
+    if (props.mutualAuthentication?.advertiseTrustStoreCaNames !== undefined) {
+      advertiseTrustStoreCaNames = props.mutualAuthentication.advertiseTrustStoreCaNames ? 'on' : 'off';
+    }
 
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
@@ -263,11 +284,18 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       port,
       sslPolicy: props.sslPolicy,
       mutualAuthentication: props.mutualAuthentication ? {
+        advertiseTrustStoreCaNames,
         ignoreClientCertificateExpiry: props.mutualAuthentication?.ignoreClientCertificateExpiry,
         mode: props.mutualAuthentication?.mutualAuthenticationMode,
         trustStoreArn: props.mutualAuthentication?.trustStore?.trustStoreArn,
       } : undefined,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    if (protocol === ApplicationProtocol.HTTP && props.certificates?.length) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-elasticloadbalancingv2:httpListenerWithCertificates', 'Certificates cannot be specified for HTTP listeners. Use HTTPS instead.');
+    }
 
     this.loadBalancer = props.loadBalancer;
     this.protocol = protocol;
@@ -290,7 +318,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     });
 
     if (props.defaultAction && props.defaultTargetGroups) {
-      throw new Error('Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'');
+      throw new ValidationError('Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'', this);
     }
 
     if (props.defaultAction) {
@@ -303,7 +331,9 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     if (props.open !== false) {
       this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv4(), `Allow from anyone on port ${port}`);
-      if (this.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK) {
+      if (this.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK ||
+        (this.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 &&
+          FeatureFlags.of(this).isEnabled(cxapi.ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT))) {
         this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv6(), `Allow from anyone on port ${port}`);
       }
     }
@@ -318,6 +348,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    *
    * @deprecated Use `addCertificates` instead.
    */
+  @MethodMetadata()
   public addCertificateArns(id: string, arns: string[]): void {
     this.addCertificates(id, arns.map(ListenerCertificate.fromArn));
   }
@@ -329,6 +360,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    * resources since cloudformation requires the certificates array on the
    * listener resource to have a length of 1.
    */
+  @MethodMetadata()
   public addCertificates(id: string, certificates: IListenerCertificate[]): void {
     const additionalCerts = [...certificates];
 
@@ -358,8 +390,9 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    * At least one Action must be added without conditions (which becomes the
    * default Action).
    */
+  @MethodMetadata()
   public addAction(id: string, props: AddApplicationActionProps): void {
-    checkAddRuleProps(props);
+    checkAddRuleProps(this, props);
 
     if (props.priority !== undefined) {
       // New rule
@@ -386,8 +419,9 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    * way. At least one TargetGroup must be added without conditions (which will
    * become the default Action for this listener).
    */
+  @MethodMetadata()
   public addTargetGroups(id: string, props: AddApplicationTargetGroupsProps): void {
-    checkAddRuleProps(props);
+    checkAddRuleProps(this, props);
 
     if (props.priority !== undefined) {
       // New rule
@@ -418,10 +452,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    *
    * @returns The newly created target group
    */
+  @MethodMetadata()
   public addTargets(id: string, props: AddApplicationTargetsProps): ApplicationTargetGroup {
     if (!this.loadBalancer.vpc) {
       // eslint-disable-next-line max-len
-      throw new Error('Can only call addTargets() when using a constructed Load Balancer or an imported Load Balancer with specified vpc; construct a new TargetGroup and use addTargetGroup');
+      throw new ValidationError('Can only call addTargets() when using a constructed Load Balancer or an imported Load Balancer with specified vpc; construct a new TargetGroup and use addTargetGroup', this);
     }
 
     const group = new ApplicationTargetGroup(this, id + 'Group', {
@@ -442,8 +477,9 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    *
    * @deprecated Use `addAction()` instead
    */
+  @MethodMetadata()
   public addFixedResponse(id: string, props: AddFixedResponseProps) {
-    checkAddRuleProps(props);
+    checkAddRuleProps(this, props);
 
     const fixedResponse: FixedResponse = {
       statusCode: props.statusCode,
@@ -457,11 +493,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
      * Inlining the duplication functionality in v2 only (for now).
      */
     if (fixedResponse.statusCode && !/^(2|4|5)\d\d$/.test(fixedResponse.statusCode)) {
-      throw new Error('`statusCode` must be 2XX, 4XX or 5XX.');
+      throw new ValidationError('`statusCode` must be 2XX, 4XX or 5XX.', this);
     }
 
     if (fixedResponse.messageBody && fixedResponse.messageBody.length > 1024) {
-      throw new Error('`messageBody` cannot have more than 1024 characters.');
+      throw new ValidationError('`messageBody` cannot have more than 1024 characters.', this);
     }
 
     if (props.priority) {
@@ -484,8 +520,9 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    *
    * @deprecated Use `addAction()` instead
    */
+  @MethodMetadata()
   public addRedirectResponse(id: string, props: AddRedirectResponseProps) {
-    checkAddRuleProps(props);
+    checkAddRuleProps(this, props);
     const redirectResponse = {
       host: props.host,
       path: props.path,
@@ -501,11 +538,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
      * Inlining the duplication functionality in v2 only (for now).
      */
     if (redirectResponse.protocol && !/^(HTTPS?|#\{protocol\})$/i.test(redirectResponse.protocol)) {
-      throw new Error('`protocol` must be HTTP, HTTPS, or #{protocol}.');
+      throw new ValidationError('`protocol` must be HTTP, HTTPS, or #{protocol}.', this);
     }
 
     if (!redirectResponse.statusCode || !/^HTTP_30[12]$/.test(redirectResponse.statusCode)) {
-      throw new Error('`statusCode` must be HTTP_301 or HTTP_302.');
+      throw new ValidationError('`statusCode` must be HTTP_301 or HTTP_302.', this);
     }
 
     if (props.priority) {
@@ -532,6 +569,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    *
    * Don't call this directly. It is called by ApplicationTargetGroup.
    */
+  @MethodMetadata()
   public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void {
     connectable.connections.allowFrom(this.loadBalancer, portRange, 'Load balancer to target');
   }
@@ -696,7 +734,7 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    * At least one TargetGroup must be added without conditions.
    */
   public addTargetGroups(id: string, props: AddApplicationTargetGroupsProps): void {
-    checkAddRuleProps(props);
+    checkAddRuleProps(this, props);
 
     if (props.priority !== undefined) {
       // New rule
@@ -706,7 +744,7 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
         ...props,
       });
     } else {
-      throw new Error('Cannot add default Target Groups to imported ApplicationListener');
+      throw new ValidationError('Cannot add default Target Groups to imported ApplicationListener', this);
     }
   }
 
@@ -723,7 +761,7 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    */
   public addTargets(_id: string, _props: AddApplicationTargetsProps): ApplicationTargetGroup {
     // eslint-disable-next-line max-len
-    throw new Error('Can only call addTargets() when using a constructed ApplicationListener; construct a new TargetGroup and use addTargetGroup.');
+    throw new ValidationError('Can only call addTargets() when using a constructed ApplicationListener; construct a new TargetGroup and use addTargetGroup.', this);
   }
 
   /**
@@ -745,7 +783,7 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    * property here to avoid having CloudFormation attempt to replace your resource.
    */
   public addAction(id: string, props: AddApplicationActionProps): void {
-    checkAddRuleProps(props);
+    checkAddRuleProps(this, props);
 
     if (props.priority !== undefined) {
       const ruleId = props.removeSuffix ? id : id + 'Rule';
@@ -758,7 +796,7 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
         ...props,
       });
     } else {
-      throw new Error('priority must be set for actions added to an imported listener');
+      throw new ValidationError('priority must be set for actions added to an imported listener', this);
     }
   }
 }
@@ -766,12 +804,17 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
 /**
  * An imported application listener.
  */
+@propertyInjectable
 class ImportedApplicationListener extends ExternalApplicationListener {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.ImportedApplicationListener';
   public readonly listenerArn: string;
   public readonly connections: ec2.Connections;
 
   constructor(scope: Construct, id: string, props: ApplicationListenerAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.listenerArn = props.listenerArn;
     const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
@@ -783,12 +826,17 @@ class ImportedApplicationListener extends ExternalApplicationListener {
   }
 }
 
+@propertyInjectable
 class LookedUpApplicationListener extends ExternalApplicationListener {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.LookedUpApplicationListener';
   public readonly listenerArn: string;
   public readonly connections: ec2.Connections;
 
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerListenerContextResponse) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.listenerArn = props.listenerArn;
     this.connections = new ec2.Connections({
@@ -1034,17 +1082,17 @@ export interface AddFixedResponseProps extends AddRuleProps, FixedResponse {
 export interface AddRedirectResponseProps extends AddRuleProps, RedirectResponse {
 }
 
-function checkAddRuleProps(props: AddRuleProps) {
+function checkAddRuleProps(scope: Construct, props: AddRuleProps) {
   const conditionsCount = props.conditions?.length || 0;
   const hasAnyConditions = conditionsCount !== 0 ||
     props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined;
   const hasPriority = props.priority !== undefined;
   if (hasAnyConditions !== hasPriority) {
-    throw new Error('Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa');
+    throw new ValidationError('Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa', scope);
   }
 }
 
-function validateMutualAuthentication(mutualAuthentication?: MutualAuthentication): void {
+function validateMutualAuthentication(scope: Construct, mutualAuthentication?: MutualAuthentication): void {
   if (!mutualAuthentication) {
     return;
   }
@@ -1053,17 +1101,21 @@ function validateMutualAuthentication(mutualAuthentication?: MutualAuthenticatio
 
   if (currentMode === MutualAuthenticationMode.VERIFY) {
     if (!mutualAuthentication.trustStore) {
-      throw new Error(`You must set 'trustStore' when 'mode' is '${MutualAuthenticationMode.VERIFY}'`);
+      throw new ValidationError(`You must set 'trustStore' when 'mode' is '${MutualAuthenticationMode.VERIFY}'`, scope);
     }
   }
 
   if (currentMode === MutualAuthenticationMode.OFF || currentMode === MutualAuthenticationMode.PASS_THROUGH) {
     if (mutualAuthentication.trustStore) {
-      throw new Error(`You cannot set 'trustStore' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`);
+      throw new ValidationError(`You cannot set 'trustStore' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`, scope);
     }
 
     if (mutualAuthentication.ignoreClientCertificateExpiry !== undefined) {
-      throw new Error(`You cannot set 'ignoreClientCertificateExpiry' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`);
+      throw new ValidationError(`You cannot set 'ignoreClientCertificateExpiry' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`, scope);
+    }
+
+    if (mutualAuthentication.advertiseTrustStoreCaNames !== undefined) {
+      throw new ValidationError(`You cannot set 'advertiseTrustStoreCaNames' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`, scope);
     }
   }
 }

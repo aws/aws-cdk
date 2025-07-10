@@ -1,5 +1,6 @@
 import { findReferencedPaths, jsonPathString, JsonPathToken, renderObject, renderInExpression, jsonPathFromAny } from './private/json-path';
-import { Token, IResolvable, JsonNull } from '../../core';
+import { Token, IResolvable, JsonNull, UnscopedValidationError } from '../../core';
+import { findJsonataExpressions } from './private/jsonata';
 
 /**
  * Extract a field from the State Machine data or context
@@ -384,7 +385,7 @@ export class JsonPath {
   public static jsonToString(value: any): string {
     const path = jsonPathFromAny(value);
     if (!path) {
-      throw new Error('Argument to JsonPath.jsonToString() must be a JsonPath object');
+      throw new UnscopedValidationError('Argument to JsonPath.jsonToString() must be a JsonPath object');
     }
 
     return new JsonPathToken(`States.JsonToString(${path})`).toString();
@@ -519,7 +520,12 @@ export class FieldUtils {
    */
   public static containsTaskToken(obj?: { [key: string]: any }): boolean {
     const paths = findReferencedPaths(obj);
-    return paths.has('$$.Task.Token') || paths.has('$$.Task') || paths.has('$$');
+    const hasJsonPathTaskToken = paths.has('$$.Task.Token') || paths.has('$$.Task') || paths.has('$$');
+    // find '$states.context' or '$states.context.Task' pr '$states.context.Task.Token'
+    const hasJsonataTaskToken = Array.from(findJsonataExpressions(obj)).some(exp =>
+      /(?<!\$states\.context\.)\$states\.context(?:\.Task(?:\.Token)?)?(?!\.[a-zA-Z])/.test(exp),
+    );
+    return hasJsonPathTaskToken || hasJsonataTaskToken;
   }
 
   private constructor() {}
@@ -556,7 +562,7 @@ function validateJsonPath(path: string) {
   ];
   const intrinsicFunctionFullNames = intrinsicFunctionNames.map((fn) => `States.${fn}`);
   if (path !== '$'
-    && !path.startsWith('$.')
+    && !path.startsWith('$')
     && path !== '$$'
     && !path.startsWith('$$.')
     && !path.startsWith('$[')
@@ -564,20 +570,20 @@ function validateJsonPath(path: string) {
   ) {
     const lastItem = intrinsicFunctionFullNames.pop();
     const intrinsicFunctionsStr = intrinsicFunctionFullNames.join(', ') + ', or ' + lastItem;
-    throw new Error(`JSON path values must be exactly '$', '$$', start with '$.', start with '$$.', start with '$[', or start with an intrinsic function: ${intrinsicFunctionsStr}. Received: ${path}`);
+    throw new UnscopedValidationError(`JSON path values must be exactly '$', '$$', start with '$', start with '$$.', start with '$[', or start with an intrinsic function: ${intrinsicFunctionsStr}. Received: ${path}`);
   }
 }
 
 function validateDataPath(path: string) {
   if (path !== '$'
     && !path.startsWith('$[')
-    && !path.startsWith('$.')) {
-    throw new Error("Data JSON path values must either be exactly equal to '$', start with '$[' or start with '$.'");
+    && !path.startsWith('$')) {
+    throw new UnscopedValidationError("Data JSON path values must either be exactly equal to '$', start with '$[' or start with '$'");
   }
 }
 
 function validateContextPath(path: string) {
   if (path !== '$$' && !path.startsWith('$$.')) {
-    throw new Error("Context JSON path values must either be exactly equal to '$$' or start with '$$.'");
+    throw new UnscopedValidationError("Context JSON path values must either be exactly equal to '$$' or start with '$$.'");
   }
 }

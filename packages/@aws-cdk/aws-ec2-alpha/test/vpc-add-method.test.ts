@@ -1,4 +1,4 @@
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib/vpc-v2';
 import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
@@ -9,6 +9,9 @@ describe('Vpc V2 with full control', () => {
   let stack: cdk.Stack;
   let myVpc: vpc.VpcV2;
   let mySubnet: SubnetV2;
+  let routeTable1: route.RouteTable;
+  let testSubnet1: SubnetV2;
+  let testSubnet2: SubnetV2;
 
   beforeEach(() => {
     const app = new cdk.App({
@@ -25,10 +28,30 @@ describe('Vpc V2 with full control', () => {
     });
     mySubnet = new SubnetV2(stack, 'TestSubnet', {
       vpc: myVpc,
-      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
+      ipv4CidrBlock: new IpCidr('10.1.1.0/24'),
       availabilityZone: 'ap-south-1b',
       subnetType: SubnetType.PUBLIC,
-      ipv6CidrBlock: new IpCidr('2001:db8::/48'),
+      ipv6CidrBlock: new IpCidr('2001:db8:0::/64'),
+    });
+    routeTable1 = new route.RouteTable(stack, 'PrivateSubnetRouteTable1', {
+      vpc: myVpc,
+    });
+    testSubnet1 = new SubnetV2(stack, 'TestSubnet1', {
+      vpc: myVpc,
+      ipv4CidrBlock: new IpCidr('10.1.2.0/24'),
+      ipv6CidrBlock: new IpCidr('2001:db8:1::/64'),
+      routeTable: routeTable1,
+      availabilityZone: 'ap-south-1a',
+      subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+    });
+
+    testSubnet2 = new SubnetV2(stack, 'TestSubnet2', {
+      vpc: myVpc,
+      ipv4CidrBlock: new IpCidr('10.1.3.0/24'),
+      ipv6CidrBlock: new IpCidr('2001:db8:2::/64'),
+      routeTable: routeTable1,
+      availabilityZone: 'ap-south-1b',
+      subnetType: SubnetType.PRIVATE_WITH_EGRESS,
     });
   });
   test('Method to add a new Egress-Only IGW', () => {
@@ -73,7 +96,7 @@ describe('Vpc V2 with full control', () => {
       vpc: vpc1,
       ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
       availabilityZone: 'ap-south-1b',
-      //Test secondary ipv6 address after IPAM pool creation
+      // Test secondary ipv6 address after IPAM pool creation
       ipv6CidrBlock: new IpCidr('2001:db8::/48'),
       subnetType: SubnetType.PRIVATE_ISOLATED,
     });
@@ -177,10 +200,18 @@ describe('Vpc V2 with full control', () => {
       ],
     });
     // EIP should be created when not provided
-    template.hasResource('AWS::EC2::EIP', {
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+    template.hasResource('AWS::EC2::EIP', {});
+  });
+
+  test('EIP created for NAT Gateway has domain set to vpc', () => {
+    myVpc.addNatGateway({
+      subnet: mySubnet,
+    });
+    const template = Template.fromStack(stack);
+
+    // Verify that the EIP has domain set to 'vpc'
+    template.hasResourceProperties('AWS::EC2::EIP', {
+      Domain: 'vpc',
     });
   });
 
@@ -236,11 +267,7 @@ describe('Vpc V2 with full control', () => {
       ],
     });
     // EIP should be created when not provided
-    template.hasResource('AWS::EC2::EIP', {
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
-    });
+    template.hasResource('AWS::EC2::EIP', {});
   });
 
   test('addNatGateway fails for public gateway without IGW attached', () => {
@@ -305,6 +332,86 @@ describe('Vpc V2 with full control', () => {
     });
   });
 
+  test('addInternetGateway throws error if subnet type provided is not available', () => {
+    expect(() => {
+      myVpc.addInternetGateway({
+        subnets: [{ subnetType: SubnetType.PRIVATE_ISOLATED }],
+      });
+    }).toThrow("There are no 'Isolated' subnet groups in this VPC. Available types: Deprecated_Private_NAT,Private,Deprecated_Private,Public");
+  });
+
+  test('addInternetGateway adds route for all selected subnets if given as an input', () => {
+    myVpc.addInternetGateway({
+      subnets: [{ subnetType: SubnetType.PRIVATE_WITH_EGRESS }],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+      GatewayId: {
+        'Fn::GetAtt': ['TestVpcInternetGatewayIGW4C825874', 'InternetGatewayId'],
+      },
+      RouteTableId: { // Private Subnet RouteTable
+        'Fn::GetAtt': ['PrivateSubnetRouteTable1RouteTable8DA475CB', 'RouteTableId'],
+      },
+    });
+    // Should be created only for Private Egress Subnet and not for Public Subnet
+    Template.fromStack(stack).hasResource('AWS::EC2::Route', 1);
+  });
+
+  test('addInternetGateway adds route for multiple subnets when filtered by subnet IDs', () => {
+    // Add Internet Gateway with multiple subnet IDs
+    myVpc.addInternetGateway({
+      subnets: [testSubnet1, testSubnet2],
+    });
+
+    // Verify routes are created for both subnets
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+      GatewayId: {
+        'Fn::GetAtt': ['TestVpcInternetGatewayIGW4C825874', 'InternetGatewayId'],
+      },
+      RouteTableId: {
+        'Fn::GetAtt': ['PrivateSubnetRouteTable1RouteTable8DA475CB', 'RouteTableId'],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+      GatewayId: {
+        'Fn::GetAtt': ['TestVpcInternetGatewayIGW4C825874', 'InternetGatewayId'],
+      },
+      RouteTableId: {
+        'Fn::GetAtt': ['PrivateSubnetRouteTable1RouteTable8DA475CB', 'RouteTableId'],
+      },
+    });
+    // Verify two routes are created
+    Template.fromStack(stack).hasResource('AWS::EC2::Route', 2);
+  });
+
+  test('addEgressInternetGateway adds route for multiple subnets when filtered by subnet IDs', () => {
+    // Add Internet Gateway with multiple subnet IDs
+    myVpc.addEgressOnlyInternetGateway({
+      subnets: [testSubnet1, testSubnet2],
+    });
+
+    // Verify routes are created for both subnets
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+      EgressOnlyInternetGatewayId: {
+        'Fn::GetAtt': ['TestVpcEgressOnlyGWEIGW5A79987F', 'Id'],
+      },
+      RouteTableId: {
+        'Fn::GetAtt': ['PrivateSubnetRouteTable1RouteTable8DA475CB', 'RouteTableId'],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+      EgressOnlyInternetGatewayId: {
+        'Fn::GetAtt': ['TestVpcEgressOnlyGWEIGW5A79987F', 'Id'],
+      },
+      RouteTableId: {
+        'Fn::GetAtt': ['PrivateSubnetRouteTable1RouteTable8DA475CB', 'RouteTableId'],
+      },
+    });
+    // Verify two routes are created
+    Template.fromStack(stack).hasResource('AWS::EC2::Route', 2);
+  });
+
   test('Throws error if there is already an IGW attached', () => {
     myVpc.addInternetGateway();
     expect(() => {
@@ -318,7 +425,7 @@ describe('Vpc V2 with full control', () => {
       ipv6Destination: '2001:db8::/48',
     });
     const template = Template.fromStack(stack);
-    //Route for custom IPv4 destination
+    // Route for custom IPv4 destination
     template.hasResourceProperties('AWS::EC2::Route', {
       GatewayId: {
         'Fn::GetAtt': ['TestVpcInternetGatewayIGW4C825874', 'InternetGatewayId'],
@@ -328,7 +435,7 @@ describe('Vpc V2 with full control', () => {
       },
       DestinationCidrBlock: '203.0.113.25',
     });
-    //Route for custom IPv6 destination
+    // Route for custom IPv6 destination
     template.hasResourceProperties('AWS::EC2::Route', {
       GatewayId: {
         'Fn::GetAtt': ['TestVpcInternetGatewayIGW4C825874', 'InternetGatewayId'],
@@ -340,7 +447,7 @@ describe('Vpc V2 with full control', () => {
     });
   });
 
-  //Tests for VPNGatewayV2
+  // Tests for VPNGatewayV2
   test('enableVpnGatewayV2 defines a new VPNGateway with attachment', () => {
     myVpc.enableVpnGatewayV2({
       type: VpnConnectionType.IPSEC_1,
@@ -365,7 +472,7 @@ describe('Vpc V2 with full control', () => {
     });
   });
 
-  test('Check vpngateway has routePropogation for input subnets', () => {
+  test('Check vpngateway has route Propagation for input subnets', () => {
     myVpc.enableVpnGatewayV2({
       type: VpnConnectionType.IPSEC_1,
       vpnRoutePropagation: [{ subnetType: SubnetType.PUBLIC }],
@@ -382,13 +489,13 @@ describe('Vpc V2 with full control', () => {
     });
   });
 
-  test('Throws error when no subnet identified for route propogation', () => {
+  test('Throws error when no subnet identified for route propagation', () => {
     expect(() => {
       myVpc.enableVpnGatewayV2({
         type: VpnConnectionType.IPSEC_1,
         vpnRoutePropagation: [{ subnetType: SubnetType.PRIVATE_ISOLATED }],
       });
-    }).toThrow("There are no 'Isolated' subnet groups in this VPC. Available types: Public");
+    }).toThrow("There are no 'Isolated' subnet groups in this VPC. Available types: Deprecated_Private_NAT,Private,Deprecated_Private,Public");
   });
 
   test('Throws error when VPN GW is already enabled', () => {
@@ -398,4 +505,88 @@ describe('Vpc V2 with full control', () => {
     }).toThrow('The VPN Gateway has already been enabled.');
   });
 
+  test('createAcceptorVpcRole creates a restricted role', () => {
+    myVpc.createAcceptorVpcRole('123456789012');
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123456789012:root']] },
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('createPeeringConnection establishes connection between 2 VPCs', () => {
+    const acceptorVpc = new vpc.VpcV2(stack, 'TestAcceptorVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+
+    myVpc.createPeeringConnection('testPeeringConnection', {
+      acceptorVpc: acceptorVpc,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCPeeringConnection', {
+      VpcId: {
+        'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'],
+      },
+      PeerVpcId: {
+        'Fn::GetAtt': ['TestAcceptorVpc4AE3E611', 'VpcId'],
+      },
+      PeerOwnerId: { Ref: 'AWS::AccountId' },
+      PeerRegion: { Ref: 'AWS::Region' },
+    });
+  });
+
+  test('can add multiple NAT gateways to different subnets', () => {
+    // Add Internet Gateway first since public NAT gateways require it
+    myVpc.addInternetGateway();
+
+    // Add first NAT gateway
+    myVpc.addNatGateway({
+      subnet: mySubnet,
+      natGatewayName: 'FirstNatGateway',
+      connectivityType: route.NatConnectivityType.PUBLIC,
+    });
+
+    // Add second NAT gateway
+    myVpc.addNatGateway({
+      subnet: testSubnet1,
+      natGatewayName: 'SecondNatGateway',
+      connectivityType: route.NatConnectivityType.PUBLIC,
+    });
+
+    const template = Template.fromStack(stack);
+
+    // Verify that two NAT gateways are created
+    template.resourceCountIs('AWS::EC2::NatGateway', 2);
+
+    // Verify NAT Gateway 1 properties
+    template.hasResourceProperties('AWS::EC2::NatGateway', {
+      Tags: Match.arrayWith([
+        {
+          Key: 'Name',
+          Value: 'SecondNatGateway',
+        },
+      ]),
+    });
+
+    // Verify NAT Gateway 2 properties
+    template.hasResourceProperties('AWS::EC2::NatGateway', {
+      Tags: Match.arrayWith([
+        {
+          Key: 'Name',
+          Value: 'FirstNatGateway',
+        },
+      ]),
+    });
+  });
 });

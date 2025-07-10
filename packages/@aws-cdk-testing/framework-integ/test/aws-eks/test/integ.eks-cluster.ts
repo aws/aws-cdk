@@ -12,9 +12,9 @@ import * as constructs from 'constructs';
 import * as hello from './hello-k8s';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
+import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
-
   private cluster: eks.Cluster;
   private vpc: ec2.IVpc;
 
@@ -43,7 +43,7 @@ class EksClusterStack extends Stack {
       vpcSubnets,
       mastersRole,
       defaultCapacity: 2,
-      ...getClusterVersionConfig(this),
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_32),
       secretsEncryptionKey,
       tags: {
         foo: 'bar',
@@ -74,6 +74,8 @@ class EksClusterStack extends Stack {
     this.assertNodeGroupGraviton3();
 
     this.assertNodeGroupCustomAmi();
+
+    this.assertNodeGroupGpu();
 
     this.assertSimpleManifest();
 
@@ -151,7 +153,6 @@ class EksClusterStack extends Stack {
   }
 
   private assertSimpleCdk8sChart() {
-
     class Chart extends cdk8s.Chart {
       constructor(scope: constructs.Construct, ns: string, cluster: eks.ICluster) {
         super(scope, ns);
@@ -161,7 +162,6 @@ class EksClusterStack extends Stack {
             clusterName: cluster.clusterName,
           },
         });
-
       }
     }
     const app = new cdk8s.App();
@@ -277,6 +277,19 @@ class EksClusterStack extends Stack {
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
     });
   }
+  private assertNodeGroupGpu() {
+    // add a GPU nodegroup
+    this.cluster.addNodegroupCapacity('extra-ng-gpu', {
+      instanceTypes: [
+        new ec2.InstanceType('p2.xlarge'),
+        new ec2.InstanceType('g5.xlarge'),
+        new ec2.InstanceType('g6e.xlarge'),
+      ],
+      minSize: 1,
+      // reusing the default capacity nodegroup instance role when available
+      nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+    });
+  }
   private assertSpotCapacity() {
     // spot instances (up to 10)
     this.cluster.addAutoScalingGroupCapacity('spot', {
@@ -296,7 +309,6 @@ class EksClusterStack extends Stack {
       minCapacity: 2,
       machineImageType: eks.MachineImageType.BOTTLEROCKET,
     });
-
   }
   private assertCapacityX86() {
     // add some x86_64 capacity to the cluster. The IAM instance role will
@@ -321,9 +333,7 @@ class EksClusterStack extends Stack {
     this.cluster.addFargateProfile('default', {
       selectors: [{ namespace: 'default' }],
     });
-
   }
-
 }
 
 // this test uses both the bottlerocket image and the inf1 instance, which are only supported in these
@@ -334,7 +344,13 @@ const supportedRegions = [
   'us-west-2',
 ];
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 
 // since the EKS optimized AMI is hard-coded here based on the region,
 // we need to actually pass in a specific region.
@@ -343,7 +359,6 @@ const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster', {
 });
 
 if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
-
   // only validate if we are about to actually deploy.
   // TODO: better way to determine this, right now the 'CDK_INTEG_ACCOUNT' seems like the only way.
 
@@ -354,7 +369,6 @@ if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
   if (!supportedRegions.includes(stack.region)) {
     throw new Error(`region (${stack.region}) must be configured to one of: ${supportedRegions}`);
   }
-
 }
 
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-integ', {

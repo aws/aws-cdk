@@ -26,7 +26,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
     vpc_v2.IpAddresses.ipv4('10.2.0.0/16', {
       cidrBlockName: 'SecondaryAddress2',
     }),
-    //Test Amazon provided secondary ipv6 address
+    // Test Amazon provided secondary ipv6 address
     vpc_v2.IpAddresses.amazonProvidedIpv6({
       cidrBlockName: 'AmazonProvided',
     }),
@@ -49,34 +49,34 @@ new SubnetV2(stack, 'testsubnet', {
   vpc,
   availabilityZone: 'us-west-2b',
   ipv4CidrBlock: new IpCidr('10.2.0.0/24'),
-  //Test secondary ipv6 address after Amazon Provided ipv6 allocation
-  //ipv6CidrBlock: new Ipv6Cidr('2001:db8:1::/64'),
+  // Test secondary ipv6 address after Amazon Provided ipv6 allocation
+  // ipv6CidrBlock: new Ipv6Cidr('2001:db8:1::/64'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 
-//Validate ipv6 IPAM
+// Validate ipv6 IPAM
 new SubnetV2(stack, 'validateIpv6', {
   vpc,
   ipv4CidrBlock: new IpCidr('10.3.0.0/24'),
   availabilityZone: 'us-west-2b',
-  //Test secondary ipv6 address after Amazon Provided ipv6 allocation
-  //ipv6CidrBlock: new IpCidr('2600:1f14:3283:9501::/64'),
+  // Test secondary ipv6 address after Amazon Provided ipv6 allocation
+  // ipv6CidrBlock: new IpCidr('2600:1f14:3283:9501::/64'),
   subnetType: SubnetType.PUBLIC,
 });
 
-//Test to add Gateway Endpoint
+// Test to add Gateway Endpoint
 vpc.addGatewayEndpoint('TestGWendpoint', {
   service: GatewayVpcEndpointAwsService.S3,
   subnets: [{ subnetType: SubnetType.PUBLIC }],
 });
 
-//Test to add Interface Endpoint
+// Test to add Interface Endpoint
 vpc.addInterfaceEndpoint('TestInterfaceEndpoint', {
   service: InterfaceVpcEndpointAwsService.SNS,
   subnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
 });
 
-//Add an Egress only Internet Gateway
+// Add an Egress only Internet Gateway
 vpc.addEgressOnlyInternetGateway({
   subnets: [{ subnetType: SubnetType.PUBLIC }],
 });
@@ -86,7 +86,7 @@ const vpnGateway = vpc.enableVpnGatewayV2({
   type: VpnConnectionType.IPSEC_1,
 });
 
-//Can define a route with VPN gateway as a target
+// Can define a route with VPN gateway as a target
 const routeTable = new RouteTable(stack, 'routeTable', { vpc } );
 
 new Route(stack, 'route', {
@@ -95,18 +95,18 @@ new Route(stack, 'route', {
   routeTable: routeTable,
 });
 
-//Add Internet Gateway with routes set to custom IP range
+// Add Internet Gateway with routes set to custom IP range
 vpc.addInternetGateway({
   ipv4Destination: '192.168.0.0/16',
 });
 
-//Add a NAT Gateway
+// Add a NAT Gateway
 vpc.addNatGateway({
   subnet: subnet,
   connectivityType: NatConnectivityType.PRIVATE,
 }).node.addDependency(vpnGateway);
 
-//Can define a route with Nat gateway as a target
+// Can define a route with Nat gateway as a target
 routeTable.addRoute( 'NATGWRoute', '172.32.0.0/24', { gateway: vpnGateway });
 
 new IntegTest(app, 'integtest-model', {

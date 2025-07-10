@@ -2,6 +2,7 @@ import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import * as ecs from '../../aws-ecs';
 import { Lazy, Size } from '../../core';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 const EMPTY_DIR_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/eks-container-definition.EmptyDirVolume');
 const HOST_PATH_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/eks-container-definition.HostPathVolume');
@@ -39,7 +40,7 @@ export interface IEksContainerDefinition extends IConstruct {
    * For example, if the reference is to `"$(NAME1)"` and the `NAME1` environment variable doesn't exist,
    * the command string will remain `"$(NAME1)."` `$$` is replaced with `$` and the resulting string isn't expanded.
    * For example, `$$(VAR_NAME)` will be passed as `$(VAR_NAME)` whether or not the `VAR_NAME` environment variable exists.
-
+   *
    * The entrypoint can't be updated.
    *
    * @see https://docs.docker.com/engine/reference/builder/#entrypoint
@@ -315,7 +316,7 @@ export interface EksContainerDefinitionProps {
    * For example, if the reference is to `"$(NAME1)"` and the `NAME1` environment variable doesn't exist,
    * the command string will remain `"$(NAME1)."` `$$` is replaced with `$` and the resulting string isn't expanded.
    * For example, `$$(VAR_NAME)` will be passed as `$(VAR_NAME)` whether or not the `VAR_NAME` environment variable exists.
-
+   *
    * The entrypoint can't be updated.
    *
    * @see https://docs.docker.com/engine/reference/builder/#entrypoint
@@ -530,7 +531,13 @@ export interface EksContainerDefinitionProps {
 /**
  * A container that can be run with EKS orchestration on EC2 resources
  */
+@propertyInjectable
 export class EksContainerDefinition extends Construct implements IEksContainerDefinition {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.EksContainerDefinition';
+
   public readonly image: ecs.ContainerImage;
   public readonly args?: string[];
   public readonly command?: string[];
@@ -631,7 +638,7 @@ export class EksContainerDefinition extends Construct implements IEksContainerDe
         },
       }),
     };
-  };
+  }
 }
 
 /**

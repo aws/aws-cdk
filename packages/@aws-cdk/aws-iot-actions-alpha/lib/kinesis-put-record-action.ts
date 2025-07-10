@@ -14,7 +14,7 @@ export interface KinesisPutRecordActionProps extends CommonActionProps {
    *
    * @see https://docs.aws.amazon.com/iot/latest/developerguide/iot-substitution-templates.html
    *
-   * You can use the expression '${newuuid()}' if your payload does not have a high cardinarity property.
+   * You can use the expression '${newuuid()}' if your payload does not have a high cardinality property.
    * If you use empty string, this action use no partition key and all records will put same one shard.
    *
    * @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_PutRecord.html#API_PutRecord_RequestParameters

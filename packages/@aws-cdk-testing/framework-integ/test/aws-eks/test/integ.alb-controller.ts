@@ -7,10 +7,10 @@ import * as kplus from 'cdk8s-plus-27';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import { Pinger } from './pinger/pinger';
 import * as eks from 'aws-cdk-lib/aws-eks';
+import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 const LATEST_VERSION: eks.AlbControllerVersion = eks.AlbControllerVersion.V2_8_2;
 class EksClusterAlbControllerStack extends Stack {
-
   constructor(scope: App, id: string) {
     super(scope, id);
 
@@ -22,6 +22,9 @@ class EksClusterAlbControllerStack extends Stack {
       ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_30),
       albController: {
         version: LATEST_VERSION,
+        additionalHelmChartValues: {
+          enableWafv2: false,
+        },
       },
     });
 
@@ -65,11 +68,16 @@ class EksClusterAlbControllerStack extends Stack {
     new CfnOutput(this, 'IngressPingerResponse', {
       value: pinger.response,
     });
-
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 const stack = new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller');
 new integ.IntegTest(app, 'aws-cdk-cluster-alb-controller-integ', {
   testCases: [stack],

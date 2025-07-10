@@ -45,7 +45,6 @@ describe('AccessPolicy', () => {
 
   describe('constructor', () => {
     test('creates an AccessPolicy with the provided props', () => {
-
       const accessPolicy = new AccessPolicy({
         accessScope: {
           type: AccessScopeType.NAMESPACE,

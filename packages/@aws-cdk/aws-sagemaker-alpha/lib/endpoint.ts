@@ -11,6 +11,8 @@ import { InstanceType } from './instance-type';
 import { sameEnv } from './private/util';
 import { CfnEndpoint } from 'aws-cdk-lib/aws-sagemaker';
 import { ScalableInstanceCount } from './scalable-instance-count';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /*
  * Amazon SageMaker automatic scaling doesn't support automatic scaling for burstable instances such
@@ -148,7 +150,7 @@ class EndpointInstanceProductionVariant implements IEndpointInstanceProductionVa
     return new cloudwatch.Metric({
       namespace,
       metricName,
-      dimensions: {
+      dimensionsMap: {
         EndpointName: this.endpoint.endpointName,
         VariantName: this.variantName,
       },
@@ -340,7 +342,11 @@ export enum InvocationHttpResponseCode {
 /**
  * Defines a SageMaker endpoint.
  */
+@propertyInjectable
 export class Endpoint extends EndpointBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-sagemaker-alpha.Endpoint';
+
   /**
    * Imports an Endpoint defined either outside the CDK or in a different CDK stack.
    * @param scope the Construct scope.
@@ -408,6 +414,8 @@ export class Endpoint extends EndpointBase {
     super(scope, id, {
       physicalName: props.endpointName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.validateEnvironmentCompatibility(props.endpointConfig);
     this.endpointConfig = props.endpointConfig;
@@ -448,6 +456,7 @@ export class Endpoint extends EndpointBase {
    * Find instance production variant based on variant name
    * @param name Variant name from production variant
    */
+  @MethodMetadata()
   public findInstanceProductionVariant(name: string): IEndpointInstanceProductionVariant {
     if (this.endpointConfig instanceof EndpointConfig) {
       const variant = this.endpointConfig._findInstanceProductionVariant(name);

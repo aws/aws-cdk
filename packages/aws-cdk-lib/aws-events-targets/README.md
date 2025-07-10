@@ -24,6 +24,7 @@ Currently supported are:
     - [Assign public IP addresses to tasks](#assign-public-ip-addresses-to-tasks)
     - [Enable Amazon ECS Exec for ECS Task](#enable-amazon-ecs-exec-for-ecs-task)
   - [Run a Redshift query](#schedule-a-redshift-query-serverless-or-cluster)
+  - [Publish to an SNS topic](#publish-to-an-sns-topic)
 
 See the README of the `aws-cdk-lib/aws-events` library for more information on
 EventBridge.
@@ -97,7 +98,7 @@ declare const logGroup: logs.LogGroup;
 declare const rule: events.Rule;
 
 rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-  logEvent: targets.LogGroupTargetInput.fromObject({
+  logEvent: targets.LogGroupTargetInput.fromObjectV2({
     timestamp: events.EventField.fromPath('$.time'),
     message: events.EventField.fromPath('$.detail-type'),
   }),
@@ -113,7 +114,7 @@ declare const logGroup: logs.LogGroup;
 declare const rule: events.Rule;
 
 rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-  logEvent: targets.LogGroupTargetInput.fromObject({
+  logEvent: targets.LogGroupTargetInput.fromObjectV2({
     message: JSON.stringify({
       CustomField: 'CustomValue',
     }),
@@ -317,6 +318,19 @@ rule.addTarget(
     deadLetterQueue: dlq
   } ),
 )
+```
+
+## Invoke an API Gateway V2 HTTP API
+
+Use the `ApiGatewayV2` target to trigger a HTTP API.
+
+```ts
+import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
+
+declare const httpApi: apigwv2.HttpApi;
+declare const rule: events.Rule;
+
+rule.addTarget(new targets.ApiGatewayV2(httpApi));
 ```
 
 ## Invoke an API Destination
@@ -564,6 +578,33 @@ rule.addTarget(new targets.EcsTask({
 }));
 ```
 
+### Overriding Values in the Task Definition
+
+You can override values in the task definition by setting the corresponding properties in the `EcsTaskProps`. All
+values in the [`TaskOverrides` API](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html) are
+supported.
+
+```ts
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.EcsTask({
+  cluster,
+  taskDefinition,
+  taskCount: 1,
+
+  // Overrides the cpu and memory values in the task definition
+  cpu: '512',
+  memory: '512',
+}));
+```
+
 ## Schedule a Redshift query (serverless or cluster)
 
 Use the `RedshiftQuery` target to schedule an Amazon Redshift Query.
@@ -586,4 +627,36 @@ rule.addTarget(new targets.RedshiftQuery(workgroup.attrWorkgroupWorkgroupArn, {
   deadLetterQueue: dlq,
   sql: ['SELECT * FROM foo','SELECT * FROM baz'],
 }));
+```
+
+## Publish to an SNS Topic
+
+Use the `SnsTopic` target to publish to an SNS Topic. 
+
+The code snippet below creates the scheduled event rule that publishes to an SNS Topic using a resource policy.
+
+```ts
+import * as sns from 'aws-cdk-lib/aws-sns';
+
+declare const topic: sns.ITopic;
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.SnsTopic(topic));
+```
+
+Alternatively, a role can be attached to the target when the rule is triggered.
+
+```ts
+import * as sns from 'aws-cdk-lib/aws-sns';
+
+declare const topic: sns.ITopic;
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.SnsTopic(topic, { authorizeUsingRole: true }));
 ```

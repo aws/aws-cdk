@@ -1,0 +1,184 @@
+{
+ "Resources": {
+  "HostedZoneDB99F866": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "cdk.dev."
+   }
+  },
+  "RecordWithParamWeight01950FDF7": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "1.2.3.4"
+    ],
+    "SetIdentifier": {
+     "Fn::Join": [
+      "",
+      [
+       "WEIGHT_",
+       {
+        "Ref": "RecordWeight0"
+       },
+       "_ID_recordweightfromcfnpaecordWithParamWeight059BCC4E1"
+      ]
+     ]
+    },
+    "TTL": "10",
+    "Type": "A",
+    "Weight": {
+     "Ref": "RecordWeight0"
+    }
+   }
+  },
+  "RecordWithParamWeight182FF0BDE": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "2.3.4.5"
+    ],
+    "SetIdentifier": {
+     "Fn::Join": [
+      "",
+      [
+       "WEIGHT_",
+       {
+        "Ref": "RecordWeight1"
+       },
+       "_ID_recordweightfromcfnpaecordWithParamWeight1304B1475"
+      ]
+     ]
+    },
+    "TTL": "10",
+    "Type": "A",
+    "Weight": {
+     "Ref": "RecordWeight1"
+    }
+   }
+  },
+  "RecordWithParamWeight2C5120D0E": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "3.4.5.6"
+    ],
+    "SetIdentifier": {
+     "Fn::Join": [
+      "",
+      [
+       "WEIGHT_",
+       {
+        "Ref": "RecordWeight2"
+       },
+       "_ID_recordweightfromcfnpaecordWithParamWeight25B9D18F1"
+      ]
+     ]
+    },
+    "TTL": "10",
+    "Type": "A",
+    "Weight": {
+     "Ref": "RecordWeight2"
+    }
+   }
+  },
+  "RecordWithParamWeight37D431545": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "4.5.6.7"
+    ],
+    "SetIdentifier": {
+     "Fn::Join": [
+      "",
+      [
+       "WEIGHT_",
+       {
+        "Ref": "RecordWeight3"
+       },
+       "_ID_recordweightfromcfnpaecordWithParamWeight37DA83B23"
+      ]
+     ]
+    },
+    "TTL": "10",
+    "Type": "A",
+    "Weight": {
+     "Ref": "RecordWeight3"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "RecordWeight0": {
+   "Type": "Number",
+   "Default": 0,
+   "MaxValue": 255,
+   "MinValue": 0
+  },
+  "RecordWeight1": {
+   "Type": "Number",
+   "Default": 0,
+   "MaxValue": 255,
+   "MinValue": 0
+  },
+  "RecordWeight2": {
+   "Type": "Number",
+   "Default": 0,
+   "MaxValue": 255,
+   "MinValue": 0
+  },
+  "RecordWeight3": {
+   "Type": "Number",
+   "Default": 0,
+   "MaxValue": 255,
+   "MinValue": 0
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

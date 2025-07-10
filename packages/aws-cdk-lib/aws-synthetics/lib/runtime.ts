@@ -235,6 +235,50 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_9_0 = new Runtime('syn-nodejs-puppeteer-9.0', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-puppeteer-9.1` includes the following:
+   * - Lambda runtime Node.js 20.x
+   * - Puppeteer-core version 22.12.1
+   * - Chromium version 126.0.6478.126
+   *
+   * New Features:
+   * - **Bug fixes** Bug fix related to date ranges and pending requests in HAR files.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-9.1
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_9_1 = new Runtime('syn-nodejs-puppeteer-9.1', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-playwright-1.0` includes the following:
+   * - Lambda runtime Node.js 20.x
+   * - Playwright version 1.45
+   * - Chromium version 126.0.6478.126
+   *
+   * New Features:
+   * - **PlayWright support** You can write canary scripts by using the Playwright automation framework. You can bring your existing Playwright scripts to run as canaries, and enhance them with AWS monitoring capabilities.
+   * - **CloudWatch Logs integration** You can query and filter for logs through the CloudWatch Synthetics console. Each log message contains unique canaryRunId, making it easy to search for logs for a particular canary run.
+   * - **Metrics and canary artifacts** You can monitor canary run pass rate through CloudWatch metrics, and configure alarms to alert you when canaries detect issues.
+   * - **Screenshots and steps association** You can capture screenshots using native Playwright functionality to visualize the stages of a canary script on each run. Screenshots are automatically associated with canary steps, and are uploaded to Amazon S3 buckets.
+   * - **Multiple tabs** You can create canaries that open multiple browser tabs, and access screenshots from each tab. You can create multi-tab and multi-step user workflows in Synthetics.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-1.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_1_0 = new Runtime('syn-nodejs-playwright-1.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-playwright-2.0` includes the following:
+   * - Lambda runtime Node.js 20.x
+   * - Playwright version 1.49.1
+   * - Chromium version 131.0.6778.264
+   *
+   * New Features:
+   * - The mismatch between total duration and sum of timings for a given request in HAR file is fixed.
+   * - Supports dry runs for the canary which allows for adhoc executions or performing a safe canary update.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-2.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_2_0 = new Runtime('syn-nodejs-playwright-2.0', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-python-selenium-1.0` includes the following:
    * - Lambda runtime Python 3.8
    * - Selenium version 3.141.0
@@ -349,9 +393,58 @@ export class Runtime {
   public static readonly SYNTHETICS_PYTHON_SELENIUM_4_0 = new Runtime('syn-python-selenium-4.0', RuntimeFamily.PYTHON);
 
   /**
-    * @param name The name of the runtime version
-    * @param family The Lambda runtime family
-    */
+   * `syn-python-selenium-4.1` includes the following:
+   * - Lambda runtime Python 3.9
+   * - Selenium version 4.15.1
+   * - Chromium version 126.0.6478.126
+   *
+   * New Features:
+   * - **Addresses security vulnerability** This runtime has an update to address the CVE-2024-39689 vulnerability.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-4.1
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_4_1 = new Runtime('syn-python-selenium-4.1', RuntimeFamily.PYTHON);
+
+  /**
+   * `syn-python-selenium-5.0` includes the following:
+   * - Lambda runtime Python 3.9
+   * - Selenium version 4.21.0
+   * - Chromium version 131.0.6778.264
+   *
+   * New Features:
+   * - Automatic retry if the browser fails to launch.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-5.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_5_0 = new Runtime('syn-python-selenium-5.0', RuntimeFamily.PYTHON);
+
+  /**
+   * `syn-python-selenium-5.1` includes the following:
+   * - Lambda runtime Python 3.9
+   * - Selenium version 4.21.0
+   * - Chromium version 131.0.6778.264
+   *
+   * New Features:
+   * - Minor updates on metric emission.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-5.1
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_5_1 = new Runtime('syn-python-selenium-5.1', RuntimeFamily.PYTHON);
+
+  /**
+   * `syn-python-selenium-6.0` includes the following:
+   * - Lambda runtime Python 3.11
+   * - Selenium version 4.21.0
+   * - Chromium version 131.0.6778.264
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-6.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_6_0 = new Runtime('syn-python-selenium-6.0', RuntimeFamily.PYTHON);
+
+  /**
+   * @param name The name of the runtime version
+   * @param family The Lambda runtime family
+   */
   public constructor(public readonly name: string, public readonly family: RuntimeFamily) {
   }
 }

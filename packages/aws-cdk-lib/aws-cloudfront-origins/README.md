@@ -73,14 +73,18 @@ new cloudfront.Distribution(this, 'myDist', {
 
 When creating a standard S3 origin using `origins.S3BucketOrigin.withOriginAccessControl()`, an [Origin Access Control resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-originaccesscontrol-originaccesscontrolconfig.html) is automatically created with the origin type set to `s3` and signing behavior set to `always`.
 
-You can grant read, write or delete access to the OAC using the `originAccessLevels` property:
+You can grant read, read versioned, list, write or delete access to the OAC using the `originAccessLevels` property:
 
 ```ts
 const myBucket = new s3.Bucket(this, 'myBucket');
-const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(myBucket, {
-  originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.WRITE, cloudfront.AccessLevel.DELETE],
+const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(myBucket, { originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.READ_VERSIONED, cloudfront.AccessLevel.WRITE, cloudfront.AccessLevel.DELETE],
 });
 ```
+
+The read versioned permission does contain the read permission, so it's required to set both `AccessLevel.READ` and
+`AccessLevel.READ_VERSIONED`.
+
+For details of list permission, see [Setting up OAC with LIST permission](#setting-up-oac-with-list-permission).
 
 You can also pass in a custom S3 origin access control:
 
@@ -338,6 +342,29 @@ See CloudFront docs on [Giving the origin access control permission to access th
 > Note: If your bucket previously used OAI, you will need to manually remove the policy statement
 that gives the OAI access to your bucket after setting up OAC.
 
+#### Setting up OAC with LIST permission
+
+By default, S3 origin returns 403 Forbidden HTTP response when the requested object does not exist.
+When you want to receive 404 Not Found, specify `AccessLevel.LIST` in `originAccessLevels` to add `s3:ListBucket` permission in the bucket policy.
+
+This is useful to distinguish between responses blocked by WAF (403) and responses where the file does not exist (404).
+
+``` ts
+const myBucket = new s3.Bucket(this, 'myBucket');
+const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(myBucket, {
+  originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.LIST],
+});
+new cloudfront.Distribution(this, 'distribution', {
+  defaultBehavior: {
+    origin: s3Origin,
+  },
+  defaultRootObject: 'index.html', // recommended to specify
+});
+```
+
+When the origin is associated to the default behavior, it is highly recommended to specify `defaultRootObject` distribution property.
+Without it, the root path `https://xxxx.cloudfront.net/` will return the list of the S3 object keys.
+
 #### Setting up an OAI (legacy)
 
 Setup an S3 origin with origin access identity (legacy) as follows:
@@ -530,9 +557,6 @@ An Elastic Load Balancing (ELB) v2 load balancer may be used as an origin. In or
 accessible (`internetFacing` is true). Both Application and Network load balancers are supported.
 
 ```ts
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-
 declare const vpc: ec2.Vpc;
 // Create an application load balancer in a VPC. 'internetFacing' must be 'true'
 // for CloudFront to access the load balancer and use it as an origin.
@@ -548,8 +572,6 @@ new cloudfront.Distribution(this, 'myDist', {
 The origin can also be customized to respond on different ports, have different connection properties, etc.
 
 ```ts
-import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-
 declare const loadBalancer: elbv2.ApplicationLoadBalancer;
 const origin = new origins.LoadBalancerV2Origin(loadBalancer, {
   connectionAttempts: 3,
@@ -576,6 +598,133 @@ new cloudfront.Distribution(this, 'myDist', {
 
 See the documentation of `aws-cdk-lib/aws-cloudfront` for more information.
 
+## VPC origins
+
+You can use CloudFront to deliver content from applications that are hosted in your virtual private cloud (VPC) private subnets.
+You can use Application Load Balancers (ALBs), Network Load Balancers (NLBs), and EC2 instances in private subnets as VPC origins.
+
+Learn more about [Restrict access with VPC origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-vpc-origins.html).
+
+### From an Application Load Balancer
+
+An Application Load Balancer (ALB) can be used as a VPC origin.
+It is not needed to be publicly accessible.
+
+``` ts
+// Creates a distribution from an Application Load Balancer
+declare const vpc: ec2.Vpc;
+// Create an application load balancer in a VPC. 'internetFacing' can be 'false'.
+const alb = new elbv2.ApplicationLoadBalancer(this, 'ALB', {
+  vpc,
+  internetFacing: false,
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+});
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: origins.VpcOrigin.withApplicationLoadBalancer(alb) },
+});
+```
+
+### From a Network Load Balancer
+
+A Network Load Balancer (NLB) can also be use as a VPC origin.
+It is not needed to be publicly accessible.
+
+- A Network Load Balancer must have a security group attached to it.
+- Dual-stack Network Load Balancers and Network Load Balancers with TLS listeners can't be added as origins.
+
+``` ts
+// Creates a distribution from a Network Load Balancer
+declare const vpc: ec2.Vpc;
+// Create a network load balancer in a VPC. 'internetFacing' can be 'false'.
+const nlb = new elbv2.NetworkLoadBalancer(this, 'NLB', {
+  vpc,
+  internetFacing: false,
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+  securityGroups: [new ec2.SecurityGroup(this, 'NLB-SG', { vpc })],
+});
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: origins.VpcOrigin.withNetworkLoadBalancer(nlb) },
+});
+```
+
+### From an EC2 instance
+
+An EC2 instance can also be used directly as a VPC origin.
+It can be in a private subnet.
+
+``` ts
+// Creates a distribution from an EC2 instance
+declare const vpc: ec2.Vpc;
+// Create an EC2 instance in a VPC. 'subnetType' can be private.
+const instance = new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+});
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: origins.VpcOrigin.withEc2Instance(instance) },
+});
+```
+
+### Restrict traffic coming to the VPC origin
+
+You may need to update the security group for your VPC private origin (Application Load Balancer, Network Load Balancer, or EC2 instance) to explicitly allow the traffic from your VPC origins.
+
+#### The CloudFront managed prefix list
+
+You can allow the traffic from the CloudFront managed prefix list named **com.amazonaws.global.cloudfront.origin-facing**. For more information, see [Use an AWS-managed prefix list](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-aws-managed-prefix-lists.html#use-aws-managed-prefix-list).
+
+``` ts
+declare const alb: elbv2.ApplicationLoadBalancer;
+
+const cfOriginFacing = ec2.PrefixList.fromLookup(this, 'CloudFrontOriginFacing', {
+  prefixListName: 'com.amazonaws.global.cloudfront.origin-facing',
+});
+alb.connections.allowFrom(cfOriginFacing, ec2.Port.HTTP);
+```
+
+#### The VPC origin service security group
+
+VPC origin will create a security group named `CloudFront-VPCOrigins-Service-SG`.
+It can be further restricted to allow only traffic from your VPC origins.
+
+The id of the security group is not provided by CloudFormation currently.
+You can retrieve it dynamically using a custom resource.
+
+``` ts
+import * as cr from 'aws-cdk-lib/custom-resources';
+
+declare const vpc: ec2.Vpc;
+declare const distribution: cloudfront.Distribution;
+declare const alb: elbv2.ApplicationLoadBalancer;
+
+// Call ec2:DescribeSecurityGroups API to retrieve the VPC origins security group.
+const getSg = new cr.AwsCustomResource(this, 'GetSecurityGroup', {
+  onCreate: {
+    service: 'ec2',
+    action: 'describeSecurityGroups',
+    parameters: {
+      Filters: [
+        { Name: 'vpc-id', Values: [vpc.vpcId] },
+        { Name: 'group-name', Values: ['CloudFront-VPCOrigins-Service-SG'] },
+      ],
+    },
+    physicalResourceId: cr.PhysicalResourceId.of('CloudFront-VPCOrigins-Service-SG'),
+  },
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: ['*'] }),
+});
+// The security group may be available after the distributon is deployed
+getSg.node.addDependency(distribution);
+const sgVpcOrigins = ec2.SecurityGroup.fromSecurityGroupId(
+  this,
+  'VpcOriginsSecurityGroup',
+  getSg.getResponseField('SecurityGroups.0.GroupId'),
+);
+// Allow connections from the security group
+alb.connections.allowFrom(sgVpcOrigins, ec2.Port.HTTP);
+```
+
 ## Failover Origins (Origin Groups)
 
 You can set up CloudFront with origin failover for scenarios that require high availability.
@@ -593,6 +742,24 @@ new cloudfront.Distribution(this, 'myDist', {
       fallbackOrigin: new origins.HttpOrigin('www.example.com'),
       // optional, defaults to: 500, 502, 503 and 504
       fallbackStatusCodes: [404],
+    }),
+  },
+});
+```
+
+### Selection Criteria: Media Quality Based with AWS Elemental MediaPackageV2
+
+You can setup your origin group to be configured for media quality based failover with your AWS Elemental MediaPackageV2 endpoints.
+You can achieve this behavior in the CDK, again using the `OriginGroup` class:
+
+```ts
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: {
+    origin: new origins.OriginGroup({
+      primaryOrigin: new origins.HttpOrigin("<AWS Elemental MediaPackageV2 origin 1>"),
+      fallbackOrigin: new origins.HttpOrigin("<AWS Elemental MediaPackageV2 origin 2>"),
+      fallbackStatusCodes: [404],
+      selectionCriteria: cloudfront.OriginSelectionCriteria.MEDIA_QUALITY_BASED,
     }),
   },
 });
@@ -631,5 +798,49 @@ const fnUrl = fn.addFunctionUrl({ authType: lambda.FunctionUrlAuthType.NONE });
 
 new cloudfront.Distribution(this, 'Distribution', {
   defaultBehavior: { origin: new origins.FunctionUrlOrigin(fnUrl) },
+});
+```
+
+### Lambda Function URL with Origin Access Control (OAC)
+You can configure the Lambda Function URL with Origin Access Control (OAC) for enhanced security. When using OAC with Signing SIGV4_ALWAYS, it is recommended to set the Lambda Function URL authType to AWS_IAM to ensure proper authorization.
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+declare const fn: lambda.Function;
+
+const fnUrl = fn.addFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.AWS_IAM,
+});
+
+new cloudfront.Distribution(this, 'MyDistribution', {
+  defaultBehavior: {
+    origin: origins.FunctionUrlOrigin.withOriginAccessControl(fnUrl),
+  },
+});
+```
+
+If you want to explicitly add OAC for more customized access control, you can use the originAccessControl option as shown below.
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+declare const fn: lambda.Function;
+
+const fnUrl = fn.addFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.AWS_IAM,
+});
+
+// Define a custom OAC
+const oac = new cloudfront.FunctionUrlOriginAccessControl(this, 'MyOAC', {
+  originAccessControlName: 'CustomLambdaOAC',
+  signing: cloudfront.Signing.SIGV4_ALWAYS,
+});
+
+// Set up Lambda Function URL with OAC in CloudFront Distribution
+new cloudfront.Distribution(this, 'MyDistribution', {
+  defaultBehavior: {
+    origin: origins.FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
+      originAccessControl: oac,
+    }),
+  },
 });
 ```

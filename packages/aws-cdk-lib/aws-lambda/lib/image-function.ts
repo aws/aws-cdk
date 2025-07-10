@@ -6,6 +6,8 @@ import { Handler } from './handler';
 import { Runtime } from './runtime';
 import * as ecr from '../../aws-ecr';
 import { Platform } from '../../aws-ecr-assets';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties to configure a new DockerImageFunction construct.
@@ -63,7 +65,11 @@ export abstract class DockerImageCode {
 /**
  * Create a lambda function where the handler is a docker image
  */
+@propertyInjectable
 export class DockerImageFunction extends Function {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.DockerImageFunction';
+
   constructor(scope: Construct, id: string, props: DockerImageFunctionProps) {
     super(scope, id, {
       ...props,
@@ -71,5 +77,7 @@ export class DockerImageFunction extends Function {
       runtime: Runtime.FROM_IMAGE,
       code: props.code._bind(props.architecture),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }

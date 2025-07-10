@@ -1,6 +1,9 @@
 import { Construct } from 'constructs';
 import { IBucket } from '../../../aws-s3';
 import { IResource, Resource, Fn, Names, Lazy, Token } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CfnTrustStore } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -54,7 +57,11 @@ export interface TrustStoreProps {
 /**
  * A new Trust Store
  */
+@propertyInjectable
 export class TrustStore extends Resource implements ITrustStore {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.TrustStore';
+
   /**
    * Import from ARN
    */
@@ -104,17 +111,17 @@ export class TrustStore extends Resource implements ITrustStore {
         produce: () => Names.uniqueResourceName(this, { maxLength: 32 }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.trustStoreName !== undefined && !Token.isUnresolved(props.trustStoreName)) {
-
       if (props.trustStoreName.length < 1 || props.trustStoreName.length > 32) {
-        throw new Error(`trustStoreName '${props.trustStoreName}' must be 1-32 characters long.`);
+        throw new ValidationError(`trustStoreName '${props.trustStoreName}' must be 1-32 characters long.`, this);
       }
       const validNameRegex = /^([a-zA-Z0-9]+-)*[a-zA-Z0-9]+$/;
       if (!validNameRegex.test(props.trustStoreName)) {
-        throw new Error(`trustStoreName '${props.trustStoreName}' must contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`);
+        throw new ValidationError(`trustStoreName '${props.trustStoreName}' must contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`, this);
       }
-
     }
 
     const resource = new CfnTrustStore(this, 'Resource', {

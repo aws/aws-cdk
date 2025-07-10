@@ -3,9 +3,15 @@
 # and that won't typecheck if Manifest.load() adds a union arm and now returns A | B | C.
 change-return-type:@aws-cdk/cloud-assembly-schema.Manifest.load
 
+# To deal with the same as the above: adding artifact properties weakens the ArtifactManifest type.
+# This is done on purpose though, and doesn't break a real type contract in practice because the type
+# of the `properties` field is already unreliable for exhaustive checking.
+weakened:aws-cdk-lib.cloud_assembly_schema.ArtifactManifest
+
 # Adding any new context queries will add to the ContextQueryProperties type,
 # which changes the signature of MissingContext.
 weakened:@aws-cdk/cloud-assembly-schema.MissingContext
+weakened:aws-cdk-lib.cloud_assembly_schema.MissingContext
 
 removed:@aws-cdk/core.BootstraplessSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN
 removed:@aws-cdk/core.DefaultStackSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN
@@ -189,7 +195,7 @@ removed:aws-cdk-lib.aws_ec2.CfnNetworkInterface.enablePrimaryIpv6
 removed:aws-cdk-lib.aws_ec2.CfnNetworkInterfaceAttachment.attrId
 removed:aws-cdk-lib.aws_ec2.CfnNetworkInterfaceProps.enablePrimaryIpv6
 
-# Changed type from GraphqlApi to IGraphqlApi to support import from a different stack, should not matter. 
+# Changed type from GraphqlApi to IGraphqlApi to support import from a different stack, should not matter.
 weakened:aws-cdk-lib.aws_appsync.SourceApi
 
 # Due to https://github.com/aws/aws-cdk/issues/27259, none of these could have worked
@@ -933,3 +939,30 @@ removed:aws-cdk-lib.aws_ec2.WindowsVersion.WINDOWS_SERVER_2022_TURKISH_FULL_BASE
 removed:aws-cdk-lib.aws_ec2.WindowsVersion.WINDOWS_SERVER_2022_TURKISH_FULL_BASE_2023_12_13
 removed:aws-cdk-lib.aws_ec2.WindowsVersion.WINDOWS_SERVER_2022_TURKISH_FULL_BASE_2024_01_16
 removed:aws-cdk-lib.aws_ec2.WindowsVersion.WINDOWS_SERVER_2022_TURKISH_FULL_BASE_2024_02_14
+
+# null() return a [] which is invalid filter rule. It should return [null].
+# Hence the return type changes from string[] to any
+change-return-type:aws-cdk-lib.aws_lambda.FilterRule.null
+
+
+# output property was mistakenly marked as required even though it should have allowed
+# for undefined, i.e optional
+changed-type:@aws-cdk/cx-api.CloudFormationStackArtifact.notificationArns
+changed-type:aws-cdk-lib.cx_api.CloudFormationStackArtifact.notificationArns
+
+# In aws/aws-cdk#31041, the CDK started emitting booleans and numbers as metadata values.
+# Since these types weren't officially declared in the schema, jsii runtime type checking failed to load them.
+# The type has now weakened, and when it's used as an output any consuming code will need to account for the possibility of the value being a boolean or number.
+# In static languages, the type would already have been treated as a generic Object with required runtime checks.
+# See: https://github.com/cdklabs/cloud-assembly-schema/pull/121
+weakened:aws-cdk-lib.cloud_assembly_schema.MetadataEntry
+weakened:aws-cdk-lib.cx_api.MetadataEntryResult
+
+# Making kubectlLayer prop required from optional so we can remove the outdated kubectl layer dependency
+strengthened:aws-cdk-lib.aws_eks.ClusterProps
+strengthened:aws-cdk-lib.aws_eks.FargateClusterProps
+removed:aws-cdk-lib.lambda_layer_kubectl.KubectlLayer
+
+# Fixing the JsonSchema interface to be consistent with JSON Schema spec
+changed-type:aws-cdk-lib.aws_apigateway.JsonSchema.additionalItems
+strengthened:aws-cdk-lib.aws_apigateway.JsonSchema

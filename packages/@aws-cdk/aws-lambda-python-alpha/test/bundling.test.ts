@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import * as fs from 'fs';
 import * as path from 'path';
 import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -280,7 +281,6 @@ test('Bundling a function with poetry and assetExcludes', () => {
       ],
     }),
   }));
-
 });
 
 test('Bundling a function with poetry and no assetExcludes', () => {
@@ -581,4 +581,30 @@ test('with command hooks', () => {
       ],
     }),
   }));
+});
+
+test('Bundling a function with uv dependencies', () => {
+  const entry = path.join(__dirname, 'lambda-handler-uv');
+
+  const assetCode = Bundling.bundle({
+    entry: path.join(entry, '.'),
+    runtime: Runtime.PYTHON_3_13,
+    outputPathSuffix: 'python',
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        "rsync -rLv --exclude='.python-version' /asset-input/ /asset-output/python && cd /asset-output/python && uv export --frozen --no-emit-workspace --no-dev --no-editable -o requirements.txt && uv pip install -r requirements.txt --target /asset-output/python",
+      ],
+    }),
+  }));
+
+  const files = fs.readdirSync(assetCode.path);
+  expect(files).toContain('index.py');
+  expect(files).toContain('pyproject.toml');
+  expect(files).toContain('uv.lock');
+  // Contains hidden files.
+  expect(files).toContain('.ignorefile');
 });

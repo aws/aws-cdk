@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Template } from '../../../assertions';
+import { Match, Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
@@ -144,6 +144,23 @@ describe('tests', () => {
       },
       Port: 80,
       UnhealthyThresholdCount: 27,
+    });
+  });
+
+  test.each([
+    elbv2.TargetGroupIpAddressType.IPV4,
+    elbv2.TargetGroupIpAddressType.IPV6,
+  ])('configure IP address type %s', (ipAddressType) => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new elbv2.ApplicationTargetGroup(stack, 'Group', {
+      vpc,
+      ipAddressType,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      IpAddressType: ipAddressType,
     });
   });
 
@@ -433,7 +450,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
@@ -455,7 +472,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
@@ -805,4 +822,160 @@ describe('tests', () => {
     });
   });
 
+  // test cases for crossZoneEnabled
+  describe('crossZoneEnabled', () => {
+    test.each([true, false])('crossZoneEnabled can be %s', (crossZoneEnabled) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.ApplicationTargetGroup(stack, 'LB', { crossZoneEnabled, vpc });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'load_balancing.cross_zone.enabled',
+            Value: `${crossZoneEnabled}`,
+          },
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+        ],
+      });
+    });
+
+    test('load_balancing.cross_zone.enabled is not set when crossZoneEnabled is not specified', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.ApplicationTargetGroup(stack, 'LB', { vpc, targetType: elbv2.TargetType.LAMBDA });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: Match.absent(),
+      });
+    });
+  });
+
+  describe('Lambda target multi_value_headers tests', () => {
+    test('Lambda target should have multi_value_headers.enabled set to true when enabled', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationTargetGroup(stack, 'TG', {
+        targetType: elbv2.TargetType.LAMBDA,
+        multiValueHeadersEnabled: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetType: 'lambda',
+        TargetGroupAttributes: [
+          {
+            Key: 'lambda.multi_value_headers.enabled',
+            Value: 'true',
+          },
+        ],
+      });
+    });
+
+    test.each([false, undefined])('lambda.multi_value_headers.enabled is not set when multiValueHeadersEnabled is %s', (multiValueHeadersEnabled) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      // WHEN
+      new elbv2.ApplicationTargetGroup(stack, 'TG', {
+        targetType: elbv2.TargetType.LAMBDA,
+        multiValueHeadersEnabled,
+      });
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetType: 'lambda',
+        TargetGroupAttributes: Match.absent(),
+      });
+    });
+
+    test('Lambda target with addTarget should preserve multi_value_headers.enabled as true', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+
+      // WHEN
+      const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', {
+        targetType: elbv2.TargetType.LAMBDA,
+        multiValueHeadersEnabled: true,
+      });
+
+      tg.addTarget({
+        attachToApplicationTargetGroup(_targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+          return {
+            targetType: elbv2.TargetType.LAMBDA,
+            targetJson: { id: 'arn:aws:lambda:eu-west-1:123456789012:function:myFn' },
+          };
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetType: 'lambda',
+        TargetGroupAttributes: [
+          {
+            Key: 'lambda.multi_value_headers.enabled',
+            Value: 'true',
+          },
+        ],
+        Targets: [{ Id: 'arn:aws:lambda:eu-west-1:123456789012:function:myFn' }],
+      });
+    });
+
+    test('lambda.multi_value_headers.enabled is not set with addTarget when multiValueHeadersEnabled is false', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+
+      // WHEN
+      const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', {
+        targetType: elbv2.TargetType.LAMBDA,
+        multiValueHeadersEnabled: false,
+      });
+
+      tg.addTarget({
+        attachToApplicationTargetGroup(_targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+          return {
+            targetType: elbv2.TargetType.LAMBDA,
+            targetJson: { id: 'arn:aws:lambda:eu-west-1:123456789012:function:myFn' },
+          };
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetType: 'lambda',
+        TargetGroupAttributes: Match.absent(),
+        Targets: [{ Id: 'arn:aws:lambda:eu-west-1:123456789012:function:myFn' }],
+      });
+    });
+  });
+
+  describe('multiValueHeadersEnabled validation', () => {
+    test.each([elbv2.TargetType.IP, elbv2.TargetType.INSTANCE])('Throws an error when multiValueHeadersEnabled is true for non-Lambda target type (%s)', (targetType) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      // WHEN & THEN
+      expect(() => new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        targetType,
+        multiValueHeadersEnabled: true,
+      })).toThrow('multiValueHeadersEnabled is only supported for Lambda targets.');
+    });
+  });
 });

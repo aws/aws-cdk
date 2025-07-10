@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "warm-throughput-integ-test/DefaultTest": {
+      "stacks": [
+        "warm-throughput-stack"
+      ],
+      "assertionStack": "warm-throughput-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "warmthroughputintegtestDefaultTestDeployAssertA9A62BB4"
+    }
+  }
+}

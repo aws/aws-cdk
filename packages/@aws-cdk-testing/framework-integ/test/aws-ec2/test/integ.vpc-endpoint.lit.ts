@@ -42,6 +42,19 @@ class VpcEndpointStack extends cdk.Stack {
       // open: false
     });
     /// !hide
+
+    // Add an interface endpoint with privateDnsDefault false
+    vpc.addInterfaceEndpoint('DynamoDbInterfaceEndpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.DYNAMODB,
+      privateDnsEnabled: false,
+    });
+
+    // Add an interface endpoint with ipAddressType and dnsRecordIpType
+    vpc.addInterfaceEndpoint('CloudwatchLogsEndpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
+      ipAddressType: ec2.VpcEndpointIpAddressType.IPV4,
+      dnsRecordIpType: ec2.VpcEndpointDnsRecordIpType.IPV4,
+    });
   }
 }
 

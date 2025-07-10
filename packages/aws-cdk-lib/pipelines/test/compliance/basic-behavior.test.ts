@@ -19,7 +19,6 @@ afterEach(() => {
 });
 
 test('stack templates in nested assemblies are correctly addressed', () => {
-
   // WHEN
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   pipeline.addStage(new OneStackApp(app, 'App'));
@@ -42,7 +41,6 @@ test('stack templates in nested assemblies are correctly addressed', () => {
 });
 
 test('obvious error is thrown when stage contains no stacks', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 
   // WHEN
@@ -52,7 +50,6 @@ test('obvious error is thrown when stage contains no stacks', () => {
 });
 
 test('overridden stack names are respected', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   pipeline.addStage(new OneStackAppWithCustomName(app, 'App1'));
   pipeline.addStage(new OneStackAppWithCustomName(app, 'App2'));
@@ -81,8 +78,34 @@ test('overridden stack names are respected', () => {
   });
 });
 
-test('changing CLI version leads to a different pipeline structure (restarting it)', () => {
+test('two stacks can have the same name', () => {
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', { useChangeSets: false });
+  pipeline.addStage(new TwoStacksApp(app, 'App'));
 
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([
+      {
+        Name: 'App',
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Name: stringLike('MyFancyStack.Deploy'),
+            Configuration: Match.objectLike({
+              StackName: 'MyFancyStack',
+            }),
+          }),
+          Match.objectLike({
+            Name: stringLike('MyFancyStack.eu-west-2.Deploy'),
+            Configuration: Match.objectLike({
+              StackName: 'MyFancyStack',
+            }),
+          }),
+        ]),
+      },
+    ]),
+  });
+});
+
+test('changing CLI version leads to a different pipeline structure (restarting it)', () => {
   // GIVEN
   const stack2 = new Stack(app, 'Stack2', { env: PIPELINE_ENV });
   const stack3 = new Stack(app, 'Stack3', { env: PIPELINE_ENV });
@@ -110,7 +133,6 @@ test('changing CLI version leads to a different pipeline structure (restarting i
 });
 
 test('tags get reflected in pipeline', () => {
-
   // WHEN
   const stage = new OneStackApp(app, 'App');
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
@@ -150,6 +172,20 @@ class OneStackAppWithCustomName extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
     new BucketStack(this, 'Stack', {
+      stackName: 'MyFancyStack',
+    });
+  }
+}
+
+class TwoStacksApp extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+    new BucketStack(this, 'Stack1', {
+      env: { region: 'eu-west-1' },
+      stackName: 'MyFancyStack',
+    });
+    new BucketStack(this, 'Stack2', {
+      env: { region: 'eu-west-2' },
       stackName: 'MyFancyStack',
     });
   }

@@ -3,7 +3,9 @@ import { Bucket, IBucket } from './bucket';
 import { CfnBucket, CfnBucketPolicy } from './s3.generated';
 import { PolicyDocument } from '../../aws-iam';
 import { RemovalPolicy, Resource, Token, Tokenization } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface BucketPolicyProps {
   /**
@@ -31,9 +33,26 @@ export interface BucketPolicyProps {
  * policy if one doesn't exist yet, otherwise it will add to the existing
  * policy.
  *
- * Prefer to use `addToResourcePolicy()` instead.
+ * The bucket policy method is implemented differently than `addToResourcePolicy()`
+ * as `BucketPolicy()` creates a new policy without knowing one earlier existed.
+ * e.g. if during Bucket creation, if `autoDeleteObject:true`, these policies are
+ * added to the bucket policy:
+ *    ["s3:DeleteObject*", "s3:GetBucket*", "s3:List*", "s3:PutBucketPolicy"],
+ * and when you add a new BucketPolicy with ["s3:GetObject", "s3:ListBucket"] on
+ * this existing bucket, invoking `BucketPolicy()` will create a new Policy
+ * without knowing one earlier exists already, so it creates a new one.
+ * In this case, the custom resource handler will not have access to
+ * `s3:GetBucketTagging` action which will cause failure during deletion of stack.
+ *
+ * Hence its strongly recommended to use `addToResourcePolicy()` method to add
+ * new permissions to existing policy.
+ *
  */
+@propertyInjectable
 export class BucketPolicy extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-s3.BucketPolicy';
+
   /**
    * Create a mutable `BucketPolicy` from a `CfnBucketPolicy`.
    */
@@ -88,6 +107,8 @@ export class BucketPolicy extends Resource {
 
   constructor(scope: Construct, id: string, props: BucketPolicyProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.bucket = props.bucket;
 
@@ -105,6 +126,7 @@ export class BucketPolicy extends Resource {
    * Sets the removal policy for the BucketPolicy.
    * @param removalPolicy the RemovalPolicy to set.
    */
+  @MethodMetadata()
   public applyRemovalPolicy(removalPolicy: RemovalPolicy) {
     this.resource.applyRemovalPolicy(removalPolicy);
   }

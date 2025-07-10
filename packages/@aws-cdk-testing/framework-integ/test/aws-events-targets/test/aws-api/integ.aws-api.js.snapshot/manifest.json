@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "aws-cdk-aws-api-target-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8ba69f373d71849859d4fd9e99c821f32a535224a0283841d4a36a4d46248d67.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1abd9bb6dc266a0925b319a4eb64ae4cc6123c9fb371db611f7c252973aea821.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,146 @@
         "aws-cdk-aws-api-target-integ.assets"
       ],
       "metadata": {
+        "/aws-cdk-aws-api-target-integ/ScheduleRule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "schedule": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addTarget": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addTarget": [
+                {}
+              ]
+            }
+          }
+        ],
         "/aws-cdk-aws-api-target-integ/ScheduleRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ScheduleRuleDA5BD877"
           }
         ],
+        "/aws-cdk-aws-api-target-integ/ScheduleRule/ScheduleRuleTarget0Handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "timeout": "*",
+              "memorySize": "*",
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addPermission": [
+                "*",
+                {
+                  "scope": "*",
+                  "action": "*",
+                  "principal": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  },
+                  "sourceArn": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/aws-cdk-aws-api-target-integ/ScheduleRule/AllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget0HandlerF2C0C898": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ScheduleRuleAllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget0HandlerF2C0C898874A4805"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/ScheduleRule/ScheduleRuleTarget1Handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "timeout": "*",
+              "memorySize": "*",
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addPermission": [
+                "*",
+                {
+                  "scope": "*",
+                  "action": "*",
+                  "principal": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  },
+                  "sourceArn": "*"
+                }
+              ]
+            }
           }
         ],
         "/aws-cdk-aws-api-target-integ/ScheduleRule/AllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget1Handler4688817C": [
@@ -58,10 +188,178 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "timeout": "*",
+              "memorySize": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/ServiceRole/DefaultPolicy/Resource": [
@@ -76,10 +374,51 @@
             "data": "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620"
           }
         ],
+        "/aws-cdk-aws-api-target-integ/TestParameter": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parameterName": "*",
+              "stringValue": "*"
+            }
+          }
+        ],
         "/aws-cdk-aws-api-target-integ/TestParameter/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestParameter95DD6E25"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/UpdateSSMRule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "eventPattern": {
+                "source": "*",
+                "detailType": "*",
+                "detail": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "source": "*",
+                  "detailType": "*",
+                  "detail": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addTarget": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-aws-api-target-integ/UpdateSSMRule/Resource": [
@@ -88,10 +427,65 @@
             "data": "UpdateSSMRule6532685F"
           }
         ],
+        "/aws-cdk-aws-api-target-integ/UpdateSSMRule/UpdateSSMRuleTarget0Handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "timeout": "*",
+              "memorySize": "*",
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addPermission": [
+                "*",
+                {
+                  "scope": "*",
+                  "action": "*",
+                  "principal": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  },
+                  "sourceArn": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/aws-cdk-aws-api-target-integ/UpdateSSMRule/AllowEventRuleawscdkawsapitargetintegUpdateSSMRuleUpdateSSMRuleTarget0Handler573B788B": [
           {
             "type": "aws:cdk:logicalId",
             "data": "UpdateSSMRuleAllowEventRuleawscdkawsapitargetintegUpdateSSMRuleUpdateSSMRuleTarget0Handler573B788B9ACEE6B4"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/EncryptionKey": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-aws-api-target-integ/EncryptionKey/Resource": [
@@ -100,10 +494,91 @@
             "data": "EncryptionKey1B843E66"
           }
         ],
+        "/aws-cdk-aws-api-target-integ/EncryptDataRule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "eventPattern": {
+                "source": "*",
+                "detailType": "*",
+                "detail": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "source": "*",
+                  "detailType": "*",
+                  "detail": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addTarget": [
+                {}
+              ]
+            }
+          }
+        ],
         "/aws-cdk-aws-api-target-integ/EncryptDataRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EncryptDataRule79774425"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/EncryptDataRule/EncryptDataRuleTarget0Handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "timeout": "*",
+              "memorySize": "*",
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addPermission": [
+                "*",
+                {
+                  "scope": "*",
+                  "action": "*",
+                  "principal": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  },
+                  "sourceArn": "*"
+                }
+              ]
+            }
           }
         ],
         "/aws-cdk-aws-api-target-integ/EncryptDataRule/AllowEventRuleawscdkawsapitargetintegEncryptDataRuleEncryptDataRuleTarget0HandlerC3017ED8": [
@@ -156,7 +631,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/52476d5be032a0785e26c75846e13f42f58187ef5868c9b4d919f530e586cf43.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7c67f1c7620450be8dfc4d1db132677edef8e1b421dbeaa486331a40f96bf4d3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -173,6 +648,12 @@
         "awsapiintegDefaultTestDeployAssertBB35B14E.assets"
       ],
       "metadata": {
+        "/aws-api-integ/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents13ba168ed67d6e97ff2c94cc14e4d276/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-api-integ/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents13ba168ed67d6e97ff2c94cc14e4d276/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -195,6 +676,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-api-integ/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter968d20b6d08f54c7f2e797d02863bf0e/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/aws-api-integ/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter968d20b6d08f54c7f2e797d02863bf0e/Default/Default": [
@@ -278,5 +773,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

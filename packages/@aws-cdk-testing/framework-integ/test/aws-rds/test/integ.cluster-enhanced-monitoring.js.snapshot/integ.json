@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "EnhancedMonitoringClusterInteg/DefaultTest": {
+      "stacks": [
+        "EnhancedMonitoringClusterStack"
+      ],
+      "assertionStack": "EnhancedMonitoringClusterInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "EnhancedMonitoringClusterIntegDefaultTestDeployAssertBBA17BDD"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

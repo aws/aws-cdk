@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { CfnGatewayResponse, CfnGatewayResponseProps } from './apigateway.generated';
 import { IRestApi } from './restapi';
 import { IResource, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents gateway response resource.
@@ -54,9 +56,15 @@ export interface GatewayResponseOptions {
  *
  * @resource AWS::ApiGateway::GatewayResponse
  */
+@propertyInjectable
 export class GatewayResponse extends Resource implements IGatewayResponse {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.GatewayResponse';
+
   constructor(scope: Construct, id: string, props: GatewayResponseProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const gatewayResponseProps: CfnGatewayResponseProps = {
       restApiId: props.restApi.restApiId,
@@ -219,5 +227,4 @@ export class ResponseType {
   private constructor(type: string) {
     this.responseType = type;
   }
-
 }

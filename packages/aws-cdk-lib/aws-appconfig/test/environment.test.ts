@@ -2,7 +2,7 @@ import { Template } from '../../assertions';
 import { Alarm, CompositeAlarm, Metric } from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { Application, ConfigurationContent, Environment, HostedConfiguration, Monitor } from '../lib';
+import { Application, ConfigurationContent, DeletionProtectionCheck, Environment, HostedConfiguration, Monitor } from '../lib';
 
 describe('environment', () => {
   test('default environment', () => {
@@ -17,6 +17,27 @@ describe('environment', () => {
       ApplicationId: {
         Ref: 'MyAppConfigB4B63E75',
       },
+    });
+  });
+
+  test.each([
+    DeletionProtectionCheck.ACCOUNT_DEFAULT,
+    DeletionProtectionCheck.APPLY,
+    DeletionProtectionCheck.BYPASS,
+  ])('environment with deletion protection check', (deletionProtectionCheck) => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    new Environment(stack, 'MyEnvironment', {
+      application: app,
+      deletionProtectionCheck,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Environment', {
+      Name: 'MyEnvironment',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      DeletionProtectionCheck: deletionProtectionCheck,
     });
   });
 
