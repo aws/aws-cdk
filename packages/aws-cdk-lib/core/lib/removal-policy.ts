@@ -29,13 +29,13 @@ export enum RemovalPolicy {
   /**
    * When this removal policy is applied, the resource will be physically destroyed
    * when it is removed from the stack or when the stack is deleted.
-   * This is not the default removal policy - most resources default to RETAIN.
    */
   DESTROY = 'destroy',
 
   /**
    * This uses the 'Retain' DeletionPolicy, which will cause the resource to be retained
    * in the account, but orphaned from the stack.
+   * Most resources default to RETAIN.
    */
   RETAIN = 'retain',
 
