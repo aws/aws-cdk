@@ -1093,7 +1093,7 @@ export class SearchExpression implements IMetric {
    * @deprecated use toMetricConfig()
    */
   public toGraphConfig(): MetricGraphConfig {
-    throw new cdk.UnscopedValidationError("`toGraphConfig()` is deprecated, use `toMetricConfig()`");
+    throw new cdk.UnscopedValidationError('`toGraphConfig()` is deprecated, use `toMetricConfig()`');
   }
 
   public toMetricConfig(): MetricConfig {

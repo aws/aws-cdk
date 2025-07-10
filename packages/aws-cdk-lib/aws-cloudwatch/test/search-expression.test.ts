@@ -201,11 +201,11 @@ describe('SearchExpression', () => {
 
       // WHEN
       const key1 = metricKey(searchExpr);
-      
+
       // Verify the key is cached on the object
-      const cachedKey = (searchExpr as any)[Symbol.for('@aws-cdk/aws-cloudwatch.MetricKey')] || 
+      const cachedKey = (searchExpr as any)[Symbol.for('@aws-cdk/aws-cloudwatch.MetricKey')] ||
                        Object.getOwnPropertySymbols(searchExpr).find(sym => sym.toString().includes('MetricKey'));
-      
+
       const key2 = metricKey(searchExpr);
 
       // THEN
@@ -331,7 +331,7 @@ describe('SearchExpression', () => {
       expect(typeof searchExpr.toMetricConfig).toBe('function');
       expect(typeof searchExpr.toAlarmConfig).toBe('function');
       expect(typeof searchExpr.toGraphConfig).toBe('function');
-      
+
       // warnings and warningsV2 are optional and only set when there are actual warnings
       // In normal cases, they will be undefined
       expect(searchExpr.warnings).toBeUndefined();
