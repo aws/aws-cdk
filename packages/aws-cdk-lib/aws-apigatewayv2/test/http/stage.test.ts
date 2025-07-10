@@ -256,6 +256,27 @@ describe('HttpStage', () => {
       })).not.toThrow();
     });
   });
+  test('can add stage variables after creation', () => {
+    // WHEN
+    const stage = new HttpStage(stack, 'DefaultStage', {
+      httpApi: api,
+      stageVariables: {
+        env: 'prod',
+      },
+    });
+
+    stage.addStageVariable('timeout', '300');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: '$default',
+      StageVariables: {
+        env: 'prod',
+        timeout: '300',
+      },
+    });
+  });
 });
 
 describe('HttpStage with domain mapping', () => {
