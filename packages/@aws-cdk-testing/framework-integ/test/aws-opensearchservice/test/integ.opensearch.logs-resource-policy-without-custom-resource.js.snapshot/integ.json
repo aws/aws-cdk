@@ -1,0 +1,14 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "OpenSearchLogsResourcePolicyWithoutCustomResourceInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-opensearch-logs-resource-policy-without-custom-resource"
+      ],
+      "diffAssets": true,
+      "assertionStack": "OpenSearchLogsResourcePolicyWithoutCustomResourceInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "OpenSearchLogsResourcePolicyWithoutCustomResourceIntegDefaultTestDeployAssert09C6D567"
+    }
+  },
+  "minimumCliVersion": "2.1019.1"
+}
