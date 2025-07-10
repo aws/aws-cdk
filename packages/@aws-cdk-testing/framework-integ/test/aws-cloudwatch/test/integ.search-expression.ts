@@ -1,10 +1,10 @@
-import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { App, Stack, Duration } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
-const app = new cdk.App();
+const app = new App();
 
-const stack = new cdk.Stack(app, 'SearchExpressionStack');
+const stack = new Stack(app, 'SearchExpressionStack');
 
 // SearchExpression with minimal properties (defaults)
 const minimalSearchExpression = new cloudwatch.SearchExpression({
@@ -16,7 +16,7 @@ const customSearchExpression = new cloudwatch.SearchExpression({
   expression: "SEARCH('{AWS/Lambda,FunctionName} Duration', 'Average', 300)",
   label: 'Custom Lambda Duration',
   color: '#e377c2',
-  period: cdk.Duration.minutes(10),
+  period: Duration.minutes(10),
   searchAccount: '123456789012',
   searchRegion: 'us-west-2',
 });
@@ -26,7 +26,7 @@ const crossAccountSearchExpression = new cloudwatch.SearchExpression({
   expression: "SEARCH('{AWS/RDS,DBInstanceIdentifier} CPUUtilization', 'Average', 300)",
   label: 'Cross-Account RDS',
   color: '#ff7f0e',
-  period: cdk.Duration.minutes(5),
+  period: Duration.minutes(5),
   searchAccount: '987654321098',
 });
 
@@ -35,7 +35,7 @@ const crossRegionSearchExpression = new cloudwatch.SearchExpression({
   expression: "SEARCH('{AWS/ELB,LoadBalancerName} RequestCount', 'Sum', 300)",
   label: 'Cross-Region ELB',
   color: '#2ca02c',
-  period: cdk.Duration.minutes(5),
+  period: Duration.minutes(5),
   searchRegion: 'eu-west-1',
 });
 
@@ -44,7 +44,7 @@ const crossAccountRegionSearchExpression = new cloudwatch.SearchExpression({
   expression: "SEARCH('{AWS/S3,BucketName} BucketSizeBytes', 'Average', 86400)",
   label: 'Cross-Account Cross-Region S3',
   color: '#9467bd',
-  period: cdk.Duration.hours(1),
+  period: Duration.hours(1),
   searchAccount: '555666777888',
   searchRegion: 'ap-southeast-1',
 });
@@ -72,17 +72,17 @@ const periodsWidget = new cloudwatch.GraphWidget({
     new cloudwatch.SearchExpression({
       expression: "SEARCH('{AWS/DynamoDB,TableName} ConsumedReadCapacityUnits', 'Sum', 300)",
       label: '5-minute period',
-      period: cdk.Duration.minutes(5),
+      period: Duration.minutes(5),
     }),
     new cloudwatch.SearchExpression({
       expression: "SEARCH('{AWS/SNS,TopicName} NumberOfMessagesPublished', 'Sum', 300)",
       label: '15-minute period',
-      period: cdk.Duration.minutes(15),
+      period: Duration.minutes(15),
     }),
     new cloudwatch.SearchExpression({
       expression: "SEARCH('{AWS/SQS,QueueName} ApproximateNumberOfMessages', 'Average', 300)",
       label: '1-hour period',
-      period: cdk.Duration.hours(1),
+      period: Duration.hours(1),
     }),
   ],
 });

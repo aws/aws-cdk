@@ -904,30 +904,33 @@ const VALID_VARIABLE = new RegExp(`^${VARIABLE_PAT}$`);
 const FIND_VARIABLE = new RegExp(VARIABLE_PAT, 'g');
 
 /**
- * Options for SearchExpression
+ * Configurable options for Search Expressions
  */
 export interface SearchExpressionOptions {
   /**
-   * Label for this search expression when displayed in graphs or dashboards.
+   * Label for this search expression when added to a Graph in a Dashboard.
    *
-   * Serves as a prefix for the title of each returned time series. For example, if the label is `X`
-   * and the expression discovers a metric instance with label `Y`, the time series will be labeled `X-Y`.
+   * Serves as a prefix for the title of each returned metric instances. For example, if the label of the Search Expression is `X`
+   * and the expression discovers a metric instance with label `Y`, the title for the metric in the widget will be `X-Y`.
    *
    * @default - No label.
    */
   readonly label?: string;
 
   /**
-   * Color to use when the time series returned by the search expression is rendered on a graph.
+   * Color for the metric produced by the Search Expression.
    *
-   * If the search expression returns multiple time series, colors are automatically assigned.
+   * If the Search Expression returns multiple metrics, the color is assigned to the first metric.
+   * Other metrics are assigned colors automatically.
    *
    * @default - Automatically assigned.
    */
   readonly color?: string;
 
   /**
-   * The period over which the statistics are applied for the returned time series.
+   * The period over which the expression's statistics are applied
+   *
+   * This period overrides the period provided in the Search Expression.
    *
    * @default - Duration.minutes(5)
    */
@@ -978,24 +981,12 @@ export interface SearchExpressionProps extends SearchExpressionOptions {
  *
  * Example:
  * ```ts
- * import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
- * import { Duration } from 'aws-cdk-lib';
- *
  * const searchExpression = new cloudwatch.SearchExpression({
  *   expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
  *   label: 'EC2 CPU Utilization',
  *   period: Duration.minutes(5),
  * });
- *
- * new cloudwatch.GraphWidget({
- *   title: 'EC2 Metrics',
- *   left: [searchExpression],
- * });
  * ```
- *
- * This class does not represent a CloudFormation resource and is not a construct.
- * Instead, `SearchExpression` is an abstraction used to simplify the use of search expressions
- * in CloudWatch graphs and dashboards.
  */
 export class SearchExpression implements IMetric {
   /**
@@ -1004,18 +995,18 @@ export class SearchExpression implements IMetric {
   public readonly expression: string;
 
   /**
-   *  The label is used as a prefix for the name of each time series returned by the search expression.
+   *  The label is used as a prefix for the title of each metric returned by the search expression.
    */
   public readonly label?: string;
 
   /**
-   * Color to use when rendering the resulting time series in a graph.
-   * If multiple time series are returned, colors are automatically assigned.
+   * Color to use when rendering the resulting metric in a graph.
+   * If multiple time series are returned, color is assigned to the first metric, color for the other metrics is automatically assigned
    */
   public readonly color?: string;
 
   /**
-   * The aggregation period for the time series produced by the search expression.
+   * The aggregation period for the metrics produced by the Search Expression.
    */
   public readonly period: cdk.Duration;
 
