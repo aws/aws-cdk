@@ -574,21 +574,6 @@ export enum ClusterScailabilityType {
 }
 
 /**
- * The database insights mode of the Aurora DB cluster.
- */
-export enum DatabaseInsightsMode {
-  /**
-   * Standard mode.
-   */
-  STANDARD = 'standard',
-
-  /**
-   * Advanced mode.
-   */
-  ADVANCED = 'advanced',
-}
-
-/**
  * Properties for looking up an existing DatabaseCluster.
  */
 export interface DatabaseClusterLookupOptions {
