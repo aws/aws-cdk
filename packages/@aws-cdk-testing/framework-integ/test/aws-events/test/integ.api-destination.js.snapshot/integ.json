@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "events-api-destination-integ/DefaultTest": {
+      "stacks": [
+        "events-api-destination-stack"
+      ],
+      "assertionStack": "events-api-destination-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "eventsapidestinationintegDefaultTestDeployAssert460ADA7C"
+    }
+  }
+}
