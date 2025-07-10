@@ -16,7 +16,6 @@ queue_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
-      - status-success=build
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -37,7 +36,6 @@ queue_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
-      - status-success=build
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -57,7 +55,6 @@ queue_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
-      - status-success=build
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -90,7 +87,6 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
-      - status-success=build
   - name: automatic priority merge
     actions:
       comment:
@@ -112,7 +108,6 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
-      - status-success=build
   - name: automatic merge (2+ approvers)
     actions:
       comment:
@@ -134,7 +129,6 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
-      - status-success=build
   - name: automatic merge (no-squash)
     actions:
       comment:
@@ -156,7 +150,6 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
-      - status-success=build
   - name: remove stale reviews
     actions:
       dismiss_reviews:
@@ -197,7 +190,6 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
-      - status-success=build
 priority_rules:
   - name: priority for queue `default-merge`
     conditions:
