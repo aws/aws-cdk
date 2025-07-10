@@ -35,7 +35,7 @@ export enum RemovalPolicy {
   /**
    * This uses the 'Retain' DeletionPolicy, which will cause the resource to be retained
    * in the account, but orphaned from the stack.
-   * Most resources default to RETAIN.
+   * Most resources default to this removal policy.
    */
   RETAIN = 'retain',
 
