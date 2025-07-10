@@ -2167,97 +2167,87 @@ describe('stack', () => {
     expect(asm.getStackArtifact(stack2.artifactId).tags).toEqual(expected);
   });
 
-  test.each([false, true])('stack tags added in constructor are in metadata and artifact properties (ussing feature flag: %p)', (explicitStackTags) => {
-    // GIVEN
-    const app = new App({
-      stackTraces: false,
-      context: {
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-        [cxapi.EXPLICIT_STACK_TAGS]: explicitStackTags,
-      },
-    });
+  describe.each([false, true])(`with ${cxapi.EXPLICIT_STACK_TAGS} set to %p`, (explicitStackTags) => {
+    let app: App;
 
-    const stack = new Stack(app, 'stack1', {
-      tags: {
-        foo: 'bar',
-      },
-    });
-
-    // THEN
-    const asm = app.synth();
-
-    const stackArtifact = asm.getStackArtifact(stack.artifactId);
-    expect(stackArtifact.manifest.metadata).toEqual({
-      '/stack1': [
-        {
-          type: 'aws:cdk:stack-tags',
-          data: [{ key: 'foo', value: 'bar' }],
+    beforeEach(() => {
+      app = new App({
+        stackTraces: false,
+        context: {
+          [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+          [cxapi.EXPLICIT_STACK_TAGS]: explicitStackTags,
         },
-      ],
-    });
-    expect(stackArtifact.tags).toEqual({ foo: 'bar' });
-  });
-
-  test('stack tags are not applied to resources', () => {
-    // GIVEN
-    const app = new App({
-      stackTraces: false,
-      context: {
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-        [cxapi.EXPLICIT_STACK_TAGS]: true,
-      },
+      });
     });
 
-    const stack = new Stack(app, 'stack1', {
-      tags: {
-        foo: 'bar',
-      },
-    });
-    new TaggableResource(stack, 'res');
+    test('stack tags are both in stack metadata and stack artifact properties', () => {
+      // GIVEN
 
-    // THEN
-    const asm = app.synth();
-    const stackArtifact = asm.getStackArtifact(stack.artifactId);
-    expect(stackArtifact.template.Resources.res).toEqual({
-      Type: 'AWS::Taggable::Resource',
-      Properties: {
-        R: 1,
-      },
-    });
-  });
+      const stack = new Stack(app, 'stack1', {
+        tags: {
+          foo: 'bar',
+        },
+      });
 
-  test('with explicitStackTags enabled, tags added using Tags.of() are only applied to resources', () => {
-    // GIVEN
-    const app = new App({
-      stackTraces: false,
-      context: {
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-        [cxapi.EXPLICIT_STACK_TAGS]: true,
-      },
-    });
+      // THEN
+      const asm = app.synth();
 
-    const stack = new Stack(app, 'stack1', {
-      tags: {
-        foo: 'bar',
-      },
-    });
-    new TaggableResource(stack, 'res');
-    Tags.of(stack).add('resourceTag', 'resourceValue');
-
-    // THEN
-    const asm = app.synth();
-    const stackArtifact = asm.getStackArtifact(stack.artifactId);
-    expect(stackArtifact.template.Resources.res).toEqual({
-      Type: 'AWS::Taggable::Resource',
-      Properties: {
-        R: 1,
-        Tags: [
-          { Key: 'resourceTag', Value: 'resourceValue' },
+      const stackArtifact = asm.getStackArtifact(stack.artifactId);
+      expect(stackArtifact.manifest.metadata).toEqual({
+        '/stack1': [
+          {
+            type: 'aws:cdk:stack-tags',
+            data: [{ key: 'foo', value: 'bar' }],
+          },
         ],
-      },
+      });
+      expect(stackArtifact.tags).toEqual({ foo: 'bar' });
     });
-    // resourceTag tag is not added to stack tags
-    expect(stackArtifact.tags).toEqual({ foo: 'bar' });
+
+    test('stack tags do not appear in template', () => {
+      const stack = new Stack(app, 'stack1', {
+        tags: {
+          foo: 'bar',
+        },
+      });
+      new TaggableResource(stack, 'res');
+
+      // THEN
+      const asm = app.synth();
+      const stackArtifact = asm.getStackArtifact(stack.artifactId);
+      expect(stackArtifact.template.Resources.res).toEqual({
+        Type: 'AWS::Taggable::Resource',
+        Properties: {
+          R: 1,
+        },
+      });
+    });
+
+    test('tags added using Tags.of() are or are not applied to Stacks', () => {
+      const stack = new Stack(app, 'stack1');
+      Tags.of(stack).add('resourceTag', 'resourceValue');
+
+      // THEN
+      const asm = app.synth();
+      const stackArtifact = asm.getStackArtifact(stack.artifactId);
+      if (explicitStackTags) {
+        expect(stackArtifact.tags).toEqual({});
+      } else {
+        expect(stackArtifact.tags).toEqual({ resourceTag: 'resourceValue' });
+      }
+    });
+
+    test('tags added using Tags.of() are applied to Stacks if explicitly included', () => {
+      const stack = new Stack(app, 'stack1');
+      Tags.of(stack).add('resourceTag', 'resourceValue', {
+        includeResourceTypes: ['aws:cdk:stack'],
+      });
+
+      // THEN
+      const asm = app.synth();
+      const stackArtifact = asm.getStackArtifact(stack.artifactId);
+      expect(stackArtifact.tags).toEqual({ resourceTag: 'resourceValue' });
+    });
   });
 
   test('warning when stack tags contain tokens', () => {
