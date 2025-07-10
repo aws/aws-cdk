@@ -62,6 +62,14 @@ export interface IApiDestination extends IResource {
    * @attribute
    */
   readonly apiDestinationArn: string;
+
+  /**
+   * The Amazon Resource Name (ARN) of an API destination in resource format,
+   * so it can be used in the Resource element of IAM permission policy statements.
+   * @see https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazoneventbridge.html#amazoneventbridge-resources-for-iam-policies
+   * @attribute
+   */
+  readonly apiDestinationArnForPolicy?: string;
 }
 
 /**
@@ -76,6 +84,12 @@ export interface ApiDestinationAttributes {
    * The Connection to associate with the Api Destination
    */
   readonly connection: IConnection;
+  /**
+   * The Amazon Resource Name (ARN) of an API destination in resource format.
+   *
+   * @default undefined - Imported API destination does not have ARN in resource format
+   */
+  readonly apiDestinationArnForPolicy?: string;
 }
 
 /**
@@ -111,6 +125,7 @@ export class ApiDestination extends Resource implements IApiDestination {
     class Import extends Resource implements ApiDestination {
       public readonly apiDestinationArn = attrs.apiDestinationArn;
       public readonly apiDestinationName = apiDestinationName!;
+      public readonly apiDestinationArnForPolicy = attrs.apiDestinationArnForPolicy;
       public readonly connection = attrs.connection;
     }
 
@@ -133,6 +148,12 @@ export class ApiDestination extends Resource implements IApiDestination {
    */
   public readonly apiDestinationArn: string;
 
+  /**
+   * The Amazon Resource Name (ARN) of an API destination in resource format.
+   * @attribute
+   */
+  public readonly apiDestinationArnForPolicy?: string;
+
   constructor(scope: Construct, id: string, props: ApiDestinationProps) {
     super(scope, id, {
       physicalName: props.apiDestinationName,
@@ -153,5 +174,6 @@ export class ApiDestination extends Resource implements IApiDestination {
 
     this.apiDestinationName = this.getResourceNameAttribute(apiDestination.ref);
     this.apiDestinationArn = apiDestination.attrArn;
+    this.apiDestinationArnForPolicy = apiDestination.attrArnForPolicy;
   }
 }
