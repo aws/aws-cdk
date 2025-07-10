@@ -1233,7 +1233,7 @@ test('resourcesToReplicateTags is not included when not specified', () => {
   template.hasResourceProperties('AWS::Synthetics::Canary', {
     Name: 'mycanary',
   });
-  
+
   const canaryResource = template.findResources('AWS::Synthetics::Canary');
   const canaryProps = canaryResource[Object.keys(canaryResource)[0]].Properties;
   expect(canaryProps.ResourcesToReplicateTags).toBeUndefined();
