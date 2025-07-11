@@ -9,7 +9,7 @@ permissions:
 jobs:
   collect:
     name: Collect Coverage
-    runs-on: ubuntu-latest
+    runs-on: codebuild-aws-cdk-github-actions-runner-${{ github.run_id }}-${{ github.run_attempt }}
 
     steps:
       - name: Checkout
