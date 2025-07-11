@@ -354,7 +354,7 @@
         ]
        },
        "SizeInGiB": 1,
-       "SnapshotId": "snap-0be592a0391c7eada",
+       "SnapshotId": "snap-123456789abcdef0",
        "VolumeInitializationRate": 200,
        "VolumeType": "gp3"
       },
