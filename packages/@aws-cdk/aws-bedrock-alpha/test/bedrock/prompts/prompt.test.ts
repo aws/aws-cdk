@@ -74,9 +74,6 @@ describe('Prompt', () => {
                 ],
               ],
             },
-            InferenceConfiguration: {
-              Text: {},
-            },
             TemplateConfiguration: {
               Text: {
                 InputVariables: [{ Name: 'name' }],

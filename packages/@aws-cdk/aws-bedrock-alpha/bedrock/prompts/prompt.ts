@@ -292,7 +292,27 @@ export class Prompt extends PromptBase implements IPrompt {
       description: props.description,
       name: props.promptName,
       variants: Lazy.any({
-        produce: () => this.variants,
+        produce: () => this.variants.map(variant => {
+          const variantConfig: any = {
+            name: variant.name,
+            templateType: variant.templateType,
+            templateConfiguration: variant.templateConfiguration._render(),
+          };
+
+          if (variant.modelId) {
+            variantConfig.modelId = variant.modelId;
+          }
+
+          if (variant.inferenceConfiguration) {
+            variantConfig.inferenceConfiguration = variant.inferenceConfiguration._render();
+          }
+
+          if (variant.genAiResource) {
+            variantConfig.genAiResource = variant.genAiResource._render();
+          }
+
+          return variantConfig;
+        }),
       }),
       tags: props.tags,
     };

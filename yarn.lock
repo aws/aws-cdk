@@ -69,15 +69,7 @@
 "@aws-cdk/aws-lambda-python-alpha@file:packages/@aws-cdk/aws-lambda-python-alpha":
   version "0.0.0"
 
-"@aws-cdk/aws-service-spec@0.1.82":
-  version "0.1.82"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.82.tgz#d9d0b9e918daea01912de11e670e29e669b0f718"
-  integrity sha512-Vn0qMU00ozjmzxMgAluhS8V8H+/tk0Zk8VwKKf4kDJ3i1uFp15mfQM5vch8JwNs5Tn/xAOCX7jIavh1PiKfKYg==
-  dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.148"
-    "@cdklabs/tskb" "^0.0.3"
-
-"@aws-cdk/aws-service-spec@^0.1.84":
+"@aws-cdk/aws-service-spec@0.1.84", "@aws-cdk/aws-service-spec@^0.1.84":
   version "0.1.84"
   resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.84.tgz#520b4d69365bed901813fac1821750d899f6cc7e"
   integrity sha512-anurRdTvmebg3VhHeXDE7c039jJqVZNBtDvnxmbmjENDLch+jmu7uxIx0DXRLT7201raR7BKA28/nQh2srCzNA==
@@ -85,10 +77,18 @@
     "@aws-cdk/service-spec-types" "^0.0.150"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/cloud-assembly-schema@^44.2.0", "@aws-cdk/cloud-assembly-schema@^44.8.0":
+"@aws-cdk/cloud-assembly-schema@^44.2.0":
   version "44.8.0"
   resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-44.8.0.tgz#52da129bd718cc354c2970a6922c2346459f3945"
   integrity sha512-Bxyj0VH8phE1uHJ6LiG3/UC/HYK91EBZnXSOzwtLsMJ0ZPuaQCYDRVAAfjDCSsEOwAk56/Waks8b5pXHpgz/xw==
+  dependencies:
+    jsonschema "~1.4.1"
+    semver "^7.7.2"
+
+"@aws-cdk/cloud-assembly-schema@^45.0.0":
+  version "45.2.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-45.2.0.tgz#bd4bf1e16189a2d424b9ab503db48ca9732325b1"
+  integrity sha512-5TTUkGHQ+nfuUGwKA8/Yraxb+JdNUh4np24qk/VHXmrCMq+M6HfmGWfhcg/QlHA2S5P3YIamfYHdQAB4uSNLAg==
   dependencies:
     jsonschema "~1.4.1"
     semver "^7.7.2"
@@ -5228,7 +5228,7 @@ aws-cdk-lib@^2.188.0:
   resolved "https://registry.npmjs.org/aws-cdk-lib/-/aws-cdk-lib-2.202.0.tgz#5cae32d08e6072cc49e6cb090471a1292efdd867"
   integrity sha512-JDycQoE8AxUAeCFXFoCx6FGvR78e6W9zYxPgmfW/uPPbntyNCXXBqwyAYo17RGS/lr0RO3zqD/oCBZSNU2e/Yg==
   dependencies:
-    "@aws-cdk/asset-awscli-v1" "2.2.242"
+    "@aws-cdk/asset-awscli-v1" "2.2.240"
     "@aws-cdk/asset-node-proxy-agent-v6" "^2.1.0"
     "@aws-cdk/cloud-assembly-schema" "^44.2.0"
     "@balena/dockerignore" "^1.0.2"
@@ -5250,16 +5250,10 @@ aws-cdk@2.1007.0:
   optionalDependencies:
     fsevents "2.3.2"
 
-aws-cdk@2.1019.2:
-  version "2.1019.2"
-  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1019.2.tgz#acbdd3be7e095d3347168cd37aab437b3bd777f7"
-  integrity sha512-LkWZ3IKBkfCPTCu60t4Wb9JMSkb+0Uzk+HIxZeW5sFohq8bxDGV0OP1hcqEC2+KbVYRn7q+YhMeSJ/FOQcgpiw==
-
 aws-cdk@2.1020.2:
   version "2.1020.2"
   resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1020.2.tgz#7e0a4113666a6d162cf40b6b1ebf9e310c22dd44"
   integrity sha512-yWdt3dJh4aPm1VNyEgfG3lozGrvddw0i7avt+Cl9KOYixmisQtAg39/aZqzVVqjzVZVEanXmz+tlhzzh75Z69A==
-
   optionalDependencies:
     fsevents "2.3.2"
 

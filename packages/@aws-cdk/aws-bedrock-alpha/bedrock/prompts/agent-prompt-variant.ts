@@ -1,5 +1,7 @@
 import { CommonPromptVariantProps, PromptTemplateType, IPromptVariant } from './prompt-variant';
 import { IAgentAlias } from '../agents/agent-alias';
+import { PromptTemplateConfiguration } from './prompt-template-configuration';
+import { PromptGenAiResource } from './prompt-genai-resource';
 
 /**
  * Properties for creating an agent prompt variant.
@@ -27,18 +29,12 @@ export function createAgentPromptVariant(props: AgentPromptVariantProps): IPromp
   return {
     name: props.variantName,
     templateType: PromptTemplateType.TEXT,
-    genAiResource: {
-      agent: {
-        agentIdentifier: props.agentAlias.aliasArn,
-      },
-    },
-    templateConfiguration: {
-      text: {
-        inputVariables: props.promptVariables?.map((variable: string) => {
-          return { name: variable };
-        }),
-        text: props.promptText,
-      },
-    },
+    genAiResource: PromptGenAiResource.agent({
+      agentAlias: props.agentAlias,
+    }),
+    templateConfiguration: PromptTemplateConfiguration.text({
+      inputVariables: props.promptVariables,
+      text: props.promptText,
+    }),
   };
 }

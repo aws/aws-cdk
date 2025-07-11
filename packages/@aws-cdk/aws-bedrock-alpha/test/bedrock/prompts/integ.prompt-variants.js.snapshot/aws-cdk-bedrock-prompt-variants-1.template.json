@@ -156,9 +156,6 @@
     "Name": "text-variants-test",
     "Variants": [
      {
-      "InferenceConfiguration": {
-       "Text": {}
-      },
       "ModelId": {
        "Fn::Join": [
         "",
@@ -202,9 +199,6 @@
     "Name": "chat-variants-test",
     "Variants": [
      {
-      "InferenceConfiguration": {
-       "Text": {}
-      },
       "ModelId": {
        "Fn::Join": [
         "",
@@ -304,9 +298,6 @@
     "Name": "basic-text-test",
     "Variants": [
      {
-      "InferenceConfiguration": {
-       "Text": {}
-      },
       "ModelId": {
        "Fn::Join": [
         "",
@@ -393,9 +384,6 @@
     "Name": "basic-chat-test",
     "Variants": [
      {
-      "InferenceConfiguration": {
-       "Text": {}
-      },
       "ModelId": {
        "Fn::Join": [
         "",
@@ -535,9 +523,6 @@
     "Name": "specific-tool-chat-test",
     "Variants": [
      {
-      "InferenceConfiguration": {
-       "Text": {}
-      },
       "ModelId": {
        "Fn::Join": [
         "",

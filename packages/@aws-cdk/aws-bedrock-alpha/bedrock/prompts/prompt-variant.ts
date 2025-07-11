@@ -1,9 +1,11 @@
-import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 // Internal Libs
 import { IBedrockInvokable } from '../models';
 import { TextPromptVariantProps, createTextPromptVariant } from './text-prompt-variant';
 import { ChatPromptVariantProps, createChatPromptVariant } from './chat-prompt-variant';
 import { AgentPromptVariantProps, createAgentPromptVariant } from './agent-prompt-variant';
+import { PromptInferenceConfiguration } from './prompt-inference-configuration';
+import { PromptTemplateConfiguration } from './prompt-template-configuration';
+import { PromptGenAiResource } from './prompt-genai-resource';
 
 /******************************************************************************
  *                              COMMON
@@ -68,7 +70,7 @@ export interface IPromptVariant {
   /**
    * The inference configuration.
    */
-  readonly inferenceConfiguration?: bedrock.CfnPrompt.PromptInferenceConfigurationProperty;
+  readonly inferenceConfiguration?: PromptInferenceConfiguration;
 
   /**
    * The unique identifier of the model with which to run inference on the prompt.
@@ -78,12 +80,12 @@ export interface IPromptVariant {
   /**
    * The template configuration.
    */
-  readonly templateConfiguration: bedrock.CfnPrompt.PromptTemplateConfigurationProperty;
+  readonly templateConfiguration: PromptTemplateConfiguration;
 
   /**
    * The generative AI resource configuration.
    */
-  readonly genAiResource?: bedrock.CfnPrompt.PromptGenAiResourceProperty;
+  readonly genAiResource?: PromptGenAiResource;
 }
 
 /******************************************************************************

@@ -204,9 +204,6 @@
     "Name": "encrypted-test-prompt",
     "Variants": [
      {
-      "InferenceConfiguration": {
-       "Text": {}
-      },
       "ModelId": {
        "Fn::Join": [
         "",

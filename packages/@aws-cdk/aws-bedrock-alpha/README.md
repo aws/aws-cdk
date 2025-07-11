@@ -644,7 +644,7 @@ const variant1 = bedrock.PromptVariant.text({
   model: claudeModel,
   promptVariables: ['topic'],
   promptText: 'This is my first text prompt. Please summarize our conversation on: {{topic}}.',
-  inferenceConfiguration: new bedrock.PromptInferenceConfiguration({
+  inferenceConfiguration: bedrock.PromptInferenceConfiguration.text({
     temperature: 1.0,
     topP: 0.999,
     maxTokens: 2000,
@@ -775,7 +775,7 @@ const variant1 = bedrock.PromptVariant.text({
   model: claudeModel,
   promptVariables: ['topic'],
   promptText: 'This is my first text prompt. Please summarize our conversation on: {{topic}}.',
-  inferenceConfiguration: new bedrock.PromptInferenceConfiguration({
+  inferenceConfiguration: bedrock.PromptInferenceConfiguration.text({
     temperature: 1.0,
     topP: 0.999,
     maxTokens: 2000,

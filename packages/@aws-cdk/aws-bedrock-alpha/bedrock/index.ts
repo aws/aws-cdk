@@ -24,6 +24,8 @@ export * from './prompts/text-prompt-variant';
 export * from './prompts/chat-prompt-variant';
 export * from './prompts/agent-prompt-variant';
 export * from './prompts/prompt-inference-configuration';
+export * from './prompts/prompt-template-configuration';
+export * from './prompts/prompt-genai-resource';
 
 // ===================================
 // Models

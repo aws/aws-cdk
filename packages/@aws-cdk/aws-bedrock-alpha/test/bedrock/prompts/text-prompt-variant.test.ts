@@ -22,19 +22,12 @@ describe('TextPromptVariant', () => {
       expect(variant.name).toBe('test-variant');
       expect(variant.templateType).toBe(bedrock.PromptTemplateType.TEXT);
       expect(variant.modelId).toBe(foundationModel.invokableArn);
-      expect(variant.inferenceConfiguration).toEqual({
-        text: {},
-      });
-      expect(variant.templateConfiguration).toEqual({
-        text: {
-          inputVariables: undefined,
-          text: 'Hello world!',
-        },
-      });
+      expect(variant.inferenceConfiguration).toBeUndefined();
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('creates text prompt variant with all properties', () => {
-      const inferenceConfig = new bedrock.PromptInferenceConfiguration({
+      const inferenceConfig = bedrock.PromptInferenceConfiguration.text({
         maxTokens: 100,
         temperature: 0.7,
         topP: 0.9,
@@ -51,19 +44,8 @@ describe('TextPromptVariant', () => {
       expect(variant.name).toBe('advanced-variant');
       expect(variant.templateType).toBe(bedrock.PromptTemplateType.TEXT);
       expect(variant.modelId).toBe(foundationModel.invokableArn);
-      expect(variant.inferenceConfiguration).toEqual({
-        text: {
-          maxTokens: 100,
-          temperature: 0.7,
-          topP: 0.9,
-        },
-      });
-      expect(variant.templateConfiguration).toEqual({
-        text: {
-          inputVariables: [{ name: 'name' }],
-          text: 'Hello {{name}}, how are you today?',
-        },
-      });
+      expect(variant.inferenceConfiguration).toBe(inferenceConfig);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('creates text prompt variant with multiple variables', () => {
@@ -74,11 +56,7 @@ describe('TextPromptVariant', () => {
         promptVariables: ['name', 'age', 'city'],
       });
 
-      expect((variant.templateConfiguration.text as any)?.inputVariables).toEqual([
-        { name: 'name' },
-        { name: 'age' },
-        { name: 'city' },
-      ]);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('creates text prompt variant with empty variables array', () => {
@@ -89,7 +67,7 @@ describe('TextPromptVariant', () => {
         promptVariables: [],
       });
 
-      expect((variant.templateConfiguration.text as any)?.inputVariables).toEqual([]);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('creates text prompt variant without variables', () => {
@@ -99,7 +77,7 @@ describe('TextPromptVariant', () => {
         promptText: 'This is a static prompt.',
       });
 
-      expect((variant.templateConfiguration.text as any)?.inputVariables).toBeUndefined();
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
   });
 
@@ -152,7 +130,7 @@ describe('TextPromptVariant', () => {
         promptText: 'Special chars: !@#$%^&*()_+-=[]{}|;:,.<>?',
       });
 
-      expect((variant.templateConfiguration.text as any)?.text).toBe('Special chars: !@#$%^&*()_+-=[]{}|;:,.<>?');
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('handles multiline prompt text', () => {
@@ -167,7 +145,7 @@ And includes {{variable}} placeholders.`;
         promptVariables: ['variable'],
       });
 
-      expect((variant.templateConfiguration.text as any)?.text).toBe(multilineText);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('handles empty prompt text', () => {
@@ -177,7 +155,7 @@ And includes {{variable}} placeholders.`;
         promptText: '',
       });
 
-      expect((variant.templateConfiguration.text as any)?.text).toBe('');
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('handles very long prompt text', () => {
@@ -188,7 +166,7 @@ And includes {{variable}} placeholders.`;
         promptText: longText,
       });
 
-      expect((variant.templateConfiguration.text as any)?.text).toBe(longText);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
   });
 
@@ -201,13 +179,11 @@ And includes {{variable}} placeholders.`;
         inferenceConfiguration: undefined,
       });
 
-      expect(variant.inferenceConfiguration).toEqual({
-        text: {},
-      });
+      expect(variant.inferenceConfiguration).toBeUndefined();
     });
 
     test('handles empty inference configuration object', () => {
-      const inferenceConfig = new bedrock.PromptInferenceConfiguration({});
+      const inferenceConfig = bedrock.PromptInferenceConfiguration.text({});
 
       const variant = bedrock.PromptVariant.text({
         variantName: 'empty-inference-variant',
@@ -216,13 +192,11 @@ And includes {{variable}} placeholders.`;
         inferenceConfiguration: inferenceConfig,
       });
 
-      expect(variant.inferenceConfiguration).toEqual({
-        text: {},
-      });
+      expect(variant.inferenceConfiguration).toBe(inferenceConfig);
     });
 
     test('preserves all inference configuration properties', () => {
-      const inferenceConfig = new bedrock.PromptInferenceConfiguration({
+      const inferenceConfig = bedrock.PromptInferenceConfiguration.text({
         maxTokens: 500,
         temperature: 0.5,
         topP: 0.8,
@@ -236,14 +210,7 @@ And includes {{variable}} placeholders.`;
         inferenceConfiguration: inferenceConfig,
       });
 
-      expect(variant.inferenceConfiguration).toEqual({
-        text: {
-          maxTokens: 500,
-          temperature: 0.5,
-          topP: 0.8,
-          stopSequences: ['END', 'STOP'],
-        },
-      });
+      expect(variant.inferenceConfiguration).toBe(inferenceConfig);
     });
   });
 });

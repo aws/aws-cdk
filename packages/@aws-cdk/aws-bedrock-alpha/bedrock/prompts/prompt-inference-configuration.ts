@@ -37,50 +37,43 @@ export interface PromptInferenceConfigurationProps {
 }
 
 /**
- * Configuration for model inference parameters used in prompts.
+ * Abstract base class for prompt inference configurations.
  *
- * This class provides a high-level abstraction over the underlying CloudFormation
+ * This provides a high-level abstraction over the underlying CloudFormation
  * inference configuration properties, offering a more developer-friendly interface
  * while maintaining full compatibility with the underlying AWS Bedrock service.
  */
-export class PromptInferenceConfiguration {
+export abstract class PromptInferenceConfiguration {
   /**
-   * The maximum number of tokens to return in the response.
+   * Creates a text inference configuration.
    */
-  public readonly maxTokens?: number;
-
-  /**
-   * A list of strings that define sequences after which the model will stop generating.
-   */
-  public readonly stopSequences?: string[];
-
-  /**
-   * Controls the randomness of the response.
-   */
-  public readonly temperature?: number;
-
-  /**
-   * The percentage of most-likely candidates that the model considers for the next token.
-   */
-  public readonly topP?: number;
-
-  constructor(props: PromptInferenceConfigurationProps) {
-    this.maxTokens = props.maxTokens;
-    this.stopSequences = props.stopSequences;
-    this.temperature = props.temperature;
-    this.topP = props.topP;
+  public static text(props: PromptInferenceConfigurationProps): PromptInferenceConfiguration {
+    return new TextInferenceConfiguration(props);
   }
 
   /**
    * Renders the inference configuration as a CloudFormation property.
    * @internal This is an internal core function and should not be called directly.
    */
-  public _render(): bedrock.CfnPrompt.PromptModelInferenceConfigurationProperty {
+  public abstract _render(): bedrock.CfnPrompt.PromptInferenceConfigurationProperty;
+}
+
+/**
+ * Text inference configuration for prompts.
+ */
+class TextInferenceConfiguration extends PromptInferenceConfiguration {
+  constructor(private readonly props: PromptInferenceConfigurationProps) {
+    super();
+  }
+
+  public _render(): bedrock.CfnPrompt.PromptInferenceConfigurationProperty {
     return {
-      maxTokens: this.maxTokens,
-      stopSequences: this.stopSequences,
-      temperature: this.temperature,
-      topP: this.topP,
+      text: {
+        maxTokens: this.props.maxTokens,
+        stopSequences: this.props.stopSequences,
+        temperature: this.props.temperature,
+        topP: this.props.topP,
+      },
     };
   }
 }

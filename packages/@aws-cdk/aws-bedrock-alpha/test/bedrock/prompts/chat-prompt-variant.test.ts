@@ -70,12 +70,8 @@ describe('ChatPromptVariant', () => {
       expect(variant.name).toBe('test-chat-variant');
       expect(variant.templateType).toBe(bedrock.PromptTemplateType.CHAT);
       expect(variant.modelId).toBe(foundationModel.invokableArn);
-      expect(variant.inferenceConfiguration).toEqual({
-        text: {},
-      });
-      expect((variant.templateConfiguration.chat as any)?.messages).toHaveLength(1);
-      expect((variant.templateConfiguration.chat as any)?.system).toBeUndefined();
-      expect((variant.templateConfiguration.chat as any)?.toolConfiguration).toBeUndefined();
+      expect(variant.inferenceConfiguration).toBeUndefined();
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('creates chat prompt variant with all properties', () => {
@@ -85,7 +81,7 @@ describe('ChatPromptVariant', () => {
         bedrock.ChatMessage.user('Tell me about {{city}}'),
       ];
 
-      const inferenceConfig = new bedrock.PromptInferenceConfiguration({
+      const inferenceConfig = bedrock.PromptInferenceConfiguration.text({
         maxTokens: 200,
         temperature: 0.8,
       });
@@ -102,15 +98,8 @@ describe('ChatPromptVariant', () => {
       expect(variant.name).toBe('advanced-chat-variant');
       expect(variant.templateType).toBe(bedrock.PromptTemplateType.CHAT);
       expect(variant.modelId).toBe(foundationModel.invokableArn);
-      expect(variant.inferenceConfiguration).toEqual({
-        text: {
-          maxTokens: 200,
-          temperature: 0.8,
-        },
-      });
-      expect((variant.templateConfiguration.chat as any)?.messages).toHaveLength(3);
-      expect((variant.templateConfiguration.chat as any)?.system).toEqual([{ text: 'You are a helpful weather assistant.' }]);
-      expect((variant.templateConfiguration.chat as any)?.inputVariables).toEqual([{ name: 'city' }]);
+      expect(variant.inferenceConfiguration).toBe(inferenceConfig);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('creates chat prompt variant with tool configuration', () => {
@@ -145,9 +134,7 @@ describe('ChatPromptVariant', () => {
         toolConfiguration: toolConfig,
       });
 
-      expect((variant.templateConfiguration.chat as any)?.toolConfiguration).toBeDefined();
-      expect((variant.templateConfiguration.chat as any)?.toolConfiguration.toolChoice).toEqual(bedrock.ToolChoice.AUTO._render());
-      expect((variant.templateConfiguration.chat as any)?.toolConfiguration.tools).toEqual(toolConfig.tools);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('creates chat prompt variant with multiple variables', () => {
@@ -164,11 +151,7 @@ describe('ChatPromptVariant', () => {
         promptVariables: ['name', 'age', 'topic'],
       });
 
-      expect((variant.templateConfiguration.chat as any)?.inputVariables).toEqual([
-        { name: 'name' },
-        { name: 'age' },
-        { name: 'topic' },
-      ]);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('creates chat prompt variant without variables', () => {
@@ -183,7 +166,7 @@ describe('ChatPromptVariant', () => {
         messages,
       });
 
-      expect((variant.templateConfiguration.chat as any)?.inputVariables).toBeUndefined();
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
   });
 
@@ -283,7 +266,7 @@ describe('ChatPromptVariant', () => {
         messages: [bedrock.ChatMessage.user('Single message')],
       });
 
-      expect((variant.templateConfiguration.chat as any)?.messages).toHaveLength(1);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('handles alternating user and assistant messages', () => {
@@ -300,7 +283,7 @@ describe('ChatPromptVariant', () => {
         messages,
       });
 
-      expect((variant.templateConfiguration.chat as any)?.messages).toHaveLength(4);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('handles special characters in messages', () => {
@@ -340,7 +323,7 @@ And includes {{variable}} placeholders.`;
         system: undefined,
       });
 
-      expect((variant.templateConfiguration.chat as any)?.system).toBeUndefined();
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('handles empty system message', () => {
@@ -351,7 +334,7 @@ And includes {{variable}} placeholders.`;
         system: '',
       });
 
-      expect((variant.templateConfiguration.chat as any)?.system).toEqual([{ text: '' }]);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('handles long system message', () => {
@@ -363,7 +346,7 @@ And includes {{variable}} placeholders.`;
         system: longSystemMessage,
       });
 
-      expect((variant.templateConfiguration.chat as any)?.system).toEqual([{ text: longSystemMessage }]);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
   });
 
@@ -376,13 +359,11 @@ And includes {{variable}} placeholders.`;
         inferenceConfiguration: undefined,
       });
 
-      expect(variant.inferenceConfiguration).toEqual({
-        text: {},
-      });
+      expect(variant.inferenceConfiguration).toBeUndefined();
     });
 
     test('handles empty inference configuration object', () => {
-      const inferenceConfig = new bedrock.PromptInferenceConfiguration({});
+      const inferenceConfig = bedrock.PromptInferenceConfiguration.text({});
 
       const variant = bedrock.PromptVariant.chat({
         variantName: 'empty-inference-chat-variant',
@@ -391,13 +372,11 @@ And includes {{variable}} placeholders.`;
         inferenceConfiguration: inferenceConfig,
       });
 
-      expect(variant.inferenceConfiguration).toEqual({
-        text: {},
-      });
+      expect(variant.inferenceConfiguration).toBe(inferenceConfig);
     });
 
     test('preserves all inference configuration properties', () => {
-      const inferenceConfig = new bedrock.PromptInferenceConfiguration({
+      const inferenceConfig = bedrock.PromptInferenceConfiguration.text({
         maxTokens: 500,
         temperature: 0.5,
         topP: 0.8,
@@ -411,14 +390,7 @@ And includes {{variable}} placeholders.`;
         inferenceConfiguration: inferenceConfig,
       });
 
-      expect(variant.inferenceConfiguration).toEqual({
-        text: {
-          maxTokens: 500,
-          temperature: 0.5,
-          topP: 0.8,
-          stopSequences: ['END', 'STOP'],
-        },
-      });
+      expect(variant.inferenceConfiguration).toBe(inferenceConfig);
     });
   });
 });

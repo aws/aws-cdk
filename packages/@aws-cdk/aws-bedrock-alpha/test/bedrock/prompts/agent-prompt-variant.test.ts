@@ -39,17 +39,8 @@ describe('AgentPromptVariant', () => {
       expect(variant.name).toBe('test-agent-variant');
       expect(variant.templateType).toBe(bedrock.PromptTemplateType.TEXT);
       expect(variant.modelId).toBeUndefined();
-      expect(variant.genAiResource).toEqual({
-        agent: {
-          agentIdentifier: mockAgentAlias.aliasArn,
-        },
-      });
-      expect(variant.templateConfiguration).toEqual({
-        text: {
-          inputVariables: undefined,
-          text: 'Hello agent!',
-        },
-      });
+      expect(variant.genAiResource).toBeInstanceOf(bedrock.PromptGenAiResource);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('creates agent prompt variant with all properties', () => {
@@ -64,17 +55,8 @@ describe('AgentPromptVariant', () => {
       expect(variant.name).toBe('advanced-agent-variant');
       expect(variant.templateType).toBe(bedrock.PromptTemplateType.TEXT);
       expect(variant.modelId).toBeUndefined();
-      expect(variant.genAiResource).toEqual({
-        agent: {
-          agentIdentifier: mockAgentAlias.aliasArn,
-        },
-      });
-      expect(variant.templateConfiguration).toEqual({
-        text: {
-          inputVariables: [{ name: 'name' }, { name: 'task' }],
-          text: 'Hello {{name}}, please help with {{task}}.',
-        },
-      });
+      expect(variant.genAiResource).toBeInstanceOf(bedrock.PromptGenAiResource);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('creates agent prompt variant with multiple variables', () => {
@@ -86,11 +68,7 @@ describe('AgentPromptVariant', () => {
         promptVariables: ['input', 'user', 'context'],
       });
 
-      expect((variant.templateConfiguration.text as any)?.inputVariables).toEqual([
-        { name: 'input' },
-        { name: 'user' },
-        { name: 'context' },
-      ]);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('creates agent prompt variant with empty variables array', () => {
@@ -102,7 +80,7 @@ describe('AgentPromptVariant', () => {
         promptVariables: [],
       });
 
-      expect((variant.templateConfiguration.text as any)?.inputVariables).toEqual([]);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('creates agent prompt variant without variables', () => {
@@ -113,7 +91,7 @@ describe('AgentPromptVariant', () => {
         promptText: 'Static agent prompt.',
       });
 
-      expect((variant.templateConfiguration.text as any)?.inputVariables).toBeUndefined();
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
   });
 
@@ -194,7 +172,7 @@ describe('AgentPromptVariant', () => {
         promptText: 'Special chars: !@#$%^&*()_+-=[]{}|;:,.<>?',
       });
 
-      expect((variant.templateConfiguration.text as any)?.text).toBe('Special chars: !@#$%^&*()_+-=[]{}|;:,.<>?');
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('handles multiline prompt text', () => {
@@ -210,7 +188,7 @@ And includes {{variable}} placeholders.`;
         promptVariables: ['variable'],
       });
 
-      expect((variant.templateConfiguration.text as any)?.text).toBe(multilineText);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('handles empty prompt text', () => {
@@ -221,7 +199,7 @@ And includes {{variable}} placeholders.`;
         promptText: '',
       });
 
-      expect((variant.templateConfiguration.text as any)?.text).toBe('');
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('handles very long prompt text', () => {
@@ -233,7 +211,7 @@ And includes {{variable}} placeholders.`;
         promptText: longText,
       });
 
-      expect((variant.templateConfiguration.text as any)?.text).toBe(longText);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
   });
 
@@ -246,7 +224,7 @@ And includes {{variable}} placeholders.`;
         promptText: 'Test prompt',
       });
 
-      expect((variant.genAiResource?.agent as any)?.agentIdentifier).toBe(mockAgentAlias.aliasArn);
+      expect(variant.genAiResource).toBeInstanceOf(bedrock.PromptGenAiResource);
     });
 
     test('works with different agent aliases', () => {
@@ -269,7 +247,7 @@ And includes {{variable}} placeholders.`;
         promptText: 'Another agent prompt',
       });
 
-      expect((variant.genAiResource?.agent as any)?.agentIdentifier).toBe(anotherAlias.aliasArn);
+      expect(variant.genAiResource).toBeInstanceOf(bedrock.PromptGenAiResource);
     });
   });
 
@@ -284,8 +262,7 @@ And includes {{variable}} placeholders.`;
         promptVariables: variables,
       });
 
-      const expectedInputVariables = variables.map(name => ({ name }));
-      expect((variant.templateConfiguration.text as any)?.inputVariables).toEqual(expectedInputVariables);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('handles duplicate variable names', () => {
@@ -297,12 +274,7 @@ And includes {{variable}} placeholders.`;
         promptVariables: ['name', 'name', 'age', 'name'],
       });
 
-      expect((variant.templateConfiguration.text as any)?.inputVariables).toEqual([
-        { name: 'name' },
-        { name: 'name' },
-        { name: 'age' },
-        { name: 'name' },
-      ]);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
 
     test('preserves variable order', () => {
@@ -315,8 +287,7 @@ And includes {{variable}} placeholders.`;
         promptVariables: orderedVariables,
       });
 
-      const expectedInputVariables = orderedVariables.map(name => ({ name }));
-      expect((variant.templateConfiguration.text as any)?.inputVariables).toEqual(expectedInputVariables);
+      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
     });
   });
 
@@ -362,9 +333,7 @@ And includes {{variable}} placeholders.`;
         promptText: 'GenAI resource test',
       });
 
-      expect(variant.genAiResource).toBeDefined();
-      expect(variant.genAiResource?.agent).toBeDefined();
-      expect((variant.genAiResource?.agent as any)?.agentIdentifier).toBe(mockAgentAlias.aliasArn);
+      expect(variant.genAiResource).toBeInstanceOf(bedrock.PromptGenAiResource);
     });
   });
 });

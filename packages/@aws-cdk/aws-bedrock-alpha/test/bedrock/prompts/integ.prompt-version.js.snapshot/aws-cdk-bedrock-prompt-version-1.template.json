@@ -239,9 +239,6 @@
     "Name": "encrypted-versioning-prompt",
     "Variants": [
      {
-      "InferenceConfiguration": {
-       "Text": {}
-      },
       "ModelId": {
        "Fn::Join": [
         "",
@@ -632,9 +629,6 @@
     "Name": "edge-case-versioning-prompt",
     "Variants": [
      {
-      "InferenceConfiguration": {
-       "Text": {}
-      },
       "ModelId": {
        "Fn::Join": [
         "",
@@ -721,9 +715,6 @@
     "Name": "method-test-prompt-1",
     "Variants": [
      {
-      "InferenceConfiguration": {
-       "Text": {}
-      },
       "ModelId": {
        "Fn::Join": [
         "",
@@ -775,9 +766,6 @@
     "Name": "method-test-prompt-2",
     "Variants": [
      {
-      "InferenceConfiguration": {
-       "Text": {}
-      },
       "ModelId": {
        "Fn::Join": [
         "",

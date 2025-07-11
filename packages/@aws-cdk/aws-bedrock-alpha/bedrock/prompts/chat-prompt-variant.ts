@@ -2,6 +2,7 @@ import { CfnPrompt } from 'aws-cdk-lib/aws-bedrock';
 import { CommonPromptVariantProps, PromptTemplateType, IPromptVariant } from './prompt-variant';
 import { ToolConfiguration } from './tool-choice';
 import { PromptInferenceConfiguration } from './prompt-inference-configuration';
+import { PromptTemplateConfiguration } from './prompt-template-configuration';
 
 /**
  * Properties for creating a chat prompt variant.
@@ -122,23 +123,12 @@ export function createChatPromptVariant(props: ChatPromptVariantProps): IPromptV
     name: props.variantName,
     templateType: PromptTemplateType.CHAT,
     modelId: props.model.invokableArn,
-    inferenceConfiguration: {
-      text: props.inferenceConfiguration ? props.inferenceConfiguration._render() : {},
-    },
-    templateConfiguration: {
-      chat: {
-        inputVariables: props.promptVariables?.map((variable: string) => {
-          return { name: variable };
-        }),
-        messages: props.messages?.flatMap(m => m._render()),
-        system: props.system !== undefined ? [{ text: props.system }] : undefined,
-        toolConfiguration: props.toolConfiguration
-          ? {
-            toolChoice: props.toolConfiguration.toolChoice._render(),
-            tools: props.toolConfiguration.tools,
-          }
-          : undefined,
-      },
-    },
+    inferenceConfiguration: props.inferenceConfiguration,
+    templateConfiguration: PromptTemplateConfiguration.chat({
+      inputVariables: props.promptVariables,
+      messages: props.messages,
+      system: props.system,
+      toolConfiguration: props.toolConfiguration,
+    }),
   };
 }

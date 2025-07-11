@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94b1001d3035dddfae2c144913e378cc120647e1ae9219a76533a9eaf28ab155.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f60feedb05109bcf33eebc508eb90460ea82e378aeecb2d502b4d572ebc57721.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,20 @@
         "aws-cdk-bedrock-prompt-variants-1.assets"
       ],
       "metadata": {
+        "/aws-cdk-bedrock-prompt-variants-1/VariantTestAgent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-bedrock-prompt-variants-1/VariantTestAgent/Role": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -122,6 +136,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VariantTestAgentF108F9C0"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/VariantTestAgentAlias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-bedrock-prompt-variants-1/VariantTestAgentAlias/Resource": [
@@ -284,5 +304,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1019.1"
+  "minimumCliVersion": "2.1019.2"
 }

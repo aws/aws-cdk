@@ -1,5 +1,6 @@
 import { CommonPromptVariantProps, PromptTemplateType, IPromptVariant } from './prompt-variant';
 import { PromptInferenceConfiguration } from './prompt-inference-configuration';
+import { PromptTemplateConfiguration } from './prompt-template-configuration';
 
 /**
  * Properties for creating a text prompt variant.
@@ -30,16 +31,10 @@ export function createTextPromptVariant(props: TextPromptVariantProps): IPromptV
     name: props.variantName,
     templateType: PromptTemplateType.TEXT,
     modelId: props.model.invokableArn,
-    inferenceConfiguration: {
-      text: props.inferenceConfiguration ? props.inferenceConfiguration._render() : {},
-    },
-    templateConfiguration: {
-      text: {
-        inputVariables: props.promptVariables?.map((variable: string) => {
-          return { name: variable };
-        }),
-        text: props.promptText,
-      },
-    },
+    inferenceConfiguration: props.inferenceConfiguration,
+    templateConfiguration: PromptTemplateConfiguration.text({
+      inputVariables: props.promptVariables,
+      text: props.promptText,
+    }),
   };
 }
