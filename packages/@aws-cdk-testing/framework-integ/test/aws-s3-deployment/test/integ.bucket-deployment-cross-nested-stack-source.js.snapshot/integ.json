@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "integ-cross-nested-stack-source/DefaultTest": {
+      "stacks": [
+        "MainStack"
+      ],
+      "assertionStack": "integ-cross-nested-stack-source/DefaultTest/DeployAssert",
+      "assertionStackName": "integcrossnestedstacksourceDefaultTestDeployAssert411BAFE0"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}

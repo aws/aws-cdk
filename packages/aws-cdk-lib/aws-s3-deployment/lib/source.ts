@@ -5,7 +5,7 @@ import { renderData } from './render-data';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
-import { FileSystem, Stack } from '../../core';
+import { FileSystem, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 
 /**
@@ -193,7 +193,7 @@ export class Source {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
         const workdir = FileSystem.mkdtemp('s3-deployment');
         const outputPath = join(workdir, objectKey);
-        const rendered = renderData(scope, data);
+        const rendered = renderData(data);
         fs.mkdirSync(dirname(outputPath), { recursive: true });
         fs.writeFileSync(outputPath, rendered.text);
         const asset = this.asset(workdir).bind(scope, context);
@@ -224,7 +224,11 @@ export class Source {
     }
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
-        return Source.data(objectKey, Stack.of(scope).toJsonString(obj), markersConfig).bind(scope, context);
+        return Source.data(
+          objectKey,
+          Token.isUnresolved(obj)? Stack.of(scope).toJsonString(obj) : JSON.stringify(obj),
+          markersConfig,
+        ).bind(scope, context);
       },
     };
   }

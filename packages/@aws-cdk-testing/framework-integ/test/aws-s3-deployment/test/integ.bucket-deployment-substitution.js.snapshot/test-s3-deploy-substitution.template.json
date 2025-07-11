@@ -70,7 +70,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -90,14 +90,22 @@
      }
     ],
     "SourceObjectKeys": [
-     "d1ba2cb2e5cfca13267ff70863e782b91873a033a2af81afb07f38cf38ec67ea.zip"
+     "9fbdabed7ac09a2c1ce7386b962f88710b60616e9444272eed68c6a0100d4657.zip"
     ],
     "SourceMarkers": [
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::GetAtt": [
-        "Hello4A628BD4",
-        "Arn"
+       "Fn::Join": [
+        "",
+        [
+         "substitutionStatus: substitution-successful!\nlambdaArn: ",
+         {
+          "Fn::GetAtt": [
+           "Hello4A628BD4",
+           "Arn"
+          ]
+         }
+        ]
        ]
       }
      }
@@ -244,7 +252,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c6358465bf49dfae556bb430bf9c81fa578c221b82c308e3707901b1dd654762.zip"
+     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
     },
     "Environment": {
      "Variables": {

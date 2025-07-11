@@ -229,67 +229,120 @@
     ],
     "SourceObjectKeys": [
      "d09271be89b6cb0398f793b40c1531fd9b076aa92ba80b5e436914b1808fe18d.zip",
-     "0f14dedeaf4386031c978375cbda0f65d7b52b29452cabb8873eb8f0d0fa936b.zip",
-     "27eff729291aea0a2b33592996b9a764c233dc3387bd9cfd58c6f064073f177f.zip",
-     "939a4ab8b51f1a1cccb59d97f04c318ad41c1d404e666c158ca2810894bc5f5f.zip",
-     "4050143e044258715dc77e0d45e38dfaaba94cba5339fe6f76f1c067fa45020d.zip",
-     "1175d01d4ddecbd7be39bdc306dabe248b6ada0281089ae680473c5ca7e13e67.zip",
-     "c3f91ed893cc759513d80ebd56bcaae5061b08bff3dd8ad10daeb62558bac52e.zip"
+     "989dae87982eb93511923653d4871be406a457ec8907b348a24fe7b3065cbf2f.zip",
+     "333a890fd01bf07f22e7f96fa08f7fe028ff0427d9d4d42320164aff00cb537d.zip",
+     "3f4b42100fe1064d035adfcb937fafa9d9cb8e27bc1c518457f72fa99d5cd559.zip",
+     "fe7ac00a63487095f6ed9839d7ffa27ecc7f4afb0025eccb181b35064541a9cb.zip",
+     "a48f8fc6044d37104f2e42100d1e8e1a5e816675f156a5ca87bbbc2349dcc759.zip",
+     "ca15167219c368696ee0b20c2cdceb06cb2c66a422eb1e0a15fc40d942bbfc15.zip"
     ],
     "SourceMarkers": [
      {},
      {
       "<<marker:0xbaba:0>>": {
-       "Ref": "Bucket83908E77"
-      }
-     },
-     {
-      "<<marker:0xbaba:0>>": {
-       "Fn::GetAtt": [
-        "Bucket83908E77",
-        "WebsiteURL"
+       "Fn::Join": [
+        "",
+        [
+         "bam! ",
+         {
+          "Ref": "Bucket83908E77"
+         }
+        ]
        ]
       }
      },
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::GetAtt": [
-        "Bucket83908E77",
-        "WebsiteURL"
+       "Fn::Join": [
+        "",
+        [
+         "{\"website_url\":\"",
+         {
+          "Fn::GetAtt": [
+           "Bucket83908E77",
+           "WebsiteURL"
+          ]
+         },
+         "\"}"
+        ]
        ]
       }
      },
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::Select": [
-        2,
-        {
-         "Fn::Split": [
-          "/",
-          {
-           "Fn::GetAtt": [
-            "Bucket83908E77",
-            "WebsiteURL"
-           ]
-          }
-         ]
-        }
+       "Fn::Join": [
+        "",
+        [
+         "website_url: ",
+         {
+          "Fn::GetAtt": [
+           "Bucket83908E77",
+           "WebsiteURL"
+          ]
+         },
+         "\n"
+        ]
        ]
       }
      },
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::GetAtt": [
-        "SecretParam0C31D215",
-        "Value"
+       "Fn::Join": [
+        "",
+        [
+         "{\"bucket_domain_name\":\"",
+         {
+          "Fn::Select": [
+           2,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::GetAtt": [
+               "Bucket83908E77",
+               "WebsiteURL"
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         "\"}"
+        ]
        ]
       }
      },
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::GetAtt": [
-        "SecretParam0C31D215",
-        "Value"
+       "Fn::Join": [
+        "",
+        [
+         "{\"secret_value\":\"",
+         {
+          "Fn::GetAtt": [
+           "SecretParam0C31D215",
+           "Value"
+          ]
+         },
+         "\"}"
+        ]
+       ]
+      }
+     },
+     {
+      "<<marker:0xbaba:0>>": {
+       "Fn::Join": [
+        "",
+        [
+         "secret_value: ",
+         {
+          "Fn::GetAtt": [
+           "SecretParam0C31D215",
+           "Value"
+          ]
+         },
+         "\n"
+        ]
        ]
       }
      }

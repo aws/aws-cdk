@@ -219,27 +219,45 @@
      }
     ],
     "SourceObjectKeys": [
-     "2905cf207f3a11b0513e6b02968b3af1623f3aa67cb3ba9643926692e5ce8ac3.zip",
+     "ac3d615f71e32b684bdf3f266932ef702034b3c5a5c1f7a44dc2cd74efdc7ab3.zip",
      "cbc7dae5477d6aa98463e36140d5833273cc3caca06c731d848799f30237fefe.zip",
-     "1175d01d4ddecbd7be39bdc306dabe248b6ada0281089ae680473c5ca7e13e67.zip",
-     "c71e65c14767615eb12046a47812c3f60d82c33e90ec926c2ab13dca2df294f6.zip"
+     "a48f8fc6044d37104f2e42100d1e8e1a5e816675f156a5ca87bbbc2349dcc759.zip",
+     "f5618ae500d786f36b8b91c17d7c53a5269a51445aff816562982635072c7461.zip"
     ],
     "SourceMarkers": [
      {},
      {},
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::GetAtt": [
-        "SecretParam0C31D215",
-        "Value"
+       "Fn::Join": [
+        "",
+        [
+         "{\"secret_value\":\"",
+         {
+          "Fn::GetAtt": [
+           "SecretParam0C31D215",
+           "Value"
+          ]
+         },
+         "\"}"
+        ]
        ]
       }
      },
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::GetAtt": [
-        "SecretParam0C31D215",
-        "Value"
+       "Fn::Join": [
+        "",
+        [
+         "{\"secret_value\":\"",
+         {
+          "Fn::GetAtt": [
+           "SecretParam0C31D215",
+           "Value"
+          ]
+         },
+         "\"}"
+        ]
        ]
       }
      }
