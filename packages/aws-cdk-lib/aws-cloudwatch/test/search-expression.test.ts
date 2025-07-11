@@ -24,7 +24,7 @@ describe('SearchExpression', () => {
 
     // THEN
     expect(searchExpr.expression).toBe("SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)");
-    expect(searchExpr.period).toEqual(Duration.minutes(5)); // Default period
+    expect(searchExpr.period).toEqual(Duration.minutes(5));
     expect(searchExpr.label).toBeUndefined();
     expect(searchExpr.color).toBeUndefined();
     expect(searchExpr.searchAccount).toBeUndefined();
@@ -57,14 +57,14 @@ describe('SearchExpression', () => {
     // WHEN
     const result1 = searchExpr.with({});
     const result2 = searchExpr.with({
-      label: 'CPU Usage', // Same value
-      color: '#ff0000', // Same value
-      period: Duration.minutes(5), // Same value
+      label: 'CPU Usage',
+      color: '#ff0000',
+      period: Duration.minutes(5),
     });
 
     // THEN
-    expect(result1).toBe(searchExpr); // Same reference
-    expect(result2).toBe(searchExpr); // Same reference
+    expect(result1).toBe(searchExpr);
+    expect(result2).toBe(searchExpr);
   });
 
   test('"with" with different properties returns a different object', () => {
@@ -78,8 +78,8 @@ describe('SearchExpression', () => {
     });
 
     // THEN
-    expect(result).not.toBe(searchExpr); // Different reference
-    expect(result.expression).toBe(searchExpr.expression); // Expression unchanged
+    expect(result).not.toBe(searchExpr);
+    expect(result.expression).toBe(searchExpr.expression);
     expect(result.label).toBe('New Label');
     expect(result.color).toBe('#00ff00');
     expect(result.period).toEqual(Duration.minutes(10));
@@ -119,10 +119,9 @@ describe('SearchExpression', () => {
   });
 
   test('throws error when multiple config types are present', () => {
-    // GIVEN - Mock toMetricConfig to return invalid state
     const mockSearchExpr = {
       toMetricConfig: jest.fn().mockReturnValue({
-        searchExpression: { expression: 'test', period: 300, usingMetrics: {} },
+        searchExpression: { expression: 'test', period: 300 },
         mathExpression: { expression: 'test', period: 300, usingMetrics: {} },
       }),
     } as any;
