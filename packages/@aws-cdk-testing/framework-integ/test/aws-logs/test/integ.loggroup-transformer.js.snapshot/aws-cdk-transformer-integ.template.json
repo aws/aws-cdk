@@ -1,0 +1,82 @@
+{
+ "Resources": {
+  "MyLogGroup5C0DAD85": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyLogGroupResourceTransformer00531468": {
+   "Type": "AWS::Logs::Transformer",
+   "Properties": {
+    "LogGroupIdentifier": {
+     "Ref": "MyLogGroup5C0DAD85"
+    },
+    "TransformerConfig": [
+     {
+      "ParseJSON": {
+       "Source": "customField"
+      }
+     },
+     {
+      "AddKeys": {
+       "Entries": [
+        {
+         "Key": "test_key1",
+         "OverwriteIfExists": true,
+         "Value": "test_value1"
+        },
+        {
+         "Key": "test_key2",
+         "OverwriteIfExists": false,
+         "Value": "test_value2"
+        },
+        {
+         "Key": "test_key3",
+         "OverwriteIfExists": false,
+         "Value": "test_value3"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
