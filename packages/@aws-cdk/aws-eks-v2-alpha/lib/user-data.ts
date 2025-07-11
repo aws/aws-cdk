@@ -65,6 +65,31 @@ export function renderAmazonLinuxUserData(cluster: ICluster, autoScalingGroup: a
   ];
 }
 
+// eslint-disable-next-line max-len
+export function renderAmazonLinux2023UserData(cluster: ICluster, autoScalingGroup: autoscaling.AutoScalingGroup): string[] {
+  // TODO: Support ipv6
+  if (!cluster.serviceIpv4Cidr) {
+    throw new Error('serviceIpv4Cidr must be defined in the cluster to render Amazon Linux 2023 user data');
+  }
+
+  // determine lifecycle label based on whether the ASG has a spot price.
+  const lifecycleLabel = autoScalingGroup.spotPrice ? LifecycleLabel.SPOT : LifecycleLabel.ON_DEMAND;
+
+  return [`---
+apiVersion: node.eks.aws/v1alpha1
+kind: NodeConfig
+spec:
+  cluster:
+    name: ${cluster.clusterName}
+    apiServerEndpoint: ${cluster.clusterEndpoint}
+    certificateAuthority: ${cluster.clusterCertificateAuthorityData}
+    cidr: ${cluster.serviceIpv4Cidr}
+  kubelet:
+    flags:
+    - "--node-labels=lifecycle=${lifecycleLabel}"
+  `];
+}
+
 export function renderBottlerocketUserData(cluster: ICluster): string[] {
   return [
     '[settings.kubernetes]',

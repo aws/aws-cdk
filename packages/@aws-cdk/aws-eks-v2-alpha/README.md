@@ -983,7 +983,7 @@ This is why we used `new cdk8s.App()` as the scope of the chart above.
 ```ts
 import * as constructs from 'constructs';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-25';
+import * as kplus from 'cdk8s-plus-32';
 
 interface LoadBalancedWebService {
   readonly port: number;
