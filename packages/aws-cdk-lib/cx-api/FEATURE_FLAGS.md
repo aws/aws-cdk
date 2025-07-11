@@ -104,6 +104,7 @@ Flags come in three types:
 | [@aws-cdk/aws-s3:publicAccessBlockedByDefault](#aws-cdkaws-s3publicaccessblockedbydefault) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | 2.196.0 | fix |
 | [@aws-cdk/aws-lambda:useCdkManagedLogGroup](#aws-cdkaws-lambdausecdkmanagedloggroup) | When enabled, CDK creates and manages loggroup for the lambda function | 2.200.0 | new default |
 | [@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal](#aws-cdkaws-kmsapplyimportedaliaspermissionstoprincipal) | Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition | 2.202.0 | fix |
+| [@aws-cdk/aws-route53-patters:useDistribution](#aws-cdkaws-route53-pattersusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -191,7 +192,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
-    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true
+    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
+    "@aws-cdk/aws-route53-patters:useDistribution": true
   }
 }
 ```
@@ -2194,6 +2196,24 @@ When disabled, grant calls on imported aliases will be dropped (no-op) to mainta
 | 2.202.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Remove calls to the grant* methods on the aliases referenced by name
+
+
+### @aws-cdk/aws-route53-patters:useDistribution
+
+*Use the `Distribution` resource instead of `CloudFrontWebDistribution`*
+
+Flag type: New default behavior
+
+Enable this feature flag to use the new `Distribution` resource instead
+of the deprecated `CloudFrontWebDistribution` construct.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Define a `CloudFrontWebDistribution` explicitly
 
 
 <!-- END details -->
