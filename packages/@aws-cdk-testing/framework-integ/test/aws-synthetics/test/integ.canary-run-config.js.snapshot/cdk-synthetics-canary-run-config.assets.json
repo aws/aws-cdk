@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "d57a897c2081bda5ce88819548c8b944dff49e721e1f7f7e9e3dd8323e6ccb0d": {
       "displayName": "cdk-synthetics-canary-run-config/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "a11ed28578c7b24d95020219465b1fcc0ea4fbf45403c681bd6d321efb40c06b": {
+    "613e483aaea2469496e93c3a0f95759492bdbecba2d51270d71fc495e4cffd90": {
       "displayName": "cdk-synthetics-canary-run-config Template",
       "source": {
         "path": "cdk-synthetics-canary-run-config.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a11ed28578c7b24d95020219465b1fcc0ea4fbf45403c681bd6d321efb40c06b.json",
+          "objectKey": "613e483aaea2469496e93c3a0f95759492bdbecba2d51270d71fc495e4cffd90.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

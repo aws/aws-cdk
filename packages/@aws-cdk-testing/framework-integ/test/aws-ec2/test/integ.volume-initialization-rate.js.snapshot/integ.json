@@ -1,0 +1,13 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "volume-initialization-rate-integ/DefaultTest": {
+      "stacks": [
+        "volume-initialization-rate-stack"
+      ],
+      "assertionStack": "volume-initialization-rate-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "volumeinitializationrateintegDefaultTestDeployAssert3790CC87"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}

@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "AthenaResultReuseConfiguration/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "AthenaResultReuseConfiguration/DefaultTest/DeployAssert",
       "assertionStackName": "AthenaResultReuseConfigurationDefaultTestDeployAssert59574A02"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

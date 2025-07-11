@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "StorageTypeClusterTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "8bae887fc8c837bf37d350b4c3e65297bccb205e615b902241675220b815d9d5": {
+    "1a604aa15f6e26bf766007b7ef008bc3cce151683a4da0f905435b9e20328a09": {
       "displayName": "StorageTypeClusterTestStack Template",
       "source": {
         "path": "StorageTypeClusterTestStack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8bae887fc8c837bf37d350b4c3e65297bccb205e615b902241675220b815d9d5.json",
+          "objectKey": "1a604aa15f6e26bf766007b7ef008bc3cce151683a4da0f905435b9e20328a09.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

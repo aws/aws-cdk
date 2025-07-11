@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "efsReplicationIntegTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "efsReplicationIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "efsReplicationIntegTestDefaultTestDeployAssert2C078280"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

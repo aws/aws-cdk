@@ -240,7 +240,11 @@ export interface GatewayVpcEndpointProps extends GatewayVpcEndpointOptions {
  * A gateway VPC endpoint.
  * @resource AWS::EC2::VPCEndpoint
  */
+@propertyInjectable
 export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoint {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.GatewayVpcEndpoint';
+
   public static fromGatewayVpcEndpointId(scope: Construct, id: string, gatewayVpcEndpointId: string): IGatewayVpcEndpoint {
     class Import extends VpcEndpoint {
       public vpcEndpointId = gatewayVpcEndpointId;
@@ -474,8 +478,15 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly DEVOPS_GURU = new InterfaceVpcEndpointAwsService('devops-guru');
   public static readonly DIRECTORY_SERVICE = new InterfaceVpcEndpointAwsService('ds');
   public static readonly DIRECTORY_SERVICE_DATA = new InterfaceVpcEndpointAwsService('ds-data');
+  /**
+    The management endpoint for DSQL.
+    For the Connection endpoint, use `new InterfaceVpcEndpointService(cfnCluster.attrVpcEndpointServiceName)`.
+    See https://docs.aws.amazon.com/aurora-dsql/latest/userguide/privatelink-managing-clusters.html#endpoint-types-dsql for details
+   */
+  public static readonly DSQL_MANAGEMENT = new InterfaceVpcEndpointAwsService('dsql');
   public static readonly DYNAMODB = new InterfaceVpcEndpointAwsService('dynamodb');
   public static readonly DYNAMODB_FIPS = new InterfaceVpcEndpointAwsService('dynamodb-fips');
+  public static readonly DYNAMODB_STREAMS = new InterfaceVpcEndpointAwsService('dynamodb-streams');
   public static readonly EBS_DIRECT = new InterfaceVpcEndpointAwsService('ebs');
   public static readonly EC2 = new InterfaceVpcEndpointAwsService('ec2');
   public static readonly EC2_MESSAGES = new InterfaceVpcEndpointAwsService('ec2messages');
@@ -703,10 +714,13 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly SERVERLESS_APPLICATION_REPOSITORY = new InterfaceVpcEndpointAwsService('serverlessrepo');
   /** @deprecated - Use InterfaceVpcEndpointAwsService.EMAIL_SMTP instead. */
   public static readonly SES = new InterfaceVpcEndpointAwsService('email-smtp');
+  public static readonly SHIELD = new InterfaceVpcEndpointAwsService('shield');
+  public static readonly SHIELD_FIPS = new InterfaceVpcEndpointAwsService('shield-fips');
   public static readonly SIMSPACE_WEAVER = new InterfaceVpcEndpointAwsService('simspaceweaver');
   public static readonly SNOW_DEVICE_MANAGEMENT = new InterfaceVpcEndpointAwsService('snow-device-management');
   public static readonly SNS = new InterfaceVpcEndpointAwsService('sns');
   public static readonly SQS = new InterfaceVpcEndpointAwsService('sqs');
+  public static readonly SQS_FIPS = new InterfaceVpcEndpointAwsService('sqs-fips');
   public static readonly SSM = new InterfaceVpcEndpointAwsService('ssm');
   public static readonly SSM_FIPS = new InterfaceVpcEndpointAwsService('ssm-fips');
   public static readonly SSM_MESSAGES = new InterfaceVpcEndpointAwsService('ssmmessages');
@@ -717,6 +731,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly STEP_FUNCTIONS_SYNC = new InterfaceVpcEndpointAwsService('sync-states');
   public static readonly STORAGE_GATEWAY = new InterfaceVpcEndpointAwsService('storagegateway');
   public static readonly STS = new InterfaceVpcEndpointAwsService('sts');
+  public static readonly STS_FIPS = new InterfaceVpcEndpointAwsService('sts-fips');
   public static readonly SUPPLY_CHAIN = new InterfaceVpcEndpointAwsService('scn');
   public static readonly SWF = new InterfaceVpcEndpointAwsService('swf');
   public static readonly SWF_FIPS = new InterfaceVpcEndpointAwsService('swf-fips');

@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "alb-weight-rando-algorithm-test-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c5695b7921aec81505039909252bccda5d008dfce15a91a7adaa229b5a7934fd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/43b62d56342bb24c43329e46c6a45fea9286a6b0ce06a563b7df81e9f8f410b3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -85,7 +85,10 @@
         "/alb-weight-rando-algorithm-test-stack/Stack/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet1Subnet0AD81D22"
+            "data": "StackPublicSubnet1Subnet0AD81D22",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/alb-weight-rando-algorithm-test-stack/Stack/PublicSubnet1/RouteTable": [
@@ -97,7 +100,10 @@
         "/alb-weight-rando-algorithm-test-stack/Stack/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet1RouteTableAssociation74F1C1B6"
+            "data": "StackPublicSubnet1RouteTableAssociation74F1C1B6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/alb-weight-rando-algorithm-test-stack/Stack/PublicSubnet1/DefaultRoute": [
@@ -115,7 +121,10 @@
         "/alb-weight-rando-algorithm-test-stack/Stack/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet1NATGatewayD2E1ABF7"
+            "data": "StackPublicSubnet1NATGatewayD2E1ABF7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/alb-weight-rando-algorithm-test-stack/Stack/PublicSubnet2": [
@@ -157,7 +166,10 @@
         "/alb-weight-rando-algorithm-test-stack/Stack/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet2Subnet3C7D2288"
+            "data": "StackPublicSubnet2Subnet3C7D2288",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/alb-weight-rando-algorithm-test-stack/Stack/PublicSubnet2/RouteTable": [
@@ -169,7 +181,10 @@
         "/alb-weight-rando-algorithm-test-stack/Stack/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet2RouteTableAssociation5E8F73F1"
+            "data": "StackPublicSubnet2RouteTableAssociation5E8F73F1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/alb-weight-rando-algorithm-test-stack/Stack/PublicSubnet2/DefaultRoute": [
@@ -187,7 +202,10 @@
         "/alb-weight-rando-algorithm-test-stack/Stack/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet2NATGatewayA8E03AB3"
+            "data": "StackPublicSubnet2NATGatewayA8E03AB3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/alb-weight-rando-algorithm-test-stack/Stack/PrivateSubnet1": [
@@ -221,7 +239,10 @@
         "/alb-weight-rando-algorithm-test-stack/Stack/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet1Subnet47AC2BC7"
+            "data": "StackPrivateSubnet1Subnet47AC2BC7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/alb-weight-rando-algorithm-test-stack/Stack/PrivateSubnet1/RouteTable": [
@@ -233,7 +254,10 @@
         "/alb-weight-rando-algorithm-test-stack/Stack/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet1RouteTableAssociationFFE38495"
+            "data": "StackPrivateSubnet1RouteTableAssociationFFE38495",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/alb-weight-rando-algorithm-test-stack/Stack/PrivateSubnet1/DefaultRoute": [
@@ -273,7 +297,10 @@
         "/alb-weight-rando-algorithm-test-stack/Stack/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet2SubnetA2F8EDD8"
+            "data": "StackPrivateSubnet2SubnetA2F8EDD8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/alb-weight-rando-algorithm-test-stack/Stack/PrivateSubnet2/RouteTable": [
@@ -285,7 +312,10 @@
         "/alb-weight-rando-algorithm-test-stack/Stack/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet2RouteTableAssociation68ACB8C1"
+            "data": "StackPrivateSubnet2RouteTableAssociation68ACB8C1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/alb-weight-rando-algorithm-test-stack/Stack/PrivateSubnet2/DefaultRoute": [
@@ -446,6 +476,96 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "StackPublicSubnet3SubnetCC1055D9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3SubnetCC1055D9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPublicSubnet3RouteTable44D8F838": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3RouteTable44D8F838",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPublicSubnet3RouteTableAssociationD026A62D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3RouteTableAssociationD026A62D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPublicSubnet3DefaultRouteBC0DA152": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3DefaultRouteBC0DA152",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPublicSubnet3EIP3201E7C8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3EIP3201E7C8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPublicSubnet3NATGatewayAB6A10EF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3NATGatewayAB6A10EF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPrivateSubnet3Subnet28548F2E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet3Subnet28548F2E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPrivateSubnet3RouteTable9B1F2842": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet3RouteTable9B1F2842",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPrivateSubnet3RouteTableAssociationC9C6644E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet3RouteTableAssociationC9C6644E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPrivateSubnet3DefaultRoute361AE708": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet3DefaultRoute361AE708",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "alb-weight-rando-algorithm-test-stack"
@@ -505,5 +625,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1020.2"
 }

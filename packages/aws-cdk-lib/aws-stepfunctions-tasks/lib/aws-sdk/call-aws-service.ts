@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
-import { Token } from '../../../core';
+import { Token, ValidationError } from '../../../core';
 import { integrationResourceArn } from '../private/task-utils';
 
 interface CallAwsServiceOptions {
@@ -109,15 +109,15 @@ export class CallAwsService extends sfn.TaskStateBase {
     super(scope, id, props);
 
     if (this.props.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-      throw new Error('The RUN_JOB integration pattern is not supported for CallAwsService');
+      throw new ValidationError('The RUN_JOB integration pattern is not supported for CallAwsService', this);
     }
     if (!Token.isUnresolved(this.props.action) && !this.props.action.startsWith(this.props.action[0]?.toLowerCase())) {
-      throw new Error(`action must be camelCase, got: ${this.props.action}`);
+      throw new ValidationError(`action must be camelCase, got: ${this.props.action}`, this);
     }
     if (this.props.parameters) {
       const invalidKeys = Object.keys(this.props.parameters).filter(key => !key.startsWith(key[0]?.toUpperCase()));
       if (invalidKeys.length) {
-        throw new Error(`parameter names must be PascalCase, got: ${invalidKeys.join(', ')}`);
+        throw new ValidationError(`parameter names must be PascalCase, got: ${invalidKeys.join(', ')}`, this);
       }
     }
 

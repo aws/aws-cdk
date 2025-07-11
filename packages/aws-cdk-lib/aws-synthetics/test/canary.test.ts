@@ -22,6 +22,7 @@ test('Basic canary properties work', () => {
     failureRetentionPeriod: Duration.days(10),
     startAfterCreation: false,
     timeToLive: Duration.minutes(30),
+    maxRetries: 2,
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
   });
 
@@ -31,8 +32,42 @@ test('Basic canary properties work', () => {
     SuccessRetentionPeriod: 10,
     FailureRetentionPeriod: 10,
     StartCanaryAfterCreation: false,
-    Schedule: Match.objectLike({ DurationInSeconds: '1800' }),
+    Schedule: Match.objectLike({ DurationInSeconds: '1800', RetryConfig: { MaxRetries: 2 } }),
     RuntimeVersion: 'syn-nodejs-puppeteer-8.0',
+  });
+});
+
+describe('Performing safe canary updates', () => {
+  test('configure dryRunAndUpdate', () => {
+    const stack = new Stack();
+
+    new synthetics.Canary(stack, 'Canary', {
+      canaryName: 'mycanary',
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1,
+      dryRunAndUpdate: true,
+    });
+  });
+
+  test.each([
+    synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_0,
+    synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1,
+    synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0,
+  ])('dryRunAndUpdate is not supported for runtime %s', (runtime) => {
+    const stack = new Stack();
+
+    expect(() => new synthetics.Canary(stack, 'Canary', {
+      canaryName: 'mycanary',
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime,
+      dryRunAndUpdate: true,
+    })).toThrow(`dryRunAndUpdate is only supported for canary runtime versions 'syn-nodejs-puppeteer-10.0+', 'syn-nodejs-playwright-2.0+', or 'syn-python-selenium-5.1+', got: ${runtime.name}`);
   });
 });
 
@@ -249,7 +284,7 @@ test('Python runtime can be specified', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_4_0,
+    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_0,
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('# Synthetics handler code'),
@@ -258,7 +293,7 @@ test('Python runtime can be specified', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RuntimeVersion: 'syn-python-selenium-4.0',
+    RuntimeVersion: 'syn-python-selenium-5.0',
   });
 });
 
@@ -323,7 +358,10 @@ test('throw error for enabling both cleanup and provisionedResourceCleanup', () 
 
 test.each([
   synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1,
+  synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1,
+  synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_6_0,
   synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0,
+  synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0,
 ])('throws when activeTracing is enabled with an unsupported runtime', (runtime) => {
   // GIVEN
   const stack = new Stack();

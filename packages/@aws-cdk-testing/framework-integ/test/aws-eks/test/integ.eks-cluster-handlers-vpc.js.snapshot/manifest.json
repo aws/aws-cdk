@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "aws-cdk-eks-handlers-in-vpc-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d41e6b106fc0ba6c36b31de0ade3c8f7f1e969c46916589e2539846462354e34.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6ea07077d16fa12b852241cf0aacbda27c714036d4715d9364b9fd3d8a2d7c60.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -118,7 +118,10 @@
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet1SubnetEA05A5C7"
+            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet1SubnetEA05A5C7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PublicSubnet1/RouteTable": [
@@ -130,7 +133,10 @@
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet1RouteTableAssociation1012ACB8"
+            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet1RouteTableAssociation1012ACB8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PublicSubnet1/DefaultRoute": [
@@ -148,7 +154,10 @@
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet1NATGatewayFD57AC6C"
+            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet1NATGatewayFD57AC6C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PublicSubnet2": [
@@ -190,7 +199,10 @@
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet2Subnet8A9F7D50"
+            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet2Subnet8A9F7D50",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PublicSubnet2/RouteTable": [
@@ -202,7 +214,10 @@
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet2RouteTableAssociation5DFA3BFD"
+            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet2RouteTableAssociation5DFA3BFD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PublicSubnet2/DefaultRoute": [
@@ -220,7 +235,10 @@
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet2NATGatewayEC0B8252"
+            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet2NATGatewayEC0B8252",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PrivateSubnet1": [
@@ -254,7 +272,10 @@
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet1SubnetE2B86978"
+            "data": "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet1SubnetE2B86978",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PrivateSubnet1/RouteTable": [
@@ -266,7 +287,10 @@
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet1RouteTableAssociationC09E4B48"
+            "data": "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet1RouteTableAssociationC09E4B48",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PrivateSubnet1/DefaultRoute": [
@@ -306,7 +330,10 @@
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet2SubnetFBAAF3E3"
+            "data": "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet2SubnetFBAAF3E3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PrivateSubnet2/RouteTable": [
@@ -318,7 +345,10 @@
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet2RouteTableAssociation475205D6"
+            "data": "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet2RouteTableAssociation475205D6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/PrivateSubnet2/DefaultRoute": [
@@ -852,7 +882,10 @@
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/NodegroupDefaultCapacity/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EksAllHandlersInVpcStackNodegroupDefaultCapacityD8DD5ECF"
+            "data": "EksAllHandlersInVpcStackNodegroupDefaultCapacityD8DD5ECF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/AwsAuth/manifest/Resource": [
@@ -2176,6 +2209,96 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "EksAllHandlersInVpcStackDefaultVpcPublicSubnet3SubnetB436275F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet3SubnetB436275F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EksAllHandlersInVpcStackDefaultVpcPublicSubnet3RouteTable85E4266C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet3RouteTable85E4266C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EksAllHandlersInVpcStackDefaultVpcPublicSubnet3RouteTableAssociationEA306E19": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet3RouteTableAssociationEA306E19",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EksAllHandlersInVpcStackDefaultVpcPublicSubnet3DefaultRoute965D74B7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet3DefaultRoute965D74B7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EksAllHandlersInVpcStackDefaultVpcPublicSubnet3EIPBF5ED908": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet3EIPBF5ED908",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EksAllHandlersInVpcStackDefaultVpcPublicSubnet3NATGateway7AE6F6B3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksAllHandlersInVpcStackDefaultVpcPublicSubnet3NATGateway7AE6F6B3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet3SubnetA75A8BA9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet3SubnetA75A8BA9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet3RouteTable19D4047C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet3RouteTable19D4047C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet3RouteTableAssociationC07A6A83": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet3RouteTableAssociationC07A6A83",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet3DefaultRoute203EAFA4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet3DefaultRoute203EAFA4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-eks-handlers-in-vpc-test"
@@ -2235,5 +2358,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1020.2"
 }

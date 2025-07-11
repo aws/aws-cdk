@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "aws-stepfunctions-tasks-emr-containers-start-job-run.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/608fc33cf897d33d47dcc7d8f8f414a173f62e10868e5a77e384128714475acd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/57e89846147d98a9e36e5f62bfae7b4f57570cc8ac7cefc8ead7c8a513c91fbf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -119,7 +119,10 @@
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integrationtesteksclusterDefaultVpcPublicSubnet1Subnet58061317"
+            "data": "integrationtesteksclusterDefaultVpcPublicSubnet1Subnet58061317",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/RouteTable": [
@@ -131,7 +134,10 @@
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integrationtesteksclusterDefaultVpcPublicSubnet1RouteTableAssociation4831B6A7"
+            "data": "integrationtesteksclusterDefaultVpcPublicSubnet1RouteTableAssociation4831B6A7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/DefaultRoute": [
@@ -149,7 +155,10 @@
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integrationtesteksclusterDefaultVpcPublicSubnet1NATGatewayC9C984F9"
+            "data": "integrationtesteksclusterDefaultVpcPublicSubnet1NATGatewayC9C984F9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2": [
@@ -191,7 +200,10 @@
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integrationtesteksclusterDefaultVpcPublicSubnet2Subnet68EAAF11"
+            "data": "integrationtesteksclusterDefaultVpcPublicSubnet2Subnet68EAAF11",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/RouteTable": [
@@ -203,7 +215,10 @@
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integrationtesteksclusterDefaultVpcPublicSubnet2RouteTableAssociation62710C52"
+            "data": "integrationtesteksclusterDefaultVpcPublicSubnet2RouteTableAssociation62710C52",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/DefaultRoute": [
@@ -221,7 +236,10 @@
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integrationtesteksclusterDefaultVpcPublicSubnet2NATGatewayE109B761"
+            "data": "integrationtesteksclusterDefaultVpcPublicSubnet2NATGatewayE109B761",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1": [
@@ -255,7 +273,10 @@
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integrationtesteksclusterDefaultVpcPrivateSubnet1Subnet4E00CAFB"
+            "data": "integrationtesteksclusterDefaultVpcPrivateSubnet1Subnet4E00CAFB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1/RouteTable": [
@@ -267,7 +288,10 @@
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integrationtesteksclusterDefaultVpcPrivateSubnet1RouteTableAssociation7482DD1E"
+            "data": "integrationtesteksclusterDefaultVpcPrivateSubnet1RouteTableAssociation7482DD1E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1/DefaultRoute": [
@@ -307,7 +331,10 @@
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integrationtesteksclusterDefaultVpcPrivateSubnet2Subnet0C3539A8"
+            "data": "integrationtesteksclusterDefaultVpcPrivateSubnet2Subnet0C3539A8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2/RouteTable": [
@@ -319,7 +346,10 @@
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integrationtesteksclusterDefaultVpcPrivateSubnet2RouteTableAssociation99F934D5"
+            "data": "integrationtesteksclusterDefaultVpcPrivateSubnet2RouteTableAssociation99F934D5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2/DefaultRoute": [
@@ -853,7 +883,10 @@
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/NodegroupDefaultCapacity/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integrationtesteksclusterNodegroupDefaultCapacity536CF32C"
+            "data": "integrationtesteksclusterNodegroupDefaultCapacity536CF32C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/AwsAuth/manifest/Resource": [
@@ -2830,6 +2863,96 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "integrationtesteksclusterDefaultVpcPublicSubnet3Subnet4307D52D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrationtesteksclusterDefaultVpcPublicSubnet3Subnet4307D52D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integrationtesteksclusterDefaultVpcPublicSubnet3RouteTable51E9DA7C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrationtesteksclusterDefaultVpcPublicSubnet3RouteTable51E9DA7C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integrationtesteksclusterDefaultVpcPublicSubnet3RouteTableAssociation14A23BAF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrationtesteksclusterDefaultVpcPublicSubnet3RouteTableAssociation14A23BAF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integrationtesteksclusterDefaultVpcPublicSubnet3DefaultRouteB0117918": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrationtesteksclusterDefaultVpcPublicSubnet3DefaultRouteB0117918",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integrationtesteksclusterDefaultVpcPublicSubnet3EIP33828C59": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrationtesteksclusterDefaultVpcPublicSubnet3EIP33828C59",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integrationtesteksclusterDefaultVpcPublicSubnet3NATGateway01B2F0F1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrationtesteksclusterDefaultVpcPublicSubnet3NATGateway01B2F0F1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integrationtesteksclusterDefaultVpcPrivateSubnet3SubnetD17D4AF1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrationtesteksclusterDefaultVpcPrivateSubnet3SubnetD17D4AF1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integrationtesteksclusterDefaultVpcPrivateSubnet3RouteTableA2B42791": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrationtesteksclusterDefaultVpcPrivateSubnet3RouteTableA2B42791",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integrationtesteksclusterDefaultVpcPrivateSubnet3RouteTableAssociationB70598F3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrationtesteksclusterDefaultVpcPrivateSubnet3RouteTableAssociationB70598F3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integrationtesteksclusterDefaultVpcPrivateSubnet3DefaultRoute6DE23E60": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integrationtesteksclusterDefaultVpcPrivateSubnet3DefaultRoute6DE23E60",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-stepfunctions-tasks-emr-containers-start-job-run"
@@ -2889,5 +3012,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1020.2"
 }

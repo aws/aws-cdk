@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "RdsClusterEngineLifecycleSupportInteg/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "RdsClusterEngineLifecycleSupportInteg/DefaultTest/DeployAssert",
       "assertionStackName": "RdsClusterEngineLifecycleSupportIntegDefaultTestDeployAssert6F5E7AEF"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

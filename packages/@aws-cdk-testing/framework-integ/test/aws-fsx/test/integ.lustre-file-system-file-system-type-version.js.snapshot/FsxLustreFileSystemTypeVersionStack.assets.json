@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "FsxLustreFileSystemTypeVersionStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "607c00fca266b62e5148d4fa529149a3471b585eae8d8128a52767546327bd58": {
+    "5303154b5f5ece1c6c286361ac0356544cc00045379aa779ffc3a9df5fd5c8bd": {
       "displayName": "FsxLustreFileSystemTypeVersionStack Template",
       "source": {
         "path": "FsxLustreFileSystemTypeVersionStack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "607c00fca266b62e5148d4fa529149a3471b585eae8d8128a52767546327bd58.json",
+          "objectKey": "5303154b5f5ece1c6c286361ac0356544cc00045379aa779ffc3a9df5fd5c8bd.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

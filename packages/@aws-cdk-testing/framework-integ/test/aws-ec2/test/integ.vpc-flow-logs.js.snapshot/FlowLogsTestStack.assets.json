@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "displayName": "FlowLogsTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "f16050bd604b8d9287076fefab69a5ca8aae0ae7f5407187cd38f044db6b8465": {
+    "2aa932fe725ba221e3dae7ad578b55d00a547afff69eaa9c98f827ed1c268bf6": {
       "displayName": "FlowLogsTestStack Template",
       "source": {
         "path": "FlowLogsTestStack.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f16050bd604b8d9287076fefab69a5ca8aae0ae7f5407187cd38f044db6b8465.json",
+          "objectKey": "2aa932fe725ba221e3dae7ad578b55d00a547afff69eaa9c98f827ed1c268bf6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

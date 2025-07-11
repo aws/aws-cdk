@@ -1,5 +1,5 @@
 import { Construct, IConstruct } from 'constructs';
-import { applyInjectors } from './private/prop-injectors-helpers';
+import { applyInjectors } from './prop-injectors-helpers';
 
 interface PropertyInjectableConstructConstructor {
   readonly PROPERTY_INJECTION_ID: string;

@@ -4,6 +4,7 @@ import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } 
 import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an UnmanagedComputeEnvironment. Batch will not provision instances on your behalf
@@ -42,7 +43,11 @@ export interface UnmanagedComputeEnvironmentProps extends ComputeEnvironmentProp
  *
  * @resource AWS::Batch::ComputeEnvironment
  */
+@propertyInjectable
 export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implements IUnmanagedComputeEnvironment {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.UnmanagedComputeEnvironment';
+
   /**
    * Import an UnmanagedComputeEnvironment by its arn
    */

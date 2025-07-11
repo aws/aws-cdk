@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "EvaluateExpressionInteg/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "EvaluateExpressionInteg/DefaultTest/DeployAssert",
       "assertionStackName": "EvaluateExpressionIntegDefaultTestDeployAssert03097648"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

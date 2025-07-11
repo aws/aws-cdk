@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "appsync-event-api-channel-namespace/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "appsync-event-api-channel-namespace/DefaultTest/DeployAssert",
       "assertionStackName": "appsynceventapichannelnamespaceDefaultTestDeployAssert6BCB222F"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

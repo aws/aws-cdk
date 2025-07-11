@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "Stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0355a82474116ee45bd1227cbbb5557da6945dea6c8a704dcf61bd465c220e67.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d4034db3aed2846ebfe72d65bbc884582e199b44387d89be9e5073a903d9f73d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -85,7 +85,10 @@
         "/Stack/MyVpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1SubnetF6608456"
+            "data": "MyVpcPublicSubnet1SubnetF6608456",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/Stack/MyVpc/PublicSubnet1/RouteTable": [
@@ -97,7 +100,10 @@
         "/Stack/MyVpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB"
+            "data": "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/Stack/MyVpc/PublicSubnet1/DefaultRoute": [
@@ -115,7 +121,10 @@
         "/Stack/MyVpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1NATGatewayAD3400C1"
+            "data": "MyVpcPublicSubnet1NATGatewayAD3400C1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/Stack/MyVpc/PublicSubnet2": [
@@ -157,7 +166,10 @@
         "/Stack/MyVpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2Subnet492B6BFB"
+            "data": "MyVpcPublicSubnet2Subnet492B6BFB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/Stack/MyVpc/PublicSubnet2/RouteTable": [
@@ -169,7 +181,10 @@
         "/Stack/MyVpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2RouteTableAssociation227DE78D"
+            "data": "MyVpcPublicSubnet2RouteTableAssociation227DE78D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/Stack/MyVpc/PublicSubnet2/DefaultRoute": [
@@ -187,7 +202,10 @@
         "/Stack/MyVpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2NATGateway91BFBEC9"
+            "data": "MyVpcPublicSubnet2NATGateway91BFBEC9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/Stack/MyVpc/PrivateSubnet1": [
@@ -221,7 +239,10 @@
         "/Stack/MyVpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet1Subnet5057CF7E"
+            "data": "MyVpcPrivateSubnet1Subnet5057CF7E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/Stack/MyVpc/PrivateSubnet1/RouteTable": [
@@ -233,7 +254,10 @@
         "/Stack/MyVpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E"
+            "data": "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/Stack/MyVpc/PrivateSubnet1/DefaultRoute": [
@@ -273,7 +297,10 @@
         "/Stack/MyVpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet2Subnet0040C983"
+            "data": "MyVpcPrivateSubnet2Subnet0040C983",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/Stack/MyVpc/PrivateSubnet2/RouteTable": [
@@ -285,7 +312,10 @@
         "/Stack/MyVpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet2RouteTableAssociation86A610DA"
+            "data": "MyVpcPrivateSubnet2RouteTableAssociation86A610DA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/Stack/MyVpc/PrivateSubnet2/DefaultRoute": [
@@ -592,6 +622,96 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "MyVpcPublicSubnet3Subnet57EEE236": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet3Subnet57EEE236",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyVpcPublicSubnet3RouteTable15028F08": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet3RouteTable15028F08",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyVpcPublicSubnet3RouteTableAssociation5C27DDA4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet3RouteTableAssociation5C27DDA4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyVpcPublicSubnet3DefaultRoute3A83AB36": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet3DefaultRoute3A83AB36",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyVpcPublicSubnet3EIPC5ACADAB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet3EIPC5ACADAB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyVpcPublicSubnet3NATGatewayD4B50EBE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet3NATGatewayD4B50EBE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyVpcPrivateSubnet3Subnet772D6AD7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet3Subnet772D6AD7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyVpcPrivateSubnet3RouteTableB790927C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet3RouteTableB790927C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyVpcPrivateSubnet3RouteTableAssociationD951741C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet3RouteTableAssociationD951741C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyVpcPrivateSubnet3DefaultRouteEC11C0C5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet3DefaultRouteEC11C0C5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "Stack"
@@ -651,5 +771,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1020.2"
 }

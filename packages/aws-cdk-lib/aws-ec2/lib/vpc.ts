@@ -1656,7 +1656,13 @@ export class Vpc extends VpcBase {
     }
 
     // Create an Egress Only Internet Gateway and attach it if necessary
-    if (this.useIpv6 && this.privateSubnets) {
+
+    const isRequirePrivateSubnetsForEgressOnlyIgw =
+      FeatureFlags.of(this).isEnabled(cxapi.EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY);
+
+    if ((this.useIpv6 && !isRequirePrivateSubnetsForEgressOnlyIgw && this.privateSubnets) ||
+      (this.useIpv6 && isRequirePrivateSubnetsForEgressOnlyIgw && this.privateSubnets.length > 0)
+    ) {
       const eigw = new CfnEgressOnlyInternetGateway(this, 'EIGW6', {
         vpcId: this.vpcId,
       });
@@ -2463,7 +2469,10 @@ function ifUndefined<T>(value: T | undefined, defaultValue: T): T {
   return value ?? defaultValue;
 }
 
+@propertyInjectable
 class ImportedVpc extends VpcBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.ImportedVpc';
   public readonly vpcId: string;
   public readonly vpcArn: string;
   public readonly publicSubnets: ISubnet[];
@@ -2517,7 +2526,10 @@ class ImportedVpc extends VpcBase {
   }
 }
 
+@propertyInjectable
 class LookedUpVpc extends VpcBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.LookedUpVpc';
   public readonly vpcId: string;
   public readonly vpcArn: string;
   public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
@@ -2628,7 +2640,10 @@ function tap<T>(x: T, fn: (x: T) => void): T {
   return x;
 }
 
+@propertyInjectable
 class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivateSubnet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.ImportedSubnet';
   public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
   public readonly subnetId: string;
   public readonly routeTable: IRouteTable;

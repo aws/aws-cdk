@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "VariablePipelineTest/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "VariablePipelineTest/DefaultTest/DeployAssert",
       "assertionStackName": "VariablePipelineTestDefaultTestDeployAssertC1E57581"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }
