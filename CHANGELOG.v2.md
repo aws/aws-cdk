@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.205.0](https://github.com/aws/aws-cdk/compare/v2.204.0...v2.205.0) (2025-07-11)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#34915](https://github.com/aws/aws-cdk/issues/34915)) ([748d03c](https://github.com/aws/aws-cdk/commit/748d03c99de6242e0b9bed91d8c015249106fdca))
+* **cloudwatch-dashboards:** add support for queryLanguage property ([#34547](https://github.com/aws/aws-cdk/issues/34547)) ([8a77828](https://github.com/aws/aws-cdk/commit/8a77828ab14f635953af27a1b00174d988e85303)), closes [#34482](https://github.com/aws/aws-cdk/issues/34482) [/github.com/aws/aws-cdk/issues/34482#issuecomment-2887841701](https://github.com/aws//github.com/aws/aws-cdk/issues/34482/issues/issuecomment-2887841701)
+* **events:** add `arnForPolicy` attribute for api destination ([#34315](https://github.com/aws/aws-cdk/issues/34315)) ([e0ac9f8](https://github.com/aws/aws-cdk/commit/e0ac9f8ee3394f666bf84066b89eb83be9b7361e))
+* **rds:** add `fromLookup` method for Amazon Aurora Database Cluster  ([#34849](https://github.com/aws/aws-cdk/issues/34849)) ([23ca6fc](https://github.com/aws/aws-cdk/commit/23ca6fca7a0d029aa76dbdedb99770e8069024ca)), closes [#34848](https://github.com/aws/aws-cdk/issues/34848) [#33258](https://github.com/aws/aws-cdk/issues/33258)
+* **synthetics:** add `maxRetries` prop to configure automatic retries on canary runs ([#34541](https://github.com/aws/aws-cdk/issues/34541)) ([54d8a84](https://github.com/aws/aws-cdk/commit/54d8a84b88c1bbde4937cc1b28e27d11aa813b0b)), closes [#34511](https://github.com/aws/aws-cdk/issues/34511)
+* **synthetics:** add support for tag replication for aws synthetics ([#34830](https://github.com/aws/aws-cdk/issues/34830)) ([5ff59d9](https://github.com/aws/aws-cdk/commit/5ff59d9c7e4959b9de8754b5a8d838810335240a))
+* report feature flag info into Cloud Assembly ([#34919](https://github.com/aws/aws-cdk/issues/34919)) ([72733ea](https://github.com/aws/aws-cdk/commit/72733ea4528911a11fb0d0411e7641ddd47fc60a))
+
+
+### Bug Fixes
+
+* **codecov:** update codecov-upload.yml with a git checkout step ([#34929](https://github.com/aws/aws-cdk/issues/34929)) ([0a0adf7](https://github.com/aws/aws-cdk/commit/0a0adf7ce2f06b13d8cf5150810214ae5b9ffb69))
+* **lambda:** handle token resolution issues in addToRolePolicy ([#34904](https://github.com/aws/aws-cdk/issues/34904)) ([6cd1802](https://github.com/aws/aws-cdk/commit/6cd1802d7fbfb5896a7c194099247eb4e05f4c5f)), closes [#34894](https://github.com/aws/aws-cdk/issues/34894)
+* **pipelines:** ensure assets with same hash but different destinations are published separately ([#34790](https://github.com/aws/aws-cdk/issues/34790)) ([05afab3](https://github.com/aws/aws-cdk/commit/05afab30b9c6071307f38ecc54c0594bec14f2b3)), closes [#31070](https://github.com/aws/aws-cdk/issues/31070) [#31070](https://github.com/aws/aws-cdk/issues/31070)
+* **region-info:** integ use standalone package ([#34782](https://github.com/aws/aws-cdk/issues/34782)) ([6d1bcb3](https://github.com/aws/aws-cdk/commit/6d1bcb3cc66490afb3c707cf3f3fd63d88d0a08b)), closes [#34692](https://github.com/aws/aws-cdk/issues/34692) [/github.com/aws/aws-cdk/blob/1ae14635cbbc8ba0f2dab8cbeb72c4af0fddce7a/packages/aws-cdk-lib/package.json#L507-L511](https://github.com/aws//github.com/aws/aws-cdk/blob/1ae14635cbbc8ba0f2dab8cbeb72c4af0fddce7a/packages/aws-cdk-lib/package.json/issues/L507-L511)
+
+
+### Reverts
+
+* **ci:** require the GitHub Actions PR build for mergify ([#34938](https://github.com/aws/aws-cdk/issues/34938)) ([e400228](https://github.com/aws/aws-cdk/commit/e400228eacfa49cc08dc97a87a2c962339acdb06)), closes [aws/aws-cdk#34836](https://github.com/aws/aws-cdk/issues/34836)
+
 ## [2.204.0](https://github.com/aws/aws-cdk/compare/v2.203.1...v2.204.0) (2025-07-04)
 
 
