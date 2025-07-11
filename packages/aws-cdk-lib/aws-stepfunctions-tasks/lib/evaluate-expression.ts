@@ -22,6 +22,13 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
    * @default - the latest Lambda node runtime available in your region.
    */
   readonly runtime?: lambda.Runtime;
+
+  /**
+   * The architecture for the underlying lambda that will be used to evaluate the expression.
+   *
+   * @default - linux/amd64
+   */
+  readonly architecture?: lambda.Architecture;
 }
 
 /**
@@ -58,7 +65,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: EvaluateExpressionProps) {
     super(scope, id, props);
 
-    this.evalFn = createEvalFn(this.props.runtime, this);
+    this.evalFn = createEvalFn(this.props.runtime, this.props.architecture, this);
 
     this.taskPolicies = [
       new iam.PolicyStatement({
@@ -96,7 +103,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   }
 }
 
-function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
+function createEvalFn(runtime: lambda.Runtime | undefined, architecture: lambda.Architecture | undefined, scope: Construct) {
   const NO_RUNTIME = Symbol.for('no-runtime');
   const lambdaPurpose = 'Eval';
 
@@ -121,5 +128,6 @@ function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
     uuid,
     lambdaPurpose,
     runtime,
+    architecture,
   });
 }

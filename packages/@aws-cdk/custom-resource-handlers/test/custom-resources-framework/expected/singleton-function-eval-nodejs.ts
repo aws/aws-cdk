@@ -9,7 +9,8 @@ export class EvalNodejsSingletonFunction extends lambda.SingletonFunction {
       ...props,
       "code": lambda.Code.fromAsset(path.join(__dirname, 'my-handler')),
       "handler": "index.handler",
-      "runtime": (props.runtime ? props.runtime : lambda.determineLatestNodeRuntime(scope))
+      "runtime": (props.runtime ? props.runtime : lambda.determineLatestNodeRuntime(scope)),
+      "architecture": (props.architecture ? props.architecture : lambda.Architecture.X86_64)
     });
   }
 }
@@ -43,4 +44,11 @@ export interface EvalNodejsSingletonFunctionProps extends lambda.FunctionOptions
    * @default - the latest Lambda node runtime available in your region.
    */
   readonly runtime?: lambda.Runtime;
+
+  /**
+   * The architecture that this Lambda will use.
+   *
+   * @default - linux/amd64
+   */
+  readonly architecture?: lambda.Architecture;
 }
