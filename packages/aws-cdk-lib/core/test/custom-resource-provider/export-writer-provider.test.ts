@@ -132,6 +132,9 @@ describe('export writer provider', () => {
         'ap-east-2': {
           value: 'nodejs22.x',
         },
+        'eusc-de-east-1': {
+          value: 'nodejs22.x',
+        },
       },
     },
   };

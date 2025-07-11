@@ -53,6 +53,39 @@ const metric = new cloudwatch.Metric({
 });
 ```
 
+### Metric ID
+
+Metrics can be assigned a unique identifier using the `id` property. This is
+useful when referencing metrics in math expressions:
+
+```ts
+const metric = new cloudwatch.Metric({
+  namespace: 'AWS/Lambda',
+  metricName: 'Invocations',
+  dimensionsMap: {
+    FunctionName: 'MyFunction'
+  },
+  id: 'invocations'
+});
+```
+
+The `id` must start with a lowercase letter and can only contain letters, numbers, and underscores.
+
+### Metric Visible
+Metrics can be hidden from dashboard graphs using the `visible` property:
+
+```ts
+declare const fn: lambda.Function;
+
+const metric = fn.metricErrors({
+  visible: false
+});
+```
+
+By default, all metrics are visible (`visible: true`). Setting `visible: false`
+hides the metric from dashboard visualizations while still allowing it to be
+used in math expressions given that it has an `id` set to it.
+
 ### Metric Math
 
 Math expressions are supported by instantiating the `MathExpression` class.
@@ -83,6 +116,31 @@ const problemPercentage = new cloudwatch.MathExpression({
     problems: allProblems,
     invocations: fn.metricInvocations()
   }
+});
+```
+
+### Metric ID Usage in Math Expressions
+
+When metrics have custom IDs, you can reference them directly in math expressions.
+
+```ts
+declare const fn: lambda.Function;
+
+const invocations = fn.metricInvocations({
+  id: 'lambda_invocations',
+});
+
+const errors = fn.metricErrors({
+  id: 'lambda_errors',
+});
+```
+
+When metrics have predefined IDs, they can be referenced directly in math expressions by their ID without requiring the `usingMetrics` property.
+
+```ts
+const errorRate = new cloudwatch.MathExpression({
+  expression: 'lambda_errors / lambda_invocations * 100',
+  label: 'Error Rate (%)',
 });
 ```
 
@@ -787,6 +845,19 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
     'fields @message',
     'filter @message like /Error/',
   ]
+}));
+```
+
+Log Insights QL is the default query language. You may specify an [alternate query language: OpenSearch PPL or SQL](https://aws.amazon.com/blogs/aws/new-amazon-cloudwatch-and-amazon-opensearch-service-launch-an-integrated-analytics-experience/), if desired:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
+  logGroupNames: ['my-log-group'],
+  view: cloudwatch.LogQueryVisualizationType.TABLE,
+  queryString: "SELECT count(*) as count FROM 'my-log-group'",
+  queryLanguage: cloudwatch.LogQueryLanguage.SQL,
 }));
 ```
 
