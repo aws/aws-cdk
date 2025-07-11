@@ -20,6 +20,7 @@ import { ConstructTree } from '../validation/private/construct-tree';
 import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
+const VALIDATION_REPORT_PRETTY_CONTEXT = '@aws-cdk/core:validationReportPrettyPrint';
 const VALIDATION_REPORT_JSON_CONTEXT = '@aws-cdk/core:validationReportJson';
 
 /**
@@ -147,24 +148,26 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
   if (reports.length > 0) {
     const tree = new ConstructTree(root);
     const formatter = new PolicyValidationReportFormatter(tree);
+    const formatPretty = root.node.tryGetContext(VALIDATION_REPORT_PRETTY_CONTEXT) ?? true;
     const formatJson = root.node.tryGetContext(VALIDATION_REPORT_JSON_CONTEXT) ?? false;
-    const output = formatJson
-      ? formatter.formatJson(reports)
-      : formatter.formatPrettyPrinted(reports);
-
     const reportFile = path.join(assembly.directory, POLICY_VALIDATION_FILE_PATH);
-    if (formatJson) {
-      fs.writeFileSync(reportFile, JSON.stringify(output, undefined, 2));
-    } else {
+    if (formatPretty) {
+      const output = formatter.formatPrettyPrinted(reports);
       // eslint-disable-next-line no-console
       console.error(output);
     }
+    if (formatJson) {
+      const output = formatter.formatJson(reports);
+      fs.writeFileSync(reportFile, JSON.stringify(output, undefined, 2));
+    }
     const failed = reports.some(r => !r.success);
     if (failed) {
-      const message = formatJson
+      let message = formatJson
         ? `Validation failed. See the validation report in '${reportFile}' for details`
         : 'Validation failed. See the validation report above for details';
-
+      if (formatPretty && formatJson) {
+        message = `Validation failed. See the validation report in '${reportFile}' and above for details`;
+      }
       // eslint-disable-next-line no-console
       console.log(message);
       process.exitCode = 1;
