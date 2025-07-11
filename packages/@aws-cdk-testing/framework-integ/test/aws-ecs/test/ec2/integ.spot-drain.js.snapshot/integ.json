@@ -1,14 +1,13 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "testCases": {
-    "integ.spot-drain": {
+    "CapacityProviders/DefaultTest": {
       "stacks": [
         "aws-ecs-integ-spot"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "CapacityProviders/DefaultTest/DeployAssert",
+      "assertionStackName": "CapacityProvidersDefaultTestDeployAssert30F9785A"
     }
   },
-  "synthContext": {},
-  "enableLookups": false
+  "minimumCliVersion": "2.1020.1"
 }

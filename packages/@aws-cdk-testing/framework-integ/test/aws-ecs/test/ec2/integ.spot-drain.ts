@@ -1,5 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 
 const app = new cdk.App({
@@ -46,6 +47,10 @@ taskDefinition.addContainer('PHP', {
 new ecs.Ec2Service(stack, 'Service', {
   cluster,
   taskDefinition,
+});
+
+new integ.IntegTest(app, 'SpotDrain', {
+  testCases: [stack],
 });
 
 app.synth();

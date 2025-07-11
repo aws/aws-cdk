@@ -744,7 +744,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.9",
+    "Runtime": "python3.13",
     "Tags": [
      {
       "Key": "Name",
