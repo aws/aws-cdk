@@ -257,7 +257,16 @@ export class ServiceManagedVolume extends Construct {
   private validateEbsVolumeConfiguration(volumeConfig?: ServiceManagedEBSVolumeConfiguration) {
     if (!volumeConfig) return;
 
-    const { volumeType = ec2.EbsDeviceVolumeType.GP2, iops, size, throughput, snapShotId } = volumeConfig;
+    const { volumeType = ec2.EbsDeviceVolumeType.GP2, iops, size, throughput, snapShotId, volumeInitializationRate } = volumeConfig;
+
+    if (volumeInitializationRate !== undefined && !Token.isUnresolved(volumeInitializationRate)) {
+      if (snapShotId === undefined) {
+        throw new ValidationError('\'volumeInitializationRate\' can only be specified when \'snapShotId\' is provided.', this);
+      }
+      if (volumeInitializationRate.toMebibytes() < 100 || volumeInitializationRate.toMebibytes() > 300) {
+        throw new ValidationError(`'volumeInitializationRate' must be between 100 and 300 MiB/s, got ${volumeInitializationRate.toMebibytes()} MiB/s.`, this);
+      }
+    }
 
     // Validate if both size and snapShotId are not specified.
     if (size === undefined && snapShotId === undefined) {

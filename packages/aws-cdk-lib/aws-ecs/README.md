@@ -1970,6 +1970,9 @@ const volumeFromSnapshot = new ecs.ServiceManagedVolume(this, 'EBSVolume', {
     snapShotId: 'snap-066877671789bd71b',
     volumeType: ec2.EbsDeviceVolumeType.GP3,
     fileSystemType: ecs.FileSystemType.XFS,
+    // Specifies the Amazon EBS Provisioned Rate for Volume Initialization.
+    // Valid range is between 100 and 300 MiB/s.
+    volumeInitializationRate: cdk.Size.mebibytes(200),
   },
 });
 
