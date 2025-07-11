@@ -84,6 +84,7 @@ enum Partition {
   UsIsoB = 'aws-iso-b',
   UsIsoF = 'aws-iso-f',
   EuIsoE = 'aws-iso-e',
+  Eusc = 'aws-eusc',
 }
 
 interface Region { partition: Partition; domainSuffix: string }
@@ -96,6 +97,7 @@ export const PARTITION_MAP: { [region: string]: Region } = {
   'us-isob-': { partition: Partition.UsIsoB, domainSuffix: 'sc2s.sgov.gov' },
   'us-isof-': { partition: Partition.UsIsoF, domainSuffix: 'csp.hci.ic.gov' },
   'eu-isoe-': { partition: Partition.EuIsoE, domainSuffix: 'cloud.adc-e.uk' },
+  'eusc-de-': { partition: Partition.Eusc, domainSuffix: 'amazonaws.eu' },
 };
 
 export const PARTITION_SAML_SIGN_ON_URL: Partial<Record<Partition, string>> = {
@@ -120,6 +122,7 @@ export const LATEST_NODE_RUNTIME_MAP: Record<Partition, string> = {
   [Partition.UsIsoB]: Runtime.NODE_18,
   [Partition.UsIsoF]: Runtime.NODE_18,
   [Partition.EuIsoE]: Runtime.NODE_18,
+  [Partition.Eusc]: Runtime.NODE_22,
 };
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
@@ -188,6 +191,7 @@ export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
   'us-west-1': '763104351884',
   'us-west-2': '763104351884',
   'ap-east-2': '975050140332',
+  'eusc-de-east-1': '204133271717',
 };
 
 // https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
