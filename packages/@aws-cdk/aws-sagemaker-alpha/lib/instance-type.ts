@@ -205,6 +205,46 @@ export class InstanceType {
   public static readonly G5_XLARGE = InstanceType.of('ml.g5.xlarge');
 
   /**
+   * ml.g6.12xlarge
+   */
+  public static readonly G6_12XLARGE = InstanceType.of('ml.g6.12xlarge');
+
+  /**
+   * ml.g6.16xlarge
+   */
+  public static readonly G6_16XLARGE = InstanceType.of('ml.g6.16xlarge');
+
+  /**
+   * ml.g6.24xlarge
+   */
+  public static readonly G6_24XLARGE = InstanceType.of('ml.g6.24xlarge');
+
+  /**
+   * ml.g6.2xlarge
+   */
+  public static readonly G6_2XLARGE = InstanceType.of('ml.g6.2xlarge');
+
+  /**
+   * ml.g6.48xlarge
+   */
+  public static readonly G6_48XLARGE = InstanceType.of('ml.g6.48xlarge');
+
+  /**
+   * ml.g6.4xlarge
+   */
+  public static readonly G6_4XLARGE = InstanceType.of('ml.g6.4xlarge');
+
+  /**
+   * ml.g6.8xlarge
+   */
+  public static readonly G6_8XLARGE = InstanceType.of('ml.g6.8xlarge');
+
+  /**
+   * ml.g6.xlarge
+   */
+  public static readonly G6_XLARGE = InstanceType.of('ml.g6.xlarge');
+
+  /**
    * ml.inf1.24xlarge
    */
   public static readonly INF1_24XLARGE = InstanceType.of('ml.inf1.24xlarge');

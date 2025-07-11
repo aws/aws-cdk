@@ -18,7 +18,10 @@ import {
   ResourceProps,
   Stack,
   Token,
+  ValidationError,
 } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -73,6 +76,21 @@ export interface IKey extends IResource {
    * Grant encryption and decryption permissions using this key to the given principal
    */
   grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant sign permissions using this key to the given principal
+   */
+  grantSign(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant verify permissions using this key to the given principal
+   */
+  grantVerify(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant sign and verify permissions using this key to the given principal
+   */
+  grantSignVerify(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant permissions to generating MACs to the given principal
@@ -147,7 +165,7 @@ abstract class KeyBase extends Resource implements IKey {
 
     if (!this.policy) {
       if (allowNoOp) { return { statementAdded: false }; }
-      throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`);
+      throw new ValidationError(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`, this);
     }
 
     this.policy.addStatements(statement);
@@ -214,6 +232,27 @@ abstract class KeyBase extends Resource implements IKey {
    */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...[...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS]);
+  }
+
+  /**
+   * Grant sign permissions using this key to the given principal
+   */
+  public grantSign(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.SIGN_ACTIONS);
+  }
+
+  /**
+   * Grant verify permissions using this key to the given principal
+   */
+  public grantVerify(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.VERIFY_ACTIONS);
+  }
+
+  /**
+   * Grant sign and verify permissions using this key to the given principal
+   */
+  public grantSignVerify(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...[...perms.SIGN_ACTIONS, ...perms.VERIFY_ACTIONS]);
   }
 
   /**
@@ -404,6 +443,11 @@ export enum KeyUsage {
    * Generating and verifying MACs
    */
   GENERATE_VERIFY_MAC = 'GENERATE_VERIFY_MAC',
+
+  /**
+   * Deriving shared secrets
+   */
+  KEY_AGREEMENT = 'KEY_AGREEMENT',
 }
 
 /**
@@ -467,6 +511,20 @@ export interface KeyProps {
    * @default KeyUsage.ENCRYPT_DECRYPT
    */
   readonly keyUsage?: KeyUsage;
+
+  /**
+   * Creates a multi-Region primary key that you can replicate in other AWS Regions.
+   *
+   * You can't change the `multiRegion` value after the KMS key is created.
+   *
+   * IMPORTANT: If you change the value of the `multiRegion` property on an existing KMS key, the update request fails,
+   * regardless of the value of the UpdateReplacePolicy attribute.
+   * This prevents you from accidentally deleting a KMS key by changing an immutable property value.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html
+   */
+  readonly multiRegion?: boolean;
 
   /**
    * Custom policy document to attach to the KMS key.
@@ -539,7 +597,21 @@ export interface KeyProps {
  *
  * @resource AWS::KMS::Key
  */
+@propertyInjectable
 export class Key extends KeyBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kms.Key';
+
+  /**
+   * The default key id of the dummy key.
+   *
+   * This value is used as a dummy key id if the key was not found
+   * by the `Key.fromLookup()` method.
+   */
+  public static readonly DEFAULT_DUMMY_KEY_ID = '1234abcd-12ab-34cd-56ef-1234567890ab';
+
   /**
    * Import an externally defined KMS Key using its ARN.
    *
@@ -566,7 +638,7 @@ export class Key extends KeyBase {
 
     const keyResourceName = Stack.of(scope).splitArn(keyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!keyResourceName) {
-      throw new Error(`KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`);
+      throw new ValidationError(`KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`, scope);
     }
 
     return new Import(keyResourceName, {
@@ -607,9 +679,9 @@ export class Key extends KeyBase {
       // throw an exception suggesting to use the other importing methods instead.
       // We might make this parsing logic smarter later,
       // but let's start by erroring out.
-      throw new Error('Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
+      throw new ValidationError('Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
         'This makes it impossible to create a mutable IKey from that Policy. ' +
-        'You have to use fromKeyArn instead, passing it the ARN attribute property of the low-level CfnKey');
+        'You have to use fromKeyArn instead, passing it the ARN attribute property of the low-level CfnKey', cfnKey);
     }
 
     // change the key policy of the L1, so that all changes done in the L2 are reflected in the resulting template
@@ -637,6 +709,12 @@ export class Key extends KeyBase {
    * You can therefore not use any values that will only be available at
    * CloudFormation execution time (i.e., Tokens).
    *
+   * If you set `returnDummyKeyOnMissing` to `true` in `options` and the key was not found,
+   * this method will return a dummy key with a key id '1234abcd-12ab-34cd-56ef-1234567890ab'.
+   * The value of the dummy key id can also be referenced using the `Key.DEFAULT_DUMMY_KEY_ID`
+   * variable, and you can check if the key is a dummy key by using the `Key.isLookupDummy()`
+   * method.
+   *
    * The Key information will be cached in `cdk.context.json` and the same Key
    * will be used on future runs. To refresh the lookup, you will have to
    * evict the value from the cache using the `cdk context` command. See
@@ -660,7 +738,7 @@ export class Key extends KeyBase {
       }
     }
     if (Token.isUnresolved(options.aliasName)) {
-      throw new Error('All arguments to Key.fromLookup() must be concrete (no Tokens)');
+      throw new ValidationError('All arguments to Key.fromLookup() must be concrete (no Tokens)', scope);
     }
 
     const attributes: cxapi.KeyContextResponse = ContextProvider.getValue(scope, {
@@ -669,12 +747,24 @@ export class Key extends KeyBase {
         aliasName: options.aliasName,
       } as cxschema.KeyContextQuery,
       dummyValue: {
-        keyId: '1234abcd-12ab-34cd-56ef-1234567890ab',
+        keyId: Key.DEFAULT_DUMMY_KEY_ID,
       },
+      mustExist: !options.returnDummyKeyOnMissing,
     }).value;
 
     return new Import(attributes.keyId,
       Arn.format({ resource: 'key', service: 'kms', resourceName: attributes.keyId }, Stack.of(scope)));
+  }
+
+  /**
+   * Checks if the key returned by the `Key.fromLookup()` method is a dummy key,
+   * i.e., a key that was not found.
+   *
+   * This method can only be used if the `returnDummyKeyOnMissing` option
+   * is set to `true` in the `options` for the `Key.fromLookup()` method.
+   */
+  public static isLookupDummy(key: IKey): boolean {
+    return key.keyId === Key.DEFAULT_DUMMY_KEY_ID;
   }
 
   public readonly keyArn: string;
@@ -685,6 +775,8 @@ export class Key extends KeyBase {
 
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const denyLists = {
       [KeyUsage.ENCRYPT_DECRYPT]: [
@@ -715,29 +807,40 @@ export class Key extends KeyBase {
         KeySpec.SYMMETRIC_DEFAULT,
         KeySpec.SM2,
       ],
+      [KeyUsage.KEY_AGREEMENT]: [
+        KeySpec.SYMMETRIC_DEFAULT,
+        KeySpec.RSA_2048,
+        KeySpec.RSA_3072,
+        KeySpec.RSA_4096,
+        KeySpec.ECC_SECG_P256K1,
+        KeySpec.HMAC_224,
+        KeySpec.HMAC_256,
+        KeySpec.HMAC_384,
+        KeySpec.HMAC_512,
+      ],
     };
     const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;
     const keyUsage = props.keyUsage ?? KeyUsage.ENCRYPT_DECRYPT;
     if (denyLists[keyUsage].includes(keySpec)) {
-      throw new Error(`key spec '${keySpec}' is not valid with usage '${keyUsage}'`);
+      throw new ValidationError(`key spec '${keySpec}' is not valid with usage '${keyUsage}'`, this);
     }
 
     if (keySpec.startsWith('HMAC') && props.enableKeyRotation) {
-      throw new Error('key rotation cannot be enabled on HMAC keys');
+      throw new ValidationError('key rotation cannot be enabled on HMAC keys', this);
     }
 
     if (keySpec !== KeySpec.SYMMETRIC_DEFAULT && props.enableKeyRotation) {
-      throw new Error('key rotation cannot be enabled on asymmetric keys');
+      throw new ValidationError('key rotation cannot be enabled on asymmetric keys', this);
     }
 
     this.enableKeyRotation = props.enableKeyRotation;
 
     if (props.rotationPeriod) {
       if (props.enableKeyRotation === false) {
-        throw new Error('\'rotationPeriod\' cannot be specified when \'enableKeyRotation\' is disabled');
+        throw new ValidationError('\'rotationPeriod\' cannot be specified when \'enableKeyRotation\' is disabled', this);
       }
       if (props.rotationPeriod.toDays() < 90 || props.rotationPeriod.toDays() > 2560) {
-        throw new Error(`'rotationPeriod' value must between 90 and 2650 days. Received: ${props.rotationPeriod.toDays()}`);
+        throw new ValidationError(`'rotationPeriod' value must between 90 and 2650 days. Received: ${props.rotationPeriod.toDays()}`, this);
       }
       // If rotationPeriod is specified, enableKeyRotation is set to true by default
       if (props.enableKeyRotation === undefined) {
@@ -750,7 +853,7 @@ export class Key extends KeyBase {
     this.policy = props.policy ?? new iam.PolicyDocument();
     if (defaultKeyPoliciesFeatureEnabled) {
       if (props.trustAccountIdentities === false) {
-        throw new Error('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set');
+        throw new ValidationError('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set', this);
       }
 
       this.trustAccountIdentities = true;
@@ -771,7 +874,7 @@ export class Key extends KeyBase {
     if (props.pendingWindow) {
       pendingWindowInDays = props.pendingWindow.toDays();
       if (pendingWindowInDays < 7 || pendingWindowInDays > 30) {
-        throw new Error(`'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`);
+        throw new ValidationError(`'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`, this);
       }
     }
 
@@ -783,6 +886,7 @@ export class Key extends KeyBase {
       keySpec: props.keySpec,
       keyUsage: props.keyUsage,
       keyPolicy: this.policy,
+      multiRegion: props.multiRegion,
       pendingWindowInDays: pendingWindowInDays,
     });
 
@@ -803,6 +907,7 @@ export class Key extends KeyBase {
    * Key administrators have permissions to manage the key (e.g., change permissions, revoke), but do not have permissions
    * to use the key in cryptographic operations (e.g., encrypt, decrypt).
    */
+  @MethodMetadata()
   public grantAdmin(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...perms.ADMIN_ACTIONS);
   }

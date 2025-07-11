@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "38.0.1",
   "testCases": {
-    "integ.function": {
+    "cdk-integ-lambda-golang-al2-integ-test/DefaultTest": {
       "stacks": [
         "cdk-integ-lambda-golang"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "cdk-integ-lambda-golang-al2-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkinteglambdagolangal2integtestDefaultTestDeployAssert21D5B17E"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

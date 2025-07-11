@@ -5,11 +5,7 @@ import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for sending a message to an SQS queue
- */
-export interface SqsSendMessageProps extends sfn.TaskStateBaseProps {
-
+interface SqsSendMessageOptions {
   /**
    * The SQS queue that messages will be sent to
    */
@@ -51,10 +47,40 @@ export interface SqsSendMessageProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for sending a message to an SQS queue using JSONPath
+ */
+export interface SqsSendMessageJsonPathProps extends sfn.TaskStateJsonPathBaseProps, SqsSendMessageOptions { }
+
+/**
+ * Properties for sending a message to an SQS queue using JSONata
+ */
+export interface SqsSendMessageJsonataProps extends sfn.TaskStateJsonataBaseProps, SqsSendMessageOptions { }
+
+/**
+ * Properties for sending a message to an SQS queue
+ */
+export interface SqsSendMessageProps extends sfn.TaskStateBaseProps, SqsSendMessageOptions { }
+
+/**
  * A StepFunctions Task to send messages to SQS queue.
- *
  */
 export class SqsSendMessage extends sfn.TaskStateBase {
+  /**
+   * A StepFunctions Task to send messages to SQS queue using JSONPath.
+   */
+  public static jsonPath(scope: Construct, id: string, props: SqsSendMessageJsonPathProps) {
+    return new SqsSendMessage(scope, id, props);
+  }
+
+  /**
+   * A StepFunctions Task to send messages to SQS queue using JSONata.
+   */
+  public static jsonata(scope: Construct, id: string, props: SqsSendMessageJsonataProps) {
+    return new SqsSendMessage(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
 
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -74,7 +100,7 @@ export class SqsSendMessage extends sfn.TaskStateBase {
 
     if (props.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.messageBody)) {
-        throw new Error('Task Token is required in `messageBody` Use JsonPath.taskToken to set the token.');
+        throw new cdk.ValidationError('Task Token is required in `messageBody` Use JsonPath.taskToken to set the token.', this);
       }
     }
 
@@ -97,21 +123,19 @@ export class SqsSendMessage extends sfn.TaskStateBase {
   }
 
   /**
-   * Provides the SQS SendMessage service integration task configuration
-   */
-  /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('sqs', 'sendMessage', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         QueueUrl: this.props.queue.queueUrl,
         MessageBody: this.props.messageBody.value,
         DelaySeconds: this.props.delay?.toSeconds(),
         MessageDeduplicationId: this.props.messageDeduplicationId,
         MessageGroupId: this.props.messageGroupId,
-      }),
+      }, queryLanguage),
     };
   }
 }

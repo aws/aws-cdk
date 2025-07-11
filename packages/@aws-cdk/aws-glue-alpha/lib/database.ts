@@ -1,6 +1,8 @@
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnDatabase } from 'aws-cdk-lib/aws-glue';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 export interface IDatabase extends IResource {
   /**
@@ -55,7 +57,10 @@ export interface DatabaseProps {
 /**
  * A Glue database.
  */
+@propertyInjectable
 export class Database extends Resource implements IDatabase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.Database';
 
   public static fromDatabaseArn(scope: Construct, id: string, databaseArn: string): IDatabase {
     const stack = Stack.of(scope);
@@ -102,6 +107,8 @@ export class Database extends Resource implements IDatabase {
           produce: () => Names.uniqueResourceName(this, {}).toLowerCase(),
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.description !== undefined) {
       validateDescription(props.description);

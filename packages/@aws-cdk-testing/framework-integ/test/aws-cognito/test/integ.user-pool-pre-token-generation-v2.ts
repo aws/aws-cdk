@@ -1,10 +1,14 @@
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { AdvancedSecurityMode, LambdaVersion, UserPool, UserPoolOperation } from 'aws-cdk-lib/aws-cognito';
+import { AdvancedSecurityMode, FeaturePlan, LambdaVersion, UserPool, UserPoolOperation } from 'aws-cdk-lib/aws-cognito';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'integ-user-pool-pre-token-generation-v2');
 
 const triggerLambda = new lambda.Function(stack, 'preTokenGenerationLambda', {
@@ -16,6 +20,7 @@ const triggerLambda = new lambda.Function(stack, 'preTokenGenerationLambda', {
 const userpool = new UserPool(stack, 'pool', {
   removalPolicy: RemovalPolicy.DESTROY,
   advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
+  featurePlan: FeaturePlan.PLUS,
 });
 userpool.addTrigger(UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG, triggerLambda, LambdaVersion.V2_0);
 

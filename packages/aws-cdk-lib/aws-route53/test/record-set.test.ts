@@ -1,10 +1,10 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Template } from '../../assertions';
+import { Annotations, Template } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as origins from '../../aws-cloudfront-origins';
 import * as iam from '../../aws-iam';
 import * as targets from '../../aws-route53-targets';
-import { Duration, RemovalPolicy, Stack } from '../../core';
+import { CfnParameter, Duration, RemovalPolicy, Stack } from '../../core';
 import * as route53 from '../lib';
 
 describe('record set', () => {
@@ -185,6 +185,140 @@ describe('record set', () => {
         HostedZoneId: 'Z2P70J7EXAMPLE',
         DNSName: 'foo.example.com',
       },
+    });
+  });
+
+  test('A record with alias health check', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    const target: route53.IAliasRecordTarget = {
+      bind: () => {
+        return {
+          hostedZoneId: 'Z2P70J7EXAMPLE',
+          dnsName: 'foo.example.com',
+          evaluateTargetHealth: true,
+        };
+      },
+    };
+
+    // WHEN
+    new route53.ARecord(zone, 'Alias', {
+      zone,
+      recordName: '_foo',
+      target: route53.RecordTarget.fromAlias(target),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: '_foo.myzone.',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      Type: 'A',
+      AliasTarget: {
+        HostedZoneId: 'Z2P70J7EXAMPLE',
+        DNSName: 'foo.example.com',
+        EvaluateTargetHealth: true,
+      },
+    });
+  });
+
+  test('A record with warning ignoring ttl property', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    const target: route53.IAliasRecordTarget = {
+      bind: () => {
+        return {
+          hostedZoneId: 'Z2P70J7EXAMPLE',
+          dnsName: 'foo.example.com',
+          evaluateTargetHealth: true,
+        };
+      },
+    };
+
+    // WHEN
+    new route53.ARecord(zone, 'Alias', {
+      zone,
+      recordName: '_foo',
+      target: route53.RecordTarget.fromAlias(target),
+      ttl: Duration.seconds(15),
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/HostedZone/Alias', 'Ignoring ttl since \'target\' uses an alias target [ack: aws-cdk-lib/aws-route53:ttlIgnored]');
+  });
+
+  test('A record with health check', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    const healthCheck = new route53.HealthCheck(stack, 'HealthCheck', {
+      type: route53.HealthCheckType.HTTP,
+      fqdn: 'example.com',
+      resourcePath: 'health',
+    });
+
+    // WHEN
+    new route53.ARecord(stack, 'Alias', {
+      zone,
+      recordName: '_foo',
+      target: route53.RecordTarget.fromValues('1.2.3.4'),
+      healthCheck,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: '_foo.myzone.',
+      Type: 'A',
+      HealthCheckId: stack.resolve(healthCheck.healthCheckId),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+      HealthCheckConfig: {
+        Type: 'HTTP',
+        FullyQualifiedDomainName: 'example.com',
+        ResourcePath: 'health',
+      },
+    });
+  });
+
+  test('A record with imported health check', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    const healthCheck = route53.HealthCheck.fromHealthCheckId(stack, 'HealthCheck', 'abcdef');
+
+    // WHEN
+    new route53.ARecord(stack, 'Alias', {
+      zone,
+      recordName: '_foo',
+      target: route53.RecordTarget.fromValues('1.2.3.4'),
+      healthCheck,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: '_foo.myzone.',
+      Type: 'A',
+      HealthCheckId: 'abcdef',
     });
   });
 
@@ -1248,6 +1382,66 @@ describe('record set', () => {
     });
   });
 
+  test('with weight provided by CfnParameter', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    const weightParameter = new CfnParameter(stack, 'RecordWeight', {
+      type: 'Number',
+      default: 0,
+      minValue: 0,
+      maxValue: 255,
+    });
+
+    // WHEN
+    new route53.RecordSet(stack, 'RecordSet', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      weight: weightParameter.valueAsNumber,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasParameter('RecordWeight', {
+      Type: 'Number',
+      Default: 0,
+      MinValue: 0,
+      MaxValue: 255,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'www.myzone.',
+      Type: 'CNAME',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      ResourceRecords: [
+        'zzz',
+      ],
+      TTL: '1800',
+      Weight: {
+        Ref: 'RecordWeight',
+      },
+      SetIdentifier: {
+        'Fn::Join': [
+          '',
+          [
+            'WEIGHT_',
+            {
+              Ref: 'RecordWeight',
+            },
+            '_ID_RecordSet',
+          ],
+        ],
+      },
+    });
+  });
+
   test.each([
     [-1],
     [256],
@@ -1292,7 +1486,14 @@ describe('record set', () => {
     { multiValueAnswer: true, region: 'us-east-1' },
     { multiValueAnswer: true, weight: 20 },
     { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1', multiValueAnswer: true },
-  ])('throw error for the simultaneous definition of weight, geoLocation and region', (props) => {
+    {
+      weight: 20,
+      cidrRoutingConfig: route53.CidrRoutingConfig.create({
+        collectionId: '12345678-1234-1234-1234-123456789012',
+        locationName: 'test_location',
+      }),
+    },
+  ])('throw error for the simultaneous definition of weight, geoLocation, region, multiValueAnswer and cidrRoutingConfig', (props) => {
     // GIVEN
     const stack = new Stack();
 
@@ -1306,7 +1507,7 @@ describe('record set', () => {
       target: route53.RecordTarget.fromValues('zzz'),
       setIdentifier: 'uniqueId',
       ...props,
-    })).toThrow('Only one of region, weight, multiValueAnswer or geoLocation can be defined');
+    })).toThrow('Only one of region, weight, multiValueAnswer, geoLocation or cidrRoutingConfig can be defined');
   });
 
   test('throw error for the definition of setIdentifier without weight, geoLocation or region', () => {
@@ -1377,4 +1578,3 @@ describe('record set', () => {
     })).toThrow('multiValueAnswer cannot be specified for alias record');
   });
 });
-

@@ -2,6 +2,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as Logs from '@aws-sdk/client-cloudwatch-logs';
 
+let FAKE_SLEEP = false;
+
+export function disableSleepForTesting() {
+  FAKE_SLEEP = true;
+}
+
 interface LogRetentionEvent extends Omit<AWSLambda.CloudFormationCustomResourceEvent, 'ResourceProperties'> {
   ResourceProperties: {
     ServiceToken: string;
@@ -11,7 +17,7 @@ interface LogRetentionEvent extends Omit<AWSLambda.CloudFormationCustomResourceE
     SdkRetry?: {
       maxRetries?: string;
     };
-    RemovalPolicy?: string
+    RemovalPolicy?: string;
   };
 }
 
@@ -24,7 +30,6 @@ async function createLogGroupSafe(logGroupName: string, client: Logs.CloudWatchL
       const params = { logGroupName };
       const command = new Logs.CreateLogGroupCommand(params);
       await client.send(command);
-
     } catch (error: any) {
       if (error.name === 'ResourceAlreadyExistsException') {
         // The log group is already created by the lambda execution
@@ -45,7 +50,6 @@ async function deleteLogGroup(logGroupName: string, client: Logs.CloudWatchLogsC
       const params = { logGroupName };
       const command = new Logs.DeleteLogGroupCommand(params);
       await client.send(command);
-
     } catch (error: any) {
       if (error.name === 'ResourceNotFoundException') {
         // The log group doesn't exist
@@ -66,7 +70,6 @@ async function setRetentionPolicy(
   withDelay: (block: () => Promise<void>) => Promise<void>,
   retentionInDays?: number,
 ) {
-
   await withDelay(async () => {
     if (!retentionInDays) {
       const params = { logGroupName };
@@ -91,13 +94,12 @@ export async function handler(event: LogRetentionEvent, context: AWSLambda.Conte
     const logGroupRegion = event.ResourceProperties.LogGroupRegion;
 
     // Parse to AWS SDK retry options
-    const maxRetries = parseIntOptional(event.ResourceProperties.SdkRetry?.maxRetries) ?? 5;
+    const maxRetries = parseIntOptional(event.ResourceProperties.SdkRetry?.maxRetries) ?? 10;
     const withDelay = makeWithDelay(maxRetries);
 
     const sdkConfig: Logs.CloudWatchLogsClientConfig = {
       logger: console,
       region: logGroupRegion,
-      maxAttempts: Math.max(5, maxRetries), // Use a minimum for SDK level retries, because it might include retryable failures that withDelay isn't checking for
     };
     const client = new Logs.CloudWatchLogsClient(sdkConfig);
 
@@ -188,8 +190,8 @@ function parseIntOptional(value?: string, base = 10): number | undefined {
 
 function makeWithDelay(
   maxRetries: number,
-  delayBase: number = 100,
-  delayCap = 10 * 1000, // 10s
+  delayBase: number = 1_000,
+  delayCap = 60_000, // 60s
 ): (block: () => Promise<void>) => Promise<void> {
   // If we try to update the log group, then due to the async nature of
   // Lambda logging there could be a race condition when the same log group is
@@ -205,12 +207,12 @@ function makeWithDelay(
         return await block();
       } catch (error: any) {
         if (
-          error.name === 'OperationAbortedException'
-          || error.name === 'ThrottlingException' // There is no class to check with instanceof, see https://github.com/aws/aws-sdk-js-v3/issues/5140
+          isException('OperationAbortedException', error)
+          || isException('ThrottlingException', error) // There is no class to check with instanceof, see https://github.com/aws/aws-sdk-js-v3/issues/5140
         ) {
           if (attempts < maxRetries ) {
             attempts++;
-            await new Promise(resolve => setTimeout(resolve, calculateDelay(attempts, delayBase, delayCap)));
+            await sleep(calculateDelay(attempts, delayBase, delayCap));
             continue;
           } else {
             // The log group is still being changed by another execution but we are out of retries
@@ -223,6 +225,18 @@ function makeWithDelay(
   };
 }
 
+function isException(type: string, e: any) {
+  // e.name check doesn't always seem to work, so also check the error message to be sure
+  return e.name === type || e.message.includes(type);
+}
+
 function calculateDelay(attempt: number, base: number, cap: number): number {
-  return Math.round(Math.random() * Math.min(cap, base * 2 ** attempt));
+  return Math.min(Math.round(Math.random() * base * 2 ** attempt), cap);
+}
+
+async function sleep(timeMs: number): Promise<void> {
+  if (FAKE_SLEEP) {
+    timeMs = 0;
+  }
+  await new Promise<void>(resolve => setTimeout(resolve, timeMs));
 }

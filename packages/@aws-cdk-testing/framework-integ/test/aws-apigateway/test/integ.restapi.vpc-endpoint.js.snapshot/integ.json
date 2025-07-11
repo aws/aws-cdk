@@ -1,11 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "44.0.0",
   "testCases": {
-    "apigateway-vpcendpoint/DefaultTest": {
+    "ApiGatewayVpcEndpointInteg/DefaultTest": {
       "stacks": [
-        "test-apigateway-vpcendpoint"
+        "ApiGatewayVpcEndpointTestStack"
       ],
-      "assertionStack": "apigateway-vpcendpoint/DefaultTest/DeployAssert"
+      "assertionStack": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ApiGatewayVpcEndpointIntegDefaultTestDeployAssert55D396EF"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

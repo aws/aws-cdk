@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "RuleStack.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "RuleStack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f9728b2d2c64ff638563c8cc4a3e8eb9ddf3074e2ae01d68fde11aeda0968fb1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a40d4de74605430401abd9268f1df95dcfa96965e0d7c8b17f140830b4170864.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,10 +34,251 @@
         "RuleStack.assets"
       ],
       "metadata": {
+        "/RuleStack/MyRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/RuleStack/MyRole/ImportMyRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RuleStack/MyRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRoleF48FFE04"
+          }
+        ],
+        "/RuleStack/MyRule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "eventPattern": {
+                "account": "*",
+                "detail": "*",
+                "detailType": "*",
+                "id": "*",
+                "region": "*",
+                "resources": "*",
+                "source": "*",
+                "time": "*",
+                "version": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "account": "*",
+                  "detail": "*",
+                  "detailType": "*",
+                  "id": "*",
+                  "region": "*",
+                  "resources": "*",
+                  "source": "*",
+                  "time": "*",
+                  "version": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/RuleStack/MyRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyRuleA44AB831"
+          }
+        ],
+        "/RuleStack/MyWildcardRule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "eventPattern": {
+                "account": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "account": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/RuleStack/MyWildcardRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyWildcardRule477FB0F9"
+          }
+        ],
+        "/RuleStack/MyAnythingButPrefixRule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "eventPattern": {
+                "account": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "account": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/RuleStack/MyAnythingButPrefixRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAnythingButPrefixRule756FC7C6"
+          }
+        ],
+        "/RuleStack/MyAnythingButSuffixRule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "eventPattern": {
+                "account": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "account": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/RuleStack/MyAnythingButSuffixRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAnythingButSuffixRuleB1E496DF"
+          }
+        ],
+        "/RuleStack/MyAnythingButWildcardRule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "eventPattern": {
+                "account": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "account": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/RuleStack/MyAnythingButWildcardRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAnythingButWildcardRuleEED7F44B"
+          }
+        ],
+        "/RuleStack/MyAnythingButEqualsIgnoreCase": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "eventPattern": {
+                "account": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "account": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/RuleStack/MyAnythingButEqualsIgnoreCase/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAnythingButEqualsIgnoreCaseEBE7F91F"
+          }
+        ],
+        "/RuleStack/MyPrefixEqualsIgnoreCase": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "eventPattern": {
+                "account": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "account": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/RuleStack/MyPrefixEqualsIgnoreCase/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPrefixEqualsIgnoreCaseC9726B40"
+          }
+        ],
+        "/RuleStack/MySuffixEqualsIgnoreCase": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "eventPattern": {
+                "account": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "account": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/RuleStack/MySuffixEqualsIgnoreCase/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySuffixEqualsIgnoreCaseBE2DDE03"
           }
         ],
         "/RuleStack/BootstrapVersion": [
@@ -67,6 +309,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "IntegTestBatchDefaultEnvVarsStackDefaultTestDeployAssertC15EFFF2.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

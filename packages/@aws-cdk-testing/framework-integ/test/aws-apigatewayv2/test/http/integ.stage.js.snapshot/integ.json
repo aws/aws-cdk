@@ -1,14 +1,12 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "testCases": {
-    "integ.stage": {
+    "aws-cdk-aws-apigatewayv2-http-stage-test/DefaultTest": {
       "stacks": [
         "aws-cdk-aws-apigatewayv2-http-stage"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "aws-cdk-aws-apigatewayv2-http-stage-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkawsapigatewayv2httpstagetestDefaultTestDeployAssert66182A52"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

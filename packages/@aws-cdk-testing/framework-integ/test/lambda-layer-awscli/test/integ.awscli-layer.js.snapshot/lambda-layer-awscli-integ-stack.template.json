@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -152,7 +152,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerpython3.9)",
     "Environment": {
@@ -187,6 +187,32 @@
     "Providerpython39frameworkonEventServiceRoleDefaultPolicy16A4767C",
     "Providerpython39frameworkonEventServiceRoleA299F5C1"
    ]
+  },
+  "Providerpython39frameworkonEventinlinePolicyAddedToExecutionRole0012C4340": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Lambdapython39426A0480",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Providerpython39frameworkonEventinlinePolicyAddedToExecutionRole0012C4340",
+    "Roles": [
+     {
+      "Ref": "Providerpython39frameworkonEventServiceRoleA299F5C1"
+     }
+    ]
+   }
   },
   "CustomResourcepython39": {
    "Type": "AWS::CloudFormation::CustomResource",
@@ -341,7 +367,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerpython3.10)",
     "Environment": {
@@ -377,6 +403,32 @@
     "Providerpython310frameworkonEventServiceRoleB6DF2879"
    ]
   },
+  "Providerpython310frameworkonEventinlinePolicyAddedToExecutionRole0B240717D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Lambdapython310815BD7E9",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Providerpython310frameworkonEventinlinePolicyAddedToExecutionRole0B240717D",
+    "Roles": [
+     {
+      "Ref": "Providerpython310frameworkonEventServiceRoleB6DF2879"
+     }
+    ]
+   }
+  },
   "CustomResourcepython310": {
    "Type": "AWS::CloudFormation::CustomResource",
    "Properties": {
@@ -394,109 +446,115 @@
  "Mappings": {
   "LatestNodeRuntimeMap": {
    "af-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
+   },
+   "ap-east-2": {
+    "value": "nodejs22.x"
    },
    "ap-northeast-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-northeast-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-northeast-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-south-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-4": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-5": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-7": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ca-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ca-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "eu-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-central-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-isoe-west-1": {
     "value": "nodejs18.x"
    },
    "eu-north-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-south-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
+    "value": "nodejs22.x"
    },
    "il-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "me-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "me-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "mx-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "sa-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-east-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"
@@ -507,11 +565,14 @@
    "us-isob-east-1": {
     "value": "nodejs18.x"
    },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
    "us-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-west-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    }
   }
  },

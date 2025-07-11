@@ -13,6 +13,8 @@ const accessLogBucket = new s3.Bucket(stack, 'ServerAccessLogsBucket', {
   encryption: s3.BucketEncryption.KMS,
 });
 
+accessLogBucket.encryptionKey?.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
 new s3.Bucket(stack, 'Bucket', {
   serverAccessLogsBucket: accessLogBucket,
   serverAccessLogsPrefix: 'example',

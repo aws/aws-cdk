@@ -1,6 +1,8 @@
 import { Construct } from 'constructs';
 import { CfnDBClusterParameterGroup } from './docdb.generated';
 import { IResource, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A parameter group
@@ -66,7 +68,10 @@ export interface ClusterParameterGroupProps {
  *
  * @resource AWS::DocDB::DBClusterParameterGroup
  */
+@propertyInjectable
 export class ClusterParameterGroup extends ClusterParameterGroupBase implements IClusterParameterGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-docdb.ClusterParameterGroup';
   /**
    * The name of the parameter group
    */
@@ -74,6 +79,8 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase implements 
 
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
       name: props.dbClusterParameterGroupName,

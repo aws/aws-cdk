@@ -1,0 +1,19 @@
+{
+  "version": "36.0.5",
+  "files": {
+    "97ed69e0c6a3717cdba2853084a186e0bfd33216748d11445a14282087c0b2e9": {
+      "source": {
+        "path": "redshift-query-events.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "97ed69e0c6a3717cdba2853084a186e0bfd33216748d11445a14282087c0b2e9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

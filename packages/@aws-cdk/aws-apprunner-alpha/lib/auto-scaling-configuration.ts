@@ -1,6 +1,8 @@
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnAutoScalingConfiguration } from 'aws-cdk-lib/aws-apprunner';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties of the App Runner Auto Scaling Configuration.
@@ -88,7 +90,11 @@ export interface IAutoScalingConfiguration extends cdk.IResource {
  *
  * @resource AWS::AppRunner::AutoScalingConfiguration
  */
+@propertyInjectable
 export class AutoScalingConfiguration extends cdk.Resource implements IAutoScalingConfiguration {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-apprunner-alpha.AutoScalingConfiguration';
+
   /**
    * Imports an App Runner Auto Scaling Configuration from attributes
    */
@@ -117,7 +123,7 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
     const resourceParts = cdk.Fn.split('/', autoScalingConfigurationArn);
 
     if (!resourceParts || resourceParts.length < 3) {
-      throw new Error(`Unexpected ARN format: ${autoScalingConfigurationArn}`);
+      throw new cdk.UnscopedValidationError(`Unexpected ARN format: ${autoScalingConfigurationArn}.`);
     }
 
     const autoScalingConfigurationName = cdk.Fn.select(0, resourceParts);
@@ -133,15 +139,15 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
   }
 
   /**
-    * The ARN of the Auto Scaling Configuration.
-    * @attribute
-    */
+   * The ARN of the Auto Scaling Configuration.
+   * @attribute
+   */
   readonly autoScalingConfigurationArn: string;
 
   /**
-    * The name of the Auto Scaling Configuration.
-    * @attribute
-    */
+   * The name of the Auto Scaling Configuration.
+   * @attribute
+   */
   readonly autoScalingConfigurationName: string;
 
   /**
@@ -154,6 +160,8 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
     super(scope, id, {
       physicalName: props.autoScalingConfigurationName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.validateAutoScalingConfiguration(props);
 
@@ -170,12 +178,18 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
   }
 
   private validateAutoScalingConfiguration(props: AutoScalingConfigurationProps) {
-    if (
-      props.autoScalingConfigurationName !== undefined &&
-      !cdk.Token.isUnresolved(props.autoScalingConfigurationName) &&
-      !/^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$/.test(props.autoScalingConfigurationName)
-    ) {
-      throw new Error(`autoScalingConfigurationName must match the ^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$ pattern, got ${props.autoScalingConfigurationName}`);
+    if (props.autoScalingConfigurationName !== undefined && !cdk.Token.isUnresolved(props.autoScalingConfigurationName)) {
+      if (props.autoScalingConfigurationName.length < 4 || props.autoScalingConfigurationName.length > 32) {
+        throw new cdk.ValidationError(
+          `\`autoScalingConfigurationName\` must be between 4 and 32 characters, got: ${props.autoScalingConfigurationName.length} characters.`, this,
+        );
+      }
+
+      if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.autoScalingConfigurationName)) {
+        throw new cdk.ValidationError(
+          `\`autoScalingConfigurationName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.autoScalingConfigurationName}.`, this,
+        );
+      }
     }
 
     const isMinSizeDefined = typeof props.minSize === 'number';
@@ -183,20 +197,19 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
     const isMaxConcurrencyDefined = typeof props.maxConcurrency === 'number';
 
     if (isMinSizeDefined && (props.minSize < 1 || props.minSize > 25)) {
-      throw new Error(`minSize must be between 1 and 25, got ${props.minSize}`);
+      throw new cdk.ValidationError(`minSize must be between 1 and 25, got ${props.minSize}.`, this);
     }
 
     if (isMaxSizeDefined && (props.maxSize < 1 || props.maxSize > 25)) {
-      throw new Error(`maxSize must be between 1 and 25, got ${props.maxSize}`);
+      throw new cdk.ValidationError(`maxSize must be between 1 and 25, got ${props.maxSize}.`, this);
     }
 
     if (isMinSizeDefined && isMaxSizeDefined && !(props.minSize < props.maxSize)) {
-      throw new Error('maxSize must be greater than minSize');
+      throw new cdk.ValidationError('maxSize must be greater than minSize.', this);
     }
 
     if (isMaxConcurrencyDefined && (props.maxConcurrency < 1 || props.maxConcurrency > 200)) {
-      throw new Error(`maxConcurrency must be between 1 and 200, got ${props.maxConcurrency}`);
+      throw new cdk.ValidationError(`maxConcurrency must be between 1 and 200, got ${props.maxConcurrency}.`, this);
     }
   }
-
 }

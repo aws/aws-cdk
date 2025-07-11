@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
@@ -191,7 +192,7 @@ test('Local bundling', () => {
 
   expect(bundler.local).toBeDefined();
 
-  const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.GO_1_X.bundlingDockerImage });
+  const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.GO_1_X.bundlingImage });
   expect(tryBundle).toBe(true);
 
   expect(spawnSyncMock).toHaveBeenCalledWith(
@@ -217,7 +218,7 @@ test('Incorrect go version', () => {
     architecture: Architecture.X86_64,
   });
 
-  const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.GO_1_X.bundlingDockerImage });
+  const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.GO_1_X.bundlingImage });
 
   expect(tryBundle).toBe(false);
 });

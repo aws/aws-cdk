@@ -15,8 +15,8 @@ export interface CorsOptions {
    * `[ * ]`.
    *
    * Responses will include the `Access-Control-Allow-Origin` response header.
-   * If `Cors.ALL_ORIGINS` is specified, the `Vary: Origin` response header will
-   * also be included.
+   * If specific origins are specified (not `Cors.ALL_ORIGINS`), the `Vary: Origin`
+   * response header will also be included.
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
    */

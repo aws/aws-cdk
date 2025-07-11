@@ -1,0 +1,188 @@
+{
+ "Resources": {
+  "SourceQueue6E809DF0": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "TargetStream3B4B2880": {
+   "Type": "AWS::Kinesis::Stream",
+   "Properties": {
+    "RetentionPeriodHours": 24,
+    "ShardCount": 1,
+    "StreamEncryption": {
+     "Fn::If": [
+      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+      {
+       "Ref": "AWS::NoValue"
+      },
+      {
+       "EncryptionType": "KMS",
+       "KeyId": "alias/aws/kinesis"
+      }
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "PipeRole7D4AFC73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "pipes.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PipeRoleDefaultPolicy56E6A74D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sqs:ChangeMessageVisibility",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SourceQueue6E809DF0",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "kinesis:ListShards",
+        "kinesis:PutRecord",
+        "kinesis:PutRecords"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "TargetStream3B4B2880",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PipeRoleDefaultPolicy56E6A74D",
+    "Roles": [
+     {
+      "Ref": "PipeRole7D4AFC73"
+     }
+    ]
+   }
+  },
+  "Pipe7793F8A1": {
+   "Type": "AWS::Pipes::Pipe",
+   "Properties": {
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "PipeRole7D4AFC73",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "Fn::GetAtt": [
+      "SourceQueue6E809DF0",
+      "Arn"
+     ]
+    },
+    "SourceParameters": {},
+    "Target": {
+     "Fn::GetAtt": [
+      "TargetStream3B4B2880",
+      "Arn"
+     ]
+    },
+    "TargetParameters": {
+     "KinesisStreamParameters": {
+      "PartitionKey": "pk"
+     }
+    }
+   }
+  }
+ },
+ "Conditions": {
+  "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+   "Fn::Or": [
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-north-1"
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-northwest-1"
+     ]
+    }
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefSourceQueue6E809DF09604904F": {
+   "Value": {
+    "Ref": "SourceQueue6E809DF0"
+   },
+   "Export": {
+    "Name": "aws-cdk-pipes-targets-kinesis:ExportsOutputRefSourceQueue6E809DF09604904F"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

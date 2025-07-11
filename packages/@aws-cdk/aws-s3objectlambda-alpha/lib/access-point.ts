@@ -4,6 +4,8 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as core from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnAccessPoint } from 'aws-cdk-lib/aws-s3objectlambda';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * The interface that represents the AccessPoint resource.
@@ -43,8 +45,8 @@ export interface IAccessPoint extends core.IResource {
 }
 
 /**
-  * The S3 object lambda access point configuration.
-  */
+ * The S3 object lambda access point configuration.
+ */
 export interface AccessPointProps {
   /**
    * The bucket to which this access point belongs.
@@ -163,17 +165,21 @@ function validateAccessPointName(name: string): void {
 }
 
 /**
-  * An S3 object lambda access point for intercepting and
-  * transforming `GetObject` requests.
-  */
+ * An S3 object lambda access point for intercepting and
+ * transforming `GetObject` requests.
+ */
+@propertyInjectable
 export class AccessPoint extends AccessPointBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-s3objectlambda-alpha.AccessPoint';
+
   /**
    * Reference an existing AccessPoint defined outside of the CDK code.
    */
   public static fromAccessPointAttributes(scope: Construct, id: string, attrs: AccessPointAttributes): IAccessPoint {
     const arn = core.Arn.split(attrs.accessPointArn, core.ArnFormat.SLASH_RESOURCE_NAME);
     if (!arn.resourceName) {
-      throw new Error('Unable to parse acess point name');
+      throw new Error('Unable to parse access point name');
     }
     const name = arn.resourceName;
     class Import extends AccessPointBase {
@@ -187,24 +193,31 @@ export class AccessPoint extends AccessPointBase {
   /**
    * The ARN of the access point.
    */
-  public readonly accessPointName: string
+  public readonly accessPointName: string;
 
   /**
    * The ARN of the access point.
    * @attribute
    */
-  public readonly accessPointArn: string
+  public readonly accessPointArn: string;
 
   /**
    * The creation data of the access point.
    * @attribute
    */
-  public readonly accessPointCreationDate: string
+  public readonly accessPointCreationDate: string;
+
+  /**
+   * The ARN of the S3 access point.
+   */
+  public readonly s3AccessPointArn: string;
 
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id, {
       physicalName: props.accessPointName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.accessPointName) {
       validateAccessPointName(props.accessPointName);
@@ -241,6 +254,7 @@ export class AccessPoint extends AccessPointBase {
         ],
       },
     });
+    this.s3AccessPointArn = supporting.attrArn;
     this.accessPointName = accessPoint.ref;
     this.accessPointArn = accessPoint.attrArn;
     this.accessPointCreationDate = accessPoint.attrCreationDate;

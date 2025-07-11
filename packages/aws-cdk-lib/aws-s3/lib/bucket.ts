@@ -4,7 +4,7 @@ import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
-import { LifecycleRule } from './rule';
+import { LifecycleRule, StorageClass } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
@@ -25,8 +25,12 @@ import {
   Token,
   Tokenization,
   Annotations,
+  PhysicalName,
 } from '../../core';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import * as cxapi from '../../cx-api';
 import * as regionInformation from '../../region-info';
@@ -94,6 +98,11 @@ export interface IBucket extends IResource {
    * first call to addToResourcePolicy(s).
    */
   policy?: BucketPolicy;
+
+  /**
+   * Role used to set up permissions on this bucket for replication
+   */
+  replicationRoleArn?: string;
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
@@ -258,6 +267,18 @@ export interface IBucket extends IResource {
   grantReadWrite(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
   /**
+   * Allows permissions for replication operation to bucket replication role.
+   *
+   * If an encryption key is used, permission to use the key for
+   * encrypt/decrypt will also be granted.
+   *
+   * @param identity The principal
+   * @param props The properties of the replication source and destination buckets.
+   * @returns The `iam.Grant` object, which represents the grant of permissions.
+   */
+  grantReplicationPermission(identity: iam.IGrantable, props: GrantReplicationPermissionProps): iam.Grant;
+
+  /**
    * Allows unrestricted access to objects from this bucket.
    *
    * IMPORTANT: This permission allows anyone to perform actions on S3 objects
@@ -336,7 +357,7 @@ export interface IBucket extends IResource {
    * that will be matched against the s3 object key. Refer to the S3 Developer Guide
    * for details about allowed filter rules.
    *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#notification-how-to-filtering
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-filtering.html
    *
    * @example
    *
@@ -384,6 +405,16 @@ export interface IBucket extends IResource {
    * - Object Tags Deleted
    */
   enableEventBridgeNotification(): void;
+
+  /**
+   * Function to add required permissions to the destination bucket for cross account
+   * replication. These permissions will be added as a resource based policy on the bucket.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
+   * If owner of the bucket needs to be overridden, set accessControlTransition to true and provide
+   * account ID in which destination bucket is hosted. For more information on accessControlTransition
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-accesscontroltranslation.html
+   */
+  addReplicationPolicy(roleArn: string, accessControlTransition?: boolean, account?: string): void;
 }
 
 /**
@@ -479,6 +510,45 @@ export interface BucketAttributes {
 }
 
 /**
+ * The properties for the destination bucket for granting replication permission.
+ */
+export interface GrantReplicationPermissionDestinationProps {
+  /**
+   * The destination bucket
+   */
+  readonly bucket: IBucket;
+
+  /**
+   * The KMS key to use for encryption if a destination bucket needs to be encrypted with a customer-managed KMS key.
+   *
+   * @default - no KMS key is used for replication.
+   */
+  readonly encryptionKey?: kms.IKey;
+}
+
+/**
+ * The properties for the destination bucket for granting replication permission.
+ */
+export interface GrantReplicationPermissionProps {
+  /**
+   * The KMS key used to decrypt objects in the source bucket for replication.
+   * **Required if** the source bucket is encrypted with a customer-managed KMS key.
+   *
+   * @default - it's assumed the source bucket is not encrypted with a customer-managed KMS key.
+   */
+  readonly sourceDecryptionKey?: kms.IKey;
+
+  /**
+   * The destination buckets for replication.
+   * Specify the KMS key to use for encryption if a destination bucket needs to be encrypted with a customer-managed KMS key.
+   * One or more destination buckets are required if replication configuration is enabled (i.e., `replicationRole` is specified).
+   *
+   * @default - empty array (valid only if the `replicationRole` property is NOT specified)
+   */
+  readonly destinations: GrantReplicationPermissionDestinationProps[];
+}
+
+/**
  * Represents an S3 Bucket.
  *
  * Buckets can be either defined within this stack:
@@ -523,6 +593,11 @@ export abstract class BucketBase extends Resource implements IBucket {
   public abstract policy?: BucketPolicy;
 
   /**
+   * Role used to set up permissions on this bucket for replication
+   */
+  public abstract replicationRoleArn?: string;
+
+  /**
    * Indicates if a bucket resource policy should automatically created upon
    * the first call to `addToResourcePolicy`.
    */
@@ -536,6 +611,8 @@ export abstract class BucketBase extends Resource implements IBucket {
   private notifications?: BucketNotifications;
 
   protected notificationsHandlerRole?: iam.IRole;
+
+  protected notificationsSkipDestinationValidation?: boolean;
 
   protected objectOwnership?: ObjectOwnership;
 
@@ -821,6 +898,60 @@ export abstract class BucketBase extends Resource implements IBucket {
   }
 
   /**
+   * Grant replication permission to a principal.
+   * This method allows the principal to perform replication operations on this bucket.
+   *
+   * Note that when calling this function for source or destination buckets that support KMS encryption,
+   * you need to specify the KMS key for encryption and the KMS key for decryption, respectively.
+   *
+   * @param identity The principal to grant replication permission to.
+   * @param props The properties of the replication source and destination buckets.
+   */
+  public grantReplicationPermission(identity: iam.IGrantable, props: GrantReplicationPermissionProps): iam.Grant {
+    if (props.destinations.length === 0) {
+      throw new ValidationError('At least one destination bucket must be specified in the destinations array', this);
+    }
+
+    // add permissions to the role
+    // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
+    let result = this.grant(identity, ['s3:GetReplicationConfiguration', 's3:ListBucket'], [], Lazy.string({ produce: () => this.bucketArn }));
+
+    const g1 = this.grant(
+      identity,
+      ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
+      [],
+      Lazy.string({ produce: () => this.arnForObjects('*') }),
+    );
+    result = result.combine(g1);
+
+    const destinationBuckets = props.destinations.map(destination => destination.bucket);
+    if (destinationBuckets.length > 0) {
+      const g2 = iam.Grant.addToPrincipalOrResource({
+        grantee: identity,
+        actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
+        resourceArns: destinationBuckets.map(bucket => Lazy.string({ produce: () => bucket.arnForObjects('*') })),
+        resource: this,
+      });
+      result = result.combine(g2);
+    }
+
+    props.destinations.forEach(destination => {
+      const g = destination.encryptionKey?.grantEncrypt(identity);
+      if (g !== undefined) {
+        result = result.combine(g);
+      }
+    });
+
+    // If KMS key encryption is enabled on the source bucket, configure the decrypt permissions.
+    const g3 = this.encryptionKey?.grantDecrypt(identity);
+    if (g3 !== undefined) {
+      result = result.combine(g3);
+    }
+
+    return result;
+  }
+
+  /**
    * Allows unrestricted access to objects from this bucket.
    *
    * IMPORTANT: This permission allows anyone to perform actions on S3 objects
@@ -847,7 +978,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    */
   public grantPublicAccess(keyPrefix = '*', ...allowedActions: string[]) {
     if (this.disallowPublicAccess) {
-      throw new Error("Cannot grant public access when 'blockPublicPolicy' is enabled");
+      throw new ValidationError("Cannot grant public access when 'blockPublicPolicy' is enabled", this);
     }
 
     allowedActions = allowedActions.length > 0 ? allowedActions : ['s3:GetObject'];
@@ -870,7 +1001,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * that will be matched against the s3 object key. Refer to the S3 Developer Guide
    * for details about allowed filter rules.
    *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#notification-how-to-filtering
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-filtering.html
    *
    * @example
    *
@@ -890,6 +1021,7 @@ export abstract class BucketBase extends Resource implements IBucket {
       this.notifications = new BucketNotifications(this, 'Notifications', {
         bucket: this,
         handlerRole: this.notificationsHandlerRole,
+        skipDestinationValidation: this.notificationsSkipDestinationValidation ?? false,
       });
     }
     cb(this.notifications);
@@ -935,6 +1067,42 @@ export abstract class BucketBase extends Resource implements IBucket {
    */
   public enableEventBridgeNotification() {
     this.withNotifications(notifications => notifications.enableEventBridgeNotification());
+  }
+
+  /**
+   * Function to add required permissions to the destination bucket for cross account
+   * replication. These permissions will be added as a resource based policy on the bucket
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
+   * If owner of the bucket needs to be overridden, set accessControlTransition to true and provide
+   * account ID in which destination bucket is hosted. For more information on accessControlTransition
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-accesscontroltranslation.html
+   */
+  public addReplicationPolicy(roleArn: string, accessControlTransition?: boolean, account?: string) {
+    const results: boolean[] = [];
+    results.push(this.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['s3:GetBucketVersioning', 's3:PutBucketVersioning'],
+      resources: [this.bucketArn],
+      principals: [new iam.ArnPrincipal(roleArn)],
+    })).statementAdded);
+    results.push(this.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['s3:ReplicateObject', 's3:ReplicateDelete'],
+      resources: [this.arnForObjects('*')],
+      principals: [new iam.ArnPrincipal(roleArn)],
+    })).statementAdded);
+    if (accessControlTransition) {
+      if (!account) {
+        throw new ValidationError('account must be specified to override ownership access control transition', this);
+      }
+      results.push(this.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3:ObjectOwnerOverrideToBucketOwner'],
+        resources: [this.arnForObjects('*')],
+        principals: [new iam.AccountPrincipal(account)],
+      })).statementAdded);
+    }
+
+    if (results.includes(false)) {
+      Annotations.of(this).addInfo(`Cross-account S3 replication for a referenced destination bucket is set up. In the destination bucket's bucket policy, please grant access permissions from ${this.stack.resolve(roleArn)}.`);
+    }
   }
 
   private get writeActions(): string[] {
@@ -1015,6 +1183,10 @@ export interface BlockPublicAccessOptions {
 }
 
 export class BlockPublicAccess {
+  /**
+   * Use this option if you want to ensure every public access method is blocked.
+   * However keep in mind that this is the default state of an S3 bucket, and leaving blockPublicAccess undefined would also work.
+   */
   public static readonly BLOCK_ALL = new BlockPublicAccess({
     blockPublicAcls: true,
     blockPublicPolicy: true,
@@ -1022,9 +1194,23 @@ export class BlockPublicAccess {
     restrictPublicBuckets: true,
   });
 
+  /**
+   *
+   * @deprecated Use `BLOCK_ACLS_ONLY` instead.
+   */
   public static readonly BLOCK_ACLS = new BlockPublicAccess({
     blockPublicAcls: true,
     ignorePublicAcls: true,
+  });
+
+  /**
+   * Use this option if you want to only block the ACLs, using this will set blockPublicPolicy and restrictPublicBuckets to false.
+   */
+  public static readonly BLOCK_ACLS_ONLY = new BlockPublicAccess({
+    blockPublicAcls: true,
+    blockPublicPolicy: false,
+    ignorePublicAcls: true,
+    restrictPublicBuckets: false,
   });
 
   public blockPublicAcls: boolean | undefined;
@@ -1273,11 +1459,11 @@ export interface Inventory {
   readonly optionalFields?: string[];
 }
 /**
-   * The ObjectOwnership of the bucket.
-   *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
-   *
-   */
+ * The ObjectOwnership of the bucket.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
+ *
+ */
 export enum ObjectOwnership {
   /**
    * ACLs are disabled, and the bucket owner automatically owns
@@ -1400,6 +1586,176 @@ export abstract class TargetObjectKeyFormat {
   public abstract _render(): CfnBucket.LoggingConfigurationProperty['targetObjectKeyFormat'];
 }
 
+/**
+ * The replication time value used for S3 Replication Time Control (S3 RTC).
+ */
+export class ReplicationTimeValue {
+  /**
+   * Fifteen minutes.
+   */
+  public static readonly FIFTEEN_MINUTES = new ReplicationTimeValue(15);
+
+  /**
+   * @param minutes the time in minutes
+   */
+  private constructor(public readonly minutes: number) {}
+}
+
+/**
+ * Specifies which Amazon S3 objects to replicate and where to store the replicas.
+ */
+export interface ReplicationRule {
+  /**
+   * The destination bucket for the replicated objects.
+   *
+   * The destination can be either in the same AWS account or a cross account.
+   *
+   * If you want to configure cross-account replication,
+   * the destination bucket must have a policy that allows the source bucket to replicate objects to it.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
+   */
+  readonly destination: IBucket;
+
+  /**
+   * Whether to want to change replica ownership to the AWS account that owns the destination bucket.
+   *
+   * This can only be specified if the source bucket and the destination bucket are not in the same AWS account.
+   *
+   * @default - The replicas are owned by same AWS account that owns the source object
+   */
+  readonly accessControlTransition?: boolean;
+
+  /**
+   * Specifying S3 Replication Time Control (S3 RTC),
+   * including whether S3 RTC is enabled and the time when all objects and operations on objects must be replicated.
+   *
+   * @default - S3 Replication Time Control is not enabled
+   */
+  readonly replicationTimeControl?: ReplicationTimeValue;
+
+  /**
+   * A container specifying replication metrics-related settings enabling replication metrics and events.
+   *
+   * When a value is set, metrics will be output to indicate whether the replication took longer than the specified time.
+   *
+   * @default - Replication metrics are not enabled
+   */
+  readonly metrics?: ReplicationTimeValue;
+
+  /**
+   * The customer managed AWS KMS key stored in AWS Key Management Service (KMS) for the destination bucket.
+   * Amazon S3 uses this key to encrypt replica objects.
+   *
+   * Amazon S3 only supports symmetric encryption KMS keys.
+   *
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/symmetric-asymmetric.html
+   *
+   * @default - Amazon S3 uses the AWS managed KMS key for encryption
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The storage class to use when replicating objects, such as S3 Standard or reduced redundancy.
+   *
+   * @default - The storage class of the source object
+   */
+  readonly storageClass?: StorageClass;
+
+  /**
+   * Specifies whether Amazon S3 replicates objects created with server-side encryption using an AWS KMS key stored in AWS Key Management Service.
+   *
+   * @default false
+   */
+  readonly sseKmsEncryptedObjects?: boolean;
+
+  /**
+   * Specifies whether Amazon S3 replicates modifications on replicas.
+   *
+   * @default false
+   */
+  readonly replicaModifications?: boolean;
+
+  /**
+   * The priority indicates which rule has precedence whenever two or more replication rules conflict.
+   *
+   * Amazon S3 will attempt to replicate objects according to all replication rules.
+   * However, if there are two or more rules with the same destination bucket,
+   * then objects will be replicated according to the rule with the highest priority.
+   *
+   * The higher the number, the higher the priority.
+   *
+   * It is essential to specify priority explicitly when the replication configuration has multiple rules.
+   *
+   * @default 0
+   */
+  readonly priority?: number;
+
+  /**
+   * Specifies whether Amazon S3 replicates delete markers.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/delete-marker-replication.html
+   *
+   * @default - delete markers in source bucket is not replicated to destination bucket
+   */
+  readonly deleteMarkerReplication?: boolean;
+
+  /**
+   * A unique identifier for the rule.
+   *
+   * The maximum value is 255 characters.
+   *
+   * @default - auto generated random ID
+   */
+  readonly id?: string;
+
+  /**
+   * A filter that identifies the subset of objects to which the replication rule applies.
+   *
+   * @default - applies to all objects
+   */
+  readonly filter?: Filter;
+}
+
+/**
+ * A filter that identifies the subset of objects to which the replication rule applies.
+ */
+export interface Filter {
+  /**
+   * An object key name prefix that identifies the object or objects to which the rule applies.
+   *
+   * @default - applies to all objects
+   */
+  readonly prefix?: string;
+
+  /**
+   * The tag array used for tag filters.
+   *
+   * The rule applies only to objects that have the tag in this set.
+   *
+   * @default - applies to all objects
+   */
+  readonly tags?: Tag[];
+}
+
+/**
+ * The transition default minimum object size for lifecycle
+ */
+export enum TransitionDefaultMinimumObjectSize {
+  /**
+   * Objects smaller than 128 KB will not transition to any storage class by default.
+   */
+  ALL_STORAGE_CLASSES_128_K = 'all_storage_classes_128K',
+
+  /**
+   * Objects smaller than 128 KB will transition to Glacier Flexible Retrieval or Glacier
+   * Deep Archive storage classes.
+   *
+   * By default, all other storage classes will prevent transitions smaller than 128 KB.
+   */
+  VARIES_BY_STORAGE_CLASS = 'varies_by_storage_class',
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -1407,8 +1763,7 @@ export interface BucketProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default - `KMS` if `encryptionKey` is specified, or `UNENCRYPTED` otherwise.
-   * But if `UNENCRYPTED` is specified, the bucket will be encrypted as `S3_MANAGED` automatically.
+   * @default - `KMS` if `encryptionKey` is specified, or `S3_MANAGED` otherwise.
    */
   readonly encryption?: BucketEncryption;
 
@@ -1424,11 +1779,11 @@ export interface BucketProps {
   readonly encryptionKey?: kms.IKey;
 
   /**
-  * Enforces SSL for requests. S3.5 of the AWS Foundational Security Best Practices Regarding S3.
-  * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html
-  *
-  * @default false
-  */
+   * Enforces SSL for requests. S3.5 of the AWS Foundational Security Best Practices Regarding S3.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html
+   *
+   * @default false
+   */
   readonly enforceSSL?: boolean;
 
   /**
@@ -1524,6 +1879,18 @@ export interface BucketProps {
    * @default - No lifecycle rules.
    */
   readonly lifecycleRules?: LifecycleRule[];
+
+  /**
+   * Indicates which default minimum object size behavior is applied to the lifecycle configuration.
+   *
+   * To customize the minimum object size for any transition you can add a filter that specifies a custom
+   * `objectSizeGreaterThan` or `objectSizeLessThan` for `lifecycleRules` property. Custom filters always
+   * take precedence over the default transition behavior.
+   *
+   * @default - TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS before September 2024,
+   * otherwise TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K.
+   */
+  readonly transitionDefaultMinimumObjectSize?: TransitionDefaultMinimumObjectSize;
 
   /**
    * The name of the index document (e.g. "index.html") for the website. Enables static website
@@ -1633,7 +2000,8 @@ export interface BucketProps {
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
    *
-   * @default - No ObjectOwnership configuration, uploading account will own the object.
+   * @default - No ObjectOwnership configuration. By default, Amazon S3 sets Object Ownership to `Bucket owner enforced`.
+   * This means ACLs are disabled and the bucket owner will own every object.
    *
    */
   readonly objectOwnership?: ObjectOwnership;
@@ -1653,7 +2021,14 @@ export interface BucketProps {
   readonly notificationsHandlerRole?: iam.IRole;
 
   /**
-   * Inteligent Tiering Configurations
+   * Skips notification validation of Amazon SQS, Amazon SNS, and Lambda destinations.
+   *
+   * @default false
+   */
+  readonly notificationsSkipDestinationValidation?: boolean;
+
+  /**
+   * Intelligent Tiering Configurations
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html
    *
@@ -1662,15 +2037,31 @@ export interface BucketProps {
   readonly intelligentTieringConfigurations?: IntelligentTieringConfiguration[];
 
   /**
-  * Enforces minimum TLS version for requests.
-  *
-  * Requires `enforceSSL` to be enabled.
-  *
-  * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazon-s3-policy-keys.html#example-object-tls-version
-  *
-  * @default No minimum TLS version is enforced.
-  */
+   * Enforces minimum TLS version for requests.
+   *
+   * Requires `enforceSSL` to be enabled.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazon-s3-policy-keys.html#example-object-tls-version
+   *
+   * @default No minimum TLS version is enforced.
+   */
   readonly minimumTLSVersion?: number;
+
+  /**
+   * The role to be used by the replication.
+   *
+   * When setting this property, you must also set `replicationRules`.
+   *
+   * @default - a new role will be created.
+   */
+  readonly replicationRole?: iam.IRole;
+
+  /**
+   * A container for one or more replication rules.
+   *
+   * @default - No replication
+   */
+  readonly replicationRules?: ReplicationRule[];
 }
 
 /**
@@ -1706,7 +2097,13 @@ export interface Tag {
  * });
  *
  */
+@propertyInjectable
 export class Bucket extends BucketBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-s3.Bucket';
+
   public static fromBucketArn(scope: Construct, id: string, bucketArn: string): IBucket {
     return Bucket.fromBucketAttributes(scope, id, { bucketArn });
   }
@@ -1731,7 +2128,7 @@ export class Bucket extends BucketBase {
 
     const bucketName = parseBucketName(scope, attrs);
     if (!bucketName) {
-      throw new Error('Bucket name is required');
+      throw new ValidationError('Bucket name is required', scope);
     }
     Bucket.validateBucketName(bucketName, true);
 
@@ -1760,6 +2157,7 @@ export class Bucket extends BucketBase {
       public readonly encryptionKey = attrs.encryptionKey;
       public readonly isWebsite = attrs.isWebsite ?? false;
       public policy?: BucketPolicy = undefined;
+      public replicationRoleArn?: string = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
       protected notificationsHandlerRole = attrs.notificationsHandlerRole;
@@ -1824,6 +2222,7 @@ export class Bucket extends BucketBase {
       public readonly encryptionKey = encryptionKey;
       public readonly isWebsite = cfnBucket.websiteConfiguration !== undefined;
       public policy = undefined;
+      public replicationRoleArn = undefined;
       protected autoCreatePolicy = true;
       protected disallowPublicAccess = cfnBucket.publicAccessBlockConfiguration &&
         (cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
@@ -1856,31 +2255,44 @@ export class Bucket extends BucketBase {
     if (bucketName.length < 3 || bucketName.length > 63) {
       errors.push('Bucket name must be at least 3 and no more than 63 characters');
     }
-    const charsetRegex = allowLegacyBucketNaming ? /[^a-z0-9._-]/ : /[^a-z0-9.-]/;
-    const charsetMatch = bucketName.match(charsetRegex);
-    if (charsetMatch) {
-      errors.push(`Bucket name must only contain lowercase characters and the symbols, period (.)${allowLegacyBucketNaming ? ', underscore (_), ' : ' '}and dash (-) `
-        + `(offset: ${charsetMatch.index})`);
+
+    const illegalCharsetRegEx = allowLegacyBucketNaming ? /[^A-Za-z0-9._-]/ : /[^a-z0-9.-]/;
+    const allowedEdgeCharsetRegEx = allowLegacyBucketNaming ? /[A-Za-z0-9]/ : /[a-z0-9]/;
+
+    const illegalCharMatch = bucketName.match(illegalCharsetRegEx);
+    if (illegalCharMatch) {
+      errors.push(allowLegacyBucketNaming
+        ? 'Bucket name must only contain uppercase or lowercase characters and the symbols, period (.), underscore (_), and dash (-)'
+        : 'Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-)'
+        + ` (offset: ${illegalCharMatch.index})`,
+      );
     }
-    if (!/[a-z0-9]/.test(bucketName.charAt(0))) {
-      errors.push('Bucket name must start and end with a lowercase character or number '
-        + '(offset: 0)');
+    if (!allowedEdgeCharsetRegEx.test(bucketName.charAt(0))) {
+      errors.push(allowLegacyBucketNaming
+        ? 'Bucket name must start with an uppercase, lowercase character or number'
+        : 'Bucket name must start with a lowercase character or number'
+        + ' (offset: 0)',
+      );
     }
-    if (!/[a-z0-9]/.test(bucketName.charAt(bucketName.length - 1))) {
-      errors.push('Bucket name must start and end with a lowercase character or number '
-        + `(offset: ${bucketName.length - 1})`);
+    if (!allowedEdgeCharsetRegEx.test(bucketName.charAt(bucketName.length - 1))) {
+      errors.push(allowLegacyBucketNaming
+        ? 'Bucket name must end with an uppercase, lowercase character or number'
+        : 'Bucket name must end with a lowercase character or number'
+        + ` (offset: ${bucketName.length - 1})`,
+      );
     }
+
     const consecSymbolMatch = bucketName.match(/\.-|-\.|\.\./);
     if (consecSymbolMatch) {
-      errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods '
-        + `(offset: ${consecSymbolMatch.index})`);
+      errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods'
+        + ` (offset: ${consecSymbolMatch.index})`);
     }
     if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(bucketName)) {
       errors.push('Bucket name must not resemble an IP address');
     }
 
     if (errors.length > 0) {
-      throw new Error(`Invalid S3 bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`);
+      throw new UnscopedValidationError(`Invalid S3 bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`);
     }
   }
 
@@ -1895,10 +2307,13 @@ export class Bucket extends BucketBase {
   public readonly encryptionKey?: kms.IKey;
   public readonly isWebsite?: boolean;
   public policy?: BucketPolicy;
+
+  public replicationRoleArn?: string;
   protected autoCreatePolicy = true;
   protected disallowPublicAccess?: boolean;
   private accessControl?: BucketAccessControl;
   private readonly lifecycleRules: LifecycleRule[] = [];
+  private readonly transitionDefaultMinimumObjectSize?: TransitionDefaultMinimumObjectSize;
   private readonly eventBridgeEnabled?: boolean;
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
@@ -1909,26 +2324,37 @@ export class Bucket extends BucketBase {
     super(scope, id, {
       physicalName: props.bucketName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.notificationsHandlerRole = props.notificationsHandlerRole;
+    this.notificationsSkipDestinationValidation = props.notificationsSkipDestinationValidation;
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
+    this.encryptionKey = encryptionKey;
 
     Bucket.validateBucketName(this.physicalName);
+
+    let publicAccessBlockConfig: BlockPublicAccessOptions | undefined = props.blockPublicAccess;
+    if (props.blockPublicAccess && FeatureFlags.of(this).isEnabled(cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT)) {
+      publicAccessBlockConfig = this.setDefaultPublicAccessBlockConfig(props.blockPublicAccess);
+    }
 
     const websiteConfiguration = this.renderWebsiteConfiguration(props);
     this.isWebsite = (websiteConfiguration !== undefined);
 
     const objectLockConfiguration = this.parseObjectLockConfig(props);
-
+    const replicationConfiguration = this.renderReplicationConfiguration(props);
+    this.replicationRoleArn = replicationConfiguration?.role;
     this.objectOwnership = props.objectOwnership;
+    this.transitionDefaultMinimumObjectSize = props.transitionDefaultMinimumObjectSize;
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: Lazy.any({ produce: () => this.parseLifecycleConfiguration() }),
       websiteConfiguration,
-      publicAccessBlockConfiguration: props.blockPublicAccess,
+      publicAccessBlockConfiguration: publicAccessBlockConfig,
       metricsConfigurations: Lazy.any({ produce: () => this.parseMetricConfiguration() }),
       corsConfiguration: Lazy.any({ produce: () => this.parseCorsConfiguration() }),
       accessControl: Lazy.string({ produce: () => this.accessControl }),
@@ -1939,12 +2365,12 @@ export class Bucket extends BucketBase {
       intelligentTieringConfigurations: this.parseTieringConfig(props),
       objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
       objectLockConfiguration: objectLockConfiguration,
+      replicationConfiguration,
     });
     this._resource = resource;
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.encryptionKey = encryptionKey;
     this.eventBridgeEnabled = props.eventBridgeEnabled;
 
     this.bucketName = this.getResourceNameAttribute(resource.ref);
@@ -1969,7 +2395,7 @@ export class Bucket extends BucketBase {
       this.enforceSSLStatement();
       this.minimumTLSVersionStatement(props.minimumTLSVersion);
     } else if (props.minimumTLSVersion) {
-      throw new Error('\'enforceSSL\' must be enabled for \'minimumTLSVersion\' to be applied');
+      throw new ValidationError('\'enforceSSL\' must be enabled for \'minimumTLSVersion\' to be applied', this);
     }
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
@@ -2003,7 +2429,7 @@ export class Bucket extends BucketBase {
 
     if (props.publicReadAccess) {
       if (props.blockPublicAccess === undefined) {
-        throw new Error('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAccess\' property.');
+        throw new ValidationError('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAccess\' property.', this);
       }
 
       this.grantPublicAccess();
@@ -2011,7 +2437,7 @@ export class Bucket extends BucketBase {
 
     if (props.autoDeleteObjects) {
       if (props.removalPolicy !== RemovalPolicy.DESTROY) {
-        throw new Error('Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'.');
+        throw new ValidationError('Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'.', this);
       }
 
       this.enableAutoDeleteObjects();
@@ -2027,6 +2453,7 @@ export class Bucket extends BucketBase {
    *
    * @param rule The rule to add
    */
+  @MethodMetadata()
   public addLifecycleRule(rule: LifecycleRule) {
     this.lifecycleRules.push(rule);
   }
@@ -2036,6 +2463,7 @@ export class Bucket extends BucketBase {
    *
    * @param metric The metric configuration to add
    */
+  @MethodMetadata()
   public addMetric(metric: BucketMetrics) {
     this.metrics.push(metric);
   }
@@ -2045,6 +2473,7 @@ export class Bucket extends BucketBase {
    *
    * @param rule The CORS configuration rule to add
    */
+  @MethodMetadata()
   public addCorsRule(rule: CorsRule) {
     this.cors.push(rule);
   }
@@ -2054,6 +2483,7 @@ export class Bucket extends BucketBase {
    *
    * @param inventory configuration to add
    */
+  @MethodMetadata()
   public addInventory(inventory: Inventory): void {
     this.inventories.push(inventory);
   }
@@ -2122,7 +2552,6 @@ export class Bucket extends BucketBase {
     bucketEncryption?: CfnBucket.BucketEncryptionProperty;
     encryptionKey?: kms.IKey;
   } {
-
     // default based on whether encryptionKey is specified
     let encryptionType = props.encryption;
     if (encryptionType === undefined) {
@@ -2131,12 +2560,12 @@ export class Bucket extends BucketBase {
 
     // if encryption key is set, encryption must be set to KMS or DSSE.
     if (encryptionType !== BucketEncryption.DSSE && encryptionType !== BucketEncryption.KMS && props.encryptionKey) {
-      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
+      throw new ValidationError(`encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`, this);
     }
 
     // if bucketKeyEnabled is set, encryption can not be BucketEncryption.UNENCRYPTED
     if (props.bucketKeyEnabled && encryptionType === BucketEncryption.UNENCRYPTED) {
-      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: ${encryptionType})`);
+      throw new ValidationError(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: ${encryptionType})`, this);
     }
 
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
@@ -2146,6 +2575,7 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
         description: `Created by ${this.node.path}`,
+        enableKeyRotation: true,
       });
 
       const bucketEncryption = {
@@ -2218,7 +2648,7 @@ export class Bucket extends BucketBase {
       return { bucketEncryption };
     }
 
-    throw new Error(`Unexpected 'encryptionType': ${encryptionType}`);
+    throw new ValidationError(`Unexpected 'encryptionType': ${encryptionType}`, this);
   }
 
   /**
@@ -2232,14 +2662,46 @@ export class Bucket extends BucketBase {
 
     const self = this;
 
-    return { rules: this.lifecycleRules.map(parseLifecycleRule) };
+    return {
+      rules: this.lifecycleRules.map(parseLifecycleRule),
+      transitionDefaultMinimumObjectSize: this.transitionDefaultMinimumObjectSize,
+    };
 
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled ?? true;
       if ((rule.expiredObjectDeleteMarker)
       && (rule.expiration || rule.expirationDate || self.parseTagFilters(rule.tagFilters))) {
         // ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays, ExpirationDate, or TagFilters.
-        throw new Error('ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.');
+        throw new ValidationError('ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.', self);
+      }
+
+      if (
+        rule.abortIncompleteMultipartUploadAfter === undefined &&
+        rule.expiration === undefined &&
+        rule.expirationDate === undefined &&
+        rule.expiredObjectDeleteMarker === undefined &&
+        rule.noncurrentVersionExpiration === undefined &&
+        rule.noncurrentVersionsToRetain === undefined &&
+        rule.noncurrentVersionTransitions === undefined &&
+        rule.transitions === undefined
+      ) {
+        throw new ValidationError('All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`', self);
+      }
+
+      // Validate transitions: exactly one of transitionDate or transitionAfter must be specified
+      if (rule.transitions) {
+        for (const transition of rule.transitions) {
+          const hasTransitionDate = transition.transitionDate !== undefined;
+          const hasTransitionAfter = transition.transitionAfter !== undefined;
+
+          if (!hasTransitionDate && !hasTransitionAfter) {
+            throw new ValidationError('Exactly one of transitionDate or transitionAfter must be specified in lifecycle rule transition', self);
+          }
+
+          if (hasTransitionDate && hasTransitionAfter) {
+            throw new ValidationError('Exactly one of transitionDate or transitionAfter must be specified in lifecycle rule transition', self);
+          }
+        }
       }
 
       const x: CfnBucket.RuleProperty = {
@@ -2285,7 +2747,7 @@ export class Bucket extends BucketBase {
       props.encryption &&
       [BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE_MANAGED].includes(props.encryption)
     ) {
-      throw new Error('Default bucket encryption with KMS managed or DSSE managed key is not supported for Server Access Logging target buckets');
+      throw new ValidationError('Default bucket encryption with KMS managed or DSSE managed key is not supported for Server Access Logging target buckets', this);
     }
 
     // When there is an encryption key exists for the server access logs bucket, grant permission to the S3 logging SP.
@@ -2362,7 +2824,7 @@ export class Bucket extends BucketBase {
     }
 
     if (accessControlRequiresObjectOwnership && this.objectOwnership === ObjectOwnership.BUCKET_OWNER_ENFORCED) {
-      throw new Error (`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`);
+      throw new ValidationError(`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`, this);
     }
 
     return {
@@ -2408,7 +2870,7 @@ export class Bucket extends BucketBase {
       return undefined;
     }
     if (objectLockEnabled === false && objectLockDefaultRetention) {
-      throw new Error('Object Lock must be enabled to configure default retention settings');
+      throw new ValidationError('Object Lock must be enabled to configure default retention settings', this);
     }
 
     return {
@@ -2428,16 +2890,16 @@ export class Bucket extends BucketBase {
     }
 
     if (props.websiteErrorDocument && !props.websiteIndexDocument) {
-      throw new Error('"websiteIndexDocument" is required if "websiteErrorDocument" is set');
+      throw new ValidationError('"websiteIndexDocument" is required if "websiteErrorDocument" is set', this);
     }
 
     if (props.websiteRedirect && (props.websiteErrorDocument || props.websiteIndexDocument || props.websiteRoutingRules)) {
-      throw new Error('"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used');
+      throw new ValidationError('"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used', this);
     }
 
     const routingRules = props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
       if (rule.condition && rule.condition.httpErrorCodeReturnedEquals == null && rule.condition.keyPrefixEquals == null) {
-        throw new Error('The condition property cannot be an empty object');
+        throw new ValidationError('The condition property cannot be an empty object', this);
       }
 
       return {
@@ -2457,6 +2919,123 @@ export class Bucket extends BucketBase {
       errorDocument: props.websiteErrorDocument,
       redirectAllRequestsTo: props.websiteRedirect,
       routingRules,
+    };
+  }
+
+  private renderReplicationConfiguration(props: BucketProps): CfnBucket.ReplicationConfigurationProperty | undefined {
+    const replicationRulesIsEmpty = !props.replicationRules || props.replicationRules.length === 0;
+    if (replicationRulesIsEmpty && props.replicationRole) {
+      throw new ValidationError('cannot specify replicationRole when replicationRules is empty', this);
+    }
+    if (replicationRulesIsEmpty) {
+      return undefined;
+    }
+
+    if (!props.versioned) {
+      throw new ValidationError('Replication rules require versioning to be enabled on the bucket', this);
+    }
+    if (props.replicationRules.length > 1 && props.replicationRules.some(rule => rule.priority === undefined)) {
+      throw new ValidationError('\'priority\' must be specified for all replication rules when there are multiple rules', this);
+    }
+    props.replicationRules.forEach(rule => {
+      if (rule.replicationTimeControl && !rule.metrics) {
+        throw new ValidationError('\'replicationTimeControlMetrics\' must be enabled when \'replicationTimeControl\' is enabled.', this);
+      }
+      if (rule.deleteMarkerReplication && rule.filter?.tags) {
+        throw new ValidationError('tag filter cannot be specified when \'deleteMarkerReplication\' is enabled.', this);
+      }
+    });
+
+    let replicationRole: iam.IRole;
+    if (!props.replicationRole) {
+      replicationRole = new iam.Role(this, 'ReplicationRole', {
+        assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+        roleName: FeatureFlags.of(this).isEnabled(cxapi.SET_UNIQUE_REPLICATION_ROLE_NAME) ? PhysicalName.GENERATE_IF_NEEDED : 'CDKReplicationRole',
+      });
+
+      this.grantReplicationPermission(replicationRole, {
+        sourceDecryptionKey: props.encryptionKey,
+        destinations: props.replicationRules.map(rule => ({
+          encryptionKey: rule.kmsKey,
+          bucket: rule.destination,
+        })),
+      });
+    } else {
+      replicationRole = props.replicationRole;
+    }
+
+    return {
+      role: replicationRole.roleArn,
+      rules: props.replicationRules.map((rule) => {
+        const sourceSelectionCriteria = (rule.replicaModifications !== undefined || rule.sseKmsEncryptedObjects !== undefined) ? {
+          replicaModifications: rule.replicaModifications !== undefined ? {
+            status: rule.replicaModifications ? 'Enabled' : 'Disabled',
+          } : undefined,
+          sseKmsEncryptedObjects: rule.sseKmsEncryptedObjects !== undefined ? {
+            status: rule.sseKmsEncryptedObjects ? 'Enabled' : 'Disabled',
+          } : undefined,
+        } : undefined;
+
+        // Whether to configure filter settings by And property.
+        const isAndFilter = rule.filter?.tags && rule.filter.tags.length > 0;
+        // To avoid deploy error when there are multiple replication rules with undefined prefix,
+        // CDK set the prefix to an empty string if it is undefined.
+        const prefix = rule.filter?.prefix ?? '';
+        const filter = isAndFilter ? {
+          and: {
+            prefix,
+            tagFilters: rule.filter?.tags,
+          },
+        } : {
+          prefix,
+        };
+
+        const sourceAccount = Stack.of(this).account;
+        const destinationAccount = rule.destination.env.account;
+        const isCrossAccount = sourceAccount !== destinationAccount;
+
+        if (isCrossAccount) {
+          Annotations.of(this).addInfo('For Cross-account S3 replication, ensure to set up permissions on destination bucket using method addReplicationPolicy() ');
+        } else if (rule.accessControlTransition) {
+          throw new ValidationError('accessControlTranslation is only supported for cross-account replication', this);
+        }
+
+        return {
+          id: rule.id,
+          priority: rule.priority,
+          status: 'Enabled',
+          destination: {
+            bucket: rule.destination.bucketArn,
+            account: isCrossAccount ? destinationAccount : undefined,
+            storageClass: rule.storageClass?.toString(),
+            accessControlTranslation: rule.accessControlTransition ? {
+              owner: 'Destination',
+            } : undefined,
+            encryptionConfiguration: rule.kmsKey ? {
+              replicaKmsKeyId: rule.kmsKey.keyArn,
+            } : undefined,
+            replicationTime: rule.replicationTimeControl !== undefined ? {
+              status: 'Enabled',
+              time: {
+                minutes: rule.replicationTimeControl.minutes,
+              },
+            } : undefined,
+            metrics: rule.metrics !== undefined ? {
+              status: 'Enabled',
+              eventThreshold: {
+                minutes: rule.metrics.minutes,
+              },
+            } : undefined,
+          },
+          filter,
+          // To avoid deploy error when there are multiple replication rules with undefined deleteMarkerReplication,
+          // CDK explicitly set the deleteMarkerReplication if it is undefined.
+          deleteMarkerReplication: {
+            status: rule.deleteMarkerReplication ? 'Enabled' : 'Disabled',
+          },
+          sourceSelectionCriteria,
+        };
+      }),
     };
   }
 
@@ -2493,7 +3072,7 @@ export class Bucket extends BucketBase {
         conditions: conditions,
       }));
     } else if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
-      throw new Error("Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed");
+      throw new ValidationError("Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed", this);
     } else {
       this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
     }
@@ -2509,7 +3088,7 @@ export class Bucket extends BucketBase {
       const format = inventory.format ?? InventoryFormat.CSV;
       const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
       if (inventory.inventoryId !== undefined && (inventory.inventoryId.length > 64 || inventoryIdValidationRegex.test(inventory.inventoryId))) {
-        throw new Error(`inventoryId should not exceed 64 characters and should not contain special characters except . and -, got ${inventory.inventoryId}`);
+        throw new ValidationError(`inventoryId should not exceed 64 characters and should not contain special characters except . and -, got ${inventory.inventoryId}`, this);
       }
       const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`.replace(inventoryIdValidationRegex, '').slice(-64);
 
@@ -2591,6 +3170,20 @@ export class Bucket extends BucketBase {
     // we can set `autoDeleteObjects: false` without the removal of the CR emptying
     // the bucket as a side effect.
     Tags.of(this._resource).add(AUTO_DELETE_OBJECTS_TAG, 'true');
+  }
+
+  /**
+   * Function to set the blockPublicAccessOptions to a true default if not defined.
+   * If no blockPublicAccessOptions are specified at all, this is already the case as an s3 default in aws
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html
+   */
+  private setDefaultPublicAccessBlockConfig(blockPublicAccessOptions: BlockPublicAccessOptions) {
+    return {
+      blockPublicAcls: blockPublicAccessOptions.blockPublicAcls ?? true,
+      blockPublicPolicy: blockPublicAccessOptions.blockPublicPolicy ?? true,
+      ignorePublicAcls: blockPublicAccessOptions.ignorePublicAcls ?? true,
+      restrictPublicBuckets: blockPublicAccessOptions.restrictPublicBuckets ?? true,
+    };
   }
 }
 
@@ -2842,7 +3435,6 @@ export enum EventType {
   /**
    * The s3:ObjectTagging:Put event type notifies you when a tag is PUT on an
    * object or an existing tag is updated.
-
    */
   OBJECT_TAGGING_PUT = 's3:ObjectTagging:Put',
 
@@ -2859,6 +3451,21 @@ export enum EventType {
    * object’s ACL.
    */
   OBJECT_ACL_PUT = 's3:ObjectAcl:Put',
+
+  /**
+   * Using restore object event types you can receive notifications for
+   * initiation and completion when restoring objects from the S3 Glacier
+   * storage class.
+   *
+   * You use s3:ObjectRestore:* to request notification of
+   * any restoration event.
+   */
+  OBJECT_RESTORE = 's3:ObjectRestore:*',
+
+  /**
+   * You receive this notification event for any object replication event.
+   */
+  REPLICATION = 's3:Replication:*',
 }
 
 export interface NotificationKeyFilter {
@@ -3095,10 +3702,10 @@ export class ObjectLockRetention {
   private constructor(mode: ObjectLockMode, duration: Duration) {
     // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-managing.html#object-lock-managing-retention-limits
     if (duration.toDays() > 365 * 100) {
-      throw new Error('Object Lock retention duration must be less than 100 years');
+      throw new UnscopedValidationError('Object Lock retention duration must be less than 100 years');
     }
     if (duration.toDays() < 1) {
-      throw new Error('Object Lock retention duration must be at least 1 day');
+      throw new UnscopedValidationError('Object Lock retention duration must be at least 1 day');
     }
 
     this.mode = mode;

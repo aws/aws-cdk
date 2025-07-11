@@ -1,4 +1,6 @@
 import { Construct } from 'constructs';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { BaseDeploymentConfig, BaseDeploymentConfigOptions, ComputePlatform, IBaseDeploymentConfig } from '../base-deployment-config';
 import { deploymentConfig } from '../private/utils';
 import { TrafficRouting } from '../traffic-routing-config';
@@ -48,7 +50,10 @@ export interface LambdaDeploymentConfigProps extends BaseDeploymentConfigOptions
  * A custom Deployment Configuration for a Lambda Deployment Group.
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
+@propertyInjectable
 export class LambdaDeploymentConfig extends BaseDeploymentConfig implements ILambdaDeploymentConfig {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.LambdaDeploymentConfig';
   /** CodeDeploy predefined deployment configuration that shifts all traffic to the updated Lambda function at once. */
   public static readonly ALL_AT_ONCE = LambdaDeploymentConfig.deploymentConfig('CodeDeployDefault.LambdaAllAtOnce');
   /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic in the first increment. The remaining 90 percent is deployed 30 minutes later. */
@@ -103,5 +108,7 @@ export class LambdaDeploymentConfig extends BaseDeploymentConfig implements ILam
       computePlatform: ComputePlatform.LAMBDA,
       trafficRouting: props?.trafficRouting ?? TrafficRouting.allAtOnce(),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }

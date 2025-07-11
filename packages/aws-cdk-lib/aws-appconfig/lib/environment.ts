@@ -4,9 +4,12 @@ import { IApplication } from './application';
 import { IConfiguration } from './configuration';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import { getHash } from './private/hash';
+import { DeletionProtectionCheck } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { Resource, IResource, Stack, ArnFormat, PhysicalName, Names } from '../../core';
+import { Resource, IResource, Stack, ArnFormat, PhysicalName, Names, ValidationError, UnscopedValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Attributes of an existing AWS AppConfig environment to import it.
@@ -54,7 +57,7 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
 
   public addDeployment(configuration: IConfiguration): void {
     if (this.name === undefined) {
-      throw new Error('Environment name must be known to add a Deployment');
+      throw new ValidationError('Environment name must be known to add a Deployment', this);
     }
 
     const queueSize = this.deploymentQueue.push(
@@ -113,6 +116,10 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
     this.extensible.onDeploymentRolledBack(eventDestination, options);
   }
 
+  public atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions) {
+    this.extensible.atDeploymentTick(eventDestination, options);
+  }
+
   public addExtension(extension: IExtension) {
     this.extensible.addExtension(extension);
   }
@@ -161,6 +168,13 @@ export interface EnvironmentOptions {
    * @default - No monitors.
    */
   readonly monitors?: Monitor[];
+
+  /**
+   * A property to prevent accidental deletion of active environments.
+   *
+   * @default undefined - AppConfig default is ACCOUNT_DEFAULT
+   */
+  readonly deletionProtectionCheck?: DeletionProtectionCheck;
 }
 
 /**
@@ -179,7 +193,11 @@ export interface EnvironmentProps extends EnvironmentOptions {
  * @resource AWS::AppConfig::Environment
  * @see https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-environment.html
  */
+@propertyInjectable
 export class Environment extends EnvironmentBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appconfig.Environment';
+
   /**
    * Imports an environment into the CDK using its Amazon Resource Name (ARN).
    *
@@ -190,12 +208,12 @@ export class Environment extends EnvironmentBase {
   public static fromEnvironmentArn(scope: Construct, id: string, environmentArn: string): IEnvironment {
     const parsedArn = Stack.of(scope).splitArn(environmentArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!parsedArn.resourceName) {
-      throw new Error(`Missing required /$/{applicationId}/environment//$/{environmentId} from environment ARN: ${parsedArn.resourceName}`);
+      throw new ValidationError(`Missing required /$/{applicationId}/environment//$/{environmentId} from environment ARN: ${parsedArn.resourceName}`, scope);
     }
 
     const resourceName = parsedArn.resourceName.split('/');
     if (resourceName.length != 3 || !resourceName[0] || !resourceName[2]) {
-      throw new Error('Missing required parameters for environment ARN: format should be /$/{applicationId}/environment//$/{environmentId}');
+      throw new ValidationError('Missing required parameters for environment ARN: format should be /$/{applicationId}/environment//$/{environmentId}', scope);
     }
 
     const applicationId = resourceName[0];
@@ -291,6 +309,8 @@ export class Environment extends EnvironmentBase {
     super(scope, id, {
       physicalName: props.environmentName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.name = props.environmentName || Names.uniqueResourceName(this, {
       maxLength: 64,
@@ -305,6 +325,7 @@ export class Environment extends EnvironmentBase {
       applicationId: this.applicationId,
       name: this.name,
       description: this.description,
+      deletionProtectionCheck: props.deletionProtectionCheck,
       monitors: this.monitors?.map((monitor) => {
         return {
           alarmArn: monitor.alarmArn,
@@ -397,7 +418,7 @@ export abstract class Monitor {
    */
   public static fromCfnMonitorsProperty(monitorsProperty: CfnEnvironment.MonitorsProperty): Monitor {
     if (monitorsProperty.alarmArn === undefined) {
-      throw new Error('You must specify an alarmArn property to use "fromCfnMonitorsProperty".');
+      throw new UnscopedValidationError('You must specify an alarmArn property to use "fromCfnMonitorsProperty".');
     }
     return {
       alarmArn: monitorsProperty.alarmArn,
@@ -555,6 +576,15 @@ export interface IEnvironment extends IResource {
    * @param options Options for the extension
    */
   onDeploymentRolledBack(eventDestination: IEventDestination, options?: ExtensionOptions): void;
+
+  /**
+   * Adds an AT_DEPLOYMENT_TICK extension with the provided event destination and
+   * also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions): void;
 
   /**
    * Adds an extension association to the environment.

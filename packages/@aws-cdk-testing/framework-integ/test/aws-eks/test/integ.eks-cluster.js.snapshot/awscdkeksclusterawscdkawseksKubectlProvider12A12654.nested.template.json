@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "abc70c90ded969d12235ca11768293cb20557cff54518518480c0d9fb344a098.zip"
+     "S3Key": "96b83d7c7535f7e731e0679249de9470f417342331b121e36664078b4ef4a11b.zip"
     },
     "Description": "onEvent handler for EKS kubectl resource provider",
     "Environment": {
@@ -28,7 +28,7 @@
     "Role": {
      "Ref": "referencetoawscdkeksclusterClusterKubectlHandlerRole614ECEDBArn"
     },
-    "Runtime": "python3.10",
+    "Runtime": "python3.11",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -54,7 +54,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+     "S3Key": "b8ab94266984268614c3fb2824a1c3a55395746c48b28c003b08bc1d08688f3e.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -132,6 +132,16 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Handler886CB40B",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -151,7 +161,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster/@aws-cdk--aws-eks.KubectlProvider/Provider)",
     "Environment": {
@@ -171,7 +181,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x",
+    "Runtime": "nodejs22.x",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [

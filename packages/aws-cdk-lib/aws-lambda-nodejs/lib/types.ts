@@ -243,20 +243,20 @@ export interface BundlingOptions extends DockerRunOptions {
   readonly forceDockerBundling?: boolean;
 
   /**
-  * Run compilation using tsc before running file through bundling step.
-  * This usually is not required unless you are using new experimental features that
-  * are only supported by typescript's `tsc` compiler.
-  * One example of such feature is `emitDecoratorMetadata`.
-  *
-  * @default false
-  */
+   * Run compilation using tsc before running file through bundling step.
+   * This usually is not required unless you are using new experimental features that
+   * are only supported by typescript's `tsc` compiler.
+   * One example of such feature is `emitDecoratorMetadata`.
+   *
+   * @default false
+   */
   readonly preCompilation?: boolean;
 
   /**
    * A custom bundling Docker image.
    *
    * This image should have esbuild installed globally. If you plan to use `nodeModules`
-   * it should also have `npm`, `yarn` or `pnpm` depending on the lock file you're using.
+   * it should also have `npm`, `yarn`, `bun` or `pnpm` depending on the lock file you're using.
    *
    * See https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-lambda-nodejs/lib/Dockerfile
    * for the default image provided by aws-cdk-lib/aws-lambda-nodejs.

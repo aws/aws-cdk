@@ -5,10 +5,10 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 /**
-* Stack verification steps:
-* aws application-autoscaling describe-scalable-targets --service-namespace lambda --resource-ids function:<function name>:prod
-* has a minCapacity of 3 and maxCapacity of 50
-*/
+ * Stack verification steps:
+ * aws application-autoscaling describe-scalable-targets --service-namespace lambda --resource-ids function:<function name>:prod
+ * has a minCapacity of 3 and maxCapacity of 50
+ */
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
@@ -55,7 +55,11 @@ class TestStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new TestStack(app, 'aws-lambda-autoscaling');
 

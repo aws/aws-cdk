@@ -2,7 +2,9 @@ import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScheduledAction } from './autoscaling.generated';
 import { Schedule } from './schedule';
-import { Resource } from '../../core';
+import { Resource, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for a scheduled scaling action
@@ -89,7 +91,10 @@ export interface ScheduledActionProps extends BasicScheduledActionProps {
 /**
  * Define a scheduled scaling action
  */
+@propertyInjectable
 export class ScheduledAction extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-autoscaling.ScheduledAction';
   /**
    * The name of the scheduled action.
    *
@@ -99,9 +104,11 @@ export class ScheduledAction extends Resource {
 
   constructor(scope: Construct, id: string, props: ScheduledActionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.minCapacity === undefined && props.maxCapacity === undefined && props.desiredCapacity === undefined) {
-      throw new Error('At least one of minCapacity, maxCapacity, or desiredCapacity is required');
+      throw new ValidationError('At least one of minCapacity, maxCapacity, or desiredCapacity is required', this);
     }
 
     // add a warning on synth when minute is not defined in a cron schedule

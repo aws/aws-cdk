@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "f36fc6222700fa77a2a49b0330ff2709209927219fcb5052339ae7e3f927d592": {
+      "displayName": "cdk-amplify-branch-compute-role Template",
+      "source": {
+        "path": "cdk-amplify-branch-compute-role.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f36fc6222700fa77a2a49b0330ff2709209927219fcb5052339ae7e3f927d592.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

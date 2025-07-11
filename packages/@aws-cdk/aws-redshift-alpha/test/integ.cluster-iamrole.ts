@@ -1,8 +1,8 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { App, Aspects, CfnResource, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import * as redshift from '../lib';
 
 class RedshiftEnv extends Stack {
@@ -33,10 +33,73 @@ class RedshiftEnv extends Stack {
   }
 }
 
-const app = new App();
+class SingleProviderRoleStack extends Stack {
+  private static databaseName = 'single-provider-role-integ-test.db';
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
 
-new integ.IntegTest(app, 'IamRoleInteg', {
-  testCases: [new RedshiftEnv(app, 'redshift-iamrole-integ')],
+    const vpc = new ec2.Vpc(this, 'VPC', { restrictDefaultSecurityGroup: false });
+    const cluster = new redshift.Cluster(this, 'Cluster', {
+      vpc,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PUBLIC,
+      },
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      defaultDatabaseName: SingleProviderRoleStack.databaseName,
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    for (let i = 0; i < 3; i++) {
+      new redshift.Table(this, `Table${i}`, {
+        cluster: cluster,
+        databaseName: SingleProviderRoleStack.databaseName,
+        tableColumns: [
+          { name: 'col1', dataType: 'varchar(4)', distKey: true, comment: 'A test column', encoding: redshift.ColumnEncoding.LZO },
+          { name: 'col2', dataType: 'float', sortKey: true, comment: 'A test column' },
+          { name: 'col3', dataType: 'float', comment: 'A test column', encoding: redshift.ColumnEncoding.RAW },
+        ],
+        distStyle: redshift.TableDistStyle.KEY,
+        sortStyle: redshift.TableSortStyle.INTERLEAVED,
+        tableComment: `A test table #${i}`,
+      });
+    }
+  }
+}
+
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+  context: {
+    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+  },
 });
 
-app.synth();
+const stack = new Stack(app, 'aws-cdk-redshift-cluster-database', {
+  env: {
+    account: '123456789012',
+    region: 'us-east-1',
+  },
+});
+
+const singleProviderRoleTestStack = new SingleProviderRoleStack(stack, 'single-provider-role-integ');
+
+new RedshiftEnv(stack, 'redshift-iamrole-integ');
+
+Aspects.of(singleProviderRoleTestStack).add({
+  visit(node: IConstruct) {
+    if (CfnResource.isCfnResource(node)) {
+      node.applyRemovalPolicy(RemovalPolicy.DESTROY);
+    }
+  },
+});
+
+new integ.IntegTest(app, 'IamRoleInteg', {
+  testCases: [
+    stack,
+    singleProviderRoleTestStack,
+  ],
+});

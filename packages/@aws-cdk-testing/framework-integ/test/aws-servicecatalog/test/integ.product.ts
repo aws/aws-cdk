@@ -60,7 +60,11 @@ import { ProductStackHistory, ProductStackProps } from 'aws-cdk-lib/aws-servicec
  ```
  */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'integ-servicecatalog-product', {
   env: {
     account: process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT,
@@ -70,7 +74,9 @@ const stack = new cdk.Stack(app, 'integ-servicecatalog-product', {
 
 class TestProductStack extends servicecatalog.ProductStack {
   constructor(scope: any, id: string) {
-    super(scope, id);
+    super(scope, id, {
+      description: 'foo bar',
+    });
 
     new sns.Topic(this, 'TopicProduct');
   }

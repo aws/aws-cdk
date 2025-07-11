@@ -1,0 +1,14 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "aws-cdk-codepipeline-commands-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codepipeline-commands"
+      ],
+      "diffAssets": true,
+      "assertionStack": "aws-cdk-codepipeline-commands-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkcodepipelinecommandstestDefaultTestDeployAssert6662C09B"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

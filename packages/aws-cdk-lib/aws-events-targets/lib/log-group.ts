@@ -1,11 +1,11 @@
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import { TargetBaseProps, bindBaseTargetConfig } from './util';
 import * as events from '../../aws-events';
-import { RuleTargetInputProperties, RuleTargetInput, EventField, IRule } from '../../aws-events';
+import { RuleTargetInputProperties, RuleTargetInput, EventField, IRule, InputType } from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
-import { ArnFormat, Stack } from '../../core';
+import { ArnFormat, Stack, ValidationError } from '../../core';
 
 /**
  * Options used when creating a target input template
@@ -36,6 +36,20 @@ export interface LogGroupTargetInputOptions {
  * The input to send to the CloudWatch LogGroup target
  */
 export abstract class LogGroupTargetInput {
+  /**
+   * Pass a JSON object to the the log group event target
+   *
+   * May contain strings returned by `EventField.from()` to substitute in parts of the
+   * matched event.
+   *
+   * @deprecated use fromObjectV2
+   */
+  public static fromObject(options?: LogGroupTargetInputOptions): RuleTargetInput {
+    return RuleTargetInput.fromObject({
+      timestamp: options?.timestamp ?? EventField.time,
+      message: options?.message ?? EventField.detailType,
+    });
+  }
 
   /**
    * Pass a JSON object to the the log group event target
@@ -43,12 +57,12 @@ export abstract class LogGroupTargetInput {
    * May contain strings returned by `EventField.from()` to substitute in parts of the
    * matched event.
    */
-  public static fromObject(options?: LogGroupTargetInputOptions): RuleTargetInput {
-    return RuleTargetInput.fromObject({
+  public static fromObjectV2(options?: LogGroupTargetInputOptions): LogGroupTargetInput {
+    return new events.FieldAwareEventInput({
       timestamp: options?.timestamp ?? EventField.time,
       message: options?.message ?? EventField.detailType,
-    });
-  };
+    }, InputType.Object);
+  }
 
   /**
    * Return the input properties for this input object
@@ -98,22 +112,22 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
   /**
    * Returns a RuleTarget that can be used to log an event into a CloudWatch LogGroup
    */
-  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
-    const resourcePolicyId = `EventsLogGroupPolicy${cdk.Names.nodeUniqueId(_rule.node)}`;
+    const resourcePolicyId = `EventsLogGroupPolicy${cdk.Names.nodeUniqueId(rule.node)}`;
 
     const logGroupStack = cdk.Stack.of(this.logGroup);
 
     if (this.props.event && this.props.logEvent) {
-      throw new Error('Only one of "event" or "logEvent" can be specified');
+      throw new ValidationError('Only one of "event" or "logEvent" can be specified', rule);
     }
 
-    this.target = this.props.event?.bind(_rule);
+    this.target = this.props.event?.bind(rule);
     if (this.target?.inputPath || this.target?.input) {
-      throw new Error('CloudWatchLogGroup targets does not support input or inputPath');
+      throw new ValidationError('CloudWatchLogGroup targets does not support input or inputPath', rule);
     }
 
-    _rule.node.addValidation({ validate: () => this.validateInputTemplate() });
+    rule.node.addValidation({ validate: () => this.validateInputTemplate() });
 
     if (!this.logGroup.node.tryFindChild(resourcePolicyId)) {
       new LogGroupResourcePolicy(logGroupStack, resourcePolicyId, {

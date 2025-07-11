@@ -3,8 +3,9 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { Annotations } from '../annotations';
 import { attachCustomSynthesis } from '../app';
+import { ValidationError } from '../errors';
 import { Reference } from '../reference';
-import { IResolvable, DefaultTokenResolver, StringConcat } from '../resolvable';
+import { IResolvable, StringConcat, DefaultTokenResolver, IFragmentConcatenator } from '../resolvable';
 import { ISynthesisSession } from '../stack-synthesizers';
 import { Token, Tokenization } from '../token';
 
@@ -123,6 +124,48 @@ interface PolicyReportRole {
 }
 
 /**
+ * PolicySynthesizer token resolver implementation
+ *
+ */
+export class PolicySynthesizerTokenResolver extends DefaultTokenResolver {
+  constructor(concat: IFragmentConcatenator) {
+    super(concat);
+  }
+
+  /**
+   * PolicySynthesizer Token resolution
+   *
+   * Resolve the Token until the token can be resolved into
+   * "(Path/To/SomeResource.Arn)" format. Otherwise, recurse
+   * into whatever it returns,
+   */
+  public resolveToken(t: IResolvable, context: any, postProcessor: any) {
+    try {
+      let resolved = t.resolve(context);
+
+      // If the token value is resolvable into the format "(Path/To/SomeResource.Arn)", return it
+      // as this is the format expected by the Policy Synthesizer.
+      const resolvable = Tokenization.reverseString(resolved);
+      if (resolvable.length === 1 && Reference.isReference(resolvable.firstToken)) {
+        return `(${resolvable.firstToken.target.node.path}.${resolvable.firstToken.displayName})`;
+      }
+      // The token might have returned more values that need resolving, recurse
+      resolved = context.resolve(resolved);
+      resolved = postProcessor.postProcess(resolved, context);
+      return resolved;
+    } catch (e: any) {
+      let message = `Resolution error: ${e.message}.`;
+      if (t.creationStack && t.creationStack.length > 0) {
+        message += `\nObject creation stack:\n  at ${t.creationStack.join('\n  at ')}`;
+      }
+
+      e.message = message;
+      throw e;
+    }
+  }
+}
+
+/**
  * A construct that is responsible for generating an IAM policy Report
  * for all IAM roles that are created as part of the CDK application.
  *
@@ -139,14 +182,17 @@ export class PolicySynthesizer extends Construct {
     if (synthesizer) {
       return synthesizer as PolicySynthesizer;
     }
-    return new PolicySynthesizer(scope.node.root);
+    return new PolicySynthesizer(scope);
   }
 
+  private readonly _scope: Construct;
   private readonly roleReport: { [rolePath: string]: RoleReportOptions } = {};
   private readonly managedPolicyReport: { [policyPath: string]: ManagedPolicyReportOptions } = {};
   constructor(scope: Construct) {
-    super(scope, POLICY_SYNTHESIZER_ID);
+    // PolicySynthesizer should be created under the `App` scope
+    super(scope.node.root, POLICY_SYNTHESIZER_ID);
 
+    this._scope = scope;
     attachCustomSynthesis(this, {
       onSynthesize: (session: ISynthesisSession) => {
         const report = this.createJsonReport();
@@ -195,7 +241,7 @@ export class PolicySynthesizer extends Construct {
       '',
       'Identity Policy Statements:',
       this.toJsonString(role.identityPolicyStatements),
-    ].join('\n')).join('');
+    ].join('\n')).join('\n\n');
   }
 
   /**
@@ -316,9 +362,11 @@ export class PolicySynthesizer extends Construct {
           if (Reference.isReference(r)) {
             return `(${r.target.node.path}.${r.displayName})`;
           }
+          // Token resolution requires a stack scope. We can't directly use 'this' scope
+          // because PolicySynthesizer is always created under 'App' scope.
           const resolved = Tokenization.resolve(r, {
-            scope: this,
-            resolver: new DefaultTokenResolver(new StringConcat()),
+            scope: this._scope,
+            resolver: new PolicySynthesizerTokenResolver(new StringConcat()),
           });
           if (typeof resolved === 'object' && resolved.hasOwnProperty('Ref')) {
             switch (resolved.Ref) {
@@ -328,9 +376,17 @@ export class PolicySynthesizer extends Construct {
                 return '(PARTITION)';
               case 'AWS::Region':
                 return '(REGION)';
+              case 'AWS::NoValue':
+                return '(NOVALUE)';
               default:
                 return r;
             }
+          }
+          // If the original value is an unresolved Token and we have successfully
+          // resolve it through the above Token resolution process, we should
+          // return the resolved token instead.
+          if (Token.isUnresolved(r) && typeof resolved === 'string' && resolved) {
+            return resolved;
           }
           return r;
         },
@@ -355,7 +411,7 @@ export class PolicySynthesizer extends Construct {
    */
   public addRole(rolePath: string, options: RoleReportOptions): void {
     if (this.roleReport.hasOwnProperty(rolePath)) {
-      throw new Error(`IAM Policy Report already has an entry for role: ${rolePath}`);
+      throw new ValidationError(`IAM Policy Report already has an entry for role: ${rolePath}`, this);
     }
     this.roleReport[rolePath] = options;
   }
@@ -368,7 +424,7 @@ export class PolicySynthesizer extends Construct {
    */
   public addManagedPolicy(policyPath: string, options: ManagedPolicyReportOptions): void {
     if (this.managedPolicyReport.hasOwnProperty(policyPath)) {
-      throw new Error(`IAM Policy Report already has an entry for managed policy: ${policyPath}`);
+      throw new ValidationError(`IAM Policy Report already has an entry for managed policy: ${policyPath}`, this);
     }
 
     this.managedPolicyReport[policyPath] = options;

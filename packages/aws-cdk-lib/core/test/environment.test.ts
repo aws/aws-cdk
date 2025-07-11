@@ -7,7 +7,6 @@ describe('environment', () => {
     expect(Token.isUnresolved(stack.region)).toEqual(true);
     expect(stack.resolve(stack.account)).toEqual({ Ref: 'AWS::AccountId' });
     expect(stack.resolve(stack.region)).toEqual({ Ref: 'AWS::Region' });
-
   });
 
   test('If only `env.region` or `env.account` are specified, Refs will be used for the other', () => {

@@ -43,20 +43,27 @@ jobs:
       contents: write
     needs: [check-secret]
     steps:
-      - name: Checkout using User Token
+      - name: Checkout using User Token (+ download lfs dependencies)
         if: needs.check-secret.outputs.ok == 'true'
         uses: actions/checkout@v4
         with:
+          lfs: true
           token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
 
-      - name: Checkout using GitHub Actions permissions
+      - name: Checkout using GitHub Actions permissions (+ download lfs dependencies)
         if: needs.check-secret.outputs.ok == 'false'
         uses: actions/checkout@v4
+        with:
+          lfs: true
+      
+      - name: Checkout LFS objects
+        run: git lfs checkout
 
       - name: Sync from aws/aws-cdk
         run: |-
           git remote add upstream https://github.com/aws/aws-cdk.git
           git fetch upstream $BRANCHES
+          git lfs fetch --all upstream
 
           for branch in $BRANCHES; do
             git push origin --force refs/remotes/upstream/$branch:refs/heads/$branch

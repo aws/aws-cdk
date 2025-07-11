@@ -1,4 +1,4 @@
-/* eslint-disable prettier/prettier,max-len */
+/* eslint-disable prettier/prettier, @stylistic/max-len */
 import * as path from "path";
 import { Construct } from "constructs";
 import { Stack, CustomResourceProviderBase, CustomResourceProviderOptions, determineLatestNodeRuntimeName } from "../../../core";
@@ -27,5 +27,6 @@ export class TestProvider extends CustomResourceProviderBase {
       "codeDirectory": path.join(__dirname, 'my-handler'),
       "runtimeName": determineLatestNodeRuntimeName(scope)
     });
+    this.node.addMetadata('aws:cdk:is-custom-resource-handler-customResourceProvider', true);
   }
 }

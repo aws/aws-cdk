@@ -4,7 +4,7 @@ import { App, NestedStack, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-/* eslint-disable @aws-cdk/no-core-construct */
+/* eslint-disable @cdklabs/no-core-construct */
 
 class MyNestedStack extends NestedStack {
   constructor(scope: Construct, id: string) {
@@ -26,6 +26,10 @@ class ParentStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 new ParentStack(app, 'nested-stacks-assets');
 app.synth();

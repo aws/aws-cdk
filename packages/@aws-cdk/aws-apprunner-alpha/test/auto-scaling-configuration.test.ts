@@ -63,7 +63,7 @@ test('minSize greater than maxSize', () => {
       minSize: 5,
       maxSize: 3,
     });
-  }).toThrow('maxSize must be greater than minSize');
+  }).toThrow('maxSize must be greater than minSize.');
 });
 
 test.each([0, 201])('invalid maxConcurrency', (maxConcurrency: number) => {
@@ -71,20 +71,30 @@ test.each([0, 201])('invalid maxConcurrency', (maxConcurrency: number) => {
     new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
       maxConcurrency,
     });
-  }).toThrow(`maxConcurrency must be between 1 and 200, got ${maxConcurrency}`);
+  }).toThrow(`maxConcurrency must be between 1 and 200, got ${maxConcurrency}.`);
 });
 
 test.each([
   ['tes'],
   ['test-autoscaling-configuration-name-over-limitation'],
-  ['-test'],
-  ['test-?'],
-])('invalid autoScalingConfigurationName (name: %s)', (autoScalingConfigurationName: string) => {
+])('autoScalingConfigurationName length is invalid(name: %s)', (autoScalingConfigurationName: string) => {
   expect(() => {
     new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
       autoScalingConfigurationName,
     });
-  }).toThrow(`autoScalingConfigurationName must match the ^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$ pattern, got ${autoScalingConfigurationName}`);
+  }).toThrow(`\`autoScalingConfigurationName\` must be between 4 and 32 characters, got: ${autoScalingConfigurationName.length} characters.`);
+});
+
+test.each([
+  ['-test'],
+  ['test-?'],
+  ['test-\\'],
+])('autoScalingConfigurationName includes invalid characters(name: %s)', (autoScalingConfigurationName: string) => {
+  expect(() => {
+    new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
+      autoScalingConfigurationName,
+    });
+  }).toThrow(`\`autoScalingConfigurationName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${autoScalingConfigurationName}.`);
 });
 
 test('create an Auto scaling Configuration with tags', () => {

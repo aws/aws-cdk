@@ -53,6 +53,39 @@ const metric = new cloudwatch.Metric({
 });
 ```
 
+### Metric ID
+
+Metrics can be assigned a unique identifier using the `id` property. This is
+useful when referencing metrics in math expressions:
+
+```ts
+const metric = new cloudwatch.Metric({
+  namespace: 'AWS/Lambda',
+  metricName: 'Invocations',
+  dimensionsMap: {
+    FunctionName: 'MyFunction'
+  },
+  id: 'invocations'
+});
+```
+
+The `id` must start with a lowercase letter and can only contain letters, numbers, and underscores.
+
+### Metric Visible
+Metrics can be hidden from dashboard graphs using the `visible` property:
+
+```ts
+declare const fn: lambda.Function;
+
+const metric = fn.metricErrors({
+  visible: false
+});
+```
+
+By default, all metrics are visible (`visible: true`). Setting `visible: false`
+hides the metric from dashboard visualizations while still allowing it to be
+used in math expressions given that it has an `id` set to it.
+
 ### Metric Math
 
 Math expressions are supported by instantiating the `MathExpression` class.
@@ -83,6 +116,31 @@ const problemPercentage = new cloudwatch.MathExpression({
     problems: allProblems,
     invocations: fn.metricInvocations()
   }
+});
+```
+
+### Metric ID Usage in Math Expressions
+
+When metrics have custom IDs, you can reference them directly in math expressions.
+
+```ts
+declare const fn: lambda.Function;
+
+const invocations = fn.metricInvocations({
+  id: 'lambda_invocations',
+});
+
+const errors = fn.metricErrors({
+  id: 'lambda_errors',
+});
+```
+
+When metrics have predefined IDs, they can be referenced directly in math expressions by their ID without requiring the `usingMetrics` property.
+
+```ts
+const errorRate = new cloudwatch.MathExpression({
+  expression: 'lambda_errors / lambda_invocations * 100',
+  label: 'Error Rate (%)',
 });
 ```
 
@@ -387,6 +445,58 @@ only supports filtering by `unit` for Alarms, not in Dashboard graphs.
 Please see the following GitHub issue for a discussion on real unit
 calculations in CDK: https://github.com/aws/aws-cdk/issues/5595
 
+## Anomaly Detection Alarms
+
+CloudWatch anomaly detection applies machine learning algorithms to create a model of expected metric behavior. You can use anomaly detection to:
+
+- Detect anomalies with minimal configuration
+- Visualize expected metric behavior
+- Create alarms that trigger when metrics deviate from expected patterns
+
+### Creating an Anomaly Detection Alarm
+
+To build an Anomaly Detection Alarm, you should create a MathExpression that
+uses an `ANOMALY_DETECTION_BAND()` function, and use one of the band comparison
+operators (see the next section). Anomaly Detection Alarms have a dynamic
+threshold, not a fixed one, so the value for `threshold` is ignored. Specify the
+value `0` or use the symbolic `Alarm.ANOMALY_DETECTION_NO_THRESHOLD` value.
+
+You can use the `AnomalyDetectionAlarm` class for convenience, which takes care
+of building the right metric math expression and passing in a magic value for
+the treshold for you:
+
+```ts
+// Create a metric
+const metric = new cloudwatch.Metric({
+  namespace: 'AWS/EC2',
+  metricName: 'CPUUtilization',
+  statistic: 'Average',
+  period: Duration.minutes(5),
+});
+
+// Create an anomaly detection alarm
+const alarm = new cloudwatch.AnomalyDetectionAlarm(this, 'AnomalyAlarm', {
+  metric: metric,
+  evaluationPeriods: 1,
+
+  // Number of standard deviations for the band (default: 2)
+  stdDevs: 2,
+  // Alarm outside on either side of the band, or just below or above it (default: outside)
+  comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
+  alarmDescription: 'Alarm when metric is outside the expected band',
+});
+```
+
+### Comparison Operators for Anomaly Detection
+
+When creating an anomaly detection alarm, you must use one of the following comparison operators:
+
+- `LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD`: Alarm when the metric is outside the band, on either side of it
+- `GREATER_THAN_UPPER_THRESHOLD`: Alarm only when the metric is above the band
+- `LESS_THAN_LOWER_THRESHOLD`: Alarm only when the metric is below the band
+
+For more information on anomaly detection in CloudWatch, see the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Anomaly_Detection.html).
+
 ## Dashboards
 
 Dashboards are set of Widgets stored server-side which can be accessed quickly
@@ -519,7 +629,7 @@ declare const dashboard: cloudwatch.Dashboard;
 
 dashboard.addWidgets(new cloudwatch.TableWidget({
   // ...
-  
+
   layout: cloudwatch.TableLayout.VERTICAL,
 }));
 ```
@@ -533,7 +643,7 @@ declare const dashboard: cloudwatch.Dashboard;
 
 dashboard.addWidgets(new cloudwatch.TableWidget({
   // ...
-  
+
   summary: {
     columns: [cloudwatch.TableSummaryColumn.AVERAGE],
     hideNonSummaryColumns: true,
@@ -549,7 +659,7 @@ declare const dashboard: cloudwatch.Dashboard;
 
 dashboard.addWidgets(new cloudwatch.TableWidget({
   // ...
-  
+
   thresholds: [
     cloudwatch.TableThreshold.above(1000, cloudwatch.Color.RED),
     cloudwatch.TableThreshold.between(500, 1000, cloudwatch.Color.ORANGE),
@@ -738,6 +848,19 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
 }));
 ```
 
+Log Insights QL is the default query language. You may specify an [alternate query language: OpenSearch PPL or SQL](https://aws.amazon.com/blogs/aws/new-amazon-cloudwatch-and-amazon-opensearch-service-launch-an-integrated-analytics-experience/), if desired:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
+  logGroupNames: ['my-log-group'],
+  view: cloudwatch.LogQueryVisualizationType.TABLE,
+  queryString: "SELECT count(*) as count FROM 'my-log-group'",
+  queryLanguage: cloudwatch.LogQueryLanguage.SQL,
+}));
+```
+
 ### Custom widget
 
 A `CustomWidget` shows the result of an AWS Lambda function:
@@ -907,3 +1030,35 @@ const dashboard = new cw.Dashboard(this, 'Dash', {
 ```
 
 You can add a variable after object instantiation with the method `dashboard.addVariable()`.
+
+### Cross-Account Visibility
+
+Both Log and Metric Widget objects support cross-account visibility by allowing you to specify the AWS Account ID that the data (logs or metrics) originates from.
+
+**Prerequisites:**
+1. The monitoring account must be set up as a monitoring account
+2. The source account must grant permissions to the monitoring account
+3. Appropriate IAM roles and policies must be configured
+
+For detailed setup instructions, see [Cross-Account Cross-Region CloudWatch Console](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html).
+
+
+To use this feature, you can set the `accountId` property on `LogQueryWidget`, `GraphWidget`, `AlarmWidget`, `SingleValueWidget`, and `GaugeWidget` constructs:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
+  // ...
+  accountId: '123456789012',
+}));
+
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
+  logGroupNames: ['my-log-group'],
+  // ...
+  accountId: '123456789012',
+  queryLines: [
+    'fields @message',
+  ],
+}));
+```

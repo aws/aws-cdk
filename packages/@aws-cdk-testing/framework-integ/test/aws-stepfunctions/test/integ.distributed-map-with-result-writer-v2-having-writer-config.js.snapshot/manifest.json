@@ -1,0 +1,518 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "distributed-map-with-result-writer-v2-having-writer-config.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "distributed-map-with-result-writer-v2-having-writer-config.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "distributed-map-with-result-writer-v2-having-writer-config": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "distributed-map-with-result-writer-v2-having-writer-config.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5bf70f0d5c3f7108403fe0158832bb0512606b23a7be029f5ad05fd33adad12e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "distributed-map-with-result-writer-v2-having-writer-config.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "distributed-map-with-result-writer-v2-having-writer-config.assets"
+      ],
+      "metadata": {
+        "/distributed-map-with-result-writer-v2-having-writer-config/Bucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "autoDeleteObjects": true,
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/Bucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/Bucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketPolicyE9A3008A"
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/Bucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/Bucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/DistributedMap": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Property 'ProcessorConfig.executionType' is ignored, use the 'mapExecutionType' in the 'DistributedMap' class instead. [ack: @aws-cdk/aws-stepfunctions:propertyIgnored]"
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/StateMachine": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "definition": "*",
+              "queryLanguage": "JSONata"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/StateMachine/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/StateMachine/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/StateMachine/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/StateMachine/DistributedMapPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "document": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/StateMachine/DistributedMapPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineDistributedMapPolicy57C9D8C2"
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefStateMachine2E01A3A5BA46F753"
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/Exports/Output{\"Ref\":\"Bucket83908E77\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefBucket83908E7781C90AC0"
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/distributed-map-with-result-writer-v2-having-writer-config/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "distributed-map-with-result-writer-v2-having-writer-config"
+    },
+    "DistributedMapResultWriterwithWriterConfigDefaultTestDeployAssert6B4CFE00.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "DistributedMapResultWriterwithWriterConfigDefaultTestDeployAssert6B4CFE00.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "DistributedMapResultWriterwithWriterConfigDefaultTestDeployAssert6B4CFE00": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "DistributedMapResultWriterwithWriterConfigDefaultTestDeployAssert6B4CFE00.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ce055cdcc8692d84eae9fd401df2ddf0f4c76bf8159407d2edc18a15162b38a6.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "DistributedMapResultWriterwithWriterConfigDefaultTestDeployAssert6B4CFE00.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "distributed-map-with-result-writer-v2-having-writer-config",
+        "DistributedMapResultWriterwithWriterConfigDefaultTestDeployAssert6B4CFE00.assets"
+      ],
+      "metadata": {
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aaWaitForIsCompleteProviderInvokeC58BE721"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aaWaitForTimeoutProviderInvokeBFD2B7A7"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aaWaitForRoleECFF6E83"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aaWaitFor46B10905"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallS3putObject7889721f7800f759de53509e2276e6a8/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallS3putObject7889721f7800f759de53509e2276e6a8/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3putObject7889721f7800f759de53509e2276e6a8"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868WaitForIsCompleteProviderInvoke398F3536"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868WaitForTimeoutProviderInvoke9FF1C2FA"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868WaitForRoleAF7F8FCE"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868WaitForF882F860"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

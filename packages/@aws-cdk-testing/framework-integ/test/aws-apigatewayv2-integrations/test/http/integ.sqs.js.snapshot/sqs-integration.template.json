@@ -1,0 +1,516 @@
+{
+ "Resources": {
+  "Queue4A7E3555": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ApiF70053CD": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "Api",
+    "ProtocolType": "HTTP"
+   }
+  },
+  "ApiDefaultStage189A7074": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   }
+  },
+  "ApiPOSTdefaultInvokeRole9137E4F5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ApiPOSTdefaultInvokeRoleDefaultPolicy603C0AF3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Queue4A7E3555",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowSqsExecution"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ApiPOSTdefaultInvokeRoleDefaultPolicy603C0AF3",
+    "Roles": [
+     {
+      "Ref": "ApiPOSTdefaultInvokeRole9137E4F5"
+     }
+    ]
+   }
+  },
+  "ApiPOSTdefaultdefaultIntegration0355373B": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "ConnectionType": "INTERNET",
+    "CredentialsArn": {
+     "Fn::GetAtt": [
+      "ApiPOSTdefaultInvokeRole9137E4F5",
+      "Arn"
+     ]
+    },
+    "IntegrationSubtype": "SQS-SendMessage",
+    "IntegrationType": "AWS_PROXY",
+    "PayloadFormatVersion": "1.0",
+    "RequestParameters": {
+     "QueueUrl": {
+      "Ref": "Queue4A7E3555"
+     },
+     "MessageBody": "$request.body.MessageBody"
+    }
+   }
+  },
+  "ApiPOSTdefault1EEA0D1D": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /default",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPOSTdefaultdefaultIntegration0355373B"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "ApiPOSTsendmessageInvokeRole628F6753": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ApiPOSTsendmessageInvokeRoleDefaultPolicy4B7D7B02": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Queue4A7E3555",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowSqsExecution"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ApiPOSTsendmessageInvokeRoleDefaultPolicy4B7D7B02",
+    "Roles": [
+     {
+      "Ref": "ApiPOSTsendmessageInvokeRole628F6753"
+     }
+    ]
+   }
+  },
+  "ApiPOSTsendmessagesendMessageIntegrationA3699583": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "ConnectionType": "INTERNET",
+    "CredentialsArn": {
+     "Fn::GetAtt": [
+      "ApiPOSTsendmessageInvokeRole628F6753",
+      "Arn"
+     ]
+    },
+    "IntegrationSubtype": "SQS-SendMessage",
+    "IntegrationType": "AWS_PROXY",
+    "PayloadFormatVersion": "1.0",
+    "RequestParameters": {
+     "QueueUrl": {
+      "Ref": "Queue4A7E3555"
+     },
+     "MessageBody": "$request.body.MessageBody"
+    }
+   }
+  },
+  "ApiPOSTsendmessageE475BC37": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /send-message",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPOSTsendmessagesendMessageIntegrationA3699583"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "ApiPOSTreceivemessageInvokeRoleF920E28E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ApiPOSTreceivemessageInvokeRoleDefaultPolicy22774339": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:ReceiveMessage",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Queue4A7E3555",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowSqsExecution"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ApiPOSTreceivemessageInvokeRoleDefaultPolicy22774339",
+    "Roles": [
+     {
+      "Ref": "ApiPOSTreceivemessageInvokeRoleF920E28E"
+     }
+    ]
+   }
+  },
+  "ApiPOSTreceivemessagereceiveMessageIntegrationFC744BEF": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "ConnectionType": "INTERNET",
+    "CredentialsArn": {
+     "Fn::GetAtt": [
+      "ApiPOSTreceivemessageInvokeRoleF920E28E",
+      "Arn"
+     ]
+    },
+    "IntegrationSubtype": "SQS-ReceiveMessage",
+    "IntegrationType": "AWS_PROXY",
+    "PayloadFormatVersion": "1.0",
+    "RequestParameters": {
+     "QueueUrl": {
+      "Ref": "Queue4A7E3555"
+     }
+    }
+   }
+  },
+  "ApiPOSTreceivemessageA4D1D164": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /receive-message",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPOSTreceivemessagereceiveMessageIntegrationFC744BEF"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "ApiPOSTdeletemessageInvokeRoleF36F96C7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ApiPOSTdeletemessageInvokeRoleDefaultPolicyC736EDFF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:DeleteMessage",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Queue4A7E3555",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowSqsExecution"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ApiPOSTdeletemessageInvokeRoleDefaultPolicyC736EDFF",
+    "Roles": [
+     {
+      "Ref": "ApiPOSTdeletemessageInvokeRoleF36F96C7"
+     }
+    ]
+   }
+  },
+  "ApiPOSTdeletemessagedeleteMessageIntegration49DB56A7": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "ConnectionType": "INTERNET",
+    "CredentialsArn": {
+     "Fn::GetAtt": [
+      "ApiPOSTdeletemessageInvokeRoleF36F96C7",
+      "Arn"
+     ]
+    },
+    "IntegrationSubtype": "SQS-DeleteMessage",
+    "IntegrationType": "AWS_PROXY",
+    "PayloadFormatVersion": "1.0",
+    "RequestParameters": {
+     "QueueUrl": {
+      "Ref": "Queue4A7E3555"
+     },
+     "ReceiptHandle": "$request.body.ReceiptHandle"
+    }
+   }
+  },
+  "ApiPOSTdeletemessage6FE1C52C": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /delete-message",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPOSTdeletemessagedeleteMessageIntegration49DB56A7"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "ApiPOSTpurgequeueInvokeRole1F4EEB80": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ApiPOSTpurgequeueInvokeRoleDefaultPolicy275FF06E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:PurgeQueue",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Queue4A7E3555",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowSqsExecution"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ApiPOSTpurgequeueInvokeRoleDefaultPolicy275FF06E",
+    "Roles": [
+     {
+      "Ref": "ApiPOSTpurgequeueInvokeRole1F4EEB80"
+     }
+    ]
+   }
+  },
+  "ApiPOSTpurgequeuepurgeQueueIntegration7B3B35C2": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "ConnectionType": "INTERNET",
+    "CredentialsArn": {
+     "Fn::GetAtt": [
+      "ApiPOSTpurgequeueInvokeRole1F4EEB80",
+      "Arn"
+     ]
+    },
+    "IntegrationSubtype": "SQS-PurgeQueue",
+    "IntegrationType": "AWS_PROXY",
+    "PayloadFormatVersion": "1.0",
+    "RequestParameters": {
+     "QueueUrl": {
+      "Ref": "Queue4A7E3555"
+     }
+    }
+   }
+  },
+  "ApiPOSTpurgequeueD7486C9E": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /purge-queue",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPOSTpurgequeuepurgeQueueIntegration7B3B35C2"
+       }
+      ]
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttApiF70053CDApiEndpoint847E7A77": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ApiF70053CD",
+     "ApiEndpoint"
+    ]
+   },
+   "Export": {
+    "Name": "sqs-integration:ExportsOutputFnGetAttApiF70053CDApiEndpoint847E7A77"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

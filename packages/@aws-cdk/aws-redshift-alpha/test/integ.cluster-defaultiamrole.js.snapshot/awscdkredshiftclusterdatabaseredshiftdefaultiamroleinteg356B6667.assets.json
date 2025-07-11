@@ -1,0 +1,34 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a": {
+      "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
+      "source": {
+        "path": "asset.2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "dc0fab177ce142278a7681f2aa90d0ea44377e5fb11381a35d7d6ca5e24cdde6": {
+      "displayName": "awscdkredshiftclusterdatabaseredshiftdefaultiamroleinteg356B6667 Template",
+      "source": {
+        "path": "awscdkredshiftclusterdatabaseredshiftdefaultiamroleinteg356B6667.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "dc0fab177ce142278a7681f2aa90d0ea44377e5fb11381a35d7d6ca5e24cdde6.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import * as ga from './globalaccelerator.generated';
 import { Listener, ListenerOptions } from './listener';
 import * as cdk from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The interface of the Accelerator
@@ -82,12 +84,12 @@ export interface AcceleratorProps {
   readonly ipAddresses?: string[];
 
   /**
-  * The IP address type that an accelerator supports.
-  *
-  * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
-  *
-  * @default - "IPV4"
-  */
+   * The IP address type that an accelerator supports.
+   *
+   * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
+   *
+   * @default - "IPV4"
+   */
   readonly ipAddressType?: IpAddressType;
 }
 
@@ -145,7 +147,11 @@ export enum IpAddressType {
 /**
  * The Accelerator construct
  */
+@propertyInjectable
 export class Accelerator extends cdk.Resource implements IAccelerator {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-globalaccelerator.Accelerator';
+
   /**
    * import from attributes
    */
@@ -188,6 +194,8 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
 
   constructor(scope: Construct, id: string, props: AcceleratorProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.validateAcceleratorName(props.acceleratorName);
     this.validateIpAddresses(props.ipAddresses);
@@ -212,6 +220,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
   /**
    * Add a listener to the accelerator
    */
+  @MethodMetadata()
   public addListener(id: string, options: ListenerOptions) {
     return new Listener(this, id, {
       accelerator: this,
@@ -221,13 +230,13 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
 
   private validateAcceleratorName(name?: string) {
     if (!cdk.Token.isUnresolved(name) && name !== undefined && (name.length < 1 || name.length > 64)) {
-      throw new Error(`Invalid acceleratorName value ${name}, must have length between 1 and 64, got: ${name.length}`);
+      throw new cdk.ValidationError(`Invalid acceleratorName value ${name}, must have length between 1 and 64, got: ${name.length}`, this);
     }
   }
 
   private validateIpAddresses(ipAddresses?: string[]) {
     if (ipAddresses !== undefined && (ipAddresses.length < 1 || ipAddresses.length > 2)) {
-      throw new Error(`Invalid ipAddresses value [${ipAddresses}], you can specify one or two addresses, got: ${ipAddresses.length}`);
+      throw new cdk.ValidationError(`Invalid ipAddresses value [${ipAddresses}], you can specify one or two addresses, got: ${ipAddresses.length}`, this);
     }
   }
 }

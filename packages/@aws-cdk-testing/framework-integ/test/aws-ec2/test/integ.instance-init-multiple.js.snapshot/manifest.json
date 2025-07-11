@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "integ-ec2-multiple-instances-in-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/55adc2a4d264e77d2c794df6cb13dd26ee0a9986d5b00a9bfe3cd48b6e0b2dfe.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e18269ae71d347932e0912d712c34e1b5d8de3669d4f0273ee5ca679752b4a12.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,52 @@
         "integ-ec2-multiple-instances-in-stack.assets"
       ],
       "metadata": {
+        "/integ-ec2-multiple-instances-in-stack/vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-ec2-multiple-instances-in-stack/vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "vpcA2121C38"
+          }
+        ],
+        "/integ-ec2-multiple-instances-in-stack/vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/integ-ec2-multiple-instances-in-stack/vpc/PublicSubnet1/Subnet": [
@@ -76,6 +118,42 @@
             "data": "vpcPublicSubnet1NATGateway9C16659E"
           }
         ],
+        "/integ-ec2-multiple-instances-in-stack/vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/integ-ec2-multiple-instances-in-stack/vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -112,6 +190,34 @@
             "data": "vpcPublicSubnet2NATGateway9B8AE11A"
           }
         ],
+        "/integ-ec2-multiple-instances-in-stack/vpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/integ-ec2-multiple-instances-in-stack/vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,6 +240,34 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "vpcPrivateSubnet1DefaultRoute1AA8E2E5"
+          }
+        ],
+        "/integ-ec2-multiple-instances-in-stack/vpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/integ-ec2-multiple-instances-in-stack/vpc/PrivateSubnet2/Subnet": [
@@ -172,6 +306,12 @@
             "data": "vpcVPCGW7984C166"
           }
         ],
+        "/integ-ec2-multiple-instances-in-stack/vpc/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-ec2-multiple-instances-in-stack/vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -182,6 +322,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-ec2-multiple-instances-in-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/integ-ec2-multiple-instances-in-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
@@ -196,16 +342,133 @@
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
+        "/integ-ec2-multiple-instances-in-stack/FirstInstance": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "instanceType": "*",
+              "machineImage": "*",
+              "init": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyCloudFormationInit": [
+                {},
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-ec2-multiple-instances-in-stack/FirstInstance/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true,
+              "allowAllIpv6Outbound": "*"
+            }
+          }
+        ],
         "/integ-ec2-multiple-instances-in-stack/FirstInstance/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FirstInstanceInstanceSecurityGroup4E812361"
           }
         ],
+        "/integ-ec2-multiple-instances-in-stack/FirstInstance/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/integ-ec2-multiple-instances-in-stack/FirstInstance/InstanceRole/ImportInstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-ec2-multiple-instances-in-stack/FirstInstance/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FirstInstanceInstanceRole32E06EC6"
+          }
+        ],
+        "/integ-ec2-multiple-instances-in-stack/FirstInstance/InstanceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/integ-ec2-multiple-instances-in-stack/FirstInstance/InstanceRole/DefaultPolicy/Resource": [
@@ -232,16 +495,133 @@
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
+        "/integ-ec2-multiple-instances-in-stack/SecondInstance": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "instanceType": "*",
+              "machineImage": "*",
+              "init": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyCloudFormationInit": [
+                {},
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-ec2-multiple-instances-in-stack/SecondInstance/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true,
+              "allowAllIpv6Outbound": "*"
+            }
+          }
+        ],
         "/integ-ec2-multiple-instances-in-stack/SecondInstance/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecondInstanceInstanceSecurityGroup035C443D"
           }
         ],
+        "/integ-ec2-multiple-instances-in-stack/SecondInstance/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/integ-ec2-multiple-instances-in-stack/SecondInstance/InstanceRole/ImportInstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-ec2-multiple-instances-in-stack/SecondInstance/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecondInstanceInstanceRole9133974F"
+          }
+        ],
+        "/integ-ec2-multiple-instances-in-stack/SecondInstance/InstanceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/integ-ec2-multiple-instances-in-stack/SecondInstance/InstanceRole/DefaultPolicy/Resource": [
@@ -331,5 +711,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

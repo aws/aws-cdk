@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "aws-eks-oidc-provider-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/139717b3420d710680f9327f36c2ab082373c666a1865620f6d4e30b988bb879.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/826c1dc9f5a855fd61d0d4476461fe9b2bd153b766290acf5b2547f9cfd01a04.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,30 @@
         "aws-eks-oidc-provider-test.assets"
       ],
       "metadata": {
+        "/aws-eks-oidc-provider-test/NoClientsNoThumbprint": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "url": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "url": "*"
+            }
+          }
+        ],
+        "/aws-eks-oidc-provider-test/NoClientsNoThumbprint/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/aws-eks-oidc-provider-test/NoClientsNoThumbprint/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -44,6 +68,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-eks-oidc-provider-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/aws-eks-oidc-provider-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role": [
@@ -127,5 +157,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

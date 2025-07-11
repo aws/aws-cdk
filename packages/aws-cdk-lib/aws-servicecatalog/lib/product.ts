@@ -6,7 +6,9 @@ import { InputValidator } from './private/validation';
 import { CfnCloudFormationProduct } from './servicecatalog.generated';
 import { TagOptions } from './tag-options';
 import { IBucket } from '../../aws-s3';
-import { ArnFormat, IResource, Resource, Stack } from '../../core';
+import { ArnFormat, IResource, Resource, Stack, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A Service Catalog product, currently only supports type CloudFormationProduct
@@ -163,7 +165,7 @@ export abstract class Product extends ProductBase {
     const productId = arn.resourceName;
 
     if (!productId) {
-      throw new Error('Missing required Portfolio ID from Portfolio ARN: ' + productArn);
+      throw new ValidationError('Missing required Portfolio ID from Portfolio ARN: ' + productArn, scope);
     }
 
     return new class extends ProductBase {
@@ -177,7 +179,10 @@ export abstract class Product extends ProductBase {
 /**
  * A Service Catalog Cloudformation Product.
  */
+@propertyInjectable
 export class CloudFormationProduct extends Product {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicecatalog.CloudFormationProduct';
   public readonly productArn: string;
   public readonly productId: string;
   /**
@@ -188,6 +193,8 @@ export class CloudFormationProduct extends Product {
 
   constructor(scope: Construct, id: string, props: CloudFormationProductProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.validateProductProps(props);
 
@@ -233,7 +240,7 @@ export class CloudFormationProduct extends Product {
         },
       };
     });
-  };
+  }
 
   private validateProductProps(props: CloudFormationProductProps) {
     InputValidator.validateLength(this.node.path, 'product product name', 1, 100, props.productName);
@@ -244,7 +251,7 @@ export class CloudFormationProduct extends Product {
     InputValidator.validateUrl(this.node.path, 'support url', props.supportUrl);
     InputValidator.validateLength(this.node.path, 'support description', 0, 8191, props.supportDescription);
     if (props.productVersions.length == 0) {
-      throw new Error(`Invalid product versions for resource ${this.node.path}, must contain at least 1 product version`);
+      throw new ValidationError(`Invalid product versions for resource ${this.node.path}, must contain at least 1 product version`, this);
     }
     props.productVersions.forEach(productVersion => {
       InputValidator.validateLength(this.node.path, 'provisioning artifact name', 0, 100, productVersion.productVersionName);

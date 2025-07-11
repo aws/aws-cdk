@@ -1,0 +1,806 @@
+{
+ "Resources": {
+  "LambdaInvoke8006c7b031e80be4861a1f247548571b": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":200,\\\"msg\\\":\\\"subscribe_success\\\"}\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefSubscribeFunction7B118C27B642BB2E"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Payload": "\"{\\\"action\\\":\\\"subscribe\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
+    },
+    "flattenResponse": "false",
+    "salt": "1746133888358"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke8006c7b031e80be4861a1f247548571bInvoke3AE64FC8": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefSubscribeFunction7B118C27B642BB2E"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefSubscribeFunction7B118C27B642BB2E"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefPublishFunctionB66025670EB2B482"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefPubSubFunctionF65FA1C6C81501FC"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefPublishFunctionB66025670EB2B482"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefSubscribeFunction7B118C27B642BB2E"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefPubSubAllChannelsFunction9EC91B3F3E9C7C1E"
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvokec34f920450dfc6f8bcd12360d5e438b1": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":200,\\\"msg\\\":\\\"publish_success\\\"}\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefPublishFunctionB66025670EB2B482"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
+    },
+    "flattenResponse": "false",
+    "salt": "1746133888359"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvokec34f920450dfc6f8bcd12360d5e438b1Invoke36E757E9": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefPublishFunctionB66025670EB2B482"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvokec29811996c72ae76bcc2a12cfc2fb858": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":200,\\\"msg\\\":\\\"subscribe_success\\\",\\\"pubStatusCode\\\":200,\\\"pubMsg\\\":[{\\\"message\\\":\\\"Hello World!\\\"}]}\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefPubSubFunctionF65FA1C6C81501FC"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Payload": "\"{\\\"action\\\":\\\"pubSub\\\",\\\"channel\\\":\\\"pubsub\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
+    },
+    "flattenResponse": "false",
+    "salt": "1746133888360"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvokec29811996c72ae76bcc2a12cfc2fb858Invoke71E884C6": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefPubSubFunctionF65FA1C6C81501FC"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":403,\\\"msg\\\":\\\"Forbidden\\\"}\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefPublishFunctionB66025670EB2B482"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"channel\\\":\\\"test1\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
+    },
+    "flattenResponse": "false",
+    "salt": "1746133888360"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2Invoke6088310E": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefPublishFunctionB66025670EB2B482"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":403,\\\"msg\\\":\\\"Forbidden\\\"}\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefSubscribeFunction7B118C27B642BB2E"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Payload": "\"{\\\"action\\\":\\\"subscribe\\\",\\\"channel\\\":\\\"test1\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
+    },
+    "flattenResponse": "false",
+    "salt": "1746133888360"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053Invoke4173F8E7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefSubscribeFunction7B118C27B642BB2E"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvokea2c0736db95d14edddf4cf00800f9c11": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":200,\\\"msg\\\":\\\"subscribe_success\\\",\\\"pubStatusCode\\\":200,\\\"pubMsg\\\":[{\\\"message\\\":\\\"Hello World!\\\"}]}\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefPubSubAllChannelsFunction9EC91B3F3E9C7C1E"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Payload": "\"{\\\"action\\\":\\\"pubSub\\\",\\\"channel\\\":\\\"test1/subtest\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
+    },
+    "flattenResponse": "false",
+    "salt": "1746133888360"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvokea2c0736db95d14edddf4cf00800f9c11InvokeC15326AD": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "EventApiApiGrantStack:ExportsOutputRefPubSubAllChannelsFunction9EC91B3F3E9C7C1E"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsLambdaInvoke8006c7b031e80be4861a1f247548571b": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke8006c7b031e80be4861a1f247548571b",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvokec34f920450dfc6f8bcd12360d5e438b1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvokec34f920450dfc6f8bcd12360d5e438b1",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvokec29811996c72ae76bcc2a12cfc2fb858": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvokec29811996c72ae76bcc2a12cfc2fb858",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvokea7c50a5db339100aa5a0c50ad72e12e2": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvokecb9ef40c8ac7aed4dfd60060aa942053": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvokea2c0736db95d14edddf4cf00800f9c11": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvokea2c0736db95d14edddf4cf00800f9c11",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

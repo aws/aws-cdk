@@ -69,7 +69,6 @@ describe('app mesh proxy configuration', () => {
         Type: 'APPMESH',
       },
     });
-
   });
 
   test('correctly sets appMeshProxyConfiguration with default properties set', () => {
@@ -123,7 +122,6 @@ describe('app mesh proxy configuration', () => {
         Type: 'APPMESH',
       },
     });
-
   });
 
   test('correctly sets appMeshProxyConfiguration with empty egressIgnoredPorts and egressIgnoredIPs', () => {
@@ -179,7 +177,6 @@ describe('app mesh proxy configuration', () => {
         Type: 'APPMESH',
       },
     });
-
   });
 
   test('throws when neither of IgnoredUID and IgnoredGID is set', () => {
@@ -200,6 +197,5 @@ describe('app mesh proxy configuration', () => {
         }),
       });
     }).toThrow(/At least one of ignoredUID or ignoredGID should be specified./);
-
   });
 });

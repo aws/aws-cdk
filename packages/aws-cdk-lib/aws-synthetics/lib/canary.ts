@@ -1,15 +1,19 @@
 import * as crypto from 'crypto';
 import { Construct } from 'constructs';
 import { Code } from './code';
-import { Runtime } from './runtime';
+import { Runtime, RuntimeFamily } from './runtime';
 import { Schedule } from './schedule';
 import { CloudWatchSyntheticsMetrics } from './synthetics-canned-metrics.generated';
 import { CfnCanary } from './synthetics.generated';
 import { Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteUnderlyingResourcesProvider } from '../../custom-resource-handlers/dist/aws-synthetics/auto-delete-underlying-resources-provider.generated';
 
 const AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE = 'Custom::SyntheticsAutoDeleteUnderlyingResources';
@@ -74,6 +78,20 @@ export enum Cleanup {
 }
 
 /**
+ * Resources that tags applied to a canary should be replicated to.
+ */
+export enum ResourceToReplicateTags {
+  /**
+   * Replicate canary tags to the Lambda function.
+   *
+   * When specified, CloudWatch Synthetics will keep the tags of the canary
+   * and the Lambda function synchronized. Any future changes made to the
+   * canary's tags will also be applied to the function.
+   */
+  LAMBDA_FUNCTION = 'lambda-function',
+}
+
+/**
  * Options for specifying the s3 location that stores the data of each canary run. The artifacts bucket location **cannot**
  * be updated once the canary is created.
  */
@@ -135,6 +153,16 @@ export interface CanaryProps {
   readonly schedule?: Schedule;
 
   /**
+   * The amount of times the canary will automatically retry a failed run.
+   * This is only supported on the following runtimes or newer: `Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0`, `Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0`, `Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1`.
+   * Max retries can be set between 0 and 2. Canaries which time out after 10 minutes are automatically limited to one retry.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_autoretry.html
+   * @default 0
+   */
+  readonly maxRetries?: number;
+
+  /**
    * Whether or not the canary should start after creation.
    *
    * @default true
@@ -180,6 +208,19 @@ export interface CanaryProps {
   readonly test: Test;
 
   /**
+   * Specifies whether this canary is to use active AWS X-Ray tracing when it runs.
+   * Active tracing enables this canary run to be displayed in the ServiceLens and X-Ray service maps even if the
+   * canary does not hit an endpoint that has X-Ray tracing enabled. Using X-Ray tracing incurs charges.
+   *
+   * You can enable active tracing only for canaries that use version `syn-nodejs-2.0` or later for their canary runtime.
+   *
+   * @default false
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_tracing.html
+   */
+  readonly activeTracing?: boolean;
+
+  /**
    * Key-value pairs that the Synthetics caches and makes available for your canary scripts. Use environment variables
    * to apply configuration changes, such as test and production environment configurations, without changing your
    * Canary script source code.
@@ -187,6 +228,26 @@ export interface CanaryProps {
    * @default - No environment variables.
    */
   readonly environmentVariables?: { [key: string]: string };
+
+  /**
+   * The maximum amount of memory that the canary can use while running.
+   * This value must be a multiple of 64 Mib.
+   * The range is 960 MiB to 3008 MiB.
+   *
+   * @default Size.mebibytes(1024)
+   */
+  readonly memory?: cdk.Size;
+
+  /**
+   * How long the canary is allowed to run before it must stop.
+   * You can't set this time to be longer than the frequency of the runs of this canary.
+   *
+   * The minimum allowed value is 3 seconds.
+   * The maximum allowed value is 840 seconds (14 minutes).
+   *
+   * @default - the frequency of the canary is used as this value, up to a maximum of 900 seconds.
+   */
+  readonly timeout?: cdk.Duration;
 
   /**
    * The VPC where this canary is run.
@@ -217,8 +278,17 @@ export interface CanaryProps {
    * Using `Cleanup.LAMBDA` will create a Custom Resource to achieve this.
    *
    * @default Cleanup.NOTHING
+   *
+   * @deprecated use provisionedResourceCleanup
    */
   readonly cleanup?: Cleanup;
+
+  /**
+   * Whether to also delete the Lambda functions and layers used by this canary when the canary is deleted.
+   *
+   * @default undefined - the default behavior is to not delete the Lambda functions and layers
+   */
+  readonly provisionedResourceCleanup?: boolean;
 
   /**
    * Lifecycle rules for the generated canary artifact bucket. Has no effect
@@ -229,12 +299,79 @@ export interface CanaryProps {
    * @default - no rules applied to the generated bucket.
    */
   readonly artifactsBucketLifecycleRules?: Array<s3.LifecycleRule>;
+
+  /**
+   * Canary Artifacts in S3 encryption mode.
+   * Artifact encryption is only supported for canaries that use Synthetics runtime
+   * version `syn-nodejs-puppeteer-3.3` or later.
+   *
+   * @default - Artifacts are encrypted at rest using an AWS managed key. `ArtifactsEncryptionMode.KMS` is set if you specify `artifactS3KmsKey`.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_artifact_encryption.html
+   */
+  readonly artifactS3EncryptionMode?: ArtifactsEncryptionMode;
+
+  /**
+   * The KMS key used to encrypt canary artifacts.
+   *
+   * @default - no kms key if `artifactS3EncryptionMode` is set to `S3_MANAGED`. A key will be created if one is not provided and `artifactS3EncryptionMode` is set to `KMS`.
+   */
+  readonly artifactS3KmsKey?: kms.IKey;
+
+  /**
+   * Specifies whether to perform a dry run before updating the canary.
+   *
+   * If set to true, CDK will execute a dry run to validate the changes before applying them to the canary.
+   * If the dry run succeeds, the canary will be updated with the changes.
+   * If the dry run fails, the CloudFormation deployment will fail with the dry run's failure reason.
+   *
+   * If set to false or omitted, the canary will be updated directly without first performing a dry run.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/performing-safe-canary-upgrades.html
+   *
+   * @default undefined - AWS CloudWatch default is false
+   */
+  readonly dryRunAndUpdate?: boolean;
+
+  /**
+   * Specifies which resources should have their tags replicated to this canary.
+   *
+   * To have the tags that you apply to this canary also be applied to the Lambda
+   * function that the canary uses, specify this property with the value
+   * ResourceToReplicateTags.LAMBDA_FUNCTION. If you do this, CloudWatch Synthetics will keep the tags of the canary and the
+   * Lambda function synchronized. Any future changes you make to the canary's tags
+   * will also be applied to the function.
+   *
+   * @default - No resources will have their tags replicated to this canary
+   */
+  readonly resourcesToReplicateTags?: ResourceToReplicateTags[];
+}
+
+/**
+ * Encryption mode for canary artifacts.
+ */
+export enum ArtifactsEncryptionMode {
+  /**
+   * Server-side encryption (SSE) with an Amazon S3-managed key.
+   */
+  S3_MANAGED = 'SSE_S3',
+
+  /**
+   * Server-side encryption (SSE) with an AWS KMS customer managed key.
+   */
+  KMS = 'SSE_KMS',
 }
 
 /**
  * Define a new Canary
  */
+@propertyInjectable
 export class Canary extends cdk.Resource implements ec2.IConnectable {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-synthetics.Canary';
+
   /**
    * Execution role associated with this Canary.
    */
@@ -282,6 +419,12 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
         produce: () => this.generateUniqueName(),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    if (props.cleanup === Cleanup.LAMBDA && props.provisionedResourceCleanup) {
+      throw new ValidationError('Cannot specify `provisionedResourceCleanup` when `cleanup` is set to `Cleanup.LAMBDA`. Use only `provisionedResourceCleanup`.', this);
+    }
 
     this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
@@ -296,6 +439,8 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       this._connections = new ec2.Connections({});
     }
 
+    this.validateDryRunAndUpdate(props.runtime, props.dryRunAndUpdate);
+
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
       executionRoleArn: this.role.roleArn,
@@ -308,6 +453,14 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       code: this.createCode(props),
       runConfig: this.createRunConfig(props),
       vpcConfig: this.createVpcConfig(props),
+      artifactConfig: this.createArtifactConfig(props),
+      provisionedResourceCleanup: props.provisionedResourceCleanup !== undefined
+        ? props.provisionedResourceCleanup
+          ? 'AUTOMATIC'
+          : 'OFF'
+        : undefined,
+      dryRunAndUpdate: props.dryRunAndUpdate,
+      resourcesToReplicateTags: props.resourcesToReplicateTags,
     });
     this._resource = resource;
 
@@ -317,6 +470,26 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
     if (props.cleanup === Cleanup.LAMBDA) {
       this.cleanupUnderlyingResources();
+    }
+  }
+
+  private validateDryRunAndUpdate(runtime: Runtime, dryRunAndUpdate?: boolean) {
+    const runtimeName = runtime.name;
+    if (dryRunAndUpdate !== true || cdk.Token.isUnresolved(runtimeName)) {
+      return;
+    }
+
+    const RUNTIME_REGEX = /^syn-(nodejs-puppeteer|nodejs-playwright|python-selenium)-(\d+\.\d+)$/;
+    const MIN_SUPPORTED_VERSIONS: { [family: string]: number } = {
+      'nodejs-puppeteer': 10.0,
+      'nodejs-playwright': 2.0,
+      'python-selenium': 5.1,
+    };
+
+    const match = runtimeName.match(RUNTIME_REGEX);
+
+    if (!match || match.length < 3 || MIN_SUPPORTED_VERSIONS[match[1]] === undefined || parseFloat(match[2]) < MIN_SUPPORTED_VERSIONS[match[1]]) {
+      throw new ValidationError(`dryRunAndUpdate is only supported for canary runtime versions 'syn-nodejs-puppeteer-10.0+', 'syn-nodejs-playwright-2.0+', or 'syn-python-selenium-5.1+', got: ${runtimeName}`, this);
     }
   }
 
@@ -359,7 +532,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
   public get connections(): ec2.Connections {
     if (!this._connections) {
       // eslint-disable-next-line max-len
-      throw new Error('Only VPC-associated Canaries have security groups to manage. Supply the "vpc" parameter when creating the Canary.');
+      throw new ValidationError('Only VPC-associated Canaries have security groups to manage. Supply the "vpc" parameter when creating the Canary.', this);
     }
     return this._connections;
   }
@@ -371,6 +544,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
    *
    * @default avg over 5 minutes
    */
+  @MethodMetadata()
   public metricDuration(options?: MetricOptions): Metric {
     return new Metric({
       ...CloudWatchSyntheticsMetrics.durationMaximum({ CanaryName: this.canaryName }),
@@ -386,6 +560,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
    *
    * @default avg over 5 minutes
    */
+  @MethodMetadata()
   public metricSuccessPercent(options?: MetricOptions): Metric {
     return this.cannedMetric(CloudWatchSyntheticsMetrics.successPercentAverage, options);
   }
@@ -397,6 +572,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
    *
    * @param options - configuration options for the metric
    */
+  @MethodMetadata()
   public metricFailed(options?: MetricOptions): Metric {
     return this.cannedMetric(CloudWatchSyntheticsMetrics.failedSum, options);
   }
@@ -420,7 +596,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
           actions: ['s3:GetBucketLocation'],
         }),
         new iam.PolicyStatement({
-          resources: [this.artifactsBucket.arnForObjects(`${prefix ? prefix+'/*' : '*'}`)],
+          resources: [this.artifactsBucket.arnForObjects(`${prefix ? prefix + '/*' : '*'}`)],
           actions: ['s3:PutObject'],
         }),
         new iam.PolicyStatement({
@@ -476,7 +652,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     this.validateHandler(props.test.handler, props.runtime);
     const codeConfig = {
       handler: props.test.handler,
-      ...props.test.code.bind(this, props.test.handler, props.runtime.family),
+      ...props.test.code.bind(this, props.test.handler, props.runtime.family, props.runtime.name),
     };
     return {
       handler: codeConfig.handler,
@@ -500,24 +676,66 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     ];
     if (oldRuntimes.includes(runtime)) {
       if (!handler.match(/^[0-9A-Za-z_\\-]+\.handler*$/)) {
-        throw new Error(`Canary Handler must be specified as \'fileName.handler\' for legacy runtimes, received ${handler}`);
+        throw new ValidationError(`Canary Handler must be specified as \'fileName.handler\' for legacy runtimes, received ${handler}`, this);
       }
     } else {
       if (!handler.match(/^([0-9a-zA-Z_-]+\/)*[0-9A-Za-z_\\-]+\.[A-Za-z_][A-Za-z0-9_]*$/)) {
-        throw new Error(`Canary Handler must be specified either as \'fileName.handler\', \'fileName.functionName\', or \'folder/fileName.functionName\', received ${handler}`);
+        throw new ValidationError(`Canary Handler must be specified either as \'fileName.handler\', \'fileName.functionName\', or \'folder/fileName.functionName\', received ${handler}`, this);
       }
     }
     if (handler.length < 1 || handler.length > 128) {
-      throw new Error(`Canary Handler length must be between 1 and 128, received ${handler.length}`);
+      throw new ValidationError(`Canary Handler length must be between 1 and 128, received ${handler.length}`, this);
     }
   }
 
   private createRunConfig(props: CanaryProps): CfnCanary.RunConfigProperty | undefined {
-    if (!props.environmentVariables) {
+    if (props.activeTracing === undefined &&
+      !props.environmentVariables &&
+      !props.memory &&
+      !props.timeout) {
       return undefined;
     }
+
+    if (
+      props.activeTracing &&
+      (
+        // Only check runtime family is nodejs because versions prior to syn-nodejs-2.0 are deprecated and can no longer be configured.
+        (!cdk.Token.isUnresolved(props.runtime.family) && props.runtime.family !== RuntimeFamily.NODEJS) ||
+        (!cdk.Token.isUnresolved(props.runtime.name) && props.runtime.name.includes('playwright'))
+      )
+    ) {
+      throw new ValidationError(`You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later and are not using the Playwright runtime, got ${props.runtime.name}.`, this);
+    }
+
+    let memoryInMb: number | undefined;
+    if (!cdk.Token.isUnresolved(props.memory) && props.memory !== undefined) {
+      memoryInMb = props.memory.toMebibytes();
+      if (memoryInMb % 64 !== 0) {
+        throw new ValidationError(`\`memory\` must be a multiple of 64 MiB, got ${memoryInMb} MiB.`, this);
+      }
+      if (memoryInMb < 960 || memoryInMb > 3008) {
+        throw new ValidationError(`\`memory\` must be between 960 MiB and 3008 MiB, got ${memoryInMb} MiB.`, this);
+      }
+    }
+
+    let timeoutInSeconds: number | undefined;
+    if (!cdk.Token.isUnresolved(props.timeout) && props.timeout !== undefined) {
+      const timeoutInMillis = props.timeout.toMilliseconds();
+      if (timeoutInMillis % 1000 !== 0) {
+        throw new ValidationError(`\`timeout\` must be set as an integer representing seconds, got ${timeoutInMillis} milliseconds.`, this);
+      }
+
+      timeoutInSeconds = props.timeout.toSeconds();
+      if (timeoutInSeconds < 3 || timeoutInSeconds > 840) {
+        throw new ValidationError(`\`timeout\` must be between 3 seconds and 840 seconds, got ${timeoutInSeconds} seconds.`, this);
+      }
+    }
+
     return {
+      activeTracing: props.activeTracing,
       environmentVariables: props.environmentVariables,
+      memoryInMb,
+      timeoutInSeconds,
     };
   }
 
@@ -528,13 +746,16 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     return {
       durationInSeconds: String(`${props.timeToLive?.toSeconds() ?? 0}`),
       expression: props.schedule?.expressionString ?? 'rate(5 minutes)',
+      retryConfig: props.maxRetries ? {
+        maxRetries: props.maxRetries,
+      } : undefined,
     };
   }
 
   private createVpcConfig(props: CanaryProps): CfnCanary.VPCConfigProperty | undefined {
     if (!props.vpc) {
       if (props.vpcSubnets != null || props.securityGroups != null) {
-        throw new Error("You must provide the 'vpc' prop when using VPC-related properties.");
+        throw new ValidationError("You must provide the 'vpc' prop when using VPC-related properties.", this);
       }
 
       return undefined;
@@ -542,7 +763,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     if (subnetIds.length < 1) {
-      throw new Error('No matching subnets found in the VPC.');
+      throw new ValidationError('No matching subnets found in the VPC.', this);
     }
 
     let securityGroups: ec2.ISecurityGroup[];
@@ -561,6 +782,43 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       vpcId: props.vpc.vpcId,
       subnetIds,
       securityGroupIds: cdk.Lazy.list({ produce: () => this.connections.securityGroups.map(sg => sg.securityGroupId) }),
+    };
+  }
+
+  private createArtifactConfig(props: CanaryProps): CfnCanary.ArtifactConfigProperty | undefined {
+    if (!props.artifactS3EncryptionMode && !props.artifactS3KmsKey) {
+      return undefined;
+    }
+
+    const isNodeRuntime = props.runtime.family === RuntimeFamily.NODEJS;
+
+    if (
+      props.artifactS3EncryptionMode === ArtifactsEncryptionMode.S3_MANAGED &&
+      props.artifactS3KmsKey
+    ) {
+      throw new ValidationError(`A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS, got: ${props.artifactS3EncryptionMode}.`, this);
+    }
+
+    // Only check runtime family is Node.js because versions prior to `syn-nodejs-puppeteer-3.3` are deprecated and can no longer be configured.
+    if (!isNodeRuntime && props.artifactS3EncryptionMode) {
+      throw new ValidationError(`Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later and the Playwright runtime, got ${props.runtime.name}.`, this);
+    }
+
+    const encryptionMode = props.artifactS3EncryptionMode ? props.artifactS3EncryptionMode :
+      props.artifactS3KmsKey ? ArtifactsEncryptionMode.KMS : undefined;
+
+    let encryptionKey: kms.IKey | undefined;
+    if (encryptionMode === ArtifactsEncryptionMode.KMS) {
+      encryptionKey = props.artifactS3KmsKey ?? new kms.Key(this, 'Key', { description: `Created by ${this.node.path}` });
+    }
+
+    encryptionKey?.grantEncryptDecrypt(this.role);
+
+    return {
+      s3Encryption: {
+        encryptionMode,
+        kmsKeyArn: encryptionKey?.keyArn,
+      },
     };
   }
 
@@ -604,10 +862,10 @@ const nameRegex: RegExp = /^[0-9a-z_\-]+$/;
  * @param name - the given name of the canary
  */
 function validateName(name: string) {
-  if (name.length > 21) {
-    throw new Error(`Canary name is too large, must be between 1 and 21 characters, but is ${name.length} (got "${name}")`);
+  if (name.length > 255) {
+    throw new UnscopedValidationError(`Canary name is too large, must be between 1 and 255 characters, but is ${name.length} (got "${name}")`);
   }
   if (!nameRegex.test(name)) {
-    throw new Error(`Canary name must be lowercase, numbers, hyphens, or underscores (got "${name}")`);
+    throw new UnscopedValidationError(`Canary name must be lowercase, numbers, hyphens, or underscores (got "${name}")`);
   }
 }

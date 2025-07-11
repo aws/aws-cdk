@@ -1,0 +1,14 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "integrationtest-sagemaker-start-pipeline-execution/DefaultTest": {
+      "stacks": [
+        "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert",
+      "assertionStackName": "integrationtestsagemakerstartpipelineexecutionDefaultTestDeployAssert19EB5121"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

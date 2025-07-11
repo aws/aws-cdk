@@ -1,0 +1,12 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "IotAuditConfigurationTest/DefaultTest": {
+      "stacks": [
+        "IotAuditConfigurationTestStack"
+      ],
+      "assertionStack": "IotAuditConfigurationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IotAuditConfigurationTestDefaultTestDeployAssert6A603D00"
+    }
+  }
+}

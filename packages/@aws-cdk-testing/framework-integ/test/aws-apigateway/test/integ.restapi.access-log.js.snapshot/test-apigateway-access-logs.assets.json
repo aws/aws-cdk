@@ -1,7 +1,8 @@
 {
-  "version": "21.0.0",
+  "version": "44.0.0",
   "files": {
-    "0605fe9fb02ad31c3236b358b7605999f20ba079969b6fad8e9cd3878d869ee6": {
+    "d57c778c0e7dcd2363421806a4d1df676740c6be3ce0121e591650bbd6ab39f8": {
+      "displayName": "test-apigateway-access-logs Template",
       "source": {
         "path": "test-apigateway-access-logs.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0605fe9fb02ad31c3236b358b7605999f20ba079969b6fad8e9cd3878d869ee6.json",
+          "objectKey": "d57c778c0e7dcd2363421806a4d1df676740c6be3ce0121e591650bbd6ab39f8.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

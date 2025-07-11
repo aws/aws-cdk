@@ -1,0 +1,13 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "integ-test-custom-resource-config-removal-policy-logGroup/DefaultTest": {
+      "stacks": [
+        "MyStack"
+      ],
+      "diffAssets": false,
+      "assertionStack": "integ-test-custom-resource-config-removal-policy-logGroup/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestcustomresourceconfigremovalpolicylogGroupDefaultTestDeployAssert3B9FD773"
+    }
+  }
+}

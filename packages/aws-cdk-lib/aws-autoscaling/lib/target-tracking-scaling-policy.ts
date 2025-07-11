@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScalingPolicy } from './autoscaling.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { Duration } from '../../core';
+import { Duration, ValidationError } from '../../core';
 
 /**
  * Base interface for target tracking props
@@ -110,19 +110,19 @@ export class TargetTrackingScalingPolicy extends Construct {
   private resource: CfnScalingPolicy;
 
   constructor(scope: Construct, id: string, props: TargetTrackingScalingPolicyProps) {
+    super(scope, id);
+
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
-      throw new Error('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.');
+      throw new ValidationError('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.', this);
     }
 
     if (props.predefinedMetric === PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET && !props.resourceLabel) {
-      throw new Error('When tracking the ALBRequestCountPerTarget metric, the ALB identifier must be supplied in resourceLabel');
+      throw new ValidationError('When tracking the ALBRequestCountPerTarget metric, the ALB identifier must be supplied in resourceLabel', this);
     }
 
     if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
-      throw new Error('Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.');
+      throw new ValidationError('Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.', this);
     }
-
-    super(scope, id);
 
     this.resource = new CfnScalingPolicy(this, 'Resource', {
       policyType: 'TargetTrackingScaling',

@@ -1,0 +1,699 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "cluster-replication.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cluster-replication.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cluster-replication": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cluster-replication.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9d255bf88332928597c7fafa86e3de2059114c045ec73a946038fd011bdf2628.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cluster-replication.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cluster-replication.assets"
+      ],
+      "metadata": {
+        "/cluster-replication/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*",
+              "restrictDefaultSecurityGroup": false
+            }
+          }
+        ],
+        "/cluster-replication/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/cluster-replication/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cluster-replication/VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1SubnetB4246D30"
+          }
+        ],
+        "/cluster-replication/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/cluster-replication/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+          }
+        ],
+        "/cluster-replication/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/cluster-replication/VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EIP6AD938E8"
+          }
+        ],
+        "/cluster-replication/VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
+          }
+        ],
+        "/cluster-replication/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cluster-replication/VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39"
+          }
+        ],
+        "/cluster-replication/VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+          }
+        ],
+        "/cluster-replication/VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+          }
+        ],
+        "/cluster-replication/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/cluster-replication/VPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2EIP4947BC00"
+          }
+        ],
+        "/cluster-replication/VPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2NATGateway3C070193"
+          }
+        ],
+        "/cluster-replication/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/cluster-replication/VPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+          }
+        ],
+        "/cluster-replication/VPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+          }
+        ],
+        "/cluster-replication/VPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+          }
+        ],
+        "/cluster-replication/VPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/cluster-replication/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/cluster-replication/VPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          }
+        ],
+        "/cluster-replication/VPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+          }
+        ],
+        "/cluster-replication/VPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+          }
+        ],
+        "/cluster-replication/VPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+          }
+        ],
+        "/cluster-replication/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/cluster-replication/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/cluster-replication/PrimaryDatabase": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "engine": {
+                "engineType": "*",
+                "singleUserRotationApplication": "*",
+                "engineVersion": {
+                  "fullVersion": "*",
+                  "majorVersion": "*"
+                },
+                "parameterGroupFamily": "*",
+                "engineFamily": "*",
+                "supportedLogTypes": "*",
+                "combineImportAndExportRoles": true
+              },
+              "writer": "*",
+              "parameters": "*",
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/cluster-replication/PrimaryDatabase/Subnets": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "removalPolicy": "*"
+            }
+          }
+        ],
+        "/cluster-replication/PrimaryDatabase/Subnets/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrimaryDatabaseSubnetsD4530836"
+          }
+        ],
+        "/cluster-replication/PrimaryDatabase/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
+          }
+        ],
+        "/cluster-replication/PrimaryDatabase/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrimaryDatabaseSecurityGroup6794A59A"
+          }
+        ],
+        "/cluster-replication/PrimaryDatabase/ParameterGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "engine": {
+                "engineType": "*",
+                "engineVersion": {
+                  "fullVersion": "*",
+                  "majorVersion": "*"
+                },
+                "parameterGroupFamily": "*",
+                "engineFamily": "*"
+              },
+              "parameters": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "bindToCluster": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cluster-replication/PrimaryDatabase/ParameterGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrimaryDatabaseParameterGroupFAD47BFE"
+          }
+        ],
+        "/cluster-replication/PrimaryDatabase/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryptionKey": "*",
+              "secretName": "*",
+              "replicaRegions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "username": "*",
+              "secretName": "*",
+              "encryptionKey": "*",
+              "excludeCharacters": "*",
+              "replaceOnPasswordCriteriaChanges": "*",
+              "replicaRegions": "*"
+            }
+          }
+        ],
+        "/cluster-replication/PrimaryDatabase/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrimaryDatabaseSecret74EE369B"
+          }
+        ],
+        "/cluster-replication/PrimaryDatabase/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/cluster-replication/PrimaryDatabase/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrimaryDatabaseSecretAttachment63373E61"
+          }
+        ],
+        "/cluster-replication/PrimaryDatabase/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrimaryDatabase4D634A5D"
+          }
+        ],
+        "/cluster-replication/PrimaryDatabase/WriterInstance": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cluster-replication/PrimaryDatabase/WriterInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrimaryDatabaseWriterInstance80606E4C"
+          }
+        ],
+        "/cluster-replication/ReplicaDatabase": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "engine": {
+                "engineType": "*",
+                "singleUserRotationApplication": "*",
+                "engineVersion": {
+                  "fullVersion": "*",
+                  "majorVersion": "*"
+                },
+                "parameterGroupFamily": "*",
+                "engineFamily": "*",
+                "supportedLogTypes": "*",
+                "combineImportAndExportRoles": true
+              },
+              "writer": "*",
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/cluster-replication/ReplicaDatabase/Subnets": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "removalPolicy": "*"
+            }
+          }
+        ],
+        "/cluster-replication/ReplicaDatabase/Subnets/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReplicaDatabaseSubnets068D0B5B"
+          }
+        ],
+        "/cluster-replication/ReplicaDatabase/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
+          }
+        ],
+        "/cluster-replication/ReplicaDatabase/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReplicaDatabaseSecurityGroup8AD3CC39"
+          }
+        ],
+        "/cluster-replication/ReplicaDatabase/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryptionKey": "*",
+              "secretName": "*",
+              "replicaRegions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "username": "*",
+              "secretName": "*",
+              "encryptionKey": "*",
+              "excludeCharacters": "*",
+              "replaceOnPasswordCriteriaChanges": "*",
+              "replicaRegions": "*"
+            }
+          }
+        ],
+        "/cluster-replication/ReplicaDatabase/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReplicaDatabaseSecretBCC2A9CF"
+          }
+        ],
+        "/cluster-replication/ReplicaDatabase/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/cluster-replication/ReplicaDatabase/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReplicaDatabaseSecretAttachment99343C66"
+          }
+        ],
+        "/cluster-replication/ReplicaDatabase/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReplicaDatabaseD9DBA763"
+          }
+        ],
+        "/cluster-replication/ReplicaDatabase/ReplicaInstance": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cluster-replication/ReplicaDatabase/ReplicaInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReplicaDatabaseReplicaInstance6EDB89B1"
+          }
+        ],
+        "/cluster-replication/Exports/Output{\"Ref\":\"PrimaryDatabase4D634A5D\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefPrimaryDatabase4D634A5D33CD85BB"
+          }
+        ],
+        "/cluster-replication/Exports/Output{\"Ref\":\"ReplicaDatabaseD9DBA763\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefReplicaDatabaseD9DBA76369E771EF"
+          }
+        ],
+        "/cluster-replication/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cluster-replication/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cluster-replication"
+    },
+    "clusterreplicationintegDefaultTestDeployAssert7E5188AB.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "clusterreplicationintegDefaultTestDeployAssert7E5188AB.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "clusterreplicationintegDefaultTestDeployAssert7E5188AB": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "clusterreplicationintegDefaultTestDeployAssert7E5188AB.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe94f438745148ecf70f576f1485331a1603640422f646606621d5765d3cee5f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "clusterreplicationintegDefaultTestDeployAssert7E5188AB.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cluster-replication",
+        "clusterreplicationintegDefaultTestDeployAssert7E5188AB.assets"
+      ],
+      "metadata": {
+        "/cluster-replication-integ/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBClustersb11cbf3440b8279dc2a08d2690818149/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/cluster-replication-integ/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBClustersb11cbf3440b8279dc2a08d2690818149/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallRDSdescribeDBClustersb11cbf3440b8279dc2a08d2690818149"
+          }
+        ],
+        "/cluster-replication-integ/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBClustersb11cbf3440b8279dc2a08d2690818149/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallRDSdescribeDBClustersb11cbf3440b8279dc2a08d2690818149"
+          }
+        ],
+        "/cluster-replication-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/cluster-replication-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/cluster-replication-integ/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/cluster-replication-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cluster-replication-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cluster-replication-integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

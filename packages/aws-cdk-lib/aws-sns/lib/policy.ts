@@ -3,6 +3,8 @@ import { CfnTopicPolicy } from './sns.generated';
 import { ITopic } from './topic-base';
 import { Effect, PolicyDocument, PolicyStatement, StarPrincipal } from '../../aws-iam';
 import { Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties to associate SNS topics with a policy
@@ -43,7 +45,13 @@ export interface TopicPolicyProps {
  *
  * Prefer to use `addToResourcePolicy()` instead.
  */
+@propertyInjectable
 export class TopicPolicy extends Resource {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-sns.TopicPolicy';
+
   /**
    * The IAM policy document for this policy.
    */
@@ -57,6 +65,8 @@ export class TopicPolicy extends Resource {
 
   constructor(scope: Construct, id: string, props: TopicPolicyProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.document = props.policyDocument ?? this.document;
 

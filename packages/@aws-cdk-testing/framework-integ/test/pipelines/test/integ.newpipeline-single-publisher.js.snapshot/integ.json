@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "PipelineStackSinglePublisher-integ/DefaultTest": {
+      "stacks": [
+        "PipelineStackSinglePublisher"
+      ],
+      "assertionStack": "PipelineStackSinglePublisher-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "PipelineStackSinglePublisherintegDefaultTestDeployAssertCDD49B07"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

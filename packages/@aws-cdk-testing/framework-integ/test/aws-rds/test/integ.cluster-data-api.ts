@@ -4,7 +4,11 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'cluster-data-api');
 const vpc = new ec2.Vpc(stack, 'VPC');

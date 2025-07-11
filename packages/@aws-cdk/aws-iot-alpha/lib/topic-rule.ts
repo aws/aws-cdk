@@ -3,6 +3,8 @@ import { Construct } from 'constructs';
 import { IAction } from './action';
 import { IotSql } from './iot-sql';
 import { CfnTopicRule } from 'aws-cdk-lib/aws-iot';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents an AWS IoT Rule
@@ -73,7 +75,11 @@ export interface TopicRuleProps {
 /**
  * Defines an AWS IoT Rule in this stack.
  */
+@propertyInjectable
 export class TopicRule extends Resource implements ITopicRule {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-iot-alpha.TopicRule';
+
   /**
    * Import an existing AWS IoT Rule provided an ARN
    *
@@ -115,6 +121,8 @@ export class TopicRule extends Resource implements ITopicRule {
     super(scope, id, {
       physicalName: props.topicRuleName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const sqlConfig = props.sql.bind(this);
 
@@ -147,6 +155,7 @@ export class TopicRule extends Resource implements ITopicRule {
    *
    * @param action the action to associate with the topic rule.
    */
+  @MethodMetadata()
   public addAction(action: IAction): void {
     const { configuration } = action._bind(this);
 

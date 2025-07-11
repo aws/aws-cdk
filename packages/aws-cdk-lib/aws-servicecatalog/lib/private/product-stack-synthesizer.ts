@@ -1,6 +1,7 @@
 import { CfnBucket, IBucket, Bucket } from '../../../aws-s3';
 import { BucketDeployment, ServerSideEncryption, Source } from '../../../aws-s3-deployment';
 import * as cdk from '../../../core';
+import { UnscopedValidationError } from '../../../core';
 
 /**
  * Product stack synthesizer props.
@@ -73,7 +74,7 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
 
   public addFileAsset(asset: cdk.FileAssetSource): cdk.FileAssetLocation {
     if (!this.assetBucket) {
-      throw new Error('An Asset Bucket must be provided to use Assets');
+      throw new UnscopedValidationError('An Asset Bucket must be provided to use Assets');
     }
 
     // This assumes all assets added to the parent stack's synthesizer go into the same bucket.
@@ -85,10 +86,10 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     const source = Source.bucket(this.parentAssetBucket, location.objectKey);
 
     if (this.serverSideEncryption === ServerSideEncryption.AWS_KMS && !this.serverSideEncryptionAwsKmsKeyId) {
-      throw new Error('A KMS Key must be provided to use SSE_KMS');
+      throw new UnscopedValidationError('A KMS Key must be provided to use SSE_KMS');
     }
     if (this.serverSideEncryption !== ServerSideEncryption.AWS_KMS && this.serverSideEncryptionAwsKmsKeyId) {
-      throw new Error('A SSE_KMS encryption must be enabled if you provide KMS Key');
+      throw new UnscopedValidationError('A SSE_KMS encryption must be enabled if you provide KMS Key');
     }
 
     // Multiple Products deploying into the same bucket will use the same 'BucketDeployment' construct.
@@ -104,12 +105,13 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
         serverSideEncryption: this.serverSideEncryption,
         serverSideEncryptionAwsKmsKeyId: this.serverSideEncryptionAwsKmsKeyId,
         memoryLimit: this.memoryLimit,
+        outputObjectKeys: false,
       });
     bucketDeployment.addSource(source);
 
     const bucketName = this.physicalNameOfBucket(this.assetBucket);
     if (!asset.fileName) {
-      throw new Error('Asset file name is undefined');
+      throw new UnscopedValidationError('Asset file name is undefined');
     }
     const s3ObjectUrl = `s3://${bucketName}/${objectKey}`;
     const httpUrl = `https://s3.${bucketName}/${objectKey}`;
@@ -125,13 +127,13 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
       resolvedName = bucket.bucketName;
     }
     if (resolvedName === undefined) {
-      throw new Error('A bucketName must be provided to use Assets');
+      throw new UnscopedValidationError('A bucketName must be provided to use Assets');
     }
     return resolvedName;
   }
 
   public addDockerImageAsset(_asset: cdk.DockerImageAssetSource): cdk.DockerImageAssetLocation {
-    throw new Error('Service Catalog Product Stacks cannot use Assets');
+    throw new UnscopedValidationError('Service Catalog Product Stacks cannot use Assets');
   }
 
   public synthesize(session: cdk.ISynthesisSession): void {

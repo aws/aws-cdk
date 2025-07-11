@@ -1,8 +1,0 @@
-
-dist
-.LAST_PACKAGE
-.LAST_BUILD
-*.snk
-
-junit.xml
-!.eslintrc.js

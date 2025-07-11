@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "44.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "cdk-integ-opensearch-advancedsecurity.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-opensearch-advancedsecurity.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/522e09487c90fcc860287ca2bc02423c66b430f2ada1fc7a5595e16f4ea8cf3d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d8cead3c6b96b35c6a684173b16824b9b848ade9b353ee8932be1d2506a9747b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,10 +34,36 @@
         "cdk-integ-opensearch-advancedsecurity.assets"
       ],
       "metadata": {
+        "/cdk-integ-opensearch-advancedsecurity/User": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-integ-opensearch-advancedsecurity/User/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "User00B015A1"
+          }
+        ],
+        "/cdk-integ-opensearch-advancedsecurity/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "version": "*",
+              "fineGrainedAccessControl": {
+                "masterUserArn": "*"
+              },
+              "encryptionAtRest": {
+                "enabled": true
+              },
+              "nodeToNodeEncryption": true,
+              "enforceHttps": true,
+              "capacity": {
+                "multiAzWithStandbyEnabled": false
+              }
+            }
           }
         ],
         "/cdk-integ-opensearch-advancedsecurity/Domain/Resource": [
@@ -65,6 +86,13 @@
         ]
       },
       "displayName": "cdk-integ-opensearch-advancedsecurity"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

@@ -3,6 +3,8 @@ import { Construct } from 'constructs';
 import { IFleet } from './fleet-base';
 import { IGameSessionQueueDestination } from './game-session-queue';
 import { CfnAlias } from 'aws-cdk-lib/aws-gamelift';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents a Gamelift Alias for a Gamelift fleet destination.
@@ -132,7 +134,11 @@ export abstract class AliasBase extends cdk.Resource implements IAlias {
  *
  * @resource AWS::GameLift::Alias
  */
+@propertyInjectable
 export class Alias extends AliasBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-gamelift-alpha.Alias';
+
   /**
    * Import an existing alias from its identifier.
    */
@@ -186,8 +192,8 @@ export class Alias extends AliasBase {
   public readonly aliasId: string;
 
   /**
-    * The ARN of the alias.
-    */
+   * The ARN of the alias.
+   */
   public readonly aliasArn: string;
 
   /**
@@ -199,6 +205,8 @@ export class Alias extends AliasBase {
     super(scope, id, {
       physicalName: props.aliasName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!cdk.Token.isUnresolved(props.aliasName)) {
       if (props.aliasName.length > 1024) {

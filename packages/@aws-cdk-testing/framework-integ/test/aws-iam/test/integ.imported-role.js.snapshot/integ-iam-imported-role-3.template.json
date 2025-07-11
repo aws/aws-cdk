@@ -1,0 +1,158 @@
+{
+ "Resources": {
+  "roleToBeImportedCAC1213C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sqs.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": "mutableRoleToBeImported"
+   }
+  },
+  "ManagedPolicy7BAB786E": {
+   "Type": "AWS::IAM::ManagedPolicy",
+   "Properties": {
+    "Description": "",
+    "ManagedPolicyName": "MyCustomManagedPolicy2",
+    "Path": "/",
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:ListBucket",
+       "Effect": "Allow",
+       "Resource": "arn:aws:s3:::my-bucket"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Roles": [
+     {
+      "Fn::Select": [
+       1,
+       {
+        "Fn::Split": [
+         "/",
+         {
+          "Fn::Select": [
+           5,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::GetAtt": [
+               "roleToBeImportedCAC1213C",
+               "Arn"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "ManagedPolicy135BDEF37": {
+   "Type": "AWS::IAM::ManagedPolicy",
+   "Properties": {
+    "Description": "",
+    "ManagedPolicyName": "MyCustomManagedPolicy1",
+    "Path": "/",
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:ListBucket",
+       "Effect": "Allow",
+       "Resource": "arn:aws:s3:::my-bucket"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Roles": [
+     {
+      "Fn::Select": [
+       1,
+       {
+        "Fn::Split": [
+         "/",
+         {
+          "Fn::Select": [
+           5,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::GetAtt": [
+               "roleToBeImportedCAC1213C",
+               "Arn"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefroleToBeImportedCAC1213CDE38D2C6": {
+   "Value": {
+    "Ref": "roleToBeImportedCAC1213C"
+   },
+   "Export": {
+    "Name": "integ-iam-imported-role-3:ExportsOutputRefroleToBeImportedCAC1213CDE38D2C6"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

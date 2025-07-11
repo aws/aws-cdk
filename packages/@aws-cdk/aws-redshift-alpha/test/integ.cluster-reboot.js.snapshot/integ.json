@@ -1,15 +1,16 @@
 {
-  "version": "36.0.0",
+  "version": "45.0.0",
   "testCases": {
     "aws-cdk-redshift-reboot-test/DefaultTest": {
       "stacks": [
-        "aws-cdk-redshift-cluster-create",
-        "aws-cdk-redshift-cluster-update"
+        "MultiAzRedshift/aws-cdk-redshift-cluster-create",
+        "MultiAzRedshift/aws-cdk-redshift-cluster-update"
       ],
       "diffAssets": false,
       "stackUpdateWorkflow": false,
       "assertionStack": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkredshiftreboottestDefaultTestDeployAssert1AE11B34"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

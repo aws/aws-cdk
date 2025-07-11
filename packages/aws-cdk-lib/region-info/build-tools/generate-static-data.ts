@@ -18,9 +18,9 @@ import {
 import { AWS_CDK_METADATA } from './metadata';
 import {
   AWS_REGIONS,
-  before,
   RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN,
   RULE_CLASSIC_PARTITION_BECOMES_OPT_IN,
+  AWS_REGIONS_AND_RULES,
 } from '../lib/aws-entities';
 
 export async function main(): Promise<void> {
@@ -99,7 +99,6 @@ export async function main(): Promise<void> {
     for (const version in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS) {
       for (const arch in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version]) {
         registerFact(region, ['cloudwatchLambdaInsightsVersion', version, arch], CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version][arch][region]);
-
       }
     }
 
@@ -166,13 +165,26 @@ function checkRegionsSubMap(map: Record<string, Record<string, Record<string, un
           throw new Error(`Un-registered region fact found: ${region}. Add to AWS_REGIONS list!`);
         }
       }
-
     }
   }
 }
 
-export function after(region: string, ruleOrRegion: string | symbol) {
+function after(region: string, ruleOrRegion: string | symbol) {
   return region !== ruleOrRegion && !before(region, ruleOrRegion);
+}
+
+/**
+ * Whether or not a region predates a given rule (or region).
+ *
+ * Unknown region => we have to assume no.
+ */
+function before(region: string, ruleOrRegion: string | symbol) {
+  const ruleIx = AWS_REGIONS_AND_RULES.indexOf(ruleOrRegion);
+  if (ruleIx === -1) {
+    throw new Error(`Unknown rule: ${String(ruleOrRegion)}`);
+  }
+  const regionIx = AWS_REGIONS_AND_RULES.indexOf(region);
+  return regionIx === -1 ? false : regionIx < ruleIx;
 }
 
 main().catch(e => {

@@ -3,6 +3,9 @@ import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
 import { CfnTagOption } from './servicecatalog.generated';
 import * as cdk from '../../core';
+import { ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for TagOptions.
@@ -23,7 +26,10 @@ export interface TagOptionsProps {
  *
  * @resource AWS::ServiceCatalog::TagOption
  */
+@propertyInjectable
 export class TagOptions extends cdk.Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicecatalog.TagOptions';
   /**
    * List of underlying CfnTagOption resources.
    *
@@ -33,13 +39,15 @@ export class TagOptions extends cdk.Resource {
 
   constructor(scope: Construct, id: string, props: TagOptionsProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this._cfnTagOptions = this.createUnderlyingTagOptions(props.allowedValuesForTags);
   }
 
   private createUnderlyingTagOptions(allowedValuesForTags: { [tagKey: string]: string[] }): CfnTagOption[] {
     if (Object.keys(allowedValuesForTags).length === 0) {
-      throw new Error(`No tag option keys or values were provided for resource ${this.node.path}`);
+      throw new ValidationError(`No tag option keys or values were provided for resource ${this.node.path}`, this);
     }
     var tagOptions: CfnTagOption[] = [];
 
@@ -48,7 +56,7 @@ export class TagOptions extends cdk.Resource {
 
       const uniqueTagValues = new Set(tagValues);
       if (uniqueTagValues.size === 0) {
-        throw new Error(`No tag option values were provided for tag option key ${tagKey} for resource ${this.node.path}`);
+        throw new ValidationError(`No tag option values were provided for tag option key ${tagKey} for resource ${this.node.path}`, this);
       }
       uniqueTagValues.forEach((tagValue: string) => {
         InputValidator.validateLength(this.node.addr, 'TagOption value', 1, 256, tagValue);

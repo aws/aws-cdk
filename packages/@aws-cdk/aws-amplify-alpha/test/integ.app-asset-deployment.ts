@@ -18,7 +18,12 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new TestStack(app, 'cdk-amplify-app-asset-deployment');
 
 // Deploying the stack is sufficient to test the custom resources
@@ -26,5 +31,4 @@ const stack = new TestStack(app, 'cdk-amplify-app-asset-deployment');
 // On updating the asset file and re-deploying it updates the existing Amplify app with the new change.
 new IntegTest(app, 'cdk-amplify-app-integ-test', {
   testCases: [stack],
-  diffAssets: true,
 });

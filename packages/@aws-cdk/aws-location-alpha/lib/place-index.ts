@@ -1,7 +1,10 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from 'aws-cdk-lib/core';
+import { ArnFormat, IResource, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnPlaceIndex } from 'aws-cdk-lib/aws-location';
+import { DataSource, generateUniqueId } from './util';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * A Place Index
@@ -28,6 +31,9 @@ export interface IPlaceIndex extends IResource {
 export interface PlaceIndexProps {
   /**
    * A name for the place index
+   *
+   * Must be between 1 and 100 characters and contain only alphanumeric characters,
+   * hyphens, periods and underscores.
    *
    * @default - A name is automatically generated
    */
@@ -56,25 +62,6 @@ export interface PlaceIndexProps {
 }
 
 /**
- * Data source for a place index
- */
-export enum DataSource {
-  /**
-   * Esri
-   *
-   * @see https://docs.aws.amazon.com/location/latest/developerguide/esri.html
-   */
-  ESRI = 'Esri',
-
-  /**
-   * HERE
-   *
-   * @see https://docs.aws.amazon.com/location/latest/developerguide/HERE.html
-   */
-  HERE = 'Here',
-}
-
-/**
  * Intend use for the results of an operation
  */
 export enum IntendedUse {
@@ -89,39 +76,16 @@ export enum IntendedUse {
   STORAGE = 'Storage',
 }
 
-abstract class PlaceIndexBase extends Resource implements IPlaceIndex {
-  public abstract readonly placeIndexName: string;
-  public abstract readonly placeIndexArn: string;
-
-  /**
-   * Grant the given principal identity permissions to perform the actions on this place index.
-   */
-  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: grantee,
-      actions: actions,
-      resourceArns: [this.placeIndexArn],
-    });
-  }
-
-  /**
-   * Grant the given identity permissions to search using this index
-   */
-  public grantSearch(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'geo:SearchPlaceIndexForPosition',
-      'geo:SearchPlaceIndexForSuggestions',
-      'geo:SearchPlaceIndexForText',
-    );
-  }
-}
-
 /**
  * A Place Index
  *
  * @see https://docs.aws.amazon.com/location/latest/developerguide/places-concepts.html
  */
-export class PlaceIndex extends PlaceIndexBase {
+@propertyInjectable
+export class PlaceIndex extends Resource implements IPlaceIndex {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-location-alpha.PlaceIndex';
+
   /**
    * Use an existing place index by name
    */
@@ -142,10 +106,10 @@ export class PlaceIndex extends PlaceIndexBase {
     const parsedArn = Stack.of(scope).splitArn(placeIndexArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new Error(`Place Index Arn ${placeIndexArn} does not have a resource name.`);
+      throw new UnscopedValidationError(`Place Index Arn ${placeIndexArn} does not have a resource name.`);
     }
 
-    class Import extends PlaceIndexBase {
+    class Import extends Resource implements IPlaceIndex {
       public readonly placeIndexName = parsedArn.resourceName!;
       public readonly placeIndexArn = placeIndexArn;
     }
@@ -161,7 +125,7 @@ export class PlaceIndex extends PlaceIndexBase {
   public readonly placeIndexArn: string;
 
   /**
-   * The timestamp for when the place index resource was created in ISO 8601 forma
+   * The timestamp for when the place index resource was created in ISO 8601 format
    *
    * @attribute
    */
@@ -175,13 +139,25 @@ export class PlaceIndex extends PlaceIndexBase {
   public readonly placeIndexUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: PlaceIndexProps = {}) {
-    if (props.placeIndexName && !Token.isUnresolved(props.placeIndexName) && !/^[-.\w]{1,100}$/.test(props.placeIndexName)) {
-      throw new Error(`Invalid place index name. The place index name must be between 1 and 100 characters and contain only alphanumeric characters, hyphens, periods and underscores. Received: ${props.placeIndexName}`);
+    super(scope, id, {
+      physicalName: props.placeIndexName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
+    });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
+      throw new ValidationError(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
     }
 
-    super(scope, id, {
-      physicalName: props.placeIndexName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
-    });
+    if (props.placeIndexName !== undefined && !Token.isUnresolved(props.placeIndexName)) {
+      if (props.placeIndexName.length < 1 || props.placeIndexName.length > 100) {
+        throw new ValidationError(`\`placeIndexName\` must be between 1 and 100 characters, got: ${props.placeIndexName.length} characters.`, this);
+      }
+
+      if (!/^[-._\w]+$/.test(props.placeIndexName)) {
+        throw new ValidationError(`\`placeIndexName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.placeIndexName}.`, this);
+      }
+    }
 
     const placeIndex = new CfnPlaceIndex(this, 'Resource', {
       indexName: this.physicalName,
@@ -198,11 +174,27 @@ export class PlaceIndex extends PlaceIndexBase {
     this.placeIndexUpdateTime = placeIndex.attrUpdateTime;
   }
 
-  private generateUniqueId(): string {
-    const name = Names.uniqueId(this);
-    if (name.length > 100) {
-      return name.substring(0, 50) + name.substring(name.length - 50);
-    }
-    return name;
+  /**
+   * Grant the given principal identity permissions to perform the actions on this place index.
+   */
+  @MethodMetadata()
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: grantee,
+      actions: actions,
+      resourceArns: [this.placeIndexArn],
+    });
+  }
+
+  /**
+   * Grant the given identity permissions to search using this index
+   */
+  @MethodMetadata()
+  public grantSearch(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee,
+      'geo:SearchPlaceIndexForPosition',
+      'geo:SearchPlaceIndexForSuggestions',
+      'geo:SearchPlaceIndexForText',
+    );
   }
 }

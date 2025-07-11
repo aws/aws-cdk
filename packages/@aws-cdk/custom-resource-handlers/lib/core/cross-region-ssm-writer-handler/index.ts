@@ -1,4 +1,4 @@
-/*eslint-disable no-console*/
+/* eslint-disable no-console*/
 /* eslint-disable import/no-extraneous-dependencies */
 import { SSM } from '@aws-sdk/client-ssm';
 import { CrossRegionExports, ExportWriterCRProps } from '../types';
@@ -53,12 +53,14 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     console.error('Error processing event: ', e);
     throw e;
   }
-};
+}
 
 /**
  * Create parameters for existing exports
  */
 async function putParameters(ssm: SSM, parameters: CrossRegionExports): Promise<void> {
+  // This linter exemption could be wrong. It is added into enable linting after it was turned off for some time
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   await Promise.all(Array.from(Object.entries(parameters), ([name, value]) => {
     return ssm.putParameter({
       Name: name,
@@ -94,6 +96,8 @@ async function deleteParameters(ssm: SSM, names: string[]) {
  */
 async function throwIfAnyInUse(ssm: SSM, parameters: CrossRegionExports): Promise<void> {
   const tagResults: Map<string, Set<string>> = new Map();
+  // This linter exemption could be wrong. It is added into enable linting after it was turned off for some time
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   await Promise.all(Object.keys(parameters).map(async (name: string) => {
     const result = await isInUse(ssm, name);
     if (result.size > 0) {

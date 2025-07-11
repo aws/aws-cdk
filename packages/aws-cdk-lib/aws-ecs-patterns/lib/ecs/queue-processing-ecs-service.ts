@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
-import { FeatureFlags } from '../../../core';
+import { FeatureFlags, ValidationError } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
@@ -82,7 +82,7 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
    * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    *
    * @default - No strategies.
-  */
+   */
   readonly placementStrategies?: PlacementStrategy[];
 }
 
@@ -90,7 +90,6 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
  * Class to create a queue processing EC2 service.
  */
 export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
-
   /**
    * The EC2 service in this construct.
    */
@@ -107,7 +106,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
     super(scope, id, props);
 
     if (!props.image) {
-      throw new Error('image must be specified for EC2 queue processing service');
+      throw new ValidationError('image must be specified for EC2 queue processing service', this);
     }
 
     const containerName = props.containerName ?? 'QueueProcessingContainer';

@@ -5,6 +5,8 @@ import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from '.
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for a CrossAccountDestination
@@ -43,7 +45,10 @@ export interface CrossAccountDestinationProps {
  *
  * @resource AWS::Logs::Destination
  */
+@propertyInjectable
 export class CrossAccountDestination extends cdk.Resource implements ILogSubscriptionDestination {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.CrossAccountDestination';
   /**
    * Policy object of this CrossAccountDestination object
    */
@@ -72,6 +77,8 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
         // In the underlying model, the name is not optional, but we make it so anyway.
         cdk.Lazy.string({ produce: () => this.generateUniqueName() }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.resource = new CfnDestination(this, 'Resource', {
       destinationName: this.physicalName!,
@@ -90,10 +97,12 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
     this.destinationName = this.getResourceNameAttribute(this.resource.ref);
   }
 
+  @MethodMetadata()
   public addToPolicy(statement: iam.PolicyStatement) {
     this.policyDocument.addStatements(statement);
   }
 
+  @MethodMetadata()
   public bind(_scope: Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig {
     return { arn: this.destinationArn };
   }

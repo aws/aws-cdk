@@ -5,7 +5,12 @@ import { Duration } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult, Match } from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  treeMetadata: false,
+  postCliContext: {
+    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-with-pipeline-variables');
 

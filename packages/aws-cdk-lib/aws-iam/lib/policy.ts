@@ -7,7 +7,9 @@ import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFrag
 import { generatePolicyName, undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
-import { IResource, Lazy, Resource } from '../../core';
+import { IResource, Lazy, Resource, UnscopedValidationError } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an IAM Policy
@@ -102,7 +104,12 @@ export interface PolicyProps {
  * [Overview of IAM Policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/policies_overview.html)
  * in the IAM User Guide guide.
  */
+@propertyInjectable
 export class Policy extends Resource implements IPolicy, IGrantable {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.Policy';
 
   /**
    * Import a policy in this app based on its name
@@ -137,6 +144,8 @@ export class Policy extends Resource implements IPolicy, IGrantable {
         // that shouod be sufficient to ensure uniqueness within a principal.
         Lazy.string({ produce: () => generatePolicyName(scope, resource.logicalId) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const self = this;
 
@@ -190,6 +199,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
   /**
    * Adds a statement to the policy document.
    */
+  @MethodMetadata()
   public addStatements(...statement: PolicyStatement[]) {
     this.document.addStatements(...statement);
   }
@@ -197,6 +207,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
   /**
    * Attaches this policy to a user.
    */
+  @MethodMetadata()
   public attachToUser(user: IUser) {
     if (this.users.find(u => u.userArn === user.userArn)) { return; }
     this.users.push(user);
@@ -206,6 +217,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
   /**
    * Attaches this policy to a role.
    */
+  @MethodMetadata()
   public attachToRole(role: IRole) {
     if (this.roles.find(r => r.roleArn === role.roleArn)) { return; }
     this.roles.push(role);
@@ -215,6 +227,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
   /**
    * Attaches this policy to a group.
    */
+  @MethodMetadata()
   public attachToGroup(group: IGroup) {
     if (this.groups.find(g => g.groupArn === group.groupArn)) { return; }
     this.groups.push(group);
@@ -281,7 +294,7 @@ class PolicyGrantPrincipal implements IPrincipal {
     // This property is referenced to add policy statements as a resource-based policy.
     // We should fail because a policy cannot be used as a principal of a policy document.
     // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
-    throw new Error(`Cannot use a Policy '${this._policy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
+    throw new UnscopedValidationError(`Cannot use a Policy '${this._policy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {

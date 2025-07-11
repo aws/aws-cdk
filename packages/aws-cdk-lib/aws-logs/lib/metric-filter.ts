@@ -2,7 +2,9 @@ import { Construct } from 'constructs';
 import { ILogGroup, MetricFilterOptions } from './log-group';
 import { CfnMetricFilter } from './logs.generated';
 import { Metric, MetricOptions } from '../../aws-cloudwatch';
-import { Resource } from '../../core';
+import { Resource, ValidationError } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for a MetricFilter
@@ -17,22 +19,28 @@ export interface MetricFilterProps extends MetricFilterOptions {
 /**
  * A filter that extracts information from CloudWatch Logs and emits to CloudWatch Metrics
  */
+@propertyInjectable
 export class MetricFilter extends Resource {
-
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.MetricFilter';
   private readonly metricName: string;
   private readonly metricNamespace: string;
+  private readonly metricDimensions?: Record<string, string>;
 
   constructor(scope: Construct, id: string, props: MetricFilterProps) {
     super(scope, id, {
       physicalName: props.filterName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.metricName = props.metricName;
     this.metricNamespace = props.metricNamespace;
+    this.metricDimensions = props.dimensions;
 
     const numberOfDimensions = Object.keys(props.dimensions ?? {}).length;
     if (numberOfDimensions > 3) {
-      throw new Error(`MetricFilter only supports a maximum of 3 dimensions but received ${numberOfDimensions}.`);
+      throw new ValidationError(`MetricFilter only supports a maximum of 3 dimensions but received ${numberOfDimensions}.`, this);
     }
 
     // It looks odd to map this object to a singleton list, but that's how
@@ -63,10 +71,12 @@ export class MetricFilter extends Resource {
    *
    * @default avg over 5 minutes
    */
+  @MethodMetadata()
   public metric(props?: MetricOptions): Metric {
     return new Metric({
       metricName: this.metricName,
       namespace: this.metricNamespace,
+      dimensionsMap: this.metricDimensions,
       statistic: 'avg',
       ...props,
     }).attachTo(this);

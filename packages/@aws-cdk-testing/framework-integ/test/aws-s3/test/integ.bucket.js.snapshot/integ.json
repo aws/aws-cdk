@@ -1,5 +1,5 @@
 {
-  "version": "30.1.0",
+  "version": "38.0.1",
   "testCases": {
     "cdk-integ-s3-bucket/DefaultTest": {
       "stacks": [

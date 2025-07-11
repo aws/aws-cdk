@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "testCases": {
     "LogRetentionIntegRetries/DefaultTest": {
       "stacks": [
@@ -17,5 +17,6 @@
       "assertionStack": "LogRetentionIntegRetries/DefaultTest/DeployAssert",
       "assertionStackName": "LogRetentionIntegRetriesDefaultTestDeployAssert6D1A1A1C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

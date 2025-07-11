@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "bastionhost-disable-al2023-feature-flag-test/DefaultTest": {
+      "stacks": [
+        "integ-bastionhost-disable-al2023-feature-flag"
+      ],
+      "assertionStack": "bastionhost-disable-al2023-feature-flag-test/DefaultTest/DeployAssert",
+      "assertionStackName": "bastionhostdisableal2023featureflagtestDefaultTestDeployAssert09C4BDD4"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "test-apigateway-spec-restapi.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "test-apigateway-spec-restapi.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b37d9cf6d676a3d4144a75463a718fe69a9e07193a9c7cd15b0880949da273e0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e91a55b212d6c61a7de6cee809a2dc05eefd57c6a49e4314283cd42db2a26b90.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,10 +34,46 @@
         "test-apigateway-spec-restapi.assets"
       ],
       "metadata": {
+        "/test-apigateway-spec-restapi/my-api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "apiDefinition": "*",
+              "disableExecuteApiEndpoint": true,
+              "minCompressionSize": "*",
+              "retainDeployments": true,
+              "cloudWatchRole": true,
+              "deployOptions": {
+                "cacheClusterEnabled": true,
+                "stageName": "*",
+                "description": "*",
+                "loggingLevel": "INFO",
+                "dataTraceEnabled": true,
+                "methodOptions": "*"
+              },
+              "mode": "merge"
+            }
+          }
+        ],
         "/test-apigateway-spec-restapi/my-api/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapi4C7BF186"
+          }
+        ],
+        "/test-apigateway-spec-restapi/my-api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/test-apigateway-spec-restapi/my-api/Default/v1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
           }
         ],
         "/test-apigateway-spec-restapi/my-api/Default/v1/Resource": [
@@ -45,10 +82,32 @@
             "data": "myapiv113487378"
           }
         ],
+        "/test-apigateway-spec-restapi/my-api/Default/v1/toys": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
+          }
+        ],
         "/test-apigateway-spec-restapi/my-api/Default/v1/toys/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapiv1toysA55FCBC4"
+          }
+        ],
+        "/test-apigateway-spec-restapi/my-api/Default/v1/toys/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "apiKeyRequired": true
+              }
+            }
           }
         ],
         "/test-apigateway-spec-restapi/my-api/Default/v1/toys/GET/ApiPermission.testapigatewayspecrestapimyapiA4A36FD7.GET..v1.toys": [
@@ -69,10 +128,32 @@
             "data": "myapiv1toysGET7348114D"
           }
         ],
+        "/test-apigateway-spec-restapi/my-api/Default/v1/toys/POST": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          }
+        ],
         "/test-apigateway-spec-restapi/my-api/Default/v1/toys/POST/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapiv1toysPOST55128058"
+          }
+        ],
+        "/test-apigateway-spec-restapi/my-api/Default/v1/toys/PUT": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/test-apigateway-spec-restapi/my-api/Default/v1/toys/PUT/Resource": [
@@ -81,10 +162,30 @@
             "data": "myapiv1toysPUT59AFBBC2"
           }
         ],
+        "/test-apigateway-spec-restapi/my-api/Default/v1/appliances": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
+          }
+        ],
         "/test-apigateway-spec-restapi/my-api/Default/v1/appliances/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapiv1appliances507FEFF4"
+          }
+        ],
+        "/test-apigateway-spec-restapi/my-api/Default/v1/appliances/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/test-apigateway-spec-restapi/my-api/Default/v1/appliances/GET/Resource": [
@@ -93,10 +194,30 @@
             "data": "myapiv1appliancesGET8FE872EC"
           }
         ],
+        "/test-apigateway-spec-restapi/my-api/Default/v1/books": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
+          }
+        ],
         "/test-apigateway-spec-restapi/my-api/Default/v1/books/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapiv1books1D4BE6C1"
+          }
+        ],
+        "/test-apigateway-spec-restapi/my-api/Default/v1/books/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/test-apigateway-spec-restapi/my-api/Default/v1/books/GET/ApiPermission.testapigatewayspecrestapimyapiA4A36FD7.GET..v1.books": [
@@ -117,6 +238,17 @@
             "data": "myapiv1booksGETC6B996D0"
           }
         ],
+        "/test-apigateway-spec-restapi/my-api/Default/v1/books/POST": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          }
+        ],
         "/test-apigateway-spec-restapi/my-api/Default/v1/books/POST/ApiPermission.testapigatewayspecrestapimyapiA4A36FD7.POST..v1.books": [
           {
             "type": "aws:cdk:logicalId",
@@ -135,6 +267,36 @@
             "data": "myapiv1booksPOST53E2832E"
           }
         ],
+        "/test-apigateway-spec-restapi/my-api/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "retain"
+              ]
+            }
+          }
+        ],
+        "/test-apigateway-spec-restapi/my-api/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/test-apigateway-spec-restapi/my-api/CloudWatchRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -147,10 +309,114 @@
             "data": "myapiAccountEC421A0A"
           }
         ],
+        "/test-apigateway-spec-restapi/my-api/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": true
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/test-apigateway-spec-restapi/my-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myapiDeployment92F2CB492c49d8fa05ada8b5cddee1ce76138bd0"
+            "data": "myapiDeployment92F2CB491b0e40e722acabc99cc39958c957686d"
+          }
+        ],
+        "/test-apigateway-spec-restapi/my-api/DeploymentStage.beta": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*",
+              "cacheClusterEnabled": true,
+              "stageName": "*",
+              "description": "*",
+              "loggingLevel": "INFO",
+              "dataTraceEnabled": true,
+              "methodOptions": "*"
+            }
           }
         ],
         "/test-apigateway-spec-restapi/my-api/DeploymentStage.beta/Resource": [
@@ -165,10 +431,55 @@
             "data": "myapiEndpoint3628AFE3"
           }
         ],
+        "/test-apigateway-spec-restapi/my-api/ApiKey": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "stages": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/test-apigateway-spec-restapi/my-api/ApiKey/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapiApiKey43446CCF"
+          }
+        ],
+        "/test-apigateway-spec-restapi/my-api/UsagePlan": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "name": "*",
+              "apiKey": "*",
+              "description": "*",
+              "throttle": {
+                "rateLimit": "*"
+              },
+              "quota": {
+                "limit": "*",
+                "period": "MONTH"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addApiStage": [
+                {
+                  "throttle": [
+                    {
+                      "method": "*",
+                      "throttle": {
+                        "rateLimit": "*",
+                        "burstLimit": "*"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
           }
         ],
         "/test-apigateway-spec-restapi/my-api/UsagePlan/Resource": [
@@ -181,6 +492,38 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myapiUsagePlanUsagePlanKeyResourcetestapigatewayspecrestapimyapiApiKey950FF760D8BD56CA"
+          }
+        ],
+        "/test-apigateway-spec-restapi/MyHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "code": "*",
+              "handler": "*"
+            }
+          }
+        ],
+        "/test-apigateway-spec-restapi/MyHandler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/test-apigateway-spec-restapi/MyHandler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/test-apigateway-spec-restapi/MyHandler/ServiceRole/Resource": [
@@ -223,6 +566,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "apigatewayspecrestapiDefaultTestDeployAssertD16AA485.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -263,5 +607,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

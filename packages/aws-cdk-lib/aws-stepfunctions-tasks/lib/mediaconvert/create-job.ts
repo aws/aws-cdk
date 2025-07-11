@@ -5,6 +5,23 @@ import { Stack } from '../../../core';
 import * as cdk from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
+interface MediaConvertCreateJobOptions {
+  /**
+   * The input data for the MediaConvert Create Job invocation
+   */
+  readonly createJobRequest: { [key: string]: any };
+}
+
+/**
+ * Properties for creating a MediaConvert Job using JSONPath
+ */
+export interface MediaConvertCreateJobJsonPathProps extends sfn.TaskStateJsonPathBaseProps, MediaConvertCreateJobOptions { }
+
+/**
+ * Properties for creating a MediaConvert Job using JSONata
+ */
+export interface MediaConvertCreateJobJsonataProps extends sfn.TaskStateJsonataBaseProps, MediaConvertCreateJobOptions { }
+
 /**
  * Properties for creating a MediaConvert Job
  *
@@ -12,14 +29,7 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  * @see https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobspost
  *
  */
-export interface MediaConvertCreateJobProps extends sfn.TaskStateBaseProps {
-
-  /**
-   * The input data for the MediaConvert Create Job invocation
-   */
-  readonly createJobRequest: { [key: string]: any };
-
-}
+export interface MediaConvertCreateJobProps extends sfn.TaskStateBaseProps, MediaConvertCreateJobOptions { }
 
 /**
  * A Step Functions Task to create a job in MediaConvert.
@@ -29,9 +39,24 @@ export interface MediaConvertCreateJobProps extends sfn.TaskStateBaseProps {
  *
  * Response syntax: see CreateJobResponse schema
  * https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-response-examples
- *
  */
 export class MediaConvertCreateJob extends sfn.TaskStateBase {
+  /**
+   * A Step Functions Task to create a job in MediaConvert using JSONPath.
+   */
+  public static jsonPath(scope: Construct, id: string, props: MediaConvertCreateJobJsonPathProps) {
+    return new MediaConvertCreateJob(scope, id, props);
+  }
+
+  /**
+   * A Step Functions Task to create a job in MediaConvert using JSONata.
+   */
+  public static jsonata(scope: Construct, id: string, props: MediaConvertCreateJobJsonataProps) {
+    return new MediaConvertCreateJob(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
 
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -99,10 +124,11 @@ export class MediaConvertCreateJob extends sfn.TaskStateBase {
    *
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('mediaconvert', 'createJob', this.props.integrationPattern),
-      Parameters: this.props.createJobRequest,
+      ...this._renderParametersOrArguments(this.props.createJobRequest, queryLanguage),
     };
   }
 }

@@ -1,0 +1,1361 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "aws-sfn-tasks-ecs-run-task-ref-task-definition.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-sfn-tasks-ecs-run-task-ref-task-definition.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-sfn-tasks-ecs-run-task-ref-task-definition": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-sfn-tasks-ecs-run-task-ref-task-definition.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a04c65eb154cc930d6f8ea8a3d18f4216f96457a1d86647792aa47f6e2cecbe7.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-sfn-tasks-ecs-run-task-ref-task-definition.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-sfn-tasks-ecs-run-task-ref-task-definition.assets"
+      ],
+      "metadata": {
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addCapacity": [
+                "*",
+                {
+                  "instanceType": "*",
+                  "vpcSubnets": {
+                    "subnetType": "Public"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAutoScalingGroup": [
+                "*",
+                {
+                  "machineImageType": 0
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Blocking container access to instance role will be deprecated. Use the @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature feature flagto keep this feature temporarily. See https://github.com/aws/aws-cdk/discussions/32609 [ack: @aws-cdk/aws-ecs:deprecatedImdsBlocking]"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterEE43E89D"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*"
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpc568127F1"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPublicSubnet1SubnetD46FD92B"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPublicSubnet1RouteTableE30610F5"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPublicSubnet1RouteTableAssociation9C78F646"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPublicSubnet1DefaultRouteC7FBE273"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPublicSubnet1EIPD4B5D142"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPublicSubnet1NATGateway79A8A839"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPublicSubnet2Subnet207D9E5E"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPublicSubnet2RouteTable44A09188"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPublicSubnet2RouteTableAssociation7615C6B2"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPublicSubnet2DefaultRouteEBA52256"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPublicSubnet2EIP921925E6"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPublicSubnet2NATGateway302F96C0"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPrivateSubnet1Subnet0AE9B91E"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPrivateSubnet1RouteTable50D391D1"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPrivateSubnet1RouteTableAssociation1043DBDA"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPrivateSubnet1DefaultRouteD31A76F0"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPrivateSubnet2Subnet16B68C19"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPrivateSubnet2RouteTable22B9DAE6"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPrivateSubnet2RouteTableAssociation3AFD70F4"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcPrivateSubnet2DefaultRoute22B3073E"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcIGW605638EB"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterVpcVPCGW24F3B413"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "machineImage": "*",
+              "updateType": "Replace",
+              "instanceType": "*",
+              "vpcSubnets": {
+                "subnetType": "Public"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupInstanceSecurityGroup149B0A9E"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole/ImportInstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupInstanceRole73D80898"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy6D2DC2FD"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupInstanceProfileDB232471"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "machineImage": "*",
+              "instanceType": "*",
+              "detailedMonitoring": false,
+              "securityGroup": "*",
+              "userData": "*",
+              "associatePublicIpAddress": "*",
+              "spotOptions": "*",
+              "blockDevices": "*",
+              "instanceProfile": "*",
+              "keyPair": "*"
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupLaunchTemplate346F58BE"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupASGC5A6D4C0"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*",
+              "timeout": "*",
+              "environment": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole23116FA3"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy638C9E33"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionE0DEFB31"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/AllowInvoke:awssfntasksecsruntaskreftaskdefinitionEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic31C4EDE4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawssfntasksecsruntaskreftaskdefinitionEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic31C4EDE486F3D901"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "topic": "*",
+              "endpoint": "*",
+              "protocol": "lambda",
+              "filterPolicy": "*",
+              "filterPolicyWithMessageBody": "*",
+              "region": "*",
+              "deadLetterQueue": "*"
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic4795E0F6"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "autoScalingGroup": "*",
+              "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
+              "defaultResult": "CONTINUE",
+              "notificationTarget": "*",
+              "heartbeatTimeout": "*"
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "masterKey": "*"
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7263B30"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole71045ED7"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicyE499974B"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHook5CB1467E"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/TaskDef": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/TaskDef/TaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/TaskDef/TaskRole/ImportTaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefTaskRole1EDB4A67"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDef54694570"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/TaskDef/ExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "roleName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/TaskDef/ExecutionRole/ImportExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/TaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefExecutionRoleB4775C97"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/TaskDef/ExecutionRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefExecutionRoleDefaultPolicy0DBB737A"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/StateMachine": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "definition": {
+                "id": "*",
+                "startState": "*",
+                "endStates": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/StateMachine/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/StateMachine/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/StateMachine/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-run-task-ref-task-definition/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole0C4190B7C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole0C4190B7C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole18817D25E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole18817D25E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole274ABEFAA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole274ABEFAA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole35049FE26": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole35049FE26",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole46BD5E1C5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole46BD5E1C5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-sfn-tasks-ecs-run-task-ref-task-definition"
+    },
+    "SfnTasksEcsEc2RunTaskTestDefaultTestDeployAssert2569343D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SfnTasksEcsEc2RunTaskTestDefaultTestDeployAssert2569343D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SfnTasksEcsEc2RunTaskTestDefaultTestDeployAssert2569343D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SfnTasksEcsEc2RunTaskTestDefaultTestDeployAssert2569343D.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SfnTasksEcsEc2RunTaskTestDefaultTestDeployAssert2569343D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SfnTasksEcsEc2RunTaskTestDefaultTestDeployAssert2569343D.assets"
+      ],
+      "metadata": {
+        "/SfnTasksEcsEc2RunTaskTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SfnTasksEcsEc2RunTaskTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SfnTasksEcsEc2RunTaskTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

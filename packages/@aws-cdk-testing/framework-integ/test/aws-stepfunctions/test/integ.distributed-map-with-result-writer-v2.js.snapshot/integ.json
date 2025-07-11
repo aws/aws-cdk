@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "DistributedMap/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-map-with-result-writer-v2"
+      ],
+      "assertionStack": "DistributedMap/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributedMapDefaultTestDeployAssertFD6CBCC4"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

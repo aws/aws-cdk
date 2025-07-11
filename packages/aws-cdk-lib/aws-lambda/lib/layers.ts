@@ -4,6 +4,9 @@ import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
 import { IResource, RemovalPolicy, Resource } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Non runtime options
@@ -98,7 +101,7 @@ abstract class LayerVersionBase extends Resource implements ILayerVersion {
 
   public addPermission(id: string, permission: LayerVersionPermission) {
     if (permission.organizationId != null && permission.accountId !== '*') {
-      throw new Error(`OrganizationId can only be specified if AwsAccountId is '*', but it is ${permission.accountId}`);
+      throw new ValidationError(`OrganizationId can only be specified if AwsAccountId is '*', but it is ${permission.accountId}`, this);
     }
 
     new CfnLayerVersionPermission(this, id, {
@@ -146,7 +149,10 @@ export interface LayerVersionAttributes {
 /**
  * Defines a new Lambda Layer version.
  */
+@propertyInjectable
 export class LayerVersion extends LayerVersionBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.LayerVersion';
 
   /**
    * Imports a layer version by ARN. Assumes it is compatible with all Lambda runtimes.
@@ -167,7 +173,7 @@ export class LayerVersion extends LayerVersionBase {
    */
   public static fromLayerVersionAttributes(scope: Construct, id: string, attrs: LayerVersionAttributes): ILayerVersion {
     if (attrs.compatibleRuntimes && attrs.compatibleRuntimes.length === 0) {
-      throw new Error('Attempted to import a Lambda layer that supports no runtime!');
+      throw new ValidationError('Attempted to import a Lambda layer that supports no runtime!', scope);
     }
 
     class Import extends LayerVersionBase {
@@ -185,18 +191,20 @@ export class LayerVersion extends LayerVersionBase {
     super(scope, id, {
       physicalName: props.layerVersionName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.compatibleRuntimes && props.compatibleRuntimes.length === 0) {
-      throw new Error('Attempted to define a Lambda layer that supports no runtime!');
+      throw new ValidationError('Attempted to define a Lambda layer that supports no runtime!', this);
     }
 
     // Allow usage of the code in this context...
     const code = props.code.bind(this);
     if (code.inlineCode) {
-      throw new Error('Inline code is not supported for AWS Lambda layers');
+      throw new ValidationError('Inline code is not supported for AWS Lambda layers', this);
     }
     if (!code.s3Location) {
-      throw new Error('Code must define an S3 location');
+      throw new ValidationError('Code must define an S3 location', this);
     }
 
     const resource: CfnLayerVersion = new CfnLayerVersion(this, 'Resource', {

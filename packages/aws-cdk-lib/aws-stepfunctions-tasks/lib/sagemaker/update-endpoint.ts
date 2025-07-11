@@ -2,14 +2,9 @@ import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for updating Amazon SageMaker endpoint
- *
- * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
- */
-export interface SageMakerUpdateEndpointProps extends sfn.TaskStateBaseProps {
+interface SageMakerUpdateEndpointOptions {
   /**
    * The name of the new endpoint configuration
    */
@@ -21,11 +16,53 @@ export interface SageMakerUpdateEndpointProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for updating Amazon SageMaker endpoint using JSONPath
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
+ */
+export interface SageMakerUpdateEndpointJsonPathProps extends sfn.TaskStateJsonPathBaseProps, SageMakerUpdateEndpointOptions {}
+
+/**
+ * Properties for updating Amazon SageMaker endpoint using JSONata
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
+ */
+export interface SageMakerUpdateEndpointJsonataProps extends sfn.TaskStateJsonataBaseProps, SageMakerUpdateEndpointOptions {}
+
+/**
+ * Properties for updating Amazon SageMaker endpoint
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
+ */
+export interface SageMakerUpdateEndpointProps extends sfn.TaskStateBaseProps, SageMakerUpdateEndpointOptions {}
+
+/**
  * A Step Functions Task to update a SageMaker endpoint
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
  */
 export class SageMakerUpdateEndpoint extends sfn.TaskStateBase {
+  /**
+   * A Step Functions Task using JSONPath to update a SageMaker endpoint
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
+   */
+  public static jsonPath(scope: Construct, id: string, props: SageMakerUpdateEndpointJsonPathProps) {
+    return new SageMakerUpdateEndpoint(scope, id, props);
+  }
+
+  /**
+   * A Step Functions Task using JSONata to update a SageMaker endpoint
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
+   */
+  public static jsonata(scope: Construct, id: string, props: SageMakerUpdateEndpointJsonataProps) {
+    return new SageMakerUpdateEndpoint(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
+
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
@@ -43,10 +80,11 @@ export class SageMakerUpdateEndpoint extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('sagemaker', 'updateEndpoint', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
+      ...this._renderParametersOrArguments(this.renderParameters(), queryLanguage),
     };
   }
 
@@ -69,14 +107,14 @@ export class SageMakerUpdateEndpoint extends sfn.TaskStateBase {
             resource: 'endpoint',
             // If the endpoint name comes from input, we cannot target the policy to a particular ARN prefix reliably.
             // SageMaker uses lowercase for resource name in the arn
-            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.endpointName) ? '*' : `${this.props.endpointName.toLowerCase()}`,
+            resourceName: isJsonPathOrJsonataExpression(this.props.endpointName) ? '*' : `${this.props.endpointName.toLowerCase()}`,
           }),
           stack.formatArn({
             service: 'sagemaker',
             resource: 'endpoint-config',
             // If the endpointConfig name comes from input, we cannot target the policy to a particular ARN prefix reliably.
             // SageMaker uses lowercase for resource name in the arn
-            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.endpointConfigName) ? '*' : `${this.props.endpointConfigName.toLowerCase()}`,
+            resourceName: isJsonPathOrJsonataExpression(this.props.endpointConfigName) ? '*' : `${this.props.endpointConfigName.toLowerCase()}`,
           }),
         ],
       }),

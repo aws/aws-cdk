@@ -1,0 +1,538 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "aws-cdk-integ-test-service-roles-for-actions.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-integ-test-service-roles-for-actions.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-integ-test-service-roles-for-actions": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-integ-test-service-roles-for-actions.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/685e2ada78523728d7e5e89310f6843233ecf8831cbeda7e8ebeda219f32ebd3.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-integ-test-service-roles-for-actions.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-integ-test-service-roles-for-actions.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-integ-test-service-roles-for-actions/test-connection": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testconnection"
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/cp-trigger-integ-test": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/cp-trigger-integ-test/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/cp-trigger-integ-test/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/cp-trigger-integ-test/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cptriggerintegtestRole1542C66E"
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/cp-trigger-integ-test/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/cp-trigger-integ-test/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cptriggerintegtestRoleDefaultPolicy88066F74"
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/cp-trigger-integ-test/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cptriggerintegtest783F89DB"
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/codepipeline-integ-trigger-test": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "pipelineName": "*",
+              "stages": [
+                {
+                  "stageName": "*",
+                  "actions": [
+                    {}
+                  ]
+                },
+                {
+                  "stageName": "*",
+                  "actions": [
+                    {}
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStage": [
+                {
+                  "stageName": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStage": [
+                {
+                  "stageName": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/codepipeline-integ-trigger-test/ArtifactsBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucketName": "*",
+              "encryptionKey": "*",
+              "encryption": "KMS_MANAGED",
+              "enforceSSL": true,
+              "blockPublicAccess": "*",
+              "removalPolicy": "retain"
+            }
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/codepipeline-integ-trigger-test/ArtifactsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "codepipelineintegtriggertestArtifactsBucketBC94925B"
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/codepipeline-integ-trigger-test/ArtifactsBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/codepipeline-integ-trigger-test/ArtifactsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "codepipelineintegtriggertestArtifactsBucketPolicyFE27D7F4"
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/codepipeline-integ-trigger-test/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/codepipeline-integ-trigger-test/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/codepipeline-integ-trigger-test/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "codepipelineintegtriggertestRoleAFD97C44"
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/codepipeline-integ-trigger-test/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/codepipeline-integ-trigger-test/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "codepipelineintegtriggertestRoleDefaultPolicy98BF275A"
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/codepipeline-integ-trigger-test/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "codepipelineintegtriggertestE01E3398"
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-integ-test-service-roles-for-actions/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-integ-test-service-roles-for-actions"
+    },
+    "codepipelineintegtestDefaultTestDeployAssert88EAAC45.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "codepipelineintegtestDefaultTestDeployAssert88EAAC45.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "codepipelineintegtestDefaultTestDeployAssert88EAAC45": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "codepipelineintegtestDefaultTestDeployAssert88EAAC45.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7ff4c7e018c08dc7a20b23dad81d416d96f33664727980642c899de14ab97d24.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "codepipelineintegtestDefaultTestDeployAssert88EAAC45.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "codepipelineintegtestDefaultTestDeployAssert88EAAC45.assets"
+      ],
+      "metadata": {
+        "/codepipeline-integ-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/codepipeline-integ-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310"
+          }
+        ],
+        "/codepipeline-integ-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310"
+          }
+        ],
+        "/codepipeline-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/codepipeline-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/codepipeline-integ-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/codepipeline-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/codepipeline-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "codepipeline-integ-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}

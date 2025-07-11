@@ -1,3 +1,4 @@
+import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
 import { Construct } from 'constructs';
 import { Alias, AliasOptions } from './alias';
 import { Architecture } from './architecture';
@@ -7,7 +8,10 @@ import { IFunction, QualifiedFunctionBase } from './function-base';
 import { CfnVersion } from './lambda.generated';
 import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { Fn, Lazy, RemovalPolicy } from '../../core';
+import { Fn, Lazy, RemovalPolicy, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IVersion extends IFunction {
   /**
@@ -111,7 +115,10 @@ export interface VersionAttributes {
  * the right deployment, specify the `codeSha256` property while
  * creating the `Version.
  */
+@propertyInjectable
 export class Version extends QualifiedFunctionBase implements IVersion {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.Version';
 
   /**
    * Construct a Version object from a Version ARN.
@@ -122,7 +129,8 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    */
   public static fromVersionArn(scope: Construct, id: string, versionArn: string): IVersion {
     const version = extractQualifierFromArn(versionArn);
-    const lambda = Function.fromFunctionArn(scope, `${id}Function`, versionArn);
+    const lambdaArn = extractLambdaFunctionArn(versionArn);
+    const lambda = Function.fromFunctionArn(scope, `${id}Function`, lambdaArn);
 
     class Import extends QualifiedFunctionBase implements IVersion {
       public readonly version = version;
@@ -142,7 +150,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
       public get edgeArn(): string {
         if (version === '$LATEST') {
-          throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+          throw new ValidationError('$LATEST function version cannot be used for Lambda@Edge', this);
         }
         return this.functionArn;
       }
@@ -169,7 +177,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
       public get edgeArn(): string {
         if (attrs.version === '$LATEST') {
-          throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+          throw new ValidationError('$LATEST function version cannot be used for Lambda@Edge', this);
         }
         return this.functionArn;
       }
@@ -188,6 +196,8 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
   constructor(scope: Construct, id: string, props: VersionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.lambda = props.lambda;
     this.architecture = props.lambda.architecture;
@@ -198,6 +208,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       functionName: props.lambda.functionName,
       provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props),
     });
+    version.addMetadata(ArtifactMetadataEntryType.DO_NOT_REFACTOR, true);
 
     if (props.removalPolicy) {
       version.applyRemovalPolicy(props.removalPolicy, {
@@ -228,6 +239,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     return this.lambda.role;
   }
 
+  @MethodMetadata()
   public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
     // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differs from the base behavior.
     return super.metric(metricName, {
@@ -248,6 +260,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    * @param options Alias options
    * @deprecated Calling `addAlias` on a `Version` object will cause the Alias to be replaced on every function update. Call `function.addAlias()` or `new Alias()` instead.
    */
+  @MethodMetadata()
   public addAlias(aliasName: string, options: AliasOptions = {}): Alias {
     return addAlias(this, this, aliasName, options);
   }
@@ -255,7 +268,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public get edgeArn(): string {
     // Validate first that this version can be used for Lambda@Edge
     if (this.version === '$LATEST') {
-      throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+      throw new ValidationError('$LATEST function version cannot be used for Lambda@Edge', this);
     }
 
     // Check compatibility at synthesis. It could be that the version was associated
@@ -283,7 +296,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     }
 
     if (props.provisionedConcurrentExecutions <= 0) {
-      throw new Error('provisionedConcurrentExecutions must have value greater than or equal to 1');
+      throw new ValidationError('provisionedConcurrentExecutions must have value greater than or equal to 1', this);
     }
 
     return { provisionedConcurrentExecutions: props.provisionedConcurrentExecutions };
@@ -305,4 +318,23 @@ export class Version extends QualifiedFunctionBase implements IVersion {
  */
 export function extractQualifierFromArn(arn: string) {
   return Fn.select(7, Fn.split(':', arn));
+}
+
+/**
+ * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the
+ * function ARN (excluding qualifier) from the ARN.
+ *
+ * Version ARNs look like this:
+ *
+ *   arn:aws:lambda:region:account-id:function:function-name:qualifier
+ *
+ * ..which means that in order to extract the function arn component from the ARN, we can
+ * split the ARN using ":" and join the first 7 components.
+ *
+ */
+export function extractLambdaFunctionArn(arn: string) {
+  if (!Token.isUnresolved(arn)) {
+    return arn.split(':').slice(0, 7).join(':');
+  }
+  return Fn.join(':', [...Array(7).keys()].map((i) => Fn.select(i, Fn.split(':', arn))));
 }

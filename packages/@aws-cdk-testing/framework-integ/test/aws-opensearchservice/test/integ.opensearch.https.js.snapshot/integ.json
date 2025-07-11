@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "integ-openseach-https/DefaultTest": {
+      "stacks": [
+        "cdk-integ-opensearch-https"
+      ],
+      "assertionStack": "integ-openseach-https/DefaultTest/DeployAssert",
+      "assertionStackName": "integopenseachhttpsDefaultTestDeployAssert40490EE6"
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}

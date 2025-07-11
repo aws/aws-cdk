@@ -3,7 +3,11 @@ import { Function, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'aws-cdk-lambda-runtime-fromasset');
 
 const lambdaFunction = new Function(stack, 'MyFunction', {

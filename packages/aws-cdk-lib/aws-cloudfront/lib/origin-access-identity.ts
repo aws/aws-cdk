@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { CfnCloudFrontOriginAccessIdentity } from './cloudfront.generated';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties of CloudFront OriginAccessIdentity
@@ -77,7 +79,11 @@ abstract class OriginAccessIdentityBase extends cdk.Resource {
  *
  * @resource AWS::CloudFront::CloudFrontOriginAccessIdentity
  */
+@propertyInjectable
 export class OriginAccessIdentity extends OriginAccessIdentityBase implements IOriginAccessIdentity {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.OriginAccessIdentity';
+
   /**
    * Creates a OriginAccessIdentity by providing the OriginAccessIdentityId.
    * It is misnamed and superseded by the correctly named fromOriginAccessIdentityId.
@@ -98,7 +104,6 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
     scope: Construct,
     id: string,
     originAccessIdentityId: string): IOriginAccessIdentity {
-
     class Import extends OriginAccessIdentityBase {
       public readonly originAccessIdentityId = originAccessIdentityId;
       public readonly originAccessIdentityName = originAccessIdentityId;
@@ -151,6 +156,8 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
 
   constructor(scope: Construct, id: string, props?: OriginAccessIdentityProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Comment has a max length of 128.
     const comment = (props?.comment ?? 'Allows CloudFront to reach the bucket').slice(0, 128);

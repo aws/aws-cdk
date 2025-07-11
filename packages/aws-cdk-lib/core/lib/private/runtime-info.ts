@@ -1,5 +1,7 @@
-import { IConstruct } from 'constructs';
+import { IConstruct, MetadataEntry } from 'constructs';
 import { App } from '../app';
+import { AssumptionError } from '../errors';
+import { isResource, MetadataType } from '../metadata-resource';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
 import { IPolicyValidationPluginBeta1 } from '../validation';
@@ -24,6 +26,7 @@ const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
 export interface ConstructInfo {
   readonly fqn: string;
   readonly version: string;
+  readonly metadata?: Record<string, any>[];
 }
 
 export function constructInfoFromConstruct(construct: IConstruct): ConstructInfo | undefined {
@@ -32,12 +35,33 @@ export function constructInfoFromConstruct(construct: IConstruct): ConstructInfo
     && jsiiRuntimeInfo !== null
     && typeof jsiiRuntimeInfo.fqn === 'string'
     && typeof jsiiRuntimeInfo.version === 'string') {
-    return { fqn: jsiiRuntimeInfo.fqn, version: jsiiRuntimeInfo.version };
+    return {
+      fqn: jsiiRuntimeInfo.fqn,
+      version: jsiiRuntimeInfo.version,
+      metadata: isResource(construct) ? filterMetadataType(construct.node.metadata) : undefined,
+    };
   } else if (jsiiRuntimeInfo) {
     // There is something defined, but doesn't match our expectations. Fail fast and hard.
-    throw new Error(`malformed jsii runtime info for construct: '${construct.node.path}'`);
+    throw new AssumptionError(`malformed jsii runtime info for construct: '${construct.node.path}'`);
   }
   return undefined;
+}
+
+/**
+ * Filter for Construct, Method, and Feature flag metadata. Redact values from it.
+ *
+ * @param metadata a list of metadata entries
+ */
+export function filterMetadataType(metadata: MetadataEntry[]): Record<string, any>[] {
+  const validTypes = new Set([
+    MetadataType.CONSTRUCT,
+    MetadataType.METHOD,
+    MetadataType.FEATURE_FLAG,
+  ]);
+
+  return metadata
+    .filter((entry) => validTypes.has(entry.type as MetadataType))
+    .map((entry) => entry.data as Record<string, any>);
 }
 
 /**
@@ -106,14 +130,21 @@ export function constructInfoFromStack(stack: Stack): ConstructInfo[] {
 
   addValidationPluginInfo(stack, allConstructInfos);
 
-  // Filter out duplicate values
-  const uniqKeys = new Set();
-  return allConstructInfos.filter(construct => {
-    const constructKey = `${construct.fqn}@${construct.version}`;
-    const isDuplicate = uniqKeys.has(constructKey);
-    uniqKeys.add(constructKey);
-    return !isDuplicate;
+  // Filter out duplicate values and append the metadata information to the array
+  const uniqueMap = new Map<string, ConstructInfo>();
+  allConstructInfos.forEach(info => {
+    const key = `${info.fqn}@${info.version}`;
+    if (uniqueMap.has(key)) {
+      const existingInfo = uniqueMap.get(key);
+      if (existingInfo && existingInfo.metadata && info.metadata) {
+        existingInfo.metadata.push(...info.metadata);
+      }
+    } else {
+      uniqueMap.set(key, info);
+    }
   });
+
+  return Array.from(uniqueMap.values());
 }
 
 /**

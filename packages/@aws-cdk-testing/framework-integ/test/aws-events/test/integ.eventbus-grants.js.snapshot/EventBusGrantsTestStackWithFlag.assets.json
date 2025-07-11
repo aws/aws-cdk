@@ -1,0 +1,20 @@
+{
+  "version": "40.0.0",
+  "files": {
+    "02549122f16df4a823b7293aa06c3c5003577d18676db1bcd8c265217735ce56": {
+      "source": {
+        "path": "EventBusGrantsTestStackWithFlag.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "554706699122-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-554706699122-us-east-1",
+          "objectKey": "02549122f16df4a823b7293aa06c3c5003577d18676db1bcd8c265217735ce56.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::554706699122:role/cdk-hnb659fds-file-publishing-role-554706699122-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

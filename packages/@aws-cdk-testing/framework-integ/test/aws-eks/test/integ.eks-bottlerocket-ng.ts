@@ -8,7 +8,6 @@ import * as eks from 'aws-cdk-lib/aws-eks';
 import { NodegroupAmiType } from 'aws-cdk-lib/aws-eks';
 
 class EksClusterStack extends Stack {
-
   private cluster: eks.Cluster;
   private vpc: ec2.IVpc;
 
@@ -36,11 +35,17 @@ class EksClusterStack extends Stack {
     });
     this.cluster.addNodegroupCapacity('BottlerocketNG2', {
       amiType: NodegroupAmiType.BOTTLEROCKET_ARM_64,
+      instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.C6G, ec2.InstanceSize.LARGE)],
     });
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-bottlerocket-ng-test');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-bottlerocket-ng', {

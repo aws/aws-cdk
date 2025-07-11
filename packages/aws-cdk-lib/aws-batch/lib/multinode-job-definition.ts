@@ -5,6 +5,8 @@ import { Compatibility } from './ecs-job-definition';
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 import * as ec2 from '../../aws-ec2';
 import { ArnFormat, Lazy, Stack } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Not a real instance type! Indicates that Batch will choose one it determines to be optimal
@@ -42,7 +44,7 @@ interface IMultiNodeJobDefinition extends IJobDefinition {
   readonly mainNode?: number;
 
   /**
-   * Whether to propogate tags from the JobDefinition
+   * Whether to propagate tags from the JobDefinition
    * to the ECS task that Batch spawns
    *
    * @default false
@@ -109,7 +111,7 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
   readonly mainNode?: number;
 
   /**
-   * Whether to propogate tags from the JobDefinition
+   * Whether to propagate tags from the JobDefinition
    * to the ECS task that Batch spawns
    *
    * @default false
@@ -122,7 +124,11 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
  *
  * @resource AWS::Batch::JobDefinition
  */
+@propertyInjectable
 export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiNodeJobDefinition {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.MultiNodeJobDefinition';
+
   /**
    * refer to an existing JobDefinition by its arn
    */
@@ -150,6 +156,8 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
 
   constructor(scope: Construct, id: string, props?: MultiNodeJobDefinitionProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.containers = props?.containers ?? [];
     this.mainNode = props?.mainNode;
@@ -200,6 +208,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     return this._instanceType;
   }
 
+  @MethodMetadata()
   public addContainer(container: MultiNodeContainer) {
     this.containers.push(container);
   }

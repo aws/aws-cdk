@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "aws-custom-resource-cloudwatch/DefaultTest": {
+      "stacks": [
+        "aws-custom-resource-cloudwatch-stack"
+      ],
+      "assertionStack": "aws-custom-resource-cloudwatch/DefaultTest/DeployAssert",
+      "assertionStackName": "awscustomresourcecloudwatchDefaultTestDeployAssert1D41955C"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}

@@ -42,7 +42,6 @@ export interface S3Props {
  * a notification to Amazon SNS.
  */
 export class S3 implements ses.IReceiptRuleAction {
-
   constructor(private readonly props: S3Props) {
   }
 
@@ -56,7 +55,7 @@ export class S3 implements ses.IReceiptRuleAction {
       resources: [this.props.bucket.arnForObjects(`${keyPattern}*`)],
       conditions: {
         StringEquals: {
-          'aws:Referer': cdk.Aws.ACCOUNT_ID,
+          'aws:SourceAccount': cdk.Aws.ACCOUNT_ID,
         },
       },
     });

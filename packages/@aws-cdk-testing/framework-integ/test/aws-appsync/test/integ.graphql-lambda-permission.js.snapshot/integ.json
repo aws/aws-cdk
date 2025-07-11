@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "GraphqlApiLambdaPermissionTest/DefaultTest": {
+      "stacks": [
+        "aws-graphql-lambda-permissions"
+      ],
+      "assertionStack": "GraphqlApiLambdaPermissionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "GraphqlApiLambdaPermissionTestDefaultTestDeployAssert7720B39B"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

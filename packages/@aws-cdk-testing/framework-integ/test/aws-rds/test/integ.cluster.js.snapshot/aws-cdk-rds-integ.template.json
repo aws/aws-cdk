@@ -495,6 +495,7 @@
   "DatabaseB269D8BB": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
+    "AutoMinorVersionUpgrade": false,
     "CopyTagsToSnapshot": true,
     "DBClusterParameterGroupName": {
      "Ref": "ParamsA8366201"
@@ -503,7 +504,7 @@
      "Ref": "DatabaseSubnets56F17B9A"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.03.0",
+    "EngineVersion": "8.0.mysql_aurora.3.07.1",
     "KmsKeyId": {
      "Fn::GetAtt": [
       "DbSecurity381C2C15",

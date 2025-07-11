@@ -13,11 +13,14 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy, FeatureFlags, ArnFormat } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
-  * Interface representing a serverless database cluster.
-  *
+ * Interface representing a serverless database cluster.
+ *
  */
 export interface IServerlessCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
@@ -92,7 +95,7 @@ interface ServerlessClusterNewProps {
    * Whether to enable the Data API.
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html
-    *
+   *
    * @default false
    */
   readonly enableDataApi?: boolean;
@@ -361,7 +364,7 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
    */
   public grantDataApiAccess(grantee: iam.IGrantable): iam.Grant {
     if (this.enableDataApi === false) {
-      throw new Error('Cannot grant Data API access when the Data API is disabled');
+      throw new ValidationError('Cannot grant Data API access when the Data API is disabled', this);
     }
 
     this.enableDataApi = true;
@@ -402,13 +405,13 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
 
     if (props.vpc === undefined) {
       if (props.vpcSubnets !== undefined) {
-        throw new Error('A VPC is required to use vpcSubnets in ServerlessCluster. Please add a VPC or remove vpcSubnets');
+        throw new ValidationError('A VPC is required to use vpcSubnets in ServerlessCluster. Please add a VPC or remove vpcSubnets', this);
       }
       if (props.subnetGroup !== undefined) {
-        throw new Error('A VPC is required to use subnetGroup in ServerlessCluster. Please add a VPC or remove subnetGroup');
+        throw new ValidationError('A VPC is required to use subnetGroup in ServerlessCluster. Please add a VPC or remove subnetGroup', this);
       }
       if (props.securityGroups !== undefined) {
-        throw new Error('A VPC is required to use securityGroups in ServerlessCluster. Please add a VPC or remove securityGroups');
+        throw new ValidationError('A VPC is required to use securityGroups in ServerlessCluster. Please add a VPC or remove securityGroups', this);
       }
     }
 
@@ -440,7 +443,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
     if (props.backupRetention) {
       const backupRetentionDays = props.backupRetention.toDays();
       if (backupRetentionDays < 1 || backupRetentionDays > 35) {
-        throw new Error(`backup retention period must be between 1 and 35 days. received: ${backupRetentionDays}`);
+        throw new ValidationError(`backup retention period must be between 1 and 35 days. received: ${backupRetentionDays}`, this);
       }
     }
 
@@ -484,16 +487,16 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
     const timeout = options.timeout?.toSeconds();
 
     if (minCapacity && maxCapacity && minCapacity > maxCapacity) {
-      throw new Error('maximum capacity must be greater than or equal to minimum capacity.');
+      throw new ValidationError('maximum capacity must be greater than or equal to minimum capacity.', this);
     }
 
     const secondsToAutoPause = options.autoPause?.toSeconds();
     if (secondsToAutoPause && (secondsToAutoPause < 300 || secondsToAutoPause > 86400)) {
-      throw new Error('auto pause time must be between 5 minutes and 1 day.');
+      throw new ValidationError('auto pause time must be between 5 minutes and 1 day.', this);
     }
 
     if (timeout && (timeout < 60 || timeout > 600)) {
-      throw new Error(`timeout must be between 60 and 600 seconds, but got ${timeout} seconds.`);
+      throw new ValidationError(`timeout must be between 60 and 600 seconds, but got ${timeout} seconds.`, this);
     }
 
     return {
@@ -532,14 +535,19 @@ export interface ServerlessClusterProps extends ServerlessClusterNewProps {
  * @resource AWS::RDS::DBCluster
  *
  */
+@propertyInjectable
 export class ServerlessCluster extends ServerlessClusterNew {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ServerlessCluster';
+
   /**
    * Import an existing DatabaseCluster from properties
    */
   public static fromServerlessClusterAttributes(
     scope: Construct, id: string, attrs: ServerlessClusterAttributes,
   ): IServerlessCluster {
-
     return new ImportedServerlessCluster(scope, id, attrs);
   }
 
@@ -557,6 +565,8 @@ export class ServerlessCluster extends ServerlessClusterNew {
 
   constructor(scope: Construct, id: string, props: ServerlessClusterProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets;
@@ -593,19 +603,20 @@ export class ServerlessCluster extends ServerlessClusterNew {
   /**
    * Adds the single user rotation of the master password to this cluster.
    */
+  @MethodMetadata()
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new Error('Cannot add single user rotation for a cluster without secret.');
+      throw new ValidationError('Cannot add single user rotation for a cluster without secret.', this);
     }
 
     if (this.vpc === undefined) {
-      throw new Error('Cannot add single user rotation for a cluster without VPC.');
+      throw new ValidationError('Cannot add single user rotation for a cluster without VPC.', this);
     }
 
     const id = 'RotationSingleUser';
     const existing = this.node.tryFindChild(id);
     if (existing) {
-      throw new Error('A single user rotation was already added to this cluster.');
+      throw new ValidationError('A single user rotation was already added to this cluster.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -620,13 +631,14 @@ export class ServerlessCluster extends ServerlessClusterNew {
   /**
    * Adds the multi user rotation to this cluster.
    */
+  @MethodMetadata()
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new Error('Cannot add multi user rotation for a cluster without secret.');
+      throw new ValidationError('Cannot add multi user rotation for a cluster without secret.', this);
     }
 
     if (this.vpc === undefined) {
-      throw new Error('Cannot add multi user rotation for a cluster without VPC.');
+      throw new ValidationError('Cannot add multi user rotation for a cluster without VPC.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -643,19 +655,24 @@ export class ServerlessCluster extends ServerlessClusterNew {
 /**
  * Represents an imported database cluster.
  */
+@propertyInjectable
 class ImportedServerlessCluster extends ServerlessClusterBase implements IServerlessCluster {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ImportedServerlessCluster';
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
 
   public readonly secret?: secretsmanager.ISecret;
 
-  protected readonly enableDataApi = true
+  protected readonly enableDataApi = true;
 
   private readonly _clusterEndpoint?: Endpoint;
   private readonly _clusterReadEndpoint?: Endpoint;
 
   constructor(scope: Construct, id: string, attrs: ServerlessClusterAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     this.clusterIdentifier = attrs.clusterIdentifier;
 
@@ -673,14 +690,14 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
 
   public get clusterEndpoint() {
     if (!this._clusterEndpoint) {
-      throw new Error('Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port');
+      throw new ValidationError('Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port', this);
     }
     return this._clusterEndpoint;
   }
 
   public get clusterReadEndpoint() {
     if (!this._clusterReadEndpoint) {
-      throw new Error('Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port');
+      throw new ValidationError('Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port', this);
     }
     return this._clusterReadEndpoint;
   }
@@ -713,7 +730,13 @@ export interface ServerlessClusterFromSnapshotProps extends ServerlessClusterNew
  *
  * @resource AWS::RDS::DBCluster
  */
+@propertyInjectable
 export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ServerlessClusterFromSnapshot';
+
   public readonly clusterIdentifier: string;
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
@@ -721,6 +744,8 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
 
   constructor(scope: Construct, id: string, props: ServerlessClusterFromSnapshotProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.enableDataApi = props.enableDataApi;
 
@@ -728,7 +753,7 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
     let secret = credentials?.secret;
     if (!secret && credentials?.generatePassword) {
       if (!credentials.username) {
-        throw new Error('`credentials` `username` must be specified when `generatePassword` is set to true');
+        throw new ValidationError('`credentials` `username` must be specified when `generatePassword` is set to true', this);
       }
 
       secret = new DatabaseSecret(this, 'Secret', {

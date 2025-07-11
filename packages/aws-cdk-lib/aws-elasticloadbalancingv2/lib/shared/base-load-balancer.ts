@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import { Construct, IDependable } from 'constructs';
 import { IpAddressType } from './enums';
 import { Attributes, ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
@@ -7,9 +7,85 @@ import { PolicyStatement, ServicePrincipal } from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { CfnResource, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../../core';
+import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
+
+/**
+ * The prefix to use for source NAT for a dual-stack network load balancer with UDP listeners.
+ */
+export class SourceNatIpv6Prefix {
+  /**
+   * Use an automatically assigned IPv6 prefix
+   */
+  public static autoAssigned(): SourceNatIpv6Prefix {
+    return new SourceNatIpv6Prefix('auto_assigned');
+  }
+
+  /**
+   * Use a custom IPv6 prefix with /80 netmask
+   * @param prefix The IPv6 prefix
+   */
+  public static fromIpv6Prefix(prefix: string): SourceNatIpv6Prefix {
+    if (!prefix.includes('/')) {
+      throw new UnscopedValidationError(`IPv6 prefix must include netmask (e.g. 2001:db8::/80), got ${prefix}`);
+    }
+
+    const [_ipv6, netmask] = prefix.split('/');
+    if (netmask !== '80') {
+      throw new UnscopedValidationError(`IPv6 prefix must have a /80 netmask, got ${netmask}`);
+    }
+
+    return new SourceNatIpv6Prefix(prefix);
+  }
+
+  /**
+   * @param prefix The IPv6 prefix
+   */
+  constructor(public readonly prefix: string) {}
+}
+
+/**
+ * Specifies a subnet for a load balancer
+ */
+export interface SubnetMapping {
+  /**
+   * The subnet.
+   */
+  readonly subnet: ec2.ISubnet;
+
+  /**
+   * The allocation ID of the Elastic IP address for an internet-facing load balancer.
+   *
+   * @default undefined - AWS default is to allocate a new IP address for internet-facing load balancers
+   */
+  readonly allocationId?: string;
+
+  /**
+   * The IPv6 address.
+   *
+   * @default undefined - AWS default is to allocate an IPv6 address from the subnet's pool
+   */
+  readonly ipv6Address?: string;
+
+  /**
+   * The private IPv4 address for an internal load balancer.
+   *
+   * @default undefined - AWS default is to allocate a private IPv4 address from the subnet's pool
+   */
+  readonly privateIpv4Address?: string;
+
+  /**
+   * The IPv6 prefix to use for source NAT for a dual-stack network load balancer with UDP listeners.
+   *
+   * Specify an IPv6 prefix (/80 netmask) from the subnet CIDR block
+   * or `SourceNatIpv6Prefix.autoAssigned()` to use an IPv6 prefix selected at random from the subnet CIDR block.
+   *
+   * @default undefined - AWS default is `SourceNatIpv6Prefix.autoAssigned()` for IPv6 load balancers
+   */
+  readonly sourceNatIpv6Prefix?: SourceNatIpv6Prefix;
+}
 
 /**
  * Shared properties of both Application and Network Load Balancers
@@ -64,6 +140,17 @@ export interface BaseLoadBalancerProps {
    * @default - false for internet-facing load balancers and true for internal load balancers
    */
   readonly denyAllIgwTraffic?: boolean;
+
+  /**
+   * The minimum capacity (LCU) for a load balancer.
+   *
+   * @default undefined - ELB default is 0 LCU
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/capacity-unit-reservation.html
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/network/capacity-unit-reservation.html
+   * @see https://exampleloadbalancer.com/ondemand_capacity_reservation_calculator.html
+   */
+  readonly minimumCapacityUnit?: number;
 }
 
 export interface ILoadBalancerV2 extends IResource {
@@ -130,7 +217,7 @@ export abstract class BaseLoadBalancer extends Resource {
   protected static _queryContextProvider(scope: Construct, options: LoadBalancerQueryContextProviderOptions) {
     if (Token.isUnresolved(options.userOptions.loadBalancerArn)
       || Object.values(options.userOptions.loadBalancerTags ?? {}).some(Token.isUnresolved)) {
-      throw new Error('All arguments to look up a load balancer must be concrete (no Tokens)');
+      throw new ValidationError('All arguments to look up a load balancer must be concrete (no Tokens)', scope);
     }
 
     let cxschemaTags: cxschema.Tag[] | undefined;
@@ -147,7 +234,7 @@ export abstract class BaseLoadBalancer extends Resource {
       } as cxschema.LoadBalancerContextQuery,
       dummyValue: {
         ipAddressType: cxapi.LoadBalancerIpAddressType.DUAL_STACK,
-        // eslint-disable-next-line @aws-cdk/no-literal-partition
+        // eslint-disable-next-line @cdklabs/no-literal-partition
         loadBalancerArn: `arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/${options.loadBalancerType}/my-load-balancer/50dc6c495c0c9188`,
         loadBalancerCanonicalHostedZoneId: 'Z3DZXE0EXAMPLE',
         loadBalancerDnsName: 'my-load-balancer-1234567890.us-west-2.elb.amazonaws.com',
@@ -228,21 +315,62 @@ export abstract class BaseLoadBalancer extends Resource {
 
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 
-    const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
-      (internetFacing ? { subnetType: ec2.SubnetType.PUBLIC } : {}) );
-    const { subnetIds, internetConnectivityEstablished } = baseProps.vpc.selectSubnets(vpcSubnets);
+    if (baseProps.vpcSubnets && additionalProps.subnetMappings) {
+      throw new ValidationError('You can specify either `vpcSubnets` or `subnetMappings`, not both.', this);
+    }
+
+    let subnetIds: string[] | undefined;
+    let subnetMappings: SubnetMapping[] | undefined = additionalProps.subnetMappings;
+    let internetConnectivityEstablishedSubnets: IDependable | undefined;
+
+    if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 &&
+        additionalProps.type !== cxschema.LoadBalancerType.APPLICATION) {
+      throw new ValidationError(`'ipAddressType' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with Application Load Balancer, got ${additionalProps.type}`, this);
+    }
 
     this.vpc = baseProps.vpc;
+
+    if (subnetMappings) {
+      if (internetFacing) {
+        const mappedSubnetIds = subnetMappings.map(mapping => mapping.subnet.subnetId);
+        internetConnectivityEstablishedSubnets = baseProps.vpc.selectSubnets(
+          { subnetFilters: [ec2.SubnetFilter.byIds(mappedSubnetIds)] },
+        ).internetConnectivityEstablished;
+      }
+
+      const { subnetMappings: _, ...cfnProps } = additionalProps;
+      additionalProps = cfnProps;
+    } else {
+      const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
+        (internetFacing ? { subnetType: ec2.SubnetType.PUBLIC } : {}));
+
+      const result = baseProps.vpc.selectSubnets(vpcSubnets);
+      subnetIds = result.subnetIds;
+      internetConnectivityEstablishedSubnets = result.internetConnectivityEstablished;
+    }
 
     const resource = new CfnLoadBalancer(this, 'Resource', {
       name: this.physicalName,
       subnets: subnetIds,
+      subnetMappings: subnetMappings?.map((mapping) => {
+        return ({
+          subnetId: mapping.subnet.subnetId,
+          allocationId: mapping.allocationId,
+          privateIPv4Address: mapping.privateIpv4Address,
+          iPv6Address: mapping.ipv6Address,
+          sourceNatIpv6Prefix: mapping.sourceNatIpv6Prefix?.prefix,
+        });
+      }),
       scheme: internetFacing ? 'internet-facing' : 'internal',
-      loadBalancerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true } ),
+      loadBalancerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
+      minimumLoadBalancerCapacity: baseProps.minimumCapacityUnit ? {
+        capacityUnits: baseProps.minimumCapacityUnit,
+      } : undefined,
       ...additionalProps,
     });
-    if (internetFacing) {
-      resource.node.addDependency(internetConnectivityEstablished);
+
+    if (internetFacing && internetConnectivityEstablishedSubnets) {
+      resource.node.addDependency(internetConnectivityEstablishedSubnets);
     }
 
     this.setAttribute('deletion_protection.enabled', baseProps.deletionProtection ? 'true' : 'false');
@@ -255,7 +383,7 @@ export abstract class BaseLoadBalancer extends Resource {
       if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK) {
         this.setAttribute('ipv6.deny_all_igw_traffic', baseProps.denyAllIgwTraffic.toString());
       } else {
-        throw new Error(`'denyAllIgwTraffic' may only be set on load balancers with ${IpAddressType.DUAL_STACK} addressing.`);
+        throw new ValidationError(`'denyAllIgwTraffic' may only be set on load balancers with ${IpAddressType.DUAL_STACK} addressing.`, this);
       }
     }
 
@@ -338,7 +466,7 @@ export abstract class BaseLoadBalancer extends Resource {
   protected resourcePolicyPrincipal(): iam.IPrincipal {
     const region = Stack.of(this).region;
     if (Token.isUnresolved(region)) {
-      throw new Error('Region is required to enable ELBv2 access logging');
+      throw new ValidationError('Region is required to enable ELBv2 access logging', this);
     }
 
     const account = RegionInfo.get(region).elbv2Account;

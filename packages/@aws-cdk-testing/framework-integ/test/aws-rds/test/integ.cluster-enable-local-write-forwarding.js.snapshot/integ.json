@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "EnableLocalWriteForwardingClusterStackInteg/DefaultTest": {
+      "stacks": [
+        "EnableLocalWriteForwardingClusterStack"
+      ],
+      "assertionStack": "EnableLocalWriteForwardingClusterStackInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "EnableLocalWriteForwardingClusterStackIntegDefaultTestDeployAssertFA53AD26"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

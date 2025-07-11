@@ -245,9 +245,9 @@ describe('CustomResourceHandler', () => {
   });
 });
 
-function nockUp(_predicate: (body: CloudFormationResponse) => boolean) {
+function nockUp(predicate: (body: CloudFormationResponse) => boolean) {
   return nock('https://someurl.com')
-    .put('/')
+    .put('/', predicate)
     .reply(200);
 }
 

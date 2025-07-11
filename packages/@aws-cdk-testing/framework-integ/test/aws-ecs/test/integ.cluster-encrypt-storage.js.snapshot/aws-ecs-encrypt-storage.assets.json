@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "631988f383bb938de2eb31a4ed2f8966bfe181f6cae9dcb8aed89a14ec3dbb46": {
+      "source": {
+        "path": "aws-ecs-encrypt-storage.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "631988f383bb938de2eb31a4ed2f8966bfe181f6cae9dcb8aed89a14ec3dbb46.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

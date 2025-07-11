@@ -113,12 +113,14 @@ test('file system LifecyclePolicies is created correctly', () => {
   // WHEN
   new FileSystem(stack, 'EfsFileSystem', {
     vpc,
+    throughputMode: ThroughputMode.ELASTIC,
     lifecyclePolicy: LifecyclePolicy.AFTER_7_DAYS,
     outOfInfrequentAccessPolicy: OutOfInfrequentAccessPolicy.AFTER_1_ACCESS,
     transitionToArchivePolicy: LifecyclePolicy.AFTER_14_DAYS,
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    ThroughputMode: 'elastic',
     LifecyclePolicies: [
       {
         TransitionToIA: 'AFTER_7_DAYS',
@@ -204,7 +206,7 @@ test('Exception when throughput mode is set to ELASTIC, performance mode cannot 
       throughputMode: ThroughputMode.ELASTIC,
       performanceMode: PerformanceMode.MAX_IO,
     });
-  }).toThrowError(/ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO/);
+  }).toThrow(/ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO/);
 });
 
 test('Exception when throughput mode is set to PROVISIONED, but provisioned throughput is not set', () => {
@@ -213,7 +215,7 @@ test('Exception when throughput mode is set to PROVISIONED, but provisioned thro
       vpc,
       throughputMode: ThroughputMode.PROVISIONED,
     });
-  }).toThrowError(/Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED/);
+  }).toThrow(/Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED/);
 });
 
 test('fails when provisioned throughput is less than the valid range', () => {
@@ -231,7 +233,7 @@ test('fails when provisioned throughput is not a whole number of mebibytes', () 
       throughputMode: ThroughputMode.PROVISIONED,
       provisionedThroughputPerSecond: Size.kibibytes(2050),
     });
-  }).toThrowError(/cannot be converted into a whole number/);
+  }).toThrow(/cannot be converted into a whole number/);
 });
 
 test('file system is created correctly with provisioned throughput mode', () => {
@@ -613,6 +615,46 @@ test('mountTargetOrderInsensitiveLogicalId flag is true', () => {
   });
 });
 
+test('mountTargetOrderInsensitiveLogicalId flag is true with imported subnet', () => {
+  // WHEN
+  const customStack = new Stack();
+  customStack.node.setContext('@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId', true);
+
+  const customVpc = new ec2.Vpc(customStack, 'VPC');
+
+  new FileSystem(customVpc, 'EfsFileSystem', {
+    vpc: customVpc,
+    vpcSubnets: {
+      subnets: [
+        ec2.Subnet.fromSubnetAttributes(customStack, 'my-subnet-id', {
+          subnetId: 'my-subnet-id',
+        }),
+        ec2.Subnet.fromSubnetAttributes(customStack, 'my-other-subnet-id', {
+          subnetId: 'my-other-subnet-id',
+        }),
+      ],
+    },
+  });
+
+  // THEN
+  Template.fromStack(customStack).templateMatches({
+    Resources: {
+      VPCEfsFileSystemEfsMountTargetmyothersubnetidA1DA462D: {
+        Properties: {
+          SubnetId: 'my-other-subnet-id',
+        },
+        Type: 'AWS::EFS::MountTarget',
+      },
+      VPCEfsFileSystemEfsMountTargetmysubnetidED4A4CD9: {
+        Properties: {
+          SubnetId: 'my-subnet-id',
+        },
+        Type: 'AWS::EFS::MountTarget',
+      },
+    },
+  });
+});
+
 test('mountTargetOrderInsensitiveLogicalId flag is false', () => {
   // WHEN
   const customStack = new Stack();
@@ -979,7 +1021,6 @@ test('one zone file system with vpcSubnets.availabilityZones having 1 AZ.', () =
   Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
     AvailabilityZoneName: 'us-east-1a',
   });
-
 });
 
 test('one zone file system with vpcSubnets.availabilityZones having more than 1 AZ.', () => {

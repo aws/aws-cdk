@@ -10,7 +10,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Domain, DomainProps, EngineVersion, IpAddressType } from '../lib';
+import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions, TLSSecurityPolicy } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -43,19 +43,20 @@ const testedOpenSearchVersions = [
   EngineVersion.OPENSEARCH_2_10,
   EngineVersion.OPENSEARCH_2_11,
   EngineVersion.OPENSEARCH_2_13,
+  EngineVersion.OPENSEARCH_2_15,
+  EngineVersion.OPENSEARCH_2_17,
+  EngineVersion.OPENSEARCH_2_19,
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
-
   expect(() => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
     }).connections;
-  }).toThrowError("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
+  }).toThrow("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
 });
 
 each(testedOpenSearchVersions).test('subnets and security groups can be provided when vpc is used', (engineVersion) => {
-
   const vpc = new Vpc(stack, 'Vpc');
   const securityGroup = new SecurityGroup(stack, 'CustomSecurityGroup', {
     vpc,
@@ -85,11 +86,9 @@ each(testedOpenSearchVersions).test('subnets and security groups can be provided
       ],
     },
   });
-
 });
 
 each(testedOpenSearchVersions).test('default subnets and security group when vpc is used', (engineVersion) => {
-
   const vpc = new Vpc(stack, 'Vpc');
   const domain = new Domain(stack, 'Domain', {
     version: engineVersion,
@@ -120,11 +119,9 @@ each(testedOpenSearchVersions).test('default subnets and security group when vpc
       ],
     },
   });
-
 });
 
 each(testedOpenSearchVersions).test('connections has no default port if enforceHttps is false', (engineVersion) => {
-
   const vpc = new Vpc(stack, 'Vpc');
   const domain = new Domain(stack, 'Domain', {
     version: engineVersion,
@@ -133,11 +130,9 @@ each(testedOpenSearchVersions).test('connections has no default port if enforceH
   });
 
   expect(domain.connections.defaultPort).toBeUndefined();
-
 });
 
 each(testedOpenSearchVersions).test('connections has default port 443 if enforceHttps is true', (engineVersion) => {
-
   const vpc = new Vpc(stack, 'Vpc');
   const domain = new Domain(stack, 'Domain', {
     version: engineVersion,
@@ -146,7 +141,6 @@ each(testedOpenSearchVersions).test('connections has default port 443 if enforce
   });
 
   expect(domain.connections.defaultPort).toEqual(Port.tcp(443));
-
 });
 
 each(testedOpenSearchVersions).test('default removalpolicy is retain', (engineVersion) => {
@@ -160,7 +154,6 @@ each(testedOpenSearchVersions).test('default removalpolicy is retain', (engineVe
 });
 
 each([testedOpenSearchVersions]).test('grants kms permissions if needed', (engineVersion) => {
-
   const key = new kms.Key(stack, 'Key');
 
   new Domain(stack, 'Domain', {
@@ -194,7 +187,6 @@ each([testedOpenSearchVersions]).test('grants kms permissions if needed', (engin
 
   const resources = Template.fromStack(stack).toJSON().Resources;
   expect(resources.AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E.Properties.PolicyDocument).toStrictEqual(expectedPolicy);
-
 });
 
 each([
@@ -209,6 +201,9 @@ each([
   [EngineVersion.OPENSEARCH_2_10, 'OpenSearch_2.10'],
   [EngineVersion.OPENSEARCH_2_11, 'OpenSearch_2.11'],
   [EngineVersion.OPENSEARCH_2_13, 'OpenSearch_2.13'],
+  [EngineVersion.OPENSEARCH_2_15, 'OpenSearch_2.15'],
+  [EngineVersion.OPENSEARCH_2_17, 'OpenSearch_2.17'],
+  [EngineVersion.OPENSEARCH_2_19, 'OpenSearch_2.19'],
 ]).test('minimal example renders correctly', (engineVersion, expectedCfVersion) => {
   new Domain(stack, 'Domain', { version: engineVersion });
 
@@ -314,7 +309,6 @@ each([testedOpenSearchVersions]).test('can set a self-referencing custom policy'
 });
 
 each([testedOpenSearchVersions]).describe('UltraWarm instances', (engineVersion) => {
-
   test('can enable UltraWarm instances', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
@@ -353,7 +347,6 @@ each([testedOpenSearchVersions]).describe('UltraWarm instances', (engineVersion)
       },
     });
   });
-
 });
 
 each([testedOpenSearchVersions]).test('can use tokens in capacity configuration', (engineVersion) => {
@@ -448,7 +441,6 @@ each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY se
 });
 
 each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
-
   test('slowSearchLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
@@ -956,7 +948,6 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
 });
 
 each(testedOpenSearchVersions).describe('grants', (engineVersion) => {
-
   test('"grantRead" allows read actions associated with this domain resource', () => {
     testGrant(readActions, (p, d) => d.grantRead(p), engineVersion);
   });
@@ -1087,11 +1078,9 @@ each(testedOpenSearchVersions).describe('grants', (engineVersion) => {
       ],
     });
   });
-
 });
 
 each(testedOpenSearchVersions).describe('metrics', (engineVersion) => {
-
   test('metricClusterStatusRed', () => {
     testMetric(
       (domain) => domain.metricClusterStatusRed(),
@@ -1228,11 +1217,9 @@ each(testedOpenSearchVersions).describe('metrics', (engineVersion) => {
       'p99',
     );
   });
-
 });
 
 describe('import', () => {
-
   test('static fromDomainEndpoint(endpoint) allows importing an external/existing domain', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
     const domainEndpointWithoutHttps = `${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
@@ -1800,11 +1787,62 @@ each(testedOpenSearchVersions).describe('custom endpoints', (engineVersion) => {
       ],
     });
   });
+});
 
+each(testedOpenSearchVersions).describe('TLS security policy', (engineVersion) => {
+  test('defaults to TLS 1.2 when tlsSecurityPolicy is not specified', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      DomainEndpointOptions: {
+        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
+      },
+    });
+  });
+
+  test('uses TLS 1.0 when explicitly specified', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      tlsSecurityPolicy: TLSSecurityPolicy.TLS_1_0,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      DomainEndpointOptions: {
+        TLSSecurityPolicy: 'Policy-Min-TLS-1-0-2019-07',
+      },
+    });
+  });
+
+  test('uses TLS 1.2 when explicitly specified', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      tlsSecurityPolicy: TLSSecurityPolicy.TLS_1_2,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      DomainEndpointOptions: {
+        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
+      },
+    });
+  });
+
+  test('uses TLS 1.2 PFS when explicitly specified', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      tlsSecurityPolicy: TLSSecurityPolicy.TLS_1_2_PFS,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      DomainEndpointOptions: {
+        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-PFS-2023-10',
+      },
+    });
+  });
 });
 
 each(testedOpenSearchVersions).describe('custom error responses', (engineVersion) => {
-
   test('error when availabilityZoneCount does not match vpcOptions.subnets length', () => {
     const vpc = new Vpc(stack, 'Vpc', {
       maxAzs: 1,
@@ -1960,68 +1998,41 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     })).toThrow(/Node-to-node encryption requires Elasticsearch version 6.0 or later or OpenSearch version 1.0 or later/);
   });
 
-  test('error when I3, R6GD, and IM4GN instance types are specified with EBS enabled', () => {
+  test.each([
+    'i3.2xlarge.search',
+    'r6gd.large.search',
+    'im4gn.2xlarge.search',
+    'i4g.large.search',
+    'i4i.xlarge.search',
+    'r7gd.xlarge.search',
+  ])('error when %s instance type is specified with EBS enabled', (dataNodeInstanceType) => {
     expect(() => new Domain(stack, 'Domain2', {
       version: engineVersion,
       capacity: {
-        dataNodeInstanceType: 'i3.2xlarge.search',
+        dataNodeInstanceType,
       },
       ebs: {
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-    })).toThrow(/I3, R6GD, and IM4GN instance types do not support EBS storage volumes./);
-    expect(() => new Domain(stack, 'Domain3', {
-      version: engineVersion,
-      capacity: {
-        dataNodeInstanceType: 'r6gd.large.search',
-      },
-      ebs: {
-        volumeSize: 100,
-        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
-      },
-    })).toThrow(/I3, R6GD, and IM4GN instance types do not support EBS storage volumes./);
-    expect(() => new Domain(stack, 'Domain4', {
-      version: engineVersion,
-      capacity: {
-        dataNodeInstanceType: 'im4gn.2xlarge.search',
-      },
-      ebs: {
-        volumeSize: 100,
-        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
-      },
-    })).toThrow(/I3, R6GD, and IM4GN instance types do not support EBS storage volumes./);
+    })).toThrow(/I3, R6GD, I4G, I4I, IM4GN and R7GD instance types do not support EBS storage volumes./);
   });
 
-  test('error when m3, r3, or t2 instance types are specified with encryption at rest enabled', () => {
-    const error = /M3, R3, and T2 instance types do not support encryption of data at rest/;
+  test.each([
+    'm3.2xlarge.search',
+    'r3.2xlarge.search',
+    't2.2xlarge.search',
+  ])
+  ('error when %s instance type is specified with encryption at rest enabled', (masterNodeInstanceType) => {
     expect(() => new Domain(stack, 'Domain1', {
       version: engineVersion,
       capacity: {
-        masterNodeInstanceType: 'm3.2xlarge.search',
+        masterNodeInstanceType,
       },
       encryptionAtRest: {
         enabled: true,
       },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain2', {
-      version: engineVersion,
-      capacity: {
-        dataNodeInstanceType: 'r3.2xlarge.search',
-      },
-      encryptionAtRest: {
-        enabled: true,
-      },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain3', {
-      version: engineVersion,
-      capacity: {
-        masterNodeInstanceType: 't2.2xlarge.search',
-      },
-      encryptionAtRest: {
-        enabled: true,
-      },
-    })).toThrow(error);
+    })).toThrow(/M3, R3 and T2 instance types do not support encryption of data at rest/);
   });
 
   test('error when t2.micro is specified with Elasticsearch version > 2.3', () => {
@@ -2033,25 +2044,19 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     })).toThrow(/t2.micro.search instance type supports only Elasticsearch versions 1.5 and 2.3/);
   });
 
-  test('error when any instance type other than R3, I3, R6GD, or IM4GN are specified without EBS enabled', () => {
+  test.each([
+    'm5.large.search',
+    'r5.large.search',
+  ])('error when any instance type other than R3, I3, R6GD, I4I, I4G, IM4GN or R7GD are specified without EBS enabled', (masterNodeInstanceType) => {
     expect(() => new Domain(stack, 'Domain1', {
       version: engineVersion,
       ebs: {
         enabled: false,
       },
       capacity: {
-        masterNodeInstanceType: 'm5.large.search',
+        masterNodeInstanceType,
       },
-    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, or IM4GN./);
-    expect(() => new Domain(stack, 'Domain2', {
-      version: engineVersion,
-      ebs: {
-        enabled: false,
-      },
-      capacity: {
-        dataNodeInstanceType: 'r5.large.search',
-      },
-    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, or IM4GN./);
+    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, I4I, IM4GN or R7GD./);
   });
 
   test('can use compatible master instance types that does not have local storage when data node type is i3 or r6gd', () => {
@@ -2175,22 +2180,18 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     });
   });
 
-  test('error when t2 or t3 instance types are specified with UltramWarm enabled', () => {
-    const error = /T2 and T3 instance types do not support UltraWarm storage/;
+  test.each([
+    't2.2xlarge.search',
+    't3.2xlarge.search',
+  ])
+  ('error when %s instance types is specified with UltramWarm enabled', (masterNodeInstanceType) => {
     expect(() => new Domain(stack, 'Domain1', {
       version: engineVersion,
       capacity: {
-        masterNodeInstanceType: 't2.2xlarge.search',
+        masterNodeInstanceType,
         warmNodes: 1,
       },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain2', {
-      version: engineVersion,
-      capacity: {
-        masterNodeInstanceType: 't3.2xlarge.search',
-        warmNodes: 1,
-      },
-    })).toThrow(error);
+    })).toThrow(/T2 and T3 instance types do not support UltraWarm storage/);
   });
 
   test('error when UltraWarm instance is used and no dedicated master instance specified', () => {
@@ -2202,7 +2203,6 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
       },
     })).toThrow(/Dedicated master node is required when UltraWarm storage is enabled/);
   });
-
 });
 
 test('can specify future version', () => {
@@ -2515,7 +2515,6 @@ each(testedOpenSearchVersions).describe('offPeakWindow and softwareUpdateOptions
 });
 
 describe('EBS Options Configurations', () => {
-
   test('iops', () => {
     const domainProps: DomainProps = {
       version: EngineVersion.OPENSEARCH_2_5,
@@ -2613,54 +2612,6 @@ describe('EBS Options Configurations', () => {
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
     }).toThrow('General Purpose EBS volumes can not be used with Iops or Throughput configuration');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
-          volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
-          iops: 99,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`io1` volumes iops must be between 100 and 64000.');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
-          volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
-          iops: 64001,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`io1` volumes iops must be between 100 and 64000.');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
-          volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
-          iops: 16001,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`gp3` volumes iops must be between 3000 and 16000.');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
-          volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
-          iops: 2999,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`gp3` volumes iops must be between 3000 and 16000.');
 
     expect(() => {
       const domainProps: DomainProps = {
@@ -2780,3 +2731,94 @@ function testMetric(
   });
   expect(metric.dimensions).toHaveProperty('DomainName');
 }
+
+each(testedOpenSearchVersions).test('can configure coordinator nodes with nodeOptions', (engineVersion) => {
+  const coordinatorConfig: NodeOptions = {
+    nodeType: 'coordinator',
+    nodeConfig: {
+      enabled: true,
+      type: 'm5.large.search',
+      count: 2,
+    },
+  };
+
+  const domain = new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      nodeOptions: [coordinatorConfig],
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    ClusterConfig: {
+      NodeOptions: [{
+        NodeType: 'coordinator',
+        NodeConfig: {
+          Enabled: true,
+          Type: 'm5.large.search',
+          Count: 2,
+        },
+      }],
+    },
+  });
+});
+
+each(testedOpenSearchVersions).test('throws when coordinator node instance type does not end with .search', (engineVersion) => {
+  expect(() => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      capacity: {
+        nodeOptions: [{
+          nodeType: 'coordinator' as const,
+          nodeConfig: {
+            enabled: true,
+            type: 'm5.large',
+          },
+        }],
+      },
+    });
+  }).toThrow('Coordinator node instance type must end with ".search".');
+});
+
+each(testedOpenSearchVersions).test('throws when coordinator node count is less than 1', (engineVersion) => {
+  expect(() => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      capacity: {
+        nodeOptions: [{
+          nodeType: 'coordinator' as const,
+          nodeConfig: {
+            enabled: true,
+            count: 0,
+            type: 'm5.large.search',
+          },
+        }],
+      },
+    });
+  }).toThrow('Coordinator node count must be at least 1.');
+});
+
+each(testedOpenSearchVersions).test('can disable coordinator nodes', (engineVersion) => {
+  const domain = new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      nodeOptions: [{
+        nodeType: 'coordinator' as const,
+        nodeConfig: {
+          enabled: false,
+        },
+      }],
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    ClusterConfig: {
+      NodeOptions: [{
+        NodeType: 'coordinator',
+        NodeConfig: {
+          Enabled: false,
+        },
+      }],
+    },
+  });
+});

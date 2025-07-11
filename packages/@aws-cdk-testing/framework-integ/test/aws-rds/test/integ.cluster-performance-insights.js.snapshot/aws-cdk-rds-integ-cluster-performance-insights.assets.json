@@ -1,0 +1,19 @@
+{
+  "version": "36.0.24",
+  "files": {
+    "e7bac5e168de01dddc4e1a60af680c5e433c25b20942fe704cf35f08f37031f4": {
+      "source": {
+        "path": "aws-cdk-rds-integ-cluster-performance-insights.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e7bac5e168de01dddc4e1a60af680c5e433c25b20942fe704cf35f08f37031f4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

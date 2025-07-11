@@ -1,7 +1,8 @@
 {
-  "version": "29.0.0",
+  "version": "44.0.0",
   "files": {
-    "f8a2a9f9e0d429354b6c00646ad4364f5e46ab6ceecf270d2ff59b9befcba8b5": {
+    "ec70adc86ef367784671172c386edad90d4a3fc5d82ea6e4ef9db0fe99775dc7": {
+      "displayName": "appsync-opensearch Template",
       "source": {
         "path": "appsync-opensearch.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f8a2a9f9e0d429354b6c00646ad4364f5e46ab6ceecf270d2ff59b9befcba8b5.json",
+          "objectKey": "ec70adc86ef367784671172c386edad90d4a3fc5d82ea6e4ef9db0fe99775dc7.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -2,6 +2,8 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import * as codestar from 'aws-cdk-lib/aws-codestar';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * GitHubRepository resource interface
@@ -83,13 +85,17 @@ export interface GitHubRepositoryProps {
 /**
  * The GitHubRepository resource
  */
+@propertyInjectable
 export class GitHubRepository extends cdk.Resource implements IGitHubRepository {
-
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-codestar-alpha.GitHubRepository';
   public readonly owner: string;
   public readonly repo: string;
 
   constructor(scope: Construct, id: string, props: GitHubRepositoryProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new codestar.CfnGitHubRepository(this, 'Resource', {
       repositoryOwner: props.owner,

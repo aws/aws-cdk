@@ -35,7 +35,6 @@ describe('vpn', () => {
       },
       StaticRoutesOnly: false,
     });
-
   });
 
   test('with static routing', () => {
@@ -80,7 +79,6 @@ describe('vpn', () => {
         Ref: 'VpcNetworkstaticE33EA98C',
       },
     });
-
   });
 
   test('with tunnel options, using secret value', () => {
@@ -162,7 +160,6 @@ describe('vpn', () => {
         },
       },
     })).toThrow(/`ip`.+IPv4/);
-
   });
 
   test('fails when specifying more than two tunnel options', () => {
@@ -187,7 +184,6 @@ describe('vpn', () => {
         },
       },
     })).toThrow(/two.+`tunnelOptions`/);
-
   });
 
   test('fails with duplicate tunnel inside cidr', () => {
@@ -209,7 +205,6 @@ describe('vpn', () => {
         },
       },
     })).toThrow(/`tunnelInsideCidr`.+both tunnels/);
-
   });
 
   test('with two tunnel options and no tunnelInsideCidr', () => {
@@ -270,7 +265,6 @@ describe('vpn', () => {
         },
       },
     })).toThrow(/`preSharedKey`/);
-
   });
 
   test('fails when specifying a reserved tunnel inside cidr', () => {
@@ -289,7 +283,6 @@ describe('vpn', () => {
         },
       },
     })).toThrow(/`tunnelInsideCidr`.+reserved/);
-
   });
 
   test('fails when specifying an invalid tunnel inside cidr', () => {
@@ -308,7 +301,6 @@ describe('vpn', () => {
         },
       },
     })).toThrow(/`tunnelInsideCidr`.+size/);
-
   });
 
   test('can use metricTunnelState on a vpn connection', () => {
@@ -331,11 +323,9 @@ describe('vpn', () => {
       period: Duration.minutes(5),
       statistic: 'Average',
     });
-
   });
 
   test('can import a vpn connection from attributes', () => {
-
     const stack = new Stack();
 
     const vpn = VpnConnection.fromVpnConnectionAttributes(stack, 'Connection', {
@@ -373,7 +363,6 @@ describe('vpn', () => {
       period: Duration.minutes(5),
       statistic: 'Sum',
     });
-
   });
 
   test('can use metricAllTunnelDataOut', () => {
@@ -387,7 +376,6 @@ describe('vpn', () => {
       period: Duration.minutes(5),
       statistic: 'Sum',
     });
-
   });
 
   test('fails when enabling vpnGateway without having subnets', () => {
@@ -398,7 +386,6 @@ describe('vpn', () => {
       vpnGateway: true,
       subnetConfiguration: [],
     })).toThrow(/VPN gateway/);
-
   });
 
   test('can add a vpn connection later to a vpc that initially had no subnets', () => {
@@ -423,7 +410,6 @@ describe('vpn', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::CustomerGateway', {
       Type: 'ipsec.1',
     });
-
   });
   test('can add a vpn connection with a Token as customer gateway ip', () => {
     // GIVEN
@@ -443,6 +429,5 @@ describe('vpn', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::CustomerGateway', {
       IpAddress: '192.0.2.1',
     });
-
   });
 });

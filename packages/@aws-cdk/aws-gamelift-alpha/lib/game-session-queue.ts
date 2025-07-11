@@ -3,6 +3,8 @@ import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnGameSessionQueue } from 'aws-cdk-lib/aws-gamelift';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents a game session queue destination
@@ -299,7 +301,11 @@ export abstract class GameSessionQueueBase extends cdk.Resource implements IGame
  *
  * @resource AWS::GameLift::GameSessionQueue
  */
+@propertyInjectable
 export class GameSessionQueue extends GameSessionQueueBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-gamelift-alpha.GameSessionQueue';
+
   /**
    * Import an existing gameSessionQueue from its name.
    */
@@ -363,6 +369,8 @@ export class GameSessionQueue extends GameSessionQueueBase {
     super(scope, id, {
       physicalName: props.gameSessionQueueName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!cdk.Token.isUnresolved(props.gameSessionQueueName)) {
       if (props.gameSessionQueueName.length > 128) {
@@ -410,6 +418,7 @@ export class GameSessionQueue extends GameSessionQueueBase {
    *
    * @param destination A destination to add
    */
+  @MethodMetadata()
   public addDestination(destination: IGameSessionQueueDestination) {
     this.destinations.push(destination);
   }

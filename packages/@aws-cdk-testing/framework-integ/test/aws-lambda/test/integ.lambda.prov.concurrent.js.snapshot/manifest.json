@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-lambda-pce-1.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-lambda-pce-1.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94eb787de5b73b68d1daa3b92361b24a2e5dae708997ec2f1bea10f616a099c2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21f23e9f0fdbd350c1a9da40cae57c88bcf5293ccfb3bfd51a3732bd23ff60ac.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,10 +34,96 @@
         "aws-cdk-lambda-pce-1.assets"
       ],
       "metadata": {
+        "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaAliasPCEServiceRoleF7C9F212"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/ServiceRole/DefaultPolicy/Resource": [
@@ -51,10 +138,28 @@
             "data": "MyLambdaAliasPCED0B8D751"
           }
         ],
+        "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/CurrentVersion": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "lambda": "*"
+            }
+          }
+        ],
         "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaAliasPCECurrentVersion072335D3abd7022526e1eae404a6f2a50ba64569"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/Alias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "aliasName": "*",
+              "version": "*",
+              "provisionedConcurrentExecutions": "*"
+            }
           }
         ],
         "/aws-cdk-lambda-pce-1/Alias/Resource": [
@@ -63,16 +168,111 @@
             "data": "Alias325C5727"
           }
         ],
+        "/aws-cdk-lambda-pce-1/Alias/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-lambda-pce-1/Alias/AliasPermission": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AliasAliasPermissionAF30F9E8"
           }
         ],
+        "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*",
+              "currentVersionOptions": {
+                "provisionedConcurrentExecutions": "*"
+              }
+            }
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaVersionPCEServiceRole2ACFB73E"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/ServiceRole/DefaultPolicy/Resource": [
@@ -87,16 +287,40 @@
             "data": "MyLambdaVersionPCEA3A0D86B"
           }
         ],
+        "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/CurrentVersion": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "lambda": "*",
+              "provisionedConcurrentExecutions": "*"
+            }
+          }
+        ],
         "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaVersionPCECurrentVersion27FC3932e3372865403c1e027068d9691afe3f3f"
           }
         ],
+        "/aws-cdk-lambda-pce-1/Alias2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "aliasName": "*",
+              "version": "*"
+            }
+          }
+        ],
         "/aws-cdk-lambda-pce-1/Alias2/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Alias29455D932"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/Alias2/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-lambda-pce-1/Alias2/AliasPermission2": [
@@ -116,24 +340,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "MyLambdaAliasPCECurrentVersion072335D34a3f83f8218b6b94346920ff28a940e4": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambdaAliasPCECurrentVersion072335D34a3f83f8218b6b94346920ff28a940e4",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyLambdaVersionPCECurrentVersion27FC39322c322873dbc351359405806a77875357": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambdaVersionPCECurrentVersion27FC39322c322873dbc351359405806a77875357",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-cdk-lambda-pce-1"
@@ -144,5 +350,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

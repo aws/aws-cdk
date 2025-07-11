@@ -1,0 +1,59 @@
+#
+#####################################
+##           AWS CDK               ##
+#####################################
+# Rule Identifier:
+#    IAM_ROLE_NO_BROAD_PRINCIPALS
+#
+# Description:
+#   Checks if IAM roles have overly permissive assume role policies by identifying:
+#   1. Use of account root in AWS principals
+#   2. Use of wildcards in AWS principals
+#   3. Use of wildcards as entire principal
+#   4. Allows specific role ARNs that are not root
+#   5. Catches use of !Join function to construct root ARNs
+#
+# Reports on:
+#    AWS::IAM::Role
+#
+# Evaluates:
+#    AWS CloudFormation
+#
+# Rule Parameters:
+#    None
+#
+# Scenarios:
+# a) SKIP: when there are no IAM Role resources
+# b) SKIP: when IAM Role resources only have service principals
+# c) PASS: when IAM Role resources with AWS principals use specific ARNs (not root or wildcards)
+# d) PASS: when IAM Role resources with AWS principals use specific role ARNs
+# e) FAIL: when any IAM Role resource uses account root in AWS principal
+# f) FAIL: when any IAM Role resource uses wildcard in AWS principal
+# g) FAIL: when any IAM Role resource uses wildcard as entire principal
+
+#
+# Select all IAM Role resources from incoming template
+#
+let iam_roles_no_broad_principals = Resources.*[ Type == 'AWS::IAM::Role'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "IAM_ROLE_NO_BROAD_PRINCIPALS"
+]
+
+rule IAM_ROLE_NO_BROAD_PRINCIPALS when %iam_roles_no_broad_principals !empty {
+    %iam_roles_no_broad_principals.Properties.AssumeRolePolicyDocument.Statement[*] {
+        when Principal exists {
+            # Check for wildcard as entire principal
+            when Principal is_string {
+              Principal != "*"
+            }
+          # Check if AWS principal exists
+          when Principal.AWS exists {
+            # Check if AWS is a string
+            when Principal.AWS is_string {
+              Principal.AWS != "*"
+              Principal.AWS != /(?i):root/
+            }
+          }
+    }
+  }
+}

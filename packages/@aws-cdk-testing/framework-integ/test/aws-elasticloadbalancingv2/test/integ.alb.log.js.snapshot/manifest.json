@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "aws-cdk-elbv2-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/e8dcef11b871328ec18d29401ebba343dec78affd3ec6055ab6d8be5b9223c97.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/e46150d175ba28d26de0278620e6bf80a278f271ee650ff5617892d2af573784.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,54 @@
         "aws-cdk-elbv2-integ.assets"
       ],
       "metadata": {
+        "/aws-cdk-elbv2-integ/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*"
+            }
+          }
+        ],
         "/aws-cdk-elbv2-integ/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/aws-cdk-elbv2-integ/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-elbv2-integ/VPC/PublicSubnet1/Subnet": [
@@ -76,6 +120,42 @@
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
+        "/aws-cdk-elbv2-integ/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/aws-cdk-elbv2-integ/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -112,6 +192,34 @@
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
+        "/aws-cdk-elbv2-integ/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/aws-cdk-elbv2-integ/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,6 +242,34 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/aws-cdk-elbv2-integ/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/aws-cdk-elbv2-integ/VPC/PrivateSubnet2/Subnet": [
@@ -172,10 +308,27 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
+        "/aws-cdk-elbv2-integ/Bucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
+          }
+        ],
         "/aws-cdk-elbv2-integ/Bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Bucket83908E77"
+          }
+        ],
+        "/aws-cdk-elbv2-integ/Bucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
           }
         ],
         "/aws-cdk-elbv2-integ/Bucket/Policy/Resource": [
@@ -184,10 +337,22 @@
             "data": "BucketPolicyE9A3008A"
           }
         ],
+        "/aws-cdk-elbv2-integ/Bucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-elbv2-integ/Bucket/AutoDeleteObjectsCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
+          }
+        ],
+        "/aws-cdk-elbv2-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/aws-cdk-elbv2-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
@@ -202,16 +367,73 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
+        "/aws-cdk-elbv2-integ/LB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-elbv2-integ/LB/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LB8A12904C"
           }
         ],
+        "/aws-cdk-elbv2-integ/LB/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*",
+              "allowAllOutbound": false
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          }
+        ],
         "/aws-cdk-elbv2-integ/LB/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LBSecurityGroup8A41EA2B"
+          }
+        ],
+        "/aws-cdk-elbv2-integ/LB/Listener": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/aws-cdk-elbv2-integ/LB/Listener/Resource": [
@@ -295,5 +517,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

@@ -1,4 +1,7 @@
 import { Template } from '../../assertions';
+import * as events from '../../aws-events';
+import * as iam from '../../aws-iam';
+import * as firehose from '../../aws-kinesisfirehose';
 import * as sns from '../../aws-sns';
 import { Stack } from '../../core';
 import { CloudWatchDimensionSource, ConfigurationSet, ConfigurationSetEventDestination, EventDestination } from '../lib';
@@ -105,3 +108,213 @@ test('cloudwatch dimensions destination', () => {
   });
 });
 
+test('default bus as event bridge destination', () => {
+  const bus = events.EventBus.fromEventBusName(stack, 'EventBus', 'default');
+  new ConfigurationSetEventDestination(stack, 'Destination', {
+    configurationSet,
+    destination: EventDestination.eventBus(bus),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSetEventDestination', {
+    ConfigurationSetName: { Ref: 'ConfigurationSet3DD38186' },
+    EventDestination: {
+      Enabled: true,
+      EventBridgeDestination: {
+        EventBusArn: {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':events:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':event-bus/default',
+          ]],
+        },
+      },
+      MatchingEventTypes: [
+        'send',
+        'reject',
+        'bounce',
+        'complaint',
+        'delivery',
+        'open',
+        'click',
+        'renderingFailure',
+        'deliveryDelay',
+        'subscription',
+      ],
+    },
+  });
+});
+
+test('throw if event bridge destination is not default event bus', () => {
+  expect(() => {
+    const bus = events.EventBus.fromEventBusName(stack, 'EventBus', 'test');
+    new ConfigurationSetEventDestination(stack, 'Destination', {
+      configurationSet,
+      destination: EventDestination.eventBus(bus),
+    });
+  }).toThrow(/Only the default bus can be used as an event destination/);
+});
+
+test('kinesis firehose delivery stream destination only specify stream ARN', () => {
+  const deliveryStream = firehose.DeliveryStream.fromDeliveryStreamName(stack, 'Firehose', 'my-deliverystream');
+
+  new ConfigurationSetEventDestination(stack, 'Destination', {
+    configurationSet,
+    destination: EventDestination.firehoseDeliveryStream({
+      deliveryStream,
+    }),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSetEventDestination', {
+    ConfigurationSetName: { Ref: 'ConfigurationSet3DD38186' },
+    EventDestination: {
+      Enabled: true,
+      KinesisFirehoseDestination: {
+        DeliveryStreamARN: {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':firehose:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':deliverystream/my-deliverystream',
+          ]],
+        },
+        IAMRoleARN: {
+          'Fn::GetAtt': [
+            'DestinationFirehoseDeliveryStreamIamRole8D1AB908',
+            'Arn',
+          ],
+        },
+      },
+      MatchingEventTypes: [
+        'send',
+        'reject',
+        'bounce',
+        'complaint',
+        'delivery',
+        'open',
+        'click',
+        'renderingFailure',
+        'deliveryDelay',
+        'subscription',
+      ],
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'ses.amazonaws.com',
+          },
+          Condition: {
+            StringEquals: {
+              'AWS:SourceAccount': {
+                Ref: 'AWS::AccountId',
+              },
+              'AWS:SourceArn': {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':ses:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':configuration-set/',
+                  { Ref: 'ConfigurationSet3DD38186' },
+                ]],
+              },
+            },
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Policies: [
+      {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'firehose:PutRecordBatch',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':firehose:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':deliverystream/my-deliverystream',
+                ]],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      },
+    ],
+  });
+});
+
+test('kinesis firehose delivery stream destination specify stream ARN and IAM Role ARN', () => {
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('ses.amazonaws.com'),
+  });
+
+  const deliveryStream = firehose.DeliveryStream.fromDeliveryStreamName(stack, 'Firehose', 'my-deliverystream');
+
+  new ConfigurationSetEventDestination(stack, 'Destination', {
+    configurationSet,
+    destination: EventDestination.firehoseDeliveryStream({
+      deliveryStream,
+      role: role,
+    }),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSetEventDestination', {
+    ConfigurationSetName: { Ref: 'ConfigurationSet3DD38186' },
+    EventDestination: {
+      Enabled: true,
+      KinesisFirehoseDestination: {
+        DeliveryStreamARN: {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':firehose:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':deliverystream/my-deliverystream',
+          ]],
+        },
+        IAMRoleARN: {
+          'Fn::GetAtt': [
+            'Role1ABCC5F0',
+            'Arn',
+          ],
+        },
+      },
+      MatchingEventTypes: [
+        'send',
+        'reject',
+        'bounce',
+        'complaint',
+        'delivery',
+        'open',
+        'click',
+        'renderingFailure',
+        'deliveryDelay',
+        'subscription',
+      ],
+    },
+  });
+});

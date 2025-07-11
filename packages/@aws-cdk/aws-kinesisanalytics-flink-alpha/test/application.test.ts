@@ -21,21 +21,32 @@ describe('Application', () => {
     stack = new core.Stack();
     bucket = new s3.Bucket(stack, 'CodeBucket');
     requiredProps = {
-      runtime: flink.Runtime.FLINK_1_11,
+      runtime: flink.Runtime.FLINK_1_20,
       code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
     };
   });
 
-  test('default Flink Application', () => {
+  const flinkRuntimes = [
+    flink.Runtime.FLINK_1_6,
+    flink.Runtime.FLINK_1_8,
+    flink.Runtime.FLINK_1_11,
+    flink.Runtime.FLINK_1_13,
+    flink.Runtime.FLINK_1_15,
+    flink.Runtime.FLINK_1_18,
+    flink.Runtime.FLINK_1_19,
+    flink.Runtime.FLINK_1_20,
+  ];
+
+  test.each(flinkRuntimes)('Flink Application with %s', (runtime) => {
     new flink.Application(stack, 'FlinkApplication', {
-      runtime: flink.Runtime.FLINK_1_11,
+      runtime,
       code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
       applicationName: 'MyFlinkApplication',
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       ApplicationName: 'MyFlinkApplication',
-      RuntimeEnvironment: 'FLINK-1_11',
+      RuntimeEnvironment: runtime.value,
       ServiceExecutionRole: {
         'Fn::GetAtt': [
           'FlinkApplicationRole2F7BCBF6',
@@ -846,31 +857,31 @@ describe('Application', () => {
 
     // Table driven test with: [method, metricName, default statistic]
     const assertions: Array<[(options?: cloudwatch.MetricOptions) => cloudwatch.Metric, string, string]> = [
-      [flinkApp.metricKpus, 'KPUs', 'Average'],
-      [flinkApp.metricDowntime, 'downtime', 'Average'],
-      [flinkApp.metricUptime, 'uptime', 'Average'],
-      [flinkApp.metricFullRestarts, 'fullRestarts', 'Sum'],
-      [flinkApp.metricNumberOfFailedCheckpoints, 'numberOfFailedCheckpoints', 'Sum'],
-      [flinkApp.metricLastCheckpointDuration, 'lastCheckpointDuration', 'Maximum'],
-      [flinkApp.metricLastCheckpointSize, 'lastCheckpointSize', 'Maximum'],
-      [flinkApp.metricCpuUtilization, 'cpuUtilization', 'Average'],
-      [flinkApp.metricHeapMemoryUtilization, 'heapMemoryUtilization', 'Average'],
-      [flinkApp.metricOldGenerationGCTime, 'oldGenerationGCTime', 'Sum'],
-      [flinkApp.metricOldGenerationGCCount, 'oldGenerationGCCount', 'Sum'],
-      [flinkApp.metricThreadsCount, 'threadsCount', 'Average'],
-      [flinkApp.metricNumRecordsIn, 'numRecordsIn', 'Average'],
-      [flinkApp.metricNumRecordsInPerSecond, 'numRecordsInPerSecond', 'Average'],
-      [flinkApp.metricNumRecordsOut, 'numRecordsOut', 'Average'],
-      [flinkApp.metricNumRecordsOutPerSecond, 'numRecordsOutPerSecond', 'Average'],
-      [flinkApp.metricNumLateRecordsDropped, 'numLateRecordsDropped', 'Sum'],
-      [flinkApp.metricCurrentInputWatermark, 'currentInputWatermark', 'Maximum'],
-      [flinkApp.metricCurrentOutputWatermark, 'currentOutputWatermark', 'Maximum'],
-      [flinkApp.metricManagedMemoryUsed, 'managedMemoryUsed', 'Average'],
-      [flinkApp.metricManagedMemoryTotal, 'managedMemoryTotal', 'Average'],
-      [flinkApp.metricManagedMemoryUtilization, 'managedMemoryUtilization', 'Average'],
-      [flinkApp.metricIdleTimeMsPerSecond, 'idleTimeMsPerSecond', 'Average'],
-      [flinkApp.metricBackPressuredTimeMsPerSecond, 'backPressuredTimeMsPerSecond', 'Average'],
-      [flinkApp.metricBusyTimePerMsPerSecond, 'busyTimePerMsPerSecond', 'Average'],
+      [x => flinkApp.metricKpus(x), 'KPUs', 'Average'],
+      [x => flinkApp.metricDowntime(x), 'downtime', 'Average'],
+      [x => flinkApp.metricUptime(x), 'uptime', 'Average'],
+      [x => flinkApp.metricFullRestarts(x), 'fullRestarts', 'Sum'],
+      [x => flinkApp.metricNumberOfFailedCheckpoints(x), 'numberOfFailedCheckpoints', 'Sum'],
+      [x => flinkApp.metricLastCheckpointDuration(x), 'lastCheckpointDuration', 'Maximum'],
+      [x => flinkApp.metricLastCheckpointSize(x), 'lastCheckpointSize', 'Maximum'],
+      [x => flinkApp.metricCpuUtilization(x), 'cpuUtilization', 'Average'],
+      [x => flinkApp.metricHeapMemoryUtilization(x), 'heapMemoryUtilization', 'Average'],
+      [x => flinkApp.metricOldGenerationGCTime(x), 'oldGenerationGCTime', 'Sum'],
+      [x => flinkApp.metricOldGenerationGCCount(x), 'oldGenerationGCCount', 'Sum'],
+      [x => flinkApp.metricThreadsCount(x), 'threadsCount', 'Average'],
+      [x => flinkApp.metricNumRecordsIn(x), 'numRecordsIn', 'Average'],
+      [x => flinkApp.metricNumRecordsInPerSecond(x), 'numRecordsInPerSecond', 'Average'],
+      [x => flinkApp.metricNumRecordsOut(x), 'numRecordsOut', 'Average'],
+      [x => flinkApp.metricNumRecordsOutPerSecond(x), 'numRecordsOutPerSecond', 'Average'],
+      [x => flinkApp.metricNumLateRecordsDropped(x), 'numLateRecordsDropped', 'Sum'],
+      [x => flinkApp.metricCurrentInputWatermark(x), 'currentInputWatermark', 'Maximum'],
+      [x => flinkApp.metricCurrentOutputWatermark(x), 'currentOutputWatermark', 'Maximum'],
+      [x => flinkApp.metricManagedMemoryUsed(x), 'managedMemoryUsed', 'Average'],
+      [x => flinkApp.metricManagedMemoryTotal(x), 'managedMemoryTotal', 'Average'],
+      [x => flinkApp.metricManagedMemoryUtilization(x), 'managedMemoryUtilization', 'Average'],
+      [x => flinkApp.metricIdleTimeMsPerSecond(x), 'idleTimeMsPerSecond', 'Average'],
+      [x => flinkApp.metricBackPressuredTimeMsPerSecond(x), 'backPressuredTimeMsPerSecond', 'Average'],
+      [x => flinkApp.metricBusyTimePerMsPerSecond(x), 'busyTimePerMsPerSecond', 'Average'],
     ];
 
     assertions.forEach(([method, metricName, defaultStatistic]) => {

@@ -2,11 +2,15 @@ import { Construct } from 'constructs';
 import {
   Arn,
   CustomResource,
+  FeatureFlags,
   IResource,
   Resource,
   Token,
 } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { OidcProvider } from '../../custom-resource-handlers/dist/aws-iam/oidc-provider.generated';
+import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from '../../cx-api';
 
 const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';
 
@@ -99,7 +103,11 @@ export interface OpenIdConnectProviderProps {
  *
  * @resource AWS::CloudFormation::CustomResource
  */
+@propertyInjectable
 export class OpenIdConnectProvider extends Resource implements IOpenIdConnectProvider {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.OpenIdConnectProvider';
+
   /**
    * Imports an Open ID connect provider from an ARN.
    * @param scope The definition scope
@@ -137,6 +145,10 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
    */
   public constructor(scope: Construct, id: string, props: OpenIdConnectProviderProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    const rejectUnauthorized = FeatureFlags.of(this).isEnabled(IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS) ?? false;
 
     const provider = this.getOrCreateProvider();
     const resource = new CustomResource(this, 'Resource', {
@@ -146,6 +158,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
         ClientIDList: props.clientIds,
         ThumbprintList: props.thumbprints,
         Url: props.url,
+        RejectUnauthorized: rejectUnauthorized,
 
         // code changes can cause thumbprint changes in case they weren't explicitly provided.
         // add the code hash as a property so that CFN invokes the UPDATE handler in these cases,

@@ -28,7 +28,9 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '../../core';
+import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
 
@@ -274,7 +276,7 @@ abstract class ProjectBase extends Resource implements IProject {
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new Error('Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project');
+      throw new ValidationError('Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project', this);
     }
     return this._connections;
   }
@@ -563,7 +565,7 @@ export interface CommonProjectProps {
   /**
    * Build environment to use for the build.
    *
-   * @default BuildEnvironment.LinuxBuildImage.STANDARD_1_0
+   * @default BuildEnvironment.LinuxBuildImage.STANDARD_7_0
    */
   readonly environment?: BuildEnvironment;
 
@@ -734,6 +736,14 @@ export interface CommonProjectProps {
    * @default - no visibility is set
    */
   readonly visibility?: ProjectVisibility;
+
+  /**
+   * CodeBuild will automatically call retry build using the project's service role up to the auto-retry limit.
+   * `autoRetryLimit` must be between 0 and 10.
+   *
+   * @default - no retry
+   */
+  readonly autoRetryLimit?: number;
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -786,7 +796,11 @@ export interface BindToCodePipelineOptions {
 /**
  * A representation of a CodeBuild Project.
  */
+@propertyInjectable
 export class Project extends ProjectBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codebuild.Project';
+
   public static fromProjectArn(scope: Construct, id: string, projectArn: string): IProject {
     const parsedArn = Stack.of(scope).splitArn(projectArn, ArnFormat.SLASH_RESOURCE_NAME);
 
@@ -859,7 +873,6 @@ export class Project extends ProjectBase {
    */
   public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable },
     validateNoPlainTextSecrets: boolean = false, principal?: iam.IGrantable): CfnProject.EnvironmentVariableProperty[] {
-
     const ret = new Array<CfnProject.EnvironmentVariableProperty>();
     const ssmIamResources = new Array<string>();
     const secretsManagerIamResources = new Set<string>();
@@ -879,7 +892,7 @@ export class Project extends ProjectBase {
         const fragments = Tokenization.reverseString(cfnEnvVariable.value);
         for (const token of fragments.tokens) {
           if (token instanceof SecretValue) {
-            throw new Error(`Plaintext environment variable '${name}' contains a secret value! ` +
+            throw new UnscopedValidationError(`Plaintext environment variable '${name}' contains a secret value! ` +
               'This means the value of this variable will be visible in plain text in the AWS Console. ' +
               "Please consider using CodeBuild's SecretsManager environment variables feature instead. " +
               "If you'd like to continue with having this secret in the plaintext environment variables, " +
@@ -913,7 +926,7 @@ export class Project extends ProjectBase {
           if (envVariableValue.startsWith('arn:')) {
             const parsedArn = stack.splitArn(envVariableValue, ArnFormat.COLON_RESOURCE_NAME);
             if (!parsedArn.resourceName) {
-              throw new Error('SecretManager ARN is missing the name of the secret: ' + envVariableValue);
+              throw new UnscopedValidationError('SecretManager ARN is missing the name of the secret: ' + envVariableValue);
             }
 
             // the value of the property can be a complex string, separated by ':';
@@ -1053,6 +1066,8 @@ export class Project extends ProjectBase {
     super(scope, id, {
       physicalName: props.projectName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.role = props.role || new iam.Role(this, 'Role', {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
@@ -1060,14 +1075,14 @@ export class Project extends ProjectBase {
     });
     this.grantPrincipal = this.role;
 
-    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_1_0;
+    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_7_0;
 
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
     this.source = props.source || new NoSource();
     const sourceConfig = this.source.bind(this, this);
     if (props.badge && !this.source.badgeSupported) {
-      throw new Error(`Badge is not supported for source type ${this.source.type}`);
+      throw new ValidationError(`Badge is not supported for source type ${this.source.type}`, this);
     }
 
     const artifacts = props.artifacts
@@ -1086,7 +1101,7 @@ export class Project extends ProjectBase {
     const environmentVariables = props.environmentVariables || {};
     const buildSpec = props.buildSpec;
     if (this.source.type === NO_SOURCE_TYPE && (buildSpec === undefined || !buildSpec.isImmediate)) {
-      throw new Error("If the Project's source is NoSource, you need to provide a concrete buildSpec");
+      throw new ValidationError("If the Project's source is NoSource, you need to provide a concrete buildSpec", this);
     }
 
     this._secondarySources = [];
@@ -1105,6 +1120,12 @@ export class Project extends ProjectBase {
 
     for (const fileSystemLocation of props.fileSystemLocations || []) {
       this.addFileSystemLocation(fileSystemLocation);
+    }
+
+    if (!Token.isUnresolved(props.autoRetryLimit) && (props.autoRetryLimit !== undefined)) {
+      if (props.autoRetryLimit < 0 || props.autoRetryLimit > 10) {
+        throw new ValidationError(`autoRetryLimit must be a value between 0 and 10, got ${props.autoRetryLimit}.`, this);
+      }
     }
 
     const resource = new CfnProject(this, 'Resource', {
@@ -1143,6 +1164,7 @@ export class Project extends ProjectBase {
           return config;
         },
       }),
+      autoRetryLimit: props.autoRetryLimit,
     });
 
     this.addVpcRequiredPermissions(props, resource);
@@ -1204,6 +1226,7 @@ export class Project extends ProjectBase {
     this.node.addValidation({ validate: () => this.validateProject() });
   }
 
+  @MethodMetadata()
   public enableBatchBuilds(): BatchBuildConfig | undefined {
     if (!this._batchServiceRole) {
       this._batchServiceRole = new iam.Role(this, 'BatchServiceRole', {
@@ -1231,9 +1254,10 @@ export class Project extends ProjectBase {
    * @param secondarySource the source to add as a secondary source
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
+  @MethodMetadata()
   public addSecondarySource(secondarySource: ISource): void {
     if (!secondarySource.identifier) {
-      throw new Error('The identifier attribute is mandatory for secondary sources');
+      throw new ValidationError('The identifier attribute is mandatory for secondary sources', this);
     }
     const secondarySourceConfig = secondarySource.bind(this, this);
     this._secondarySources.push(secondarySourceConfig.sourceProperty);
@@ -1250,6 +1274,7 @@ export class Project extends ProjectBase {
    *
    * @param fileSystemLocation the fileSystemLocation to add
    */
+  @MethodMetadata()
   public addFileSystemLocation(fileSystemLocation: IFileSystemLocation): void {
     const fileSystemConfig = fileSystemLocation.bind(this, this);
     this._fileSystemLocations.push(fileSystemConfig.location);
@@ -1261,9 +1286,10 @@ export class Project extends ProjectBase {
    * @param secondaryArtifact the artifact to add as a secondary artifact
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
+  @MethodMetadata()
   public addSecondaryArtifact(secondaryArtifact: IArtifacts): void {
     if (!secondaryArtifact.identifier) {
-      throw new Error('The identifier attribute is mandatory for secondary artifacts');
+      throw new ValidationError('The identifier attribute is mandatory for secondary artifacts', this);
     }
     this._secondaryArtifacts.push(secondaryArtifact.bind(this, this).artifactsProperty);
   }
@@ -1274,6 +1300,7 @@ export class Project extends ProjectBase {
    * @param _scope the construct the binding is taking place in
    * @param options additional options for the binding
    */
+  @MethodMetadata()
   public bindToCodePipeline(_scope: Construct, options: BindToCodePipelineOptions): void {
     // work around a bug in CodeBuild: it ignores the KMS key set on the pipeline,
     // and always uses its own, project-level key
@@ -1284,7 +1311,7 @@ export class Project extends ProjectBase {
       const keyStack = Stack.of(options.artifactBucket.encryptionKey);
       const projectStack = Stack.of(this);
       if (!(options.artifactBucket.encryptionKey instanceof kms.Key &&
-          (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region))) {
+        (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region))) {
         this.encryptionKey = options.artifactBucket.encryptionKey;
       }
     }
@@ -1329,7 +1356,6 @@ export class Project extends ProjectBase {
   private renderEnvironment(
     props: ProjectProps,
     projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
-
     const env = props.environment ?? {};
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
     const containerVars = env.environmentVariables || {};
@@ -1351,7 +1377,7 @@ export class Project extends ProjectBase {
     errors.push(...this.validateLambdaBuildImage(this.buildImage, props));
 
     if (errors.length > 0) {
-      throw new Error('Invalid CodeBuild environment: ' + errors.join('\n'));
+      throw new ValidationError('Invalid CodeBuild environment: ' + errors.join('\n'), this);
     }
 
     const imagePullPrincipalType = this.isLambdaBuildImage(this.buildImage) ? undefined :
@@ -1428,7 +1454,7 @@ export class Project extends ProjectBase {
 
     // If the fleetArn is resolved, the fleet is imported and we cannot validate the environment type
     if (Token.isUnresolved(fleet.fleetArn) && this.buildImage.type !== fleet.environmentType) {
-      throw new Error(`The environment type of the fleet (${fleet.environmentType}) must match the environment type of the build image (${this.buildImage.type})`);
+      throw new ValidationError(`The environment type of the fleet (${fleet.environmentType}) must match the environment type of the build image (${this.buildImage.type})`, this);
     }
 
     return { fleetArn: fleet.fleetArn };
@@ -1442,13 +1468,13 @@ export class Project extends ProjectBase {
    */
   private configureVpc(props: ProjectProps): CfnProject.VpcConfigProperty | undefined {
     if ((props.securityGroups || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new Error('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC');
+      throw new ValidationError('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC', this);
     }
 
     if (!props.vpc) { return undefined; }
 
     if ((props.securityGroups && props.securityGroups.length > 0) && props.allowAllOutbound !== undefined) {
-      throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
+      throw new ValidationError('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.', this);
     }
 
     let securityGroups: ec2.ISecurityGroup[];
@@ -1494,7 +1520,7 @@ export class Project extends ProjectBase {
       const status = (cloudWatchLogs.enabled ?? true) ? 'ENABLED' : 'DISABLED';
 
       if (status === 'ENABLED' && !(cloudWatchLogs.logGroup)) {
-        throw new Error('Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled');
+        throw new ValidationError('Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled', this);
       }
       cloudWatchLogs.logGroup?.grantWrite(this);
 
@@ -1570,7 +1596,7 @@ export class Project extends ProjectBase {
     if ((sourceType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE ||
         artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
         (sourceType !== artifactsType)) {
-      throw new Error('Both source and artifacts must be set to CodePipeline');
+      throw new ValidationError('Both source and artifacts must be set to CodePipeline', this);
     }
   }
 
@@ -1624,7 +1650,7 @@ export interface BuildEnvironment {
   /**
    * The image used for the builds.
    *
-   * @default LinuxBuildImage.STANDARD_1_0
+   * @default LinuxBuildImage.STANDARD_7_0
    */
   readonly buildImage?: IBuildImage;
 
@@ -1749,8 +1775,9 @@ export interface IBindableBuildImage extends IBuildImage {
 
 /**
  * The options when creating a CodeBuild Docker build image
- * using `LinuxBuildImage.fromDockerRegistry`
- * or `WindowsBuildImage.fromDockerRegistry`.
+ * using `LinuxBuildImage.fromDockerRegistry`,
+ * `WindowsBuildImage.fromDockerRegistry`,
+ * or `MacBuildImage.fromDockerRegistry`
  */
 export interface DockerImageOptions {
   /**
@@ -1825,10 +1852,19 @@ export class LinuxBuildImage implements IBuildImage {
   /** The Amazon Linux 2023 x86_64 standard image, version `5.0`. */
   public static readonly AMAZON_LINUX_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:5.0');
 
+  /** The Amazon Linux 2023 x86_64 standard image, version `4.0`. */
+  public static readonly AMAZON_LINUX_2023_4 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:4.0');
+  /** The Amazon Linux 2023 x86_64 standard image, version `5.0`. */
+  public static readonly AMAZON_LINUX_2023_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:5.0');
+
   /** The Amazon Coretto 8 image x86_64, based on Amazon Linux 2. */
   public static readonly AMAZON_LINUX_2_CORETTO_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto8');
   /** The Amazon Coretto 11 image x86_64, based on Amazon Linux 2. */
   public static readonly AMAZON_LINUX_2_CORETTO_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto11');
+  /** The Amazon Coretto 8 image x86_64, based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_CORETTO_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:corretto8');
+  /** The Amazon Coretto 11 image x86_64, based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_CORETTO_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:corretto11');
 
   /**
    * Image "aws/codebuild/amazonlinux2-aarch64-standard:1.0".
@@ -2125,7 +2161,6 @@ export class WindowsBuildImage implements IBuildImage {
     name: string,
     options: DockerImageOptions = {},
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
     return new WindowsBuildImage({
       ...options,
       imageId: name,
@@ -2149,7 +2184,6 @@ export class WindowsBuildImage implements IBuildImage {
     repository: ecr.IRepository,
     tagOrDigest: string = 'latest',
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
     return new WindowsBuildImage({
       imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
@@ -2166,7 +2200,6 @@ export class WindowsBuildImage implements IBuildImage {
     id: string,
     props: DockerImageAssetProps,
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
     const asset = new DockerImageAsset(scope, id, props);
     return new WindowsBuildImage({
       imageId: asset.imageUri,
@@ -2237,6 +2270,108 @@ export class WindowsBuildImage implements IBuildImage {
         },
       },
     });
+  }
+}
+
+/**
+ * Construction properties of `MacBuildImage`.
+ * Module-private, as the constructor of `MacBuildImage` is private.
+ */
+interface MacBuildImageProps {
+  readonly imageId: string;
+  readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  readonly repository?: ecr.IRepository;
+}
+
+/**
+ * A CodeBuild image running ARM MacOS.
+ *
+ * This class has a bunch of public constants that represent the most popular images.
+ *
+ * You can also specify a custom image using one of the static methods:
+ *
+ * - MacBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])
+ * - MacBuildImage.fromEcrRepository(repo[, tag])
+ * - MacBuildImage.fromAsset(parent, id, props)
+ *
+ *
+ * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+ */
+export class MacBuildImage implements IBuildImage {
+  /**
+   * Corresponds to the standard CodeBuild image `aws/codebuild/macos-arm-base:14`.
+   */
+  public static readonly BASE_14: IBuildImage = new MacBuildImage({
+    imageId: 'aws/codebuild/macos-arm-base:14',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+  });
+
+  /**
+   * Makes an ARM MacOS build image from a Docker Hub image.
+   */
+  public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
+    return new MacBuildImage({
+      ...options,
+      imageId: name,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+    });
+  }
+
+  /**
+   * Makes an ARM MacOS build image from an ECR repository.
+   */
+  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): IBuildImage {
+    return new MacBuildImage({
+      imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository,
+    });
+  }
+
+  /**
+   * Uses an Docker image asset as a ARM MacOS build image.
+   */
+  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): IBuildImage {
+    const asset = new DockerImageAsset(scope, id, props);
+    return new MacBuildImage({
+      imageId: asset.imageUri,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository: asset.repository,
+    });
+  }
+
+  public readonly type = EnvironmentType.MAC_ARM as string;
+  public readonly defaultComputeType = ComputeType.MEDIUM;
+  public readonly imageId: string;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  public readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  public readonly repository?: ecr.IRepository;
+
+  private constructor(props: MacBuildImageProps) {
+    this.imageId = props.imageId;
+    this.imagePullPrincipalType = props.imagePullPrincipalType;
+    this.secretsManagerCredentials = props.secretsManagerCredentials;
+    this.repository = props.repository;
+  }
+
+  public validate(buildEnvironment: BuildEnvironment): string[] {
+    const errors: string[] = [];
+
+    if (buildEnvironment.computeType && isLambdaComputeType(buildEnvironment.computeType)) {
+      errors.push('Mac images do not support Lambda compute types');
+    }
+
+    if (!buildEnvironment.fleet) {
+      errors.push('Mac images must be used with a fleet');
+    }
+
+    return errors;
+  }
+
+  public runScriptBuildspec(entrypoint: string): BuildSpec {
+    // Reuse Linux BuildSpec, since it is compatible
+    return runScriptLinuxBuildSpec(entrypoint);
   }
 }
 

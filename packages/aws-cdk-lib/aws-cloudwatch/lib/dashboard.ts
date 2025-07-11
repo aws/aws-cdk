@@ -3,7 +3,9 @@ import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from './layout';
 import { IVariable } from './variable';
 import { IWidget } from './widget';
-import { Lazy, Resource, Stack, Token, Annotations, Duration } from '../../core';
+import { Lazy, Resource, Stack, Token, Annotations, Duration, ValidationError } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Specify the period for graphs when the CloudWatch dashboard loads
@@ -97,13 +99,15 @@ export interface DashboardProps {
 /**
  * A CloudWatch dashboard
  */
+@propertyInjectable
 export class Dashboard extends Resource {
-
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudwatch.Dashboard';
   /**
    * The name of this dashboard
    *
    * @attribute
-  */
+   */
   public readonly dashboardName: string;
 
   /**
@@ -121,23 +125,25 @@ export class Dashboard extends Resource {
     super(scope, id, {
       physicalName: props.dashboardName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     {
       const { dashboardName } = props;
       if (dashboardName && !Token.isUnresolved(dashboardName) && !dashboardName.match(/^[\w-]+$/)) {
-        throw new Error([
+        throw new ValidationError([
           `The value ${dashboardName} for field dashboardName contains invalid characters.`,
           'It can only contain alphanumerics, dash (-) and underscore (_).',
-        ].join(' '));
+        ].join(' '), this);
       }
     }
 
     if (props.start !== undefined && props.defaultInterval !== undefined) {
-      throw new Error('both properties defaultInterval and start cannot be set at once');
+      throw new ValidationError('both properties defaultInterval and start cannot be set at once', this);
     }
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new Error('If you specify a value for end, you must also specify a value for start.');
+      throw new ValidationError('If you specify a value for end, you must also specify a value for start.', this);
     }
 
     const dashboard = new CfnDashboard(this, 'Resource', {
@@ -182,6 +188,7 @@ export class Dashboard extends Resource {
    * Multiple widgets added in the same call to add() will be laid out next
    * to each other.
    */
+  @MethodMetadata()
   public addWidgets(...widgets: IWidget[]) {
     if (widgets.length === 0) {
       return;
@@ -206,6 +213,7 @@ export class Dashboard extends Resource {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_dashboard_variables.html
    */
+  @MethodMetadata()
   public addVariable(variable: IVariable) {
     this.variables.push(variable);
   }

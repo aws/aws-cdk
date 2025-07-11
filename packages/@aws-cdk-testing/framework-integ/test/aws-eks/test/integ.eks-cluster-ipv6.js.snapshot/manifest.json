@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster-ipv6-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/cb20919fb4c3ba91c5996da0e1d564a82b0c9eefe18f2e7c00547e536c2f28d7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/fb4121444fe12dbaab2d13e5e6d1df07adf8623e8fa7129a28eaa7200a653af4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,33 @@
         "aws-cdk-eks-cluster-ipv6-test.assets"
       ],
       "metadata": {
+        "/aws-cdk-eks-cluster-ipv6-test/AdminRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/AdminRole/ImportAdminRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/AdminRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AdminRole38563C57"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/SecretsKey": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/SecretsKey/Resource": [
@@ -46,10 +69,56 @@
             "data": "SecretsKey317DCF94"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*",
+              "natGateways": "*",
+              "restrictDefaultSecurityGroup": false
+            }
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Vpc/PublicSubnet1/Subnet": [
@@ -88,6 +157,34 @@
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -112,6 +209,34 @@
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Vpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,6 +259,34 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Vpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Vpc/PrivateSubnet2/Subnet": [
@@ -178,10 +331,279 @@
             "data": "CIDR6"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/KubectlLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "KubectlLayer600207B5"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "vpcSubnets": [
+                {
+                  "subnetType": "Private"
+                },
+                {
+                  "subnetType": "Public"
+                }
+              ],
+              "mastersRole": "*",
+              "defaultCapacity": "*",
+              "ipFamily": "ipv6",
+              "version": "*",
+              "kubectlLayer": "*",
+              "secretsEncryptionKey": "*",
+              "tags": "*",
+              "clusterLogging": [
+                "api",
+                "authenticator",
+                "scheduler"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNodegroupCapacity": [
+                "*",
+                {
+                  "minSize": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addFargateProfile": [
+                "*",
+                {
+                  "selectors": [
+                    {
+                      "namespace": "*"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAutoScalingGroupCapacity": [
+                "*",
+                {
+                  "instanceType": "*",
+                  "minCapacity": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAutoScalingGroupCapacity": [
+                "*",
+                {
+                  "instanceType": "*",
+                  "minCapacity": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAutoScalingGroupCapacity": [
+                "*",
+                {
+                  "instanceType": "*",
+                  "minCapacity": "*",
+                  "machineImageType": 1
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAutoScalingGroupCapacity": [
+                "*",
+                {
+                  "spotPrice": "*",
+                  "instanceType": "*",
+                  "maxCapacity": "*",
+                  "bootstrapOptions": {
+                    "kubeletExtraArgs": "*",
+                    "awsApiRetryAttempts": "*"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNodegroupCapacity": [
+                "*",
+                {
+                  "minSize": "*",
+                  "nodeRole": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNodegroupCapacity": [
+                "*",
+                {
+                  "minSize": "*",
+                  "nodeRole": "*",
+                  "capacityType": "SPOT"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNodegroupCapacity": [
+                "*",
+                {
+                  "minSize": "*",
+                  "nodeRole": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNodegroupCapacity": [
+                "*",
+                {
+                  "minSize": "*",
+                  "nodeRole": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNodegroupCapacity": [
+                "*",
+                {
+                  "minSize": "*",
+                  "nodeRole": "*",
+                  "launchTemplateSpec": {
+                    "id": "*",
+                    "version": "*"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/KubectlHandlerRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/KubectlHandlerRole/ImportKubectlHandlerRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/KubectlHandlerRole/Resource": [
@@ -190,16 +612,387 @@
             "data": "ClusterKubectlHandlerRole94549F93"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/KubectlHandlerRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/KubectlHandlerRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterKubectlHandlerRoleDefaultPolicyE44083DD"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterRoleFA261979"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/ControlPlaneSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/ControlPlaneSecurityGroup/Resource": [
@@ -238,16 +1031,298 @@
             "data": "ClusterControlPlaneSecurityGroupfromawscdkeksclusteripv6testClusterspotInstanceSecurityGroupF363CA034431582AEBA"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Resource/CreationRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grant": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Resource/CreationRole/ImportCreationRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Resource/CreationRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterCreationRole360249B6"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Resource/CreationRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Resource/CreationRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterCreationRoleDefaultPolicyE8BDFC7B"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Resource/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Resource/Resource/Default": [
@@ -358,16 +1433,133 @@
             "data": "ClusterHasEcrPublic8EE1114E"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/AwsAuth/manifest/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/AwsAuth/manifest/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterAwsAuthmanifestFE51F8AE"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/NodegroupDefaultCapacity": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cluster": "*",
+              "instanceTypes": "*",
+              "minSize": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/DefaultPolicy/Resource": [
@@ -394,10 +1586,63 @@
             "data": "ClusterGetTokenCommand06AE992E"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/fargate-profile-default/PodExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grantPassRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grant": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/fargate-profile-default/PodExecutionRole/ImportPodExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/fargate-profile-default/PodExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterfargateprofiledefaultPodExecutionRole09952CFF"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/fargate-profile-default/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/fargate-profile-default/Resource/Default": [
@@ -406,10 +1651,197 @@
             "data": "ClusterfargateprofiledefaultEFC59F14"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodes": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "instanceType": "*",
+              "minCapacity": "*",
+              "vpc": "*",
+              "machineImage": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addSecurityGroup": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*",
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodes/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*"
+              ]
+            }
+          },
           {
             "type": "aws:cdk:warning",
             "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodes/InstanceSecurityGroup/Resource": [
@@ -454,6 +1886,54 @@
             "data": "ClusterNodesInstanceSecurityGroupfromawscdkeksclusteripv6testClusterClusterSecurityGroupE4D19A6DALLTRAFFIC67D1F519"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodes/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodes/InstanceRole/ImportInstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodes/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -464,6 +1944,31 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterNodesInstanceProfileF2DD0E21"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodes/LaunchTemplate": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "machineImage": "*",
+              "instanceType": "*",
+              "detailedMonitoring": false,
+              "securityGroup": "*",
+              "userData": "*",
+              "associatePublicIpAddress": "*",
+              "spotOptions": "*",
+              "blockDevices": "*",
+              "instanceProfile": "*",
+              "keyPair": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addSecurityGroup": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodes/LaunchTemplate/Resource": [
@@ -478,10 +1983,197 @@
             "data": "ClusterNodesASGF172BD19"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/NodesArm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "instanceType": "*",
+              "minCapacity": "*",
+              "vpc": "*",
+              "machineImage": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addSecurityGroup": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*",
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/NodesArm/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*"
+              ]
+            }
+          },
           {
             "type": "aws:cdk:warning",
             "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/NodesArm/InstanceSecurityGroup/Resource": [
@@ -526,6 +2218,54 @@
             "data": "ClusterNodesArmInstanceSecurityGroupfromawscdkeksclusteripv6testClusterClusterSecurityGroupE4D19A6DALLTRAFFICA21F70E4"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/NodesArm/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/NodesArm/InstanceRole/ImportInstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/NodesArm/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -536,6 +2276,31 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterNodesArmInstanceProfile158C5C9F"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/NodesArm/LaunchTemplate": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "machineImage": "*",
+              "instanceType": "*",
+              "detailedMonitoring": false,
+              "securityGroup": "*",
+              "userData": "*",
+              "associatePublicIpAddress": "*",
+              "spotOptions": "*",
+              "blockDevices": "*",
+              "instanceProfile": "*",
+              "keyPair": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addSecurityGroup": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/NodesArm/LaunchTemplate/Resource": [
@@ -550,10 +2315,198 @@
             "data": "ClusterNodesArmASG40A593D0"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/BottlerocketNodes": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "instanceType": "*",
+              "minCapacity": "*",
+              "vpc": "*",
+              "machineImage": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addSecurityGroup": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*",
+                "*",
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/BottlerocketNodes/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*"
+              ]
+            }
+          },
           {
             "type": "aws:cdk:warning",
             "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/BottlerocketNodes/InstanceSecurityGroup/Resource": [
@@ -598,6 +2551,54 @@
             "data": "ClusterBottlerocketNodesInstanceSecurityGroupfromawscdkeksclusteripv6testClusterClusterSecurityGroupE4D19A6DALLTRAFFIC2A7F9925"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/BottlerocketNodes/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/BottlerocketNodes/InstanceRole/ImportInstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/BottlerocketNodes/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -608,6 +2609,31 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterBottlerocketNodesInstanceProfileB6E2F25A"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/BottlerocketNodes/LaunchTemplate": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "machineImage": "*",
+              "instanceType": "*",
+              "detailedMonitoring": false,
+              "securityGroup": "*",
+              "userData": "*",
+              "associatePublicIpAddress": "*",
+              "spotOptions": "*",
+              "blockDevices": "*",
+              "instanceProfile": "*",
+              "keyPair": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addSecurityGroup": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/BottlerocketNodes/LaunchTemplate/Resource": [
@@ -622,10 +2648,198 @@
             "data": "ClusterBottlerocketNodesASGA27A9B70"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/spot": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "spotPrice": "*",
+              "instanceType": "*",
+              "maxCapacity": "*",
+              "vpc": "*",
+              "machineImage": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addSecurityGroup": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*",
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/spot/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*"
+              ]
+            }
+          },
           {
             "type": "aws:cdk:warning",
             "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/spot/InstanceSecurityGroup/Resource": [
@@ -670,6 +2884,54 @@
             "data": "ClusterspotInstanceSecurityGroupfromawscdkeksclusteripv6testClusterClusterSecurityGroupE4D19A6DALLTRAFFIC5330BC8B"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/spot/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/spot/InstanceRole/ImportInstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/spot/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -680,6 +2942,33 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterspotInstanceProfileAB88D077"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/spot/LaunchTemplate": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "machineImage": "*",
+              "instanceType": "*",
+              "detailedMonitoring": false,
+              "securityGroup": "*",
+              "userData": "*",
+              "associatePublicIpAddress": "*",
+              "spotOptions": {
+                "maxPrice": "*"
+              },
+              "blockDevices": "*",
+              "instanceProfile": "*",
+              "keyPair": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addSecurityGroup": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/spot/LaunchTemplate/Resource": [
@@ -694,16 +2983,134 @@
             "data": "ClusterspotASG857494B6"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/chart-spot-interrupt-handler/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/chart-spot-interrupt-handler/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Clusterchartspotinterrupthandler79E2D768"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cluster": "*",
+              "instanceTypes": "*",
+              "minSize": "*",
+              "nodeRole": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng/NodeGroupRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng/NodeGroupRole/ImportNodeGroupRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng/NodeGroupRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterNodegroupextrangNodeGroupRole23AE23D0"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng/NodeGroupRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng/NodeGroupRole/DefaultPolicy/Resource": [
@@ -718,10 +3125,123 @@
             "data": "ClusterNodegroupextrangF9406A09"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-spot": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cluster": "*",
+              "instanceTypes": "*",
+              "minSize": "*",
+              "nodeRole": "*",
+              "capacityType": "SPOT"
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-spot/NodeGroupRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-spot/NodeGroupRole/ImportNodeGroupRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-spot/NodeGroupRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterNodegroupextrangspotNodeGroupRoleB53B4857"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-spot/NodeGroupRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-spot/NodeGroupRole/DefaultPolicy/Resource": [
@@ -736,10 +3256,122 @@
             "data": "ClusterNodegroupextrangspotB327AE6B"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-arm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cluster": "*",
+              "instanceTypes": "*",
+              "minSize": "*",
+              "nodeRole": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-arm/NodeGroupRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-arm/NodeGroupRole/ImportNodeGroupRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-arm/NodeGroupRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterNodegroupextrangarmNodeGroupRoleADF5749F"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-arm/NodeGroupRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-arm/NodeGroupRole/DefaultPolicy/Resource": [
@@ -754,10 +3386,122 @@
             "data": "ClusterNodegroupextrangarm7773987A"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-arm3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cluster": "*",
+              "instanceTypes": "*",
+              "minSize": "*",
+              "nodeRole": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-arm3/NodeGroupRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-arm3/NodeGroupRole/ImportNodeGroupRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-arm3/NodeGroupRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterNodegroupextrangarm3NodeGroupRole3A6AB3EC"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-arm3/NodeGroupRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng-arm3/NodeGroupRole/DefaultPolicy/Resource": [
@@ -772,10 +3516,30 @@
             "data": "ClusterNodegroupextrangarm327128311"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cluster": "*",
+              "minSize": "*",
+              "nodeRole": "*",
+              "launchTemplateSpec": {
+                "id": "*",
+                "version": "*"
+              }
+            }
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/Nodegroupextra-ng2/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterNodegroupextrang2F1FB0D40"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/manifest-HelloApp/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/manifest-HelloApp/Resource/Default": [
@@ -784,10 +3548,22 @@
             "data": "ClustermanifestHelloApp078A45D8"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/chart-dashboard/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/chart-dashboard/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Clusterchartdashboard4AA45F3F"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/chart-test-chart/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/chart-test-chart/Resource/Default": [
@@ -796,10 +3572,22 @@
             "data": "Clustercharttestchart9FD698EB"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/cdk8s-chart/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/cdk8s-chart/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Clustercdk8schartDADD257F"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/manifest-nginx-namespace/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/manifest-nginx-namespace/Resource/Default": [
@@ -808,10 +3596,26 @@
             "data": "ClustermanifestnginxnamespaceA68B4CE0"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/chart-nginx-ingress/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/chart-nginx-ingress/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Clusterchartnginxingress1193EC3F"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/MyServiceAccount/ConditionJson/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/MyServiceAccount/ConditionJson/Resource/Default": [
@@ -820,10 +3624,33 @@
             "data": "ClusterMyServiceAccountConditionJson671C0633"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/MyServiceAccount/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/MyServiceAccount/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/MyServiceAccount/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterMyServiceAccountRole85337B29"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/MyServiceAccount/manifest-MyServiceAccountServiceAccountResource/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/MyServiceAccount/manifest-MyServiceAccountServiceAccountResource/Resource/Default": [
@@ -832,10 +3659,44 @@
             "data": "ClusterMyServiceAccountmanifestMyServiceAccountServiceAccountResource67018F11"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/OpenIdConnectProvider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "url": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "url": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/OpenIdConnectProvider/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/OpenIdConnectProvider/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterOpenIdConnectProviderE7EB0530"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/MyExtendedServiceAccount/ConditionJson/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/MyExtendedServiceAccount/ConditionJson/Resource/Default": [
@@ -844,10 +3705,33 @@
             "data": "ClusterMyExtendedServiceAccountConditionJsonF780F28A"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/MyExtendedServiceAccount/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/MyExtendedServiceAccount/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/MyExtendedServiceAccount/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterMyExtendedServiceAccountRole064047AA"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Cluster/MyExtendedServiceAccount/manifest-MyExtendedServiceAccountServiceAccountResource/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Cluster/MyExtendedServiceAccount/manifest-MyExtendedServiceAccountServiceAccountResource/Resource/Default": [
@@ -856,10 +3740,78 @@
             "data": "ClusterMyExtendedServiceAccountmanifestMyExtendedServiceAccountServiceAccountResource90162712"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "NodeProxyAgentLayer924C1971"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "environment": "*",
+              "timeout": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "securityGroups": "*",
+              "layers": [
+                "*"
+              ],
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
@@ -874,6 +3826,68 @@
             "data": "OnEventHandler42BEBAE0"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "environment": "*",
+              "timeout": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "securityGroups": "*",
+              "layers": [
+                "*"
+              ],
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -886,10 +3900,196 @@
             "data": "IsCompleteHandler7073F4DA"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "description": "*",
+              "runtime": "*",
+              "handler": "*",
+              "timeout": "*",
+              "logGroup": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "securityGroups": "*",
+              "role": "*",
+              "functionName": "*",
+              "environmentEncryption": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEventServiceRole9FF04296"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -904,10 +4104,171 @@
             "data": "ProviderframeworkonEvent83C1D0A7"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "description": "*",
+              "runtime": "*",
+              "handler": "*",
+              "timeout": "*",
+              "logGroup": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "securityGroups": "*",
+              "role": "*",
+              "functionName": "*",
+              "environmentEncryption": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkisCompleteServiceRoleB1087139"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
@@ -922,10 +4283,171 @@
             "data": "ProviderframeworkisComplete26D7B0CB"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "description": "*",
+              "runtime": "*",
+              "handler": "*",
+              "timeout": "*",
+              "logGroup": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "securityGroups": "*",
+              "role": "*",
+              "functionName": "*",
+              "environmentEncryption": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonTimeoutServiceRole28643D26"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
@@ -940,16 +4462,127 @@
             "data": "ProviderframeworkonTimeout0B47CA38"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderwaiterstatemachineRole0C7159F9"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/LogGroup/Resource": [
@@ -988,10 +4621,70 @@
             "data": "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.KubectlProvider/Handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "timeout": "*",
+              "description": "*",
+              "memorySize": "*",
+              "environment": "*",
+              "role": "*",
+              "vpc": "*",
+              "securityGroups": [
+                "*"
+              ],
+              "vpcSubnets": {
+                "subnets": [
+                  "*",
+                  "*"
+                ]
+              },
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 2
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Handler886CB40B"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Resource": [
@@ -1000,10 +4693,140 @@
             "data": "AwsCliLayerF44AAF94"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "description": "*",
+              "runtime": "*",
+              "handler": "*",
+              "timeout": "*",
+              "logGroup": "*",
+              "vpc": "*",
+              "vpcSubnets": {
+                "subnets": [
+                  "*",
+                  "*"
+                ]
+              },
+              "securityGroups": [
+                "*"
+              ],
+              "role": "*",
+              "functionName": "*",
+              "environmentEncryption": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                },
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEventServiceRole9FF04296"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -1060,22 +4883,22 @@
             "data": "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B"
           }
         ],
-        "/aws-cdk-eks-cluster-ipv6-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.24--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-eks-cluster-ipv6-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.32--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-cdk-eks-cluster-ipv6-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.24--amazon-linux-2-arm64--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-eks-cluster-ipv6-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.32--amazon-linux-2-arm64--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceeksoptimizedami124amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-cdk-eks-cluster-ipv6-test/SsmParameterValue:--aws--service--bottlerocket--aws-k8s-1.24--x86_64--latest--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-eks-cluster-ipv6-test/SsmParameterValue:--aws--service--bottlerocket--aws-k8s-1.32--x86_64--latest--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsservicebottlerocketawsk8s124x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsservicebottlerocketawsk8s132x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.25--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -1090,10 +4913,22 @@
             "data": "LaunchTemplate"
           }
         ],
+        "/aws-cdk-eks-cluster-ipv6-test/HelloAppWithoutValidation/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-eks-cluster-ipv6-test/HelloAppWithoutValidation/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HelloAppWithoutValidation7C638ACB"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role": [
@@ -1106,6 +4941,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
+          }
+        ],
+        "/aws-cdk-eks-cluster-ipv6-test/AWSCDKCfnUtilsProviderCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/aws-cdk-eks-cluster-ipv6-test/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [
@@ -1225,5 +5066,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1017.1"
 }

@@ -1,7 +1,5 @@
 # Amazon Elastic Load Balancing V2 Construct Library
 
-
-
 The `aws-cdk-lib/aws-elasticloadbalancingv2` package provides constructs for
 configuring application and network load balancers.
 
@@ -48,6 +46,13 @@ listener.addTargets('ApplicationFleet', {
 
 The security groups of the load balancer and the target are automatically
 updated to allow the network traffic.
+
+> NOTE: If the `@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault` feature flag is set (the default for new projects), and `addListener()` is called with `open: true`,
+the load balancer's security group will automatically include both IPv4 and IPv6 ingress rules when using `IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4`.
+>
+> For existing projects that only have IPv4 rules, you can opt-in to IPv6 ingress rules
+by enabling the feature flag in your cdk.json file. Note that enabling this feature flag
+will modify existing security group rules.
 
 One (or more) security groups can be associated with the load balancer;
 if a security group isn't provided, one will be automatically created.
@@ -100,8 +105,8 @@ where all requests that didn't match any of the conditions will be sent.
 
 Routing traffic from a Load Balancer to a Target involves the following steps:
 
-- Create a Target Group, register the Target into the Target Group
-- Add an Action to the Listener which forwards traffic to the Target Group.
+* Create a Target Group, register the Target into the Target Group
+* Add an Action to the Listener which forwards traffic to the Target Group.
 
 A new listener can be added to the Load Balancer by calling `addListener()`.
 Listeners that have been added to the load balancer can be listed using the
@@ -111,27 +116,27 @@ for imported or looked up Load Balancers.
 Various methods on the `Listener` take care of this work for you to a greater
 or lesser extent:
 
-- `addTargets()` performs both steps: automatically creates a Target Group and the
+* `addTargets()` performs both steps: automatically creates a Target Group and the
   required Action.
-- `addTargetGroups()` gives you more control: you create the Target Group (or
+* `addTargetGroups()` gives you more control: you create the Target Group (or
   Target Groups) yourself and the method creates Action that routes traffic to
   the Target Groups.
-- `addAction()` gives you full control: you supply the Action and wire it up
+* `addAction()` gives you full control: you supply the Action and wire it up
   to the Target Groups yourself (or access one of the other ELB routing features).
 
 Using `addAction()` gives you access to some of the features of an Elastic Load
 Balancer that the other two convenience methods don't:
 
-- **Routing stickiness**: use `ListenerAction.forward()` and supply a
+* **Routing stickiness**: use `ListenerAction.forward()` and supply a
   `stickinessDuration` to make sure requests are routed to the same target group
   for a given duration.
-- **Weighted Target Groups**: use `ListenerAction.weightedForward()`
+* **Weighted Target Groups**: use `ListenerAction.weightedForward()`
   to give different weights to different target groups.
-- **Fixed Responses**: use `ListenerAction.fixedResponse()` to serve
+* **Fixed Responses**: use `ListenerAction.fixedResponse()` to serve
   a static response (ALB only).
-- **Redirects**: use `ListenerAction.redirect()` to serve an HTTP
+* **Redirects**: use `ListenerAction.redirect()` to serve an HTTP
   redirect response (ALB only).
-- **Authentication**: use `ListenerAction.authenticateOidc()` to
+* **Authentication**: use `ListenerAction.authenticateOidc()` to
   perform OpenID authentication before serving a request (see the
   `aws-cdk-lib/aws-elasticloadbalancingv2-actions` package for direct authentication
   integration with Cognito) (ALB only).
@@ -193,6 +198,8 @@ If you do not provide any options for this method, it redirects HTTP port 80 to 
 By default all ingress traffic will be allowed on the source port. If you want to be more selective with your
 ingress rules then set `open: false` and use the listener's `connections` object to selectively grant access to the listener.
 
+**Note**: The `path` parameter must start with a `/`.
+
 ### Application Load Balancer attributes
 
 You can modify attributes of Application Load Balancers:
@@ -210,7 +217,7 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   // The idle timeout value, in seconds
   idleTimeout: Duration.seconds(1000),
 
-  // Whether HTTP headers with header fields thatare not valid
+  // Whether HTTP headers with header fields that are not valid
   // are removed by the load balancer (true), or routed to targets
   dropInvalidHeaderFields: true,
 
@@ -252,19 +259,75 @@ For more information, see [Load balancer attributes](https://docs.aws.amazon.com
 ### Setting up Access Log Bucket on Application Load Balancer
 
 The only server-side encryption option that's supported is Amazon S3-managed keys (SSE-S3). For more information
-Documentation: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html
+Documentation: <https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html>
 
-```ts 
+```ts
 
 declare const vpc: ec2.Vpc;
 
-const bucket = new s3.Bucket(this, 'ALBAccessLogsBucket',{ 
+const bucket = new s3.Bucket(this, 'ALBAccessLogsBucket',{
   encryption: s3.BucketEncryption.S3_MANAGED,
   });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc });
 lb.logAccessLogs(bucket);
 
+```
+
+### Setting up Connection Log Bucket on Application Load Balancer
+
+Like access log bucket, the only server-side encryption option that's supported is Amazon S3-managed keys (SSE-S3). For more information
+Documentation: <https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html>
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const bucket = new s3.Bucket(this, 'ALBConnectionLogsBucket',{
+  encryption: s3.BucketEncryption.S3_MANAGED,
+});
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc });
+lb.logConnectionLogs(bucket);
+```
+
+### Dualstack Application Load Balancer
+
+You can create a dualstack Network Load Balancer using the `ipAddressType` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+```
+
+By setting `DUAL_STACK_WITHOUT_PUBLIC_IPV4`, you can provision load balancers without public IPv4s:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  internetFacing: true,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+});
+```
+
+### Defining a reserved Application Load Balancer Capacity Unit (LCU)
+
+You can define a [reserved LCU for your Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/capacity-unit-reservation.html).
+To reserve an LCU, you must specify a `minimumCapacityUnit`.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  // Valid value is between 100 and 1500.
+  minimumCapacityUnit: 100,
+});
 ```
 
 ## Defining a Network Load Balancer
@@ -301,7 +364,7 @@ listener.addTargets('AppFleet', {
 
 ### Enforce security group inbound rules on PrivateLink traffic for a Network Load Balancer
 
-You can indicate whether to evaluate inbound security group rules for traffic 
+You can indicate whether to evaluate inbound security group rules for traffic
 sent to a Network Load Balancer through AWS PrivateLink.
 The evaluation is enabled by default.
 
@@ -324,7 +387,6 @@ and [Register targets with your Target
 Group](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html)
 for more information.
 
-
 ### Dualstack Network Load Balancer
 
 You can create a dualstack Network Load Balancer using the `ipAddressType` property:
@@ -338,7 +400,95 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 });
 ```
 
-You cannot add UDP or TCP_UDP listeners to a dualstack Network Load Balancer.
+You can configure whether to use an IPv6 prefix from each subnet for source NAT by setting `enablePrefixForIpv6SourceNat` to `true`.
+This must be enabled if you want to create a dualstack Network Load Balancer with a listener that uses UDP protocol.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  enablePrefixForIpv6SourceNat: true,
+});
+
+const listener = lb.addListener('Listener', {
+  port: 1229,
+  protocol: elbv2.Protocol.UDP,
+});
+```
+
+### Configuring a subnet information for a Network Load Balancer
+
+You can specify the subnets for a Network Load Balancer easily by setting the `vpcSubnets` property.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PRIVATE,
+  },
+});
+```
+
+If you want to configure detailed information about the subnets, you can use the `subnetMappings` property as follows:
+
+```ts
+declare const vpc: ec2.IVpc;
+declare const dualstackVpc: ec2.IVpc;
+declare const subnet: ec2.ISubnet;
+declare const dualstackSubnet: ec2.ISubnet;
+declare const cfnEip: ec2.CfnEIP;
+
+// Internet facing Network Load Balancer with an Elastic IPv4 address
+new elbv2.NetworkLoadBalancer(this, 'InternetFacingLb', {
+  vpc,
+  internetFacing: true,
+  subnetMappings: [
+    {
+      subnet,
+      // The allocation ID of the Elastic IP address
+      allocationId: cfnEip.attrAllocationId,
+    },
+  ],
+});
+
+// Internal Network Load Balancer with a private IPv4 address
+new elbv2.NetworkLoadBalancer(this, 'InternalLb', {
+  vpc,
+  internetFacing: false,
+  subnetMappings: [
+    {
+      subnet,
+      // The private IPv4 address from the subnet
+      // The address must be in the subnet's CIDR range and
+      // can not be configured for a internet facing Network Load Balancer.
+      privateIpv4Address: '10.0.12.29',
+    },
+  ],
+});
+
+// Dualstack Network Load Balancer with an IPv6 address and prefix for source NAT
+new elbv2.NetworkLoadBalancer(this, 'DualstackLb', {
+  vpc: dualstackVpc,
+  // Configure the dualstack Network Load Balancer
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  enablePrefixForIpv6SourceNat: true,
+  subnetMappings: [
+    {
+      subnet: dualstackSubnet,
+      // The IPv6 address from the subnet
+      // `ipAddresstype` must be `DUAL_STACK` or `DUAL_STACK_WITHOUT_PUBLIC_IPV4` to set the IPv6 address.
+      ipv6Address: '2001:db8:1234:1a00::10',
+      // The IPv6 prefix to use for source NAT
+      // `enablePrefixForIpv6SourceNat` must be `true` to set `sourceNatIpv6Prefix`.
+      sourceNatIpv6Prefix: elbv2.SourceNatIpv6Prefix.autoAssigned(),
+    },
+  ],
+});
+```
 
 ### Network Load Balancer attributes
 
@@ -360,8 +510,65 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 
   // Indicates how traffic is distributed among the load balancer Availability Zones.
   clientRoutingPolicy: elbv2.ClientRoutingPolicy.AVAILABILITY_ZONE_AFFINITY,
+
+  // Indicates whether zonal shift is enabled.
+  zonalShift: true,
 });
 ```
+
+### Network Load Balancer Listener attributes
+
+You can modify attributes of Network Load Balancer Listener:
+
+```ts
+declare const lb: elbv2.NetworkLoadBalancer;
+declare const group: elbv2.NetworkTargetGroup;
+
+const listener = lb.addListener('Listener', {
+  port: 80,
+  defaultAction: elbv2.NetworkListenerAction.forward([group]),
+
+  // The tcp idle timeout value. The valid range is 60-6000 seconds. The default is 350 seconds.
+  tcpIdleTimeout: Duration.seconds(100),
+});
+```
+
+### Network Load Balancer and EC2 IConnectable interface
+
+Network Load Balancer implements EC2 `IConnectable` and exposes `connections` property. EC2 Connections allows manage the allowed network connections for constructs with Security Groups. This class makes it easy to allow network connections to and from security groups, and between security groups individually. One thing to keep in mind is that network load balancers do not have security groups, and no automatic security group configuration is done for you. You will have to configure the security groups of the target yourself to allow traffic by clients and/or load balancer instances, depending on your target types.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const sg1: ec2.ISecurityGroup;
+declare const sg2: ec2.ISecurityGroup;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  internetFacing: true,
+  securityGroups: [sg1],
+});
+lb.addSecurityGroup(sg2);
+lb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
+```
+
+### Defining a reserved Network Load Balancer Capacity Unit (LCU)
+
+You can define a [reserved LCU for your Network Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/capacity-unit-reservation.html).
+
+When requesting a LCU reservation, convert your capacity needs from Mbps to LCUs using the conversion rate of 1 LCU to 2.2 Mbps.
+
+To reserve an LCU, you must specify a `minimumCapacityUnit`.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  minimumCapacityUnit: 5500,
+});
+```
+
+**Note**: The `minimumCapacityUnit` value is evenly distributed across all active Availability Zones (AZs) for the network load balancer. The distributed value per AZ must be between 2,750 and 45,000 units.
 
 ## Targets and Target Groups
 
@@ -436,7 +643,7 @@ const tg = new elbv2.ApplicationTargetGroup(this, 'TG', {
 });
 ```
 
-For more information see: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html#application-based-stickiness
+For more information see: <https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html#application-based-stickiness>
 
 ### Setting the target group protocol version
 
@@ -455,6 +662,87 @@ const tg = new elbv2.ApplicationTargetGroup(this, 'TG', {
     healthyGrpcCodes: '0-99',
   },
   vpc,
+});
+```
+
+### Weighted random routing algorithms and automatic target weights for your Application Load Balancer
+
+You can use the `weighted_random` routing algorithms by setting the `loadBalancingAlgorithmType` property.
+
+When using this algorithm, Automatic Target Weights (ATW) anomaly mitigation can be used by setting `enableAnomalyMitigation` to `true`.
+
+Also you can't use this algorithm with slow start mode.
+
+For more information, see [Routing algorithms](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#modify-routing-algorithm) and [Automatic Target Weights (ATW)](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#automatic-target-weights).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const tg = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
+  vpc,
+  loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+  enableAnomalyMitigation: true,
+});
+```
+
+### Target Group level cross-zone load balancing setting for Application Load Balancers and Network Load Balancers
+
+You can set cross-zone load balancing setting at the target group level by setting `crossZone` property.
+
+If not specified, it will use the load balancer's configuration.
+
+For more information, see [How Elastic Load Balancing works](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const targetGroup = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+
+  // Whether cross zone load balancing is enabled.
+  crossZoneEnabled: true,
+});
+```
+
+### IP Address Type for Target Groups
+
+You can set the IP address type for the target group by setting the `ipAddressType` property for both Application and Network target groups.
+
+If you set the `ipAddressType` property to `IPV6`, the VPC for the target group must have an associated IPv6 CIDR block.
+
+For more information, see IP address type for [Network Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#target-group-ip-address-type) and [Application Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-ip-address-type).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const ipv4ApplicationTargetGroup = new elbv2.ApplicationTargetGroup(this, 'IPv4ApplicationTargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV4,
+});
+
+const ipv6ApplicationTargetGroup = new elbv2.ApplicationTargetGroup(this, 'Ipv6ApplicationTargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV6,
+});
+
+const ipv4NetworkTargetGroup = new elbv2.NetworkTargetGroup(this, 'IPv4NetworkTargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV4,
+});
+
+const ipv6NetworkTargetGroup = new elbv2.NetworkTargetGroup(this, 'Ipv6NetworkTargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV6,
 });
 ```
 
@@ -483,6 +771,29 @@ listener.addTargets('Targets', {
 ```
 
 Only a single Lambda function can be added to a single listener rule.
+
+### Multi-Value Headers with Lambda Targets
+
+When using a Lambda function as a target, you can enable [multi-value headers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/lambda-functions.html#multi-value-headers) to allow the load balancer to send headers with multiple values:
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as targets from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
+
+declare const vpc: ec2.Vpc;
+declare const lambdaFunction: lambda.Function;
+
+// Create a target group with multi-value headers enabled
+const targetGroup = new elbv2.ApplicationTargetGroup(this, 'LambdaTargetGroup', {
+  vpc,
+  targets: [new targets.LambdaTarget(lambdaFunction)],
+
+  // Enable multi-value headers
+  multiValueHeadersEnabled: true,
+});
+```
+
+When multi-value headers are enabled, the request and response headers exchanged between the load balancer and the Lambda function include headers with multiple values. If this option is disabled (the default) and the request contains a duplicate header field name, the load balancer uses the last value sent by the client.
 
 ## Using Application Load Balancer Targets
 
@@ -517,7 +828,7 @@ const nlb = new elbv2.NetworkLoadBalancer(this, 'Nlb', {
 const listener = nlb.addListener('listener', { port: 80 });
 
 listener.addTargets('Targets', {
-  targets: [new targets.AlbTarget(svc.loadBalancer, 80)],
+  targets: [new targets.AlbListenerTarget(svc.listener)],
   port: 80,
 });
 
@@ -634,12 +945,12 @@ Node.of(resource).addDependency(targetGroup.loadBalancerAttached);
 You may look up load balancers and load balancer listeners by using one of the
 following lookup methods:
 
-- `ApplicationLoadBalancer.fromlookup(options)` - Look up an application load
+* `ApplicationLoadBalancer.fromLookup(options)` - Look up an application load
   balancer.
-- `ApplicationListener.fromLookup(options)` - Look up an application load
+* `ApplicationListener.fromLookup(options)` - Look up an application load
   balancer listener.
-- `NetworkLoadBalancer.fromLookup(options)` - Look up a network load balancer.
-- `NetworkListener.fromLookup(options)` - Look up a network load balancer
+* `NetworkLoadBalancer.fromLookup(options)` - Look up a network load balancer.
+* `NetworkListener.fromLookup(options)` - Look up a network load balancer
   listener.
 
 ### Load Balancer lookup options
@@ -675,11 +986,11 @@ const loadBalancer = elbv2.ApplicationLoadBalancer.fromLookup(this, 'ALB', {
 
 You may look up a load balancer listener by the following criteria:
 
-- Associated load balancer ARN
-- Associated load balancer tags
-- Listener ARN
-- Listener port
-- Listener protocol
+* Associated load balancer ARN
+* Associated load balancer tags
+* Listener ARN
+* Listener port
+* Listener protocol
 
 The lookup method will return the matching listener. If more than one listener
 matches, CDK will throw an error requesting that you specify additional
@@ -778,3 +1089,57 @@ then you will need to enable the `removeRuleSuffixFromLogicalId: true` property 
 
 `ListenerRule`s have a unique `priority` for a given `Listener`.
 Because the `priority` must be unique, CloudFormation will always fail when creating a new `ListenerRule` to replace the existing one, unless you change the `priority` as well as the logicalId.
+
+## Configuring Mutual authentication with TLS in Application Load Balancer
+
+You can configure Mutual authentication with TLS (mTLS) for Application Load Balancer.
+
+To set mTLS, you must create an instance of `TrustStore` and set it to `ApplicationListener`.
+
+For more information, see [Mutual authentication with TLS in Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/mutual-authentication.html)
+
+```ts
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+
+declare const certificate: acm.Certificate;
+declare const lb: elbv2.ApplicationLoadBalancer;
+declare const bucket: s3.Bucket;
+
+const trustStore = new elbv2.TrustStore(this, 'Store', {
+  bucket,
+  key: 'rootCA_cert.pem',
+});
+
+lb.addListener('Listener', {
+  port: 443,
+  protocol: elbv2.ApplicationProtocol.HTTPS,
+  certificates: [certificate],
+  // mTLS settings
+  mutualAuthentication: {
+    advertiseTrustStoreCaNames: true,
+    ignoreClientCertificateExpiry: false,
+    mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
+    trustStore,
+  },
+  defaultAction: elbv2.ListenerAction.fixedResponse(200,
+    { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+});
+```
+
+Optionally, you can create a certificate revocation list for a trust store by creating an instance of `TrustStoreRevocation`.
+
+```ts
+declare const trustStore: elbv2.TrustStore;
+declare const bucket: s3.Bucket;
+
+new elbv2.TrustStoreRevocation(this, 'Revocation', {
+  trustStore,
+  revocationContents: [
+    {
+      revocationType: elbv2.RevocationType.CRL,
+      bucket,
+      key: 'crl.pem',
+    },
+  ],
+});
+```

@@ -1,0 +1,426 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "EventApiHttpStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EventApiHttpStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EventApiHttpStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EventApiHttpStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/75a5590ce3ffae4a02a95f890056e77d183a16696c7ed189dd983b0f76bbaac4.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EventApiHttpStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EventApiHttpStack.assets"
+      ],
+      "metadata": {
+        "/EventApiHttpStack/EventApiHttp": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "apiName": "*"
+            }
+          }
+        ],
+        "/EventApiHttpStack/EventApiHttp/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiHttpE6D161A9"
+          }
+        ],
+        "/EventApiHttpStack/EventApiHttp/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiHttpDefaultApiKeyC81EBA64"
+          }
+        ],
+        "/EventApiHttpStack/EventApiHttp/httpsource/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/EventApiHttpStack/EventApiHttp/httpsource/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiHttpStack/EventApiHttp/httpsource/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiHttphttpsourceServiceRole356257EC"
+          }
+        ],
+        "/EventApiHttpStack/EventApiHttp/httpsource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiHttphttpsourceEA6E3F30"
+          }
+        ],
+        "/EventApiHttpStack/EventApiHttp/chat": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "api": "*",
+              "channelNamespaceName": "*",
+              "code": "*",
+              "publishHandlerConfig": {
+                "dataSource": "*"
+              }
+            }
+          }
+        ],
+        "/EventApiHttpStack/EventApiHttp/chat/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiHttpchat35B9D364"
+          }
+        ],
+        "/EventApiHttpStack/RandomApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiHttpStack/RandomApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RandomApi6E16D13B"
+          }
+        ],
+        "/EventApiHttpStack/RandomApi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/EventApiHttpStack/RandomApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RandomApiDeployment068AAC3A3c1c7009d116bbb8ba0c708a77e23c34"
+          }
+        ],
+        "/EventApiHttpStack/RandomApi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
+          }
+        ],
+        "/EventApiHttpStack/RandomApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RandomApiDeploymentStageprodD971ED19"
+          }
+        ],
+        "/EventApiHttpStack/RandomApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RandomApiEndpointD7608ADE"
+          }
+        ],
+        "/EventApiHttpStack/RandomApi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiHttpStack/RandomApi/Default/random": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
+          }
+        ],
+        "/EventApiHttpStack/RandomApi/Default/random/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RandomApirandom8E08461A"
+          }
+        ],
+        "/EventApiHttpStack/RandomApi/Default/random/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "methodResponses": [
+                  {
+                    "statusCode": "*"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/EventApiHttpStack/RandomApi/Default/random/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RandomApirandomGETA2A531BD"
+          }
+        ],
+        "/EventApiHttpStack/EventApiHttpTestFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "environment": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "entry": "*",
+              "handler": "*",
+              "timeout": "*",
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "environment": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "entry": "*",
+              "handler": "*",
+              "timeout": "*"
+            }
+          }
+        ],
+        "/EventApiHttpStack/EventApiHttpTestFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/EventApiHttpStack/EventApiHttpTestFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiHttpStack/EventApiHttpTestFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiHttpTestFunctionServiceRole205111EF"
+          }
+        ],
+        "/EventApiHttpStack/EventApiHttpTestFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiHttpTestFunctionB0225230"
+          }
+        ],
+        "/EventApiHttpStack/Exports/Output{\"Ref\":\"EventApiHttpTestFunctionB0225230\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefEventApiHttpTestFunctionB0225230B8E355F4"
+          }
+        ],
+        "/EventApiHttpStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EventApiHttpStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EventApiHttpStack"
+    },
+    "appsynceventapiHttptestDefaultTestDeployAssertC3EF071C.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "appsynceventapiHttptestDefaultTestDeployAssertC3EF071C.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "appsynceventapiHttptestDefaultTestDeployAssertC3EF071C": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "appsynceventapiHttptestDefaultTestDeployAssertC3EF071C.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/97e809236834e83ac70c10d0417fe219759936698503f55504432017913d12c0.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "appsynceventapiHttptestDefaultTestDeployAssertC3EF071C.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EventApiHttpStack",
+        "appsynceventapiHttptestDefaultTestDeployAssertC3EF071C.assets"
+      ],
+      "metadata": {
+        "/appsync-eventapi-Http-test/DefaultTest/DeployAssert/LambdaInvokec0d662cb5f83f7d9ecd4110320ac26ad/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/appsync-eventapi-Http-test/DefaultTest/DeployAssert/LambdaInvokec0d662cb5f83f7d9ecd4110320ac26ad/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokec0d662cb5f83f7d9ecd4110320ac26ad"
+          }
+        ],
+        "/appsync-eventapi-Http-test/DefaultTest/DeployAssert/LambdaInvokec0d662cb5f83f7d9ecd4110320ac26ad/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokec0d662cb5f83f7d9ecd4110320ac26adInvoke1DE3B3DF"
+          }
+        ],
+        "/appsync-eventapi-Http-test/DefaultTest/DeployAssert/LambdaInvokec0d662cb5f83f7d9ecd4110320ac26ad/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvokec0d662cb5f83f7d9ecd4110320ac26ad"
+          }
+        ],
+        "/appsync-eventapi-Http-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/appsync-eventapi-Http-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/appsync-eventapi-Http-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/appsync-eventapi-Http-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/appsync-eventapi-Http-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "appsync-eventapi-Http-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

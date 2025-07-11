@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "integ-cluster-data-api-to-imported-cluster/DefaultTest": {
+      "stacks": [
+        "cluster-data-api-to-imported-cluster"
+      ],
+      "assertionStack": "integ-cluster-data-api-to-imported-cluster/DefaultTest/DeployAssert",
+      "assertionStackName": "integclusterdataapitoimportedclusterDefaultTestDeployAssert641C7C79"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

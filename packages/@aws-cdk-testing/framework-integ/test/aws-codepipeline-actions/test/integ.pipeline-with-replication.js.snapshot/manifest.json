@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "integ-pipeline-producer-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/9a1dcb50c14e0aac493a9e307cbb51885011791505b20ee5f54d1bceaf274387.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/68f602a3d08d1a845ad770df875a2a228c5329eea4f68b923a7fe169edda1d2f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,26 @@
         "integ-pipeline-producer-stack.assets"
       ],
       "metadata": {
+        "/integ-pipeline-producer-stack/ReplicationKey": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-pipeline-producer-stack/ReplicationKey/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ReplicationKeyFCE40BF4"
+          }
+        ],
+        "/integ-pipeline-producer-stack/ReplicationBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryptionKey": "*",
+              "autoDeleteObjects": true,
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/integ-pipeline-producer-stack/ReplicationBucket/Resource": [
@@ -46,16 +62,36 @@
             "data": "ReplicationBucket70D68737"
           }
         ],
+        "/integ-pipeline-producer-stack/ReplicationBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/integ-pipeline-producer-stack/ReplicationBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ReplicationBucketPolicyADD8A584"
           }
         ],
+        "/integ-pipeline-producer-stack/ReplicationBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-pipeline-producer-stack/ReplicationBucket/AutoDeleteObjectsCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ReplicationBucketAutoDeleteObjectsCustomResourceF7D32567"
+          }
+        ],
+        "/integ-pipeline-producer-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/integ-pipeline-producer-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
@@ -70,10 +106,22 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
+        "/integ-pipeline-producer-stack/ExportsWriteruseast2828FA26B/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-pipeline-producer-stack/ExportsWriteruseast2828FA26B/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsWriteruseast2828FA26B86FBEFA7"
+          }
+        ],
+        "/integ-pipeline-producer-stack/Custom::CrossRegionExportWriterCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/integ-pipeline-producer-stack/Custom::CrossRegionExportWriterCustomResourceProvider/Role": [
@@ -120,7 +168,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/1dc889b3f825d740cbfa21dc3a190870985d90a79ec7852889eb3143f61e3f40.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/a62d154bba670c9bcb7ad0582e8e5a6066a12869a04fa077b825bb8aacd6b1c0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -139,8 +187,44 @@
       "metadata": {
         "/integ-pipeline-consumer-stack/Pipeline": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "crossAccountKeys": true,
+              "crossRegionReplicationBuckets": "*"
+            }
+          },
+          {
             "type": "aws:cdk:warning",
             "data": "V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`. [ack: @aws-cdk/aws-codepipeline:unspecifiedPipelineType]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStage": [
+                {
+                  "stageName": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStage": [
+                {
+                  "stageName": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-pipeline-consumer-stack/Pipeline/ArtifactsBucketEncryptionKey": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "enableKeyRotation": "*"
+            }
           }
         ],
         "/integ-pipeline-consumer-stack/Pipeline/ArtifactsBucketEncryptionKey/Resource": [
@@ -149,10 +233,33 @@
             "data": "PipelineArtifactsBucketEncryptionKey01D58D69"
           }
         ],
+        "/integ-pipeline-consumer-stack/Pipeline/ArtifactsBucketEncryptionKeyAlias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "aliasName": "*",
+              "targetKey": "*",
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/integ-pipeline-consumer-stack/Pipeline/ArtifactsBucketEncryptionKeyAlias/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE"
+          }
+        ],
+        "/integ-pipeline-consumer-stack/Pipeline/ArtifactsBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucketName": "*",
+              "encryptionKey": "*",
+              "encryption": "KMS",
+              "enforceSSL": true,
+              "blockPublicAccess": "*",
+              "removalPolicy": "retain"
+            }
           }
         ],
         "/integ-pipeline-consumer-stack/Pipeline/ArtifactsBucket/Resource": [
@@ -161,16 +268,144 @@
             "data": "PipelineArtifactsBucket22248F97"
           }
         ],
+        "/integ-pipeline-consumer-stack/Pipeline/ArtifactsBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/integ-pipeline-consumer-stack/Pipeline/ArtifactsBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineArtifactsBucketPolicyD4F9712A"
           }
         ],
+        "/integ-pipeline-consumer-stack/Pipeline/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "roleName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/integ-pipeline-consumer-stack/Pipeline/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-pipeline-consumer-stack/Pipeline/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineRoleD68726F7"
+          }
+        ],
+        "/integ-pipeline-consumer-stack/Pipeline/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/integ-pipeline-consumer-stack/Pipeline/Role/DefaultPolicy/Resource": [
@@ -185,10 +420,130 @@
             "data": "PipelineC660917D"
           }
         ],
+        "/integ-pipeline-consumer-stack/Pipeline/source/Source/CodePipelineActionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grantAssumeRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grant": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/integ-pipeline-consumer-stack/Pipeline/source/Source/CodePipelineActionRole/ImportCodePipelineActionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-pipeline-consumer-stack/Pipeline/source/Source/CodePipelineActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelinesourceSourceCodePipelineActionRoleC03B7ECA"
+          }
+        ],
+        "/integ-pipeline-consumer-stack/Pipeline/source/Source/CodePipelineActionRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/integ-pipeline-consumer-stack/Pipeline/source/Source/CodePipelineActionRole/DefaultPolicy/Resource": [
@@ -197,10 +552,106 @@
             "data": "PipelinesourceSourceCodePipelineActionRoleDefaultPolicy6B296460"
           }
         ],
+        "/integ-pipeline-consumer-stack/Pipeline/stage2/Build/CodePipelineActionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grantAssumeRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grant": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-pipeline-consumer-stack/Pipeline/stage2/Build/CodePipelineActionRole/ImportCodePipelineActionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-pipeline-consumer-stack/Pipeline/stage2/Build/CodePipelineActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Pipelinestage2BuildCodePipelineActionRole6D7E5309"
+          }
+        ],
+        "/integ-pipeline-consumer-stack/Pipeline/stage2/Build/CodePipelineActionRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/integ-pipeline-consumer-stack/Pipeline/stage2/Build/CodePipelineActionRole/DefaultPolicy/Resource": [
@@ -209,10 +660,27 @@
             "data": "Pipelinestage2BuildCodePipelineActionRoleDefaultPolicy4431A4F5"
           }
         ],
+        "/integ-pipeline-consumer-stack/SourceBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "autoDeleteObjects": true,
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/integ-pipeline-consumer-stack/SourceBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SourceBucketDDD2130A"
+          }
+        ],
+        "/integ-pipeline-consumer-stack/SourceBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
           }
         ],
         "/integ-pipeline-consumer-stack/SourceBucket/Policy/Resource": [
@@ -221,10 +689,22 @@
             "data": "SourceBucketPolicy703DFBF9"
           }
         ],
+        "/integ-pipeline-consumer-stack/SourceBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-pipeline-consumer-stack/SourceBucket/AutoDeleteObjectsCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SourceBucketAutoDeleteObjectsCustomResourceC68FC040"
+          }
+        ],
+        "/integ-pipeline-consumer-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/integ-pipeline-consumer-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
@@ -239,10 +719,160 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
+        "/integ-pipeline-consumer-stack/Build": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/integ-pipeline-consumer-stack/Build/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/integ-pipeline-consumer-stack/Build/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-pipeline-consumer-stack/Build/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BuildRoleB7C66CB2"
+          }
+        ],
+        "/integ-pipeline-consumer-stack/Build/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/integ-pipeline-consumer-stack/Build/Role/DefaultPolicy/Resource": [
@@ -257,10 +887,30 @@
             "data": "Build45A36621"
           }
         ],
+        "/integ-pipeline-consumer-stack/ExportsReader/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-pipeline-consumer-stack/ExportsReader/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsReader8B249524"
+          }
+        ],
+        "/integ-pipeline-consumer-stack/Custom::CrossRegionExportReaderCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/integ-pipeline-consumer-stack/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
@@ -338,5 +988,6 @@
       },
       "displayName": "codepipeline-integ-test/DefaultTest/DeployAssert"
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "GraphQLFieldLevelLog/DefaultTest": {
+      "stacks": [
+        "aws-cdk-appsync-graphql-field-level-log"
+      ],
+      "assertionStack": "GraphQLFieldLevelLog/DefaultTest/DeployAssert",
+      "assertionStackName": "GraphQLFieldLevelLogDefaultTestDeployAssert06C4E034"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

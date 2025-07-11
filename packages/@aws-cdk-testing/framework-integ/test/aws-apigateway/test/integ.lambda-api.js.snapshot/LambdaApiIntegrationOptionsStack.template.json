@@ -37,13 +37,13 @@
     "Code": {
      "ZipFile": "exports.handler = async function(event) {\n        return {\n          body: JSON.stringify({\n            message: 'Hello',\n          }),\n          statusCode: 200,\n          headers: { 'Content-Type': '*/*' }\n        };\n      }"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "myfnServiceRole7822DC24",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [
@@ -108,25 +108,28 @@
   "lambdarestapiDeployment2E401BD85ca559db3bb9b4a52bf7250ba64df032": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "lambdarestapiF559E4F2"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "lambdarestapiproxyANYC900233F",
     "lambdarestapiproxyB0E963B7",
     "lambdarestapiANYB9BB3FB2"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "lambdarestapiDeploymentStageprodA05F84EA": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "lambdarestapiF559E4F2"
-    },
     "DeploymentId": {
      "Ref": "lambdarestapiDeployment2E401BD85ca559db3bb9b4a52bf7250ba64df032"
+    },
+    "RestApiId": {
+     "Ref": "lambdarestapiF559E4F2"
     },
     "StageName": "prod"
    },
@@ -230,14 +233,8 @@
   "lambdarestapiproxyANYC900233F": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "ANY",
-    "ResourceId": {
-     "Ref": "lambdarestapiproxyB0E963B7"
-    },
-    "RestApiId": {
-     "Ref": "lambdarestapiF559E4F2"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "TimeoutInMillis": 1000,
@@ -265,6 +262,12 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Ref": "lambdarestapiproxyB0E963B7"
+    },
+    "RestApiId": {
+     "Ref": "lambdarestapiF559E4F2"
     }
    }
   },
@@ -349,17 +352,8 @@
   "lambdarestapiANYB9BB3FB2": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "ANY",
-    "ResourceId": {
-     "Fn::GetAtt": [
-      "lambdarestapiF559E4F2",
-      "RootResourceId"
-     ]
-    },
-    "RestApiId": {
-     "Ref": "lambdarestapiF559E4F2"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "TimeoutInMillis": 1000,
@@ -387,6 +381,15 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "lambdarestapiF559E4F2",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "lambdarestapiF559E4F2"
     }
    }
   }

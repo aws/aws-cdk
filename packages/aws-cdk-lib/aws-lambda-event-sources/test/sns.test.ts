@@ -44,7 +44,6 @@ describe('SNSEventSource', () => {
         'Ref': 'TD925BC7E',
       },
     });
-
   });
 
   test('props are passed to subscription', () => {
@@ -106,6 +105,5 @@ describe('SNSEventSource', () => {
         },
       },
     });
-
   });
 });

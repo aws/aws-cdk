@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-stepfunctions-aws-sdk-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/00f1e8d3dbe179026634af217c5e7d2fc89e9c541112c54ce5ec8d2f63d68b88.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7c5bccda272c8c685e963d1ea453520c45eaa4339cde4ce0d98e4c8cc68d06d6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,238 @@
         "aws-stepfunctions-aws-sdk-integ.assets"
       ],
       "metadata": {
+        "/aws-stepfunctions-aws-sdk-integ/CreateTable/Handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "timeout": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
         "/aws-stepfunctions-aws-sdk-integ/LatestNodeRuntimeMap": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/aws-stepfunctions-aws-sdk-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "timeout": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
+        "/aws-stepfunctions-aws-sdk-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-stepfunctions-aws-sdk-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-stepfunctions-aws-sdk-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
+          }
+        ],
+        "/aws-stepfunctions-aws-sdk-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-stepfunctions-aws-sdk-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/DefaultPolicy/Resource": [
@@ -58,10 +280,321 @@
             "data": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F"
           }
         ],
+        "/aws-stepfunctions-aws-sdk-integ/DescribeTable/Handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "timeout": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-stepfunctions-aws-sdk-integ/PutItem/Handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "timeout": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-stepfunctions-aws-sdk-integ/DeleteTable/Handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "timeout": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-stepfunctions-aws-sdk-integ/ListApplications/Handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "timeout": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-stepfunctions-aws-sdk-integ/StateMachine": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "definition": {
+                "id": "*",
+                "startState": "*",
+                "endStates": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-stepfunctions-aws-sdk-integ/StateMachine/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-stepfunctions-aws-sdk-integ/StateMachine/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-stepfunctions-aws-sdk-integ/StateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/aws-stepfunctions-aws-sdk-integ/StateMachine/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-stepfunctions-aws-sdk-integ/StateMachine/Role/DefaultPolicy/Resource": [
@@ -114,7 +647,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/72f7fd9f46b02f7a077ddde998d403f7fb607962a2f8c13a26dc7a95dbfe614f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/040060a4ce3ff736bb21d31a0d3b63e72acc0c50ab616da008e4879acdb37888.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -131,6 +664,20 @@
         "IntegTestDefaultTestDeployAssertE3E7D2A4.assets"
       ],
       "metadata": {
+        "/IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -153,6 +700,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/Default/Default": [
@@ -236,5 +797,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

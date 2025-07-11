@@ -3,7 +3,9 @@ import { IWebSocketApi } from './api';
 import { IWebSocketRoute } from './route';
 import { CfnAuthorizer } from '.././index';
 import { Resource } from '../../../core';
-
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IAuthorizer } from '../common';
 
 /**
@@ -81,7 +83,13 @@ export interface WebSocketAuthorizerAttributes {
  * An authorizer for WebSocket Apis
  * @resource AWS::ApiGatewayV2::Authorizer
  */
+@propertyInjectable
 export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorizer {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.WebSocketAuthorizer';
+
   /**
    * Import an existing WebSocket Authorizer into this CDK app.
    */
@@ -104,9 +112,11 @@ export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorize
 
   constructor(scope: Construct, id: string, props: WebSocketAuthorizerProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.type === WebSocketAuthorizerType.LAMBDA && !props.authorizerUri) {
-      throw new Error('authorizerUri is mandatory for Lambda authorizers');
+      throw new ValidationError('authorizerUri is mandatory for Lambda authorizers', scope);
     }
 
     const resource = new CfnAuthorizer(this, 'Resource', {

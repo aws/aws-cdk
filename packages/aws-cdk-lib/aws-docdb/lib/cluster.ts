@@ -11,7 +11,26 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import { CaCertificate } from '../../aws-rds';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { CfnResource, Duration, RemovalPolicy, Resource, Token } from '../../core';
+import { CfnResource, Duration, RemovalPolicy, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+
+const MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE = 5;
+
+/**
+ * The storage type of the DocDB cluster
+ */
+export enum StorageType {
+  /**
+   * Standard storage
+   */
+  STANDARD = 'standard',
+
+  /**
+   * I/O-optimized storage
+   */
+  IOPT1 = 'iopt1',
+}
 
 /**
  * Properties for a new database cluster
@@ -20,7 +39,7 @@ export interface DatabaseClusterProps {
   /**
    * What version of the database to start
    *
-   * @default - The default engine version.
+   * @default -  the latest major version
    */
   readonly engineVersion?: string;
 
@@ -101,31 +120,31 @@ export interface DatabaseClusterProps {
   readonly caCertificate?: CaCertificate;
 
   /**
-    * What subnets to run the DocumentDB instances in.
-    *
-    * Must be at least 2 subnets in two different AZs.
-    */
+   * What subnets to run the DocumentDB instances in.
+   *
+   * Must be at least 2 subnets in two different AZs.
+   */
   readonly vpc: ec2.IVpc;
 
   /**
-    * Where to place the instances within the VPC
-    *
-    * @default private subnets
-    */
+   * Where to place the instances within the VPC
+   *
+   * @default private subnets
+   */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-    * Security group.
-    *
-    * @default a new security group is created.
-    */
+   * Security group.
+   *
+   * @default a new security group is created.
+   */
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
-    * The DB parameter group to associate with the instance.
-    *
-    * @default no parameter group
-    */
+   * The DB parameter group to associate with the instance.
+   *
+   * @default no parameter group
+   */
   readonly parameterGroup?: IClusterParameterGroup;
 
   /**
@@ -194,11 +213,11 @@ export interface DatabaseClusterProps {
   readonly cloudWatchLogsRetention?: logs.RetentionDays;
 
   /**
-    * The IAM role for the Lambda function associated with the custom resource
-    * that sets the retention policy.
-    *
-    * @default - a new role is created.
-    */
+   * The IAM role for the Lambda function associated with the custom resource
+   * that sets the retention policy.
+   *
+   * @default - a new role is created.
+   */
   readonly cloudWatchLogsRetentionRole?: IRole;
 
   /**
@@ -236,6 +255,17 @@ export interface DatabaseClusterProps {
    * @default - false
    */
   readonly copyTagsToSnapshot?: boolean;
+
+  /**
+   * The storage type of the DocDB cluster.
+   *
+   * I/O-optimized storage is supported starting with engine version 5.0.0.
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/db-cluster-storage-configs.html
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/release-notes.html#release-notes.11-21-2023
+   *
+   * @default StorageType.STANDARD
+   */
+  readonly storageType?: StorageType;
 }
 
 /**
@@ -292,7 +322,12 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
  *
  * @resource AWS::DocDB::DBCluster
  */
+@propertyInjectable
 export class DatabaseCluster extends DatabaseClusterBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-docdb.DatabaseCluster';
 
   /**
    * The default number of instances in the DocDB cluster if none are
@@ -327,35 +362,35 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
       public get instanceIdentifiers(): string[] {
         if (!this._instanceIdentifiers) {
-          throw new Error('Cannot access `instanceIdentifiers` of an imported cluster without provided instanceIdentifiers');
+          throw new UnscopedValidationError('Cannot access `instanceIdentifiers` of an imported cluster without provided instanceIdentifiers');
         }
         return this._instanceIdentifiers;
       }
 
       public get clusterEndpoint(): Endpoint {
         if (!this._clusterEndpoint) {
-          throw new Error('Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port');
+          throw new UnscopedValidationError('Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port');
         }
         return this._clusterEndpoint;
       }
 
       public get clusterReadEndpoint(): Endpoint {
         if (!this._clusterReadEndpoint) {
-          throw new Error('Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port');
+          throw new UnscopedValidationError('Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port');
         }
         return this._clusterReadEndpoint;
       }
 
       public get instanceEndpoints(): Endpoint[] {
         if (!this._instanceEndpoints) {
-          throw new Error('Cannot access `instanceEndpoints` of an imported cluster without instanceEndpointAddresses and port');
+          throw new UnscopedValidationError('Cannot access `instanceEndpoints` of an imported cluster without instanceEndpointAddresses and port');
         }
         return this._instanceEndpoints;
       }
 
       public get securityGroupId(): string {
         if (!this._securityGroupId) {
-          throw new Error('Cannot access `securityGroupId` of an imported cluster without securityGroupId');
+          throw new UnscopedValidationError('Cannot access `securityGroupId` of an imported cluster without securityGroupId');
         }
         return this._securityGroupId;
       }
@@ -438,6 +473,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets;
@@ -449,7 +486,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     // We cannot test whether the subnets are in different AZs, but at least we can test the amount.
     // See https://docs.aws.amazon.com/documentdb/latest/developerguide/replication.html#replication.high-availability
     if (subnetIds.length < 2) {
-      throw new Error(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
+      throw new ValidationError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`, this);
     }
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
@@ -467,7 +504,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
         vpc: this.vpc,
       });
       // HACK: Use an escape-hatch to apply a consistent removal policy to the
-      // security group so we don't get errors when trying to delete the stack.
+      // security group so we don't get ValidationErrors when trying to delete the stack.
       const securityGroupRemovalPolicy = this.getSecurityGroupRemovalPolicy(props);
       (securityGroup.node.defaultChild as CfnResource).applyRemovalPolicy(securityGroupRemovalPolicy, {
         applyToUpdateReplacePolicy: true,
@@ -499,7 +536,20 @@ export class DatabaseCluster extends DatabaseClusterBase {
     const storageEncrypted = props.storageEncrypted ?? true;
 
     if (props.kmsKey && !storageEncrypted) {
-      throw new Error('KMS key supplied but storageEncrypted is false');
+      throw new ValidationError('KMS key supplied but storageEncrypted is false', this);
+    }
+
+    const validEngineVersionRegex = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/;
+    if (props.engineVersion !== undefined && !validEngineVersionRegex.test(props.engineVersion)) {
+      throw new ValidationError(`Invalid engine version: '${props.engineVersion}'. Engine version must be in the format x.y.z`, this);
+    }
+
+    if (
+      props.storageType === StorageType.IOPT1
+      && props.engineVersion !== undefined
+      && Number(props.engineVersion.split('.')[0]) < MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE
+    ) {
+      throw new ValidationError(`I/O-optimized storage is supported starting with engine version 5.0.0, got '${props.engineVersion}'`, this);
     }
 
     // Create the DocDB cluster
@@ -528,6 +578,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       storageEncrypted,
       // Tags
       copyTagsToSnapshot: props.copyTagsToSnapshot,
+      storageType: props.storageType,
     });
 
     this.cluster.applyRemovalPolicy(props.removalPolicy, {
@@ -550,7 +601,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     // Create the instances
     const instanceCount = props.instances ?? DatabaseCluster.DEFAULT_NUM_INSTANCES;
     if (instanceCount < 1) {
-      throw new Error('At least one instance is required');
+      throw new ValidationError('At least one instance is required', this);
     }
 
     const instanceRemovalPolicy = this.getInstanceRemovalPolicy(props);
@@ -607,7 +658,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
   private getInstanceRemovalPolicy(props: DatabaseClusterProps) {
     if (props.instanceRemovalPolicy === RemovalPolicy.SNAPSHOT) {
-      throw new Error('AWS::DocDB::DBInstance does not support the SNAPSHOT removal policy');
+      throw new ValidationError('AWS::DocDB::DBInstance does not support the SNAPSHOT removal policy', this);
     }
     if (props.instanceRemovalPolicy) return props.instanceRemovalPolicy;
     return !props.removalPolicy || props.removalPolicy !== RemovalPolicy.SNAPSHOT ?
@@ -616,7 +667,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
   private getSecurityGroupRemovalPolicy(props: DatabaseClusterProps) {
     if (props.securityGroupRemovalPolicy === RemovalPolicy.SNAPSHOT) {
-      throw new Error('AWS::EC2::SecurityGroup does not support the SNAPSHOT removal policy');
+      throw new ValidationError('AWS::EC2::SecurityGroup does not support the SNAPSHOT removal policy', this);
     }
     if (props.securityGroupRemovalPolicy) return props.securityGroupRemovalPolicy;
     return !props.removalPolicy || props.removalPolicy !== RemovalPolicy.SNAPSHOT ?
@@ -629,15 +680,16 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
    * before Secrets Manager triggers the next automatic rotation.
    */
+  @MethodMetadata()
   public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new Error('Cannot add single user rotation for a cluster without secret.');
+      throw new ValidationError('Cannot add single user rotation for a cluster without secret.', this);
     }
 
     const id = 'RotationSingleUser';
     const existing = this.node.tryFindChild(id);
     if (existing) {
-      throw new Error('A single user rotation was already added to this cluster.');
+      throw new ValidationError('A single user rotation was already added to this cluster.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -654,9 +706,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * Adds the multi user rotation to this cluster.
    */
+  @MethodMetadata()
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new Error('Cannot add multi user rotation for a cluster without secret.');
+      throw new ValidationError('Cannot add multi user rotation for a cluster without secret.', this);
     }
     return new secretsmanager.SecretRotation(this, id, {
       secret: options.secret,
@@ -674,6 +727,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * Adds security groups to this cluster.
    * @param securityGroups The security groups to add.
    */
+  @MethodMetadata()
   public addSecurityGroups(...securityGroups: ec2.ISecurityGroup[]): void {
     if (this.cluster.vpcSecurityGroupIds === undefined) {
       this.cluster.vpcSecurityGroupIds = [];

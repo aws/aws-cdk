@@ -1,0 +1,64 @@
+name: CDK Enums Static Mapping Updater
+on:
+  workflow_dispatch:
+  schedule: # Runs every Monday at 12am PT
+    - cron: '0 0 * * 1'
+
+jobs:
+  update-l2-enums:
+    if: github.repository == 'aws/aws-cdk'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Check Out
+        uses: actions/checkout@v4
+        
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "*"
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
+
+      - name: Install dependencies
+        run: cd tools/@aws-cdk/enum-updater && yarn install --frozen-lockfile && yarn build
+
+      - name: Update enum static mapping
+        run: |
+          cd tools/@aws-cdk/enum-updater
+          ./bin/update-static-enum-mapping
+
+      - name: Check for changes
+        id: static-mapping-check
+        run: |
+          cd tools/@aws-cdk/enum-updater
+          if [[ -n "$(git status --porcelain ./lib/static-enum-mapping.json)" ]]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Create PR for static mapping changes
+        if: steps.static-mapping-check.outputs.changes == 'true'
+        run: |
+          cd tools/@aws-cdk/enum-updater
+          git config --global user.name 'aws-cdk-automation'
+          git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
+
+          # Create a new branch for the module
+          branchName="enum-update/static-mapping-update"
+          git checkout -b "$branchName"
+
+          git add .  # Add all files changed
+          git commit -m "chore(enum-updater): update enum static mapping"
+          git push -f origin "$branchName"
+
+          gh pr create --title "chore(enum-updater): update enum static mapping" \
+           --body "This PR updates the CDK enum mapping file." \
+           --base main \
+           --head "$branchName" \
+           --label "contribution/core,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

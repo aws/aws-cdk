@@ -3,8 +3,11 @@ import { Cluster, ICluster, IpFamily, AuthenticationMode } from './cluster';
 import { CfnNodegroup } from './eks.generated';
 import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { IResource, Resource, Annotations, withResolved, FeatureFlags } from '../../core';
+import { IResource, Resource, Annotations, withResolved, FeatureFlags, ValidationError } from '../../core';
 import * as cxapi from '../../cx-api';
+import { isGpuInstanceType } from './private/nodegroup';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * NodeGroup interface
@@ -56,6 +59,14 @@ export enum NodegroupAmiType {
    */
   BOTTLEROCKET_X86_64_NVIDIA = 'BOTTLEROCKET_x86_64_NVIDIA',
   /**
+   * Bottlerocket Linux (ARM-64) with FIPS enabled
+   */
+  BOTTLEROCKET_ARM_64_FIPS = 'BOTTLEROCKET_ARM_64_FIPS',
+  /**
+   * Bottlerocket (x86-64) with FIPS enabled
+   */
+  BOTTLEROCKET_X86_64_FIPS = 'BOTTLEROCKET_x86_64_FIPS',
+  /**
    * Windows Core 2019 (x86-64)
    */
   WINDOWS_CORE_2019_X86_64 = 'WINDOWS_CORE_2019_x86_64',
@@ -76,6 +87,14 @@ export enum NodegroupAmiType {
    */
   AL2023_X86_64_STANDARD = 'AL2023_x86_64_STANDARD',
   /**
+   * Amazon Linux 2023 with AWS Neuron drivers (x86-64)
+   */
+  AL2023_X86_64_NEURON = 'AL2023_x86_64_NEURON',
+  /**
+   * Amazon Linux 2023 with NVIDIA drivers (x86-64)
+   */
+  AL2023_X86_64_NVIDIA = 'AL2023_x86_64_NVIDIA',
+  /**
    * Amazon Linux 2023 (ARM-64)
    */
   AL2023_ARM_64_STANDARD = 'AL2023_ARM_64_STANDARD',
@@ -93,6 +112,10 @@ export enum CapacityType {
    * on-demand instances
    */
   ON_DEMAND = 'ON_DEMAND',
+  /**
+   * capacity block instances
+   */
+  CAPACITY_BLOCK = 'CAPACITY_BLOCK',
 }
 
 /**
@@ -325,6 +348,14 @@ export interface NodegroupOptions {
    * @default undefined - node groups will update instances one at a time
    */
   readonly maxUnavailablePercentage?: number;
+
+  /**
+   * Specifies whether to enable node auto repair for the node group. Node auto repair is disabled by default.
+   *
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/node-health.html#node-auto-repair
+   * @default - disabled
+   */
+  readonly enableNodeAutoRepair?: boolean;
 }
 
 /**
@@ -340,7 +371,11 @@ export interface NodegroupProps extends NodegroupOptions {
 /**
  * The Nodegroup resource class
  */
+@propertyInjectable
 export class Nodegroup extends Resource implements INodegroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.Nodegroup';
+
   /**
    * Import the Nodegroup from attributes
    */
@@ -381,6 +416,8 @@ export class Nodegroup extends Resource implements INodegroup {
     super(scope, id, {
       physicalName: props.nodegroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.cluster = props.cluster;
 
@@ -391,25 +428,25 @@ export class Nodegroup extends Resource implements INodegroup {
     withResolved(this.desiredSize, this.maxSize, (desired, max) => {
       if (desired === undefined) {return ;}
       if (desired > max) {
-        throw new Error(`Desired capacity ${desired} can't be greater than max size ${max}`);
+        throw new ValidationError(`Desired capacity ${desired} can't be greater than max size ${max}`, this);
       }
     });
 
     withResolved(this.desiredSize, this.minSize, (desired, min) => {
       if (desired === undefined) {return ;}
       if (desired < min) {
-        throw new Error(`Minimum capacity ${min} can't be greater than desired size ${desired}`);
+        throw new ValidationError(`Minimum capacity ${min} can't be greater than desired size ${desired}`, this);
       }
     });
 
     if (props.launchTemplateSpec && props.diskSize) {
       // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
       // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
-      throw new Error('diskSize must be specified within the launch template');
+      throw new ValidationError('diskSize must be specified within the launch template', this);
     }
 
     if (props.instanceType && props.instanceTypes) {
-      throw new Error('"instanceType is deprecated, please use "instanceTypes" only.');
+      throw new ValidationError('"instanceType is deprecated, please use "instanceTypes" only.', this);
     }
 
     if (props.instanceType) {
@@ -426,19 +463,19 @@ export class Nodegroup extends Resource implements INodegroup {
        * 1. instance types of different CPU architectures are not mixed(e.g. X86 with ARM).
        * 2. user-specified amiType should be included in `possibleAmiTypes`.
        */
-      possibleAmiTypes = getPossibleAmiTypes(instanceTypes);
+      possibleAmiTypes = getPossibleAmiTypes(this, instanceTypes);
 
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
-        throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`);
+        throw new ValidationError(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`, this);
       }
 
-      //if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
+      // if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
       if (props.amiType && windowsAmiTypes.includes(props.amiType) &&
       instanceTypes.filter(isWindowsSupportedInstanceType).length < instanceTypes.length) {
-        throw new Error('The specified instanceType does not support Windows workloads. '
+        throw new ValidationError('The specified instanceType does not support Windows workloads. '
         + 'Amazon EC2 instance types C3, C4, D2, I2, M4 (excluding m4.16xlarge), M6a.x, and '
-        + 'R3 instances aren\'t supported for Windows workloads.');
+        + 'R3 instances aren\'t supported for Windows workloads.', this);
       }
     }
 
@@ -455,14 +492,14 @@ export class Nodegroup extends Resource implements INodegroup {
       // https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html
       if (props.cluster.ipFamily == IpFamily.IP_V6) {
         ngRole.addToPrincipalPolicy(new PolicyStatement({
-          // eslint-disable-next-line @aws-cdk/no-literal-partition
+          // eslint-disable-next-line @cdklabs/no-literal-partition
           resources: ['arn:aws:ec2:*:*:network-interface/*'],
           actions: [
             'ec2:AssignIpv6Addresses',
             'ec2:UnassignIpv6Addresses',
           ],
         }));
-      };
+      }
       this.role = ngRole;
     } else {
       this.role = props.nodeRole;
@@ -512,6 +549,9 @@ export class Nodegroup extends Resource implements INodegroup {
         maxUnavailable: props.maxUnavailable,
         maxUnavailablePercentage: props.maxUnavailablePercentage,
       } : undefined,
+      nodeRepairConfig: props.enableNodeAutoRepair ? {
+        enabled: props.enableNodeAutoRepair,
+      } : undefined,
     });
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
@@ -552,17 +592,17 @@ export class Nodegroup extends Resource implements INodegroup {
   private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {
     if (!maxUnavailable && !maxUnavailablePercentage) return;
     if (maxUnavailable && maxUnavailablePercentage) {
-      throw new Error('maxUnavailable and maxUnavailablePercentage are not allowed to be defined together');
+      throw new ValidationError('maxUnavailable and maxUnavailablePercentage are not allowed to be defined together', this);
     }
     if (maxUnavailablePercentage && (maxUnavailablePercentage < 1 || maxUnavailablePercentage > 100)) {
-      throw new Error(`maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`);
+      throw new ValidationError(`maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`, this);
     }
     if (maxUnavailable) {
       if (maxUnavailable > this.maxSize) {
-        throw new Error(`maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`);
+        throw new ValidationError(`maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`, this);
       }
       if (maxUnavailable < 1 || maxUnavailable > 100) {
-        throw new Error(`maxUnavailable must be between 1 and 100, got ${maxUnavailable}`);
+        throw new ValidationError(`maxUnavailable must be between 1 and 100, got ${maxUnavailable}`, this);
       }
     }
   }
@@ -594,21 +634,11 @@ const windowsAmiTypes: NodegroupAmiType[] = [
 ];
 const gpuAmiTypes: NodegroupAmiType[] = [
   NodegroupAmiType.AL2_X86_64_GPU,
+  NodegroupAmiType.AL2023_X86_64_NEURON,
+  NodegroupAmiType.AL2023_X86_64_NVIDIA,
   NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA,
   NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA,
 ];
-
-/**
- * This function check if the instanceType is GPU instance.
- * @param instanceType The EC2 instance type
- */
-function isGpuInstanceType(instanceType: InstanceType): boolean {
-  //compare instanceType to known GPU InstanceTypes
-  const knownGpuInstanceTypes = [InstanceClass.P2, InstanceClass.P3, InstanceClass.P3DN, InstanceClass.P4DE, InstanceClass.P4D,
-    InstanceClass.G3S, InstanceClass.G3, InstanceClass.G4DN, InstanceClass.G4AD, InstanceClass.G5, InstanceClass.G5G,
-    InstanceClass.INF1, InstanceClass.INF2];
-  return knownGpuInstanceTypes.some((c) => instanceType.sameInstanceClassAs(InstanceType.of(c, InstanceSize.LARGE)));
-}
 
 /**
  * This function check if the instanceType is supported by Windows AMI.
@@ -616,8 +646,8 @@ function isGpuInstanceType(instanceType: InstanceType): boolean {
  * @param instanceType The EC2 instance type
  */
 function isWindowsSupportedInstanceType(instanceType: InstanceType): boolean {
-  //compare instanceType to forbidden InstanceTypes for Windows. Add exception for m6a.16xlarge.
-  //NOTE: i2 instance class is not present in the InstanceClass enum.
+  // compare instanceType to forbidden InstanceTypes for Windows. Add exception for m6a.16xlarge.
+  // NOTE: i2 instance class is not present in the InstanceClass enum.
   const forbiddenInstanceClasses: InstanceClass[] = [InstanceClass.C3, InstanceClass.C4, InstanceClass.D2, InstanceClass.M4,
     InstanceClass.M6A, InstanceClass.R3];
   return instanceType.toString() === InstanceType.of(InstanceClass.M4, InstanceSize.XLARGE16).toString() ||
@@ -632,7 +662,7 @@ type AmiArchitecture = InstanceArchitecture | 'GPU';
  * @param instanceTypes The instance types
  * @returns NodegroupAmiType[]
  */
-function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] {
+function getPossibleAmiTypes(scope: Construct, instanceTypes: InstanceType[]): NodegroupAmiType[] {
   function typeToArch(instanceType: InstanceType): AmiArchitecture {
     return isGpuInstanceType(instanceType) ? 'GPU' : instanceType.architecture;
   }
@@ -644,11 +674,11 @@ function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] 
   const architectures: Set<AmiArchitecture> = new Set(instanceTypes.map(typeToArch));
 
   if (architectures.size === 0) { // protective code, the current implementation will never result in this.
-    throw new Error(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString).join(', ')}`);
+    throw new ValidationError(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString()).join(', ')}`, scope);
   }
 
   if (architectures.size > 1) {
-    throw new Error('instanceTypes of different architectures is not allowed');
+    throw new ValidationError('instanceTypes of different architectures is not allowed', scope);
   }
 
   return archAmiMap.get(Array.from(architectures)[0])!;

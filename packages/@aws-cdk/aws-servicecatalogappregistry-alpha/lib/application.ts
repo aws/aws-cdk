@@ -7,6 +7,8 @@ import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } fr
 import { isAccountUnresolved } from './private/utils';
 import { InputValidator } from './private/validation';
 import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } from 'aws-cdk-lib/aws-servicecatalogappregistry';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 const APPLICATION_READ_ONLY_RAM_PERMISSION_ARN = `arn:${cdk.Aws.PARTITION}:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly`;
 const APPLICATION_ALLOW_ACCESS_RAM_PERMISSION_ARN = `arn:${cdk.Aws.PARTITION}:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation`;
@@ -80,7 +82,7 @@ export interface IApplication extends cdk.IResource {
   associateStack(stack: cdk.Stack): void;
 
   /**
-   * Associate a Cloudformation statck with the application in the given stack.
+   * Associate a Cloudformation stack with the application in the given stack.
    *
    * @param stack a CFN stack
    */
@@ -253,8 +255,8 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   }
 
   /**
-  *  Checks whether a stack is defined in a Stage or not.
-  */
+   *  Checks whether a stack is defined in a Stage or not.
+   */
   private isStageScope(stack : cdk.Stack): boolean {
     return !(stack.node.scope instanceof cdk.App) && (stack.node.scope instanceof cdk.Stage);
   }
@@ -265,13 +267,16 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   private isSameAccount(stack: cdk.Stack): boolean {
     return isAccountUnresolved(this.env.account, stack.account) || this.env.account === stack.account;
   }
-
 }
 
 /**
  * A Service Catalog AppRegistry Application.
  */
+@propertyInjectable
 export class Application extends ApplicationBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-servicecatalogappregistry-alpha.Application';
+
   /**
    * Imports an Application construct that represents an external application.
    *
@@ -314,6 +319,8 @@ export class Application extends ApplicationBase {
 
   constructor(scope: Construct, id: string, props: ApplicationProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.validateApplicationProps(props);
 

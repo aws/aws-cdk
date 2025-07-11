@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "a8ec6cbdebdfee0a751851a84216f1643a9c332798775433963d315cf02401a1": {
+      "source": {
+        "path": "cdk-ses-configuration-set-overriding-suppression-list-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a8ec6cbdebdfee0a751851a84216f1643a9c332798775433963d315cf02401a1.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

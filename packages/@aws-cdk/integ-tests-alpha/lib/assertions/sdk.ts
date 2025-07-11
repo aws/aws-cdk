@@ -1,4 +1,4 @@
-import { ArnFormat, CfnResource, CustomResource, Lazy, Stack, Aspects, CfnOutput } from 'aws-cdk-lib/core';
+import { ArnFormat, CfnResource, CustomResource, Lazy, Stack, Aspects, CfnOutput, AspectPriority } from 'aws-cdk-lib/core';
 import { Construct, IConstruct } from 'constructs';
 import { ApiCallBase, IApiCall } from './api-call-base';
 import { ExpectedResult } from './common';
@@ -125,7 +125,7 @@ export class AwsApiCall extends ApiCallBase {
           }
         }
       },
-    });
+    }, { priority: AspectPriority.MUTATING });
   }
 
   public assertAtPath(path: string, expected: ExpectedResult): IApiCall {
@@ -281,6 +281,6 @@ export class LambdaInvokeFunction extends AwsApiCall {
           })]);
         }
       },
-    });
+    }, { priority: AspectPriority.MUTATING });
   }
 }

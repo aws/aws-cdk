@@ -1,0 +1,16 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "networkMultipleTargetGroupsFargateServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-fargate-health-percentage"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "networkMultipleTargetGroupsFargateServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "networkMultipleTargetGroupsFargateServiceTestDefaultTestDeployAssertC9049A80"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}

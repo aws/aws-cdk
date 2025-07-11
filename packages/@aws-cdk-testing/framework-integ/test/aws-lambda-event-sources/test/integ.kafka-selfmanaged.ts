@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { TestFunction } from './test-function';
 import { AuthenticationMethod, SelfManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { Key } from 'aws-cdk-lib/aws-kms';
 
 class KafkaSelfManagedEventSourceTest extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -60,10 +61,79 @@ zp2mwJn2NYB7AZ7+imp0azDZb+8YG2aUCiyqb6PnnA==
         ],
       }),
     );
+
+    const myKey = new Key(this, 'fc-test-key-name', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      pendingWindow: cdk.Duration.days(7),
+      description: 'KMS key for test fc encryption',
+    });
+
+    const fn2 = new TestFunction(this, 'F2');
+    rootCASecret.grantRead(fn2);
+    clientCertificatesSecret.grantRead(fn2);
+
+    fn2.addEventSource(new SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'my-test-topic2',
+      consumerGroupId: 'myTestConsumerGroup2',
+      secret: clientCertificatesSecret,
+      authenticationMethod: AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
+      rootCACertificate: rootCASecret,
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      filters: [
+        lambda.FilterCriteria.filter({
+          numericEquals: lambda.FilterRule.isEqual(2),
+        }),
+      ],
+      filterEncryption: myKey,
+    }));
+
+    const fn3 = new TestFunction(this, 'F3');
+    rootCASecret.grantRead(fn3);
+    clientCertificatesSecret.grantRead(fn3);
+
+    fn3.addEventSource(new SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'my-test-topic3',
+      consumerGroupId: 'myTestConsumerGroup3',
+      secret: clientCertificatesSecret,
+      authenticationMethod: AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
+      rootCACertificate: rootCASecret,
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      filters: [
+        lambda.FilterCriteria.filter({
+          numericEquals: lambda.FilterRule.isEqual(1),
+        }),
+      ],
+      provisionedPollerConfig: {
+        minimumPollers: 1,
+        maximumPollers: 3,
+      },
+    }));
+
+    const fn4 = new TestFunction(this, 'F4');
+    rootCASecret.grantRead(fn4);
+    clientCertificatesSecret.grantRead(fn4);
+
+    fn4.addEventSource(new SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'my-test-topic4',
+      consumerGroupId: 'myTestConsumerGroup4',
+      secret: clientCertificatesSecret,
+      authenticationMethod:
+        AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
+      rootCACertificate: rootCASecret,
+      startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1730270400,
+    }));
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new KafkaSelfManagedEventSourceTest(
   app,
   'lambda-event-source-kafka-self-managed',

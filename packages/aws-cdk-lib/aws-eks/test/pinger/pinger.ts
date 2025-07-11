@@ -11,7 +11,6 @@ export interface PingerProps {
   readonly subnets?: ec2.ISubnet[];
 }
 export class Pinger extends Construct {
-
   private _resource: CustomResource;
 
   constructor(scope: Construct, id: string, props: PingerProps) {

@@ -277,7 +277,6 @@ describe('route', () => {
         },
         RouteName: 'test-http-route',
       });
-
     });
 
     test('should allow weighted targets with port specified', () => {
@@ -336,7 +335,6 @@ describe('route', () => {
         },
         RouteName: 'test-http-route',
       });
-
     });
 
     test('should not have weighted targets port when not specified', () => {
@@ -394,7 +392,6 @@ describe('route', () => {
         },
         RouteName: 'test-http-route',
       });
-
     });
 
     test('should allow http retries', () => {
@@ -1636,7 +1633,6 @@ describe('route', () => {
     expect(route.routeName).toEqual(routeName);
     expect(route.virtualRouter.virtualRouterName).toEqual(virtualRouterName);
     expect(route.virtualRouter.mesh.meshName).toEqual(meshName);
-
   });
 
   test('Can import Routes using ARN and attributes', () => {

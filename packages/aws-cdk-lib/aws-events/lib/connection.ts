@@ -1,6 +1,8 @@
 import { Construct } from 'constructs';
 import { CfnConnection } from './events.generated';
-import { IResource, Resource, Stack, SecretValue } from '../../core';
+import { IResource, Resource, Stack, SecretValue, UnscopedValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * An API Destination Connection
@@ -99,7 +101,7 @@ export abstract class Authorization {
    */
   public static oauth(props: OAuthAuthorizationProps): Authorization {
     if (![HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT].includes(props.httpMethod)) {
-      throw new Error('httpMethod must be one of GET, POST, PUT');
+      throw new UnscopedValidationError('httpMethod must be one of GET, POST, PUT');
     }
 
     return new class extends Authorization {
@@ -124,7 +126,6 @@ export abstract class Authorization {
         };
       }
     }();
-
   }
 
   /**
@@ -293,7 +294,11 @@ export interface ConnectionAttributes {
  *
  * @resource AWS::Events::Connection
  */
+@propertyInjectable
 export class Connection extends Resource implements IConnection {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.Connection';
+
   /**
    * Import an existing connection resource
    * @param scope Parent construct
@@ -342,6 +347,8 @@ export class Connection extends Resource implements IConnection {
     super(scope, id, {
       physicalName: props.connectionName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const authBind = props.authorization._bind();
 
@@ -367,7 +374,10 @@ export class Connection extends Resource implements IConnection {
   }
 }
 
+@propertyInjectable
 class ImportedConnection extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.ImportedConnection';
   public readonly connectionArn: string;
   public readonly connectionName: string;
   public readonly connectionSecretArn: string;
@@ -377,6 +387,8 @@ class ImportedConnection extends Resource {
       account: arnParts.account,
       region: arnParts.region,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     this.connectionArn = attrs.connectionArn;
     this.connectionName = attrs.connectionName;

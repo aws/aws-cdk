@@ -13,4 +13,19 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
   }
 ];
 
+// no-throw-default-error
+baseConfig.rules['@cdklabs/no-throw-default-error'] = ['error'];
+baseConfig.overrides.push({
+  rules: { "@cdklabs/no-throw-default-error": "off" },
+  files: [
+    // Build and test files can have whatever error they like
+    "./scripts/**",
+    "./*/build-tools/**",
+    "./*/test/**",
+
+    // Lambda Runtime code should use regular errors
+    "./custom-resources/lib/provider-framework/runtime/**",
+  ],
+});
+
 module.exports = baseConfig;

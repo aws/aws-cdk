@@ -1,0 +1,177 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "cdk-integ-opensearch-instance-store.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-integ-opensearch-instance-store.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-integ-opensearch-instance-store": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-opensearch-instance-store.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7d33352f78462dd72c51edb98b20b84b6e9f155f9f96873ac615fc32758db5a0.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-integ-opensearch-instance-store.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-integ-opensearch-instance-store.assets"
+      ],
+      "metadata": {
+        "/cdk-integ-opensearch-instance-store/Domain1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "version": "*",
+              "capacity": {
+                "multiAzWithStandbyEnabled": false,
+                "dataNodeInstanceType": "*",
+                "dataNodes": "*"
+              },
+              "ebs": {
+                "enabled": false
+              }
+            }
+          }
+        ],
+        "/cdk-integ-opensearch-instance-store/Domain1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Domain19FCBCB91"
+          }
+        ],
+        "/cdk-integ-opensearch-instance-store/Domain2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "version": "*",
+              "capacity": {
+                "multiAzWithStandbyEnabled": false,
+                "dataNodeInstanceType": "*",
+                "dataNodes": "*"
+              },
+              "ebs": {
+                "enabled": false
+              }
+            }
+          }
+        ],
+        "/cdk-integ-opensearch-instance-store/Domain2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Domain2644FE48C"
+          }
+        ],
+        "/cdk-integ-opensearch-instance-store/Domain3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "version": "*",
+              "capacity": {
+                "multiAzWithStandbyEnabled": false,
+                "dataNodeInstanceType": "*",
+                "dataNodes": "*"
+              },
+              "ebs": {
+                "enabled": false
+              }
+            }
+          }
+        ],
+        "/cdk-integ-opensearch-instance-store/Domain3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Domain3BE108C7A"
+          }
+        ],
+        "/cdk-integ-opensearch-instance-store/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-integ-opensearch-instance-store/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-opensearch-instance-store"
+    },
+    "IntegDefaultTestDeployAssert4E6713E1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "IntegDefaultTestDeployAssert4E6713E1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "IntegDefaultTestDeployAssert4E6713E1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IntegDefaultTestDeployAssert4E6713E1.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "IntegDefaultTestDeployAssert4E6713E1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "IntegDefaultTestDeployAssert4E6713E1.assets"
+      ],
+      "metadata": {
+        "/Integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "Integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

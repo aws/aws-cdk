@@ -20,7 +20,11 @@ import {
   EventBridgeDestination,
 } from 'aws-cdk-lib/aws-appconfig';
 
-const cdkApp = new App();
+const cdkApp = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new Stack(cdkApp, 'aws-appconfig-extension');
 
@@ -39,6 +43,7 @@ const lambdaExtension = new Extension(stack, 'MyLambdaExtension', {
       actionPoints: [
         ActionPoint.PRE_CREATE_HOSTED_CONFIGURATION_VERSION,
         ActionPoint.ON_DEPLOYMENT_START,
+        ActionPoint.AT_DEPLOYMENT_TICK,
       ],
       eventDestination: new LambdaDestination(lambda),
     }),

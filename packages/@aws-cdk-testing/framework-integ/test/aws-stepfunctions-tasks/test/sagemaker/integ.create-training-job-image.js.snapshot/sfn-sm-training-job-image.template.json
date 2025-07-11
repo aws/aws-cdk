@@ -1,0 +1,551 @@
+{
+ "Resources": {
+  "Bucket83908E77": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:cr-owned:b06b7af3",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TrainSetAwsCliLayer57B94C48": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "f24ba5e516d9d80b64bc7b0f406eedd12c36b20e7461f3e7719b7ffbdad72410.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   }
+  },
+  "TrainSetCustomResourceF5C8A355": {
+   "Type": "Custom::CDKBucketDeployment",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+      "Arn"
+     ]
+    },
+    "SourceBucketNames": [
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     }
+    ],
+    "SourceObjectKeys": [
+     "cde7d85215f3ee5ac423297c9f240a263dde5eef09c654d7973de537e45ecc63.zip"
+    ],
+    "DestinationBucketName": {
+     "Ref": "Bucket83908E77"
+    },
+    "Prune": true,
+    "OutputObjectKeys": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Bucket83908E77",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+    "Roles": [
+     {
+      "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+     }
+    ]
+   }
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c6358465bf49dfae556bb430bf9c81fa578c221b82c308e3707901b1dd654762.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
+     }
+    },
+    "Handler": "index.handler",
+    "Layers": [
+     {
+      "Ref": "TrainSetAwsCliLayer57B94C48"
+     }
+    ],
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.11",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+   ]
+  },
+  "TrainTaskSagemakerRole0A9B1CDD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sagemaker.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "cloudwatch:PutMetricData",
+          "ecr:GetAuthorizationToken",
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:DescribeLogStreams",
+          "logs:PutLogEvents"
+         ],
+         "Effect": "Allow",
+         "Resource": "*"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "CreateTrainingJob"
+     }
+    ]
+   }
+  },
+  "TrainTaskSagemakerRoleDefaultPolicyA28F72FA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Bucket83908E77",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/data/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Bucket83908E77",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/result/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TrainTaskSagemakerRoleDefaultPolicyA28F72FA",
+    "Roles": [
+     {
+      "Ref": "TrainTaskSagemakerRole0A9B1CDD"
+     }
+    ]
+   }
+  },
+  "StateMachineRoleB840431D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "StateMachineRoleDefaultPolicyDF1E6607": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sagemaker:AddTags",
+        "sagemaker:CreateTrainingJob",
+        "sagemaker:DescribeTrainingJob",
+        "sagemaker:StopTrainingJob"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":sagemaker:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":training-job/MyBlazingTextTrainingJob*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "sagemaker:ListTags",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "iam:PassRole",
+       "Condition": {
+        "StringEquals": {
+         "iam:PassedToService": "sagemaker.amazonaws.com"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "TrainTaskSagemakerRole0A9B1CDD",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "events:DescribeRule",
+        "events:PutRule",
+        "events:PutTargets"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":events:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":rule/StepFunctionsGetEventsForSageMakerTrainingJobsRule"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StateMachineRoleDefaultPolicyDF1E6607",
+    "Roles": [
+     {
+      "Ref": "StateMachineRoleB840431D"
+     }
+    ]
+   }
+  },
+  "StateMachine2E01A3A5": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"TrainTask\",\"States\":{\"TrainTask\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::sagemaker:createTrainingJob.sync\",\"Parameters\":{\"TrainingJobName\":\"MyBlazingTextTrainingJob\",\"RoleArn\":\"",
+       {
+        "Fn::GetAtt": [
+         "TrainTaskSagemakerRole0A9B1CDD",
+         "Arn"
+        ]
+       },
+       "\",\"AlgorithmSpecification\":{\"TrainingInputMode\":\"FastFile\",\"TrainingImage\":\"811284229777.dkr.ecr.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazonaws.com/blazingtext\"},\"InputDataConfig\":[{\"ChannelName\":\"train\",\"DataSource\":{\"S3DataSource\":{\"S3Uri\":\"https://s3.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/",
+       {
+        "Ref": "Bucket83908E77"
+       },
+       "/data/\",\"S3DataType\":\"S3Prefix\"}}}],\"OutputDataConfig\":{\"S3OutputPath\":\"https://s3.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/",
+       {
+        "Ref": "Bucket83908E77"
+       },
+       "/result/\"},\"ResourceConfig\":{\"InstanceCount\":1,\"InstanceType\":\"ml.m4.xlarge\",\"VolumeSizeInGB\":10},\"StoppingCondition\":{\"MaxRuntimeInSeconds\":3600},\"HyperParameters\":{\"mode\":\"supervised\"}}}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "StateMachineRoleDefaultPolicyDF1E6607",
+    "StateMachineRoleB840431D"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefStateMachine2E01A3A5BA46F753": {
+   "Value": {
+    "Ref": "StateMachine2E01A3A5"
+   },
+   "Export": {
+    "Name": "sfn-sm-training-job-image:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

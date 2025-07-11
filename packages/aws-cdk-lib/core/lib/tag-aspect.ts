@@ -1,6 +1,10 @@
 import { Construct, IConstruct } from 'constructs';
 import { Annotations } from './annotations';
-import { IAspect, Aspects } from './aspect';
+import { IAspect, Aspects, AspectOptions } from './aspect';
+import { UnscopedValidationError } from './errors';
+import { FeatureFlags } from './feature-flags';
+import * as cxapi from '../../cx-api';
+import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { ITaggable, ITaggableV2, TagManager } from './tag-manager';
 
 /**
@@ -20,6 +24,7 @@ export interface TagProps {
    * An empty array will allow this tag to be applied to all resources. A
    * non-empty array will apply this tag only if the Resource type is not in
    * this array.
+   *
    * @default []
    */
   readonly excludeResourceTypes?: string[];
@@ -58,7 +63,6 @@ export interface TagProps {
  * The common functionality for Tag and Remove Tag Aspects
  */
 abstract class TagBase implements IAspect {
-
   /**
    * The string key for the tag
    */
@@ -87,7 +91,6 @@ abstract class TagBase implements IAspect {
  * The Tag Aspect will handle adding a tag to this node and cascading tags to children
  */
 export class Tag extends TagBase {
-
   /**
    * DEPRECATED: add tags to the node of a construct and all its the taggable children
    *
@@ -118,7 +121,7 @@ export class Tag extends TagBase {
   constructor(key: string, value: string, props: TagProps = {}) {
     super(key, props);
     if (value === undefined) {
-      throw new Error('Tag must have a value');
+      throw new UnscopedValidationError('Tag must have a value');
     }
     this.value = value;
   }
@@ -155,20 +158,53 @@ export class Tags {
     return new Tags(scope);
   }
 
-  private constructor(private readonly scope: IConstruct) { }
+  private readonly explicitStackTags: boolean;
+
+  private constructor(private readonly scope: IConstruct) {
+    this.explicitStackTags = FeatureFlags.of(scope).isEnabled(cxapi.EXPLICIT_STACK_TAGS) ?? false;
+  }
 
   /**
-   * add tags to the node of a construct and all its the taggable children
+   * Add tags to the node of a construct and all its the taggable children
+   *
+   * ## Tagging and CloudFormation Stacks
+   *
+   * If the feature flag `@aws-cdk/core:explicitStackTags` is set to `true`
+   * (recommended modern behavior), Stacks will not automatically be tagged.
+   * Stack tags should be configured on Stacks directly (preferred), or
+   * you must explicitly include the resource type `aws:cdk:stack` in the
+   * `includeResourceTypes` array.
+   *
+   * If the feature flag is set to `false` (legacy behavior) then both Stacks
+   * and resources in the indicated scope will both be tagged by default, which
+   * leads to tags being applied twice (once in the template, and then once
+   * again automatically by CloudFormation as part of the stack deployment).
+   * That behavior leads to loss of control as `excludeResourceTypes` will
+   * prevent tags from appearing in the template, but they will still be
+   * applied to the Stack and hence CloudFormation will still apply them
+   * to the resource.
    */
   public add(key: string, value: string, props: TagProps = {}) {
-    Aspects.of(this.scope).add(new Tag(key, value, props));
+    // Implicitly add `aws:cdk:stack` to the `excludeResourceTypes` array in modern behavior
+    if (this.explicitStackTags && !props.includeResourceTypes?.includes('aws:cdk:stack')) {
+      props = {
+        ...props,
+        excludeResourceTypes: [...props.excludeResourceTypes ?? [], 'aws:cdk:stack'],
+      };
+    }
+
+    const tag = new Tag(key, value, props);
+    const options: AspectOptions = { priority: mutatingAspectPrio32333(this.scope) };
+    Aspects.of(this.scope).add(tag, options);
   }
 
   /**
    * remove tags to the node of a construct and all its the taggable children
    */
   public remove(key: string, props: TagProps = {}) {
-    Aspects.of(this.scope).add(new RemoveTag(key, props));
+    const removeTag = new RemoveTag(key, props);
+    const options: AspectOptions = { priority: mutatingAspectPrio32333(this.scope) };
+    Aspects.of(this.scope).add(removeTag, options);
   }
 }
 
@@ -176,7 +212,6 @@ export class Tags {
  * The RemoveTag Aspect will handle removing tags from this node and children
  */
 export class RemoveTag extends TagBase {
-
   private readonly defaultPriority = 200;
 
   constructor(key: string, props: TagProps = {}) {

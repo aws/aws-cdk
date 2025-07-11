@@ -89,7 +89,6 @@ describe('Attribute Group', () => {
       Application: { 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Id'] },
       AttributeGroup: '0aqmvxvgmry0ecc4mjhwypun6i',
     });
-
   });
 
   test('fails for attribute group imported by ARN missing attributeGroupId', () => {
@@ -209,9 +208,7 @@ describe('Attribute Group', () => {
         Application: { 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Id'] },
         AttributeGroup: { 'Fn::GetAtt': ['MyAttributeGroupForAssociation6B3E1329', 'Id'] },
       });
-
     });
-
   });
 
   describe('Resource sharing of an attribute group', () => {

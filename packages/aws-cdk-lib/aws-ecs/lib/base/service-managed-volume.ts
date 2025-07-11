@@ -2,36 +2,36 @@ import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
-import { Size, Token } from '../../../core';
+import { Size, Token, ValidationError } from '../../../core';
 import { BaseMountPoint, ContainerDefinition } from '../container-definition';
 
 /**
-* Represents the Volume configuration for an ECS service.
-*/
+ * Represents the Volume configuration for an ECS service.
+ */
 export interface ServiceManagedVolumeProps {
   /**
-  * The name of the volume. This corresponds to the name provided in the ECS TaskDefinition.
-  */
+   * The name of the volume. This corresponds to the name provided in the ECS TaskDefinition.
+   */
   readonly name: string;
 
   /**
-  * Configuration for an Amazon Elastic Block Store (EBS) volume managed by ECS.
-  *
-  * @default - undefined
-  */
+   * Configuration for an Amazon Elastic Block Store (EBS) volume managed by ECS.
+   *
+   * @default - undefined
+   */
   readonly managedEBSVolume?: ServiceManagedEBSVolumeConfiguration;
 }
 
 /**
-* Represents the configuration for an ECS Service managed EBS volume.
-*/
+ * Represents the configuration for an ECS Service managed EBS volume.
+ */
 export interface ServiceManagedEBSVolumeConfiguration {
   /**
-  * An IAM role that allows ECS to make calls to EBS APIs on your behalf.
-  * This role is required to create and manage the Amazon EBS volume.
-  *
-  * @default - automatically generated role.
-  */
+   * An IAM role that allows ECS to make calls to EBS APIs on your behalf.
+   * This role is required to create and manage the Amazon EBS volume.
+   *
+   * @default - automatically generated role.
+   */
   readonly role?: iam.IRole;
 
   /**
@@ -122,10 +122,10 @@ export interface ServiceManagedEBSVolumeConfiguration {
   readonly fileSystemType?: FileSystemType;
 
   /**
-  * Specifies the tags to apply to the volume and whether to propagate those tags to the volume.
-  *
-  * @default - No tags are specified.
-  */
+   * Specifies the tags to apply to the volume and whether to propagate those tags to the volume.
+   *
+   * @default - No tags are specified.
+   */
   readonly tagSpecifications?: EBSTagSpecification[];
 }
 
@@ -134,18 +134,18 @@ export interface ServiceManagedEBSVolumeConfiguration {
  */
 export interface EBSTagSpecification {
   /**
-  * The tags to apply to the volume.
-  *
-  * @default - No tags
-  */
+   * The tags to apply to the volume.
+   *
+   * @default - No tags
+   */
   readonly tags?: {[key: string]: string};
 
   /**
-  * Specifies whether to propagate the tags from the task definition or the service to the task.
-  * Valid values are: PropagatedTagSource.SERVICE, PropagatedTagSource.TASK_DEFINITION
-  *
-  * @default - undefined
-  */
+   * Specifies whether to propagate the tags from the task definition or the service to the task.
+   * Valid values are: PropagatedTagSource.SERVICE, PropagatedTagSource.TASK_DEFINITION
+   *
+   * @default - undefined
+   */
   readonly propagateTags?: EbsPropagatedTagSource;
 }
 
@@ -165,6 +165,10 @@ export enum FileSystemType {
    * xfs type
    */
   XFS = 'xfs',
+  /**
+   * ntfs type
+   */
+  NTFS = 'ntfs',
 }
 
 /**
@@ -192,13 +196,13 @@ export interface ContainerMountPoint extends BaseMountPoint {
  */
 export class ServiceManagedVolume extends Construct {
   /**
-  * Name of the volume, referenced by taskdefintion and mount point.
-  */
+   * Name of the volume, referenced by taskdefintion and mount point.
+   */
   public readonly name: string;
 
   /**
-  * Volume configuration
-  */
+   * Volume configuration
+   */
   public readonly config?: ServiceManagedEBSVolumeConfiguration;
 
   /**
@@ -247,11 +251,11 @@ export class ServiceManagedVolume extends Construct {
 
     // Validate if both size and snapShotId are not specified.
     if (size === undefined && snapShotId === undefined) {
-      throw new Error('\'size\' or \'snapShotId\' must be specified');
+      throw new ValidationError('\'size\' or \'snapShotId\' must be specified', this);
     }
 
     if (snapShotId && !Token.isUnresolved(snapShotId) && !/^snap-[0-9a-fA-F]+$/.test(snapShotId)) {
-      throw new Error(`'snapshotId' does match expected pattern. Expected 'snap-<hexadecmial value>' (ex: 'snap-05abe246af') or Token, got: ${snapShotId}`);
+      throw new ValidationError(`'snapshotId' does match expected pattern. Expected 'snap-<hexadecmial value>' (ex: 'snap-05abe246af') or Token, got: ${snapShotId}`, this);
     }
 
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-servicemanagedebsvolumeconfiguration.html#cfn-ecs-service-servicemanagedebsvolumeconfiguration-sizeingib
@@ -269,7 +273,7 @@ export class ServiceManagedVolume extends Construct {
     if (size !== undefined) {
       const { minSize, maxSize } = sizeInGiBRanges[volumeType];
       if (size.toGibibytes() < minSize || size.toGibibytes() > maxSize) {
-        throw new Error(`'${volumeType}' volumes must have a size between ${minSize} and ${maxSize} GiB, got ${size.toGibibytes()} GiB`);
+        throw new ValidationError(`'${volumeType}' volumes must have a size between ${minSize} and ${maxSize} GiB, got ${size.toGibibytes()} GiB`, this);
       }
     }
 
@@ -277,9 +281,9 @@ export class ServiceManagedVolume extends Construct {
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-servicemanagedebsvolumeconfiguration.html#cfn-ecs-service-servicemanagedebsvolumeconfiguration-throughput
     if (throughput !== undefined) {
       if (volumeType !== ec2.EbsDeviceVolumeType.GP3) {
-        throw new Error(`'throughput' can only be configured with gp3 volume type, got ${volumeType}`);
+        throw new ValidationError(`'throughput' can only be configured with gp3 volume type, got ${volumeType}`, this);
       } else if (!Token.isUnresolved(throughput) && throughput > 1000) {
-        throw new Error(`'throughput' must be less than or equal to 1000 MiB/s, got ${throughput} MiB/s`);
+        throw new ValidationError(`'throughput' must be less than or equal to 1000 MiB/s, got ${throughput} MiB/s`, this);
       }
     }
 
@@ -287,12 +291,12 @@ export class ServiceManagedVolume extends Construct {
     // https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateVolume.html
     if ([ec2.EbsDeviceVolumeType.SC1, ec2.EbsDeviceVolumeType.ST1, ec2.EbsDeviceVolumeType.STANDARD,
       ec2.EbsDeviceVolumeType.GP2].includes(volumeType) && iops !== undefined) {
-      throw new Error(`'iops' cannot be specified with sc1, st1, gp2 and standard volume types, got ${volumeType}`);
+      throw new ValidationError(`'iops' cannot be specified with sc1, st1, gp2 and standard volume types, got ${volumeType}`, this);
     }
 
     // Check if IOPS is required but not provided.
     if ([ec2.EbsDeviceVolumeType.IO1, ec2.EbsDeviceVolumeType.IO2].includes(volumeType) && iops === undefined) {
-      throw new Error(`'iops' must be specified with io1 or io2 volume types, got ${volumeType}`);
+      throw new ValidationError(`'iops' must be specified with io1 or io2 volume types, got ${volumeType}`, this);
     }
 
     // Validate IOPS range if specified.
@@ -303,7 +307,7 @@ export class ServiceManagedVolume extends Construct {
     if (iops !== undefined && !Token.isUnresolved(iops)) {
       const { min, max } = iopsRanges[volumeType];
       if ((iops < min || iops > max)) {
-        throw new Error(`'${volumeType}' volumes must have 'iops' between ${min} and ${max}, got ${iops}`);
+        throw new ValidationError(`'${volumeType}' volumes must have 'iops' between ${min} and ${max}, got ${iops}`, this);
       }
     }
   }

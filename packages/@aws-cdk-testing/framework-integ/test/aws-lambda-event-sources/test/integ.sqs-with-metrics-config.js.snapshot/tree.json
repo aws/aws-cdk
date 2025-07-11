@@ -1,0 +1,479 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "lambda-event-source-metrics-config-sqs": {
+        "id": "lambda-event-source-metrics-config-sqs",
+        "path": "lambda-event-source-metrics-config-sqs",
+        "children": {
+          "F1": {
+            "id": "F1",
+            "path": "lambda-event-source-metrics-config-sqs/F1",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "lambda-event-source-metrics-config-sqs/F1/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "lambda-event-source-metrics-config-sqs/F1/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "lambda-event-source-metrics-config-sqs/F1/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "lambda-event-source-metrics-config-sqs/F1/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "lambda-event-source-metrics-config-sqs/F1/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "sqs:ChangeMessageVisibility",
+                                    "sqs:DeleteMessage",
+                                    "sqs:GetQueueAttributes",
+                                    "sqs:GetQueueUrl",
+                                    "sqs:ReceiveMessage"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Q63C6E3AB",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "F1ServiceRoleDefaultPolicy1610A985",
+                            "roles": [
+                              {
+                                "Ref": "F1ServiceRoleCCF1273A"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "lambda-event-source-metrics-config-sqs/F1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = async function handler(event) {\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    return { event };\n}"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "F1ServiceRoleCCF1273A",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "SqsEventSource:lambdaeventsourcemetricsconfigsqsQ5E4B9C75": {
+                "id": "SqsEventSource:lambdaeventsourcemetricsconfigsqsQ5E4B9C75",
+                "path": "lambda-event-source-metrics-config-sqs/F1/SqsEventSource:lambdaeventsourcemetricsconfigsqsQ5E4B9C75",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "lambda-event-source-metrics-config-sqs/F1/SqsEventSource:lambdaeventsourcemetricsconfigsqsQ5E4B9C75/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::EventSourceMapping",
+                      "aws:cdk:cloudformation:props": {
+                        "batchSize": 5,
+                        "eventSourceArn": {
+                          "Fn::GetAtt": [
+                            "Q63C6E3AB",
+                            "Arn"
+                          ]
+                        },
+                        "functionName": {
+                          "Ref": "F1EAD92DBE"
+                        },
+                        "metricsConfig": {
+                          "metrics": []
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnEventSourceMapping",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.EventSourceMapping",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
+              "version": "0.0.0"
+            }
+          },
+          "Q": {
+            "id": "Q",
+            "path": "lambda-event-source-metrics-config-sqs/Q",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "lambda-event-source-metrics-config-sqs/Q/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "0.0.0"
+            }
+          },
+          "F2": {
+            "id": "F2",
+            "path": "lambda-event-source-metrics-config-sqs/F2",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "lambda-event-source-metrics-config-sqs/F2/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "lambda-event-source-metrics-config-sqs/F2/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "lambda-event-source-metrics-config-sqs/F2/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "lambda-event-source-metrics-config-sqs/F2/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "lambda-event-source-metrics-config-sqs/F2/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "sqs:ChangeMessageVisibility",
+                                    "sqs:DeleteMessage",
+                                    "sqs:GetQueueAttributes",
+                                    "sqs:GetQueueUrl",
+                                    "sqs:ReceiveMessage"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Q63C6E3AB",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "F2ServiceRoleDefaultPolicy999D30A8",
+                            "roles": [
+                              {
+                                "Ref": "F2ServiceRole7F7C6006"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "lambda-event-source-metrics-config-sqs/F2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = async function handler(event) {\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    return { event };\n}"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "F2ServiceRole7F7C6006",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "SqsEventSource:lambdaeventsourcemetricsconfigsqsQ5E4B9C75": {
+                "id": "SqsEventSource:lambdaeventsourcemetricsconfigsqsQ5E4B9C75",
+                "path": "lambda-event-source-metrics-config-sqs/F2/SqsEventSource:lambdaeventsourcemetricsconfigsqsQ5E4B9C75",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "lambda-event-source-metrics-config-sqs/F2/SqsEventSource:lambdaeventsourcemetricsconfigsqsQ5E4B9C75/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::EventSourceMapping",
+                      "aws:cdk:cloudformation:props": {
+                        "batchSize": 5,
+                        "eventSourceArn": {
+                          "Fn::GetAtt": [
+                            "Q63C6E3AB",
+                            "Arn"
+                          ]
+                        },
+                        "functionName": {
+                          "Ref": "F23BAC7B9C"
+                        },
+                        "metricsConfig": {
+                          "metrics": [
+                            "EventCount"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnEventSourceMapping",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.EventSourceMapping",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "lambda-event-source-metrics-config-sqs/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "lambda-event-source-metrics-config-sqs/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "lambda-event-source-sqs-with-metrics": {
+        "id": "lambda-event-source-sqs-with-metrics",
+        "path": "lambda-event-source-sqs-with-metrics",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "lambda-event-source-sqs-with-metrics/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "lambda-event-source-sqs-with-metrics/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "lambda-event-source-sqs-with-metrics/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "lambda-event-source-sqs-with-metrics/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "lambda-event-source-sqs-with-metrics/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

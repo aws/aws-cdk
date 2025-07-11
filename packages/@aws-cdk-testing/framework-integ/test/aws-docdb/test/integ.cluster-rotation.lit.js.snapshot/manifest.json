@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "aws-cdk-docdb-cluster-rotation.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "aws-cdk-docdb-cluster-rotation.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3c9156cdc8ad159436e7f5cb61779d4c5d50cd06b66950b225e3154c85941930.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aa659f3038709e8265260133391fa9c56b4b9a2f8ae0d1a5fc85cd22f7d6199e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

@@ -1,20 +1,19 @@
 import { Construct } from 'constructs';
 import { ItemBatcher } from './distributed-map/item-batcher';
 import { IItemReader } from './distributed-map/item-reader';
-import { ResultWriter } from './distributed-map/result-writer';
-import { MapBase, MapBaseProps } from './map-base';
-import { Annotations } from '../../../core';
+import { ResultWriter, ResultWriterV2 } from './distributed-map/result-writer';
+import { MapBase, MapBaseJsonataOptions, MapBaseJsonPathOptions, MapBaseOptions, MapBaseProps } from './map-base';
+import { Annotations, FeatureFlags } from '../../../core';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { StateMachineType } from '../state-machine';
-import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
+import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, QueryLanguage, RetryProps } from '../types';
+import { StateBaseProps } from './state';
+import { STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2 } from '../../../cx-api';
 
 const DISTRIBUTED_MAP_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.DistributedMap');
 
-/**
- * Properties for configuring a Distribute Map state
- */
-export interface DistributedMapProps extends MapBaseProps {
+interface DistributedMapBaseOptions extends MapBaseOptions {
   /**
    * MapExecutionType
    *
@@ -45,15 +44,6 @@ export interface DistributedMapProps extends MapBaseProps {
   readonly toleratedFailurePercentage?: number;
 
   /**
-   * ToleratedFailurePercentagePath
-   *
-   * Percentage of failed items to tolerate in a Map Run, as JsonPath
-   *
-   * @default - No toleratedFailurePercentagePath
-   */
-  readonly toleratedFailurePercentagePath?: string;
-
-  /**
    * ToleratedFailureCount
    *
    * Number of failed items to tolerate in a Map Run, as static number
@@ -61,15 +51,6 @@ export interface DistributedMapProps extends MapBaseProps {
    * @default - No toleratedFailureCount
    */
   readonly toleratedFailureCount?: number;
-
-  /**
-   * ToleratedFailureCountPath
-   *
-   * Number of failed items to tolerate in a Map Run, as JsonPath
-   *
-   * @default - No toleratedFailureCountPath
-   */
-  readonly toleratedFailureCountPath?: string;
 
   /**
    * Label
@@ -83,9 +64,19 @@ export interface DistributedMapProps extends MapBaseProps {
   /**
    * Configuration for S3 location in which to save Map Run results
    *
+   * @deprecated Use {@link resultWriterV2}
    * @default - No resultWriter
    */
   readonly resultWriter?: ResultWriter;
+
+  /**
+   * Configuration for S3 location in which to save Map Run results
+   * Enable "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2" feature in the context to use resultWriterV2
+   * Example: stack.node.setContext("@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2", true);
+   *
+   * @default - No resultWriterV2
+   */
+  readonly resultWriterV2?: ResultWriterV2;
 
   /**
    * Specifies to process a group of items in a single child workflow execution
@@ -94,6 +85,41 @@ export interface DistributedMapProps extends MapBaseProps {
    */
   readonly itemBatcher?: ItemBatcher;
 }
+
+interface DistributedMapJsonPathOptions extends MapBaseJsonPathOptions {
+  /**
+   * ToleratedFailurePercentagePath
+   *
+   * Percentage of failed items to tolerate in a Map Run, as JsonPath
+   *
+   * @default - No toleratedFailurePercentagePath
+   */
+  readonly toleratedFailurePercentagePath?: string;
+
+  /**
+   * ToleratedFailureCountPath
+   *
+   * Number of failed items to tolerate in a Map Run, as JsonPath
+   *
+   * @default - No toleratedFailureCountPath
+   */
+  readonly toleratedFailureCountPath?: string;
+}
+
+/**
+ * Properties for configuring a Distribute Map state that using JSONPath
+ */
+export interface DistributedMapJsonPathProps extends StateBaseProps, DistributedMapBaseOptions, DistributedMapJsonPathOptions {}
+
+/**
+ * Properties for configuring a Distribute Map state that using JSONata
+ */
+export interface DistributedMapJsonataProps extends StateBaseProps, DistributedMapBaseOptions, MapBaseJsonataOptions {}
+
+/**
+ * Properties for configuring a Distribute Map state
+ */
+export interface DistributedMapProps extends MapBaseProps, DistributedMapBaseOptions, DistributedMapJsonPathOptions, MapBaseJsonataOptions {}
 
 /**
  * Define a Distributed Mode Map state in the state machine
@@ -110,6 +136,41 @@ export interface DistributedMapProps extends MapBaseProps {
  */
 export class DistributedMap extends MapBase implements INextable {
   /**
+   * Define a Distributed Mode Map state using JSONPath in the state machine
+   *
+   * A `Map` state can be used to run a set of steps for each element of an input array.
+   * A Map state will execute the same steps for multiple entries of an array in the state input.
+   *
+   * While the Parallel state executes multiple branches of steps using the same input, a Map state
+   * will execute the same steps for multiple entries of an array in the state input.
+   *
+   * A `Map` state in `Distributed` mode will execute a child workflow for each iteration of the Map state.
+   * This serves to increase concurrency and allows for larger workloads to be run in a single state machine.
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-asl-use-map-state-distributed.html
+   */
+  public static jsonPath(scope: Construct, id: string, props: DistributedMapJsonPathProps = {}) {
+    return new DistributedMap(scope, id, props);
+  }
+  /**
+   * Define a Distributed Mode Map state using JSONata in the state machine
+   *
+   * A `Map` state can be used to run a set of steps for each element of an input array.
+   * A Map state will execute the same steps for multiple entries of an array in the state input.
+   *
+   * While the Parallel state executes multiple branches of steps using the same input, a Map state
+   * will execute the same steps for multiple entries of an array in the state input.
+   *
+   * A `Map` state in `Distributed` mode will execute a child workflow for each iteration of the Map state.
+   * This serves to increase concurrency and allows for larger workloads to be run in a single state machine.
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-asl-use-map-state-distributed.html
+   */
+  public static jsonata(scope: Construct, id: string, props: DistributedMapJsonataProps = {}) {
+    return new DistributedMap(scope, id, {
+      ...props,
+      queryLanguage: QueryLanguage.JSONATA,
+    });
+  }
+  /**
    * Return whether the given object is a DistributedMap.
    */
   public static isDistributedMap(x: any): x is DistributedMap {
@@ -124,6 +185,7 @@ export class DistributedMap extends MapBase implements INextable {
   private readonly toleratedFailureCountPath?: string;
   private readonly label?: string;
   private readonly resultWriter?: ResultWriter;
+  private readonly resultWriterV2?: ResultWriterV2;
   private readonly itemBatcher?: ItemBatcher;
 
   constructor(scope: Construct, id: string, props: DistributedMapProps = {}) {
@@ -137,7 +199,14 @@ export class DistributedMap extends MapBase implements INextable {
     this.label = props.label;
     this.itemBatcher = props.itemBatcher;
     this.resultWriter = props.resultWriter;
+    this.resultWriterV2 = props.resultWriterV2;
     this.processorMode = ProcessorMode.DISTRIBUTED;
+  }
+
+  private getResultWriter(): ResultWriterV2 | ResultWriter | undefined {
+    return FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2)
+      ? this.resultWriterV2
+      : this.resultWriter;
   }
 
   /**
@@ -170,6 +239,14 @@ export class DistributedMap extends MapBase implements INextable {
       errors.push(...this.itemBatcher.validateItemBatcher());
     }
 
+    if (this.itemReader) {
+      errors.push(...this.itemReader.validateItemReader());
+    }
+
+    if (this.resultWriterV2) {
+      errors.push(...this.resultWriterV2.validateResultWriter());
+    }
+
     if (this.label) {
       if (this.label.length > 40) {
         errors.push('label must be 40 characters or less');
@@ -186,8 +263,9 @@ export class DistributedMap extends MapBase implements INextable {
 
   protected whenBoundToGraph(graph: StateGraph) {
     super.whenBoundToGraph(graph);
-    if (this.resultWriter) {
-      this.resultWriter.providePolicyStatements().forEach(policyStatement => {
+    const resultWriter = this.getResultWriter();
+    if (resultWriter) {
+      resultWriter.providePolicyStatements().forEach(policyStatement => {
         graph.registerPolicyStatement(policyStatement);
       });
     }
@@ -235,45 +313,67 @@ export class DistributedMap extends MapBase implements INextable {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(): object {
-    let rendered: any = super.toStateJson();
+  public toStateJson(stateMachineQueryLanguage?: QueryLanguage): object {
+    let rendered: any = super.toStateJson(stateMachineQueryLanguage);
     if (rendered.ItemProcessor.ProcessorConfig.ExecutionType) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-stepfunctions:propertyIgnored', 'Property \'ProcessorConfig.executionType\' is ignored, use the \'mapExecutionType\' in the \'DistributedMap\' class instead.');
     }
-    rendered.ItemProcessor.ProcessorConfig.ExecutionType = this.mapExecutionType;
 
+    rendered.ItemProcessor.ProcessorConfig.ExecutionType = this.mapExecutionType;
+    const renderedResultWriter = this.renderResultWriter(stateMachineQueryLanguage);
+    this.addWarningIfResultWriterIsEmpty(renderedResultWriter);
+    // ItemReader and ResultWriter configuration will base on the Map's query language.
+    // If Map's query language is not specified, then use state machine's query language.
+    const stateQueryLanguage = this.queryLanguage ?? stateMachineQueryLanguage;
     return {
       ...rendered,
-      ...this.renderItemReader(),
+      ...this.renderItemReader(stateQueryLanguage),
       ...this.renderItemBatcher(),
       ...(this.toleratedFailurePercentage && { ToleratedFailurePercentage: this.toleratedFailurePercentage }),
       ...(this.toleratedFailurePercentagePath && { ToleratedFailurePercentagePath: this.toleratedFailurePercentagePath }),
       ...(this.toleratedFailureCount && { ToleratedFailureCount: this.toleratedFailureCount }),
       ...(this.toleratedFailureCountPath && { ToleratedFailureCountPath: this.toleratedFailureCountPath }),
       ...(this.label && { Label: this.label }),
-      ...this.renderResultWriter(),
+      ...renderedResultWriter,
     };
+  }
+
+  private addWarningIfResultWriterIsEmpty(renderedResultWriter: any) {
+    // Step Functions currently allows saving empty ResultWriter object but it fails while executing the State Machine.
+    // This will now be possible when using resultWriterV2.
+    // Integ tessts cannot cover this test case as it the test will start failing if Step Functions service
+    // starts validating empty ResultWriter objects in future.
+    // https://docs.aws.amazon.com/step-functions/latest/dg/input-output-resultwriter.html#input-output-resultwriter-field-contents
+    if (
+      renderedResultWriter &&
+      renderedResultWriter.ResultWriter &&
+      renderedResultWriter.ResultWriter.Resource === undefined &&
+      renderedResultWriter.ResultWriter.WriterConfig === undefined
+    ) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-stepfunctions:emptyResultWriter', 'ResultWriter should specify at least the WriterConfig or the Bucket and Prefix');
+    }
   }
 
   /**
    * Render the ItemReader as JSON object
    */
-  private renderItemReader(): any {
+  private renderItemReader(queryLanguage?: QueryLanguage): any {
     if (!this.itemReader) { return undefined; }
 
     return FieldUtils.renderObject({
-      ItemReader: this.itemReader.render(),
+      ItemReader: this.itemReader.render(queryLanguage),
     });
   }
 
   /**
    * Render ResultWriter in ASL JSON format
    */
-  private renderResultWriter(): any {
-    if (!this.resultWriter) { return undefined; }
+  private renderResultWriter(queryLanguage?: QueryLanguage): any {
+    const resultWriter = this.getResultWriter();
+    if (!resultWriter) { return undefined; }
 
     return FieldUtils.renderObject({
-      ResultWriter: this.resultWriter.render(),
+      ResultWriter: resultWriter.render(queryLanguage),
     });
   }
 

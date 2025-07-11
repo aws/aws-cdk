@@ -52,6 +52,47 @@ test('Execute State Machine - Default - Request Response', () => {
   });
 });
 
+test('Execute State Machine - Default - using JSONata', () => {
+  const task = StepFunctionsStartExecution.jsonata(stack, 'ChildTask', {
+    stateMachine: child,
+    input: sfn.TaskInput.fromObject({
+      foo: 'bar',
+    }),
+    name: 'myExecutionName',
+  });
+
+  new sfn.StateMachine(stack, 'ParentStateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::states:startExecution',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      Input: {
+        foo: 'bar',
+      },
+      Name: 'myExecutionName',
+      StateMachineArn: {
+        Ref: 'ChildStateMachine9133117F',
+      },
+    },
+  });
+});
+
 test('Execute State Machine - Run Job', () => {
   const task = new StepFunctionsStartExecution(stack, 'ChildTask', {
     stateMachine: child,
@@ -266,4 +307,49 @@ test('Execute State Machine - Associate With Parent - Incorrect Input Type', () 
       input: sfn.TaskInput.fromText('{ "token.$": "$$.Task.Token" }'),
     });
   }).toThrow('Could not enable `associateWithParent` because `input` is taken directly from a JSON path. Use `sfn.TaskInput.fromObject` instead.');
+});
+
+test('Execute State Machine - Associate With Parent - Input Not Provided - JSONata', () => {
+  const task = StepFunctionsStartExecution.jsonata(stack, 'ChildTask', {
+    stateMachine: child,
+    associateWithParent: true,
+  });
+
+  new sfn.StateMachine(stack, 'ParentStateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  expect(stack.resolve(task.toStateJson())).toMatchObject({
+    QueryLanguage: 'JSONata',
+    Arguments: {
+      Input: {
+        AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID: '{% $states.context.Execution.Id %}',
+      },
+    },
+  });
+});
+
+test('Execute State Machine - Associate With Parent - Input Provided - JSONata', () => {
+  const task = new StepFunctionsStartExecution(stack, 'ChildTask', {
+    stateMachine: child,
+    queryLanguage: sfn.QueryLanguage.JSONATA,
+    associateWithParent: true,
+    input: sfn.TaskInput.fromObject({
+      token: '{% $states.context.Task.Token %}',
+    }),
+  });
+
+  new sfn.StateMachine(stack, 'ParentStateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  expect(stack.resolve(task.toStateJson())).toMatchObject({
+    QueryLanguage: 'JSONata',
+    Arguments: {
+      Input: {
+        token: '{% $states.context.Task.Token %}',
+        AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID: '{% $states.context.Execution.Id %}',
+      },
+    },
+  });
 });

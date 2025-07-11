@@ -10,7 +10,6 @@ describe('json file log driver', () => {
   beforeEach(() => {
     stack = new cdk.Stack();
     td = new ecs.Ec2TaskDefinition(stack, 'TaskDefinition');
-
   });
 
   test('create a json-file log driver with options', () => {

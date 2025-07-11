@@ -3,7 +3,11 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Function, InlineCode, Runtime, LogFormat, LoggingFormat, SystemLogLevel, ApplicationLogLevel } from 'aws-cdk-lib/aws-lambda';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new Stack(app, 'aws-cdk-lambda-logging-config');
 

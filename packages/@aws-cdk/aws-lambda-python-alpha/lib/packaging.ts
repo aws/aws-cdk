@@ -5,6 +5,7 @@ export enum DependenciesFile {
   PIP = 'requirements.txt',
   POETRY = 'poetry.lock',
   PIPENV = 'Pipfile.lock',
+  UV = 'uv.lock',
   NONE = '',
 }
 
@@ -40,7 +41,6 @@ export interface PoetryPackagingProps {
 }
 
 export class Packaging {
-
   /**
    * Standard packaging with `pip`.
    */
@@ -70,13 +70,23 @@ export class Packaging {
       dependenciesFile: DependenciesFile.POETRY,
       // Export dependencies with credentials available in the bundling image.
       exportCommand: [
-	    'poetry', 'export',
+        'poetry', 'export',
         ...props?.poetryIncludeHashes ? [] : ['--without-hashes'],
         ...props?.poetryWithoutUrls ? ['--without-urls'] : [],
         '--with-credentials',
         '--format', DependenciesFile.PIP,
         '--output', DependenciesFile.PIP,
-	  ].join(' '),
+      ].join(' '),
+    });
+  }
+
+  /**
+   * Packaging with `uv`.
+   */
+  public static withUv() {
+    return new Packaging({
+      dependenciesFile: DependenciesFile.UV,
+      exportCommand: `uv export --frozen --no-emit-workspace --no-dev --no-editable -o ${DependenciesFile.PIP}`,
     });
   }
 
@@ -94,6 +104,8 @@ export class Packaging {
       return this.withPoetry({ poetryIncludeHashes, poetryWithoutUrls });
     } else if (fs.existsSync(path.join(entry, DependenciesFile.PIP))) {
       return this.withPip();
+    } else if (fs.existsSync(path.join(entry, DependenciesFile.UV))) {
+      return this.withUv();
     } else {
       return this.withNoPackaging();
     }

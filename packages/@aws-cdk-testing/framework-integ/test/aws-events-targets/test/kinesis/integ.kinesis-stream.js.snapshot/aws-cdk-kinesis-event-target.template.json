@@ -45,6 +45,7 @@
      "Statement": [
       {
        "Action": [
+        "kinesis:ListShards",
         "kinesis:PutRecord",
         "kinesis:PutRecords"
        ],

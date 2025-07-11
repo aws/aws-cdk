@@ -1,4 +1,4 @@
-import { Arn, ArnFormat, Token } from '../../../core';
+import { Arn, ArnFormat, Token, UnscopedValidationError } from '../../../core';
 
 /**
  * Guradrail settings for BedrockInvokeModel
@@ -13,7 +13,7 @@ export class Guardrail {
   public static enable(identifier: string, version: number): Guardrail {
     if (!Token.isUnresolved(version)) {
       if (version < 1 || version > 99999999) {
-        throw new Error(`\`version\` must be between 1 and 99999999, got ${version}.`);
+        throw new UnscopedValidationError(`\`version\` must be between 1 and 99999999, got ${version}.`);
       }
     }
     return new Guardrail(identifier, version.toString());
@@ -39,7 +39,7 @@ export class Guardrail {
       if (guardrailIdentifier.startsWith('arn:')) {
         const arn = Arn.split(guardrailIdentifier, ArnFormat.SLASH_RESOURCE_NAME);
         if (!arn.resourceName) {
-          throw new Error(`Invalid ARN format. The ARN of Guradrail should have the format: \`arn:<partition>:bedrock:<region>:<account-id>:guardrail/<guardrail-name>\`, got ${guardrailIdentifier}.`);
+          throw new UnscopedValidationError(`Invalid ARN format. The ARN of Guradrail should have the format: \`arn:<partition>:bedrock:<region>:<account-id>:guardrail/<guardrail-name>\`, got ${guardrailIdentifier}.`);
         }
         gurdrailId = arn.resourceName;
       } else {
@@ -48,11 +48,11 @@ export class Guardrail {
 
       const guardrailPattern = /^[a-z0-9]+$/;
       if (!guardrailPattern.test(gurdrailId)) {
-        throw new Error(`The id of Guardrail must contain only lowercase letters and numbers, got ${gurdrailId}.`);
+        throw new UnscopedValidationError(`The id of Guardrail must contain only lowercase letters and numbers, got ${gurdrailId}.`);
       }
 
       if (guardrailIdentifier.length > 2048) {
-        throw new Error(`\`guardrailIdentifier\` length must be between 0 and 2048, got ${guardrailIdentifier.length}.`);
+        throw new UnscopedValidationError(`\`guardrailIdentifier\` length must be between 0 and 2048, got ${guardrailIdentifier.length}.`);
       }
     }
   }

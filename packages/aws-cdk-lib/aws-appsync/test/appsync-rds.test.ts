@@ -33,7 +33,7 @@ describe('Rds Data Source configuration', () => {
       username: 'clusteradmin',
     });
     serverlessCluster = new ServerlessCluster(stack, 'AuroraCluster', {
-      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_07_1 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       credentials: { username: 'clusteradmin' },
       clusterIdentifier: 'db-endpoint-test',
       vpc,
@@ -494,7 +494,7 @@ describe('adding rds data source from imported api', () => {
       username: 'clusteradmin',
     });
     serverlessCluster = new ServerlessCluster(stack, 'AuroraCluster', {
-      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_07_1 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       credentials: { username: 'clusteradmin' },
       clusterIdentifier: 'db-endpoint-test',
       vpc,

@@ -82,12 +82,12 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call ECS.`);
+      throw new cdk.UnscopedValidationError(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call ECS.`);
     }
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
       && !sfn.FieldUtils.containsTaskToken(props.containerOverrides?.map(override => override.environment))) {
-      throw new Error('Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.');
+      throw new cdk.UnscopedValidationError('Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.');
     }
 
     for (const override of this.props.containerOverrides || []) {
@@ -95,7 +95,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       if (!cdk.Token.isUnresolved(name)) {
         const cont = this.props.taskDefinition.node.tryFindChild(name);
         if (!cont) {
-          throw new Error(`Overrides mention container with name '${name}', but no such container in task definition`);
+          throw new cdk.UnscopedValidationError(`Overrides mention container with name '${name}', but no such container in task definition`);
         }
       }
     }
@@ -128,7 +128,6 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     assignPublicIp?: boolean,
     subnetSelection?: ec2.SubnetSelection,
     securityGroup?: ec2.ISecurityGroup) {
-
     if (subnetSelection === undefined) {
       subnetSelection = { subnetType: assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE_WITH_EGRESS };
     }

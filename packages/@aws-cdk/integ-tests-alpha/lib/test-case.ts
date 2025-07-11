@@ -111,7 +111,6 @@ export class IntegTestCaseStack extends Stack {
       stacks: [this],
     });
   }
-
 }
 
 /**

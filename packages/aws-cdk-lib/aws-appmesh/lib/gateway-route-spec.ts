@@ -364,8 +364,8 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
   public bind(scope: Construct): GatewayRouteSpecConfig {
     const metadataMatch = this.match.metadata;
 
-    validateGrpcGatewayRouteMatch(this.match);
-    validateGrpcMatchArrayLength(metadataMatch);
+    validateGrpcGatewayRouteMatch(scope, this.match);
+    validateGrpcMatchArrayLength(scope, metadataMatch);
 
     return {
       grpcSpecConfig: {

@@ -2,6 +2,9 @@ import { Construct } from 'constructs';
 import { CfnCodeSigningConfig } from './lambda.generated';
 import { ISigningProfile } from '../../aws-signer';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Code signing configuration policy for deployment validation failure.
@@ -70,7 +73,13 @@ export interface CodeSigningConfigProps {
  *
  * @resource AWS::Lambda::CodeSigningConfig
  */
+@propertyInjectable
 export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.CodeSigningConfig';
+
   /**
    * Creates a Signing Profile construct that represents an external Signing Profile.
    *
@@ -78,10 +87,10 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
    * @param id The construct's name.
    * @param codeSigningConfigArn The ARN of code signing config.
    */
-  public static fromCodeSigningConfigArn( scope: Construct, id: string, codeSigningConfigArn: string): ICodeSigningConfig {
+  public static fromCodeSigningConfigArn(scope: Construct, id: string, codeSigningConfigArn: string): ICodeSigningConfig {
     const codeSigningProfileId = Stack.of(scope).splitArn(codeSigningConfigArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!codeSigningProfileId) {
-      throw new Error(`Code signing config ARN must be in the format 'arn:<partition>:lambda:<region>:<account>:code-signing-config:<codeSigningConfigArn>', got: '${codeSigningConfigArn}'`);
+      throw new ValidationError(`Code signing config ARN must be in the format 'arn:<partition>:lambda:<region>:<account>:code-signing-config:<codeSigningConfigArn>', got: '${codeSigningConfigArn}'`, scope);
     }
     const assertedCodeSigningProfileId = codeSigningProfileId;
     class Import extends Resource implements ICodeSigningConfig {
@@ -100,6 +109,8 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
 
   constructor(scope: Construct, id: string, props: CodeSigningConfigProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const signingProfileVersionArns = props.signingProfiles.map(signingProfile => {
       return signingProfile.signingProfileVersionArn;

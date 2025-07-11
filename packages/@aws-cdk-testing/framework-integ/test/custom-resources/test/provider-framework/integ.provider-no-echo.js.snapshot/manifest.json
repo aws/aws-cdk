@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "integ-provider-no-echo.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cdc86ad33549ca75eef7f661cc371d5f0c1b3ade94aa1ce7623d50c2297c5bcf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ef6e2abd1a244a2b0903b144503234601396eb0d3aa977b55567e78786fcf42d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,38 @@
         "integ-provider-no-echo.assets"
       ],
       "metadata": {
+        "/integ-provider-no-echo/my-handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/integ-provider-no-echo/my-handler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-provider-no-echo/my-handler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-provider-no-echo/my-handler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -46,10 +78,130 @@
             "data": "myhandler42A6C3AB"
           }
         ],
+        "/integ-provider-no-echo/my-provider/framework-onEvent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "description": "*",
+              "runtime": "*",
+              "handler": "*",
+              "timeout": "*",
+              "logGroup": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "securityGroups": "*",
+              "role": "*",
+              "functionName": "*",
+              "environmentEncryption": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-provider-no-echo/my-provider/framework-onEvent/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-provider-no-echo/my-provider/framework-onEvent/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-provider-no-echo/my-provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myproviderframeworkonEventServiceRole793AEC4D"
+          }
+        ],
+        "/integ-provider-no-echo/my-provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/integ-provider-no-echo/my-provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -64,6 +216,44 @@
             "data": "myproviderframeworkonEvent97E4361B"
           }
         ],
+        "/integ-provider-no-echo/my-provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-provider-no-echo/my-provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myproviderframeworkonEventinlinePolicyAddedToExecutionRole04C8892C5"
+          }
+        ],
         "/integ-provider-no-echo/my-provider/framework-onEvent/LogRetention/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -76,10 +266,86 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/integ-provider-no-echo/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-provider-no-echo/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-provider-no-echo/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/integ-provider-no-echo/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/integ-provider-no-echo/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
@@ -92,6 +358,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/integ-provider-no-echo/my-cr": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-provider-no-echo/my-cr/Default": [
@@ -138,7 +410,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0b64e8746879b28d96a16a223b19d5d34bbd7944459cf046f713c13eac1c96e5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/909dae59e79b3a7d05cfd726dc3d8a6af4aa99bdedbeb40936f290ebe57776c4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -155,6 +427,20 @@
         "IntegProviderFrameworkNoEchoTestDefaultTestDeployAssert1DF2B4A0.assets"
       ],
       "metadata": {
+        "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsdbdc36d436682909b09e2058599e58d5/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsdbdc36d436682909b09e2058599e58d5/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -179,6 +465,12 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
+        "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -200,5 +492,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

@@ -5,6 +5,8 @@ import * as iam from '../../aws-iam';
 import * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { Token } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CertificateRequestCertificateRequestFunction } from '../../custom-resource-handlers/dist/aws-certificatemanager/certificate-request-provider.generated';
 
 /**
@@ -67,13 +69,16 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
  * @resource AWS::CertificateManager::Certificate
  * @deprecated use {@link Certificate} instead
  */
+@propertyInjectable
 export class DnsValidatedCertificate extends CertificateBase implements ICertificate, cdk.ITaggable {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-certificatemanager.DnsValidatedCertificate';
   public readonly certificateArn: string;
 
   /**
-  * Resource Tags.
-  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-tags
-  */
+   * Resource Tags.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-tags
+   */
 
   public readonly tags: cdk.TagManager;
   protected readonly region?: string;
@@ -84,6 +89,8 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
 
   constructor(scope: Construct, id: string, props: DnsValidatedCertificateProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.keyAlgorithm) {
       cdk.Annotations.of(this)
@@ -95,7 +102,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     this.domainName = props.domainName;
     // check if domain name is 64 characters or less
     if (!Token.isUnresolved(props.domainName) && props.domainName.length > 64) {
-      throw new Error('Domain name must be 64 characters or less');
+      throw new cdk.ValidationError('Domain name must be 64 characters or less', this);
     }
     this.normalizedZoneName = props.hostedZone.zoneName;
     // Remove trailing `.` from zone name
@@ -161,6 +168,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     this.node.addValidation({ validate: () => this.validateDnsValidatedCertificate() });
   }
 
+  @MethodMetadata()
   public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
     this._removalPolicy = policy;
   }

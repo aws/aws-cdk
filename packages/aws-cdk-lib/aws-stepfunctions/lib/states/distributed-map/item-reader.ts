@@ -1,7 +1,8 @@
 import * as iam from '../../../../aws-iam';
 import { IBucket } from '../../../../aws-s3';
-import { Arn, ArnFormat, Aws } from '../../../../core';
+import { Arn, ArnFormat, Aws, UnscopedValidationError } from '../../../../core';
 import { FieldUtils } from '../../fields';
+import { QueryLanguage } from '../../types';
 
 /**
  * Base interface for Item Reader configurations
@@ -11,6 +12,11 @@ export interface IItemReader {
    * S3 Bucket containing objects to iterate over or a file with a list to iterate over
    */
   readonly bucket: IBucket;
+
+  /**
+   * S3 bucket name containing objects to iterate over or a file with a list to iterate over, as JsonPath
+   */
+  readonly bucketNamePath?: string;
 
   /**
    * The Amazon S3 API action that Step Functions must invoke depending on the specified dataset.
@@ -27,12 +33,17 @@ export interface IItemReader {
   /**
    * Render the ItemReader as JSON object
    */
-  render(): any;
+  render(queryLanguage?: QueryLanguage): any;
 
   /**
    * Compile policy statements to provide relevent permissions to the state machine
    */
   providePolicyStatements(): iam.PolicyStatement[];
+
+  /**
+   * Validate that ItemReader contains exactly either @see bucket or @see bucketNamePath
+   */
+  validateItemReader(): string[];
 }
 
 /**
@@ -41,8 +52,17 @@ export interface IItemReader {
 export interface ItemReaderProps {
   /**
    * S3 Bucket containing objects to iterate over or a file with a list to iterate over
+   *
+   * @default - S3 bucket will be determined from @see bucketNamePath
    */
-  readonly bucket: IBucket;
+  readonly bucket?: IBucket;
+
+  /**
+   * S3 bucket name containing objects to iterate over or a file with a list to iterate over, as JsonPath
+   *
+   * @default - S3 bucket will be determined from @see bucket
+   */
+  readonly bucketNamePath?: string;
 
   /**
    * Limits the number of items passed to the Distributed Map state
@@ -68,10 +88,22 @@ export interface S3ObjectsItemReaderProps extends ItemReaderProps {
  * Item Reader configuration for iterating over objects in an S3 bucket
  */
 export class S3ObjectsItemReader implements IItemReader {
+  private readonly _bucket?: IBucket;
+
   /**
    * S3 Bucket containing objects to iterate over
    */
-  readonly bucket: IBucket;
+  public get bucket(): IBucket {
+    if (!this._bucket) {
+      throw new UnscopedValidationError('`bucket` is undefined');
+    }
+    return this._bucket;
+  }
+
+  /**
+   * S3 bucket name containing objects to iterate over or a file with a list to iterate over, as JsonPath
+   */
+  readonly bucketNamePath?: string;
 
   /**
    * ARN for the `listObjectsV2` method of the S3 API
@@ -94,7 +126,8 @@ export class S3ObjectsItemReader implements IItemReader {
   readonly maxItems?: number;
 
   constructor(props: S3ObjectsItemReaderProps) {
-    this.bucket = props.bucket;
+    this._bucket = props.bucket;
+    this.bucketNamePath = props.bucketNamePath;
     this.prefix = props.prefix;
     this.maxItems = props.maxItems;
     this.resource = Arn.format({
@@ -112,14 +145,20 @@ export class S3ObjectsItemReader implements IItemReader {
    * Renders the ItemReader configuration as JSON object
    * @returns - JSON object
    */
-  public render(): any {
+  public render(queryLanguage?: QueryLanguage): any {
+    const parameterOrArgument = {
+      ...(this._bucket && { Bucket: this._bucket.bucketName }),
+      ...(this.bucketNamePath && { Bucket: this.bucketNamePath }),
+      ...(this.prefix && { Prefix: this.prefix }),
+    };
     return FieldUtils.renderObject({
       Resource: this.resource,
       ...(this.maxItems && { ReaderConfig: { MaxItems: this.maxItems } }),
-      Parameters: {
-        Bucket: this.bucket.bucketName,
-        ...(this.prefix && { Prefix: this.prefix }),
-      },
+      ...(queryLanguage === QueryLanguage.JSONATA ? {
+        Arguments: parameterOrArgument,
+      } : {
+        Parameters: parameterOrArgument,
+      }),
     });
   }
 
@@ -132,9 +171,22 @@ export class S3ObjectsItemReader implements IItemReader {
         actions: [
           's3:ListBucket',
         ],
-        resources: [this.bucket.bucketArn],
+        resources: [this._bucket ? this._bucket.bucketArn : '*'],
       }),
     ];
+  }
+
+  /**
+   * Validate that ItemReader contains exactly either @see bucket or @see bucketNamePath
+   */
+  public validateItemReader(): string[] {
+    const errors: string[] = [];
+    if (this._bucket && this.bucketNamePath) {
+      errors.push('Provide either `bucket` or `bucketNamePath`, but not both');
+    } else if (!this._bucket && !this.bucketNamePath) {
+      errors.push('Provide either `bucket` or `bucketNamePath`');
+    }
+    return errors;
   }
 }
 
@@ -152,10 +204,22 @@ export interface S3FileItemReaderProps extends ItemReaderProps {
  * Base Item Reader configuration for iterating over entries in a S3 file
  */
 abstract class S3FileItemReader implements IItemReader {
+  private readonly _bucket?: IBucket;
+
   /**
    * S3 Bucket containing a file with a list to iterate over
    */
-  readonly bucket: IBucket;
+  public get bucket(): IBucket {
+    if (!this._bucket) {
+      throw new UnscopedValidationError('`bucket` is undefined');
+    }
+    return this._bucket;
+  }
+
+  /**
+   * S3 bucket name containing objects to iterate over or a file with a list to iterate over, as JsonPath
+   */
+  readonly bucketNamePath?: string;
 
   /**
    * S3 key of a file with a list to iterate over
@@ -178,7 +242,8 @@ abstract class S3FileItemReader implements IItemReader {
   protected abstract readonly inputType: string;
 
   constructor(props: S3FileItemReaderProps) {
-    this.bucket = props.bucket;
+    this._bucket = props.bucket;
+    this.bucketNamePath = props.bucketNamePath;
     this.key = props.key;
     this.maxItems = props.maxItems;
     this.resource = Arn.format({
@@ -196,17 +261,24 @@ abstract class S3FileItemReader implements IItemReader {
    * Renders the ItemReader configuration as JSON object
    * @returns - JSON object
    */
-  public render(): any {
+  public render(queryLanguage?: QueryLanguage): any {
+    const parameterOrArgument = {
+      ...(this._bucket && { Bucket: this._bucket.bucketName }),
+      ...(this.bucketNamePath && { Bucket: this.bucketNamePath }),
+      Key: this.key,
+    };
+
     return FieldUtils.renderObject({
       Resource: this.resource,
       ReaderConfig: {
         InputType: this.inputType,
         ...(this.maxItems && { MaxItems: this.maxItems }),
       },
-      Parameters: {
-        Bucket: this.bucket.bucketName,
-        Key: this.key,
-      },
+      ...(queryLanguage === QueryLanguage.JSONATA ? {
+        Arguments: parameterOrArgument,
+      }: {
+        Parameters: parameterOrArgument,
+      }),
     });
   }
 
@@ -214,12 +286,13 @@ abstract class S3FileItemReader implements IItemReader {
    * Compile policy statements to provide relevent permissions to the state machine
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
+    if (!this._bucket) return [];
     const resource = Arn.format({
       region: '',
       account: '',
       partition: Aws.PARTITION,
       service: 's3',
-      resource: this.bucket.bucketName,
+      resource: this._bucket.bucketName,
       resourceName: '*',
     });
 
@@ -232,6 +305,19 @@ abstract class S3FileItemReader implements IItemReader {
       }),
     ];
   }
+
+  /**
+   * Validate that ItemReader contains exactly either @see bucket or @see bucketNamePath
+   */
+  public validateItemReader(): string[] {
+    const errors: string[] = [];
+    if (this._bucket && this.bucketNamePath) {
+      errors.push('Provide either `bucket` or `bucketNamePath`, but not both');
+    } else if (!this._bucket && !this.bucketNamePath) {
+      errors.push('Provide either `bucket` or `bucketNamePath`');
+    }
+    return errors;
+  }
 }
 
 /**
@@ -239,6 +325,13 @@ abstract class S3FileItemReader implements IItemReader {
  */
 export class S3JsonItemReader extends S3FileItemReader {
   protected readonly inputType: string = 'JSON';
+}
+
+/**
+ * Item Reader configuration for iterating over the rows of the JSONL file stored in S3
+ */
+export class S3JsonLItemReader extends S3FileItemReader {
+  protected readonly inputType: string = 'JSONL';
 }
 
 /**
@@ -303,6 +396,44 @@ export interface S3CsvItemReaderProps extends S3FileItemReaderProps {
    * @default - CsvHeaders with CsvHeadersLocation.FIRST_ROW
    */
   readonly csvHeaders?: CsvHeaders;
+
+  /**
+   * Delimiter used in a CSV file
+   *
+   * @default undefined - Default setting is COMMA.
+   */
+  readonly csvDelimiter?: CsvDelimiter;
+}
+
+/**
+ * Delimiter used in CSV file
+ */
+export enum CsvDelimiter {
+
+  /**
+   * Comma delimiter
+   */
+  COMMA = 'COMMA',
+
+  /**
+   * Pipe delimiter
+   */
+  PIPE = 'PIPE',
+
+  /**
+   * Semicolon delimiter
+   */
+  SEMICOLON = 'SEMICOLON',
+
+  /**
+   * Space delimiter
+   */
+  SPACE = 'SPACE',
+
+  /**
+   * Tab delimiter
+   */
+  TAB = 'TAB',
 }
 
 /**
@@ -313,19 +444,25 @@ export class S3CsvItemReader extends S3FileItemReader {
    * CSV headers configuration
    */
   readonly csvHeaders: CsvHeaders;
+  /**
+   * Delimiter used in CSV file
+   */
+  readonly csvDelimiter?: CsvDelimiter;
   protected readonly inputType: string = 'CSV';
 
   constructor(props: S3CsvItemReaderProps) {
     super(props);
     this.csvHeaders = props.csvHeaders ?? CsvHeaders.useFirstRow();
+    this.csvDelimiter = props.csvDelimiter;
   }
 
-  public render(): any {
-    let rendered = super.render();
+  public render(queryLanguage?: QueryLanguage): any {
+    let rendered = super.render(queryLanguage);
 
     rendered.ReaderConfig = FieldUtils.renderObject({
       ...rendered.ReaderConfig,
       ...{
+        CSVDelimiter: this.csvDelimiter,
         CSVHeaderLocation: this.csvHeaders.headerLocation,
         ...(this.csvHeaders.headers && { CSVHeaders: this.csvHeaders.headers }),
       },

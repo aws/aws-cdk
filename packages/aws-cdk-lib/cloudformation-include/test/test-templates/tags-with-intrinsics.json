@@ -1,0 +1,46 @@
+{
+  "Parameters": {
+    "Param": {
+      "Type": "CommaDelimitedList",
+      "Default": "key,value"
+    }
+  },
+  "Conditions": {
+    "ShouldIncludeTag": {
+      "Fn::Equals": [2, 2]
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "cdk-integ-cfn-include-bucket2",
+        "Tags": [
+          {
+            "Key": "Key1",
+            "Value": "Value1"
+          },
+          {
+            "Fn::If": [
+              "ShouldIncludeTag",
+              {
+                "Key": {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Ref": "Param"
+                    }
+                  ]
+                },
+                "Value": "TagValue"
+              },
+              {
+                "Ref": "AWS::NoValue"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

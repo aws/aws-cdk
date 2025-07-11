@@ -1,0 +1,147 @@
+{
+ "Resources": {
+  "RestApi0C43BF4B": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "RestApi"
+   }
+  },
+  "RestApiAccount7C83CF5A": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":iam::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":role/precreated-role-api"
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "RestApi0C43BF4B"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "RestApiDeployment180EC503f7fb2c75a4565f0d9e459f179f2a7481": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "RestApi0C43BF4B"
+    }
+   },
+   "DependsOn": [
+    "RestApiGET0F59260B"
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "RestApiDeploymentStageprod3855DE66": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "RestApiDeployment180EC503f7fb2c75a4565f0d9e459f179f2a7481"
+    },
+    "RestApiId": {
+     "Ref": "RestApi0C43BF4B"
+    },
+    "StageName": "prod"
+   },
+   "DependsOn": [
+    "RestApiAccount7C83CF5A"
+   ]
+  },
+  "RestApiGET0F59260B": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "Type": "MOCK"
+    },
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "RestApi0C43BF4B",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "RestApi0C43BF4B"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "RestApiEndpoint0551178A": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "RestApi0C43BF4B"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "RestApiDeploymentStageprod3855DE66"
+      },
+      "/"
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

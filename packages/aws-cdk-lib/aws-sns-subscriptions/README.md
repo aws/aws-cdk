@@ -13,8 +13,9 @@ Subscriptions can be added to the following endpoints:
 * AWS Lambda
 * Email
 * SMS
+* Amazon Data Firehose
 
-Subscriptions to Amazon SQS and AWS Lambda can be added on topics across regions.
+Subscriptions to Amazon SQS, AWS Lambda and Amazon Data Firehose can be added on topics across regions.
 
 Create an Amazon SNS Topic to add subscriptions.
 
@@ -43,6 +44,35 @@ const url = new CfnParameter(this, 'url-param');
 
 myTopic.addSubscription(new subscriptions.UrlSubscription(url.valueAsString));
 ```
+
+The [delivery policy](https://docs.aws.amazon.com/sns/latest/dg/sns-message-delivery-retries.html) can also be set like so:
+
+```ts
+const myTopic = new sns.Topic(this, 'MyTopic');
+
+myTopic.addSubscription(
+  new subscriptions.UrlSubscription(
+    'https://foobar.com/',
+    {
+      deliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: Duration.seconds(5),
+          maxDelayTarget: Duration.seconds(10),
+          numRetries: 6,
+          backoffFunction: sns.BackoffFunction.EXPONENTIAL,
+        },
+        throttlePolicy: {
+          maxReceivesPerSecond: 10,
+        },
+        requestPolicy: {
+          headerContentType: 'application/json',
+        },
+      },
+    },
+  ),
+);
+```
+
 
 ### Amazon SQS
 
@@ -117,4 +147,30 @@ const myTopic = new sns.Topic(this, 'Topic');
 const smsNumber = new CfnParameter(this, 'sms-param');
 
 myTopic.addSubscription(new subscriptions.SmsSubscription(smsNumber.valueAsString));
+```
+
+### Amazon Data Firehose
+
+Subscribe an Amazon Data Firehose delivery stream to your topic:
+
+```ts
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+
+const myTopic = new sns.Topic(this, 'Topic');
+declare const stream: firehose.DeliveryStream;
+
+myTopic.addSubscription(new subscriptions.FirehoseSubscription(stream));
+```
+
+To remove any Amazon SNS metadata from published messages, specify `rawMessageDelivery` to true.
+
+```ts
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+
+const myTopic = new sns.Topic(this, 'Topic');
+declare const stream: firehose.DeliveryStream;
+
+myTopic.addSubscription(new subscriptions.FirehoseSubscription(stream, {
+  rawMessageDelivery: true,
+}));
 ```

@@ -3,7 +3,11 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {

@@ -2,6 +2,9 @@ import { Construct } from 'constructs';
 import { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { Names, Token } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
 /**
@@ -72,17 +75,17 @@ export interface OidcEndpoints {
   readonly authorization: string;
 
   /**
-    * Token endpoint
-    */
+   * Token endpoint
+   */
   readonly token: string;
 
   /**
-    * UserInfo endpoint
-    */
+   * UserInfo endpoint
+   */
   readonly userInfo: string;
 
   /**
-    * Jwks_uri endpoint
+   * Jwks_uri endpoint
    */
   readonly jwksUri: string;
 }
@@ -101,11 +104,16 @@ export enum OidcAttributeRequestMethod {
  * Represents an identity provider that integrates with OpenID Connect
  * @resource AWS::Cognito::UserPoolIdentityProvider
  */
+@propertyInjectable
 export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito.UserPoolIdentityProviderOidc';
   public readonly providerName: string;
 
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderOidcProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const scopes = props.scopes ?? ['openid'];
 
@@ -134,12 +142,12 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
   private getProviderName(name?: string): string {
     if (name) {
       if (!Token.isUnresolved(name) && (name.length < 3 || name.length > 32)) {
-        throw new Error(`Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`);
+        throw new ValidationError(`Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`, this);
       }
       // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolidentityprovider.html#cfn-cognito-userpoolidentityprovider-providername
       // u is for unicode
       if (!name.match(/^[^_\p{Z}][\p{L}\p{M}\p{S}\p{N}\p{P}][^_\p{Z}]+$/u)) {
-        throw new Error(`Expected provider name must match [^_\p{Z}][\p{L}\p{M}\p{S}\p{N}\p{P}][^_\p{Z}]+, received ${name}`);
+        throw new ValidationError(`Expected provider name must match [^_\p{Z}][\p{L}\p{M}\p{S}\p{N}\p{P}][^_\p{Z}]+, received ${name}`, this);
       }
       return name;
     }

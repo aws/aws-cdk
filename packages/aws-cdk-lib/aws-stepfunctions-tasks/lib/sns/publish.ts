@@ -2,8 +2,8 @@ import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as sns from '../../../aws-sns';
 import * as sfn from '../../../aws-stepfunctions';
-import { Token } from '../../../core';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+import { Token, ValidationError } from '../../../core';
+import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
 /**
  * The data type set for the SNS message attributes
@@ -58,11 +58,7 @@ export interface MessageAttribute {
   readonly dataType?: MessageAttributeDataType;
 }
 
-/**
- * Properties for publishing a message to an SNS topic
- */
-export interface SnsPublishProps extends sfn.TaskStateBaseProps {
-
+interface SnsPublishOptions {
   /**
    * The SNS topic that the task will publish to.
    */
@@ -141,10 +137,40 @@ export interface SnsPublishProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for publishing a message to an SNS topic using JSONPath
+ */
+export interface SnsPublishJsonPathProps extends sfn.TaskStateJsonPathBaseProps, SnsPublishOptions { }
+
+/**
+ * Properties for publishing a message to an SNS topic using JSONata
+ */
+export interface SnsPublishJsonataProps extends sfn.TaskStateJsonataBaseProps, SnsPublishOptions { }
+
+/**
+ * Properties for publishing a message to an SNS topic
+ */
+export interface SnsPublishProps extends sfn.TaskStateBaseProps, SnsPublishOptions { }
+
+/**
  * A Step Functions Task to publish messages to SNS topic.
- *
  */
 export class SnsPublish extends sfn.TaskStateBase {
+  /**
+   * A Step Functions Task to publish messages to SNS topic using JSONPath.
+   */
+  public static jsonPath(scope: Construct, id: string, props: SnsPublishJsonPathProps) {
+    return new SnsPublish(scope, id, props);
+  }
+
+  /**
+   * A Step Functions Task to publish messages to SNS topic using JSONata.
+   */
+  public static jsonata(scope: Construct, id: string, props: SnsPublishJsonataProps) {
+    return new SnsPublish(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
 
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -164,22 +190,22 @@ export class SnsPublish extends sfn.TaskStateBase {
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.message)) {
-        throw new Error('Task Token is required in `message` Use JsonPath.taskToken to set the token.');
+        throw new ValidationError('Task Token is required in `message` Use JsonPath.taskToken to set the token.', this);
       }
     }
 
     if (props.topic.fifo) {
       if (!props.messageGroupId) {
-        throw new Error('\'messageGroupId\' is required for FIFO topics');
+        throw new ValidationError('\'messageGroupId\' is required for FIFO topics', this);
       }
       if (props.messageGroupId.length > 128) {
-        throw new Error(`\'messageGroupId\' must be at most 128 characters long, got ${props.messageGroupId.length}`);
+        throw new ValidationError(`\'messageGroupId\' must be at most 128 characters long, got ${props.messageGroupId.length}`, this);
       }
       if (!props.topic.contentBasedDeduplication && !props.messageDeduplicationId) {
-        throw new Error('\'messageDeduplicationId\' is required for FIFO topics with \'contentBasedDeduplication\' disabled');
+        throw new ValidationError('\'messageDeduplicationId\' is required for FIFO topics with \'contentBasedDeduplication\' disabled', this);
       }
       if (props.messageDeduplicationId && props.messageDeduplicationId.length > 128) {
-        throw new Error(`\'messageDeduplicationId\' must be at most 128 characters long, got ${props.messageDeduplicationId.length}`);
+        throw new ValidationError(`\'messageDeduplicationId\' must be at most 128 characters long, got ${props.messageDeduplicationId.length}`, this);
       }
     }
 
@@ -192,23 +218,21 @@ export class SnsPublish extends sfn.TaskStateBase {
   }
 
   /**
-   * Provides the SNS Publish service integration task configuration
-   */
-  /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('sns', 'publish', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         TopicArn: this.props.topic.topicArn,
         Message: this.props.message.value,
         MessageDeduplicationId: this.props.messageDeduplicationId,
         MessageGroupId: this.props.messageGroupId,
         MessageStructure: this.props.messagePerSubscriptionType ? 'json' : undefined,
-        MessageAttributes: renderMessageAttributes(this.props.messageAttributes),
+        MessageAttributes: renderMessageAttributes(this, this.props.messageAttributes),
         Subject: this.props.subject,
-      }),
+      }, queryLanguage),
     };
   }
 }
@@ -219,16 +243,16 @@ interface MessageAttributeValue {
   BinaryValue?: string;
 }
 
-function renderMessageAttributes(attributes?: { [key: string]: MessageAttribute }): any {
+function renderMessageAttributes(scope: Construct, attributes?: { [key: string]: MessageAttribute }): any {
   if (attributes === undefined) { return undefined; }
   const renderedAttributes: { [key: string]: MessageAttributeValue } = {};
   Object.entries(attributes).map(([key, val]) => {
-    renderedAttributes[key] = renderMessageAttributeValue(val);
+    renderedAttributes[key] = renderMessageAttributeValue(scope, val);
   });
   return sfn.TaskInput.fromObject(renderedAttributes).value;
 }
 
-function renderMessageAttributeValue(attribute: MessageAttribute): MessageAttributeValue {
+function renderMessageAttributeValue(scope: Construct, attribute: MessageAttribute): MessageAttributeValue {
   const dataType = attribute.dataType;
   if (attribute.value instanceof sfn.TaskInput) {
     return {
@@ -246,7 +270,7 @@ function renderMessageAttributeValue(attribute: MessageAttribute): MessageAttrib
     return { DataType: dataType ?? MessageAttributeDataType.STRING, StringValue: attribute.value };
   }
 
-  validateMessageAttribute(attribute);
+  validateMessageAttribute(scope, attribute);
   if (Array.isArray(attribute.value)) {
     return { DataType: MessageAttributeDataType.STRING_ARRAY, StringValue: JSON.stringify(attribute.value) };
   }
@@ -258,7 +282,7 @@ function renderMessageAttributeValue(attribute: MessageAttribute): MessageAttrib
   }
 }
 
-function validateMessageAttribute(attribute: MessageAttribute): void {
+function validateMessageAttribute(scope: Construct, attribute: MessageAttribute): void {
   const dataType = attribute.dataType;
   const value = attribute.value;
   if (dataType === undefined) {
@@ -266,12 +290,12 @@ function validateMessageAttribute(attribute: MessageAttribute): void {
   }
   if (Array.isArray(value)) {
     if (dataType !== MessageAttributeDataType.STRING_ARRAY) {
-      throw new Error(`Requested SNS message attribute type was ${dataType} but ${value} was of type Array`);
+      throw new ValidationError(`Requested SNS message attribute type was ${dataType} but ${value} was of type Array`, scope);
     }
     const validArrayTypes = ['string', 'boolean', 'number'];
     value.forEach((v) => {
       if (v !== null || !validArrayTypes.includes(typeof v)) {
-        throw new Error(`Requested SNS message attribute type was ${typeof value} but Array values must be one of ${validArrayTypes}`);
+        throw new ValidationError(`Requested SNS message attribute type was ${typeof value} but Array values must be one of ${validArrayTypes}`, scope);
       }
     });
     return;
@@ -280,7 +304,7 @@ function validateMessageAttribute(attribute: MessageAttribute): void {
   switch (typeof value) {
     case 'string':
       // trust the user or will default to string
-      if (sfn.JsonPath.isEncodedJsonPath(attribute.value)) {
+      if (isJsonPathOrJsonataExpression(attribute.value)) {
         return;
       }
       if (dataType === MessageAttributeDataType.STRING ||

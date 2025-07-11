@@ -11,6 +11,9 @@ import * as ec2 from '../../aws-ec2';
 import { IRole } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { IResource, Resource, Duration, RemovalPolicy, ArnFormat, FeatureFlags } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from '../../cx-api';
 
 /**
@@ -144,7 +147,7 @@ export interface ServerlessV2ClusterInstanceProps extends ClusterInstanceOptions
    *
    * For serverless v2 instances this means:
    * - true: The serverless v2 reader will scale to match the writer instance (provisioned or serverless)
-   * - false: The serverless v2 reader will scale with the read workfload on the instance
+   * - false: The serverless v2 reader will scale with the read workload on the instance
    *
    * @default false
    */
@@ -222,6 +225,17 @@ export interface ClusterInstanceOptions {
    * @default - `true` if the cluster's `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
    */
   readonly publiclyAccessible?: boolean;
+
+  /**
+   * The Availability Zone (AZ) where the database will be created.
+   *
+   * For Amazon Aurora, each Aurora DB cluster hosts copies of its storage in three separate Availability Zones.
+   * Specify one of these Availability Zones. Aurora automatically chooses an appropriate Availability Zone if you don't specify one.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.RegionsAndAvailabilityZones.html
+   * @default - A random, system-chosen Availability Zone in the endpointʼs AWS Region.
+   */
+  readonly availabilityZone?: string;
 
   /**
    * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
@@ -321,6 +335,20 @@ export interface ClusterInstanceOptions {
    * @default - RDS will choose a certificate authority
    */
   readonly caCertificate?: CaCertificate;
+
+  /**
+   * Specifies whether changes to the DB instance and any pending modifications are applied immediately, regardless of the `preferredMaintenanceWindow` setting.
+   * If set to `false`, changes are applied during the next maintenance window.
+   *
+   * Until RDS applies the changes, the DB instance remains in a drift state.
+   * As a result, the configuration doesn't fully reflect the requested modifications and temporarily diverges from the intended state.
+   *
+   * This property also determines whether the DB instance reboots when a static parameter is modified in the associated DB parameter group.
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Modifying.html
+   *
+   * @default - Changes will be applied immediately
+   */
+  readonly applyImmediately?: boolean;
 }
 
 /**
@@ -436,12 +464,30 @@ export interface IAuroraClusterInstance extends IResource {
   readonly instanceSize?: string;
 
   /**
-   * Te promotion tier the instance was created in
+   * The promotion tier the instance was created in
    */
   readonly tier: number;
+
+  /**
+   * Whether Performance Insights is enabled
+   */
+  readonly performanceInsightsEnabled?: boolean;
+
+  /**
+   * The amount of time, in days, to retain Performance Insights data.
+   */
+  readonly performanceInsightRetention?: PerformanceInsightRetention;
+
+  /**
+   * The AWS KMS key for encryption of Performance Insights data.
+   */
+  readonly performanceInsightEncryptionKey?: kms.IKey;
 }
 
+@propertyInjectable
 class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.AuroraClusterInstance';
   public readonly dbInstanceArn: string;
   public readonly dbiResourceId: string;
   public readonly dbInstanceEndpointAddress: string;
@@ -449,6 +495,9 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
   public readonly type: InstanceType;
   public readonly tier: number;
   public readonly instanceSize?: string;
+  public readonly performanceInsightsEnabled: boolean;
+  public readonly performanceInsightRetention?: PerformanceInsightRetention;
+  public readonly performanceInsightEncryptionKey?: kms.IKey;
   constructor(scope: Construct, id: string, props: AuroraClusterInstanceProps) {
     super(
       scope,
@@ -456,9 +505,11 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
       {
         physicalName: props.instanceIdentifier,
       });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.tier = props.promotionTier ?? 2;
     if (this.tier > 15) {
-      throw new Error('promotionTier must be between 0-15');
+      throw new ValidationError('promotionTier must be between 0-15', this);
     }
 
     const isOwnedResource = Resource.isOwnedResource(props.cluster);
@@ -481,8 +532,14 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
     const enablePerformanceInsights = props.enablePerformanceInsights
       || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
     if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
-      throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
+      throw new ValidationError('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set', this);
     }
+
+    this.performanceInsightsEnabled = enablePerformanceInsights;
+    this.performanceInsightRetention = enablePerformanceInsights
+      ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
+      : undefined;
+    this.performanceInsightEncryptionKey = props.performanceInsightEncryptionKey;
 
     const instanceParameterGroup = props.parameterGroup ?? (
       props.parameters
@@ -510,12 +567,11 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         // Instance properties
         dbInstanceClass: props.instanceType ? databaseInstanceType(instanceType) : undefined,
         publiclyAccessible,
+        availabilityZone: props.availabilityZone,
         preferredMaintenanceWindow: props.preferredMaintenanceWindow,
-        enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set
-        performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
-        performanceInsightsRetentionPeriod: enablePerformanceInsights
-          ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
-          : undefined,
+        enablePerformanceInsights: this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
+        performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
+        performanceInsightsRetentionPeriod: this.performanceInsightRetention,
         // only need to supply this when migrating from legacy method.
         // this is not applicable for aurora instances, but if you do provide it and then
         // change it it will cause an instance replacement
@@ -526,6 +582,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
         allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
         caCertificateIdentifier: props.caCertificate && props.caCertificate.toString(),
+        applyImmediately: props.applyImmediately,
       });
     // For instances that are part of a cluster:
     //

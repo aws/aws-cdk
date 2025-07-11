@@ -149,6 +149,23 @@ new logs.SubscriptionFilter(this, 'Subscription', {
 });
 ```
 
+When you use `FirehoseDestination`, you can choose the method used to
+distribute log data to the destination by setting the `distribution` property.
+
+```ts
+import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+
+declare const deliveryStream: firehose.IDeliveryStream;
+declare const logGroup: logs.LogGroup;
+
+new logs.SubscriptionFilter(this, 'Subscription', {
+  logGroup,
+  destination: new destinations.FirehoseDestination(deliveryStream),
+  filterPattern: logs.FilterPattern.allEvents(),
+});
+```
+
 ## Metric Filters
 
 CloudWatch Logs can extract and emit metrics based on a textual log stream.
@@ -182,6 +199,7 @@ the name `Namespace/MetricName`.
 
 You can expose a metric on a metric filter by calling the `MetricFilter.metric()` API.
 This has a default of `statistic = 'avg'` if the statistic is not set in the `props`.
+Additionally, if the metric filter was created with a dimension map, those dimensions will be included in the metric.
 
 ```ts
 declare const logGroup: logs.LogGroup;
@@ -205,6 +223,29 @@ new cloudwatch.Alarm(this, 'alarm from metric filter', {
   metric,
   threshold: 100,
   evaluationPeriods: 2,
+});
+```
+
+### Metrics for IncomingLogs and IncomingBytes
+Metric methods have been defined for IncomingLogs and IncomingBytes within LogGroups. These metrics allow for the creation of alarms on log ingestion, ensuring that the log ingestion process is functioning correctly.
+
+To define an alarm based on these metrics, you can use the following template:
+```ts
+const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+const incomingEventsMetric = logGroup.metricIncomingLogEvents();
+new cloudwatch.Alarm(this, 'HighLogVolumeAlarm', {
+  metric: incomingEventsMetric,
+  threshold: 1000,
+  evaluationPeriods: 1,
+});
+```
+```ts
+const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+const incomingBytesMetric = logGroup.metricIncomingBytes();
+new cloudwatch.Alarm(this, 'HighDataVolumeAlarm', {
+  metric: incomingBytesMetric,
+  threshold: 5000000,  // 5 MB
+  evaluationPeriods: 1,
 });
 ```
 
@@ -272,6 +313,8 @@ and then descending into it, such as `$.field` or `$.list[0].field`.
 
 * `FilterPattern.stringValue(field, comparison, string)`: matches if the given
   field compares as indicated with the given string value.
+* `FilterPattern.regexValue(field, comparison, string)`: matches if the given
+  field compares as indicated with the given regex pattern.
 * `FilterPattern.numberValue(field, comparison, number)`: matches if the given
   field compares as indicated with the given numerical value.
 * `FilterPattern.isNull(field)`: matches if the given field exists and has the
@@ -301,6 +344,7 @@ const pattern = logs.FilterPattern.all(
     logs.FilterPattern.booleanValue('$.error', true),
     logs.FilterPattern.numberValue('$.latency', '>', 1000),
   ),
+  logs.FilterPattern.regexValue('$.message', '=', 'bind address already in use'),
 );
 ```
 
@@ -383,18 +427,17 @@ Each policy may consist of a log group, S3 bucket, and/or Firehose delivery stre
 Example:
 
 ```ts
-import * as kinesisfirehose from '@aws-cdk/aws-kinesisfirehose-alpha';
-import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations-alpha';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 const logGroupDestination = new logs.LogGroup(this, 'LogGroupLambdaAudit', {
   logGroupName: 'auditDestinationForCDK',
 });
 
 const bucket = new s3.Bucket(this, 'audit-bucket');
-const s3Destination = new destinations.S3Bucket(bucket);
+const s3Destination = new firehose.S3Bucket(bucket);
 
-const deliveryStream = new kinesisfirehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [s3Destination],
+const deliveryStream = new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: s3Destination,
 });
 
 const dataProtectionPolicy = new logs.DataProtectionPolicy({
@@ -414,6 +457,90 @@ new logs.LogGroup(this, 'LogGroupLambda', {
   dataProtectionPolicy: dataProtectionPolicy,
 });
 ```
+
+## Field Index Policies
+
+Creates or updates a field index policy for the specified log group. You can use field index policies to create field indexes on fields found in log events in the log group. Creating field indexes lowers the costs for CloudWatch Logs Insights queries that reference those field indexes, because these queries attempt to skip the processing of log events that are known to not match the indexed field. Good fields to index are fields that you often need to query for and fields that have high cardinality of values.
+
+For more information, see [Create field indexes to improve query performance and reduce costs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatchLogs-Field-Indexing.html).
+
+Only log groups in the Standard log class support field index policies.
+Currently, this array supports only one field index policy object.
+
+Example:
+
+```ts
+
+const fieldIndexPolicy = new logs.FieldIndexPolicy({
+  fields: ['Operation', 'RequestId'],
+});
+
+new logs.LogGroup(this, 'LogGroup', {
+  logGroupName: 'cdkIntegLogGroup',
+  fieldIndexPolicies: [fieldIndexPolicy],
+});
+```
+
+## Transformer
+
+A log transformer enables transforming log events into a different format, making them easier
+to process and analyze. You can transform logs from different sources into standardized formats
+that contain relevant, source-specific information. Transformations are performed at the time of log ingestion.
+Transformers support several types of processors which can be chained into a processing pipeline (subject to some restrictions, see [Usage Limits](#usage-limits)).
+
+### Processor Types
+
+1. **Parser Processors**: Parse string log events into structured log events. These are configurable parsers created using `ParserProcessor`, and support conversion to a format like Json, extracting fields from CSV input, converting vended sources to [OCSF](https://schema.ocsf.io/1.1.0/) format, regex parsing using Grok patterns or key-value parsing. Refer [configurable parsers](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html#CloudWatch-Logs-Transformation-Configurable) for more examples.
+
+2. **Vended Log Parsers**: Parse log events from vended sources into structured log events. These are created using `VendedLogParser`, and support conversion from sources such as AWS WAF, PostGres, Route53, CloudFront and VPC. These parsers are not configurable, meaning these can be added to the pipeline but do not accept any properties or configurations. Refer [vended log parsers](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html#CloudWatch-Logs-Transformation-BuiltIn) for more examples.
+
+3. **String Mutators**: Perform operations on string values in a field of a log event and are created using `StringMutatorProcessor`. These can be used to format string values in the log event such as changing case, removing trailing whitespaces or extracting values from a string field by splitting the string or regex backreferences. Refer [string mutators](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html#CloudWatch-Logs-Transformation-StringMutate) for more examples.
+
+4. **JSON Mutators**: Perform operation on JSON log events and are created using `JsonMutatorProcessor`. These processors can be used to enrich log events by adding new fields, deleting, moving, renaming fields, copying values to other fields or converting a list of key-value pairs to a map. Refer [JSON mutators](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html#CloudWatch-Logs-Transformation-JSONMutate) for more examples.
+
+5. **Data Converters**: Convert the data into different formats and are created using `DataConverterProcessor`. These can be used to convert values in a field to datatypes such as integers, string, double and boolean or to convert dates and times to different formats. Refer [datatype processors](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html#CloudWatch-Logs-Transformation-Datatype) for more examples.
+
+### Usage Limits
+
+- A transformer can have a maximum of 20 processors
+- At least one parser-type processor is required
+- Maximum of 5 parser-type processors allowed
+- AWS vended log parser (if used) must be the first processor
+- Only one parseToOcsf processor, one grok processor, one addKeys processor, and one copyValue processor allowed per transformer
+- Transformers can only be used with log groups in the Standard log class
+
+Example:
+
+```ts
+
+// Create a log group
+const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+
+// Create a JSON parser processor
+const jsonParser = new logs.ParserProcessor({
+  type: logs.ParserProcessorType.JSON
+});
+
+// Create a processor to add keys
+const addKeysProcessor = new logs.JsonMutatorProcessor({
+  type: logs.JsonMutatorType.ADD_KEYS,
+  addKeysOptions: {
+    entries: [{
+      key: 'metadata.transformed_in',
+      value: 'CloudWatchLogs'
+    }]
+  }
+});
+
+// Create a transformer with these processors
+new logs.Transformer(this, 'Transformer', {
+  transformerName: 'MyTransformer',
+  logGroup: logGroup,
+  transformerConfig: [jsonParser, addKeysProcessor]
+});
+```
+
+For more details on CloudWatch Logs transformation processors, refer to the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html).
 
 ## Notes
 

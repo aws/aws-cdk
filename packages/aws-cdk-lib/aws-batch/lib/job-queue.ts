@@ -2,7 +2,9 @@ import { Construct } from 'constructs';
 import { CfnJobQueue } from './batch.generated';
 import { IComputeEnvironment } from './compute-environment-base';
 import { ISchedulingPolicy } from './scheduling-policy';
-import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from '../../core';
+import { ArnFormat, Duration, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a JobQueue
@@ -227,7 +229,11 @@ export enum JobStateTimeLimitActionsState {
  * sent to the linked ComputeEnvironment(s) to be executed.
  * Jobs exit the queue in FIFO order unless a `SchedulingPolicy` is linked.
  */
+@propertyInjectable
 export class JobQueue extends Resource implements IJobQueue {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.JobQueue';
+
   /**
    * refer to an existing JobQueue by its arn
    */
@@ -240,17 +246,17 @@ export class JobQueue extends Resource implements IJobQueue {
       public readonly jobQueueName = stack.splitArn(jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
       public addComputeEnvironment(_computeEnvironment: IComputeEnvironment, _order: number): void {
-        throw new Error(`cannot add ComputeEnvironments to imported JobQueue '${id}'`);
+        throw new ValidationError(`cannot add ComputeEnvironments to imported JobQueue '${id}'`, this);
       }
     }
 
     return new Import(scope, id);
   }
 
-  public readonly computeEnvironments: OrderedComputeEnvironment[]
-  public readonly priority: number
-  public readonly enabled?: boolean
-  public readonly schedulingPolicy?: ISchedulingPolicy
+  public readonly computeEnvironments: OrderedComputeEnvironment[];
+  public readonly priority: number;
+  public readonly enabled?: boolean;
+  public readonly schedulingPolicy?: ISchedulingPolicy;
 
   public readonly jobQueueArn: string;
   public readonly jobQueueName: string;
@@ -259,6 +265,8 @@ export class JobQueue extends Resource implements IJobQueue {
     super(scope, id, {
       physicalName: props?.jobQueueName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.computeEnvironments = props?.computeEnvironments ?? [];
     this.priority = props?.priority ?? 1;
@@ -305,16 +313,17 @@ export class JobQueue extends Resource implements IJobQueue {
       return;
     }
 
-    return jobStateTimeLimitActions.map((action, index) => renderJobStateTimeLimitAction(action, index));
+    return jobStateTimeLimitActions.map((action, index) => renderJobStateTimeLimitAction(this, action, index));
 
     function renderJobStateTimeLimitAction(
+      scope: Construct,
       jobStateTimeLimitAction: JobStateTimeLimitAction,
       index: number,
     ): CfnJobQueue.JobStateTimeLimitActionProperty {
       const maxTimeSeconds = jobStateTimeLimitAction.maxTime.toSeconds();
 
       if (maxTimeSeconds < 600 || maxTimeSeconds > 86400) {
-        throw new Error(`maxTime must be between 600 and 86400 seconds, got ${maxTimeSeconds} seconds at jobStateTimeLimitActions[${index}]`);
+        throw new ValidationError(`maxTime must be between 600 and 86400 seconds, got ${maxTimeSeconds} seconds at jobStateTimeLimitActions[${index}]`, scope);
       }
 
       return {

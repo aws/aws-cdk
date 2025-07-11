@@ -9,7 +9,7 @@ import { Construct } from 'constructs';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class SdkV3TestStack extends Stack {
-  public lambdaFunction: IFunction
+  public lambdaFunction: IFunction;
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -35,7 +35,7 @@ class SdkV3TestStack extends Stack {
 }
 
 class SdkV3BundledStack extends Stack {
-  public lambdaFunction: IFunction
+  public lambdaFunction: IFunction;
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -63,7 +63,11 @@ class SdkV3BundledStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const sdkV3testCase = new SdkV3TestStack(app, 'cdk-integ-lambda-nodejs-dependencies-for-sdk-v3');
 const sdkV3BundledSdk = new SdkV3BundledStack(app, 'cdk-integ-lambda-nodejs-dependencies-for-sdk-v3-bundled');
 

@@ -1,0 +1,1765 @@
+{
+  "version": "45.0.0",
+  "artifacts": {
+    "cdk-instance-engine-lifecycle-support.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-instance-engine-lifecycle-support.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-instance-engine-lifecycle-support": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-instance-engine-lifecycle-support.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a7f1a9684d2d36e2244df0a90f59e56be65ae15291378a9bd30ce81d4a60e3a3.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-instance-engine-lifecycle-support.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-instance-engine-lifecycle-support.assets"
+      ],
+      "metadata": {
+        "/cdk-instance-engine-lifecycle-support/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*",
+              "natGateways": "*",
+              "restrictDefaultSecurityGroup": false
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Instance": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "engine": {
+                "engineType": "*",
+                "singleUserRotationApplication": "*",
+                "engineVersion": {
+                  "fullVersion": "*",
+                  "majorVersion": "*"
+                },
+                "parameterGroupFamily": "*",
+                "engineFamily": "*",
+                "supportsReadReplicaBackups": true
+              },
+              "instanceType": "*",
+              "vpc": "*",
+              "removalPolicy": "destroy",
+              "engineLifecycleSupport": "open-source-rds-extended-support"
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Instance/SubnetGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "removalPolicy": "*"
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Instance/SubnetGroup/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceSubnetGroupF2CBA54F"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Instance/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Instance/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceSecurityGroupB4E5FA83"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Instance/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryptionKey": "*",
+              "secretName": "*",
+              "replicaRegions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "username": "*",
+              "secretName": "*",
+              "encryptionKey": "*",
+              "excludeCharacters": "*",
+              "replaceOnPasswordCriteriaChanges": "*",
+              "replicaRegions": "*"
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Instance/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceSecret478E0A47"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Instance/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Instance/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceSecretAttachment83BEE581"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Instance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceC1063A87"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/OnEventHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "runtime": "*",
+              "handler": "*",
+              "initialPolicy": "*"
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/OnEventHandler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/OnEventHandler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/OnEventHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterOnEventHandlerServiceRole7F84B26D"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/OnEventHandler/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/OnEventHandler/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterOnEventHandlerServiceRoleDefaultPolicyAF0DFD57"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/OnEventHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterOnEventHandlerDF82DF85"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/IsCompleteHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "runtime": "*",
+              "handler": "*",
+              "initialPolicy": "*"
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/IsCompleteHandler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/IsCompleteHandler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/IsCompleteHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterIsCompleteHandlerServiceRole40F5F1A8"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/IsCompleteHandler/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterIsCompleteHandlerServiceRoleDefaultPolicyA43EB222"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/IsCompleteHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterIsCompleteHandler93DE2591"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onEvent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "description": "*",
+              "runtime": "*",
+              "handler": "*",
+              "timeout": "*",
+              "logGroup": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "securityGroups": "*",
+              "role": "*",
+              "functionName": "*",
+              "environmentEncryption": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onEvent/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onEvent/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkonEventServiceRole29C21F76"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onEvent/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicy21CE9686"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkonEventF0C0D052"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkonEventinlinePolicyAddedToExecutionRole079D50682"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkonEventinlinePolicyAddedToExecutionRole178584C7C"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "description": "*",
+              "runtime": "*",
+              "handler": "*",
+              "timeout": "*",
+              "logGroup": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "securityGroups": "*",
+              "role": "*",
+              "functionName": "*",
+              "environmentEncryption": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleFAA9C6CB"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicyF410E478"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkisComplete803B4F1B"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkisCompleteinlinePolicyAddedToExecutionRole060DC0CFE"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkisCompleteinlinePolicyAddedToExecutionRole1AD853F80"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onTimeout": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "description": "*",
+              "runtime": "*",
+              "handler": "*",
+              "timeout": "*",
+              "logGroup": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "securityGroups": "*",
+              "role": "*",
+              "functionName": "*",
+              "environmentEncryption": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onTimeout/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onTimeout/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onTimeout/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkonTimeoutServiceRole0B00A1BD"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onTimeout/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy05DF1C30"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onTimeout/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkonTimeout04342B00"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onTimeout/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onTimeout/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole0D9321580"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole131B7131D"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/waiter-state-machine/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/waiter-state-machine/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/waiter-state-machine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderwaiterstatemachineRole76E414C5"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/waiter-state-machine/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/waiter-state-machine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyCF7716B2"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/waiter-state-machine/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/waiter-state-machine/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderwaiterstatemachineLogGroup5A64CAF9"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/waiter-state-machine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderwaiterstatemachineE1F05D1F"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/Snapshot": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/Snapshoter/Snapshot/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotAA1755BE"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/FromSnapshot": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "snapshotIdentifier": "*",
+              "engine": {
+                "engineType": "*",
+                "singleUserRotationApplication": "*",
+                "engineVersion": {
+                  "fullVersion": "*",
+                  "majorVersion": "*"
+                },
+                "parameterGroupFamily": "*",
+                "engineFamily": "*",
+                "supportsReadReplicaBackups": true
+              },
+              "instanceType": "*",
+              "vpc": "*",
+              "removalPolicy": "destroy",
+              "engineLifecycleSupport": "open-source-rds-extended-support-disabled"
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/FromSnapshot/SubnetGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "removalPolicy": "*"
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/FromSnapshot/SubnetGroup/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotSubnetGroupDEC72E9D"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/FromSnapshot/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/FromSnapshot/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotSecurityGroup72F11E81"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/FromSnapshot/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FromSnapshotEE0682C5"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/ReadReplica": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "sourceDatabaseInstance": "*",
+              "instanceType": "*",
+              "vpc": "*",
+              "removalPolicy": "destroy",
+              "engineLifecycleSupport": "open-source-rds-extended-support-disabled"
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/ReadReplica/SubnetGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "removalPolicy": "*"
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/ReadReplica/SubnetGroup/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadReplicaSubnetGroup680C605C"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/ReadReplica/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/ReadReplica/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadReplicaSecurityGroupF624C7FA"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/ReadReplica/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadReplicaDA01B356"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-instance-engine-lifecycle-support"
+    },
+    "cdkinstanceenginelifecyclesupporttestDefaultTestDeployAssert3026BBCC.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdkinstanceenginelifecyclesupporttestDefaultTestDeployAssert3026BBCC.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdkinstanceenginelifecyclesupporttestDefaultTestDeployAssert3026BBCC": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdkinstanceenginelifecyclesupporttestDefaultTestDeployAssert3026BBCC.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdkinstanceenginelifecyclesupporttestDefaultTestDeployAssert3026BBCC.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdkinstanceenginelifecyclesupporttestDefaultTestDeployAssert3026BBCC.assets"
+      ],
+      "metadata": {
+        "/cdk-instance-engine-lifecycle-support-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-instance-engine-lifecycle-support-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-instance-engine-lifecycle-support-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

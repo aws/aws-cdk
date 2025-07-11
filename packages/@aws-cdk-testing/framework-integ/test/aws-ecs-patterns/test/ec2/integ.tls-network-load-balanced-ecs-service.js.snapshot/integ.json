@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "networkLoadBalancedEc2ServiceTest/DefaultTest": {
+      "stacks": [
+        "tls-network-load-balanced-ecs-service"
+      ],
+      "assertionStack": "networkLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "networkLoadBalancedEc2ServiceTestDefaultTestDeployAssert34DAD7DE"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

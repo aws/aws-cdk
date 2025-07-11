@@ -6,6 +6,8 @@ import { DefaultTokenResolver, IFragmentConcatenator, IResolveContext } from '..
 import { Stack } from '../stack';
 import { Token } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
+import { makeUniqueId } from './uniqueid';
+import { UnscopedValidationError } from '../errors';
 
 /**
  * Routines that know how to do operations at the CloudFormation document language level
@@ -182,7 +184,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
     if (obj === undefined) { return; }
 
     if (Token.isUnresolved(obj)) {
-      throw new Error("This shouldn't happen anymore");
+      throw new UnscopedValidationError("This shouldn't happen anymore");
     }
     if (Array.isArray(obj)) {
       return renderCollection('[', ']', obj, recurse);
@@ -257,9 +259,10 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
 
         // Because this will be called twice (once during `prepare`, once during `resolve`),
         // we need to make sure to be idempotent, so use a cache.
-        const stringifyResponse = stringifyCache.obtain(stack, JSON.stringify(intrinsic), () =>
-          CfnUtils.stringify(stack, `CdkJsonStringify${stringifyCounter++}`, intrinsic),
-        );
+        const stringifyResponse = stringifyCache.obtain(stack, JSON.stringify(intrinsic), () => {
+          const id = makeUniqueId(['CdkJsonStringify', JSON.stringify(intrinsic)]);
+          return CfnUtils.stringify(stack, id, intrinsic);
+        });
 
         pushIntrinsic(stringifyResponse);
         return;
@@ -269,7 +272,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
         return;
     }
 
-    throw new Error(`Unexpected type hint: ${resolvedTypeHint(intrinsic)}`);
+    throw new UnscopedValidationError(`Unexpected type hint: ${resolvedTypeHint(intrinsic)}`);
   }
 
   /**
@@ -445,8 +448,6 @@ function quoteString(s: string) {
   s = JSON.stringify(s);
   return s.substring(1, s.length - 1);
 }
-
-let stringifyCounter = 1;
 
 /**
  * A cache scoped to object instances, that's maintained externally to the object instances

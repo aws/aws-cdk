@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-cdk-elbv2-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/07df570609ba80d7ccc6a61dc96229756a5e4fc6a10d9a68ac076b94a8ce3e55.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/dd9140945011edcbce692a37f5f7cbd8334730c6955bb30907758d7bda777b77.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -194,6 +194,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LBALBAccessLogsBucketPolicy1E4EBAFE"
+          }
+        ],
+        "/aws-cdk-elbv2-integ/LB/ALBConnectionLogsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LBALBConnectionLogsBucket4BFA48DB"
+          }
+        ],
+        "/aws-cdk-elbv2-integ/LB/ALBConnectionLogsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LBALBConnectionLogsBucketPolicy62509153"
           }
         ],
         "/aws-cdk-elbv2-integ/LB/Listener/Resource": [

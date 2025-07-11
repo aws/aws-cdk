@@ -1,5 +1,10 @@
 import { Construct } from 'constructs';
+import { Annotations } from './annotations';
 import { CfnResource } from './cfn-resource';
+import { Duration } from './duration';
+import { ValidationError } from './errors';
+import { addConstructMetadata, MethodMetadata } from './metadata-resource';
+import { propertyInjectable } from './prop-injectable';
 import { RemovalPolicy } from './removal-policy';
 import { Resource } from './resource';
 import { Token } from './token';
@@ -52,11 +57,41 @@ export interface CustomResourceProps {
    *   serviceToken: myTopic.topicArn,
    * });
    * ```
+   *
+   * Maps to [ServiceToken](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-customresource.html#cfn-cloudformation-customresource-servicetoken) property for the `AWS::CloudFormation::CustomResource` resource
    */
   readonly serviceToken: string;
 
   /**
+   * The maximum time that can elapse before a custom resource operation times out.
+   *
+   * The value must be between 1 second and 3600 seconds.
+   *
+   * Maps to [ServiceTimeout](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-customresource.html#cfn-cloudformation-customresource-servicetimeout) property for the `AWS::CloudFormation::CustomResource` resource
+   *
+   * A token can be specified for this property, but it must be specified with `Duration.seconds()`.
+   *
+   * @example
+   * const stack = new Stack();
+   * const durToken = new CfnParameter(stack, 'MyParameter', {
+   *   type: 'Number',
+   *   default: 60,
+   * });
+   * new CustomResource(stack, 'MyCustomResource', {
+   *   serviceToken: 'MyServiceToken',
+   *   serviceTimeout: Duration.seconds(durToken.valueAsNumber),
+   * });
+   *
+   * @default Duration.seconds(3600)
+   */
+  readonly serviceTimeout?: Duration;
+
+  /**
    * Properties to pass to the Lambda
+   *
+   * Values in this `properties` dictionary can possibly overwrite other values in `CustomResourceProps`
+   * E.g. `ServiceToken` and `ServiceTimeout`
+   * It is recommended to avoid using same keys that exist in `CustomResourceProps`
    *
    * @default - No properties.
    */
@@ -122,20 +157,44 @@ export interface CustomResourceProps {
  *
  * @resource AWS::CloudFormation::CustomResource
  */
+@propertyInjectable
 export class CustomResource extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.core.CustomResource';
   private readonly resource: CfnResource;
 
   constructor(scope: Construct, id: string, props: CustomResourceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
-    const type = renderResourceType(props.resourceType);
+    const type = renderResourceType(this, props.resourceType);
     const pascalCaseProperties = props.pascalCaseProperties ?? false;
     const properties = pascalCaseProperties ? uppercaseProperties(props.properties || {}) : (props.properties || {});
+
+    if (props.serviceTimeout !== undefined && !props.serviceTimeout.isUnresolved()) {
+      const serviceTimeoutSeconds = props.serviceTimeout.toSeconds();
+
+      if (serviceTimeoutSeconds < 1 || serviceTimeoutSeconds > 3600) {
+        throw new ValidationError(`serviceTimeout must either be between 1 and 3600 seconds, got ${serviceTimeoutSeconds}`, this);
+      }
+    }
+
+    const constructPropertiesPassed = {
+      ServiceToken: props.serviceToken,
+      ServiceTimeout: props.serviceTimeout?.toSeconds().toString(),
+    };
+
+    const hasCommonKeys = Object.keys(properties).some(key => key in constructPropertiesPassed);
+
+    if (hasCommonKeys) {
+      Annotations.of(this).addWarningV2('@aws-cdk/core:customResourcePropConflict', `The following keys will be overwritten as they exist in the 'properties' prop. Keys found: ${Object.keys(properties).filter(key => key in constructPropertiesPassed)}`);
+    }
 
     this.resource = new CfnResource(this, 'Default', {
       type,
       properties: {
-        ServiceToken: props.serviceToken,
+        ...constructPropertiesPassed,
         ...properties,
       },
     });
@@ -161,6 +220,7 @@ export class CustomResource extends Resource {
    * @returns a token for `Fn::GetAtt`. Use `Token.asXxx` to encode the returned `Reference` as a specific type or
    * use the convenience `getAttString` for string attributes.
    */
+  @MethodMetadata()
   public getAtt(attributeName: string) {
     return this.resource.getAtt(attributeName);
   }
@@ -173,6 +233,7 @@ export class CustomResource extends Resource {
    * @param attributeName the name of the attribute
    * @returns a token for `Fn::GetAtt` encoded as a string.
    */
+  @MethodMetadata()
   public getAttString(attributeName: string): string {
     return Token.asString(this.getAtt(attributeName));
   }
@@ -194,22 +255,22 @@ function uppercaseProperties(props: { [key: string]: any }) {
   return ret;
 }
 
-function renderResourceType(resourceType?: string) {
+function renderResourceType(scope: Construct, resourceType?: string) {
   if (!resourceType) {
     return 'AWS::CloudFormation::CustomResource';
   }
 
   if (!resourceType.startsWith('Custom::')) {
-    throw new Error(`Custom resource type must begin with "Custom::" (${resourceType})`);
+    throw new ValidationError(`Custom resource type must begin with "Custom::" (${resourceType})`, scope);
   }
 
   if (resourceType.length > 60) {
-    throw new Error(`Custom resource type length > 60 (${resourceType})`);
+    throw new ValidationError(`Custom resource type length > 60 (${resourceType})`, scope);
   }
 
   const typeName = resourceType.slice(resourceType.indexOf('::') + 2);
   if (!/^[a-z0-9_@-]+$/i.test(typeName)) {
-    throw new Error(`Custom resource type name can only include alphanumeric characters and _@- (${typeName})`);
+    throw new ValidationError(`Custom resource type name can only include alphanumeric characters and _@- (${typeName})`, scope);
   }
 
   return resourceType;

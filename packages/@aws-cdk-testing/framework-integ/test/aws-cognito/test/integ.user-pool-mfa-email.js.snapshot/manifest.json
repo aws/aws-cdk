@@ -1,0 +1,161 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "integ-user-email-mfa.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-user-email-mfa.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-user-email-mfa": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-user-email-mfa.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dede4b21c364166e64241d20b5916270a190b70ec1a4c8a5d848e5ac04ce77d1.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-user-email-mfa.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-user-email-mfa.assets"
+      ],
+      "metadata": {
+        "/integ-user-email-mfa/myuserpool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "userPoolName": "*",
+              "email": "*",
+              "mfa": "ON",
+              "mfaSecondFactor": {
+                "sms": true,
+                "otp": false,
+                "email": true
+              },
+              "advancedSecurityMode": "ENFORCED",
+              "featurePlan": "PLUS"
+            }
+          }
+        ],
+        "/integ-user-email-mfa/myuserpool/smsRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*"
+            }
+          }
+        ],
+        "/integ-user-email-mfa/myuserpool/smsRole/ImportsmsRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-user-email-mfa/myuserpool/smsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolsmsRole0E16FDD9"
+          }
+        ],
+        "/integ-user-email-mfa/myuserpool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpool01998219"
+          }
+        ],
+        "/integ-user-email-mfa/user-pool-id": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "userpoolid"
+          }
+        ],
+        "/integ-user-email-mfa/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-user-email-mfa/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-user-email-mfa"
+    },
+    "integuseremailmfatestDefaultTestDeployAssertD4C43B3C.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integuseremailmfatestDefaultTestDeployAssertD4C43B3C.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integuseremailmfatestDefaultTestDeployAssertD4C43B3C": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integuseremailmfatestDefaultTestDeployAssertD4C43B3C.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integuseremailmfatestDefaultTestDeployAssertD4C43B3C.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integuseremailmfatestDefaultTestDeployAssertD4C43B3C.assets"
+      ],
+      "metadata": {
+        "/integ-user-email-mfa-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-user-email-mfa-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-user-email-mfa-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

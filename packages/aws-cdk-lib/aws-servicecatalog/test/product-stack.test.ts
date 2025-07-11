@@ -16,7 +16,11 @@ import * as servicecatalog from '../lib';
 describe('ProductStack', () => {
   test('Asset bucket undefined in product stack without assets', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const mainStack = new cdk.Stack(app, 'MyStack');
     const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack');
 
@@ -26,7 +30,11 @@ describe('ProductStack', () => {
 
   test('Used defined Asset bucket in product stack with assets', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const mainStack = new cdk.Stack(app, 'MyStack');
     const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
       bucketName: 'test-asset-bucket',
@@ -51,9 +59,12 @@ describe('ProductStack', () => {
 
   test('Use correct assetPath when outdir is absolute', () => {
     // GIVEN
-    const app = new cdk.App(
-      { outdir: '/tmp/foobar' },
-    );
+    const app = new cdk.App({
+      outdir: '/tmp/foobar',
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const mainStack = new cdk.Stack(app, 'MyStackAbsolutePath');
     const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
       bucketName: 'test-asset-bucket',
@@ -67,6 +78,26 @@ describe('ProductStack', () => {
 
     // THEN
     expect(assembly.directory).toBe('/tmp/foobar');
+  });
+
+  test.each([true, false])('Can enable or disable anlaytics reporting in product stack', (enabled) => {
+    // GIVEN
+    const app = new cdk.App();
+    const mainStack = new cdk.Stack(app, 'MyStackAbsolutePath');
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
+      bucketName: 'test-asset-bucket',
+    });
+    const productStack = new ProductWithAnAsset(mainStack, 'MyProductStackAbsolutePath', {
+      assetBucket: testAssetBucket,
+      analyticsReporting: enabled,
+      description: 'foo bar',
+    });
+
+    // THEN
+    const assembly = app.synth();
+    const stackTemplate = JSON.parse(fs.readFileSync(path.join(assembly.directory, productStack.templateFile), 'utf-8'));
+    Template.fromJSON(stackTemplate).resourceCountIs('AWS::CDK::Metadata', enabled ? 1 : 0);
+    expect(Template.fromJSON(stackTemplate).toJSON().Description).toEqual('foo bar');
   });
 
   test('Used defined Asset bucket in product stack with nested assets', () => {
@@ -103,7 +134,7 @@ describe('ProductStack', () => {
     // WHEN
     app.synth();
 
-    //THEN
+    // THEN
     const template = JSON.parse(fs.readFileSync(path.join(portfolioStage.outdir, templateFileUrl), 'utf-8'));
     Template.fromJSON(template).hasResourceProperties('AWS::Lambda::Function', {
       Code: {
@@ -115,7 +146,11 @@ describe('ProductStack', () => {
 
   test('nested stack in product stack', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
 
     class ServiceCatalogSampleStack extends cdk.Stack {
       constructor(scope: Construct, id: string) {
@@ -416,7 +451,11 @@ describe('ProductStack', () => {
 
   test('Two product stacks with assets in the same portfolio', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
     const mainStack = new cdk.Stack(app, 'MyStack');
     const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
       bucketName: 'test-asset-bucket',

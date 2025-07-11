@@ -2,7 +2,7 @@ import { BuildSpec } from './build-spec';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import { BuildEnvironment, IBuildImage, ImagePullPrincipalType, DockerImageOptions } from './project';
+import { BuildEnvironment, IBuildImage, ImagePullPrincipalType, DockerImageOptions, isLambdaComputeType } from './project';
 import * as ecr from '../../aws-ecr';
 import * as secretsmanager from '../../aws-secretsmanager';
 
@@ -41,8 +41,13 @@ export class LinuxArmBuildImage implements IBuildImage {
   /** Image "aws/codebuild/amazonlinux2-aarch64-standard:3.0" based on Amazon Linux 2023. */
   public static readonly AMAZON_LINUX_2_STANDARD_3_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux2-aarch64-standard:3.0');
 
+  /** Image "aws/codebuild/amazonlinux-aarch64-standard:2.0" based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_STANDARD_2_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-standard:2.0');
+  /** Image "aws/codebuild/amazonlinux-aarch64-standard:3.0" based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_STANDARD_3_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-standard:3.0');
+
   /**
-   * @returns a x86-64 Linux build image from a Docker Hub image.
+   * @returns a aarch-64 Linux build image from a Docker Hub image.
    */
   public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
     return new LinuxArmBuildImage({
@@ -103,17 +108,13 @@ export class LinuxArmBuildImage implements IBuildImage {
   }
 
   /**
-   * Validates by checking the BuildEnvironment computeType as aarch64 images only support ComputeType.SMALL and
-   * ComputeType.LARGE
+   * Validates by checking the BuildEnvironments' images are not Lambda ComputeTypes
    * @param buildEnvironment BuildEnvironment
    */
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret = [];
-    if (buildEnvironment.computeType &&
-        buildEnvironment.computeType !== ComputeType.SMALL &&
-        buildEnvironment.computeType !== ComputeType.LARGE) {
-      ret.push(`ARM images only support ComputeTypes '${ComputeType.SMALL}' and '${ComputeType.LARGE}' - ` +
-               `'${buildEnvironment.computeType}' was given`);
+    if (buildEnvironment.computeType && isLambdaComputeType(buildEnvironment.computeType)) {
+      ret.push(`ARM images do not support Lambda ComputeTypes, got ${buildEnvironment.computeType}`);
     }
     return ret;
   }

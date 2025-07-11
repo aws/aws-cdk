@@ -1,12 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "38.0.1",
   "testCases": {
     "InstanceUpdateBehaviorTests/DefaultTest": {
       "stacks": [
         "BulkUpdate",
         "RollingUpdate"
       ],
-      "assertionStack": "InstanceUpdateBehaviorTests/DefaultTest/DeployAssert"
+      "assertionStack": "InstanceUpdateBehaviorTests/DefaultTest/DeployAssert",
+      "assertionStackName": "InstanceUpdateBehaviorTestsDefaultTestDeployAssert287956FD"
     }
   }
 }

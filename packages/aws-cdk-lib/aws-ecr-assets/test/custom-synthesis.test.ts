@@ -8,7 +8,7 @@ import * as path from 'path';
 import { Template } from '../../assertions';
 import { StackSynthesizer, FileAssetSource, FileAssetLocation, DockerImageAssetSource, DockerImageAssetLocation, ISynthesisSession, App, Stack, AssetManifestBuilder, CfnParameter, CfnResource } from '../../core';
 import { AssetManifestArtifact } from '../../cx-api';
-import { DockerImageAsset } from '../lib';
+import { DockerImageAsset, TarballImageAsset } from '../lib';
 
 test('use custom synthesizer', () => {
   // GIVEN
@@ -44,7 +44,7 @@ test('use custom synthesizer', () => {
     dockerImages: expect.objectContaining({
       '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14': {
         destinations: {
-          'current_account-current_region': {
+          'current_account-current_region-2db33560': {
             repositoryName: 'write-repo',
             imageTag: '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
           },
@@ -55,6 +55,45 @@ test('use custom synthesizer', () => {
       },
     }),
   }));
+});
+
+function someDockerImageAsset(stack: Stack, displayName: string | undefined) {
+  new DockerImageAsset(stack, 'MyAsset', {
+    directory: path.join(__dirname, 'demo-image'),
+    displayName,
+  });
+}
+
+function someTarballImageAsset(stack: Stack, displayName: string | undefined) {
+  const tarballFile = path.join(__dirname, 'demo-tarball', 'empty.tar');
+  new TarballImageAsset(stack, 'MyAsset', {
+    tarballFile,
+    displayName,
+  });
+}
+
+test.each([
+  [someDockerImageAsset, undefined, 'MyAsset'],
+  [someDockerImageAsset, 'Some name', 'Some name'],
+  [someTarballImageAsset, undefined, 'MyAsset'],
+  [someTarballImageAsset, 'Some name', 'Some name'],
+])('for %p: when input display name is %p, passes display name %p to synthesizer', (factory, given, expected) => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    synthesizer: new CustomSynthesizer(),
+  });
+  const addDockerImageAsset = jest.spyOn(CustomSynthesizer.prototype, 'addDockerImageAsset');
+
+  // WHEN
+  factory(stack, given);
+
+  // THEN
+  expect(addDockerImageAsset).toHaveBeenCalledWith(expect.objectContaining({
+    displayName: expected,
+  }));
+
+  addDockerImageAsset.mockRestore();
 });
 
 class CustomSynthesizer extends StackSynthesizer {

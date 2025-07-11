@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { INetworkListener } from './network-listener';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as cdk from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import {
   BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
@@ -129,7 +131,13 @@ class NetworkTargetGroupMetrics implements INetworkTargetGroupMetrics {
 /**
  * Define a Network Target Group
  */
+@propertyInjectable
 export class NetworkTargetGroup extends TargetGroupBase implements INetworkTargetGroup {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.NetworkTargetGroup';
+
   /**
    * Import an existing target group
    */
@@ -171,7 +179,6 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
       this.setAttribute('deregistration_delay.connection_termination.enabled', props.connectionTermination ? 'true' : 'false');
     }
     this.addTarget(...(props.targets || []));
-
   }
 
   public get metrics(): INetworkTargetGroupMetrics {
@@ -226,7 +233,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
    */
   public get firstLoadBalancerFullName(): string {
     if (this.listeners.length === 0) {
-      throw new Error('The TargetGroup needs to be attached to a LoadBalancer before you can call this method');
+      throw new ValidationError('The TargetGroup needs to be attached to a LoadBalancer before you can call this method', this);
     }
     return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
   }
@@ -325,9 +332,9 @@ class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INet
 
   public get metrics(): INetworkTargetGroupMetrics {
     if (!this._metrics) {
-      throw new Error(
+      throw new ValidationError(
         'The imported NetworkTargetGroup needs the associated NetworkLoadBalancer to be able to provide metrics. ' +
-        'Please specify the ARN value when importing it.');
+        'Please specify the ARN value when importing it.', this);
     }
     return this._metrics;
   }
@@ -340,7 +347,7 @@ class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INet
     for (const target of targets) {
       const result = target.attachToNetworkTargetGroup(this);
       if (result.targetJson !== undefined) {
-        throw new Error('Cannot add a non-self registering target to an imported TargetGroup. Create a new TargetGroup instead.');
+        throw new ValidationError('Cannot add a non-self registering target to an imported TargetGroup. Create a new TargetGroup instead.', this);
       }
     }
   }

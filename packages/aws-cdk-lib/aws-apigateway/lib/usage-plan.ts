@@ -6,6 +6,8 @@ import { IRestApi } from './restapi';
 import { Stage } from './stage';
 import { validateDouble, validateInteger } from './util';
 import { FeatureFlags, IResource, Lazy, Names, Resource, Token } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID } from '../../cx-api';
 
 /**
@@ -209,10 +211,12 @@ abstract class UsagePlanBase extends Resource implements IUsagePlan {
       resource.overrideLogicalId(options?.overrideLogicalId);
     }
   }
-
 }
 
+@propertyInjectable
 export class UsagePlan extends UsagePlanBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.UsagePlan';
 
   /**
    * Import an externally defined usage plan using its ARN.
@@ -241,6 +245,8 @@ export class UsagePlan extends UsagePlanBase {
 
   constructor(scope: Construct, id: string, props: UsagePlanProps = { }) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     let resource: CfnUsagePlan;
 
     resource = new CfnUsagePlan(this, 'Resource', {
@@ -263,16 +269,12 @@ export class UsagePlan extends UsagePlanBase {
 
   /**
    * Adds an apiStage.
-   * @param apiStage
    */
+  @MethodMetadata()
   public addApiStage(apiStage: UsagePlanPerApiStage) {
     this.apiStages.push(apiStage);
   }
 
-  /**
-   *
-   * @param props
-   */
   private renderApiStages(apiStages: UsagePlanPerApiStage[] | undefined): CfnUsagePlan.ApiStageProperty[] | undefined {
     if (apiStages && apiStages.length > 0) {
       const stages: CfnUsagePlan.ApiStageProperty[] = [];

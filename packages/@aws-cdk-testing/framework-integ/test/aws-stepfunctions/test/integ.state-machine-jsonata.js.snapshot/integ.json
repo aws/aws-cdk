@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "StateMachineJsonata/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-state-machine-jsonata-integ"
+      ],
+      "assertionStack": "StateMachineJsonata/DefaultTest/DeployAssert",
+      "assertionStackName": "StateMachineJsonataDefaultTestDeployAssertF616C932"
+    }
+  }
+}

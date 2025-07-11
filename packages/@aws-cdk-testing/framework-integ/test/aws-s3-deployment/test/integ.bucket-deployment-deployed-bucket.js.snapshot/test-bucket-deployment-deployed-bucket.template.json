@@ -161,7 +161,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -188,6 +188,7 @@
     },
     "RetainOnDelete": false,
     "Prune": true,
+    "OutputObjectKeys": true,
     "DestinationBucketArn": {
      "Fn::GetAtt": [
       "Destination920A3C57",
@@ -330,7 +331,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0158f40002a8c211635388a87874fd4dcc3d68f525fe08a0fe0f014069ae539c.zip"
+     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
     },
     "Environment": {
      "Variables": {
@@ -349,7 +350,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.9",
+    "Runtime": "python3.11",
     "Timeout": 900
    },
    "DependsOn": [
@@ -361,109 +362,115 @@
  "Mappings": {
   "LatestNodeRuntimeMap": {
    "af-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
+   },
+   "ap-east-2": {
+    "value": "nodejs22.x"
    },
    "ap-northeast-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-northeast-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-northeast-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-south-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-4": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-5": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ap-southeast-7": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ca-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "ca-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "eu-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-central-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-isoe-west-1": {
     "value": "nodejs18.x"
    },
    "eu-north-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-south-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "eu-west-3": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
+    "value": "nodejs22.x"
    },
    "il-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "me-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "me-south-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "mx-central-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "sa-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-east-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-east-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"
@@ -474,11 +481,14 @@
    "us-isob-east-1": {
     "value": "nodejs18.x"
    },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
    "us-west-1": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    },
    "us-west-2": {
-    "value": "nodejs20.x"
+    "value": "nodejs22.x"
    }
   },
   "S3staticwebsiteMap": {
@@ -487,6 +497,9 @@
    },
    "ap-east-1": {
     "endpoint": "s3-website.ap-east-1.amazonaws.com"
+   },
+   "ap-east-2": {
+    "endpoint": "s3-website.ap-east-2.amazonaws.com"
    },
    "ap-northeast-1": {
     "endpoint": "s3-website-ap-northeast-1.amazonaws.com"
@@ -560,6 +573,9 @@
    "eu-west-3": {
     "endpoint": "s3-website.eu-west-3.amazonaws.com"
    },
+   "eusc-de-east-1": {
+    "endpoint": "s3-website.eusc-de-east-1.amazonaws.eu"
+   },
    "il-central-1": {
     "endpoint": "s3-website.il-central-1.amazonaws.com"
    },
@@ -595,6 +611,9 @@
    },
    "us-isob-east-1": {
     "endpoint": "s3-website.us-isob-east-1.sc2s.sgov.gov"
+   },
+   "us-isob-west-1": {
+    "endpoint": "s3-website.us-isob-west-1.sc2s.sgov.gov"
    },
    "us-west-1": {
     "endpoint": "s3-website-us-west-1.amazonaws.com"

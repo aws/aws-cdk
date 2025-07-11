@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "alb-weight-rando-algorithm-test-integ/DefaultTest": {
+      "stacks": [
+        "alb-weight-rando-algorithm-test-stack"
+      ],
+      "assertionStack": "alb-weight-rando-algorithm-test-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "albweightrandoalgorithmtestintegDefaultTestDeployAssertD1584525"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}

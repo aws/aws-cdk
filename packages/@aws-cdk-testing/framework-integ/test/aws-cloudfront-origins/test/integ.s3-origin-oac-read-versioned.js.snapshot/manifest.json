@@ -1,0 +1,168 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "cloudfront-s3-bucket-origin-oac-read-versioned-access.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cloudfront-s3-bucket-origin-oac-read-versioned-access.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cloudfront-s3-bucket-origin-oac-read-versioned-access": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cloudfront-s3-bucket-origin-oac-read-versioned-access.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2bbc6652795cfb00bd259ec7ad7b3cc1424c7706a4024de039a27e8f3d9a6179.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cloudfront-s3-bucket-origin-oac-read-versioned-access.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cloudfront-s3-bucket-origin-oac-read-versioned-access.assets"
+      ],
+      "metadata": {
+        "/cloudfront-s3-bucket-origin-oac-read-versioned-access/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/cloudfront-s3-bucket-origin-oac-read-versioned-access/Bucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketPolicyE9A3008A"
+          }
+        ],
+        "/cloudfront-s3-bucket-origin-oac-read-versioned-access/Distribution/Origin1/S3OriginAccessControl/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DistributionOrigin1S3OriginAccessControlEB606076"
+          }
+        ],
+        "/cloudfront-s3-bucket-origin-oac-read-versioned-access/Distribution/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Distribution830FAC52"
+          }
+        ],
+        "/cloudfront-s3-bucket-origin-oac-read-versioned-access/Exports/Output{\"Ref\":\"Bucket83908E77\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefBucket83908E7781C90AC0"
+          }
+        ],
+        "/cloudfront-s3-bucket-origin-oac-read-versioned-access/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cloudfront-s3-bucket-origin-oac-read-versioned-access/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cloudfront-s3-bucket-origin-oac-read-versioned-access"
+    },
+    "s3originoacreadversionedaccessDefaultTestDeployAssert4EB06593.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "s3originoacreadversionedaccessDefaultTestDeployAssert4EB06593.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "s3originoacreadversionedaccessDefaultTestDeployAssert4EB06593": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "s3originoacreadversionedaccessDefaultTestDeployAssert4EB06593.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1c909894c4ddad8b1b4a143662da862dd87515eef2a89d38aa93d0af9787779.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "s3originoacreadversionedaccessDefaultTestDeployAssert4EB06593.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cloudfront-s3-bucket-origin-oac-read-versioned-access",
+        "s3originoacreadversionedaccessDefaultTestDeployAssert4EB06593.assets"
+      ],
+      "metadata": {
+        "/s3-origin-oac-read-versioned-access/DefaultTest/DeployAssert/AwsApiCallS3getBucketPolicy4e0df7b53e9ac270ab166ef5159b7471/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3getBucketPolicy4e0df7b53e9ac270ab166ef5159b7471"
+          }
+        ],
+        "/s3-origin-oac-read-versioned-access/DefaultTest/DeployAssert/AwsApiCallS3getBucketPolicy4e0df7b53e9ac270ab166ef5159b7471/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallS3getBucketPolicy4e0df7b53e9ac270ab166ef5159b7471"
+          }
+        ],
+        "/s3-origin-oac-read-versioned-access/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/s3-origin-oac-read-versioned-access/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/s3-origin-oac-read-versioned-access/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/s3-origin-oac-read-versioned-access/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/s3-origin-oac-read-versioned-access/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "s3-origin-oac-read-versioned-access/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

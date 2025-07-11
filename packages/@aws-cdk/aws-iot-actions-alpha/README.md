@@ -28,7 +28,7 @@ Currently supported are:
 - Capture CloudWatch metrics
 - Change state for a CloudWatch alarm
 - Put records to Kinesis Data stream
-- Put records to Kinesis Data Firehose stream
+- Put records to Amazon Data Firehose stream
 - Send messages to SQS queues
 - Publish messages on SNS topics
 - Write messages into columns of DynamoDB
@@ -232,18 +232,17 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
 });
 ```
 
-## Put records to Kinesis Data Firehose stream
+## Put records to Amazon Data Firehose stream
 
 The code snippet below creates an AWS IoT Rule that puts records to Put records
-to Kinesis Data Firehose stream when it is triggered.
+to Amazon Data Firehose stream when it is triggered.
 
 ```ts
-import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
-import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations-alpha';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 const bucket = new s3.Bucket(this, 'MyBucket');
 const stream = new firehose.DeliveryStream(this, 'MyStream', {
-  destinations: [new destinations.S3Bucket(bucket)],
+  destination: new firehose.S3Bucket(bucket),
 });
 
 const topicRule = new iot.TopicRule(this, 'TopicRule', {

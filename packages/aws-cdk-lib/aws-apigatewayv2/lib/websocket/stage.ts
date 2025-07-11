@@ -2,7 +2,10 @@ import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
 import { CfnStage } from '.././index';
 import { Grant, IGrantable } from '../../../aws-iam';
-import { Stack } from '../../../core';
+import { Lazy, Stack } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { StageOptions, IApi, IStage, StageAttributes } from '../common';
 import { StageBase } from '../common/base';
 
@@ -53,7 +56,11 @@ export interface WebSocketStageAttributes extends StageAttributes {
  * Represents a stage where an instance of the API is deployed.
  * @resource AWS::ApiGatewayV2::Stage
  */
+@propertyInjectable
 export class WebSocketStage extends StageBase implements IWebSocketStage {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.WebSocketStage';
+
   /**
    * Import an existing stage into this CDK app.
    */
@@ -64,11 +71,11 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       public readonly api = attrs.api;
 
       get url(): string {
-        throw new Error('url is not available for imported stages.');
+        throw new ValidationError('url is not available for imported stages.', scope);
       }
 
       get callbackUrl(): string {
-        throw new Error('callback url is not available for imported stages.');
+        throw new ValidationError('callback url is not available for imported stages.', scope);
       }
     }
     return new Import(scope, id);
@@ -82,6 +89,14 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
     super(scope, id, {
       physicalName: props.stageName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    if (props.stageVariables) {
+      Object.entries(props.stageVariables).forEach(([key, value]) => {
+        this.addStageVariable(key, value);
+      });
+    }
 
     this.baseApi = props.webSocketApi;
     this.api = props.webSocketApi;
@@ -91,11 +106,13 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       apiId: props.webSocketApi.apiId,
       stageName: this.physicalName,
       autoDeploy: props.autoDeploy,
-      defaultRouteSettings: !props.throttle ? undefined : {
+      defaultRouteSettings: props.throttle || props.detailedMetricsEnabled ? {
         throttlingBurstLimit: props.throttle?.burstLimit,
         throttlingRateLimit: props.throttle?.rateLimit,
-      },
+        detailedMetricsEnabled: props.detailedMetricsEnabled,
+      } : undefined,
       description: props.description,
+      stageVariables: Lazy.any({ produce: () => this._stageVariables }),
     });
 
     if (props.domainMapping) {
@@ -127,6 +144,7 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
    *
    * @param identity The principal
    */
+  @MethodMetadata()
   public grantManagementApiAccess(identity: IGrantable): Grant {
     const arn = Stack.of(this.api).formatArn({
       service: 'execute-api',

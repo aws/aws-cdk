@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-ecr-integ-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d1e9fd700ef2d0c24c2e7a8e6e4ccdbbac0688375b6a419c2b58648e2dab3f46.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f360006b28d1a366bd38804ec6ed44476b45596006403373ffe38a8acf24e060.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,26 @@
         "aws-ecr-integ-stack.assets"
       ],
       "metadata": {
+        "/aws-ecr-integ-stack/Repo": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "repositoryName": "*",
+              "removalPolicy": "destroy",
+              "autoDeleteImages": true
+            }
+          }
+        ],
         "/aws-ecr-integ-stack/Repo/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Repo02AC86CF"
+          }
+        ],
+        "/aws-ecr-integ-stack/Repo/AutoDeleteImagesCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-ecr-integ-stack/Repo/AutoDeleteImagesCustomResource/Default": [
@@ -50,6 +66,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-ecr-integ-stack/Custom::ECRAutoDeleteImagesCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/aws-ecr-integ-stack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Role": [
@@ -139,5 +161,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

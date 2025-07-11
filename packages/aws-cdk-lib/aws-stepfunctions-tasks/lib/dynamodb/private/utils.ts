@@ -1,4 +1,5 @@
 import * as sfn from '../../../../aws-stepfunctions';
+import { UnscopedValidationError } from '../../../../core';
 import { integrationResourceArn } from '../../private/task-utils';
 import { DynamoAttributeValue } from '../shared-types';
 
@@ -25,6 +26,12 @@ export function transformAttributeValueMap(attrMap?: { [key: string]: DynamoAttr
 
 export function validateJsonPath(value: string) {
   if (!value.startsWith('$')) {
-    throw new Error("Data JSON path values must either be exactly equal to '$' or start with '$.'");
+    throw new UnscopedValidationError("Data JSON path values must either be exactly equal to '$' or start with '$.'");
+  }
+}
+
+export function validateJsonata(value: string) {
+  if (!value.startsWith('{%') || !value.endsWith('%}')) {
+    throw new UnscopedValidationError("Data JSONata expression values must either be exactly start with '{%' and end with '%}'");
   }
 }

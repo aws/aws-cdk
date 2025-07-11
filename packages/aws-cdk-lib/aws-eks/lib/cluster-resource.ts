@@ -6,7 +6,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
-import { ArnComponents, CustomResource, Token, Stack, Lazy } from '../../core';
+import { ArnComponents, CustomResource, Token, Stack, Lazy, ValidationError } from '../../core';
 
 export interface ClusterResourceProps {
   readonly resourcesVpcConfig: CfnCluster.ResourcesVpcConfigProperty;
@@ -27,6 +27,8 @@ export interface ClusterResourceProps {
   readonly tags?: { [key: string]: string };
   readonly logging?: { [key: string]: [ { [key: string]: any } ] };
   readonly accessconfig?: CfnCluster.AccessConfigProperty;
+  readonly remoteNetworkConfig?: CfnCluster.RemoteNetworkConfigProperty;
+  readonly bootstrapSelfManagedAddons?: boolean;
 }
 
 /**
@@ -55,7 +57,7 @@ export class ClusterResource extends Construct {
     super(scope, id);
 
     if (!props.roleArn) {
-      throw new Error('"roleArn" is required');
+      throw new ValidationError('"roleArn" is required', this);
     }
 
     const provider = ClusterResourceProvider.getOrCreate(this, {
@@ -90,6 +92,8 @@ export class ClusterResource extends Construct {
           tags: props.tags,
           logging: props.logging,
           accessConfig: props.accessconfig,
+          remoteNetworkConfig: props.remoteNetworkConfig,
+          bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
         },
         AssumeRoleArn: this.adminRole.roleArn,
 
@@ -98,7 +102,7 @@ export class ClusterResource extends Construct {
         // doesn't contain XXX key in object" (see #8276) by incrementing this
         // number, you will effectively cause a "no-op update" to the cluster
         // which will return the new set of attribute.
-        AttributesRevision: 3,
+        AttributesRevision: 5,
       },
     });
 

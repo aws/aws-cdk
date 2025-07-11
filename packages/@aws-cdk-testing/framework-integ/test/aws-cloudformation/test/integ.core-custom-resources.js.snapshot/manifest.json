@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "custom-resource-test.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "custom-resource-test.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9e5d3e20624023e8f794f5d686d025da3e98b1b5a8acbe187a994bb8dc26f2c1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ea4cc10f0bac43b997718d2adeda73a195b848863af9d0683cdd3f2c08657692.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -45,10 +46,30 @@
             "data": "CustomReflectCustomResourceProviderHandler2E189D0B"
           }
         ],
+        "/custom-resource-test/MyResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/custom-resource-test/MyResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyResource"
+          }
+        ],
+        "/custom-resource-test/MyLengthyTypeResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/custom-resource-test/MyLengthyTypeResource/Default": [
@@ -96,5 +117,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1014.0"
 }

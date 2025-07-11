@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "aws-cdk-rds-proxy.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f68b974b928e0003a591e50a31664287bf09b26266fd62aff657be66a8ddd553.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/24c50d70529cefe67615ea76909c26232656878d7c5606e5fe0bbe6313acc3af.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -356,6 +356,156 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "dbClusterProxy2ProxyTargetGroup8BD48F57"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/Subnets/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersSubnetsD9FBAD2A"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersSecurityGroup1D462CCA"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/SecurityGroup/from awscdkrdsproxyProxy3ProxySecurityGroup211267B8:{IndirectPort}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersSecurityGroupfromawscdkrdsproxyProxy3ProxySecurityGroup211267B8IndirectPort9336325A"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/SecurityGroup/from awscdkrdsproxydbClusterWithWriterAndReadersProxy4ProxySecurityGroup4989CF8F:{IndirectPort}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersSecurityGroupfromawscdkrdsproxydbClusterWithWriterAndReadersProxy4ProxySecurityGroup4989CF8FIndirectPort905C5505"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/SecurityGroup/from awscdkrdsproxydbClusterWithWriterAndReadersProxy5ProxySecurityGroupF30773AF:{IndirectPort}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersSecurityGroupfromawscdkrdsproxydbClusterWithWriterAndReadersProxy5ProxySecurityGroupF30773AFIndirectPort5D2FF883"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersSecret3ED37A64"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersSecretAttachment9F7B2148"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReaders6627D259"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/writer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReaderswriter6BAC1240"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/reader/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersreader042B2B99"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/Proxy4/IAMRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy4IAMRoleA63955A2"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/Proxy4/IAMRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy4IAMRoleDefaultPolicy8019C3D4"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/Proxy4/ProxySecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy4ProxySecurityGroupEDC85546"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/Proxy4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy4C6584761"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/Proxy4/ProxyTargetGroup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy4ProxyTargetGroup69B133B1"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/Proxy5/IAMRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy5IAMRole760AB64E"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/Proxy5/IAMRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy5IAMRoleDefaultPolicy0CD3B628"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/Proxy5/ProxySecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy5ProxySecurityGroupE59314C4"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/Proxy5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy5FA5F5557"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbClusterWithWriterAndReaders/Proxy5/ProxyTargetGroup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterWithWriterAndReadersProxy5ProxyTargetGroupE76C811F"
+          }
+        ],
+        "/aws-cdk-rds-proxy/Proxy3/IAMRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Proxy3IAMRole26B82D9F"
+          }
+        ],
+        "/aws-cdk-rds-proxy/Proxy3/IAMRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Proxy3IAMRoleDefaultPolicyEBD54677"
+          }
+        ],
+        "/aws-cdk-rds-proxy/Proxy3/ProxySecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Proxy3ProxySecurityGroupF29F0434"
+          }
+        ],
+        "/aws-cdk-rds-proxy/Proxy3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Proxy39463A146"
+          }
+        ],
+        "/aws-cdk-rds-proxy/Proxy3/ProxyTargetGroup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Proxy3ProxyTargetGroup5A623A38"
           }
         ],
         "/aws-cdk-rds-proxy/BootstrapVersion": [

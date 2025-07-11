@@ -37,13 +37,13 @@
     "Code": {
      "ZipFile": "def handler(event, context):\n  return \"success\""
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "IamAuthFunctionUrlsServiceRole35DF9DE0",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "python3.10"
    },
    "DependsOn": [
@@ -99,13 +99,13 @@
     "Code": {
      "ZipFile": "def handler(event, context):\n  return \"success\""
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "NoAuthFunctionUrlsServiceRole7247E6F2",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "python3.10"
    },
    "DependsOn": [
@@ -134,8 +134,8 @@
       "Arn"
      ]
     },
-    "Principal": "*",
-    "FunctionUrlAuthType": "NONE"
+    "FunctionUrlAuthType": "NONE",
+    "Principal": "*"
    }
   },
   "CorsFunctionUrlsServiceRole6227B597": {
@@ -175,13 +175,13 @@
     "Code": {
      "ZipFile": "def handler(event, context):\n  return \"success\""
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "CorsFunctionUrlsServiceRole6227B597",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "python3.10"
    },
    "DependsOn": [
@@ -192,18 +192,18 @@
    "Type": "AWS::Lambda::Url",
    "Properties": {
     "AuthType": "NONE",
-    "TargetFunctionArn": {
-     "Fn::GetAtt": [
-      "CorsFunctionUrlsD81CF424",
-      "Arn"
-     ]
-    },
     "Cors": {
      "AllowMethods": [
       "*"
      ],
      "AllowOrigins": [
       "https://example.com"
+     ]
+    },
+    "TargetFunctionArn": {
+     "Fn::GetAtt": [
+      "CorsFunctionUrlsD81CF424",
+      "Arn"
      ]
     }
    }
@@ -218,8 +218,8 @@
       "Arn"
      ]
     },
-    "Principal": "*",
-    "FunctionUrlAuthType": "NONE"
+    "FunctionUrlAuthType": "NONE",
+    "Principal": "*"
    }
   },
   "StreamFunctionUrlsServiceRoleAF76EC5D": {
@@ -259,13 +259,13 @@
     "Code": {
      "ZipFile": "def handler(event, context):\n  return \"success\""
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "StreamFunctionUrlsServiceRoleAF76EC5D",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "python3.10"
    },
    "DependsOn": [
@@ -276,13 +276,13 @@
    "Type": "AWS::Lambda::Url",
    "Properties": {
     "AuthType": "NONE",
+    "InvokeMode": "RESPONSE_STREAM",
     "TargetFunctionArn": {
      "Fn::GetAtt": [
       "StreamFunctionUrlsAAB55C9C",
       "Arn"
      ]
-    },
-    "InvokeMode": "RESPONSE_STREAM"
+    }
    }
   },
   "StreamFunctionUrlsinvokefunctionurl4FD8689D": {
@@ -295,8 +295,8 @@
       "Arn"
      ]
     },
-    "Principal": "*",
-    "FunctionUrlAuthType": "NONE"
+    "FunctionUrlAuthType": "NONE",
+    "Principal": "*"
    }
   }
  },

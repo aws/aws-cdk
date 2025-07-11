@@ -31,11 +31,15 @@ class TestBucketDeployment extends cdk.Stack {
       distributionPaths: ['/images/*.png'],
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
-
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 
 const stack = new TestBucketDeployment(app, 'test-bucket-deployments-1');
 

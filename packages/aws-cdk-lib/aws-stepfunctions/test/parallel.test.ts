@@ -58,6 +58,75 @@ describe('Parallel State', () => {
       },
     });
   });
+
+  test('State Machine With Parallel State With Parameters', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const parallel = new stepfunctions.Parallel(stack, 'Parallel State', {
+      parameters: {
+        staticString: 'Static Value',
+        staticNumber: 123,
+        dynamicValue: stepfunctions.JsonPath.stringAt('$.inputField'),
+        executionName: stepfunctions.JsonPath.executionName,
+      },
+    });
+    parallel.branch(new stepfunctions.Pass(stack, 'Branch 1'));
+
+    // THEN
+    expect(render(parallel)).toStrictEqual({
+      StartAt: 'Parallel State',
+      States: {
+        'Parallel State': {
+          Type: 'Parallel',
+          End: true,
+          Branches: [
+            { StartAt: 'Branch 1', States: { 'Branch 1': { Type: 'Pass', End: true } } },
+          ],
+          Parameters: {
+            'staticString': 'Static Value',
+            'staticNumber': 123,
+            'dynamicValue.$': '$.inputField',
+            'executionName.$': '$$.Execution.Name',
+          },
+        },
+      },
+    });
+  });
+
+  test('State Machine With Parallel State using JSONata', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const parallel = stepfunctions.Parallel.jsonata(stack, 'Parallel State', {
+      outputs: {
+        foo: '{% $state.input.result[0] %}',
+      },
+    });
+    parallel.branch(stepfunctions.Pass.jsonPath(stack, 'Branch 1', { stateName: 'first-pass-state' }));
+    parallel.branch(stepfunctions.Pass.jsonPath(stack, 'Branch 2'));
+
+    // THEN
+    expect(render(parallel)).toStrictEqual({
+      StartAt: 'Parallel State',
+      States: {
+        'Parallel State': {
+          Type: 'Parallel',
+          QueryLanguage: 'JSONata',
+          End: true,
+          Branches: [
+            { StartAt: 'first-pass-state', States: { 'first-pass-state': { Type: 'Pass', End: true } } },
+            { StartAt: 'Branch 2', States: { 'Branch 2': { Type: 'Pass', End: true } } },
+          ],
+          Output: {
+            foo: '{% $state.input.result[0] %}',
+          },
+        },
+      },
+    });
+  });
 });
 
 function render(sm: stepfunctions.IChainable) {

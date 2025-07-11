@@ -14,8 +14,16 @@ import {
   Expression,
   ClassSpec,
   $T,
+  Statement,
 } from '@cdklabs/typewriter';
-import { Runtime } from './config';
+import {
+  CUSTOM_RESOURCE_PROVIDER,
+  CUSTOM_RESOURCE_RUNTIME_FAMILY,
+  CUSTOM_RESOURCE_SINGLETON,
+  CUSTOM_RESOURCE_SINGLETON_LOG_GROUP,
+  CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION,
+  Runtime,
+} from './config';
 import { HandlerFrameworkModule } from './framework';
 import {
   PATH_MODULE,
@@ -56,6 +64,13 @@ interface ConstructorBuildProps {
    * @default MemberVisbility.Public
    */
   readonly constructorVisbility?: MemberVisibility;
+
+  /**
+   * These statements are added to the constructor body in the order they appear in this property.
+   *
+   * @default undefined
+   */
+  readonly statements?: Statement[];
 }
 
 /**
@@ -118,11 +133,15 @@ export abstract class HandlerFrameworkClass extends ClassType {
           ['handler', expr.lit(props.handler)],
           ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime })],
         ]);
+        const metadataStatements: Statement[] = [
+          expr.directCode(`this.node.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`),
+        ];
         this.buildConstructor({
           constructorPropsType: LAMBDA_MODULE.FunctionOptions,
           superProps,
           optionalConstructorProps: true,
           constructorVisbility: MemberVisibility.Public,
+          statements: metadataStatements,
         });
       }
     })();
@@ -206,10 +225,18 @@ export abstract class HandlerFrameworkClass extends ClassType {
           ['handler', expr.lit(props.handler)],
           ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime, isEvalNodejsProvider })],
         ]);
+        const metadataStatements: Statement[] = [
+          expr.directCode(`this.addMetadata('${CUSTOM_RESOURCE_SINGLETON}', true)`),
+          expr.directCode(`this.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`),
+          expr.directCode(`if (props?.logGroup) { this.logGroup.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_GROUP}', true) }`),
+          // We need to access the private `_logRetention` custom resource, the only public property - `logGroup` - provides an ARN reference to the resource, instead of the resource itself.
+          expr.directCode(`if (props?.logRetention) { ((this as any).lambdaFunction as lambda.Function)._logRetention?.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION}', true) }`),
+        ];
         this.buildConstructor({
           constructorPropsType: _interface.type,
           superProps,
           constructorVisbility: MemberVisibility.Public,
+          statements: metadataStatements,
         });
       }
     })();
@@ -310,11 +337,13 @@ export abstract class HandlerFrameworkClass extends ClassType {
             isCustomResourceProvider: true,
           })],
         ]);
+        const metadataStatements: Statement[] = [expr.directCode(`this.node.addMetadata('${CUSTOM_RESOURCE_PROVIDER}', true)`)];
         this.buildConstructor({
           constructorPropsType: CORE_MODULE.CustomResourceProviderOptions,
           superProps,
           constructorVisbility: MemberVisibility.Private,
           optionalConstructorProps: true,
+          statements: metadataStatements,
         });
       }
     })();
@@ -359,6 +388,11 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
     const superInitializerArgs: Expression[] = [scope, id, props.superProps];
     init.addBody(new SuperInitializer(...superInitializerArgs));
+    if (props.statements) {
+      for (const statement of props.statements) {
+        init.addBody(statement);
+      }
+    }
   }
 
   private buildRuntimeProperty(scope: HandlerFrameworkModule, options: BuildRuntimePropertyOptions = {}) {

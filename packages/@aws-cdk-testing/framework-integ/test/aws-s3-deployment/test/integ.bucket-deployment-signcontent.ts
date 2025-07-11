@@ -34,7 +34,10 @@ class TestBucketDeployment extends cdk.Stack {
         resources: [`${bucket.bucketArn}/*`],
         conditions: {
           StringNotLike: {
-            's3:x-amz-content-sha256': '????????????????????????????????????????????????????????????????',
+            's3:x-amz-content-sha256': [
+              '[A-Fa-f0-9]{64}', // Regular SHA256 hash
+              'STREAMING-*', // Streaming upload format
+            ],
           },
         },
       }),
@@ -43,7 +46,11 @@ class TestBucketDeployment extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new TestBucketDeployment(app, 'test-bucket-deployment-signobject');
 
 new integ.IntegTest(app, 'integ-test-bucket-deployments', {

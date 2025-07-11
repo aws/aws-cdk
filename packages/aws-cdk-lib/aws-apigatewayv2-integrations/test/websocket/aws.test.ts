@@ -1,8 +1,8 @@
-import { WebSocketAwsIntegration } from './../../lib/websocket/aws';
 import { Template } from '../../../assertions';
 import { ContentHandling, PassthroughBehavior, WebSocketApi } from '../../../aws-apigatewayv2';
 import * as iam from '../../../aws-iam';
 import { Duration, Stack } from '../../../core';
+import { WebSocketAwsIntegration } from './../../lib/websocket/aws';
 
 describe('AwsWebSocketIntegration', () => {
   test('default', () => {

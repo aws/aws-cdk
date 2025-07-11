@@ -1,0 +1,12 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "PreTokenGenerationIntegTest/DefaultTest": {
+      "stacks": [
+        "UserPoolPreTokenGenerationStack"
+      ],
+      "assertionStack": "PreTokenGenerationIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PreTokenGenerationIntegTestDefaultTestDeployAssert5121EE60"
+    }
+  }
+}

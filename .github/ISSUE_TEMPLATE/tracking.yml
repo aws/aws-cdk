@@ -1,7 +1,7 @@
 name: Tracking Issue
-description: Add a module tracking issue (internal use only)
+description: Add a module tracking issue. Internal CDK team use only.
 title: "Tracking: [service]"
-labels: [management/tracking]
+labels: [needs-triage, management/tracking]
 body:
   - type: markdown
     attributes:

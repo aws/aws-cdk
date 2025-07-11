@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "BedrockActionGroup/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-action-group-1"
+      ],
+      "assertionStack": "BedrockActionGroup/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockActionGroupDefaultTestDeployAssertE2AFA81B"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

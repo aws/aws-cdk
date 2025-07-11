@@ -7,8 +7,10 @@ import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFrag
 import { undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
-import { ArnFormat, Resource, Stack, Arn, Aws } from '../../core';
+import { ArnFormat, Resource, Stack, Arn, Aws, UnscopedValidationError } from '../../core';
 import { getCustomizeRolesConfig, PolicySynthesizer } from '../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A managed policy
@@ -101,7 +103,11 @@ export interface ManagedPolicyProps {
  * Managed policy
  *
  */
+@propertyInjectable
 export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantable {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.ManagedPolicy';
+
   /**
    * Import a customer managed policy from the managedPolicyName.
    *
@@ -214,6 +220,8 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
     super(scope, id, {
       physicalName: props.managedPolicyName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.description = props.description || '';
     this.path = props.path || '/';
@@ -274,6 +282,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   /**
    * Adds a statement to the policy document.
    */
+  @MethodMetadata()
   public addStatements(...statement: PolicyStatement[]) {
     this.document.addStatements(...statement);
   }
@@ -281,6 +290,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   /**
    * Attaches this policy to a user.
    */
+  @MethodMetadata()
   public attachToUser(user: IUser) {
     if (this.users.find(u => u.userArn === user.userArn)) { return; }
     this.users.push(user);
@@ -289,6 +299,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   /**
    * Attaches this policy to a role.
    */
+  @MethodMetadata()
   public attachToRole(role: IRole) {
     if (this.roles.find(r => r.roleArn === role.roleArn)) { return; }
     this.roles.push(role);
@@ -297,6 +308,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   /**
    * Attaches this policy to a group.
    */
+  @MethodMetadata()
   public attachToGroup(group: IGroup) {
     if (this.groups.find(g => g.groupArn === group.groupArn)) { return; }
     this.groups.push(group);
@@ -336,7 +348,7 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
     // This property is referenced to add policy statements as a resource-based policy.
     // We should fail because a managed policy cannot be used as a principal of a policy document.
     // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
-    throw new Error(`Cannot use a ManagedPolicy '${this._managedPolicy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
+    throw new UnscopedValidationError(`Cannot use a ManagedPolicy '${this._managedPolicy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {

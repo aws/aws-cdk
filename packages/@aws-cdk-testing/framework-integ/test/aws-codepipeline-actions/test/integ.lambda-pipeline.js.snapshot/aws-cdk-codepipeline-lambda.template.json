@@ -846,30 +846,6 @@
     ]
    }
   },
-  "LambdaFunServiceRoleDefaultPolicy217FED83": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "codepipeline:PutJobFailureResult",
-        "codepipeline:PutJobSuccessResult"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "LambdaFunServiceRoleDefaultPolicy217FED83",
-    "Roles": [
-     {
-      "Ref": "LambdaFunServiceRoleF0979767"
-     }
-    ]
-   }
-  },
   "LambdaFun98622869": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -886,9 +862,32 @@
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [
-    "LambdaFunServiceRoleDefaultPolicy217FED83",
     "LambdaFunServiceRoleF0979767"
    ]
+  },
+  "LambdaFuninlinePolicyAddedToExecutionRole0E4128878": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "codepipeline:PutJobFailureResult",
+        "codepipeline:PutJobSuccessResult"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LambdaFuninlinePolicyAddedToExecutionRole0E4128878",
+    "Roles": [
+     {
+      "Ref": "LambdaFunServiceRoleF0979767"
+     }
+    ]
+   }
   }
  },
  "Parameters": {

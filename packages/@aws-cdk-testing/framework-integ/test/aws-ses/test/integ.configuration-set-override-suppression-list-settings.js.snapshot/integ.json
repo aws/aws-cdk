@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "ConfigurationSetOverridingSuppressionListSettingsInteg/DefaultTest": {
+      "stacks": [
+        "cdk-ses-configuration-set-overriding-suppression-list-integ"
+      ],
+      "assertionStack": "ConfigurationSetOverridingSuppressionListSettingsInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ConfigurationSetOverridingSuppressionListSettingsIntegDefaultTestDeployAssert41D23FD8"
+    }
+  }
+}

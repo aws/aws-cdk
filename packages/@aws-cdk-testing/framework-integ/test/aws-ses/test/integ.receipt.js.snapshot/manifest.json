@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-ses-receipt.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe59a581b43476b7e76a50605d9291a33cbbe1a05264ea6b2990bf9a5523f6e9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/630433e920f0531c36422ae0a05b1457ac23f23417b2de39ffc6f5c9f78eea2d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,81 @@
         "aws-cdk-ses-receipt.assets"
       ],
       "metadata": {
+        "/aws-cdk-ses-receipt/RuleSet": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "dropSpam": true
+            }
+          }
+        ],
         "/aws-cdk-ses-receipt/RuleSet/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RuleSetE30C6C48"
+          }
+        ],
+        "/aws-cdk-ses-receipt/RuleSet/DropSpam/Function": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addPermission": [
+                "*",
+                {
+                  "action": "*",
+                  "principal": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  },
+                  "sourceAccount": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-ses-receipt/RuleSet/DropSpam/Rule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "actions": "*",
+              "scanEnabled": true,
+              "ruleSet": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAction": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-ses-receipt/RuleSet/DropSpam/Rule/Resource": [
@@ -46,10 +117,32 @@
             "data": "RuleSetDropSpamRule5809F51B"
           }
         ],
+        "/aws-cdk-ses-receipt/RuleSet/FirstRule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "after": "*",
+              "ruleSet": "*",
+              "receiptRuleName": "*",
+              "recipients": "*",
+              "scanEnabled": true,
+              "tlsPolicy": "Require"
+            }
+          }
+        ],
         "/aws-cdk-ses-receipt/RuleSet/FirstRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RuleSetFirstRule0A27C8CC"
+          }
+        ],
+        "/aws-cdk-ses-receipt/RuleSet/SecondRule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "after": "*",
+              "ruleSet": "*"
+            }
           }
         ],
         "/aws-cdk-ses-receipt/RuleSet/SecondRule/Resource": [
@@ -62,6 +155,46 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
+        "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/Resource": [
@@ -82,10 +215,25 @@
             "data": "SingletonLambda224e77f9a32e4b4dac32983477abba16AllowSesB42DF904"
           }
         ],
+        "/aws-cdk-ses-receipt/Allowlist/BlockAll": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-ses-receipt/Allowlist/BlockAll/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AllowlistBlockAll7E0A7F11"
+          }
+        ],
+        "/aws-cdk-ses-receipt/Allowlist/Allow1000016": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "ip": "*",
+              "policy": "Allow"
+            }
           }
         ],
         "/aws-cdk-ses-receipt/Allowlist/Allow1000016/Resource": [
@@ -163,5 +311,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

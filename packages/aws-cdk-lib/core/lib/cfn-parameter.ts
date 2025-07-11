@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnElement } from './cfn-element';
+import { ValidationError } from './errors';
 import { CfnReference } from './private/cfn-reference';
 import { IResolvable, IResolveContext } from './resolvable';
 import { Token } from './token';
@@ -294,7 +295,7 @@ export class CfnParameter extends CfnElement {
    */
   public get valueAsString(): string {
     if (!isStringType(this.type) && !isNumberType(this.type)) {
-      throw new Error(`Parameter type (${this.type}) is not a string or number type`);
+      throw new ValidationError(`Parameter type (${this.type}) is not a string or number type`, this);
     }
     return Token.asString(this.value);
   }
@@ -304,7 +305,7 @@ export class CfnParameter extends CfnElement {
    */
   public get valueAsList(): string[] {
     if (!isListType(this.type)) {
-      throw new Error(`Parameter type (${this.type}) is not a string list type`);
+      throw new ValidationError(`Parameter type (${this.type}) is not a string list type`, this);
     }
     return Token.asList(this.value);
   }
@@ -314,7 +315,7 @@ export class CfnParameter extends CfnElement {
    */
   public get valueAsNumber(): number {
     if (!isNumberType(this.type)) {
-      throw new Error(`Parameter type (${this.type}) is not a number type`);
+      throw new ValidationError(`Parameter type (${this.type}) is not a number type`, this);
     }
     return Token.asNumber(this.value);
   }

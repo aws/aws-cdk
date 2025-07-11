@@ -6,6 +6,9 @@ import { MockIntegration } from './integrations';
 import { Method, MethodOptions, AuthorizationType } from './method';
 import { IRestApi, RestApi } from './restapi';
 import { IResource as IResourceBase, Resource as ResourceConstruct } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IResource extends IResourceBase {
   /**
@@ -204,11 +207,11 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     // Access-Control-Allow-Origin
 
     if (options.allowOrigins.length === 0) {
-      throw new Error('allowOrigins must contain at least one origin');
+      throw new ValidationError('allowOrigins must contain at least one origin', this);
     }
 
     if (options.allowOrigins.includes('*') && options.allowOrigins.length > 1) {
-      throw new Error(`Invalid "allowOrigins" - cannot mix "*" with specific origins: ${options.allowOrigins.join(',')}`);
+      throw new ValidationError(`Invalid "allowOrigins" - cannot mix "*" with specific origins: ${options.allowOrigins.join(',')}`, this);
     }
 
     // we use the first origin here and if there are more origins in the list, we
@@ -229,7 +232,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
     if (allowMethods.includes('ANY')) {
       if (allowMethods.length > 1) {
-        throw new Error(`ANY cannot be used with any other method. Received: ${allowMethods.join(',')}`);
+        throw new ValidationError(`ANY cannot be used with any other method. Received: ${allowMethods.join(',')}`, this);
       }
 
       allowMethods = Cors.ALL_METHODS;
@@ -250,7 +253,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     let maxAgeSeconds;
 
     if (options.maxAge && options.disableCache) {
-      throw new Error('The options "maxAge" and "disableCache" are mutually exclusive');
+      throw new ValidationError('The options "maxAge" and "disableCache" are mutually exclusive', this);
     }
 
     if (options.maxAge) {
@@ -353,7 +356,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
     if (path.startsWith('/')) {
       if (this.path !== '/') {
-        throw new Error(`Path may start with "/" only for the resource, but we are at: ${this.path}`);
+        throw new ValidationError(`Path may start with "/" only for the resource, but we are at: ${this.path}`, this);
       }
 
       // trim trailing "/"
@@ -363,7 +366,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     const parts = path.split('/');
     const next = parts.shift();
     if (!next || next === '') {
-      throw new Error('resourceForPath cannot be called with an empty path');
+      throw new ValidationError('resourceForPath cannot be called with an empty path', this);
     }
 
     let resource = this.getResource(next);
@@ -402,7 +405,11 @@ export interface ResourceAttributes {
   readonly path: string;
 }
 
+@propertyInjectable
 export class Resource extends ResourceBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.Resource';
+
   /**
    * Import an existing resource
    */
@@ -416,11 +423,11 @@ export class Resource extends ResourceBase {
       public readonly defaultCorsPreflightOptions?: CorsOptions = undefined;
 
       public get parentResource(): IResource {
-        throw new Error('parentResource is not configured for imported resource.');
+        throw new ValidationError('parentResource is not configured for imported resource.', scope);
       }
 
       public get restApi(): RestApi {
-        throw new Error('restApi is not configured for imported resource.');
+        throw new ValidationError('restApi is not configured for imported resource.', scope);
       }
     }
 
@@ -438,8 +445,10 @@ export class Resource extends ResourceBase {
 
   constructor(scope: Construct, id: string, props: ResourceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
-    validateResourcePathPart(props.pathPart);
+    validateResourcePathPart(props.pathPart, scope);
 
     this.parentResource = props.parent;
 
@@ -488,7 +497,7 @@ export class Resource extends ResourceBase {
    */
   public get restApi(): RestApi {
     if (!this.parentResource) {
-      throw new Error('parentResource was unexpectedly not defined');
+      throw new ValidationError('parentResource was unexpectedly not defined', this);
     }
     return this.parentResource.restApi;
   }
@@ -516,7 +525,10 @@ export interface ProxyResourceProps extends ProxyResourceOptions {
  * Defines a {proxy+} greedy resource and an ANY method on a route.
  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html
  */
+@propertyInjectable
 export class ProxyResource extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.ProxyResource';
   /**
    * If `props.anyMethod` is `true`, this will be the reference to the 'ANY'
    * method associated with this proxy resource.
@@ -530,6 +542,8 @@ export class ProxyResource extends Resource {
       defaultIntegration: props.defaultIntegration,
       defaultMethodOptions: props.defaultMethodOptions,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const anyMethod = props.anyMethod ?? true;
     if (anyMethod) {
@@ -537,6 +551,7 @@ export class ProxyResource extends Resource {
     }
   }
 
+  @MethodMetadata()
   public addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
     // In case this proxy is mounted under the root, also add this method to
     // the root so that empty paths are proxied as well.
@@ -550,7 +565,7 @@ export class ProxyResource extends Resource {
   }
 }
 
-function validateResourcePathPart(part: string) {
+function validateResourcePathPart(part: string, scope: Construct) {
   // strip {} which indicate this is a parameter
   if (part.startsWith('{') && part.endsWith('}')) {
     part = part.slice(1, -1);
@@ -562,7 +577,7 @@ function validateResourcePathPart(part: string) {
   }
 
   if (!/^[a-zA-Z0-9:\.\_\-\$]+$/.test(part)) {
-    throw new Error(`Resource's path part only allow [a-zA-Z0-9:._-$], an optional trailing '+'
-      and curly braces at the beginning and the end: ${part}`);
+    throw new ValidationError(`Resource's path part only allow [a-zA-Z0-9:._-$], an optional trailing '+'
+      and curly braces at the beginning and the end: ${part}`, scope);
   }
 }

@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "22de69e75b55e15d4d49905d8a4901edd66d1367f617c2a01ac6e86ca2b7eb84.zip"
+     "S3Key": "93d96d34e0d3cd20eb082652b91012b131bdc34fcf2bc16eb4170e04772fddb1.zip"
     },
     "Description": "/opt/nodejs/node_modules/proxy-agent"
    }
@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "6b19297a97597a250e5e30435d2cc30a5558a154c4135bccb767b62181e6c86d.zip"
+     "S3Key": "92f18f14cae670d3fa0d18ca6ff6e09531d5ba28a189b80f5c43c1df18736cd8.zip"
     },
     "Description": "onEvent handler for EKS cluster resource provider",
     "Environment": {
@@ -70,7 +70,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x",
+    "Runtime": "nodejs22.x",
     "Timeout": 60
    },
    "DependsOn": [
@@ -115,7 +115,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "6b19297a97597a250e5e30435d2cc30a5558a154c4135bccb767b62181e6c86d.zip"
+     "S3Key": "92f18f14cae670d3fa0d18ca6ff6e09531d5ba28a189b80f5c43c1df18736cd8.zip"
     },
     "Description": "isComplete handler for EKS cluster resource provider",
     "Environment": {
@@ -135,7 +135,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x",
+    "Runtime": "nodejs22.x",
     "Timeout": 60
    },
    "DependsOn": [
@@ -225,6 +225,24 @@
        ]
       },
       {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnEventHandler42BEBAE0",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
        "Action": "states:StartExecution",
        "Effect": "Allow",
        "Resource": {
@@ -249,7 +267,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -278,7 +296,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x",
+    "Runtime": "nodejs22.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -367,6 +385,24 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnEventHandler42BEBAE0",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -386,7 +422,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -412,7 +448,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x",
+    "Runtime": "nodejs22.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -501,6 +537,24 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnEventHandler42BEBAE0",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -520,7 +574,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -546,7 +600,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x",
+    "Runtime": "nodejs22.x",
     "Timeout": 900
    },
    "DependsOn": [

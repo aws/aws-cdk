@@ -1,14 +1,23 @@
 import { IConstruct, Construct, Node } from 'constructs';
-import { Token } from '../../../core';
+import { Token, UnscopedValidationError } from '../../../core';
 import { Condition } from '../condition';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
-import { CatchProps, Errors, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
+import { CatchProps, Errors, IChainable, INextable, ProcessorConfig, ProcessorMode, QueryLanguage, RetryProps } from '../types';
 
 /**
  * Properties shared by all states
  */
-export interface StateProps {
+export interface StateBaseProps {
+  /**
+   * The name of the query language used by the state.
+   * If the state does not contain a `queryLanguage` field,
+   * then it will use the query language specified in the top-level `queryLanguage` field.
+   *
+   * @default - JSONPath
+   */
+  readonly queryLanguage?: QueryLanguage;
+
   /**
    * Optional name for this state
    *
@@ -22,7 +31,12 @@ export interface StateProps {
    * @default No comment
    */
   readonly comment?: string;
+}
 
+/**
+ * Option properties for JSONPath state.
+ */
+export interface JsonPathCommonOptions {
   /**
    * JSONPath expression to select part of the state to be the input to this state.
    *
@@ -34,16 +48,6 @@ export interface StateProps {
   readonly inputPath?: string;
 
   /**
-   * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
-   *
-   * @see
-   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters
-   *
-   * @default No parameters
-   */
-  readonly parameters?: { [name: string]: any };
-
-  /**
    * JSONPath expression to select part of the state to be the output to this state.
    *
    * May also be the special value JsonPath.DISCARD, which will cause the effective
@@ -52,7 +56,9 @@ export interface StateProps {
    * @default $
    */
   readonly outputPath?: string;
+}
 
+interface JsonPathStateOptions extends JsonPathCommonOptions {
   /**
    * JSONPath expression to indicate where to inject the state's output
    *
@@ -76,7 +82,82 @@ export interface StateProps {
    * @default - None
    */
   readonly resultSelector?: { [key: string]: any };
+
+  /**
+   * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters
+   *
+   * @default No parameters
+   */
+  readonly parameters?: { [name: string]: any };
 }
+
+/**
+ * Option properties for JSONata state.
+ */
+export interface JsonataCommonOptions {
+  /**
+   * Used to specify and transform output from the state.
+   * When specified, the value overrides the state output default.
+   * The output field accepts any JSON value (object, array, string, number, boolean, null).
+   * Any string value, including those inside objects or arrays,
+   * will be evaluated as JSONata if surrounded by {% %} characters.
+   * Output also accepts a JSONata expression directly.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-input-output-filtering.html
+   *
+   * @default - $states.result or $states.errorOutput
+   */
+  readonly outputs?: any;
+}
+
+/**
+ * Option properties for JSONata task state.
+ */
+export interface JsonataStateOptions extends JsonataCommonOptions {
+  /**
+   * Parameters pass a collection of key-value pairs, either static values or JSONata expressions that select from the input.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/transforming-data.html
+   *
+   * @default - No arguments
+   */
+  readonly arguments?: any;
+}
+
+/**
+ * Option properties for state that can assign variables.
+ */
+export interface AssignableStateOptions {
+  /**
+   * Workflow variables to store in this step.
+   * Using workflow variables, you can store data in a step and retrieve that data in future steps.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/workflow-variables.html
+   *
+   * @default - Not assign variables
+   */
+  readonly assign?: { [name: string]: any };
+}
+
+/**
+ * Properties shared by all states that use JSONPath
+ */
+export interface JsonPathStateProps extends StateBaseProps, JsonPathStateOptions, AssignableStateOptions {}
+
+/**
+ * Properties shared by all states that use JSONata
+ */
+export interface JsonataStateProps extends StateBaseProps, JsonataStateOptions, AssignableStateOptions {}
+
+/**
+ * Properties shared by all states
+ */
+export interface StateProps extends StateBaseProps, JsonPathStateOptions, JsonataStateOptions, AssignableStateOptions {}
 
 /**
  * Base class for all other state classes
@@ -170,6 +251,10 @@ export abstract class State extends Construct implements IChainable {
   protected readonly resultPath?: string;
   protected readonly resultSelector?: object;
   protected readonly branches: StateGraph[] = [];
+  protected readonly queryLanguage?: QueryLanguage;
+  protected readonly outputs?: object;
+  protected readonly arguments?: object;
+  protected readonly assign?: object;
   protected iteration?: StateGraph;
   protected processorMode?: ProcessorMode = ProcessorMode.INLINE;
   protected processor?: StateGraph;
@@ -206,12 +291,16 @@ export abstract class State extends Construct implements IChainable {
     this.startState = this;
 
     this.stateName = props.stateName;
+    this.queryLanguage = props.queryLanguage;
     this.comment = props.comment;
     this.inputPath = props.inputPath;
     this.parameters = props.parameters;
     this.outputPath = props.outputPath;
     this.resultPath = props.resultPath;
     this.resultSelector = props.resultSelector;
+    this.outputs = props.outputs;
+    this.arguments = props.arguments;
+    this.assign = props.assign;
 
     this.node.addValidation({ validate: () => this.validateState() });
   }
@@ -254,7 +343,7 @@ export abstract class State extends Construct implements IChainable {
 
     if (this.containingGraph) {
       // eslint-disable-next-line max-len
-      throw new Error(`Trying to use state '${this.stateId}' in ${graph}, but is already in ${this.containingGraph}. Every state can only be used in one graph.`);
+      throw new UnscopedValidationError(`Trying to use state '${this.stateId}' in ${graph}, but is already in ${this.containingGraph}. Every state can only be used in one graph.`);
     }
 
     this.containingGraph = graph;
@@ -280,7 +369,7 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Render the state as JSON
    */
-  public abstract toStateJson(): object;
+  public abstract toStateJson(stateMachineQueryLanguage?: QueryLanguage): object;
 
   /**
    * Add a retrier to the retry list of this state
@@ -307,6 +396,8 @@ export abstract class State extends Construct implements IChainable {
       props: {
         errors: props.errors ?? [Errors.ALL],
         resultPath: props.resultPath,
+        outputs: props.outputs,
+        assign: props.assign,
       },
     });
     handler.addIncoming(this);
@@ -321,7 +412,7 @@ export abstract class State extends Construct implements IChainable {
   protected makeNext(next: State) {
     // Can't be called 'setNext' because of JSII
     if (this._next) {
-      throw new Error(`State '${this.id}' already has a next state`);
+      throw new UnscopedValidationError(`State '${this.id}' already has a next state`);
     }
     this._next = next;
     next.addIncoming(this);
@@ -378,7 +469,7 @@ export abstract class State extends Construct implements IChainable {
   protected makeDefault(def: State) {
     // Can't be called 'setDefault' because of JSII
     if (this.defaultChoice) {
-      throw new Error(`Choice '${this.id}' already has a default next state`);
+      throw new UnscopedValidationError(`Choice '${this.id}' already has a default next state`);
     }
     this.defaultChoice = def;
   }
@@ -397,21 +488,24 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Render the choices in ASL JSON format
    */
-  protected renderChoices(): any {
+  protected renderChoices(topLevelQueryLanguage?: QueryLanguage): any {
+    const queryLanguage = _getActualQueryLanguage(topLevelQueryLanguage, this.queryLanguage);
     return {
-      Choices: renderList(this.choices, renderChoice),
+      Choices: renderList(this.choices, (x) => renderChoice(x, queryLanguage)),
       Default: this.defaultChoice?.stateId,
     };
   }
 
   /**
-   * Render InputPath/Parameters/OutputPath in ASL JSON format
+   * Render InputPath/Parameters/OutputPath/Arguments/Output in ASL JSON format
    */
   protected renderInputOutput(): any {
     return {
       InputPath: renderJsonPath(this.inputPath),
       Parameters: this.parameters,
       OutputPath: renderJsonPath(this.outputPath),
+      Arguments: this.arguments,
+      Output: this.outputs,
     };
   }
 
@@ -437,10 +531,11 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Render error recovery options in ASL JSON format
    */
-  protected renderRetryCatch(): any {
+  protected renderRetryCatch(topLevelQueryLanguage?: QueryLanguage): any {
+    const queryLanguage = _getActualQueryLanguage(topLevelQueryLanguage, this.queryLanguage);
     return {
       Retry: renderList(this.retries, renderRetry, (a, b) => compareErrors(a.errors, b.errors)),
-      Catch: renderList(this.catches, renderCatch, (a, b) => compareErrors(a.props.errors, b.props.errors)),
+      Catch: renderList(this.catches, (x) => renderCatch(x, queryLanguage), (a, b) => compareErrors(a.props.errors, b.props.errors)),
     };
   }
 
@@ -484,6 +579,32 @@ export abstract class State extends Construct implements IChainable {
         Mode: mode,
         ExecutionType: executionType,
       },
+    };
+  }
+
+  /**
+   * Render QueryLanguage in ASL JSON format if needed.
+   */
+  protected renderQueryLanguage(topLevelQueryLanguage?: QueryLanguage): any {
+    topLevelQueryLanguage = topLevelQueryLanguage ?? QueryLanguage.JSON_PATH;
+    if (topLevelQueryLanguage === QueryLanguage.JSONATA && this.queryLanguage === QueryLanguage.JSON_PATH) {
+      throw new UnscopedValidationError(`'queryLanguage' can not be 'JSONPath' if set to 'JSONata' for whole state machine ${this.node.path}`);
+    }
+    const queryLanguage = topLevelQueryLanguage === QueryLanguage.JSON_PATH && this.queryLanguage === QueryLanguage.JSONATA
+      ? QueryLanguage.JSONATA : undefined;
+    return {
+      QueryLanguage: queryLanguage,
+    };
+  }
+
+  /**
+   * Render the assign in ASL JSON format
+   */
+  protected renderAssign(topLevelQueryLanguage?: QueryLanguage): any {
+    const queryLanguage = _getActualQueryLanguage(topLevelQueryLanguage, this.queryLanguage);
+    return {
+      Assign: queryLanguage === QueryLanguage.JSON_PATH
+        ? FieldUtils.renderObject(this.assign) : this.assign,
     };
   }
 
@@ -552,21 +673,43 @@ interface ChoiceTransition extends ChoiceTransitionOptions {
 /**
  * Options for Choice Transition
  */
-export interface ChoiceTransitionOptions {
+export interface ChoiceTransitionOptions extends AssignableStateOptions {
   /**
    * An optional description for the choice transition
    *
    * @default No comment
    */
   readonly comment?: string;
+
+  /**
+   * This option for JSONata only. When you use JSONPath, then the state ignores this property.
+   * Used to specify and transform output from the state.
+   * When specified, the value overrides the state output default.
+   * The output field accepts any JSON value (object, array, string, number, boolean, null).
+   * Any string value, including those inside objects or arrays,
+   * will be evaluated as JSONata if surrounded by {% %} characters.
+   * Output also accepts a JSONata expression directly.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-input-output-filtering.html
+   *
+   * @default - $states.result or $states.errorOutput
+   */
+  readonly outputs?: any;
 }
 
 /**
  * Render a choice transition
  */
-function renderChoice(c: ChoiceTransition) {
+function renderChoice(c: ChoiceTransition, queryLanguage: QueryLanguage) {
+  const optionsByLanguage = queryLanguage === QueryLanguage.JSONATA ? {
+    Output: c.outputs,
+    Assign: c.assign,
+  } : {
+    Assign: FieldUtils.renderObject(c.assign),
+  };
   return {
     ...c.condition.renderCondition(),
+    ...optionsByLanguage,
     Next: c.next.stateId,
     Comment: c.comment,
   };
@@ -604,8 +747,15 @@ function renderRetry(retry: RetryProps) {
 /**
  * Render a Catch object to ASL
  */
-function renderCatch(c: CatchTransition) {
+function renderCatch(c: CatchTransition, queryLanguage: QueryLanguage) {
+  const optionsByLanguage = queryLanguage === QueryLanguage.JSONATA ? {
+    Output: c.props.outputs,
+    Assign: c.props.assign,
+  } : {
+    Assign: FieldUtils.renderObject(c.props.assign),
+  };
   return {
+    ...optionsByLanguage,
     ErrorEquals: c.props.errors,
     ResultPath: renderJsonPath(c.props.resultPath),
     Next: c.next.stateId,
@@ -630,7 +780,7 @@ function compareErrors(a?: string[], b?: string[]) {
  */
 function validateErrors(errors?: string[]) {
   if (errors?.includes(Errors.ALL) && errors.length > 1) {
-    throw new Error(`${Errors.ALL} must appear alone in an error list`);
+    throw new UnscopedValidationError(`${Errors.ALL} must appear alone in an error list`);
   }
 }
 
@@ -653,7 +803,7 @@ export function renderJsonPath(jsonPath?: string): undefined | null | string {
   if (jsonPath === undefined) { return undefined; }
 
   if (!Token.isUnresolved(jsonPath) && !jsonPath.startsWith('$')) {
-    throw new Error(`Expected JSON path to start with '$', got: ${jsonPath}`);
+    throw new UnscopedValidationError(`Expected JSON path to start with '$', got: ${jsonPath}`);
   }
   return jsonPath;
 }
@@ -677,4 +827,11 @@ function isPrefixable(x: any): x is Prefixable {
  */
 function isNextable(x: any): x is INextable {
   return typeof(x) === 'object' && x.next;
+}
+
+/**
+ * @internal
+ */
+export function _getActualQueryLanguage(topLevelQueryLanguage?: QueryLanguage, stateLevelQueryLanguage?: QueryLanguage) {
+  return stateLevelQueryLanguage ?? topLevelQueryLanguage ?? QueryLanguage.JSON_PATH;
 }

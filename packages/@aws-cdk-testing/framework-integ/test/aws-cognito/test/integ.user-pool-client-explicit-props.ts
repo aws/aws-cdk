@@ -2,7 +2,11 @@ import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { ClientAttributes, OAuthScope, StringAttribute, UserPool } from 'aws-cdk-lib/aws-cognito';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'integ-user-pool-client-explicit-props');
 
 const userpool = new UserPool(stack, 'myuserpool', {
@@ -20,6 +24,7 @@ const client = userpool.addClient('myuserpoolclient', {
     custom: true,
     userPassword: true,
     userSrp: true,
+    user: true,
   },
   generateSecret: true,
   oAuth: {

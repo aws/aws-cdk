@@ -5,10 +5,10 @@ import * as cloudwatch from '../../../aws-cloudwatch';
 import * as cdk from '../../../core';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
+import { noEmptyObject } from '../private/util';
 import { StateGraph } from '../state-graph';
 import { IStepFunctionsTask, StepFunctionsTaskConfig } from '../step-functions-task';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
-import { noEmptyObject } from '../util';
 
 /**
  * Props that are common to all tasks
@@ -282,7 +282,7 @@ export class Task extends State implements INextable {
 
   private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (prefix === undefined) {
-      throw new Error('This Task Resource does not expose metrics');
+      throw new cdk.UnscopedValidationError('This Task Resource does not expose metrics');
     }
     return this.metric(prefix + suffix, props);
   }

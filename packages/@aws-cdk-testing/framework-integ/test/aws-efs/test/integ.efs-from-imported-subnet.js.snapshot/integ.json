@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "efs-from-imported-subnet-test/DefaultTest": {
+      "stacks": [
+        "efs-from-imported-subnet"
+      ],
+      "assertionStack": "efs-from-imported-subnet-test/DefaultTest/DeployAssert",
+      "assertionStackName": "efsfromimportedsubnettestDefaultTestDeployAssertC5BA6A6C"
+    }
+  }
+}

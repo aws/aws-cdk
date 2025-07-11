@@ -204,7 +204,6 @@ describe('deployment', () => {
         'MyResource',
       ],
     });
-
   });
 
   test('integration change invalidates deployment', () => {
@@ -239,7 +238,6 @@ describe('deployment', () => {
     Template.fromStack(stack2).hasResourceProperties('AWS::ApiGateway::Stage', {
       DeploymentId: { Ref: 'myapiDeploymentB7EF8EB7b50d305057ba109c118e4aafd4509355' },
     });
-
   });
 
   test('deployment resource depends on all restapi methods defined', () => {

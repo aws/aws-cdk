@@ -1,0 +1,34 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1": {
+      "displayName": "SubscribeFunction/Code",
+      "source": {
+        "path": "asset.cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cc58ffe6cea9c658ded0d33d16dc6bb780ce30d2c2b9b5a2c0a2367654628dc1.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "a5292ba1c9ff29c45bb0d0792c2db762eb10a44944d8257b15458c37bfd09309": {
+      "displayName": "EventApiApiGrantStack Template",
+      "source": {
+        "path": "EventApiApiGrantStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a5292ba1c9ff29c45bb0d0792c2db762eb10a44944d8257b15458c37bfd09309.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

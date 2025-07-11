@@ -639,7 +639,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
      },
-     "S3Key": "96ea260348625427bb7f28ab3b379f62da6f428bcd155cb13f9261aa6a404b0d.zip"
+     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -650,7 +650,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x",
+    "Runtime": "nodejs22.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -831,7 +831,7 @@
     },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:1.0",
+     "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -927,7 +927,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
      },
-     "S3Key": "db6125c17ee6883a5c42f4340b9dd79a7a8b098470e62fb5ae2048149a34e3cf.zip"
+     "S3Key": "d6fa38886a871b64de769ec5016af90a071e6429aa8e7de84f595e4e2462e17d.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -938,7 +938,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"

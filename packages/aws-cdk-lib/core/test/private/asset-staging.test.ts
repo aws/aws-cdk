@@ -26,6 +26,7 @@ describe('bundling', () => {
       bundleDir: '/tmp/output',
       image: DockerImage.fromRegistry('public.ecr.aws/docker/library/alpine'),
       user: '1000',
+      platform: 'linux/amd64',
     };
     const helper = new AssetBundlingVolumeCopy(options);
     helper.run();
@@ -78,10 +79,10 @@ describe('bundling', () => {
     // actual docker run
     expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match.array.contains([
       'run', '--rm',
+      '--platform', 'linux/amd64',
       '--volumes-from', helper.copyContainerName,
       'public.ecr.aws/docker/library/alpine',
     ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
   });
 
   test('AssetBundlingBindMount bundles with bind mount ', () => {
@@ -101,6 +102,7 @@ describe('bundling', () => {
       image: DockerImage.fromRegistry('public.ecr.aws/docker/library/alpine'),
       user: '1000',
       network: 'host',
+      platform: 'linux/amd64',
     };
     const helper = new AssetBundlingBindMount(options);
     helper.run();
@@ -109,6 +111,7 @@ describe('bundling', () => {
     expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match.array.contains([
       'run', '--rm',
       '--network', 'host',
+      '--platform', 'linux/amd64',
       '-v',
       'public.ecr.aws/docker/library/alpine',
     ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);

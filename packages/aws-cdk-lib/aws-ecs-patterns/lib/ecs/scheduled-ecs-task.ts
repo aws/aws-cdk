@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { Ec2TaskDefinition } from '../../../aws-ecs';
 import { EcsTask } from '../../../aws-events-targets';
+import { ValidationError } from '../../../core';
 import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
 
 /**
@@ -80,7 +81,6 @@ export interface ScheduledEc2TaskDefinitionOptions {
  * A scheduled EC2 task that will be initiated off of CloudWatch Events.
  */
 export class ScheduledEc2Task extends ScheduledTaskBase {
-
   /**
    * The EC2 task definition in this construct.
    */
@@ -98,7 +98,7 @@ export class ScheduledEc2Task extends ScheduledTaskBase {
     super(scope, id, props);
 
     if (props.scheduledEc2TaskDefinitionOptions && props.scheduledEc2TaskImageOptions) {
-      throw new Error('You must specify either a scheduledEc2TaskDefinitionOptions or scheduledEc2TaskOptions, not both.');
+      throw new ValidationError('You must specify either a scheduledEc2TaskDefinitionOptions or scheduledEc2TaskOptions, not both.', this);
     } else if (props.scheduledEc2TaskDefinitionOptions) {
       this.taskDefinition = props.scheduledEc2TaskDefinitionOptions.taskDefinition;
     } else if (props.scheduledEc2TaskImageOptions) {
@@ -118,7 +118,7 @@ export class ScheduledEc2Task extends ScheduledTaskBase {
         logging: taskImageOptions.logDriver ?? this.createAWSLogDriver(this.node.id),
       });
     } else {
-      throw new Error('You must specify a taskDefinition or image');
+      throw new ValidationError('You must specify a taskDefinition or image', this);
     }
 
     this.task = this.addTaskDefinitionToEventTarget(this.taskDefinition);

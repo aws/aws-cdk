@@ -3,6 +3,8 @@ import { ICertificate, KeyAlgorithm } from './certificate';
 import { CertificateBase } from './certificate-base';
 import { CfnCertificate } from './certificatemanager.generated';
 import * as acmpca from '../../aws-acmpca';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for your private certificate
@@ -47,7 +49,11 @@ export interface PrivateCertificateProps {
  *
  * @resource AWS::CertificateManager::Certificate
  */
+@propertyInjectable
 export class PrivateCertificate extends CertificateBase implements ICertificate {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-certificatemanager.PrivateCertificate';
+
   /**
    * Import a certificate
    */
@@ -66,6 +72,8 @@ export class PrivateCertificate extends CertificateBase implements ICertificate 
 
   constructor(scope: Construct, id: string, props: PrivateCertificateProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,

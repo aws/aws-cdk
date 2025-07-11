@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "aws-cdk-aws-apigatewayv2-http-stage.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d0e21994eba50227669b2052acb6e237940781e64fc7baad9c2946a2c56d4b8d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e061f5a6d916014651daeef51dd06d34c84e734e619b1cae27e78b998029a70a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,34 @@
         "aws-cdk-aws-apigatewayv2-http-stage.assets"
       ],
       "metadata": {
+        "/aws-cdk-aws-apigatewayv2-http-stage/MyLogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage/MyLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLogGroup5C0DAD85"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage/HttpApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-aws-apigatewayv2-http-stage/HttpApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HttpApiF5A9A8A7"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage/HttpStageWithProperties": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-aws-apigatewayv2-http-stage/HttpStageWithProperties/Resource": [
@@ -61,11 +85,60 @@
       },
       "displayName": "aws-cdk-aws-apigatewayv2-http-stage"
     },
+    "awscdkawsapigatewayv2httpstagetestDefaultTestDeployAssert66182A52.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awscdkawsapigatewayv2httpstagetestDefaultTestDeployAssert66182A52.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awscdkawsapigatewayv2httpstagetestDefaultTestDeployAssert66182A52": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awscdkawsapigatewayv2httpstagetestDefaultTestDeployAssert66182A52.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "awscdkawsapigatewayv2httpstagetestDefaultTestDeployAssert66182A52.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "awscdkawsapigatewayv2httpstagetestDefaultTestDeployAssert66182A52.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-aws-apigatewayv2-http-stage-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-aws-apigatewayv2-http-stage-test/DefaultTest/DeployAssert"
+    },
     "Tree": {
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }

@@ -1,0 +1,133 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cdk-integ-location-map": {
+        "id": "cdk-integ-location-map",
+        "path": "cdk-integ-location-map",
+        "children": {
+          "Map": {
+            "id": "Map",
+            "path": "cdk-integ-location-map/Map",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-location-map/Map/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Location::Map",
+                  "aws:cdk:cloudformation:props": {
+                    "configuration": {
+                      "style": "VectorEsriNavigation",
+                      "customLayers": [
+                        "POI"
+                      ],
+                      "politicalView": "IND"
+                    },
+                    "description": "my map for test",
+                    "mapName": "my-map"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_location.CfnMap",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-integ-location-map/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-integ-location-map/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "MapTest": {
+        "id": "MapTest",
+        "path": "MapTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "MapTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "MapTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "MapTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "MapTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "MapTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

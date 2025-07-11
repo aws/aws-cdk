@@ -4,7 +4,6 @@ import * as cdk from 'aws-cdk-lib';
 import * as gamelift from '../lib';
 
 describe('MatchmakingRuleSet', () => {
-
   describe('new', () => {
     let stack: cdk.Stack;
     const ruleSetBody = JSON.stringify('{}');

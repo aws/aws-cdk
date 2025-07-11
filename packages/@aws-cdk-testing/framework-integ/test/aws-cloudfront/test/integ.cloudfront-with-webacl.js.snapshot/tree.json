@@ -1,0 +1,181 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-cloudfront-with-webacl": {
+        "id": "aws-cdk-cloudfront-with-webacl",
+        "path": "aws-cdk-cloudfront-with-webacl",
+        "children": {
+          "WebAcl": {
+            "id": "WebAcl",
+            "path": "aws-cdk-cloudfront-with-webacl/WebAcl",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::WAFv2::WebACL",
+              "aws:cdk:cloudformation:props": {
+                "defaultAction": {
+                  "allow": {}
+                },
+                "scope": "CLOUDFRONT",
+                "visibilityConfig": {
+                  "cloudWatchMetricsEnabled": false,
+                  "metricName": "webAclMetric",
+                  "sampledRequestsEnabled": false
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "Distribution": {
+            "id": "Distribution",
+            "path": "aws-cdk-cloudfront-with-webacl/Distribution",
+            "children": {
+              "Origin1": {
+                "id": "Origin1",
+                "path": "aws-cdk-cloudfront-with-webacl/Distribution/Origin1",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-cloudfront-with-webacl/Distribution/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "origins": [
+                        {
+                          "domainName": "www.example.com",
+                          "id": "awscdkcloudfrontwithwebaclDistributionOrigin11CAC3663",
+                          "customOriginConfig": {
+                            "originProtocolPolicy": "https-only"
+                          }
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "pathPattern": "*",
+                        "targetOriginId": "awscdkcloudfrontwithwebaclDistributionOrigin11CAC3663",
+                        "cachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+                        "compress": true,
+                        "viewerProtocolPolicy": "allow-all"
+                      },
+                      "httpVersion": "http2",
+                      "ipv6Enabled": true,
+                      "webAclId": {
+                        "Fn::GetAtt": [
+                          "WebAcl",
+                          "Arn"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-cloudfront-with-webacl/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-cloudfront-with-webacl/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      },
+      "integ-cloudfront-with-webacl": {
+        "id": "integ-cloudfront-with-webacl",
+        "path": "integ-cloudfront-with-webacl",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "integ-cloudfront-with-webacl/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "integ-cloudfront-with-webacl/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "integ-cloudfront-with-webacl/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "integ-cloudfront-with-webacl/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "integ-cloudfront-with-webacl/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
+    }
+  }
+}

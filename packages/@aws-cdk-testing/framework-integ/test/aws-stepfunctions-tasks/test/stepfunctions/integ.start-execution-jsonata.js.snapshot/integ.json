@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "integ-sfn-start-execution-jsonata-integ/DefaultTest": {
+      "stacks": [
+        "integ-sfn-start-execution-jsonata"
+      ],
+      "assertionStack": "integ-sfn-start-execution-jsonata-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "integsfnstartexecutionjsonataintegDefaultTestDeployAssert66319094"
+    }
+  }
+}

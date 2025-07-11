@@ -1,0 +1,1632 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "aws-cdk-eks-cluster-alb-controller.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-eks-cluster-alb-controller.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-eks-cluster-alb-controller": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-eks-cluster-alb-controller.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cbc83cb1f05bc1659ee919de4fde9cd2bc80976e09989307b5bafc48b52490bc.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-eks-cluster-alb-controller.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-eks-cluster-alb-controller.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-eks-cluster-alb-controller/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*",
+              "natGateways": "*",
+              "restrictDefaultSecurityGroup": false
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/kubectlLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/kubectlLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "kubectlLayer44321E08"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterRoleFA261979"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/ControlPlaneSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/ControlPlaneSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterControlPlaneSecurityGroupD274242C"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/ClusternodePoolRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                },
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/ClusternodePoolRole/ImportClusternodePoolRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/ClusternodePoolRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterClusternodePoolRole69276141"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterEB0386A7"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlReadyBarrier": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlReadyBarrier200052AF"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Handler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "timeout": "*",
+              "description": "*",
+              "memorySize": "*",
+              "environment": "*",
+              "role": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*",
+              "vpc": "*",
+              "securityGroups": [
+                "*"
+              ],
+              "vpcSubnets": {
+                "subnets": [
+                  "*",
+                  "*"
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Handler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                },
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlProviderHandlerServiceRoleB460AA6D"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Handler/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlProviderHandlerServiceRoleDefaultPolicy77317198"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Handler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlProviderHandler2E05C68A"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Handler/HasEcrPublic": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlProviderHandlerHasEcrPublic69E09706"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/AwsCliLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlProviderAwsCliLayer24064B0B"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Provider/framework-onEvent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "description": "*",
+              "runtime": "*",
+              "handler": "*",
+              "timeout": "*",
+              "logGroup": "*",
+              "vpc": "*",
+              "vpcSubnets": {
+                "subnets": [
+                  "*",
+                  "*"
+                ]
+              },
+              "securityGroups": [
+                "*"
+              ],
+              "role": "*",
+              "functionName": "*",
+              "environmentEncryption": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                },
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlProviderframeworkonEventServiceRoleFD0BA8C5"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlProviderframeworkonEventServiceRoleDefaultPolicyA4F24629"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Provider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlProviderframeworkonEvent68E0CF80"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole081AD342A"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/ClusterAdminRoleAccess": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/ClusterAdminRoleAccess/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterClusterAdminRoleAccessF2BFF759"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/OpenIdConnectProvider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/OpenIdConnectProvider/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/OpenIdConnectProvider/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterOpenIdConnectProviderE7EB0530"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/echo-server/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/echo-server/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Clusterechoserver5815619F"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/hello-server-deployment-service-ingress-c896bd7eLoadBalancerAddress/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Cluster/hello-server-deployment-service-ingress-c896bd7eLoadBalancerAddress/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Clusterhelloserverdeploymentserviceingressc896bd7eLoadBalancerAddress142F1CB0"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/ConditionJson/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/ConditionJson/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaConditionJson853930C0"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaRoleE08C7B02"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaRoleDefaultPolicy0BB22F48"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/manifest-alb-saServiceAccountResource/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/manifest-alb-saServiceAccountResource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsamanifestalbsaServiceAccountResource49741BE5"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/Resource/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/Resource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkeksclusteralbcontrollerCluster0686D58BAlbController2EB2FB81"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/AWSCDKCfnUtilsProviderCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/AWSCDKCfnUtilsProviderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Function": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "securityGroups": "*",
+              "timeout": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Function/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                },
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Function/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IngressPingerFunctionServiceRoleD01E9C19"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Function/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*",
+              "allowAllOutbound": "*",
+              "allowAllIpv6Outbound": "*"
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Function/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IngressPingerFunctionSecurityGroup77C60B1A"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IngressPingerFunction54746D9B"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "description": "*",
+              "runtime": "*",
+              "handler": "*",
+              "timeout": "*",
+              "logGroup": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "securityGroups": "*",
+              "role": "*",
+              "functionName": "*",
+              "environmentEncryption": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IngressPingerProviderframeworkonEventServiceRole89300FAD"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IngressPingerProviderframeworkonEventServiceRoleDefaultPolicy7CC73E26"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IngressPingerProviderframeworkonEventEE5AD360"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IngressPingerProviderframeworkonEventinlinePolicyAddedToExecutionRole097789944"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPinger/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IngressPinger1AD9E831"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/IngressPingerResponse": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IngressPingerResponse"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-eks-cluster-alb-controller"
+    },
+    "awscdkclusteralbcontrollerintegDefaultTestDeployAssert5A4A7C6A.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awscdkclusteralbcontrollerintegDefaultTestDeployAssert5A4A7C6A.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awscdkclusteralbcontrollerintegDefaultTestDeployAssert5A4A7C6A": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awscdkclusteralbcontrollerintegDefaultTestDeployAssert5A4A7C6A.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "awscdkclusteralbcontrollerintegDefaultTestDeployAssert5A4A7C6A.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "awscdkclusteralbcontrollerintegDefaultTestDeployAssert5A4A7C6A.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-cluster-alb-controller-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-cluster-alb-controller-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-cluster-alb-controller-integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

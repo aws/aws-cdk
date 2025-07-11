@@ -1,4 +1,4 @@
-/* eslint-disable prettier/prettier,max-len */
+/* eslint-disable prettier/prettier, @stylistic/max-len */
 import * as path from "path";
 import { Construct } from "constructs";
 import * as lambda from "../../../aws-lambda";
@@ -12,6 +12,10 @@ export class EvalNodejsSingletonFunction extends lambda.SingletonFunction {
       "runtime": (props.runtime ? props.runtime : lambda.determineLatestNodeRuntime(scope)),
       "architecture": (props.architecture ? props.architecture : lambda.Architecture.X86_64)
     });
+    this.addMetadata('aws:cdk:is-custom-resource-handler-singleton', true);
+    this.addMetadata('aws:cdk:is-custom-resource-handler-runtime-family', this.runtime.family);
+    if (props?.logGroup) { this.logGroup.node.addMetadata('aws:cdk:is-custom-resource-handler-logGroup', true) };
+    if (props?.logRetention) { ((this as any).lambdaFunction as lambda.Function)._logRetention?.node.addMetadata('aws:cdk:is-custom-resource-handler-logRetention', true) };
   }
 }
 

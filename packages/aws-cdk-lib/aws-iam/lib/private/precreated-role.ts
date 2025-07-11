@@ -1,6 +1,8 @@
 import { Construct, Dependable, DependencyGroup } from 'constructs';
 import { Resource, Stack } from '../../../core';
 import { PolicySynthesizer } from '../../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
@@ -55,7 +57,10 @@ export interface PrecreatedRoleProps {
  * synthesized into a separate report and will _not_ be synthesized in
  * the CloudFormation template.
  */
+@propertyInjectable
 export class PrecreatedRole extends Resource implements IRole {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.PrecreatedRole';
   public readonly assumeRoleAction: string;
   public readonly policyFragment: PrincipalPolicyFragment;
   public readonly grantPrincipal = this;
@@ -74,6 +79,8 @@ export class PrecreatedRole extends Resource implements IRole {
       account: props.role.env.account,
       region: props.role.env.region,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.role = props.role;
     this.assumeRoleAction = this.role.assumeRoleAction;
     this.policyFragment = this.role.policyFragment;
@@ -98,6 +105,7 @@ export class PrecreatedRole extends Resource implements IRole {
     });
   }
 
+  @MethodMetadata()
   public attachInlinePolicy(policy: Policy): void {
     const statements = policy.document.toJSON()?.Statement;
     if (statements && Array.isArray(statements)) {
@@ -107,15 +115,18 @@ export class PrecreatedRole extends Resource implements IRole {
     }
   }
 
+  @MethodMetadata()
   public addManagedPolicy(policy: IManagedPolicy): void {
     this.managedPolicies.push(policy);
   }
 
+  @MethodMetadata()
   public addToPolicy(statement: PolicyStatement): boolean {
     this.policyStatements.push(statement.toStatementJson());
     return false;
   }
 
+  @MethodMetadata()
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     this.addToPolicy(statement);
     // If we return `false`, the grants will try to add the statement to the resource
@@ -123,14 +134,17 @@ export class PrecreatedRole extends Resource implements IRole {
     return { statementAdded: true, policyDependable: new DependencyGroup() };
   }
 
+  @MethodMetadata()
   public grant(grantee: IPrincipal, ...actions: string[]): Grant {
     return this.role.grant(grantee, ...actions);
   }
 
+  @MethodMetadata()
   public grantPassRole(grantee: IPrincipal): Grant {
     return this.role.grantPassRole(grantee);
   }
 
+  @MethodMetadata()
   public grantAssumeRole(identity: IPrincipal): Grant {
     return this.role.grantAssumeRole(identity);
   }

@@ -31,8 +31,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
+                  "version": "0.0.0"
                 }
               },
               "PublicSubnet1": {
@@ -75,16 +75,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "version": "0.0.0"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "aws-ecs-integ-multiple-alb/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -105,8 +106,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTableAssociation": {
@@ -124,8 +125,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultRoute": {
@@ -144,8 +145,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
                     }
                   },
                   "EIP": {
@@ -164,8 +165,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
+                      "version": "0.0.0"
                     }
                   },
                   "NATGateway": {
@@ -192,14 +193,38 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {},
+                    {
+                      "addNatGateway": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "PublicSubnet2": {
@@ -242,16 +267,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "version": "0.0.0"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "aws-ecs-integ-multiple-alb/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -272,8 +298,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTableAssociation": {
@@ -291,8 +317,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultRoute": {
@@ -311,8 +337,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
                     }
                   },
                   "EIP": {
@@ -331,8 +357,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
+                      "version": "0.0.0"
                     }
                   },
                   "NATGateway": {
@@ -359,14 +385,38 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {},
+                    {
+                      "addNatGateway": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "PrivateSubnet1": {
@@ -409,16 +459,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "version": "0.0.0"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "aws-ecs-integ-multiple-alb/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -439,8 +490,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTableAssociation": {
@@ -458,8 +509,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultRoute": {
@@ -478,14 +529,33 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "PrivateSubnet2": {
@@ -528,16 +598,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "version": "0.0.0"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "aws-ecs-integ-multiple-alb/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -558,8 +629,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTableAssociation": {
@@ -577,8 +648,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultRoute": {
@@ -597,14 +668,33 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "IGW": {
@@ -622,8 +712,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
+                  "version": "0.0.0"
                 }
               },
               "VPCGW": {
@@ -641,14 +731,20 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "maxAzs": "*",
+                  "restrictDefaultSecurityGroup": false
+                }
+              ]
             }
           },
           "Cluster": {
@@ -663,8 +759,8 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnCluster",
+                  "version": "0.0.0"
                 }
               },
               "DefaultAutoScalingGroup": {
@@ -701,8 +797,8 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                          "version": "0.0.0"
                         }
                       },
                       "from awsecsintegmultiplealbmyServiceLBSecurityGroupA7380E25:32768-65535": {
@@ -730,14 +826,36 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "vpc": "*",
+                          "allowAllOutbound": true
+                        },
+                        {
+                          "addIngressRule": [
+                            "*",
+                            {},
+                            "*",
+                            false
+                          ]
+                        },
+                        {
+                          "addIngressRule": [
+                            "*",
+                            {},
+                            "*",
+                            false
+                          ]
+                        }
+                      ]
                     }
                   },
                   "InstanceRole": {
@@ -748,8 +866,11 @@
                         "id": "ImportInstanceRole",
                         "path": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/InstanceRole/ImportInstanceRole",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -779,8 +900,8 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
                         }
                       },
                       "DefaultPolicy": {
@@ -849,20 +970,82 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            }
+                          ]
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "roleName": "*",
+                          "assumedBy": {
+                            "principalAccount": "*",
+                            "assumeRoleAction": "*"
+                          }
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   },
                   "InstanceProfile": {
@@ -879,50 +1062,124 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
+                      "version": "0.0.0"
                     }
                   },
-                  "LaunchConfig": {
-                    "id": "LaunchConfig",
-                    "path": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LaunchConfig",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
-                      "aws:cdk:cloudformation:props": {
-                        "iamInstanceProfile": {
-                          "Ref": "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55"
-                        },
-                        "imageId": {
-                          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-                        },
-                        "instanceType": "t2.micro",
-                        "securityGroups": [
-                          {
-                            "Fn::GetAtt": [
-                              "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A",
-                              "GroupId"
-                            ]
-                          }
-                        ],
-                        "userData": {
-                          "Fn::Base64": {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "#!/bin/bash\necho ECS_CLUSTER=",
+                  "ImportedInstanceProfile": {
+                    "id": "ImportedInstanceProfile",
+                    "path": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/ImportedInstanceProfile",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": []
+                    }
+                  },
+                  "LaunchTemplate": {
+                    "id": "LaunchTemplate",
+                    "path": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LaunchTemplate",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LaunchTemplate/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                          "aws:cdk:cloudformation:props": {
+                            "launchTemplateData": {
+                              "iamInstanceProfile": {
+                                "arn": {
+                                  "Fn::GetAtt": [
+                                    "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "imageId": {
+                                "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+                              },
+                              "instanceType": "t2.micro",
+                              "monitoring": {
+                                "enabled": false
+                              },
+                              "securityGroupIds": [
                                 {
-                                  "Ref": "ClusterEB0386A7"
+                                  "Fn::GetAtt": [
+                                    "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A",
+                                    "GroupId"
+                                  ]
+                                }
+                              ],
+                              "tagSpecifications": [
+                                {
+                                  "resourceType": "instance",
+                                  "tags": [
+                                    {
+                                      "key": "Name",
+                                      "value": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LaunchTemplate"
+                                    }
+                                  ]
                                 },
-                                " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
-                              ]
+                                {
+                                  "resourceType": "volume",
+                                  "tags": [
+                                    {
+                                      "key": "Name",
+                                      "value": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LaunchTemplate"
+                                    }
+                                  ]
+                                }
+                              ],
+                              "userData": {
+                                "Fn::Base64": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "#!/bin/bash\necho ECS_CLUSTER=",
+                                      {
+                                        "Ref": "ClusterEB0386A7"
+                                      },
+                                      " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "tagSpecifications": [
+                              {
+                                "resourceType": "launch-template",
+                                "tags": [
+                                  {
+                                    "key": "Name",
+                                    "value": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LaunchTemplate"
+                                  }
+                                ]
+                              }
                             ]
                           }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "machineImage": "*",
+                          "instanceType": "*",
+                          "detailedMonitoring": false,
+                          "securityGroup": "*",
+                          "userData": "*",
+                          "associatePublicIpAddress": "*",
+                          "spotOptions": "*",
+                          "blockDevices": "*",
+                          "instanceProfile": "*",
+                          "keyPair": "*"
+                        }
+                      ]
                     }
                   },
                   "ASG": {
@@ -931,8 +1188,16 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
                       "aws:cdk:cloudformation:props": {
-                        "launchConfigurationName": {
-                          "Ref": "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466"
+                        "launchTemplate": {
+                          "launchTemplateId": {
+                            "Ref": "ClusterDefaultAutoScalingGroupLaunchTemplate2449908D"
+                          },
+                          "version": {
+                            "Fn::GetAtt": [
+                              "ClusterDefaultAutoScalingGroupLaunchTemplate2449908D",
+                              "LatestVersionNumber"
+                            ]
+                          }
                         },
                         "maxSize": "1",
                         "minSize": "1",
@@ -954,8 +1219,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_autoscaling.CfnAutoScalingGroup",
+                      "version": "0.0.0"
                     }
                   },
                   "DrainECSHook": {
@@ -974,8 +1239,11 @@
                                 "id": "ImportServiceRole",
                                 "path": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/ImportServiceRole",
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "fqn": "aws-cdk-lib.Resource",
+                                  "version": "0.0.0",
+                                  "metadata": [
+                                    "*"
+                                  ]
                                 }
                               },
                               "Resource": {
@@ -1019,8 +1287,8 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                                  "version": "0.0.0"
                                 }
                               },
                               "DefaultPolicy": {
@@ -1118,20 +1386,106 @@
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "constructs.Construct",
-                                      "version": "10.3.0"
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                      "version": "0.0.0"
                                     }
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                                  "version": "0.0.0",
+                                  "metadata": [
+                                    "*",
+                                    {
+                                      "attachToRole": [
+                                        "*"
+                                      ]
+                                    },
+                                    {
+                                      "attachToRole": [
+                                        "*"
+                                      ]
+                                    },
+                                    {
+                                      "addStatements": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "addStatements": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "addStatements": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "addStatements": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "addStatements": [
+                                        {}
+                                      ]
+                                    }
+                                  ]
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.aws_iam.Role",
+                              "version": "0.0.0",
+                              "metadata": [
+                                {
+                                  "assumedBy": {
+                                    "principalAccount": "*",
+                                    "assumeRoleAction": "*"
+                                  },
+                                  "managedPolicies": [
+                                    {
+                                      "managedPolicyArn": "*"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "addToPrincipalPolicy": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "attachInlinePolicy": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachInlinePolicy": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "addToPrincipalPolicy": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addToPrincipalPolicy": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addToPrincipalPolicy": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addToPrincipalPolicy": [
+                                    {}
+                                  ]
+                                }
+                              ]
                             }
                           },
                           "Resource": {
@@ -1168,8 +1522,8 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                              "version": "0.0.0"
                             }
                           },
                           "AllowInvoke:awsecsintegmultiplealbClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic69A3F5ED": {
@@ -1192,8 +1546,8 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "0.0.0"
                             }
                           },
                           "Topic": {
@@ -1219,26 +1573,52 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
+                                  "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.aws_sns.Subscription",
+                              "version": "0.0.0",
+                              "metadata": [
+                                {
+                                  "topic": "*",
+                                  "endpoint": "*",
+                                  "protocol": "lambda",
+                                  "filterPolicy": "*",
+                                  "filterPolicyWithMessageBody": "*",
+                                  "region": "*",
+                                  "deadLetterQueue": "*"
+                                }
+                              ]
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.aws_lambda.Function",
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "code": "*",
+                              "handler": "*",
+                              "runtime": "*",
+                              "timeout": "*",
+                              "environment": "*"
+                            },
+                            {
+                              "addEnvironment": [
+                                "*",
+                                "*"
+                              ]
+                            }
+                          ]
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -1264,14 +1644,19 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.aws_sns.Topic",
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "masterKey": "*"
+                            }
+                          ]
                         }
                       },
                       "Role": {
@@ -1282,8 +1667,11 @@
                             "id": "ImportRole",
                             "path": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/ImportRole",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*"
+                              ]
                             }
                           },
                           "Resource": {
@@ -1313,8 +1701,8 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                              "version": "0.0.0"
                             }
                           },
                           "DefaultPolicy": {
@@ -1348,20 +1736,61 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                  "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*",
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                }
+                              ]
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "assumedBy": {
+                                "principalAccount": "*",
+                                "assumeRoleAction": "*"
+                              }
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            }
+                          ]
                         }
                       },
                       "Resource": {
@@ -1388,42 +1817,348 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.aws_autoscaling.CfnLifecycleHook",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_autoscaling.LifecycleHook",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "autoScalingGroup": "*",
+                          "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
+                          "defaultResult": "CONTINUE",
+                          "notificationTarget": "*",
+                          "heartbeatTimeout": "*"
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_autoscaling.AutoScalingGroup",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "vpc": "*",
+                      "machineImage": "*",
+                      "updateType": "Replace",
+                      "instanceType": "*"
+                    },
+                    {
+                      "addUserData": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addUserData": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addUserData": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addUserData": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToRolePolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToRolePolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToRolePolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.aws_ecs.Cluster",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "vpc": "*"
+                },
+                {
+                  "addCapacity": [
+                    "*",
+                    {
+                      "instanceType": "*"
+                    }
+                  ]
+                },
+                {
+                  "addAutoScalingGroup": [
+                    "*",
+                    {
+                      "machineImageType": 0
+                    }
+                  ]
+                }
+              ]
             }
           },
           "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
             "id": "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "path": "aws-ecs-integ-multiple-alb/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118": {
             "id": "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "path": "aws-ecs-integ-multiple-alb/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": []
+            }
+          },
+          "TaskDef": {
+            "id": "TaskDef",
+            "path": "aws-ecs-integ-multiple-alb/TaskDef",
+            "children": {
+              "TaskRole": {
+                "id": "TaskRole",
+                "path": "aws-ecs-integ-multiple-alb/TaskDef/TaskRole",
+                "children": {
+                  "ImportTaskRole": {
+                    "id": "ImportTaskRole",
+                    "path": "aws-ecs-integ-multiple-alb/TaskDef/TaskRole/ImportTaskRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ-multiple-alb/TaskDef/TaskRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-ecs-integ-multiple-alb/TaskDef/TaskRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-ecs-integ-multiple-alb/TaskDef/TaskRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:DescribeLogGroups",
+                                    "logs:DescribeLogStreams",
+                                    "logs:PutLogEvents",
+                                    "ssmmessages:CreateControlChannel",
+                                    "ssmmessages:CreateDataChannel",
+                                    "ssmmessages:OpenControlChannel",
+                                    "ssmmessages:OpenDataChannel"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "TaskDefTaskRoleDefaultPolicyA592CB18",
+                            "roles": [
+                              {
+                                "Ref": "TaskDefTaskRole1EDB4A67"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      }
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-integ-multiple-alb/TaskDef/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
+                  "aws:cdk:cloudformation:props": {
+                    "containerDefinitions": [
+                      {
+                        "command": [
+                          "sh",
+                          "-c",
+                          "printf 'Listen 90\n <VirtualHost *:90>\n DocumentRoot /var/www/html\n ServerName localhost\n</VirtualHost>' > /etc/httpd/conf.d/default-90.conf && /usr/sbin/apache2 -D FOREGROUND"
+                        ],
+                        "essential": true,
+                        "image": "amazon/amazon-ecs-sample",
+                        "memory": 256,
+                        "name": "web",
+                        "portMappings": [
+                          {
+                            "containerPort": 80,
+                            "hostPort": 0,
+                            "protocol": "tcp"
+                          },
+                          {
+                            "containerPort": 90,
+                            "hostPort": 0,
+                            "protocol": "tcp"
+                          }
+                        ]
+                      }
+                    ],
+                    "family": "awsecsintegmultiplealbTaskDef053E81DE",
+                    "networkMode": "bridge",
+                    "requiresCompatibilities": [
+                      "EC2"
+                    ],
+                    "taskRoleArn": {
+                      "Fn::GetAtt": [
+                        "TaskDefTaskRole1EDB4A67",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnTaskDefinition",
+                  "version": "0.0.0"
+                }
+              },
+              "web": {
+                "id": "web",
+                "path": "aws-ecs-integ-multiple-alb/TaskDef/web",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecs.Ec2TaskDefinition",
+              "version": "0.0.0",
+              "metadata": [
+                "*",
+                "*",
+                "*",
+                "*",
+                "*",
+                "*",
+                "*",
+                "*"
+              ]
             }
           },
           "myService": {
@@ -1446,6 +2181,7 @@
                             "value": "false"
                           }
                         ],
+                        "name": "LB",
                         "scheme": "internet-facing",
                         "securityGroups": [
                           {
@@ -1467,8 +2203,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnLoadBalancer",
+                      "version": "0.0.0"
                     }
                   },
                   "SecurityGroup": {
@@ -1497,8 +2233,8 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                          "version": "0.0.0"
                         }
                       },
                       "to awsecsintegmultiplealbClusterDefaultAutoScalingGroupInstanceSecurityGroup9E5900FD:32768-65535": {
@@ -1526,14 +2262,49 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupEgress",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "vpc": "*",
+                          "description": "*",
+                          "allowAllOutbound": false
+                        },
+                        {
+                          "addIngressRule": [
+                            {
+                              "canInlineRule": true,
+                              "connections": "*",
+                              "uniqueId": "*"
+                            },
+                            {},
+                            "*",
+                            false
+                          ]
+                        },
+                        {
+                          "addEgressRule": [
+                            "*",
+                            {},
+                            "*",
+                            true
+                          ]
+                        },
+                        {
+                          "addEgressRule": [
+                            "*",
+                            {},
+                            "*",
+                            true
+                          ]
+                        }
+                      ]
                     }
                   },
                   "PublicListener": {
@@ -1562,8 +2333,8 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnListener",
+                          "version": "0.0.0"
                         }
                       },
                       "ECSTargetGroupweb80Group": {
@@ -1591,14 +2362,14 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnTargetGroup",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationTargetGroup",
+                          "version": "0.0.0"
                         }
                       },
                       "ECSTargetGroupweb90Group": {
@@ -1626,14 +2397,14 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnTargetGroup",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationTargetGroup",
+                          "version": "0.0.0"
                         }
                       },
                       "ECSTargetGroupweb90Rule": {
@@ -1671,327 +2442,55 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnListenerRule",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationListenerRule",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationListener",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationLoadBalancer",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    "*"
+                  ]
                 }
               },
               "LoadBalancerDNS": {
                 "id": "LoadBalancerDNS",
                 "path": "aws-ecs-integ-multiple-alb/myService/LoadBalancerDNS",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "ServiceURL": {
                 "id": "ServiceURL",
                 "path": "aws-ecs-integ-multiple-alb/myService/ServiceURL",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
-                }
-              },
-              "TaskDef": {
-                "id": "TaskDef",
-                "path": "aws-ecs-integ-multiple-alb/myService/TaskDef",
-                "children": {
-                  "TaskRole": {
-                    "id": "TaskRole",
-                    "path": "aws-ecs-integ-multiple-alb/myService/TaskDef/TaskRole",
-                    "children": {
-                      "ImportTaskRole": {
-                        "id": "ImportTaskRole",
-                        "path": "aws-ecs-integ-multiple-alb/myService/TaskDef/TaskRole/ImportTaskRole",
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-ecs-integ-multiple-alb/myService/TaskDef/TaskRole/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                          "aws:cdk:cloudformation:props": {
-                            "assumeRolePolicyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "Service": "ecs-tasks.amazonaws.com"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-ecs-integ-multiple-alb/myService/TaskDef/TaskRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-ecs-integ-multiple-alb/myService/TaskDef/TaskRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": [
-                                        "logs:CreateLogStream",
-                                        "logs:DescribeLogGroups",
-                                        "logs:DescribeLogStreams",
-                                        "logs:PutLogEvents",
-                                        "ssmmessages:CreateControlChannel",
-                                        "ssmmessages:CreateDataChannel",
-                                        "ssmmessages:OpenControlChannel",
-                                        "ssmmessages:OpenDataChannel"
-                                      ],
-                                      "Effect": "Allow",
-                                      "Resource": "*"
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "myServiceTaskDefTaskRoleDefaultPolicyD48473C0",
-                                "roles": [
-                                  {
-                                    "Ref": "myServiceTaskDefTaskRole1C1DE6CC"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-ecs-integ-multiple-alb/myService/TaskDef/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
-                      "aws:cdk:cloudformation:props": {
-                        "containerDefinitions": [
-                          {
-                            "essential": true,
-                            "image": "amazon/amazon-ecs-sample",
-                            "memory": 256,
-                            "name": "web",
-                            "portMappings": [
-                              {
-                                "containerPort": 80,
-                                "hostPort": 0,
-                                "protocol": "tcp"
-                              },
-                              {
-                                "containerPort": 90,
-                                "hostPort": 0,
-                                "protocol": "tcp"
-                              }
-                            ],
-                            "logConfiguration": {
-                              "logDriver": "awslogs",
-                              "options": {
-                                "awslogs-group": {
-                                  "Ref": "myServiceTaskDefwebLogGroupA1767F2C"
-                                },
-                                "awslogs-stream-prefix": "myService",
-                                "awslogs-region": {
-                                  "Ref": "AWS::Region"
-                                }
-                              }
-                            }
-                          }
-                        ],
-                        "executionRoleArn": {
-                          "Fn::GetAtt": [
-                            "myServiceTaskDefExecutionRole618CD311",
-                            "Arn"
-                          ]
-                        },
-                        "family": "awsecsintegmultiplealbmyServiceTaskDefC0AB61D5",
-                        "networkMode": "bridge",
-                        "requiresCompatibilities": [
-                          "EC2"
-                        ],
-                        "taskRoleArn": {
-                          "Fn::GetAtt": [
-                            "myServiceTaskDefTaskRole1C1DE6CC",
-                            "Arn"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  },
-                  "web": {
-                    "id": "web",
-                    "path": "aws-ecs-integ-multiple-alb/myService/TaskDef/web",
-                    "children": {
-                      "LogGroup": {
-                        "id": "LogGroup",
-                        "path": "aws-ecs-integ-multiple-alb/myService/TaskDef/web/LogGroup",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-ecs-integ-multiple-alb/myService/TaskDef/web/LogGroup/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                              "aws:cdk:cloudformation:props": {}
-                            },
-                            "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  },
-                  "ExecutionRole": {
-                    "id": "ExecutionRole",
-                    "path": "aws-ecs-integ-multiple-alb/myService/TaskDef/ExecutionRole",
-                    "children": {
-                      "ImportExecutionRole": {
-                        "id": "ImportExecutionRole",
-                        "path": "aws-ecs-integ-multiple-alb/myService/TaskDef/ExecutionRole/ImportExecutionRole",
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-ecs-integ-multiple-alb/myService/TaskDef/ExecutionRole/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                          "aws:cdk:cloudformation:props": {
-                            "assumeRolePolicyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "Service": "ecs-tasks.amazonaws.com"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-ecs-integ-multiple-alb/myService/TaskDef/ExecutionRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-ecs-integ-multiple-alb/myService/TaskDef/ExecutionRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": [
-                                        "logs:CreateLogStream",
-                                        "logs:PutLogEvents"
-                                      ],
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "myServiceTaskDefwebLogGroupA1767F2C",
-                                          "Arn"
-                                        ]
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "myServiceTaskDefExecutionRoleDefaultPolicyBDAEC571",
-                                "roles": [
-                                  {
-                                    "Ref": "myServiceTaskDefExecutionRole618CD311"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "Service": {
@@ -2033,47 +2532,51 @@
                         ],
                         "schedulingStrategy": "REPLICA",
                         "taskDefinition": {
-                          "Ref": "myServiceTaskDef7FB8322A"
+                          "Ref": "TaskDef54694570"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ecs.CfnService",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ecs.Ec2Service",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.aws_ecs_patterns.ApplicationMultipleTargetGroupsEc2Service",
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-ecs-integ-multiple-alb/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "aws-ecs-integ-multiple-alb/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
         }
       },
       "applicationMultipleTargetGroupsEc2ServiceTest": {
@@ -2089,7 +2592,7 @@
                 "path": "applicationMultipleTargetGroupsEc2ServiceTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2100,22 +2603,22 @@
                     "id": "BootstrapVersion",
                     "path": "applicationMultipleTargetGroupsEc2ServiceTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "applicationMultipleTargetGroupsEc2ServiceTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -2135,13 +2638,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.3.0"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

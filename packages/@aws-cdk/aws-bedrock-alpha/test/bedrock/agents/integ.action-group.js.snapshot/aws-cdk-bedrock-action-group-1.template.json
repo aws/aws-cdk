@@ -1,0 +1,302 @@
+{
+ "Resources": {
+  "ActionGroupFunctionServiceRole77660D62": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ActionGroupFunctionFE14D1CB": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n    exports.handler = async (event) => {\n      console.log('Event:', JSON.stringify(event));\n      return {\n        messageVersion: '1.0',\n        response: {\n          actionGroup: event.actionGroup,\n          apiPath: event.apiPath,\n          httpMethod: event.httpMethod,\n          httpStatusCode: 200,\n          responseBody: {\n            application_json: { result: 'Success from action group' }\n          }\n        }\n      };\n    };\n  "
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "ActionGroupFunctionServiceRole77660D62",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "ActionGroupFunctionServiceRole77660D62"
+   ]
+  },
+  "ActionGroupFunctionLogGroup05A58C56": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ActionGroupFunctionFE14D1CB"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "ActionGroupFunctionLambdaInvocationPolicyc855117c0e9b7e1e08A69654": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ActionGroupFunctionFE14D1CB",
+      "Arn"
+     ]
+    },
+    "Principal": "bedrock.amazonaws.com",
+    "SourceAccount": {
+     "Ref": "AWS::AccountId"
+    }
+   }
+  },
+  "MyAgentRoleE8318EBB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":agent/*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": "agent-awscdkbedrockactiongroup1-myagent-319c695f-bedrockagent"
+   }
+  },
+  "MyAgentRoleDefaultPolicy30DBC7AC": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ActionGroupFunctionFE14D1CB",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ActionGroupFunctionFE14D1CB",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "bedrock:GetFoundationModel",
+        "bedrock:InvokeModel*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":bedrock:",
+          {
+           "Ref": "AWS::Region"
+          },
+          "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyAgentRoleDefaultPolicy30DBC7AC",
+    "Roles": [
+     {
+      "Ref": "MyAgentRoleE8318EBB"
+     }
+    ]
+   }
+  },
+  "MyAgent039CC8B3": {
+   "Type": "AWS::Bedrock::Agent",
+   "Properties": {
+    "ActionGroups": [
+     {
+      "ActionGroupName": "UserInputAction",
+      "ActionGroupState": "ENABLED",
+      "ParentActionGroupSignature": "AMAZON.UserInput",
+      "SkipResourceInUseCheckOnDelete": false
+     },
+     {
+      "ActionGroupName": "CodeInterpreterAction",
+      "ActionGroupState": "ENABLED",
+      "ParentActionGroupSignature": "AMAZON.CodeInterpreter",
+      "SkipResourceInUseCheckOnDelete": false
+     },
+     {
+      "ActionGroupExecutor": {
+       "Lambda": {
+        "Fn::GetAtt": [
+         "ActionGroupFunctionFE14D1CB",
+         "Arn"
+        ]
+       }
+      },
+      "ActionGroupName": "CustomActionGroup",
+      "ActionGroupState": "ENABLED",
+      "ApiSchema": {
+       "Payload": "\nopenapi: 3.0.3\ninfo:\n  title: Action Group API\n  version: 1.0.0\npaths:\n  /perform-action:\n    post:\n      operationId: performAction\n      summary: Perform an action\n      description: Perform an action with the specified parameters\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema:\n              type: object\n              required:\n                - action_type\n              properties:\n                action_type:\n                  type: string\n                  description: Type of action to perform\n                parameters:\n                  type: object\n                  description: Additional parameters for the action\n      responses:\n        '200':\n          description: Action performed successfully\n          content:\n            application/json:\n              schema:\n                type: object\n                properties:\n                  success:\n                    type: boolean\n                  result:\n                    type: string\n                  details:\n                    type: object\n"
+      },
+      "Description": "A custom action group for testing",
+      "SkipResourceInUseCheckOnDelete": false
+     }
+    ],
+    "AgentName": "test-action-group-agent",
+    "AgentResourceRoleArn": {
+     "Fn::GetAtt": [
+      "MyAgentRoleE8318EBB",
+      "Arn"
+     ]
+    },
+    "AutoPrepare": false,
+    "FoundationModel": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+      ]
+     ]
+    },
+    "IdleSessionTTLInSeconds": 600,
+    "Instruction": "This is a test instruction that must be at least 40 characters long to be valid",
+    "OrchestrationType": "DEFAULT",
+    "SkipResourceInUseCheckOnDelete": true
+   },
+   "DependsOn": [
+    "MyAgentRoleDefaultPolicy30DBC7AC"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

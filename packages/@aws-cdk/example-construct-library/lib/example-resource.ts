@@ -11,10 +11,12 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as core from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-// for files that are part of this package, we do import individual classes or functions
+// for files that are part of this package or part of core, we do import individual classes or functions
+import { CfnWaitCondition, CfnWaitConditionHandle, Fn, IResource, RemovalPolicy, Resource, Stack, Token } from 'aws-cdk-lib/core';
 import { exampleResourceArnComponents } from './private/example-resource-common';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * The interface that represents the ExampleResource resource.
@@ -58,7 +60,7 @@ import { exampleResourceArnComponents } from './private/example-resource-common'
  */
 export interface IExampleResource extends
   // all L2 interfaces need to extend IResource
-  core.IResource,
+  IResource,
 
   // Only for resources that have an associated IAM Role.
   // Allows this resource to be the target in calls like bucket.grantRead(exampleResource).
@@ -149,7 +151,7 @@ export interface IExampleResource extends
  *
  * Notice that the class is not exported - it's not part of the public API of this module!
  */
-abstract class ExampleResourceBase extends core.Resource implements IExampleResource {
+abstract class ExampleResourceBase extends Resource implements IExampleResource {
   // these stay abstract at this level
   public abstract readonly exampleResourceArn: string;
   public abstract readonly exampleResourceName: string;
@@ -199,7 +201,11 @@ abstract class ExampleResourceBase extends core.Resource implements IExampleReso
    * as it simplifies the implementation code (less branching).
    */
   public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, options);
+    const rule = new events.Rule(this, id, {
+      description: options.description,
+      ruleName: options.ruleName,
+      crossStackScope: options.crossStackScope,
+    });
     rule.addTarget(options.target);
     rule.addEventPattern({
       // obviously, you would put your resource-specific values here
@@ -319,7 +325,7 @@ export interface ExampleResourceProps {
    *
    * @default RemovalPolicy.RETAIN
    */
-  readonly removalPolicy?: core.RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -338,7 +344,11 @@ export interface ExampleResourceProps {
  *
  * @resource AWS::CloudFormation::WaitConditionHandle
  */
+@propertyInjectable
 export class ExampleResource extends ExampleResourceBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.example-construct-library.ExampleResource';
+
   /**
    * Reference an existing ExampleResource,
    * defined outside of the CDK code, by name.
@@ -364,7 +374,7 @@ export class ExampleResource extends ExampleResourceBase {
       // using the Stack.formatArn helper method from the core library.
       // We have to know the ARN components of ExampleResource in a few places, so,
       // to avoid duplication, extract that into a module-private function
-      public readonly exampleResourceArn = core.Stack.of(scope)
+      public readonly exampleResourceArn = Stack.of(scope)
         .formatArn(exampleResourceArnComponents(exampleResourceName));
     }
 
@@ -382,8 +392,8 @@ export class ExampleResource extends ExampleResourceBase {
 
   /**
    * The constructor of a construct has always 3 arguments:
-   * the parent Construct, the string identifier,
-   * locally unique within the scope of the parent,
+   * the parent Construct, the string identifier
+   * (locally unique within the scope of the parent),
    * and a properties struct.
    *
    * If the props only have optional properties, like in our case,
@@ -391,6 +401,7 @@ export class ExampleResource extends ExampleResourceBase {
    */
   constructor(scope: Construct, id: string, props: ExampleResourceProps = {}) {
     // Call the constructor from Resource superclass,
+
     // which attaches this construct to the construct tree.
     super(scope, id, {
       // You need to let the Resource superclass know which of your properties
@@ -402,6 +413,9 @@ export class ExampleResource extends ExampleResourceBase {
       physicalName: props.waitConditionHandleName,
     });
 
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
     // We often add validations for properties,
     // so that customers receive feedback about incorrect properties
     // sooner than a CloudFormation deployment.
@@ -412,7 +426,7 @@ export class ExampleResource extends ExampleResourceBase {
     // so, we need to use the Token.isUnresolved() method from the core library
     // to skip validation in that case.
     if (props.waitConditionHandleName !== undefined &&
-        !core.Token.isUnresolved(props.waitConditionHandleName) &&
+        !Token.isUnresolved(props.waitConditionHandleName) &&
         !/^[_a-zA-Z]+$/.test(props.waitConditionHandleName)) {
       throw new Error('waitConditionHandleName must be non-empty and contain only letters and underscores, ' +
         `got: '${props.waitConditionHandleName}'`);
@@ -435,12 +449,12 @@ export class ExampleResource extends ExampleResourceBase {
     // This guarantees that they get scoped correctly,
     // and the CDK will make sure their locally-unique identifiers
     // are globally unique, which makes your L2 compose.
-    const waitConditionHandle = new core.CfnWaitConditionHandle(this, 'WaitConditionHandle');
+    const waitConditionHandle = new CfnWaitConditionHandle(this, 'WaitConditionHandle');
 
     // The 'main' L1 you create should always have the logical ID 'Resource'.
     // This is important, so that the ConstructNode.defaultChild method works correctly.
     // The local variable representing the L1 is often called 'resource' as well.
-    const resource = new core.CfnWaitCondition(this, 'Resource', {
+    const resource = new CfnWaitCondition(this, 'Resource', {
       count: 0,
       handle: waitConditionHandle.ref,
       timeout: '10',
@@ -460,7 +474,7 @@ export class ExampleResource extends ExampleResourceBase {
       // and the ARN for your resource is of the form 'arn:aws:<service>:<region>:<account>:resource/physical-name',
       // which is quite common,
       // you can use Fn::Select and Fn::Split to take out the part after the '/' from the ARN:
-      core.Fn.select(1, core.Fn.split('/', resource.ref)),
+      Fn.select(1, Fn.split('/', resource.ref)),
     );
     this.exampleResourceArn = this.getResourceArnAttribute(
       // A lot of the L1 classes have an 'attrArn' property -
@@ -469,7 +483,7 @@ export class ExampleResource extends ExampleResourceBase {
       // you can often formulate the ARN yourself,
       // using the Stack.formatArn helper function.
       // Here, we assume resource.ref returns the physical name of the resource.
-      core.Stack.of(this).formatArn(exampleResourceArnComponents(resource.ref)),
+      Stack.of(this).formatArn(exampleResourceArnComponents(resource.ref)),
       // always use the protected physicalName property for this second argument
       exampleResourceArnComponents(this.physicalName));
 
@@ -505,7 +519,7 @@ export class ExampleResource extends ExampleResourceBase {
     // this is how you apply the removal policy
     resource.applyRemovalPolicy(props.removalPolicy, {
       // this is the default to apply if props.removalPolicy is undefined
-      default: core.RemovalPolicy.RETAIN,
+      default: RemovalPolicy.RETAIN,
     });
   }
 }

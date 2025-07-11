@@ -5,6 +5,8 @@ import { renderMeshOwner } from './private/utils';
 import { RouteSpec } from './route-spec';
 import { IVirtualRouter, VirtualRouter } from './virtual-router';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface for which all Route based classes MUST implement
@@ -67,7 +69,11 @@ export interface RouteProps extends RouteBaseProps {
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/routes.html
  */
+@propertyInjectable
 export class Route extends cdk.Resource implements IRoute {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appmesh.Route';
+
   /**
    * Import an existing Route given an ARN
    */
@@ -113,6 +119,8 @@ export class Route extends cdk.Resource implements IRoute {
     super(scope, id, {
       physicalName: props.routeName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.virtualRouter = props.virtualRouter;
 

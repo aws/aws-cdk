@@ -1,12 +1,18 @@
 import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Rule, Match } from 'aws-cdk-lib/aws-events';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 const app = new App();
 
 const stack = new Stack(app, 'RuleStack');
 
+const role = new iam.Role(stack, 'MyRole', {
+  assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+});
+
 new Rule(stack, 'MyRule', {
+  role,
   eventPattern: {
     account: ['account1', 'account2'],
     detail: {
@@ -38,6 +44,48 @@ new Rule(stack, 'MyRule', {
     source: ['src1', 'src2'],
     time: ['t1'],
     version: ['0'],
+  },
+});
+
+new Rule(stack, 'MyWildcardRule', {
+  eventPattern: {
+    account: Match.wildcard('account*'),
+  },
+});
+
+new Rule(stack, 'MyAnythingButPrefixRule', {
+  eventPattern: {
+    account: Match.anythingButPrefix('prefix-'),
+  },
+});
+
+new Rule(stack, 'MyAnythingButSuffixRule', {
+  eventPattern: {
+    account: Match.anythingButSuffix('-suffix'),
+  },
+});
+
+new Rule(stack, 'MyAnythingButWildcardRule', {
+  eventPattern: {
+    account: Match.anythingButWildcard('account*'),
+  },
+});
+
+new Rule(stack, 'MyAnythingButEqualsIgnoreCase', {
+  eventPattern: {
+    account: Match.anythingButEqualsIgnoreCase('account1', 'account2'),
+  },
+});
+
+new Rule(stack, 'MyPrefixEqualsIgnoreCase', {
+  eventPattern: {
+    account: Match.prefixEqualsIgnoreCase('prefix-'),
+  },
+});
+
+new Rule(stack, 'MySuffixEqualsIgnoreCase', {
+  eventPattern: {
+    account: Match.suffixEqualsIgnoreCase('-suffix'),
   },
 });
 

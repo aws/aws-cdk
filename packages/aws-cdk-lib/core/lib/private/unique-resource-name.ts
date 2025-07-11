@@ -1,8 +1,9 @@
+import { UnscopedValidationError } from '../errors';
 import { md5hash } from './md5';
 
 /**
  * Options for creating a unique resource name.
-*/
+ */
 interface MakeUniqueResourceNameOptions {
 
   /**
@@ -43,8 +44,8 @@ interface MakeUniqueResourceNameOptions {
 const HIDDEN_FROM_HUMAN_ID = 'Resource';
 
 /**
-* Resources with this ID are complete hidden from the logical ID calculation.
-*/
+ * Resources with this ID are complete hidden from the logical ID calculation.
+ */
 const HIDDEN_ID = 'Default';
 
 const PATH_SEP = '/';
@@ -60,7 +61,7 @@ export function makeUniqueResourceName(components: string[], options: MakeUnique
   components = components.filter(x => x !== HIDDEN_ID);
 
   if (components.length === 0) {
-    throw new Error('Unable to calculate a unique resource name for an empty set of components');
+    throw new UnscopedValidationError('Unable to calculate a unique resource name for an empty set of components');
   }
 
   // top-level resources will simply use the `name` as-is if the name is also short enough

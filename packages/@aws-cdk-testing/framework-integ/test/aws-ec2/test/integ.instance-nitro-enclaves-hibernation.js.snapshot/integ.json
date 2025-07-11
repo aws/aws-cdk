@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "testCases": {
     "instance-nitro-enclaves-hibernation/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "instance-nitro-enclaves-hibernation/DefaultTest/DeployAssert",
       "assertionStackName": "instancenitroenclaveshibernationDefaultTestDeployAssertDE7E123E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

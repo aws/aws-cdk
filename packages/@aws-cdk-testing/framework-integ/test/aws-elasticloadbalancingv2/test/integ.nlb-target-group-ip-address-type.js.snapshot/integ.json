@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "NlbTargetGroupIpAddressTypeTestInteg/DefaultTest": {
+      "stacks": [
+        "NlbTargetGroupIpAddressTypeTestStack"
+      ],
+      "assertionStack": "NlbTargetGroupIpAddressTypeTestInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "NlbTargetGroupIpAddressTypeTestIntegDefaultTestDeployAssertF4BE6039"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}

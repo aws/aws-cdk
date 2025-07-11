@@ -1,0 +1,19 @@
+{
+  "version": "36.0.5",
+  "files": {
+    "3239e363f9e8e5a4ef7c700724f38f69548a563607e006187dc64b4027f36839": {
+      "source": {
+        "path": "cdk-amplify-app-cache-config.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3239e363f9e8e5a4ef7c700724f38f69548a563607e006187dc64b4027f36839.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

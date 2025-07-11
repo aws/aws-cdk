@@ -8,7 +8,7 @@ import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '../../
 import { IRole } from '../../../aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
-import { CfnOutput, Duration, Stack } from '../../../core';
+import { CfnOutput, Duration, Stack, ValidationError } from '../../../core';
 
 /**
  * The properties for the base NetworkMultipleTargetGroupsEc2Service or NetworkMultipleTargetGroupsFargateService service.
@@ -380,7 +380,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
         return listener;
       }
     }
-    throw new Error(`Listener ${name} is not defined. Did you define listener with name ${name}?`);
+    throw new ValidationError(`Listener ${name} is not defined. Did you define listener with name ${name}?`, this);
   }
 
   protected registerECSTargets(service: BaseService, container: ContainerDefinition, targets: NetworkTargetProps[]): NetworkTargetGroup {
@@ -397,7 +397,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
       this.targetGroups.push(targetGroup);
     }
     if (this.targetGroups.length === 0) {
-      throw new Error('At least one target group should be specified.');
+      throw new ValidationError('At least one target group should be specified.', this);
     }
     return this.targetGroups[0];
   }
@@ -423,20 +423,20 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
 
   private validateInput(props: NetworkMultipleTargetGroupsServiceBaseProps) {
     if (props.cluster && props.vpc) {
-      throw new Error('You can only specify either vpc or cluster. Alternatively, you can leave both blank');
+      throw new ValidationError('You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
     }
 
     if (props.desiredCount !== undefined && props.desiredCount < 1) {
-      throw new Error('You must specify a desiredCount greater than 0');
+      throw new ValidationError('You must specify a desiredCount greater than 0', this);
     }
 
     if (props.loadBalancers) {
       if (props.loadBalancers.length === 0) {
-        throw new Error('At least one load balancer must be specified');
+        throw new ValidationError('At least one load balancer must be specified', this);
       }
       for (const lbProps of props.loadBalancers) {
         if (lbProps.listeners.length === 0) {
-          throw new Error('At least one listener must be specified');
+          throw new ValidationError('At least one listener must be specified', this);
         }
       }
     }
@@ -461,7 +461,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   private createDomainName(loadBalancer: NetworkLoadBalancer, name?: string, zone?: IHostedZone) {
     if (typeof name !== 'undefined') {
       if (typeof zone === 'undefined') {
-        throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
+        throw new ValidationError('A Route53 hosted domain zone name is required to configure the specified domain name', this);
       }
 
       new ARecord(this, `DNS${loadBalancer.node.id}`, {

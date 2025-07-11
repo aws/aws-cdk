@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnTaskDefinition } from './ecs.generated';
 import * as cdk from '../../core';
+import { ValidationError } from '../../core';
 
 /**
  * The properties for defining Linux-specific options that are applied to the container.
@@ -32,18 +33,18 @@ export interface LinuxParametersProps {
   readonly maxSwap?: cdk.Size;
 
   /**
-    * This allows you to tune a container's memory swappiness behavior. This parameter
-    * maps to the --memory-swappiness option to docker run. The swappiness relates
-    * to the kernel's tendency to swap memory. A value of 0 will cause swapping to
-    * not happen unless absolutely necessary. A value of 100 will cause pages to
-    * be swapped very aggressively.
-    *
-    * This parameter is only supported when you are using the EC2 launch type.
-    * Accepted values are whole numbers between 0 and 100. If a value is not
-    * specified for maxSwap then this parameter is ignored.
-    *
-    * @default 60
-    */
+   * This allows you to tune a container's memory swappiness behavior. This parameter
+   * maps to the --memory-swappiness option to docker run. The swappiness relates
+   * to the kernel's tendency to swap memory. A value of 0 will cause swapping to
+   * not happen unless absolutely necessary. A value of 100 will cause pages to
+   * be swapped very aggressively.
+   *
+   * This parameter is only supported when you are using the EC2 launch type.
+   * Accepted values are whole numbers between 0 and 100. If a value is not
+   * specified for maxSwap then this parameter is ignored.
+   *
+   * @default 60
+   */
   readonly swappiness?: number;
 }
 
@@ -111,7 +112,7 @@ export class LinuxParameters extends Construct {
       props.sharedMemorySize !== undefined &&
       (!Number.isInteger(props.sharedMemorySize) || props.sharedMemorySize < 0)
     ) {
-      throw new Error(`sharedMemorySize: Must be an integer greater than 0; received ${props.sharedMemorySize}.`);
+      throw new ValidationError(`sharedMemorySize: Must be an integer greater than 0; received ${props.sharedMemorySize}.`, this);
     }
 
     if (
@@ -119,7 +120,7 @@ export class LinuxParameters extends Construct {
       props.swappiness !== undefined &&
       (!Number.isInteger(props.swappiness) || props.swappiness < 0 || props.swappiness > 100)
     ) {
-      throw new Error(`swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`);
+      throw new ValidationError(`swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`, this);
     }
   }
 

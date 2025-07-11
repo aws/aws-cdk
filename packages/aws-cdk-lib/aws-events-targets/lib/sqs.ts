@@ -2,7 +2,7 @@ import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConf
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as sqs from '../../aws-sqs';
-import { FeatureFlags } from '../../core';
+import { FeatureFlags, ValidationError } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -40,10 +40,9 @@ export interface SqsQueueProps extends TargetBaseProps {
  *
  */
 export class SqsQueue implements events.IRuleTarget {
-
   constructor(public readonly queue: sqs.IQueue, private readonly props: SqsQueueProps = {}) {
     if (props.messageGroupId !== undefined && !queue.fifo) {
-      throw new Error('messageGroupId cannot be specified for non-FIFO queues');
+      throw new ValidationError('messageGroupId cannot be specified for non-FIFO queues', queue);
     }
   }
 
@@ -83,5 +82,4 @@ export class SqsQueue implements events.IRuleTarget {
       sqsParameters: this.props.messageGroupId ? { messageGroupId: this.props.messageGroupId } : undefined,
     };
   }
-
 }

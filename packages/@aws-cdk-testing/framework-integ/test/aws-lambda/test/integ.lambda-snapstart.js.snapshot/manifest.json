@@ -1,0 +1,235 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "aws-cdk-lambda-runtime-management.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-lambda-runtime-management.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-lambda-runtime-management": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-lambda-runtime-management.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/45c1527ff0ae033c7e2bb4fa9b83b353902213c7c73162bdfa055210d24bd9ef.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-lambda-runtime-management.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-lambda-runtime-management.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-lambda-runtime-management/JavaSnapstartLambda": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "SnapStart only support published Lambda versions. Ignore if function already have published versions [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-management/JavaSnapstartLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JavaSnapstartLambdaServiceRole50CD4832"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-management/JavaSnapstartLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JavaSnapstartLambdaB19F6BA4"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-management/Python312SnapstartLambda": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "SnapStart only support published Lambda versions. Ignore if function already have published versions [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-management/Python312SnapstartLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Python312SnapstartLambdaServiceRole16F303C0"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-management/Python312SnapstartLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Python312SnapstartLambdaB0C15475"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-management/Python313SnapstartLambda": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "SnapStart only support published Lambda versions. Ignore if function already have published versions [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-management/Python313SnapstartLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Python313SnapstartLambdaServiceRoleC3989FBF"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-management/Python313SnapstartLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Python313SnapstartLambda008EE7A4"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-management/DotnetSnapstartLambda": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "SnapStart only support published Lambda versions. Ignore if function already have published versions [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-management/DotnetSnapstartLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DotnetSnapstartLambdaServiceRole222A9244"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-management/DotnetSnapstartLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DotnetSnapstartLambda7DAEB52E"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-management/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-management/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "PythonSnapstartLambdaServiceRole8EF8BB34": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PythonSnapstartLambdaServiceRole8EF8BB34",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "PythonSnapstartLambdaC0CE7563": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PythonSnapstartLambdaC0CE7563",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Python13SnapstartLambdaServiceRole4FF7D1E9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Python13SnapstartLambdaServiceRole4FF7D1E9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Python13SnapstartLambdaF3D6F9F4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Python13SnapstartLambdaF3D6F9F4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Python11SnapstartLambdaServiceRoleA18C39FB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Python11SnapstartLambdaServiceRoleA18C39FB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Python11SnapstartLambda8C62C534": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Python11SnapstartLambda8C62C534",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-lambda-runtime-management"
+    },
+    "lambdaruntimemanagementDefaultTestDeployAssertDE680AF3.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambdaruntimemanagementDefaultTestDeployAssertDE680AF3.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambdaruntimemanagementDefaultTestDeployAssertDE680AF3": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambdaruntimemanagementDefaultTestDeployAssertDE680AF3.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambdaruntimemanagementDefaultTestDeployAssertDE680AF3.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambdaruntimemanagementDefaultTestDeployAssertDE680AF3.assets"
+      ],
+      "metadata": {
+        "/lambda-runtime-management/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-runtime-management/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-runtime-management/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

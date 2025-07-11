@@ -2,7 +2,7 @@ import * as sfn from '../../../aws-stepfunctions';
 
 /** Http Methods that API Gateway supports */
 export enum HttpMethod {
-  /** Retreive data from a server at the specified resource */
+  /** Retrieve data from a server at the specified resource */
   GET = 'GET',
 
   /** Send data to the API endpoint to create or udpate a resource */
@@ -17,7 +17,7 @@ export enum HttpMethod {
   /** Apply partial modifications to the resource */
   PATCH = 'PATCH',
 
-  /** Retreive data from a server at the specified resource without the response body */
+  /** Retrieve data from a server at the specified resource without the response body */
   HEAD = 'HEAD',
 
   /** Return data describing what other methods and operations the server supports */
@@ -41,7 +41,7 @@ export enum AuthType {
 /**
  * Base CallApiGatewayEdnpoint Task Props
  */
-export interface CallApiGatewayEndpointBaseProps extends sfn.TaskStateBaseProps {
+export interface CallApiGatewayEndpointBaseOptions {
   /**
    * Http method for the API
    */
@@ -77,3 +77,18 @@ export interface CallApiGatewayEndpointBaseProps extends sfn.TaskStateBaseProps 
    */
   readonly authType?: AuthType;
 }
+
+/**
+ * Base CallApiGatewayEndpoint Task Props
+ */
+export interface CallApiGatewayEndpointJsonPathBaseProps extends sfn.TaskStateJsonPathBaseProps, CallApiGatewayEndpointBaseOptions { }
+
+/**
+ * Base CallApiGatewayEndpoint Task Props
+ */
+export interface CallApiGatewayEndpointJsonataBaseProps extends sfn.TaskStateJsonataBaseProps, CallApiGatewayEndpointBaseOptions { }
+
+/**
+ * Base CallApiGatewayEndpoint Task Props
+ */
+export interface CallApiGatewayEndpointBaseProps extends sfn.TaskStateBaseProps, CallApiGatewayEndpointBaseOptions { }

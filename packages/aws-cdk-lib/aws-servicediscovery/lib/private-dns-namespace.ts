@@ -3,7 +3,9 @@ import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPrivateDnsNamespace } from './servicediscovery.generated';
 import * as ec2 from '../../aws-ec2';
-import { Resource } from '../../core';
+import { Resource, ValidationError } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   /**
@@ -34,7 +36,10 @@ export interface PrivateDnsNamespaceAttributes {
 /**
  * Define a Service Discovery HTTP Namespace
  */
+@propertyInjectable
 export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespace {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicediscovery.PrivateDnsNamespace';
 
   public static fromPrivateDnsNamespaceAttributes(scope: Construct, id: string, attrs: PrivateDnsNamespaceAttributes): IPrivateDnsNamespace {
     class Import extends Resource implements IPrivateDnsNamespace {
@@ -73,8 +78,10 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
 
   constructor(scope: Construct, id: string, props: PrivateDnsNamespaceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     if (props.vpc === undefined) {
-      throw new Error('VPC must be specified for PrivateDNSNamespaces');
+      throw new ValidationError('VPC must be specified for PrivateDNSNamespaces', this);
     }
 
     const ns = new CfnPrivateDnsNamespace(this, 'Resource', {
@@ -102,6 +109,7 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
   /**
    * Creates a service within the namespace
    */
+  @MethodMetadata()
   public createService(id: string, props?: DnsServiceProps): Service {
     return new Service(this, id, {
       namespace: this,

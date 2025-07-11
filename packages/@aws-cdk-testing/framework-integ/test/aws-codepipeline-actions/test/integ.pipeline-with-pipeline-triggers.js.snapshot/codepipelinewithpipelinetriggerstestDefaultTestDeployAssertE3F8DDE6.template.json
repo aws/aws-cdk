@@ -20,7 +20,7 @@
     "outputPaths": [
      "pipeline.name"
     ],
-    "salt": "1708619218938"
+    "salt": "1745663027801"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -68,6 +68,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "codepipeline:GetPipeline"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -78,12 +87,20 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs18.x",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "310f432b946edeef3316f39f32b344b6bdc401a3b438433db42adadab1bf5e17.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -115,7 +132,28 @@
     "outputPaths": [
      "pipeline.name"
     ],
-    "salt": "1708619218938"
+    "salt": "1745663027802"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310": {
+   "Type": "Custom::DeployAssert@SdkCallCodePipelinegetPipeline",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CodePipeline",
+    "api": "getPipeline",
+    "expected": "{\"$ObjectLike\":{\"pipeline\":{\"name\":\"codepipeline-integ-trigger-test\",\"stages\":[{\"name\":\"Source\"},{\"name\":\"Build\"}],\"triggers\":[{\"providerType\":\"CodeStarSourceConnection\",\"gitConfiguration\":{\"sourceActionName\":\"integ-action-name\",\"push\":[{\"branches\":{\"includes\":[\"include1\",\"include2\"],\"excludes\":[\"exclude1\",\"exclude2\"]},\"filePaths\":{\"includes\":[\"/path/to/include1\",\"/path/to/include2\"],\"excludes\":[\"/path/to/exclude1\",\"/path/to/exclude2\"]}}],\"pullRequest\":[{\"branches\":{\"includes\":[\"includePR1\",\"includePR2\"],\"excludes\":[\"excludePR1\",\"excludePR2\"]},\"filePaths\":{\"includes\":[\"/path/to/includePR1\",\"/path/to/includePR2\"],\"excludes\":[\"/path/to/excludePR1\",\"/path/to/excludePR2\"]}}]}}]}}}",
+    "parameters": {
+     "name": "\"codepipeline-integ-trigger-test\""
+    },
+    "flattenResponse": "false",
+    "salt": "1745663027802"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -136,6 +174,141 @@
      "AwsApiCallCodePipelinegetPipeline1c275ca65933c3cecd335e67fe9182e2",
      "assertion"
     ]
+   }
+  },
+  "AssertionResultsAwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
    }
   }
  },

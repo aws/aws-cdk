@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
 import { ArnFormat } from '../../core';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Construction properties for a LogRetention.
@@ -73,7 +74,12 @@ export interface LogRetentionRetryOptions {
  * Log group can be created in the region that is different from stack region by
  * specifying `logGroupRegion`
  */
+@propertyInjectable
 export class LogRetention extends Construct {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-log.LogRetention';
 
   /**
    * The ARN of the LogGroup.
@@ -201,7 +207,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
   public grantDeleteLogGroup(logGroupName: string) {
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['logs:DeleteLogGroup'],
-      //Only allow deleting the specific log group.
+      // Only allow deleting the specific log group.
       resources: [cdk.Stack.of(this).formatArn({
         service: 'logs',
         resource: 'log-group',

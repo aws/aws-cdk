@@ -2,15 +2,18 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib/core';
 import * as constructs from 'constructs';
 import { CfnConnection } from 'aws-cdk-lib/aws-glue';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * The type of the glue connection
  *
  * If you need to use a connection type that doesn't exist as a static member, you
  * can instantiate a `ConnectionType` object, e.g: `new ConnectionType('NEW_TYPE')`.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-connectioninput.html#cfn-glue-connection-connectioninput-connectiontype
  */
 export class ConnectionType {
-
   /**
    * Designates a connection to a database through Java Database Connectivity (JDBC).
    */
@@ -27,9 +30,131 @@ export class ConnectionType {
   public static readonly MONGODB = new ConnectionType('MONGODB');
 
   /**
+   * Designates a connection used for view validation by Amazon Redshift.
+   */
+  public static readonly VIEW_VALIDATION_REDSHIFT = new ConnectionType('VIEW_VALIDATION_REDSHIFT');
+
+  /**
+   * Designates a connection used for view validation by Amazon Athena.
+   */
+  public static readonly VIEW_VALIDATION_ATHENA = new ConnectionType('VIEW_VALIDATION_ATHENA');
+
+  /**
    * Designates a network connection to a data source within an Amazon Virtual Private Cloud environment (Amazon VPC).
    */
   public static readonly NETWORK = new ConnectionType('NETWORK');
+
+  /**
+   * Uses configuration settings contained in a connector purchased from AWS Marketplace
+   * to read from and write to data stores that are not natively supported by AWS Glue.
+   */
+  public static readonly MARKETPLACE = new ConnectionType('MARKETPLACE');
+
+  /**
+   * Uses configuration settings contained in a custom connector to read from and write to data stores
+   * that are not natively supported by AWS Glue.
+   */
+  public static readonly CUSTOM = new ConnectionType('CUSTOM');
+
+  /**
+   * Designates a connection to Facebook Ads.
+   */
+  public static readonly FACEBOOKADS = new ConnectionType('FACEBOOKADS');
+
+  /**
+   * Designates a connection to Google Ads.
+   */
+  public static readonly GOOGLEADS = new ConnectionType('GOOGLEADS');
+
+  /**
+   * Designates a connection to Google Sheets.
+   */
+  public static readonly GOOGLESHEETS = new ConnectionType('GOOGLESHEETS');
+
+  /**
+   * Designates a connection to Google Analytics 4.
+   */
+  public static readonly GOOGLEANALYTICS4 = new ConnectionType('GOOGLEANALYTICS4');
+
+  /**
+   * Designates a connection to HubSpot.
+   */
+  public static readonly HUBSPOT = new ConnectionType('HUBSPOT');
+
+  /**
+   * Designates a connection to Instagram Ads.
+   */
+  public static readonly INSTAGRAMADS = new ConnectionType('INSTAGRAMADS');
+
+  /**
+   * Designates a connection to Intercom.
+   */
+  public static readonly INTERCOM = new ConnectionType('INTERCOM');
+
+  /**
+   * Designates a connection to Jira Cloud.
+   */
+  public static readonly JIRACLOUD = new ConnectionType('JIRACLOUD');
+
+  /**
+   * Designates a connection to Adobe Marketo Engage.
+   */
+  public static readonly MARKETO = new ConnectionType('MARKETO');
+
+  /**
+   * Designates a connection to Oracle NetSuite.
+   */
+  public static readonly NETSUITEERP = new ConnectionType('NETSUITEERP');
+
+  /**
+   * Designates a connection to Salesforce using OAuth authentication.
+   */
+  public static readonly SALESFORCE = new ConnectionType('SALESFORCE');
+
+  /**
+   * Designates a connection to Salesforce Marketing Cloud.
+   */
+  public static readonly SALESFORCEMARKETINGCLOUD = new ConnectionType('SALESFORCEMARKETINGCLOUD');
+
+  /**
+   * Designates a connection to Salesforce Marketing Cloud Account Engagement (MCAE).
+   */
+  public static readonly SALESFORCEPARDOT = new ConnectionType('SALESFORCEPARDOT');
+
+  /**
+   * Designates a connection to SAP OData.
+   */
+  public static readonly SAPODATA = new ConnectionType('SAPODATA');
+
+  /**
+   * Designates a connection to ServiceNow.
+   */
+  public static readonly SERVICENOW = new ConnectionType('SERVICENOW');
+
+  /**
+   * Designates a connection to Slack.
+   */
+  public static readonly SLACK = new ConnectionType('SLACK');
+
+  /**
+   * Designates a connection to Snapchat Ads.
+   */
+  public static readonly SNAPCHATADS = new ConnectionType('SNAPCHATADS');
+
+  /**
+   * Designates a connection to Stripe.
+   */
+  public static readonly STRIPE = new ConnectionType('STRIPE');
+
+  /**
+   * Designates a connection to Zendesk.
+   */
+  public static readonly ZENDESK = new ConnectionType('ZENDESK');
+
+  /**
+   * Designates a connection to Zoho CRM.
+   */
+  public static readonly ZOHOCRM = new ConnectionType('ZOHOCRM');
 
   /**
    * The name of this ConnectionType, as expected by Connection resource.
@@ -121,7 +246,10 @@ export interface ConnectionProps extends ConnectionOptions {
 /**
  * An AWS Glue connection to a data source.
  */
+@propertyInjectable
 export class Connection extends cdk.Resource implements IConnection {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.Connection';
 
   /**
    * Creates a Connection construct that represents an external connection.
@@ -155,7 +283,7 @@ export class Connection extends cdk.Resource implements IConnection {
     return new Import(scope, id);
   }
 
-  private static buildConnectionArn(scope: constructs.Construct, connectionName: string) : string {
+  private static buildConnectionArn(scope: constructs.Construct, connectionName: string): string {
     return cdk.Stack.of(scope).formatArn({
       service: 'glue',
       resource: 'connection',
@@ -173,12 +301,14 @@ export class Connection extends cdk.Resource implements IConnection {
    */
   public readonly connectionName: string;
 
-  private readonly properties: {[key: string]: string};
+  private readonly properties: { [key: string]: string };
 
   constructor(scope: constructs.Construct, id: string, props: ConnectionProps) {
     super(scope, id, {
       physicalName: props.connectionName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.properties = props.properties || {};
 
@@ -210,6 +340,7 @@ export class Connection extends cdk.Resource implements IConnection {
    * @param key parameter key
    * @param value parameter value
    */
+  @MethodMetadata()
   public addProperty(key: string, value: string): void {
     this.properties[key] = value;
   }

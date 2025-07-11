@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "44.0.0",
   "testCases": {
     "base-path-mapping/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "base-path-mapping/DefaultTest/DeployAssert",
       "assertionStackName": "basepathmappingDefaultTestDeployAssertDA82B6F0"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

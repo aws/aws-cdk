@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "lambda-url-origin-oac/DefaultTest": {
+      "stacks": [
+        "integ-cloudfront-function-url-origin-oac"
+      ],
+      "assertionStack": "lambda-url-origin-oac/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdaurloriginoacDefaultTestDeployAssert0BF569B3"
+    }
+  }
+}

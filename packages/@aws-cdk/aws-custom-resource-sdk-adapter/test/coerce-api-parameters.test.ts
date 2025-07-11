@@ -4,7 +4,6 @@ import { TypeCoercionStateMachine } from '../lib/parameter-types';
 const encode = (v: any) => new TextEncoder().encode(v);
 
 describe('Uint8Array', () => {
-
   describe('should coerce', () => {
     test('a nested value', () => {
       // GIVEN
@@ -136,7 +135,6 @@ describe('Uint8Array', () => {
       // EXPECT
       expect(obj).toMatchObject({ a: { b: { c: encode('0') } } });
     });
-
   });
 
   describe('should NOT coerce', () => {
@@ -197,7 +195,6 @@ describe('Uint8Array', () => {
   });
 
   describe('given an api call description', () => {
-
     test('can convert string parameters to Uint8Array when needed', () => {
       const params = coerceApiParameters('KMS', 'encrypt', {
         KeyId: 'key-id',
@@ -294,11 +291,9 @@ describe('Uint8Array', () => {
       });
     });
   });
-
 });
 
 describe('number', () => {
-
   describe('should coerce', () => {
     test('a nested value', () => {
       // GIVEN
@@ -477,7 +472,6 @@ describe('number', () => {
   });
 
   describe('given an api call description', () => {
-
     test('can convert string parameters to number when needed', () => {
       const params = coerceApiParameters('Amplify', 'listApps', {
         maxResults: '15',

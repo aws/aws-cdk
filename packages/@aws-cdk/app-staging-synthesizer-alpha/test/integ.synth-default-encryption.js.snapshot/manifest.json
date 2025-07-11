@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "synthesize-default-encryption.assets": {
       "type": "cdk:asset-manifest",
@@ -45,10 +45,82 @@
         "stackName": "StagingStack-default-resourcesmax"
       },
       "metadata": {
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole/ImportCdkFileRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkFileRoleE26CEABA"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole/DefaultPolicy/Resource": [
@@ -57,16 +129,62 @@
             "data": "CdkFileRoleDefaultPolicy621C7E5B"
           }
         ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucketName": "*",
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true,
+              "encryption": "S3_MANAGED",
+              "encryptionKey": "*",
+              "versioned": true,
+              "enforceSSL": true
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLifecycleRule": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLifecycleRule": [
+                {
+                  "prefix": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkStagingBucket1636058C"
           }
         ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkStagingBucketPolicy42BD1F92"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/AutoDeleteObjectsCustomResource/Default": [
@@ -79,6 +197,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
@@ -150,5 +274,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

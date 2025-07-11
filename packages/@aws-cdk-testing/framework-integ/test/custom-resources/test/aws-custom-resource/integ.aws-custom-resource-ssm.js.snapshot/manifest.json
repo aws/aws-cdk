@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "CreateParameterStack.assets": {
       "type": "cdk:asset-manifest",
@@ -34,6 +34,15 @@
         "CreateParameterStack.assets"
       ],
       "metadata": {
+        "/CreateParameterStack/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parameterName": "*",
+              "stringValue": "*"
+            }
+          }
+        ],
         "/CreateParameterStack/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -78,7 +87,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bea3028e4d77341f78019dc2415a16962e851fa87bbc5d418bd57d33414f5fa0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/630b29a2b3b7ba2ef4e60151506d31d8e91f343819ae10938a897fb7c36cfed0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -101,10 +110,93 @@
             "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
           }
         ],
+        "/GetParameterStack/GetSecret/Provider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/GetParameterStack/GetSecret/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/GetParameterStack/GetSecret/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "GetSecret8A933C6F"
+          }
+        ],
+        "/GetParameterStack/GetSecret/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/GetParameterStack/GetSecret/CustomResourcePolicy/Resource": [
@@ -117,6 +209,61 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/GetParameterStack/AWS679f53fac002430cb0da5b7982bd2287": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
+        "/GetParameterStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/GetParameterStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/GetParameterStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -206,5 +353,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

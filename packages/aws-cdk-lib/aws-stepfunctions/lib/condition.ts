@@ -1,8 +1,9 @@
+import { UnscopedValidationError } from '../../core';
+
 /**
  * A Condition for use in a Choice state branch
  */
 export abstract class Condition {
-
   /**
    * Matches if variable is present
    */
@@ -339,6 +340,13 @@ export abstract class Condition {
   }
 
   /**
+   * JSONata expression condition
+   */
+  public static jsonata(condition: string): Condition {
+    return new JsonataCondition(condition);
+  }
+
+  /**
    * Render Amazon States Language JSON for the condition
    */
   public abstract renderCondition(): any;
@@ -405,7 +413,7 @@ class VariableComparison extends Condition {
   constructor(private readonly variable: string, private readonly comparisonOperator: ComparisonOperator, private readonly value: any) {
     super();
     if (!/^\$|(\$[.[])/.test(variable)) {
-      throw new Error(`Variable reference must be '$', start with '$.', or start with '$[', got '${variable}'`);
+      throw new UnscopedValidationError(`Variable reference must be '$', start with '$.', or start with '$[', got '${variable}'`);
     }
   }
 
@@ -427,7 +435,7 @@ class CompoundCondition extends Condition {
     super();
     this.conditions = conditions;
     if (conditions.length === 0) {
-      throw new Error('Must supply at least one inner condition for a logical combination');
+      throw new UnscopedValidationError('Must supply at least one inner condition for a logical combination');
     }
   }
 
@@ -449,6 +457,24 @@ class NotCondition extends Condition {
   public renderCondition(): any {
     return {
       Not: this.comparisonOperation.renderCondition(),
+    };
+  }
+}
+
+/**
+ * JSONata for Condition
+ */
+class JsonataCondition extends Condition {
+  constructor(private readonly condition: string) {
+    super();
+    if (!/^{%(.*)%}$/.test(condition)) {
+      throw new UnscopedValidationError(`JSONata expression must be start with '{%' and end with '%}', got '${condition}'`);
+    }
+  }
+
+  public renderCondition(): any {
+    return {
+      Condition: this.condition,
     };
   }
 }

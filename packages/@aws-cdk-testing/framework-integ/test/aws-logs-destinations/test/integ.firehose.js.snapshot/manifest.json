@@ -1,0 +1,339 @@
+{
+  "version": "40.0.0",
+  "artifacts": {
+    "firehose-logsubscription-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "firehose-logsubscription-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "firehose-logsubscription-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "firehose-logsubscription-integ.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/640310b1e20ee9c7560e8d541e4c22b7979d1ec9df555598d8670086b1f0a750.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "firehose-logsubscription-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "firehose-logsubscription-integ.assets"
+      ],
+      "metadata": {
+        "/firehose-logsubscription-integ/MyBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/firehose-logsubscription-integ/MyBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucketF68F3FF0"
+          }
+        ],
+        "/firehose-logsubscription-integ/MyStream": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "destination": "*"
+            }
+          }
+        ],
+        "/firehose-logsubscription-integ/MyStream/S3 Destination Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/firehose-logsubscription-integ/MyStream/S3 Destination Role/ImportS3 Destination Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/firehose-logsubscription-integ/MyStream/S3 Destination Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStreamS3DestinationRole5E0BA960"
+          }
+        ],
+        "/firehose-logsubscription-integ/MyStream/S3 Destination Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/firehose-logsubscription-integ/MyStream/S3 Destination Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStreamS3DestinationRoleDefaultPolicy401EF6F2"
+          }
+        ],
+        "/firehose-logsubscription-integ/MyStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStream5C050E93"
+          }
+        ],
+        "/firehose-logsubscription-integ/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkawskinesisfirehoseCidrBlocks"
+          }
+        ],
+        "/firehose-logsubscription-integ/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/firehose-logsubscription-integ/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogGroupF5B46931"
+          }
+        ],
+        "/firehose-logsubscription-integ/Subscription": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroup": "*",
+              "destination": "*",
+              "filterPattern": {
+                "logPatternString": "*"
+              }
+            }
+          }
+        ],
+        "/firehose-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/firehose-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords/ImportCloudWatchLogsCanPutRecords": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/firehose-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionCloudWatchLogsCanPutRecords9C1223EC"
+          }
+        ],
+        "/firehose-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/firehose-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionCloudWatchLogsCanPutRecordsDefaultPolicy50D4970F"
+          }
+        ],
+        "/firehose-logsubscription-integ/Subscription/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Subscription391C9821"
+          }
+        ],
+        "/firehose-logsubscription-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/firehose-logsubscription-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "firehose-logsubscription-integ"
+    },
+    "FirehoseIntegDefaultTestDeployAssert9D77F4C4.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "FirehoseIntegDefaultTestDeployAssert9D77F4C4.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "FirehoseIntegDefaultTestDeployAssert9D77F4C4": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "FirehoseIntegDefaultTestDeployAssert9D77F4C4.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "FirehoseIntegDefaultTestDeployAssert9D77F4C4.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "FirehoseIntegDefaultTestDeployAssert9D77F4C4.assets"
+      ],
+      "metadata": {
+        "/FirehoseInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/FirehoseInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "FirehoseInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

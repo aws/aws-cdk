@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "alb-target-group-cross-zone-test-stack/DefaultTest": {
+      "stacks": [
+        "alb-target-group-cross-zone-stack"
+      ],
+      "assertionStack": "alb-target-group-cross-zone-test-stack/DefaultTest/DeployAssert",
+      "assertionStackName": "albtargetgroupcrosszoneteststackDefaultTestDeployAssertBFB9F5EA"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}

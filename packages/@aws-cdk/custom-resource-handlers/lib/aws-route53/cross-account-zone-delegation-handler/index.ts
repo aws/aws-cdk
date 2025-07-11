@@ -9,13 +9,13 @@ export type CrossAccountZoneDelegationEvent = AWSLambda.CloudFormationCustomReso
 }
 
 interface ResourceProperties {
-  AssumeRoleArn: string,
-  ParentZoneName?: string,
-  ParentZoneId?: string,
-  DelegatedZoneName: string,
-  DelegatedZoneNameServers: string[],
-  TTL: number,
-  AssumeRoleRegion?: string,
+  AssumeRoleArn: string;
+  ParentZoneName?: string;
+  ParentZoneId?: string;
+  DelegatedZoneName: string;
+  DelegatedZoneNameServers: string[];
+  TTL: number;
+  AssumeRoleRegion?: string;
 }
 
 export async function handler(event: CrossAccountZoneDelegationEvent) {
@@ -119,6 +119,7 @@ function route53Region(region: string) {
     'us-isob': 'us-isob-east-1',
     'eu-isoe': 'eu-isoe-west-1',
     'us-isof': 'us-isof-south-1',
+    'eusc-de': 'eusc-de-east-1',
   };
 
   for (const [prefix, mainRegion] of Object.entries(partitions)) {

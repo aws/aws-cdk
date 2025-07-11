@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "fd86f70c4811c065e8ba1e901dd55050250a99adff08a6adb42aa6526aef6ce5": {
+      "source": {
+        "path": "nlb-tcp-idle-timeout.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fd86f70c4811c065e8ba1e901dd55050250a99adff08a6adb42aa6526aef6ce5.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

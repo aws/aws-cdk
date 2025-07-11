@@ -6,6 +6,7 @@ import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
   },
 });
 
@@ -33,6 +34,7 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
         new cpactions.ManualApprovalAction({
           actionName: 'ManualApproval',
           notifyEmails: ['adamruka85@gmail.com'],
+          timeout: cdk.Duration.minutes(10),
         }),
       ],
     },

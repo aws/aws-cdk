@@ -14,6 +14,10 @@ import * as iam from '../../aws-iam';
 import { IBucket } from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
+import { ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Options for portfolio share.
@@ -304,7 +308,11 @@ export interface PortfolioProps {
 /**
  * A Service Catalog portfolio.
  */
+@propertyInjectable
 export class Portfolio extends PortfolioBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicecatalog.Portfolio';
+
   /**
    * Creates a Portfolio construct that represents an external portfolio.
    *
@@ -317,7 +325,7 @@ export class Portfolio extends PortfolioBase {
     const portfolioId = arn.resourceName;
 
     if (!portfolioId) {
-      throw new Error('Missing required Portfolio ID from Portfolio ARN: ' + portfolioArn);
+      throw new ValidationError('Missing required Portfolio ID from Portfolio ARN: ' + portfolioArn, scope);
     }
 
     class Import extends PortfolioBase {
@@ -340,6 +348,8 @@ export class Portfolio extends PortfolioBase {
 
   constructor(scope: Construct, id: string, props: PortfolioProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.validatePortfolioProps(props);
 
@@ -364,8 +374,10 @@ export class Portfolio extends PortfolioBase {
       visit(c: IConstruct) {
         if (c.node.id === portfolioNodeId) {
           (c as Portfolio).addBucketPermissionsToSharedAccounts();
-        };
+        }
       },
+    }, {
+      priority: mutatingAspectPrio32333(this),
     });
   }
 

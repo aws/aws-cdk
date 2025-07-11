@@ -3,6 +3,9 @@ import { DestinationType, IDestination } from './destination';
 import { IFunction } from './function-base';
 import { CfnEventInvokeConfig } from './lambda.generated';
 import { Duration, Resource } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Options to add an EventInvokeConfig to a function.
@@ -69,16 +72,22 @@ export interface EventInvokeConfigProps extends EventInvokeConfigOptions {
  * event fails all processing attempts or stays in the asynchronous invocation
  * queue for too long, Lambda discards it.
  */
+@propertyInjectable
 export class EventInvokeConfig extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.EventInvokeConfig';
+
   constructor(scope: Construct, id: string, props: EventInvokeConfigProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.maxEventAge && (props.maxEventAge.toSeconds() < 60 || props.maxEventAge.toSeconds() > 21600)) {
-      throw new Error('`maximumEventAge` must represent a `Duration` that is between 60 and 21600 seconds.');
+      throw new ValidationError('`maximumEventAge` must represent a `Duration` that is between 60 and 21600 seconds.', this);
     }
 
     if (props.retryAttempts && (props.retryAttempts < 0 || props.retryAttempts > 2)) {
-      throw new Error('`retryAttempts` must be between 0 and 2.');
+      throw new ValidationError('`retryAttempts` must be between 0 and 2.', this);
     }
 
     new CfnEventInvokeConfig(this, 'Resource', {

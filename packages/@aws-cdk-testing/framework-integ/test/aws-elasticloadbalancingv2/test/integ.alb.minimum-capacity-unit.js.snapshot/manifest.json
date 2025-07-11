@@ -1,0 +1,605 @@
+{
+  "version": "45.0.0",
+  "artifacts": {
+    "MinimumCapacityUnitAlbStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "MinimumCapacityUnitAlbStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "MinimumCapacityUnitAlbStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "MinimumCapacityUnitAlbStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/549d745258d43cfdbd4d29c076a12a8d33cf93375f81e57ad748a4bdf5bcd55a.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "MinimumCapacityUnitAlbStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "MinimumCapacityUnitAlbStack.assets"
+      ],
+      "metadata": {
+        "/MinimumCapacityUnitAlbStack/Stack": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Stack8A423254"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet1Subnet0AD81D22",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet1RouteTable5057189D"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet1RouteTableAssociation74F1C1B6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet1DefaultRoute16154E3D"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet1EIPBDAAB2A5"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet1NATGatewayD2E1ABF7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet2Subnet3C7D2288",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet2RouteTableCD306445"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet2RouteTableAssociation5E8F73F1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet2DefaultRoute0319539B"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet2EIP8CDBC8C2"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet2NATGatewayA8E03AB3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet1Subnet47AC2BC7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet1RouteTable8ADA6A0C"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet1RouteTableAssociationFFE38495",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet1DefaultRouteFBF81BA5"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet2SubnetA2F8EDD8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet2RouteTableA5546697"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet2RouteTableAssociation68ACB8C1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet2DefaultRoute22004492"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackIGW2F0A1126"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackVPCGWFFCB6290"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Stack/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackRestrictDefaultSecurityGroupCustomResource804DC9E2"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/LB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/LB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LB8A12904C"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/LB/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*",
+              "allowAllOutbound": false
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/LB/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LBSecurityGroup8A41EA2B"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/LB/Listener": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/LB/Listener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LBListener49E825B4"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/TargetGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TargetGroup3D7CD9B8"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/MinimumCapacityUnitAlbStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "StackPublicSubnet3SubnetCC1055D9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3SubnetCC1055D9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPublicSubnet3RouteTable44D8F838": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3RouteTable44D8F838",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPublicSubnet3RouteTableAssociationD026A62D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3RouteTableAssociationD026A62D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPublicSubnet3DefaultRouteBC0DA152": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3DefaultRouteBC0DA152",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPublicSubnet3EIP3201E7C8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3EIP3201E7C8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPublicSubnet3NATGatewayAB6A10EF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPublicSubnet3NATGatewayAB6A10EF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPrivateSubnet3Subnet28548F2E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet3Subnet28548F2E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPrivateSubnet3RouteTable9B1F2842": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet3RouteTable9B1F2842",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPrivateSubnet3RouteTableAssociationC9C6644E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet3RouteTableAssociationC9C6644E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "StackPrivateSubnet3DefaultRoute361AE708": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StackPrivateSubnet3DefaultRoute361AE708",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "MinimumCapacityUnitAlbStack"
+    },
+    "MinimumCapacityUnitAlbIntegDefaultTestDeployAssertD00E6A61.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "MinimumCapacityUnitAlbIntegDefaultTestDeployAssertD00E6A61.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "MinimumCapacityUnitAlbIntegDefaultTestDeployAssertD00E6A61": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "MinimumCapacityUnitAlbIntegDefaultTestDeployAssertD00E6A61.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "MinimumCapacityUnitAlbIntegDefaultTestDeployAssertD00E6A61.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "MinimumCapacityUnitAlbIntegDefaultTestDeployAssertD00E6A61.assets"
+      ],
+      "metadata": {
+        "/MinimumCapacityUnitAlbInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/MinimumCapacityUnitAlbInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "MinimumCapacityUnitAlbInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

@@ -6,7 +6,11 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as path from 'path';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'integ-apigwv2-lambda-connect-integration');
 const webSocketTableName = 'WebSocketConnections';

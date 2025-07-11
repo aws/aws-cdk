@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import * as core from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Collection of arbitrary properties
@@ -171,7 +173,11 @@ export interface CustomResourceProps {
  * Deprecated.
  * @deprecated use `core.CustomResource`
  */
+@propertyInjectable
 export class CustomResource extends core.CustomResource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudformation.CustomResource';
+
   constructor(scope: Construct, id: string, props: CustomResourceProps) {
     super(scope, id, {
       pascalCaseProperties: true,
@@ -180,5 +186,7 @@ export class CustomResource extends core.CustomResource {
       resourceType: props.resourceType,
       serviceToken: core.Lazy.string({ produce: () => props.provider.bind(this).serviceToken }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }

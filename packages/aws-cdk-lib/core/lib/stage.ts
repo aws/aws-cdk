@@ -1,7 +1,10 @@
 import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
+import { ValidationError } from './errors';
+import { FeatureFlags } from './feature-flags';
 import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
+import { IPropertyInjector, PropertyInjectors } from './prop-injectors';
 import { IPolicyValidationPluginBeta1 } from './validation';
 import * as cxapi from '../../cx-api';
 
@@ -67,6 +70,20 @@ export interface StageProps {
    * Options for applying a permissions boundary to all IAM Roles
    * and Users created within this Stage
    *
+   * Be aware that this feature uses Aspects, and the Aspects are applied at the
+   * Stack level with a priority of `MUTATING` (if the feature flag
+   * `@aws-cdk/core:aspectPrioritiesMutating` is set) or `DEFAULT` (if the flag
+   * is not set). This is relevant if you are both using your own Aspects to
+   * assign Permissions Boundaries, as well as specifying this property.  The
+   * Aspect added by this property will overwrite the Permissions Boundary
+   * assigned by your own Aspect if both: (a) your Aspect has a lower or equal
+   * priority to the automatic Aspect, and (b) your Aspect is applied *above*
+   * the Stack level.  If either of those conditions are not true, your own
+   * Aspect will win.
+   *
+   * We recommend assigning Permissions Boundaries only using the provided APIs,
+   * and not using custom Aspects.
+   *
    * @default - no permissions boundary is applied
    */
   readonly permissionsBoundary?: PermissionsBoundary;
@@ -78,6 +95,12 @@ export interface StageProps {
    * @default - no validation plugins are used
    */
   readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
+
+  /**
+   * A list of IPropertyInjector attached to this Stage.
+   * @default - no PropertyInjectors
+   */
+  readonly propertyInjectors?: IPropertyInjector[];
 }
 
 /**
@@ -105,7 +128,7 @@ export class Stage extends Construct {
    * Test whether the given construct is a stage.
    *
    */
-  public static isStage(x: any ): x is Stage {
+  public static isStage(this: void, x: any): x is Stage {
     return x !== null && typeof(x) === 'object' && STAGE_SYMBOL in x;
   }
 
@@ -147,6 +170,11 @@ export class Stage extends Construct {
   private assembly?: cxapi.CloudAssembly;
 
   /**
+   * The cached set of construct paths. Empty if assembly was not yet built.
+   */
+  private constructPathsCache: Set<string>;
+
+  /**
    * Validation plugins to run during synthesis. If any plugin reports any violation,
    * synthesis will be interrupted and the report displayed to the user.
    *
@@ -157,12 +185,18 @@ export class Stage extends Construct {
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id);
 
-    if (id !== '' && !/^[a-z][a-z0-9\-\_\.]+$/i.test(id)) {
-      throw new Error(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`);
+    if (id !== '' && !/^[a-z][a-z0-9\-\_\.]*$/i.test(id)) {
+      throw new ValidationError(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`, this);
+    }
+
+    if (props.propertyInjectors) {
+      const injectors = PropertyInjectors.of(this);
+      injectors.add(...props.propertyInjectors);
     }
 
     Object.defineProperty(this, STAGE_SYMBOL, { value: true });
 
+    this.constructPathsCache = new Set<string>();
     this.parentStage = Stage.of(this);
 
     this.region = props.env?.region ?? this.parentStage?.region;
@@ -210,20 +244,66 @@ export class Stage extends Construct {
    * calls will return the same assembly.
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
-    if (!this.assembly || options.force) {
+    let newConstructPaths = this.listAllConstructPaths(this);
+
+    // If the assembly cache is uninitiazed, run synthesize and reset construct paths cache
+    if (this.constructPathsCache.size == 0 || !this.assembly || options.force) {
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
         validateOnSynthesis: options.validateOnSynthesis,
+        aspectStabilization: options.aspectStabilization ?? FeatureFlags.of(this).isEnabled(cxapi.ASPECT_STABILIZATION) ?? false,
       });
+      newConstructPaths = this.listAllConstructPaths(this);
+      this.constructPathsCache = newConstructPaths;
     }
 
+    // If the construct paths set has changed
+    if (!this.constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
+      const errorMessage = 'Synthesis has been called multiple times and the construct tree was modified after the first synthesis.';
+      if (options.errorOnDuplicateSynth ?? true) {
+        throw new ValidationError(errorMessage + ' This is not allowed. Remove multple synth() calls and do not modify the construct tree after the first synth().', this);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error(errorMessage + ' Only the results of the first synth() call are used, and modifications done after it are ignored. Avoid construct tree mutations after synth() has been called unless this is intentional.');
+      }
+    }
+
+    // Reset construct paths cache
+    this.constructPathsCache = newConstructPaths;
+
     return this.assembly;
+  }
+
+  // Function that lists all construct paths and returns them as a set
+  private listAllConstructPaths(construct: IConstruct): Set<string> {
+    const paths = new Set<string>();
+    function recurse(root: IConstruct) {
+      paths.add(root.node.path);
+      for (const child of root.node.children) {
+        if (!Stage.isStage(child)) {
+          recurse(child);
+        }
+      }
+    }
+    recurse(construct);
+    return paths;
+  }
+
+  // Checks if sets of construct paths are equal
+  private constructPathSetsAreEqual(set1: Set<string>, set2: Set<string>): boolean {
+    if (set1.size !== set2.size) return false;
+    for (const id of set1) {
+      if (!set2.has(id)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private createBuilder(outdir?: string) {
     // cannot specify "outdir" if we are a nested stage
     if (this.parentStage && outdir) {
-      throw new Error('"outdir" cannot be specified for nested stages');
+      throw new ValidationError('"outdir" cannot be specified for nested stages', this);
     }
 
     // Need to determine fixed output directory already, because we must know where
@@ -259,4 +339,22 @@ export interface StageSynthesisOptions {
    * @default false
    */
   readonly force?: boolean;
+
+  /**
+   * Whether or not to throw a warning instead of an error if the construct tree has
+   * been mutated since the last synth.
+   * @default true
+   */
+  readonly errorOnDuplicateSynth?: boolean;
+
+  /**
+   * Whether or not run the stabilization loop while invoking Aspects.
+   *
+   * The stabilization loop runs multiple passes of the construct tree when invoking
+   * Aspects. Without the stabilization loop, Aspects that are created by other Aspects
+   * are not run and new nodes that are created at higher points on the construct tree by
+   * an Aspect will not inherit their parent aspects.
+   * @default false
+   */
+  readonly aspectStabilization?: boolean;
 }

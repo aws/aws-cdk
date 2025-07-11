@@ -1,10 +1,18 @@
 // Fixture with packages imported, but nothing else
 import * as cdk from 'aws-cdk-lib';
+import * as api from 'aws-cdk-lib/aws-apigateway';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
+import * as sns from 'aws-cdk-lib/aws-sns';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import * as pipes from '@aws-cdk/aws-pipes-alpha';
+import { SqsSource } from '@aws-cdk/aws-pipes-sources-alpha';
 import * as targets from '@aws-cdk/aws-pipes-targets-alpha';
 
 class SomeSource implements pipes.ISource {

@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
-import { FeatureFlags } from '../../../core';
+import { FeatureFlags, ValidationError } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
 
@@ -76,7 +76,7 @@ export interface NetworkLoadBalancedEc2ServiceProps extends NetworkLoadBalancedS
    * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    *
    * @default - No strategies.
-  */
+   */
   readonly placementStrategies?: PlacementStrategy[];
 }
 
@@ -84,7 +84,6 @@ export interface NetworkLoadBalancedEc2ServiceProps extends NetworkLoadBalancedS
  * An EC2 service running on an ECS cluster fronted by a network load balancer.
  */
 export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBase {
-
   /**
    * The ECS service in this construct.
    */
@@ -101,7 +100,7 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
     super(scope, id, props);
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new Error('You must specify either a taskDefinition or an image, not both.');
+      throw new ValidationError('You must specify either a taskDefinition or an image, not both.', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -131,7 +130,7 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
         containerPort: taskImageOptions.containerPort || 80,
       });
     } else {
-      throw new Error('You must specify one of: taskDefinition or image');
+      throw new ValidationError('You must specify one of: taskDefinition or image', this);
     }
 
     const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;

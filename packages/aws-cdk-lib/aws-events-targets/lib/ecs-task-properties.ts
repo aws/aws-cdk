@@ -56,3 +56,31 @@ export interface TaskEnvironmentVariable {
    */
   readonly value: string;
 }
+
+/**
+ * Override ephemeral storage for the task.
+ */
+export interface EphemeralStorageOverride {
+  /**
+   * The total amount, in GiB, of ephemeral storage to set for the task.
+   *
+   * The minimum supported value is 20 GiB and the maximum supported value is 200 GiB.
+   */
+  readonly sizeInGiB: number;
+}
+
+/**
+ * Override inference accelerators for the task.
+ */
+export interface InferenceAcceleratorOverride {
+  /**
+   * The Elastic Inference accelerator device name to override for the task.
+   * This parameter must match a `deviceName` specified in the task definition.
+   */
+  readonly deviceName: string;
+
+  /**
+   * The Elastic Inference accelerator type to use.
+   */
+  readonly deviceType: string;
+}

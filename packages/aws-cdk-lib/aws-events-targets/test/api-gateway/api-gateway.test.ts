@@ -244,7 +244,6 @@ test('Throw when the number of wild cards in the path not equal to the number of
     path: '/*/*',
     pathParameterValues: ['value1', 'value2'],
   }))).not.toThrow();
-
 });
 
 test('with an explicit event role', () => {

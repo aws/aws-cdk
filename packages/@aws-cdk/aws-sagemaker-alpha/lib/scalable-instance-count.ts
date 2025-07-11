@@ -60,7 +60,7 @@ export interface InvocationsScalingProps extends appscaling.BaseTargetTrackingPr
    */
   readonly maxRequestsPerSecond: number;
   /**
-   * Safty factor for calculating the target SageMaker variant invocation per instance
+   * Safety factor for calculating the target SageMaker variant invocation per instance
    *
    * More documentation available here: https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-scaling-loadtest.html
    * @default 0.5

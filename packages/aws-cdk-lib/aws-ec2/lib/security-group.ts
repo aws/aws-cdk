@@ -5,7 +5,9 @@ import { IPeer, Peer } from './peer';
 import { Port } from './port';
 import { IVpc } from './vpc';
 import * as cxschema from '../../cloud-assembly-schema';
-import { Annotations, ContextProvider, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token } from '../../core';
+import { Annotations, ContextProvider, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token, ValidationError } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
@@ -179,7 +181,6 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     connection: Port,
     fromTo: 'from' | 'to',
     remoteRule?: boolean): RuleScope {
-
     if (remoteRule && SecurityGroupBase.isSecurityGroup(peer) && differentStacks(this, peer)) {
       // Reversed
       const reversedFromTo = fromTo === 'from' ? 'to' : 'from';
@@ -280,7 +281,7 @@ export interface SecurityGroupProps {
    * Inlining rules is an optimization for producing smaller stack templates. Sometimes
    * this is not desirable, for example when security group access is managed via tags.
    *
-   * The default value can be overriden globally by setting the context variable
+   * The default value can be overridden globally by setting the context variable
    * '@aws-cdk/aws-ec2.securityGroupDisableInlineRules'.
    *
    * @default false
@@ -363,7 +364,13 @@ export interface SecurityGroupImportOptions {
  * });
  * ```
  */
+@propertyInjectable
 export class SecurityGroup extends SecurityGroupBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.SecurityGroup';
+
   /**
    * Look up a security group by id.
    *
@@ -434,8 +441,8 @@ export class SecurityGroup extends SecurityGroupBase {
    * Look up a security group.
    */
   private static fromLookupAttributes(scope: Construct, id: string, options: SecurityGroupLookupOptions) {
-    if (Token.isUnresolved(options.securityGroupId) || Token.isUnresolved(options.securityGroupName) || Token.isUnresolved(options.vpc?.vpcId)) {
-      throw new Error('All arguments to look up a security group must be concrete (no Tokens)');
+    if (Token.isUnresolved(options.securityGroupId) || Token.isUnresolved(options.securityGroupName) || Token.isUnresolved(options.vpc?.vpcId)) {
+      throw new ValidationError('All arguments to look up a security group must be concrete (no Tokens)', scope);
     }
 
     const attributes: cxapi.SecurityGroupContextResponse = ContextProvider.getValue(scope, {
@@ -502,6 +509,8 @@ export class SecurityGroup extends SecurityGroupBase {
     super(scope, id, {
       physicalName: props.securityGroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const groupDescription = props.description || this.node.path;
 
@@ -515,8 +524,8 @@ export class SecurityGroup extends SecurityGroupBase {
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
       groupName: this.physicalName,
       groupDescription,
-      securityGroupIngress: Lazy.any({ produce: () => this.directIngressRules }, { omitEmptyArray: true } ),
-      securityGroupEgress: Lazy.any({ produce: () => this.directEgressRules }, { omitEmptyArray: true } ),
+      securityGroupIngress: Lazy.any({ produce: () => this.directIngressRules }, { omitEmptyArray: true }),
+      securityGroupEgress: Lazy.any({ produce: () => this.directEgressRules }, { omitEmptyArray: true }),
       vpcId: props.vpc.vpcId,
     });
 
@@ -528,6 +537,7 @@ export class SecurityGroup extends SecurityGroupBase {
     this.addDefaultIpv6EgressRule();
   }
 
+  @MethodMetadata()
   public addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
     if (!peer.canInlineRule || !connection.canInlineRule || this.disableInlineRules) {
       super.addIngressRule(peer, connection, description, remoteRule);
@@ -545,6 +555,7 @@ export class SecurityGroup extends SecurityGroupBase {
     });
   }
 
+  @MethodMetadata()
   public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
     const isIpv6 = peer.toEgressRuleConfig().hasOwnProperty('cidrIpv6');
 
@@ -552,7 +563,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // In the case of "allowAllOutbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other
       // rule.
-      if (!remoteRule) { // Warn only if addEgressRule() was explicitely called
+      if (!remoteRule) { // Warn only if addEgressRule() was explicitly called
         Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:ipv4IgnoreEgressRule', 'Ignoring Egress rule since \'allowAllOutbound\' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup');
       }
       return;
@@ -567,7 +578,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // In the case of "allowAllIpv6Outbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other
       // rule.
-      if (!remoteRule) { // Warn only if addEgressRule() was explicitely called
+      if (!remoteRule) { // Warn only if addEgressRule() was explicitly called
         Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:ipv6IgnoreEgressRule', 'Ignoring Egress rule since \'allowAllIpv6Outbound\' is set to true; To add customized rules, set allowAllIpv6Outbound=false on the SecurityGroup');
       }
       return;
@@ -594,7 +605,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // to "allOutbound=true" mode, because we might have already emitted
       // EgressRule objects (which count as rules added later) and there's no way
       // to recall those. Better to prevent this for now.
-      throw new Error('Cannot add an "all traffic" egress rule in this way; set allowAllOutbound=true (for ipv6) or allowAllIpv6Outbound=true (for ipv6) on the SecurityGroup instead.');
+      throw new ValidationError('Cannot add an "all traffic" egress rule in this way; set allowAllOutbound=true (for ipv6) or allowAllIpv6Outbound=true (for ipv6) on the SecurityGroup instead.', this);
     }
 
     this.addDirectEgressRule(rule);
@@ -653,7 +664,7 @@ export class SecurityGroup extends SecurityGroupBase {
       const description = this.allowAllOutbound ? ALLOW_ALL_RULE.description : MATCH_NO_TRAFFIC.description;
       super.addEgressRule(peer, port, description, false);
     } else {
-      const rule = this.allowAllOutbound? ALLOW_ALL_RULE : MATCH_NO_TRAFFIC;
+      const rule = this.allowAllOutbound ? ALLOW_ALL_RULE : MATCH_NO_TRAFFIC;
       this.directEgressRules.push(rule);
     }
   }
