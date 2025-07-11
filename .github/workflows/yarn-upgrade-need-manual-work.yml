@@ -12,7 +12,7 @@ on:
 
 # For multiple dependencies, do `DEPS_TO_UPGRADE:"p1 p2 p3"`
 env:
-  DEPS_TO_UPGRADE: "@aws-cdk/asset-awscli-v1"
+  DEPS_TO_UPGRADE: "@aws-cdk/asset-awscli-v1 @aws-sdk/*"
 
 jobs:
   upgrade:
