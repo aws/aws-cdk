@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "bdfe12a28209891263a6ce0f401639d4d64dfe37baa1c942388f93e75685c6df": {
+      "displayName": "kinesis-stream-shard-level-monitoring-stack Template",
+      "source": {
+        "path": "kinesis-stream-shard-level-monitoring-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-e850af09": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bdfe12a28209891263a6ce0f401639d4d64dfe37baa1c942388f93e75685c6df.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
