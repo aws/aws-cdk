@@ -1,0 +1,169 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "cdk-integ-opensearch-logs-resource-policy-without-custom-resource.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-integ-opensearch-logs-resource-policy-without-custom-resource.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-integ-opensearch-logs-resource-policy-without-custom-resource": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-opensearch-logs-resource-policy-without-custom-resource.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ee4f1c00d4c1ad72cf1ee9580fadc354e3abe9bb8836cd8cae3552075d1521a1.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-integ-opensearch-logs-resource-policy-without-custom-resource.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-integ-opensearch-logs-resource-policy-without-custom-resource.assets"
+      ],
+      "metadata": {
+        "/cdk-integ-opensearch-logs-resource-policy-without-custom-resource/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "version": "*",
+              "logging": {
+                "slowSearchLogEnabled": true,
+                "appLogEnabled": true
+              },
+              "capacity": {
+                "multiAzWithStandbyEnabled": false
+              }
+            }
+          }
+        ],
+        "/cdk-integ-opensearch-logs-resource-policy-without-custom-resource/Domain/SlowSearchLogs": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "retention": 30
+            }
+          }
+        ],
+        "/cdk-integ-opensearch-logs-resource-policy-without-custom-resource/Domain/SlowSearchLogs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DomainSlowSearchLogs5B35A97A"
+          }
+        ],
+        "/cdk-integ-opensearch-logs-resource-policy-without-custom-resource/Domain/AppLogs": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "retention": 30
+            }
+          }
+        ],
+        "/cdk-integ-opensearch-logs-resource-policy-without-custom-resource/Domain/AppLogs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DomainAppLogs21698C1B"
+          }
+        ],
+        "/cdk-integ-opensearch-logs-resource-policy-without-custom-resource/Domain/ESLogGroupPolicyc8e238a55cffcee812484326832a8e5597910e99c0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
+        "/cdk-integ-opensearch-logs-resource-policy-without-custom-resource/Domain/ESLogGroupPolicyc8e238a55cffcee812484326832a8e5597910e99c0/ResourcePolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DomainESLogGroupPolicyc8e238a55cffcee812484326832a8e5597910e99c0ResourcePolicy01CCB910"
+          }
+        ],
+        "/cdk-integ-opensearch-logs-resource-policy-without-custom-resource/Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Domain66AC69E0"
+          }
+        ],
+        "/cdk-integ-opensearch-logs-resource-policy-without-custom-resource/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-integ-opensearch-logs-resource-policy-without-custom-resource/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-opensearch-logs-resource-policy-without-custom-resource"
+    },
+    "OpenSearchLogsResourcePolicyWithoutCustomResourceIntegDefaultTestDeployAssert09C6D567.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "OpenSearchLogsResourcePolicyWithoutCustomResourceIntegDefaultTestDeployAssert09C6D567.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "OpenSearchLogsResourcePolicyWithoutCustomResourceIntegDefaultTestDeployAssert09C6D567": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "OpenSearchLogsResourcePolicyWithoutCustomResourceIntegDefaultTestDeployAssert09C6D567.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "OpenSearchLogsResourcePolicyWithoutCustomResourceIntegDefaultTestDeployAssert09C6D567.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "OpenSearchLogsResourcePolicyWithoutCustomResourceIntegDefaultTestDeployAssert09C6D567.assets"
+      ],
+      "metadata": {
+        "/OpenSearchLogsResourcePolicyWithoutCustomResourceInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/OpenSearchLogsResourcePolicyWithoutCustomResourceInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "OpenSearchLogsResourcePolicyWithoutCustomResourceInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

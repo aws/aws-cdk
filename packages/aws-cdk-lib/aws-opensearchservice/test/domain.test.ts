@@ -945,6 +945,40 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       },
     });
   });
+
+  test('log group policy is created without custom resource if feature flag is set', () => {
+    const stackWithFlag = new Stack(app, 'StackWithFlag', {
+      env: { account: '1234', region: 'testregion' },
+    });
+    stackWithFlag.node.setContext(cxapi.OPENSEARCHSERVICE_CREATE_CLOUDFORMATION_RESOURCE_POLICY, true);
+
+    new Domain(stackWithFlag, 'Domain', {
+      version: engineVersion,
+      logging: {
+        appLogEnabled: true,
+      },
+    });
+
+    Template.fromStack(stackWithFlag).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 0);
+
+    Template.fromStack(stackWithFlag).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{"Statement":[{"Action":["logs:PutLogEvents","logs:CreateLogStream"],"Effect":"Allow","Principal":{"Service":"es.amazonaws.com"},"Resource":"',
+            {
+              'Fn::GetAtt': [
+                'DomainAppLogs21698C1B',
+                'Arn',
+              ],
+            },
+            '"}],"Version":"2012-10-17"}',
+          ],
+        ],
+      },
+    });
+  });
 });
 
 each(testedOpenSearchVersions).describe('grants', (engineVersion) => {
