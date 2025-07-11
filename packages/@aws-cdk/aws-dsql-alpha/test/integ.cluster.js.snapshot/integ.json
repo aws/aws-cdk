@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "aws-cdk-dsql-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-dsql-stack"
+      ],
+      "assertionStack": "aws-cdk-dsql-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkdsqlintegDefaultTestDeployAssert9569A7F9"
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}
