@@ -1,0 +1,181 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "SyntheticsCanaryResourcesToReplicateTagsStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SyntheticsCanaryResourcesToReplicateTagsStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SyntheticsCanaryResourcesToReplicateTagsStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SyntheticsCanaryResourcesToReplicateTagsStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/05afbffbd3fd4bafcca6e1f1f35525efe38124e6892f294ec7421e1d97072304.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SyntheticsCanaryResourcesToReplicateTagsStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SyntheticsCanaryResourcesToReplicateTagsStack.assets"
+      ],
+      "metadata": {
+        "/SyntheticsCanaryResourcesToReplicateTagsStack/TagReplicationCanary": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "canaryName": "*",
+              "runtime": "*",
+              "test": "*",
+              "memory": "*",
+              "timeout": "*"
+            }
+          }
+        ],
+        "/SyntheticsCanaryResourcesToReplicateTagsStack/TagReplicationCanary/ArtifactsBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryption": "KMS_MANAGED",
+              "enforceSSL": true,
+              "lifecycleRules": "*"
+            }
+          }
+        ],
+        "/SyntheticsCanaryResourcesToReplicateTagsStack/TagReplicationCanary/ArtifactsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TagReplicationCanaryArtifactsBucket66A919F9"
+          }
+        ],
+        "/SyntheticsCanaryResourcesToReplicateTagsStack/TagReplicationCanary/ArtifactsBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
+        "/SyntheticsCanaryResourcesToReplicateTagsStack/TagReplicationCanary/ArtifactsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TagReplicationCanaryArtifactsBucketPolicyCFD9E77B"
+          }
+        ],
+        "/SyntheticsCanaryResourcesToReplicateTagsStack/TagReplicationCanary/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
+          }
+        ],
+        "/SyntheticsCanaryResourcesToReplicateTagsStack/TagReplicationCanary/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/SyntheticsCanaryResourcesToReplicateTagsStack/TagReplicationCanary/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TagReplicationCanaryServiceRoleE1E5A2B6"
+          }
+        ],
+        "/SyntheticsCanaryResourcesToReplicateTagsStack/TagReplicationCanary/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TagReplicationCanary4B22C124"
+          }
+        ],
+        "/SyntheticsCanaryResourcesToReplicateTagsStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SyntheticsCanaryResourcesToReplicateTagsStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SyntheticsCanaryResourcesToReplicateTagsStack"
+    },
+    "SyntheticsCanaryResourcesToReplicateTagsDefaultTestDeployAssertF883002A.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SyntheticsCanaryResourcesToReplicateTagsDefaultTestDeployAssertF883002A.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SyntheticsCanaryResourcesToReplicateTagsDefaultTestDeployAssertF883002A": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SyntheticsCanaryResourcesToReplicateTagsDefaultTestDeployAssertF883002A.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SyntheticsCanaryResourcesToReplicateTagsDefaultTestDeployAssertF883002A.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SyntheticsCanaryResourcesToReplicateTagsDefaultTestDeployAssertF883002A.assets"
+      ],
+      "metadata": {
+        "/SyntheticsCanaryResourcesToReplicateTags/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SyntheticsCanaryResourcesToReplicateTags/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SyntheticsCanaryResourcesToReplicateTags/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}
