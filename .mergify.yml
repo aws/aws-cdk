@@ -1,4 +1,7 @@
 # See https://doc.mergify.io
+merge_queue:
+  # Hopefully this gets Mergify to stop creating PRs just to test merges (it both messes with statistics and our automatic validations)
+  max_parallel_checks: 1
 queue_rules:
   - name: default-merge
     update_method: merge
