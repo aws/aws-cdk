@@ -298,6 +298,94 @@ export interface MathExpressionProps extends MathExpressionOptions {
 }
 
 /**
+ * Configurable options for SearchExpressions
+ */
+export interface SearchExpressionOptions {
+  /**
+   * Label for this search expression when added to a Graph in a Dashboard.
+   *
+   * If this expression evaluates to more than one time series,
+   * each time series will appear in the graph using a combination of the
+   * expression label and the individual metric label. Specify the empty
+   * string (`''`) to suppress the expression label and only keep the
+   * metric label.
+   *
+   * You can use [dynamic labels](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/graph-dynamic-labels.html)
+   * to show summary information about the displayed time series
+   * in the legend. For example, if you use:
+   *
+   * ```
+   * [max: ${MAX}] MyMetric
+   * ```
+   *
+   * As the metric label, the maximum value in the visible range will
+   * be shown next to the time series name in the graph's legend. If the
+   * search expression produces more than one time series, the maximum
+   * will be shown for each individual time series produce by this
+   * search expression.
+   *
+   * @default - No label.
+   */
+  readonly label?: string;
+
+  /**
+   * Color for the metric produced by the search expression.
+   *
+   * If the search expression produces more than one time series, the color is assigned to the first one.
+   * Other metrics are assigned colors automatically.
+   *
+   * @default - Automatically assigned.
+   */
+  readonly color?: string;
+
+  /**
+   * The period over which the search expression's statistics are applied.
+   *
+   * This period overrides the period defined within the search expression.
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly period?: cdk.Duration;
+
+  /**
+   * Account to evaluate search expressions within.
+   *
+   * @default - Deployment account.
+   */
+  readonly searchAccount?: string;
+
+  /**
+   * Region to evaluate search expressions within.
+   *
+   * @default - Deployment region.
+   */
+  readonly searchRegion?: string;
+}
+
+/**
+ * Properties for a SearchExpression
+ */
+export interface SearchExpressionProps extends SearchExpressionOptions {
+  /**
+   * The search expression defining the metrics to be retrieved.
+   *
+   * A search expression cannot be used within an Alarm.
+   *
+   * A search expression allows you to retrieve and graph multiple related metrics in a single statement.
+   * It can return up to 500 time series.
+   *
+   * Examples:
+   * - `SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)`
+   * - `SEARCH('{AWS/ApplicationELB,LoadBalancer} RequestCount', 'Sum', 60)`
+   * - `SEARCH('{MyNamespace,ServiceName} Errors', 'Sum')`
+   *
+   * For more information about search expression syntax, see:
+   * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/search-expression-syntax.html
+   */
+  readonly expression: string;
+}
+
+/**
  * A metric emitted by a service
  *
  * The metric is a combination of a metric identifier (namespace, name and dimensions)
@@ -895,82 +983,6 @@ export class MathExpression implements IMetric {
   }
 }
 
-/**
- * Pattern for a variable name. Alphanum starting with lowercase.
- */
-const VARIABLE_PAT = '[a-z][a-zA-Z0-9_]*';
-
-const VALID_VARIABLE = new RegExp(`^${VARIABLE_PAT}$`);
-const FIND_VARIABLE = new RegExp(VARIABLE_PAT, 'g');
-
-/**
- * Configurable options for Search Expressions
- */
-export interface SearchExpressionOptions {
-  /**
-   * Label for this search expression when added to a Graph in a Dashboard.
-   *
-   * Serves as a prefix for the title of each returned metric instances. For example, if the label of the Search Expression is `X`
-   * and the expression discovers a metric instance with label `Y`, the title for the metric in the widget will be `X-Y`.
-   *
-   * @default - No label.
-   */
-  readonly label?: string;
-
-  /**
-   * Color for the metric produced by the Search Expression.
-   *
-   * If the Search Expression returns multiple metrics, the color is assigned to the first metric.
-   * Other metrics are assigned colors automatically.
-   *
-   * @default - Automatically assigned.
-   */
-  readonly color?: string;
-
-  /**
-   * The period over which the expression's statistics are applied
-   *
-   * This period overrides the period provided in the Search Expression.
-   *
-   * @default - Duration.minutes(5)
-   */
-  readonly period?: cdk.Duration;
-
-  /**
-   * Account to evaluate search expressions within.
-   *
-   * @default - Deployment account.
-   */
-  readonly searchAccount?: string;
-
-  /**
-   * Region to evaluate search expressions within.
-   *
-   * @default - Deployment region.
-   */
-  readonly searchRegion?: string;
-}
-
-/**
- * Properties for a SearchExpression
- */
-export interface SearchExpressionProps extends SearchExpressionOptions {
-  /**
-   * The search expression string.
-   *
-   * A search expression allows you to retrieve and graph multiple related metrics in a single statement.
-   * It can return up to 500 time series.
-   *
-   * Examples:
-   * - `SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)`
-   * - `SEARCH('{AWS/ApplicationELB,LoadBalancer} RequestCount', 'Sum', 60)`
-   * - `SEARCH('{MyNamespace,ServiceName} Errors', 'Sum')`
-   *
-   * For more information about search expression syntax, see:
-   * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/search-expression-syntax.html
-   */
-  readonly expression: string;
-}
 
 /**
  * A CloudWatch search expression for dynamically finding and graphing multiple related metrics.
@@ -987,20 +999,23 @@ export interface SearchExpressionProps extends SearchExpressionOptions {
  *   period: Duration.minutes(5),
  * });
  * ```
+ *
+ * This class does not represent a resource, so hence is not a construct. Instead,
+ * SearchExpression is an abstraction that makes it easy to specify metrics for use in graphs.
  */
 export class SearchExpression implements IMetric {
   /**
-   * The search expression to evaluate.
+   * The search expression defining the metrics to be retrieved.
    */
   public readonly expression: string;
 
   /**
-   *  The label is used as a prefix for the title of each metric returned by the search expression.
+   * The label is used as a prefix for the title of each metric returned by the search expression.
    */
   public readonly label?: string;
 
   /**
-   * Color to use when rendering the resulting metric in a graph.
+   * Hex color code (e.g. '#00ff00'), to use when rendering the resulting metrics in a graph.
    * If multiple time series are returned, color is assigned to the first metric, color for the other metrics is automatically assigned
    */
   public readonly color?: string;
@@ -1103,6 +1118,16 @@ export class SearchExpression implements IMetric {
     };
   }
 }
+
+
+/**
+ * Pattern for a variable name. Alphanum starting with lowercase.
+ */
+const VARIABLE_PAT = '[a-z][a-zA-Z0-9_]*';
+
+const VALID_VARIABLE = new RegExp(`^${VARIABLE_PAT}$`);
+const FIND_VARIABLE = new RegExp(VARIABLE_PAT, 'g');
+
 
 function validVariableName(x: string) {
   return VALID_VARIABLE.test(x);
