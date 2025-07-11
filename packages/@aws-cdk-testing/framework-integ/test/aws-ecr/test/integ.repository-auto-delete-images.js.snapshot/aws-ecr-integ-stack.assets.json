@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "3bbaa4a6ad9dab22284496cb250a9e77fb2f26bc181f35610877275058a4f160": {
       "displayName": "aws-ecr-integ-stack/Custom::ECRAutoDeleteImagesCustomResourceProvider Code",
