@@ -983,7 +983,6 @@ export class MathExpression implements IMetric {
   }
 }
 
-
 /**
  * A CloudWatch search expression for dynamically finding and graphing multiple related metrics.
  *
@@ -1119,7 +1118,6 @@ export class SearchExpression implements IMetric {
   }
 }
 
-
 /**
  * Pattern for a variable name. Alphanum starting with lowercase.
  */
@@ -1127,7 +1125,6 @@ const VARIABLE_PAT = '[a-z][a-zA-Z0-9_]*';
 
 const VALID_VARIABLE = new RegExp(`^${VARIABLE_PAT}$`);
 const FIND_VARIABLE = new RegExp(VARIABLE_PAT, 'g');
-
 
 function validVariableName(x: string) {
   return VALID_VARIABLE.test(x);

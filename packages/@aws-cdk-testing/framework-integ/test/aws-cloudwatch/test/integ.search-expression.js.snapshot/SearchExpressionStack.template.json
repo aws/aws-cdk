@@ -11,15 +11,7 @@
        {
         "Ref": "AWS::Region"
        },
-       "\",\"metrics\":[[{\"label\":\"[object Object]\",\"expression\":\"SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)\"}],[{\"label\":\"Custom Lambda Duration\",\"color\":\"#e377c2\",\"expression\":\"SEARCH('{AWS/Lambda,FunctionName} Duration', 'Average', 300)\",\"accountId\":\"123456789012\",\"region\":\"us-west-2\",\"period\":600,\"yAxis\":\"right\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":24,\"height\":6,\"x\":0,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Multiple Period Configurations\",\"region\":\"",
-       {
-        "Ref": "AWS::Region"
-       },
-       "\",\"metrics\":[[{\"label\":\"5-minute period\",\"expression\":\"SEARCH('{AWS/DynamoDB,TableName} ConsumedReadCapacityUnits', 'Sum', 300)\"}],[{\"label\":\"15-minute period\",\"expression\":\"SEARCH('{AWS/SNS,TopicName} NumberOfMessagesPublished', 'Sum', 300)\",\"period\":900}],[{\"label\":\"1-hour period\",\"expression\":\"SEARCH('{AWS/SQS,QueueName} ApproximateNumberOfMessages', 'Average', 300)\",\"period\":3600}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":24,\"height\":8,\"x\":0,\"y\":12,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Cross-Account and Cross-Region SearchExpressions\",\"region\":\"",
-       {
-        "Ref": "AWS::Region"
-       },
-       "\",\"metrics\":[[{\"label\":\"Cross-Account RDS\",\"color\":\"#ff7f0e\",\"expression\":\"SEARCH('{AWS/RDS,DBInstanceIdentifier} CPUUtilization', 'Average', 300)\",\"accountId\":\"987654321098\"}],[{\"label\":\"Cross-Region ELB\",\"color\":\"#2ca02c\",\"expression\":\"SEARCH('{AWS/ELB,LoadBalancerName} RequestCount', 'Sum', 300)\",\"region\":\"eu-west-1\"}],[{\"label\":\"Cross-Account Cross-Region S3\",\"color\":\"#9467bd\",\"expression\":\"SEARCH('{AWS/S3,BucketName} BucketSizeBytes', 'Average', 86400)\",\"accountId\":\"555666777888\",\"region\":\"ap-southeast-1\",\"period\":3600,\"yAxis\":\"right\"}]],\"yAxis\":{}}}]}"
+       "\",\"metrics\":[[{\"label\":\"[object Object]\",\"expression\":\"SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)\"}],[{\"label\":\"Custom Lambda Duration\",\"color\":\"#e377c2\",\"expression\":\"SEARCH('{AWS/Lambda,FunctionName} Duration', 'Average', 300)\",\"accountId\":\"123456789012\",\"region\":\"us-west-2\",\"period\":600,\"yAxis\":\"right\"}],[{\"label\":\"Cross-Account Cross-Region S3\",\"color\":\"#9467bd\",\"expression\":\"SEARCH('{AWS/S3,BucketName} BucketSizeBytes', 'Average', 86400)\",\"accountId\":\"123456789012\",\"region\":\"ap-southeast-1\",\"period\":3600,\"yAxis\":\"right\"}]],\"yAxis\":{}}}]}"
       ]
      ]
     },

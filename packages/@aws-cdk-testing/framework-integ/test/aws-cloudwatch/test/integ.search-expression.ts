@@ -44,6 +44,8 @@ class SearchExpressionStack extends cdk.Stack {
   }
 }
 
+const app = new cdk.App();
+
 new IntegTest(app, 'SearchExpressionIntegTest', {
-  testCases: [ new SearchExpressionStack(cdk.App(), 'SearchExpressionStack')],
+  testCases: [new SearchExpressionStack(app, 'SearchExpressionStack')],
 });

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/246d7c7e524f0168f91f95aa6297239cd2bf1462254ce2aaab041a618850775f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3dbc66ca9e36d1ce7e0e892543c3311d14b7f0b46fce63a73ce8824d81c17279.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,32 +39,6 @@
             "type": "aws:cdk:analytics:construct",
             "data": {
               "dashboardName": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "warnings": "*",
-                  "warningsV2": "*",
-                  "width": "*",
-                  "height": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "warnings": "*",
-                  "warningsV2": "*",
-                  "width": "*",
-                  "height": "*"
-                }
-              ]
             }
           },
           {

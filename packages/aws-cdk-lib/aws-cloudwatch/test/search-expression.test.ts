@@ -17,12 +17,6 @@ describe('SearchExpression', () => {
   });
 
   test('should create SearchExpression with minimal required props', () => {
-    // WHEN
-    const searchExpr = new SearchExpression({
-      expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
-    });
-
-    // THEN
     expect(searchExpr.expression).toBe("SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)");
     expect(searchExpr.period).toEqual(Duration.minutes(5));
     expect(searchExpr.label).toBeUndefined();
@@ -34,17 +28,6 @@ describe('SearchExpression', () => {
   });
 
   test('should create SearchExpression with all optional properties', () => {
-    // WHEN
-    const searchExpr = new SearchExpression({
-      expression: "SEARCH('{AWS/Lambda,FunctionName} Duration', 'Average', 300)",
-      label: 'Lambda Duration',
-      color: '#1f77b4',
-      period: Duration.minutes(10),
-      searchAccount: '123456789012',
-      searchRegion: 'us-west-2',
-    });
-
-    // THEN
     expect(searchExpr.expression).toBe("SEARCH('{AWS/Lambda,FunctionName} Duration', 'Average', 300)");
     expect(searchExpr.label).toBe('Lambda Duration');
     expect(searchExpr.color).toBe('#1f77b4');

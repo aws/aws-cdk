@@ -5,8 +5,6 @@
       "stacks": [
         "SearchExpressionStack"
       ],
-      "diffAssets": true,
-      "stackUpdateWorkflow": true,
       "assertionStack": "SearchExpressionIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "SearchExpressionIntegTestDefaultTestDeployAssert9E90EDA4"
     }
