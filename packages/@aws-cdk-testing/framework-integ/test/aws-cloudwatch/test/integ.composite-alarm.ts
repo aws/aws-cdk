@@ -59,6 +59,14 @@ class CompositeAlarmIntegrationTest extends Stack {
       alarmRule,
       actionsSuppressor: alarm5,
     });
+
+    new CompositeAlarm(this, 'EmptyAnyOf', {
+      alarmRule: AlarmRule.anyOf(),
+    });
+
+    new CompositeAlarm(this, 'EmptyAllOf', {
+      alarmRule: AlarmRule.allOf(),
+    });
   }
 }
 
