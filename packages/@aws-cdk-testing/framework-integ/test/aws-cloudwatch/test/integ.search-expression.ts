@@ -24,7 +24,7 @@ class SearchExpressionStack extends cdk.Stack {
       label: 'Cross-Account Cross-Region S3',
       color: '#9467bd',
       period: cdk.Duration.hours(1),
-      searchAccount: '555666777888',
+      searchAccount: '123456789012',
       searchRegion: 'ap-southeast-1',
     });
 
