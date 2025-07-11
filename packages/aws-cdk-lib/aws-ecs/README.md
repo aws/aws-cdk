@@ -1972,7 +1972,7 @@ const volumeFromSnapshot = new ecs.ServiceManagedVolume(this, 'EBSVolume', {
     fileSystemType: ecs.FileSystemType.XFS,
     // Specifies the Amazon EBS Provisioned Rate for Volume Initialization.
     // Valid range is between 100 and 300 MiB/s.
-    volumeInitializationRate: cdk.Size.mebibytes(200),
+    volumeInitializationRate: Size.mebibytes(200),
   },
 });
 
