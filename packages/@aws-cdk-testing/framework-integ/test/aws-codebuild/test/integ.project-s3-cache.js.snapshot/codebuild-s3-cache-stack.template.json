@@ -348,7 +348,6 @@
      "Type": "NO_ARTIFACTS"
     },
     "Cache": {
-     "CacheNamespace": "cache-namespace",
      "Location": {
       "Fn::Join": [
        "/",
@@ -591,7 +590,6 @@
      "Type": "NO_ARTIFACTS"
     },
     "Cache": {
-     "CacheNamespace": "cache-namespace",
      "Location": {
       "Fn::Join": [
        "/",
@@ -718,6 +716,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

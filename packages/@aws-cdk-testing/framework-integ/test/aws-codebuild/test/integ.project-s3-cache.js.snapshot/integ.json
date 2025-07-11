@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "testCases": {
     "codebuild-s3-cache-integ/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "codebuilds3cacheintegDefaultTestDeployAssert27F68086"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1020.1"
 }

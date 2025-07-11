@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "displayName": "codebuild-s3-cache-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
@@ -8,23 +8,23 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-094cbf39": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "9e1e1f746f2318cc1cbe57099ae836f8c32926a64394bce8f2a7ea9a30f73822": {
+    "270d421b9d208aa9082ea7a8a4a08c7523435f6ac92090a6a548b77a32aa1a10": {
       "displayName": "codebuild-s3-cache-stack Template",
       "source": {
         "path": "codebuild-s3-cache-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-839137a4": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9e1e1f746f2318cc1cbe57099ae836f8c32926a64394bce8f2a7ea9a30f73822.json",
+          "objectKey": "270d421b9d208aa9082ea7a8a4a08c7523435f6ac92090a6a548b77a32aa1a10.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
