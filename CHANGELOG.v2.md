@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.204.1](https://github.com/aws/aws-cdk/compare/v2.204.0...v2.204.1) (2025-07-11)
+
+
+### Bug Fixes
+
+* **lambda:** handle token resolution issues in addToRolePolicy ([#34904](https://github.com/aws/aws-cdk/issues/34904)) ([bbdc2db](https://github.com/aws/aws-cdk/commit/bbdc2db22fb5d90d898c8a57c85c7dcf03d6f947)), closes [#34894](https://github.com/aws/aws-cdk/issues/34894)
+
 ## [2.204.0](https://github.com/aws/aws-cdk/compare/v2.203.1...v2.204.0) (2025-07-04)
 
 
