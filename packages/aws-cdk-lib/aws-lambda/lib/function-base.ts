@@ -331,6 +331,18 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   private _policyCounter: number = 0;
 
   /**
+   * Track whether we've added statements with literal resources to the role's default policy
+   * @internal
+   */
+  private _hasAddedLiteralStatements: boolean = false;
+
+  /**
+   * Track whether we've added statements with array token resources to the role's default policy
+   * @internal
+   */
+  private _hasAddedArrayTokenStatements: boolean = false;
+
+  /**
    * A warning will be added to functions under the following conditions:
    * - permissions that include `lambda:InvokeFunction` are added to the unqualified function.
    * - function.currentVersion is invoked before or after the permission is created.
@@ -400,13 +412,28 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return;
     }
 
-    if (useCreateNewPolicies) {
+    const hasArrayTokens = this.statementHasArrayTokens(statement);
+
+    // Check if mixing different token types would cause CloudFormation resolution conflicts
+    // Array tokens and literal resources cannot be safely merged in the same policy document
+    const wouldCauseConflict = (hasArrayTokens && this._hasAddedLiteralStatements) ||
+      (!hasArrayTokens && this._hasAddedArrayTokenStatements);
+
+    if (useCreateNewPolicies || wouldCauseConflict) {
+      // Create separate policy to avoid CloudFormation token resolution conflicts
       const policyToAdd = new iam.Policy(this, `inlinePolicyAddedToExecutionRole-${this._policyCounter++}`, {
         statements: [statement],
       });
       this.role.attachInlinePolicy(policyToAdd);
     } else {
+      // Safe to merge - track what type of resources we're adding to the default policy
       this.role.addToPrincipalPolicy(statement);
+
+      if (hasArrayTokens) {
+        this._hasAddedArrayTokenStatements = true;
+      } else {
+        this._hasAddedLiteralStatements = true;
+      }
     }
   }
 
@@ -723,8 +750,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       const supportedPrincipalConditions = [{
         operator: 'ArnLike',
         key: 'aws:SourceArn',
-      },
-      {
+      }, {
         operator: 'StringEquals',
         key: 'aws:SourceAccount',
       }, {
@@ -751,6 +777,29 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   private isPrincipalWithConditions(principal: iam.IPrincipal): boolean {
     return Object.keys(principal.policyFragment.conditions).length > 0;
+  }
+
+  /**
+   * Check if a policy statement contains array tokens that would cause CloudFormation
+   * resolution conflicts when mixed with literal arrays in the same policy document.
+   *
+   * Array tokens are created by CloudFormation intrinsic functions that return arrays,
+   * such as Fn::Split, Fn::GetAZs, etc. These cannot be safely merged with literal
+   * resource arrays due to CloudFormation's token resolution limitations.
+   *
+   * Individual string tokens within literal arrays (e.g., `["arn:${token}:..."]`) are
+   * safe and do not cause conflicts, so they are not detected by this method.
+   * @internal
+   */
+  private statementHasArrayTokens(statement: iam.PolicyStatement): boolean {
+    const resources = statement.resources;
+    if (!resources) {
+      return false;
+    }
+
+    // Detect when the entire resources property is an unresolved token that will
+    // resolve to an array at CloudFormation deployment time.
+    return Token.isUnresolved(resources);
   }
 }
 
