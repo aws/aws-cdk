@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "125e20045adc2b858cc3e96eeda9ce2f952a0ef4890e222b83e085fd957cce68": {
+      "displayName": "codebuild-project-docker-server Template",
+      "source": {
+        "path": "codebuild-project-docker-server.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-aba22b6a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "125e20045adc2b858cc3e96eeda9ce2f952a0ef4890e222b83e085fd957cce68.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
