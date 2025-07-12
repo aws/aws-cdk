@@ -156,7 +156,7 @@ graph showing the Average statistic with an aggregation period of 5 minutes:
 
 ```ts
 const cpuUtilization = new cloudwatch.SearchExpression({
-  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)",
+  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 900)",
   label: 'EC2 CPU Utilization',
   color: '#ff7f0e',
 });
