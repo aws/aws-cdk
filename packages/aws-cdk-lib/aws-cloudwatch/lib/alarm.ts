@@ -11,7 +11,7 @@ import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
-import { ArnFormat, Lazy, Stack, Token, Annotations, ValidationError, AssumptionError } from '../../core';
+import { ArnFormat, Lazy, Stack, Token, Annotations, ValidationError, AssumptionError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -475,7 +475,7 @@ export class Alarm extends AlarmBase {
         };
       },
 
-      withExpression() {
+      withMathExpression() {
         // Expand the math expression metric into a set
         const mset = new MetricSet<boolean>();
         mset.addTopLevel(true, metric);
@@ -517,22 +517,25 @@ export class Alarm extends AlarmBase {
                   returnData,
                 };
               },
-              withExpression(expr, conf) {
-                const hasSubmetrics = mathExprHasSubmetrics(expr);
+              withMathExpression(mathExpr, conf) {
+                const hasSubmetrics = mathExprHasSubmetrics(mathExpr);
 
                 if (hasSubmetrics) {
-                  assertSubmetricsCount(self, expr);
+                  assertSubmetricsCount(self, mathExpr);
                 }
 
-                self.validateMetricExpression(expr);
+                self.validateMetricExpression(mathExpr);
 
                 return {
-                  expression: expr.expression,
+                  expression: mathExpr.expression,
                   id,
                   label: conf.renderingProperties?.label as string,
-                  period: hasSubmetrics ? undefined : expr.period,
+                  period: hasSubmetrics ? undefined : mathExpr.period,
                   returnData,
                 };
+              },
+              withSearchExpression(_searchExpr, _conf) {
+                throw new UnscopedValidationError('Search expressions are not supported in CloudWatch Alarms. Use search expressions only in dashboard graphs.');
               },
             });
           }),
@@ -543,6 +546,9 @@ export class Alarm extends AlarmBase {
         }
 
         return { props, primaryId };
+      },
+      withSearchExpression() {
+        throw new UnscopedValidationError('Search expressions are not supported in CloudWatch Alarms. Use search expressions only in dashboard graphs.');
       },
     });
   }
@@ -608,9 +614,13 @@ function isAnomalyDetectionMetric(metric: IMetric): boolean {
       // Not an anomaly detection metric
       isAnomalyDetection = false;
     },
-    withExpression(expr) {
+    withMathExpression(mathExpr) {
       // Check if the expression is an anomaly detection band
-      isAnomalyDetection = expr.expression.includes('ANOMALY_DETECTION_BAND');
+      isAnomalyDetection = mathExpr.expression.includes('ANOMALY_DETECTION_BAND');
+    },
+    withSearchExpression() {
+      // Search expressions are not anomaly detection metrics
+      isAnomalyDetection = false;
     },
   });
 
