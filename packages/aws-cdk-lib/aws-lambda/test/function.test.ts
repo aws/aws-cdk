@@ -1113,6 +1113,61 @@ describe('function', () => {
     });
   });
 
+  test('default function with SQS DLQ when client provides Queue to be used as DLQ and queue encrypts with CMK', () => {
+    const stack = new cdk.Stack();
+
+    const key = new kms.Key(stack, 'DlqKey');
+
+    const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
+      queueName: 'MyLambda_DLQ',
+      retentionPeriod: cdk.Duration.days(14),
+      encryptionMasterKey: key,
+    });
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      deadLetterQueue: dlQueue,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'DeadLetterQueue9F481546',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['DlqKey1CBAEEF0', 'Arn'],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      DeadLetterConfig: {
+        TargetArn: {
+          'Fn::GetAtt': [
+            'DeadLetterQueue9F481546',
+            'Arn',
+          ],
+        },
+      },
+    });
+  });
+
   test('default function with SQS DLQ when client provides Queue to be used as DLQ and deadLetterQueueEnabled set to true', () => {
     const stack = new cdk.Stack();
 

@@ -1709,6 +1709,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
         actions: ['sqs:SendMessage'],
         resources: [deadLetterQueue.queueArn],
       }));
+      deadLetterQueue.encryptionMasterKey?.grant(this, 'kms:Decrypt', 'kms:GenerateDataKey');
     }
 
     return deadLetterQueue;
