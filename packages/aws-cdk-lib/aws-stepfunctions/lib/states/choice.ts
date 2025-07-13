@@ -1,48 +1,25 @@
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { ChoiceTransitionOptions, State } from './state';
+import { AssignableStateOptions, ChoiceTransitionOptions, JsonataCommonOptions, JsonPathCommonOptions, State, StateBaseProps } from './state';
+import { UnscopedValidationError } from '../../../core';
 import { Chain } from '../chain';
 import { Condition } from '../condition';
-import { IChainable, INextable } from '../types';
+import { IChainable, INextable, QueryLanguage } from '../types';
+
+/**
+ * Properties for defining a Choice state that using JSONPath
+ */
+export interface ChoiceJsonPathProps extends StateBaseProps, AssignableStateOptions, JsonPathCommonOptions {}
+
+/**
+ * Properties for defining a Choice state that using JSONata
+ */
+export interface ChoiceJsonataProps extends StateBaseProps, AssignableStateOptions, JsonataCommonOptions {}
 
 /**
  * Properties for defining a Choice state
  */
-export interface ChoiceProps {
-  /**
-   * Optional name for this state
-   *
-   * @default - The construct ID will be used as state name
-   */
-  readonly stateName?: string;
-
-  /**
-   * An optional description for this state
-   *
-   * @default No comment
-   */
-  readonly comment?: string;
-
-  /**
-   * JSONPath expression to select part of the state to be the input to this state.
-   *
-   * May also be the special value JsonPath.DISCARD, which will cause the effective
-   * input to be the empty object {}.
-   *
-   * @default $
-   */
-  readonly inputPath?: string;
-
-  /**
-   * JSONPath expression to select part of the state to be the output to this state.
-   *
-   * May also be the special value JsonPath.DISCARD, which will cause the effective
-   * output to be the empty object {}.
-   *
-   * @default $
-   */
-  readonly outputPath?: string;
-}
+export interface ChoiceProps extends StateBaseProps, AssignableStateOptions, JsonPathCommonOptions, JsonataCommonOptions {}
 
 /**
  * Define a Choice in the state machine
@@ -51,6 +28,27 @@ export interface ChoiceProps {
  * state.
  */
 export class Choice extends State {
+  /**
+   * Define a Choice using JSONPath in the state machine
+   *
+   * A choice state can be used to make decisions based on the execution
+   * state.
+   */
+  public static jsonPath(scope: Construct, id: string, props: ChoiceJsonPathProps = {}) {
+    return new Choice(scope, id, props);
+  }
+  /**
+   * Define a Choice using JSONata in the state machine
+   *
+   * A choice state can be used to make decisions based on the execution
+   * state.
+   */
+  public static jsonata(scope: Construct, id: string, props: ChoiceJsonataProps = {}) {
+    return new Choice(scope, id, {
+      ...props,
+      queryLanguage: QueryLanguage.JSONATA,
+    });
+  }
   public readonly endStates: INextable[] = [];
 
   constructor(scope: Construct, id: string, props: ChoiceProps = {}) {
@@ -84,7 +82,7 @@ export class Choice extends State {
   public afterwards(options: AfterwardsOptions = {}): Chain {
     const endStates = State.filterNextables(State.findReachableEndStates(this, { includeErrorHandlers: options.includeErrorHandlers }));
     if (options.includeOtherwise && this.defaultChoice) {
-      throw new Error(`'includeOtherwise' set but Choice state ${this.stateId} already has an 'otherwise' transition`);
+      throw new UnscopedValidationError(`'includeOtherwise' set but Choice state ${this.stateId} already has an 'otherwise' transition`);
     }
     if (options.includeOtherwise) {
       endStates.push(new DefaultAsNext(this));
@@ -95,12 +93,14 @@ export class Choice extends State {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(): object {
+  public toStateJson(topLevelQueryLanguage?: QueryLanguage): object {
     return {
       Type: StateType.CHOICE,
+      ...this.renderQueryLanguage(topLevelQueryLanguage),
       Comment: this.comment,
       ...this.renderInputOutput(),
       ...this.renderChoices(),
+      ...this.renderAssign(topLevelQueryLanguage),
     };
   }
 }

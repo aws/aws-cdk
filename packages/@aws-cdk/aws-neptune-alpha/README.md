@@ -100,7 +100,7 @@ const cluster = new neptune.DatabaseCluster(this, 'Database', {
 });
 ```
 
-Note: To use the Neptune engine versions `1.2.0.0` or later, including the newly added `1.3` series, it's necessary to specify the appropriate `engineVersion` prop in `neptune.DatabaseCluster`. Additionally, for both 1.2 and 1.3 series, the corresponding `family` prop must be set to `ParameterGroupFamily.NEPTUNE_1_2` or `ParameterGroupFamily.NEPTUNE_1_3` respectively in `neptune.ClusterParameterGroup` and `neptune.ParameterGroup`.
+Note: To use the Neptune engine versions `1.2.0.0` or later, including the newly added `1.4` series, it's necessary to specify the appropriate `engineVersion` prop in `neptune.DatabaseCluster`. Additionally, for both 1.2,  1.3 and 1.4 series, the corresponding `family` prop must be set to `ParameterGroupFamily.NEPTUNE_1_2`, `ParameterGroupFamily.NEPTUNE_1_3` or `ParameterGroupFamily.NEPTUNE_1_4` respectively in `neptune.ClusterParameterGroup` and `neptune.ParameterGroup`.
 
 ## Adding replicas
 
@@ -135,6 +135,29 @@ new neptune.DatabaseCluster(this, 'Cluster', {
   vpc,
   instanceType: neptune.InstanceType.R5_LARGE,
   autoMinorVersionUpgrade: true,
+});
+```
+
+You can also specify `autoMinorVersionUpgrade` to a database instance.
+Even within the same cluster, you can modify the `autoMinorVersionUpgrade` setting on a per-instance basis.
+
+```ts fixture=with-cluster
+new neptune.DatabaseInstance(this, 'Instance', {
+  cluster,
+  instanceType: neptune.InstanceType.R5_LARGE,
+  autoMinorVersionUpgrade: true,
+});
+```
+
+## Port
+
+By default, Neptune uses port `8182`. You can override the default port by specifying the `port` property:
+
+```ts
+const cluster = new neptune.DatabaseCluster(this, 'Database', {
+  vpc,
+  instanceType: neptune.InstanceType.R5_LARGE,
+  port: 12345,
 });
 ```
 

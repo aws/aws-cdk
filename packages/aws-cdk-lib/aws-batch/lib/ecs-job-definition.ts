@@ -5,6 +5,8 @@ import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefi
 import { IJobQueue } from './job-queue';
 import * as iam from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A JobDefinition that uses ECS orchestration
@@ -16,7 +18,7 @@ interface IEcsJobDefinition extends IJobDefinition {
   readonly container: IEcsContainerDefinition;
 
   /**
-   * Whether to propogate tags from the JobDefinition
+   * Whether to propagate tags from the JobDefinition
    * to the ECS task that Batch spawns
    *
    * @default false
@@ -42,7 +44,7 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
   readonly container: IEcsContainerDefinition;
 
   /**
-   * Whether to propogate tags from the JobDefinition
+   * Whether to propagate tags from the JobDefinition
    * to the ECS task that Batch spawns
    *
    * @default false
@@ -55,7 +57,11 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
  *
  * @resource AWS::Batch::JobDefinition
  */
+@propertyInjectable
 export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefinition {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.EcsJobDefinition';
+
   /**
    * Import a JobDefinition by its arn.
    */
@@ -75,7 +81,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
     return resourceName.split(':')[0];
   }
 
-  readonly container: IEcsContainerDefinition
+  readonly container: IEcsContainerDefinition;
   public readonly propagateTags?: boolean;
 
   public readonly jobDefinitionArn: string;
@@ -83,6 +89,8 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
 
   constructor(scope: Construct, id: string, props: EcsJobDefinitionProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.container = props.container;
     this.propagateTags = props?.propagateTags;
@@ -106,7 +114,8 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
 
   /**
    * Grants the `batch:submitJob` permission to the identity on both this job definition and the `queue`
-  */
+   */
+  @MethodMetadata()
   public grantSubmitJob(identity: iam.IGrantable, queue: IJobQueue) {
     iam.Grant.addToPrincipal({
       actions: ['batch:SubmitJob'],

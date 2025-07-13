@@ -78,7 +78,20 @@ export const handler = async (event: Event) => {
     const command = new Command(event.parameters ?? {});
     const res = await client.send(command);
 
-    return res;
+    // Special handling for Lambda invoke responses
+    if (res.Payload && (res.Payload instanceof Uint8Array || res.Payload instanceof Buffer)) {
+      try {
+        const payloadString = new TextDecoder().decode(res.Payload);
+        res.Payload = JSON.parse(payloadString);
+      } catch (error) {
+        // If parsing fails, keep as decoded string
+        res.Payload = new TextDecoder().decode(res.Payload);
+      }
+    }
+
+    // Serialize the entire response to ensure all other binary data is handled
+    const serializedRes = JSON.stringify(res);
+    return JSON.parse(serializedRes);
   } catch (error) {
     console.error('Error: ', error);
     throw error;

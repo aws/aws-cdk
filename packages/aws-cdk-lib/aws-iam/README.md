@@ -125,6 +125,14 @@ const role = iam.Role.fromRoleArn(this, 'Role', 'arn:aws:iam::123456789012:role/
 });
 ```
 
+If you want to lookup roles that actually exist in your account, you can use `Role.fromLookup()`.
+
+```ts
+const role = iam.Role.fromLookup(this, 'Role', {
+  roleName: 'MyExistingRole',
+});
+```
+
 ### Customizing role creation
 
 It is best practice to allow CDK to manage IAM roles and permissions. You can prevent CDK from
@@ -237,6 +245,72 @@ iam.Role.customizeRoles(this, {
 
 For more information on configuring permissions see the [Security And Safety Dev
 Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
+
+#### Policy report generation
+
+When `customizeRoles` is used, the `iam-policy-report.txt` report will contain a list
+of IAM roles and associated permissions that would have been created. This report is
+generated in an attempt to resolve and replace any references with a more user-friendly
+value.
+
+The following are some examples of the value that will appear in the report:
+
+```json
+"Resource": {
+  "Fn::Join": [
+    "",
+    [
+      "arn:",
+      {
+        "Ref": "AWS::Partition"
+      },
+      ":iam::",
+      {
+        "Ref": "AWS::AccountId"
+      },
+      ":role/Role"
+    ]
+  ]
+}
+```
+
+The policy report will instead get:
+
+```json
+"Resource": "arn:(PARTITION):iam::(ACCOUNT):role/Role"
+```
+
+If IAM policy is referencing a resource attribute:
+
+```json
+"Resource": [
+  {
+    "Fn::GetAtt": [
+      "SomeResource",
+      "Arn"
+    ]
+  },
+  {
+    "Ref": "AWS::NoValue",
+  }
+]
+```
+
+The policy report will instead get:
+
+```json
+"Resource": [
+  "(Path/To/SomeResource.Arn)"
+  "(NOVALUE)"
+]
+```
+
+The following pseudo parameters will be converted:
+
+1. `{ 'Ref': 'AWS::AccountId' }` -> `(ACCOUNT)
+2. `{ 'Ref': 'AWS::Partition' }` -> `(PARTITION)
+3. `{ 'Ref': 'AWS::Region' }` -> `(REGION)
+4. `{ 'Ref': 'AWS::NoValue' }` -> `(NOVALUE)
 
 #### Generating a permissions report
 
@@ -400,6 +474,24 @@ role.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
     new iam.ServicePrincipal('beep-boop.amazonaws.com')
     ],
 }));
+```
+
+### Fixing the synthesized service principle for services that do not follow the IAM Pattern
+
+In some cases, certain AWS services may not use the standard `<service>.amazonaws.com` pattern for their service principals. For these services, you can define the ServicePrincipal as following where the provided service principle name will be used as is without any changing.
+
+```ts
+    const sp = iam.ServicePrincipal.fromStaticServicePrincipleName('elasticmapreduce.amazonaws.com.cn');
+```
+
+This principle can use as normal in defining any role, for example:
+```ts
+const emrServiceRole = new iam.Role(this, 'EMRServiceRole', {
+    assumedBy: iam.ServicePrincipal.fromStaticServicePrincipleName('elasticmapreduce.amazonaws.com.cn'),
+    managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceRole'),
+    ],
+});
 ```
 
 
@@ -611,6 +703,35 @@ The following examples defines an OpenID Connect provider. Two client IDs
 (audiences) are will be able to send authentication requests to
 <https://openid/connect>.
 
+It is recommended to use the new `OidcProviderNative` which native CloudFormation resource `AWS::IAM::OIDCProvider` over the old `OpenIdConnectProvider` which uses a custom resource.
+
+```ts
+const nativeProvider = new iam.OidcProviderNative(this, 'MyProvider', {
+  url: 'https://openid/connect',
+  clientIds: [ 'myclient1', 'myclient2' ],
+  thumbprints: ['aa00aa1122aa00aa1122aa00aa1122aa00aa1122'],
+});
+```
+
+For the new `OidcProviderNative`, you must provide at least one thumbprint when creating an IAM OIDC
+provider. For example, assume that the OIDC provider is server.example.com
+and the provider stores its keys at
+https://keys.server.example.com/openid-connect. In that case, the
+thumbprint string would be the hex-encoded SHA-1 hash value of the
+certificate used by https://keys.server.example.com.
+
+The server certificate thumbprint is the hex-encoded SHA-1 hash value of
+the X.509 certificate used by the domain where the OpenID Connect provider
+makes its keys available. It is always a 40-character string.
+
+Typically this list includes only one entry. However, IAM lets you have up
+to five thumbprints for an OIDC provider. This lets you maintain multiple
+thumbprints if the identity provider is rotating certificates.
+
+Obtain the thumbprint of the root certificate authority from the provider's
+server as described in https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
+
+The older `OpenIdConnectProvider` is still supported but it is recommended to use the new `OidcProviderNative` instead.
 ```ts
 const provider = new iam.OpenIdConnectProvider(this, 'MyProvider', {
   url: 'https://openid/connect',
@@ -618,10 +739,18 @@ const provider = new iam.OpenIdConnectProvider(this, 'MyProvider', {
 });
 ```
 
-You can specify an optional list of `thumbprints`. If not specified, the
+For the older `OpenIdConnectProvider`, you can specify an optional list of `thumbprints`. If not specified, the
 thumbprint of the root certificate authority (CA) will automatically be obtained
 from the host as described
 [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html).
+
+By default, the custom resource enforces strict security practices by rejecting
+any unauthorized connections when downloading CA thumbprints from the issuer URL.
+If you need to connect to an unauthorized OIDC identity provider and understand the
+implications, you can disable this behavior by setting the feature flag
+`IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS` to `false` in your `cdk.context.json`
+or `cdk.json`. Visit [CDK Feature Flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html)
+for more information on how to configure feature flags.
 
 Once you define an OpenID connect provider, you can use it with AWS services
 that expect an IAM OIDC provider. For example, when you define an [Amazon

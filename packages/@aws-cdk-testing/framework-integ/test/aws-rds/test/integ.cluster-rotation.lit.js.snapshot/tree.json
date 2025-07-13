@@ -1091,7 +1091,7 @@
                       "Ref": "DatabaseSubnets56F17B9A"
                     },
                     "engine": "aurora-mysql",
-                    "engineVersion": "8.0.mysql_aurora.3.03.0",
+                    "engineVersion": "8.0.mysql_aurora.3.07.1",
                     "masterUsername": {
                       "Fn::Join": [
                         "",
@@ -1616,7 +1616,7 @@
                       "Ref": "CustomRotationOptionsSubnets52AEBCED"
                     },
                     "engine": "aurora-mysql",
-                    "engineVersion": "8.0.mysql_aurora.3.03.0",
+                    "engineVersion": "8.0.mysql_aurora.3.07.1",
                     "masterUsername": {
                       "Fn::Join": [
                         "",
@@ -1844,12 +1844,66 @@
           "version": "0.0.0"
         }
       },
+      "test-rds-cluster-rotation": {
+        "id": "test-rds-cluster-rotation",
+        "path": "test-rds-cluster-rotation",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "test-rds-cluster-rotation/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "test-rds-cluster-rotation/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "test-rds-cluster-rotation/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "test-rds-cluster-rotation/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "test-rds-cluster-rotation/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
       "Tree": {
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

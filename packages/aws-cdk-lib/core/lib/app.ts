@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
+import { IPropertyInjector, PropertyInjectors } from './prop-injectors';
 import { IReusableStackSynthesizer } from './stack-synthesizers';
 import { Stage } from './stage';
 import { IPolicyValidationPluginBeta1 } from './validation/validation';
@@ -126,6 +127,12 @@ export interface AppProps {
    * @default - no validation plugins
    */
   readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
+
+  /**
+   * A list of IPropertyInjector attached to this App.
+   * @default - no PropertyInjectors
+   */
+  readonly propertyInjectors?: IPropertyInjector[];
 }
 
 /**
@@ -170,6 +177,11 @@ export class App extends Stage {
       policyValidationBeta1: props.policyValidationBeta1,
     });
 
+    if (props.propertyInjectors) {
+      const injectors = PropertyInjectors.of(this);
+      injectors.add(...props.propertyInjectors);
+    }
+
     Object.defineProperty(this, APP_SYMBOL, { value: true });
 
     this.loadContext(props.context, props.postCliContext);
@@ -192,7 +204,7 @@ export class App extends Stage {
     if (autoSynth) {
       // synth() guarantees it will only execute once, so a default of 'true'
       // doesn't bite manual calling of the function.
-      process.once('beforeExit', () => this.synth());
+      process.once('beforeExit', () => this.synth({ errorOnDuplicateSynth: false }));
     }
 
     this._treeMetadata = props.treeMetadata ?? true;

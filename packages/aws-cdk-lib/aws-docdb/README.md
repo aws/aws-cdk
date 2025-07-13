@@ -259,3 +259,22 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
   caCertificate: docdb.CaCertificate.RDS_CA_RSA4096_G1, // CA certificate for all instances under this cluster
 });
 ```
+
+## Storage Type
+
+You can specify [storage type](https://docs.aws.amazon.com/documentdb/latest/developerguide/db-cluster-storage-configs.html) for the cluster.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new docdb.DatabaseCluster(this, 'Database', {
+  masterUser: {
+    username: 'myuser',
+  },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
+  vpc,
+  storageType: docdb.StorageType.IOPT1, // Default is StorageType.STANDARD
+});
+```
+
+**Note**: `StorageType.IOPT1` is supported starting with engine version 5.0.0.

@@ -2,9 +2,11 @@ import { Construct } from 'constructs';
 import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
 import { ISecurityGroup, IVpc, SubnetSelection } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
+import { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
+import { ISchemaRegistry } from '../../aws-lambda/lib/schema-registry';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { Stack, Names } from '../../core';
+import { Stack, Names, Annotations, UnscopedValidationError, ValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 
 /**
@@ -23,7 +25,7 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    */
   readonly secret?: secretsmanager.ISecret;
   /**
-   * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value.  The value must have a lenght between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'.
+   * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value.  The value must have a length between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'.
    * @see https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id
    *
    * @default - none
@@ -39,11 +41,35 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
   readonly filters?: Array<{[key: string]: any}>;
 
   /**
+   * Add Customer managed KMS key to encrypt Filter Criteria.
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
+   * By default, Lambda will encrypt Filter Criteria using AWS managed keys
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#aws-managed-cmk
+   *
+   * @default - none
+   */
+  readonly filterEncryption?: IKey;
+
+  /**
    * Add an on Failure Destination for this Kafka event. SNS/SQS/S3 are supported
    *
    * @default - discarded records are ignored
    */
   readonly onFailure?: lambda.IEventSourceDlq;
+
+  /**
+   * The time from which to start reading, in Unix time seconds.
+   *
+   * @default - no timestamp
+   */
+  readonly startingPositionTimestamp?: number;
+
+  /**
+   * Specific configuration settings for a Kafka schema registry.
+   *
+   * @default - none
+   */
+  readonly schemaRegistryConfig?: ISchemaRegistry;
 }
 
 /**
@@ -141,17 +167,29 @@ export class ManagedKafkaEventSource extends StreamEventSource {
   }
 
   public bind(target: lambda.IFunction) {
+    if (this.innerProps.startingPosition === lambda.StartingPosition.AT_TIMESTAMP && !this.innerProps.startingPositionTimestamp) {
+      Annotations.of(target).addWarningV2('@aws-cdk/aws-lambda-event-source:needStartingPositionTimestamp', 'startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
+    }
+
+    if (this.innerProps.startingPosition !== lambda.StartingPosition.AT_TIMESTAMP && this.innerProps.startingPositionTimestamp) {
+      Annotations.of(target).addWarningV2('@aws-cdk/aws-lambda-event-source:invalidStartingPosition', 'startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+    }
+
     const eventSourceMapping = target.addEventSourceMapping(
       `KafkaEventSource:${Names.nodeUniqueId(target.node)}${this.innerProps.topic}`,
       this.enrichMappingOptions({
         eventSourceArn: this.innerProps.clusterArn,
         filters: this.innerProps.filters,
+        filterEncryption: this.innerProps.filterEncryption,
         startingPosition: this.innerProps.startingPosition,
+        startingPositionTimestamp: this.innerProps.startingPositionTimestamp,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
         kafkaTopic: this.innerProps.topic,
         kafkaConsumerGroupId: this.innerProps.consumerGroupId,
         onFailure: this.innerProps.onFailure,
         supportS3OnFailureDestination: true,
+        provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
+        schemaRegistryConfig: this.innerProps.schemaRegistryConfig,
       }),
     );
 
@@ -188,11 +226,11 @@ export class ManagedKafkaEventSource extends StreamEventSource {
   }
 
   /**
-  * The identifier for this EventSourceMapping
-  */
+   * The identifier for this EventSourceMapping
+   */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new Error('KafkaEventSource is not yet bound to an event source mapping');
+      throw new UnscopedValidationError('KafkaEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingId;
   }
@@ -202,7 +240,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
    */
   public get eventSourceMappingArn(): string {
     if (!this._eventSourceMappingArn) {
-      throw new Error('KafkaEventSource is not yet bound to an event source mapping');
+      throw new UnscopedValidationError('KafkaEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingArn;
   }
@@ -219,30 +257,43 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
     super(props);
     if (props.vpc) {
       if (!props.securityGroup) {
-        throw new Error('securityGroup must be set when providing vpc');
+        throw new UnscopedValidationError('securityGroup must be set when providing vpc');
       }
       if (!props.vpcSubnets) {
-        throw new Error('vpcSubnets must be set when providing vpc');
+        throw new UnscopedValidationError('vpcSubnets must be set when providing vpc');
       }
     } else if (!props.secret) {
-      throw new Error('secret must be set if Kafka brokers accessed over Internet');
+      throw new UnscopedValidationError('secret must be set if Kafka brokers accessed over Internet');
     }
+
+    if (props.startingPosition === lambda.StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
+      throw new UnscopedValidationError('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
+    }
+
+    if (props.startingPosition !== lambda.StartingPosition.AT_TIMESTAMP && props.startingPositionTimestamp) {
+      throw new UnscopedValidationError('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+    }
+
     this.innerProps = props;
   }
 
   public bind(target: lambda.IFunction) {
-    if (!(target instanceof Construct)) { throw new Error('Function is not a construct. Unexpected error.'); }
+    if (!(Construct.isConstruct(target))) { throw new ValidationError('Function is not a construct. Unexpected error.', target); }
     target.addEventSourceMapping(
       this.mappingId(target),
       this.enrichMappingOptions({
         filters: this.innerProps.filters,
+        filterEncryption: this.innerProps.filterEncryption,
         kafkaBootstrapServers: this.innerProps.bootstrapServers,
         kafkaTopic: this.innerProps.topic,
         kafkaConsumerGroupId: this.innerProps.consumerGroupId,
         startingPosition: this.innerProps.startingPosition,
+        startingPositionTimestamp: this.innerProps.startingPositionTimestamp,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
         onFailure: this.innerProps.onFailure,
         supportS3OnFailureDestination: true,
+        provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
+        schemaRegistryConfig: this.innerProps.schemaRegistryConfig,
       }),
     );
 

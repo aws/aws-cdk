@@ -1,6 +1,8 @@
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnObservabilityConfiguration } from 'aws-cdk-lib/aws-apprunner';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * The implementation provider chosen for tracing App Runner services
@@ -74,7 +76,11 @@ export interface IObservabilityConfiguration extends cdk.IResource {
  *
  * @resource AWS::AppRunner::ObservabilityConfiguration
  */
+@propertyInjectable
 export class ObservabilityConfiguration extends cdk.Resource implements IObservabilityConfiguration {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-apprunner-alpha.ObservabilityConfiguration';
+
   /**
    * Imports an App Runner Observability Configuration from attributes.
    */
@@ -103,7 +109,7 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
     const resourceParts = cdk.Fn.split('/', observabilityConfigurationArn);
 
     if (!resourceParts || resourceParts.length < 3) {
-      throw new Error(`Unexpected ARN format: ${observabilityConfigurationArn}`);
+      throw new cdk.UnscopedValidationError(`Unexpected ARN format: ${observabilityConfigurationArn}.`);
     }
 
     const observabilityConfigurationName = cdk.Fn.select(0, resourceParts);
@@ -140,13 +146,21 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
     super(scope, id, {
       physicalName: props.observabilityConfigurationName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
-    if (
-      props.observabilityConfigurationName !== undefined &&
-      !cdk.Token.isUnresolved(props.observabilityConfigurationName) &&
-      !/^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$/.test(props.observabilityConfigurationName)
-    ) {
-      throw new Error(`observabilityConfigurationName must match the \`^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$\` pattern, got ${props.observabilityConfigurationName}`);
+    if (props.observabilityConfigurationName !== undefined && !cdk.Token.isUnresolved(props.observabilityConfigurationName)) {
+      if (props.observabilityConfigurationName.length < 4 || props.observabilityConfigurationName.length > 32) {
+        throw new cdk.ValidationError(
+          `\`observabilityConfigurationName\` must be between 4 and 32 characters, got: ${props.observabilityConfigurationName.length} characters.`, this,
+        );
+      }
+
+      if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.observabilityConfigurationName)) {
+        throw new cdk.ValidationError(
+          `\`observabilityConfigurationName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.observabilityConfigurationName}.`, this,
+        );
+      }
     }
 
     const resource = new CfnObservabilityConfiguration(this, 'Resource', {

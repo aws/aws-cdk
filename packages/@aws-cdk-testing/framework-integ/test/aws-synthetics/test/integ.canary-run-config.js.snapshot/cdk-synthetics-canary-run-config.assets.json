@@ -1,0 +1,34 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "d57a897c2081bda5ce88819548c8b944dff49e721e1f7f7e9e3dd8323e6ccb0d": {
+      "displayName": "cdk-synthetics-canary-run-config/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider Code",
+      "source": {
+        "path": "asset.d57a897c2081bda5ce88819548c8b944dff49e721e1f7f7e9e3dd8323e6ccb0d",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d57a897c2081bda5ce88819548c8b944dff49e721e1f7f7e9e3dd8323e6ccb0d.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "613e483aaea2469496e93c3a0f95759492bdbecba2d51270d71fc495e4cffd90": {
+      "displayName": "cdk-synthetics-canary-run-config Template",
+      "source": {
+        "path": "cdk-synthetics-canary-run-config.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "613e483aaea2469496e93c3a0f95759492bdbecba2d51270d71fc495e4cffd90.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

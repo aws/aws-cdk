@@ -222,6 +222,8 @@ describe('State Machine Resources', () => {
       ResultPath: undefined,
       TimeoutSeconds: undefined,
       HeartbeatSeconds: undefined,
+      Arguments: undefined,
+      Output: undefined,
     });
   }),
 
@@ -265,6 +267,8 @@ describe('State Machine Resources', () => {
       ResultPath: undefined,
       TimeoutSeconds: undefined,
       HeartbeatSeconds: undefined,
+      Arguments: undefined,
+      Output: undefined,
     });
   }),
 
@@ -294,7 +298,6 @@ describe('State Machine Resources', () => {
         })]),
       },
     });
-
   }),
 
   test('Created state machine can grant start sync execution to a role', () => {
@@ -324,7 +327,6 @@ describe('State Machine Resources', () => {
         })]),
       },
     });
-
   }),
 
   test('Created state machine can grant read access to a role', () => {
@@ -410,7 +412,6 @@ describe('State Machine Resources', () => {
       },
     },
     );
-
   }),
 
   test('Created state machine can grant task response actions to the state machine', () => {
@@ -443,6 +444,65 @@ describe('State Machine Resources', () => {
             },
           },
         ],
+      },
+    });
+  }),
+
+  test('Created state machine can grant redrive execution access to a role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new FakeTask(stack, 'Task');
+    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    stateMachine.grantRedriveExecution(role);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([Match.objectLike({
+          Action: 'states:RedriveExecution',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':states:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':execution:',
+                {
+                  'Fn::Select': [
+                    6,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          Ref: 'StateMachine2E01A3A5',
+                        },
+                      ],
+                    },
+                  ],
+                },
+                ':*',
+              ],
+            ],
+          },
+        })]),
       },
     });
   }),
@@ -536,7 +596,6 @@ describe('State Machine Resources', () => {
         ],
       },
     });
-
   }),
 
   test('Imported state machine can grant start execution to a role', () => {
@@ -720,10 +779,10 @@ describe('State Machine Resources', () => {
     }
   }),
 
-  test('Pass should render InputPath / Parameters / OutputPath correctly', () => {
+  test('Pass with JSONPath should render InputPath / Parameters / OutputPath correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Pass(stack, 'Pass', {
+    const task = stepfunctions.Pass.jsonPath(stack, 'Pass', {
       stateName: 'my-pass-state',
       inputPath: '$',
       outputPath: '$.state',
@@ -753,9 +812,144 @@ describe('State Machine Resources', () => {
           'arrayArgument': ['a', 'b', 'c'],
         },
       Type: 'Pass',
+      QueryLanguage: undefined,
       Comment: undefined,
       Result: undefined,
       ResultPath: undefined,
+      Arguments: undefined,
+      Output: undefined,
+      Assign: undefined,
+    });
+  }),
+
+  test('Pass with JSONata should render Output correctly', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const pass = stepfunctions.Pass.jsonata(stack, 'Pass', {
+      outputs: {
+        input: '{% $states.input %}',
+        stringArgument: 'inital-task',
+        numberArgument: 123,
+        booleanArgument: true,
+        arrayArgument: ['a', 'b', 'c'],
+      },
+    });
+
+    // WHEN
+    const passState = pass.toStateJson();
+
+    // THEN
+    expect(passState).toStrictEqual({
+      Type: 'Pass',
+      QueryLanguage: 'JSONata',
+      Output: {
+        input: '{% $states.input %}',
+        stringArgument: 'inital-task',
+        numberArgument: 123,
+        booleanArgument: true,
+        arrayArgument: ['a', 'b', 'c'],
+      },
+      End: true,
+      Comment: undefined,
+      InputPath: undefined,
+      Result: undefined,
+      ResultPath: undefined,
+      Parameters: undefined,
+      OutputPath: undefined,
+      Arguments: undefined,
+      Assign: undefined,
+    });
+  }),
+
+  test('Pass with JSONata should render Assign as is', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = stepfunctions.Pass.jsonata(stack, 'Pass', {
+      assign: {
+        id: '{% $states.input.order.id %}',
+        products: [
+          {
+            id: '{% $states.input.order.product.id %}',
+            currentPrice: '{% $states.result.Payload.current_price %}',
+            name: '{% $states.input.order.product.name %}',
+          },
+        ],
+        count: 42,
+        available: true,
+      },
+    });
+
+    // WHEN
+    const taskState = task.toStateJson();
+
+    // THEN
+    expect(taskState).toStrictEqual({
+      Type: 'Pass',
+      QueryLanguage: 'JSONata',
+      Assign: {
+        id: '{% $states.input.order.id %}',
+        products: [
+          {
+            id: '{% $states.input.order.product.id %}',
+            currentPrice: '{% $states.result.Payload.current_price %}',
+            name: '{% $states.input.order.product.name %}',
+          },
+        ],
+        count: 42,
+        available: true,
+      },
+      End: true,
+      Comment: undefined,
+      InputPath: undefined,
+      Result: undefined,
+      ResultPath: undefined,
+      Parameters: undefined,
+      OutputPath: undefined,
+      Arguments: undefined,
+      Output: undefined,
+    });
+  }),
+
+  test('Pass with JSONPath should render Assign correctly', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = stepfunctions.Pass.jsonPath(stack, 'Pass', {
+      assign: {
+        details: {
+          status: 'SUCCESS',
+          lineItems: stepfunctions.JsonPath.stringAt('$.order.items'),
+        },
+        resultCode: stepfunctions.JsonPath.stringAt('$.result.code'),
+        message: stepfunctions.JsonPath.format('Hello {}', stepfunctions.JsonPath.stringAt('$customer.name')),
+        startTime: stepfunctions.JsonPath.stringAt('$$.Execution.StartTime'),
+      },
+    });
+
+    // WHEN
+    const taskState = task.toStateJson();
+
+    // THEN
+    expect(taskState).toStrictEqual({
+      Type: 'Pass',
+      Assign: {
+        'details': {
+          'status': 'SUCCESS',
+          'lineItems.$': '$.order.items',
+        },
+        'resultCode.$': '$.result.code',
+        'message.$': "States.Format('Hello {}', $customer.name)",
+        'startTime.$': '$$.Execution.StartTime',
+      },
+      End: true,
+      QueryLanguage: undefined,
+      Comment: undefined,
+      InputPath: undefined,
+      Result: undefined,
+      ResultPath: undefined,
+      Parameters: undefined,
+      OutputPath: undefined,
+      Arguments: undefined,
+      Output: undefined,
     });
   }),
 
@@ -801,6 +995,120 @@ describe('State Machine Resources', () => {
         'StateMachineRoleDefaultPolicyDF1E6607',
         'StateMachineRoleB840431D',
       ],
+    });
+  }),
+
+  test('Choice with JSONata should render Assign/Output correctly', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const nextState = stepfunctions.Pass.jsonata(stack, 'Pass');
+    const choice = stepfunctions.Choice.jsonata(stack, 'Choice', {
+      assign: {
+        a: '{% $default.a %}',
+        b: 'default.b',
+      },
+      outputs: {
+        a: '{% $states.input.default.a %}',
+        b: 'input.default.b',
+      },
+    }).otherwise(nextState);
+    choice.when(stepfunctions.Condition.jsonata('{% true %}'), nextState, {
+      assign: {
+        a: '{% $when.a %}',
+        b: 'when.b',
+      },
+      outputs: {
+        a: '{% $states.input.when.a %}',
+        b: 'input.when.b',
+      },
+    });
+
+    // WHEN
+    const choiceState = choice.toStateJson();
+
+    // THEN
+    expect(choiceState).toStrictEqual({
+      Type: 'Choice',
+      Assign: {
+        a: '{% $default.a %}',
+        b: 'default.b',
+      },
+      Output: {
+        a: '{% $states.input.default.a %}',
+        b: 'input.default.b',
+      },
+      Choices: [
+        {
+          Condition: '{% true %}',
+          Next: 'Pass',
+          Assign: {
+            a: '{% $when.a %}',
+            b: 'when.b',
+          },
+          Output: {
+            a: '{% $states.input.when.a %}',
+            b: 'input.when.b',
+          },
+          Comment: undefined,
+        },
+      ],
+      Default: 'Pass',
+      QueryLanguage: 'JSONata',
+      Comment: undefined,
+      InputPath: undefined,
+      Parameters: undefined,
+      OutputPath: undefined,
+      Arguments: undefined,
+    });
+  }),
+
+  test('Choice with JSONPath should render Assign correctly', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const nextState = stepfunctions.Pass.jsonPath(stack, 'Pass');
+    const choice = stepfunctions.Choice.jsonPath(stack, 'Choice', {
+      assign: {
+        a: stepfunctions.JsonPath.stringAt('$default.a'),
+        b: 'default.b',
+      },
+    }).otherwise(nextState);
+    choice.when(stepfunctions.Condition.stringEquals('$foo', 'bar'), nextState, {
+      assign: {
+        a: stepfunctions.JsonPath.stringAt('$when.a'),
+        b: 'when.b',
+      },
+    });
+
+    // WHEN
+    const choiceState = choice.toStateJson();
+
+    // THEN
+    expect(choiceState).toStrictEqual({
+      Type: 'Choice',
+      Assign: {
+        'a.$': '$default.a',
+        'b': 'default.b',
+      },
+      Choices: [
+        {
+          StringEquals: 'bar',
+          Variable: '$foo',
+          Next: 'Pass',
+          Assign: {
+            'a.$': '$when.a',
+            'b': 'when.b',
+          },
+          Comment: undefined,
+        },
+      ],
+      Default: 'Pass',
+      QueryLanguage: undefined,
+      Comment: undefined,
+      InputPath: undefined,
+      Parameters: undefined,
+      OutputPath: undefined,
+      Arguments: undefined,
+      Output: undefined,
     });
   });
 });

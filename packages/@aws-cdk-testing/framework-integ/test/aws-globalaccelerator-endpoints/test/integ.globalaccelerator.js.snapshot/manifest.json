@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "integ-globalaccelerator.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d94a7db543843e4dcf0ffa0a6c3db0368d6a7e59d9ade266a53c5dc8187687f7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7fba4f87e234de88b44d8cebdd442597b3dac92b7b049c3b553139668f13a11f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,65 @@
         "integ-globalaccelerator.assets"
       ],
       "metadata": {
+        "/integ-globalaccelerator/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*",
+              "natGateways": "*",
+              "restrictDefaultSecurityGroup": false
+            }
+          }
+        ],
         "/integ-globalaccelerator/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
           }
         ],
+        "/integ-globalaccelerator/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/integ-globalaccelerator/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1SubnetB4246D30"
+            "data": "VPCPublicSubnet1SubnetB4246D30",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-globalaccelerator/VPC/PublicSubnet1/RouteTable": [
@@ -55,7 +104,10 @@
         "/integ-globalaccelerator/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-globalaccelerator/VPC/PublicSubnet1/DefaultRoute": [
@@ -73,13 +125,47 @@
         "/integ-globalaccelerator/VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1NATGatewayE0556630"
+            "data": "VPCPublicSubnet1NATGatewayE0556630",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/integ-globalaccelerator/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/integ-globalaccelerator/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2Subnet74179F39"
+            "data": "VPCPublicSubnet2Subnet74179F39",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-globalaccelerator/VPC/PublicSubnet2/RouteTable": [
@@ -91,7 +177,10 @@
         "/integ-globalaccelerator/VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-globalaccelerator/VPC/PublicSubnet2/DefaultRoute": [
@@ -100,10 +189,41 @@
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
+        "/integ-globalaccelerator/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/integ-globalaccelerator/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-globalaccelerator/VPC/PrivateSubnet1/RouteTable": [
@@ -115,7 +235,10 @@
         "/integ-globalaccelerator/VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-globalaccelerator/VPC/PrivateSubnet1/DefaultRoute": [
@@ -124,10 +247,41 @@
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
           }
         ],
+        "/integ-globalaccelerator/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/integ-globalaccelerator/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-globalaccelerator/VPC/PrivateSubnet2/RouteTable": [
@@ -139,7 +293,10 @@
         "/integ-globalaccelerator/VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-globalaccelerator/VPC/PrivateSubnet2/DefaultRoute": [
@@ -160,10 +317,30 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
+        "/integ-globalaccelerator/Accelerator": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-globalaccelerator/Accelerator/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Accelerator8EB0B6B1"
+          }
+        ],
+        "/integ-globalaccelerator/Listener": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "accelerator": "*",
+              "portRanges": [
+                {
+                  "fromPort": "*",
+                  "toPort": "*"
+                }
+              ]
+            }
           }
         ],
         "/integ-globalaccelerator/Listener/Resource": [
@@ -172,22 +349,57 @@
             "data": "Listener828B0E81"
           }
         ],
+        "/integ-globalaccelerator/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                {
+                  "canInlineRule": false,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          }
+        ],
+        "/integ-globalaccelerator/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroupDD263621"
+          }
+        ],
+        "/integ-globalaccelerator/SecurityGroup/from GlobalAcceleratorGroup:443": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroupfromGlobalAcceleratorGroup44382272BC7"
+          }
+        ],
+        "/integ-globalaccelerator/ALB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-globalaccelerator/ALB/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ALBAEE750D2"
           }
         ],
-        "/integ-globalaccelerator/ALB/SecurityGroup/Resource": [
+        "/integ-globalaccelerator/NLB": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "ALBSecurityGroup8B8624F8"
-          }
-        ],
-        "/integ-globalaccelerator/ALB/SecurityGroup/from GlobalAcceleratorGroup:443": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ALBSecurityGroupfromGlobalAcceleratorGroup4435D2AC398"
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-globalaccelerator/NLB/Resource": [
@@ -202,10 +414,47 @@
             "data": "ElasticIpAddress"
           }
         ],
+        "/integ-globalaccelerator/Instance0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "machineImage": "*",
+              "instanceType": "*"
+            }
+          }
+        ],
+        "/integ-globalaccelerator/Instance0/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true,
+              "allowAllIpv6Outbound": "*"
+            }
+          }
+        ],
         "/integ-globalaccelerator/Instance0/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Instance0InstanceSecurityGroup7897592D"
+          }
+        ],
+        "/integ-globalaccelerator/Instance0/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/integ-globalaccelerator/Instance0/InstanceRole/ImportInstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-globalaccelerator/Instance0/InstanceRole/Resource": [
@@ -223,7 +472,10 @@
         "/integ-globalaccelerator/Instance0/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Instance008A4B15C"
+            "data": "Instance008A4B15C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-globalaccelerator/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -232,10 +484,47 @@
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
+        "/integ-globalaccelerator/Instance1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "machineImage": "*",
+              "instanceType": "*"
+            }
+          }
+        ],
+        "/integ-globalaccelerator/Instance1/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true,
+              "allowAllIpv6Outbound": "*"
+            }
+          }
+        ],
         "/integ-globalaccelerator/Instance1/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Instance1InstanceSecurityGroup50841F79"
+          }
+        ],
+        "/integ-globalaccelerator/Instance1/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/integ-globalaccelerator/Instance1/InstanceRole/ImportInstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-globalaccelerator/Instance1/InstanceRole/Resource": [
@@ -253,7 +542,120 @@
         "/integ-globalaccelerator/Instance1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Instance14BC3991D"
+            "data": "Instance14BC3991D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/integ-globalaccelerator/Group": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "listener": "*",
+              "endpoints": [
+                {
+                  "region": "*"
+                },
+                {
+                  "region": "*"
+                },
+                {
+                  "region": "*"
+                },
+                {
+                  "region": "*"
+                },
+                {
+                  "region": "*"
+                },
+                {
+                  "region": "*"
+                },
+                {
+                  "region": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEndpoint": [
+                {
+                  "region": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEndpoint": [
+                {
+                  "region": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEndpoint": [
+                {
+                  "region": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEndpoint": [
+                {
+                  "region": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEndpoint": [
+                {
+                  "region": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEndpoint": [
+                {
+                  "region": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEndpoint": [
+                {
+                  "region": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "connectionsPeer": [
+                "*",
+                "*"
+              ]
+            }
           }
         ],
         "/integ-globalaccelerator/Group/Resource": [
@@ -262,10 +664,93 @@
             "data": "GroupC77FDACD"
           }
         ],
+        "/integ-globalaccelerator/Group/PeerCustomResource/Provider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-globalaccelerator/Group/PeerCustomResource/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-globalaccelerator/Group/PeerCustomResource/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "GroupPeerCustomResourceB3A15D36"
+          }
+        ],
+        "/integ-globalaccelerator/Group/PeerCustomResource/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/integ-globalaccelerator/Group/PeerCustomResource/CustomResourcePolicy/Resource": [
@@ -278,6 +763,61 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-globalaccelerator/AWS679f53fac002430cb0da5b7982bd2287": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
+        "/integ-globalaccelerator/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-globalaccelerator/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-globalaccelerator/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -302,6 +842,78 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "VPCPublicSubnet3Subnet631C5E25": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3Subnet631C5E25",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet3RouteTable98AE0E14": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3RouteTable98AE0E14",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet3RouteTableAssociation427FE0C6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3RouteTableAssociation427FE0C6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPublicSubnet3DefaultRouteA0D29D46": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3DefaultRouteA0D29D46",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet3Subnet3EDCD457": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3Subnet3EDCD457",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet3RouteTable192186F8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3RouteTable192186F8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet3RouteTableAssociationC28D144E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3RouteTableAssociationC28D144E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VPCPrivateSubnet3DefaultRoute27F311AE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3DefaultRoute27F311AE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -361,5 +973,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }

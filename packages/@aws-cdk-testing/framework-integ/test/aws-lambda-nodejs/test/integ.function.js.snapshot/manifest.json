@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "cdk-integ-lambda-nodejs.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c2bf07d9d9241edb7452788dcd8e02bf195b939083c50e88c148b5cd2b29cab5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fdf1ddd01f3416c53ffd6dbc46333c1f98b119778b059fa20ea9474226a2ad85.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -80,6 +80,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "jshandlerbundlingpath4B2FEE93"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/js-handler-tsconfig-path/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "jshandlertsconfigpathServiceRoleC592AD71"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/js-handler-tsconfig-path/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "jshandlertsconfigpath74546CB1"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/ts-handler-metafile-path/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tshandlermetafilepathServiceRoleECB676AC"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/ts-handler-metafile-path/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tshandlermetafilepath3B73FC2C"
           }
         ],
         "/cdk-integ-lambda-nodejs/Vpc/Resource": [

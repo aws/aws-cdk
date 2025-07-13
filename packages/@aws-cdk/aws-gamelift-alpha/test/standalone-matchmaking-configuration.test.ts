@@ -5,7 +5,6 @@ import { Duration } from 'aws-cdk-lib';
 import * as gamelift from '../lib';
 
 describe('standaloneMatchmakingConfiguration', () => {
-
   describe('new', () => {
     let stack: cdk.Stack;
     const ruleSetBody = JSON.stringify('{}');
@@ -242,7 +241,6 @@ describe('standaloneMatchmakingConfiguration', () => {
         },
       });
     });
-
   });
 
   describe('test import methods', () => {

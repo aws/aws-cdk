@@ -11,7 +11,6 @@ import { LambdaDestination } from 'aws-cdk-lib/aws-logs-destinations';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class LambdaStack extends Stack {
-
   public readonly queue: sqs.Queue;
 
   constructor(scope: constructs.Construct, id: string) {
@@ -51,7 +50,11 @@ class LambdaStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new LambdaStack(app, 'lambda-logssubscription-integ');
 
 const integ = new IntegTest(app, 'LambdaInteg', {

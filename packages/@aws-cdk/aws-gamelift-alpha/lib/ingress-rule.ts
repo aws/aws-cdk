@@ -15,25 +15,25 @@ export enum Protocol {
  */
 export interface PortProps {
   /**
-     * The protocol for the range
-     */
+   * The protocol for the range
+   */
   readonly protocol: Protocol;
 
   /**
-     * A starting value for a range of allowed port numbers.
-     *
-     * For fleets using Windows and Linux builds, only ports 1026-60000 are valid.
-     */
+   * A starting value for a range of allowed port numbers.
+   *
+   * For fleets using Windows and Linux builds, only ports 1026-60000 are valid.
+   */
   readonly fromPort: number;
 
   /**
-     * An ending value for a range of allowed port numbers. Port numbers are end-inclusive.
-     * This value must be higher than `fromPort`.
-     *
-     * For fleets using Windows and Linux builds, only ports 1026-60000 are valid.
-     *
-     * @default the `fromPort` value
-     */
+   * An ending value for a range of allowed port numbers. Port numbers are end-inclusive.
+   * This value must be higher than `fromPort`.
+   *
+   * For fleets using Windows and Linux builds, only ports 1026-60000 are valid.
+   *
+   * @default the `fromPort` value
+   */
   readonly toPort?: number;
 }
 
@@ -42,8 +42,8 @@ export interface PortProps {
  */
 export class Port {
   /**
-     * A single TCP port
-     */
+   * A single TCP port
+   */
   public static tcp(port: number): Port {
     return new Port({
       protocol: Protocol.TCP,
@@ -53,8 +53,8 @@ export class Port {
   }
 
   /**
-     * A TCP port range
-     */
+   * A TCP port range
+   */
   public static tcpRange(startPort: number, endPort: number) {
     return new Port({
       protocol: Protocol.TCP,
@@ -64,8 +64,8 @@ export class Port {
   }
 
   /**
-     * Any TCP traffic
-     */
+   * Any TCP traffic
+   */
   public static allTcp() {
     return new Port({
       protocol: Protocol.TCP,
@@ -75,8 +75,8 @@ export class Port {
   }
 
   /**
-     * A single UDP port
-     */
+   * A single UDP port
+   */
   public static udp(port: number): Port {
     return new Port({
       protocol: Protocol.UDP,
@@ -86,8 +86,8 @@ export class Port {
   }
 
   /**
-     * A UDP port range
-     */
+   * A UDP port range
+   */
   public static udpRange(startPort: number, endPort: number) {
     return new Port({
       protocol: Protocol.UDP,
@@ -97,8 +97,8 @@ export class Port {
   }
 
   /**
-     * Any UDP traffic
-     */
+   * Any UDP traffic
+   */
   public static allUdp() {
     return new Port({
       protocol: Protocol.UDP,
@@ -127,35 +127,35 @@ export class Port {
 export interface IPeer {
 
   /**
-     * A unique identifier for this connection peer
-     */
+   * A unique identifier for this connection peer
+   */
   readonly uniqueId: string;
 
   /**
-     * Produce the ingress rule JSON for the given connection
-     */
+   * Produce the ingress rule JSON for the given connection
+   */
   toJson(): any;
 }
 
 /**
-   * Peer object factories
-   *
-   * The static methods on this object can be used to create peer objects
-   * which represent a connection partner in inbound permission rules.
-   *
-   * Use this object if you need to represent connection partners using plain IP addresses.
-   */
+ * Peer object factories
+ *
+ * The static methods on this object can be used to create peer objects
+ * which represent a connection partner in inbound permission rules.
+ *
+ * Use this object if you need to represent connection partners using plain IP addresses.
+ */
 export class Peer {
   /**
-     * Create an IPv4 peer from a CIDR
-     */
+   * Create an IPv4 peer from a CIDR
+   */
   public static ipv4(cidrIp: string): IPeer {
     return new CidrIPv4(cidrIp);
   }
 
   /**
-     * Any IPv4 address
-     */
+   * Any IPv4 address
+   */
   public static anyIpv4(): IPeer {
     return new AnyIPv4();
   }
@@ -165,8 +165,8 @@ export class Peer {
 }
 
 /**
-   * A connection to and from a given IP range
-   */
+ * A connection to and from a given IP range
+ */
 class CidrIPv4 implements IPeer {
   public readonly canInlineRule = true;
   public readonly uniqueId: string;
@@ -188,16 +188,16 @@ class CidrIPv4 implements IPeer {
   }
 
   /**
-     * Produce the ingress rule JSON for the given connection
-     */
+   * Produce the ingress rule JSON for the given connection
+   */
   public toJson(): any {
     return { ipRange: this.cidrIp };
   }
 }
 
 /**
-   * Any IPv4 address
-   */
+ * Any IPv4 address
+ */
 class AnyIPv4 extends CidrIPv4 {
   constructor() {
     super('0.0.0.0/0');
@@ -213,8 +213,8 @@ class AnyIPv4 extends CidrIPv4 {
  */
 export interface IngressRule {
   /**
-     * The port range used for ingress traffic
-     */
+   * The port range used for ingress traffic
+   */
   readonly port: Port;
 
   /**

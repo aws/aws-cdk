@@ -5,6 +5,8 @@ import { renderMeshOwner } from './private/utils';
 import { Route, RouteBaseProps } from './route';
 import { VirtualRouterListener } from './virtual-router-listener';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface which all VirtualRouter based classes MUST implement
@@ -95,7 +97,11 @@ export interface VirtualRouterProps extends VirtualRouterBaseProps {
   readonly mesh: IMesh;
 }
 
+@propertyInjectable
 export class VirtualRouter extends VirtualRouterBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appmesh.VirtualRouter';
+
   /**
    * Import an existing VirtualRouter given an ARN
    */
@@ -144,6 +150,8 @@ export class VirtualRouter extends VirtualRouterBase {
     super(scope, id, {
       physicalName: props.virtualRouterName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.mesh = props.mesh;
     if (props.listeners && props.listeners.length) {

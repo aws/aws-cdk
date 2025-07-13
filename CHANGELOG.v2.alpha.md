@@ -2,6 +2,758 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.204.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.203.1-alpha.0...v2.204.0-alpha.0) (2025-07-04)
+
+
+### Features
+
+* **lambda-python-alpha:** support uv ([#33880](https://github.com/aws/aws-cdk/issues/33880)) ([ac6f136](https://github.com/aws/aws-cdk/commit/ac6f13695ba84d5358b69c0763c2f611af54e826)), closes [#31238](https://github.com/aws/aws-cdk/issues/31238) [#32413](https://github.com/aws/aws-cdk/issues/32413)
+
+## [2.203.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.203.0-alpha.0...v2.203.1-alpha.0) (2025-07-02)
+
+## [2.203.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.202.0-alpha.0...v2.203.0-alpha.0) (2025-07-01)
+
+
+### Features
+
+* **ec2:** support for client route enforcement for client VPN endpoint ([#34405](https://github.com/aws/aws-cdk/issues/34405)) ([063f4e7](https://github.com/aws/aws-cdk/commit/063f4e79d7416c52b622450222c5439e893ca74c))
+
+
+### Bug Fixes
+
+* **ec2:** don't use inferenceAccellerators in the constructors if not needed ([#34618](https://github.com/aws/aws-cdk/issues/34618)) ([054c6c5](https://github.com/aws/aws-cdk/commit/054c6c53982b8ba33ca31af6752b1662ed5752b8)), closes [#33505](https://github.com/aws/aws-cdk/issues/33505) [/github.com/aws/aws-cdk/issues/33505#issuecomment-2770818825](https://github.com/aws//github.com/aws/aws-cdk/issues/33505/issues/issuecomment-2770818825) [#34610](https://github.com/aws/aws-cdk/issues/34610)
+
+## [2.202.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.201.0-alpha.0...v2.202.0-alpha.0) (2025-06-20)
+
+
+### Features
+
+* **amplify:** add compute role support for Amplify branches ([#34708](https://github.com/aws/aws-cdk/issues/34708)) ([817a21a](https://github.com/aws/aws-cdk/commit/817a21a782da035f7878facf8cc4d938250b70e0))
+* **amplify-alpha:** support custom response headers in monorepo structures ([#31771](https://github.com/aws/aws-cdk/issues/31771)) ([aea1372](https://github.com/aws/aws-cdk/commit/aea1372ab7bc68c489cea5ee5e499233755910e8)), closes [#31758](https://github.com/aws/aws-cdk/issues/31758)
+
+## [2.201.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.200.2-alpha.0...v2.201.0-alpha.0) (2025-06-12)
+
+
+### Features
+
+* **amplify:** add skew protection feature for Amplify branches ([#34656](https://github.com/aws/aws-cdk/issues/34656)) ([8808998](https://github.com/aws/aws-cdk/commit/8808998d0ba6e5e22e36888c10474f9788a77454))
+* **bedrock:** adding bedrock l2 construct features ([#34065](https://github.com/aws/aws-cdk/issues/34065)) ([a028927](https://github.com/aws/aws-cdk/commit/a0289271aa9990f85c120d0549b878bd3c6ea484))
+* **ec2:** add interface VPC endpoint for DSQL ([#34487](https://github.com/aws/aws-cdk/issues/34487)) ([3e53c2c](https://github.com/aws/aws-cdk/commit/3e53c2c0449692e639779c4315a34bca3b778cf4))
+* **ec2:** support Firehose `IDeliveryStream` as flow log destination ([#34596](https://github.com/aws/aws-cdk/issues/34596)) ([cdfe6e7](https://github.com/aws/aws-cdk/commit/cdfe6e7e2946e80b3dffe9b23fd30659c0b88b99)), closes [#33883](https://github.com/aws/aws-cdk/issues/33883) [#33757](https://github.com/aws/aws-cdk/issues/33757)
+* **ec2:** volume initialization rate for EBS volume ([#34570](https://github.com/aws/aws-cdk/issues/34570)) ([527d483](https://github.com/aws/aws-cdk/commit/527d483a670042caed1ba8366de81f38dde12a51))
+
+
+### Reverts
+
+* **ec2:** support Firehose `IDeliveryStream` as flow log destination ([#34665](https://github.com/aws/aws-cdk/issues/34665)) ([b77bd0e](https://github.com/aws/aws-cdk/commit/b77bd0e0da635098ca951c7f8b030bcb3cb387dd)), closes [aws/aws-cdk#34596](https://github.com/aws/aws-cdk/issues/34596)
+
+## [2.200.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.200.1-alpha.0...v2.200.2-alpha.0) (2025-06-11)
+
+## [2.200.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.200.0-alpha.0...v2.200.1-alpha.0) (2025-06-03)
+
+## [2.200.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.199.0-alpha.0...v2.200.0-alpha.0) (2025-06-02)
+
+### Features
+* **msk:** support Kafka 4.0 ([#34501](https://github.com/aws/aws-cdk/issues/34501)) ([aa40e38](https://github.com/aws/aws-cdk/commit/aa40e382ddd585f027febcc994a8e32491bf37c1))
+
+## [2.199.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.198.0-alpha.0...v2.199.0-alpha.0) (2025-05-27)
+
+
+## [2.198.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.197.0-alpha.0...v2.198.0-alpha.0) (2025-05-22)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **amplify:** A compute role is created when `platform` is `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.
+
+### Features
+
+* **amplify:** add compute role support for Amplify app ([#33962](https://github.com/aws/aws-cdk/issues/33962)) ([7490b92](https://github.com/aws/aws-cdk/commit/7490b921aa2c464e32ad27064fa4b84571d5ba1a)), closes [#33882](https://github.com/aws/aws-cdk/issues/33882)
+* **ec2:** add i7i instance class ([#34453](https://github.com/aws/aws-cdk/issues/34453)) ([3fe8ab4](https://github.com/aws/aws-cdk/commit/3fe8ab4bb100e23042f3d55d4a52bfc8cdbf495a))
+
+## [2.197.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.196.1-alpha.0...v2.197.0-alpha.0) (2025-05-20)
+
+## [2.196.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.196.0-alpha.0...v2.196.1-alpha.0) (2025-05-19)
+
+## [2.196.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.195.0-alpha.0...v2.196.0-alpha.0) (2025-05-15)
+
+
+### Features
+
+* **msk:** support Kafka versions 3.9.x and 3.9.x Kraft ([#34213](https://github.com/aws/aws-cdk/issues/34213)) ([a1226db](https://github.com/aws/aws-cdk/commit/a1226db3164f885ab1bbf13a18697831cfde74d0))
+* **pipes-targets:** add SNS ([#34159](https://github.com/aws/aws-cdk/issues/34159)) ([2f846b3](https://github.com/aws/aws-cdk/commit/2f846b395cc5061363bd6def946a04740ac0139b))
+* **s3tables:** server-side encryption by customer managed KMS key ([#34229](https://github.com/aws/aws-cdk/issues/34229)) ([488f0db](https://github.com/aws/aws-cdk/commit/488f0db714c20fcaf5dbdf682277a70c6a938d3f))
+
+
+### Bug Fixes
+
+* **ec2:**  dual-stack vpc without private subnets creates EgressOnlyInternetGateway (under feature flag) ([#34437](https://github.com/aws/aws-cdk/issues/34437)) ([35e818b](https://github.com/aws/aws-cdk/commit/35e818b4f86638b5fe6074705511d1eee16266d2)), closes [#30981](https://github.com/aws/aws-cdk/issues/30981)
+* **ec2-alpha:** fix resource id references and tags for migration behind feature flag ([#34377](https://github.com/aws/aws-cdk/issues/34377)) ([aa73534](https://github.com/aws/aws-cdk/commit/aa735341a8e95224a14241b5e1c5c5ba71de5022))
+
+## [2.195.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.194.0-alpha.0...v2.195.0-alpha.0) (2025-05-07)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **iot:** By default, `deviceDertificateAgeCheck` is automatically enabled.
+
+### Features
+
+* **iot:** device certificate age check audit configuration ([#33816](https://github.com/aws/aws-cdk/issues/33816)) ([9ad383d](https://github.com/aws/aws-cdk/commit/9ad383d5300c5d5f5a9d2552fbd541436570a404))
+* **location:** support L2 API Key Construct ([#32733](https://github.com/aws/aws-cdk/issues/32733)) ([d867878](https://github.com/aws/aws-cdk/commit/d86787889dd49dce220324d141bf48e1bfa8fc3b)), closes [#30684](https://github.com/aws/aws-cdk/issues/30684)
+
+
+### Bug Fixes
+
+* **amplify-alpha:** example code for adding a custom rule is wrong  ([#34353](https://github.com/aws/aws-cdk/issues/34353)) ([8ab2606](https://github.com/aws/aws-cdk/commit/8ab2606b7b8de068a70dfaf02c5d96651ef5d286)), closes [#34351](https://github.com/aws/aws-cdk/issues/34351)
+
+## [2.194.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.193.0-alpha.0...v2.194.0-alpha.0) (2025-05-01)
+
+## [2.193.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.192.0-alpha.0...v2.193.0-alpha.0) (2025-04-30)
+
+
+### Features
+
+* **pipes-targets-alpha:** support Amazon Data Firehose target ([#33860](https://github.com/aws/aws-cdk/issues/33860)) ([ebf1ea2](https://github.com/aws/aws-cdk/commit/ebf1ea2a57ec7876fffbe16eddac6b409ae79074))
+
+## [2.192.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.191.0-alpha.0...v2.192.0-alpha.0) (2025-04-24)
+
+
+### Features
+
+* **applicationsignals-alpha:** introduce Application Signals L2 constructs ([#32931](https://github.com/aws/aws-cdk/issues/32931)) ([e7a6e14](https://github.com/aws/aws-cdk/commit/e7a6e14d7c3ddfbff8b1fd3f583abeefeed1258a))
+
+## [2.191.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.190.0-alpha.0...v2.191.0-alpha.0) (2025-04-22)
+
+
+### Features
+
+* **location:** throw ValidationError instead of untyped errors ([#34174](https://github.com/aws/aws-cdk/issues/34174)) ([2ecf14a](https://github.com/aws/aws-cdk/commit/2ecf14a0c3e5a988532975536980d81589ea448e))
+* **msk:** throw ValidationError instead of untyped errors ([#34214](https://github.com/aws/aws-cdk/issues/34214)) ([02cb5a4](https://github.com/aws/aws-cdk/commit/02cb5a4284e9aad2f8cc4fc8fcb2c1aebe8f92be))
+
+## [2.190.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.189.1-alpha.0...v2.190.0-alpha.0) (2025-04-16)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **ec2-alpha:** The logical ID for the NAT Gateway, defined using the `addNatGateways` method, will be changed, resulting in the NAT Gateway being recreated. Additionally, the domain for the Elastic IP (EIP) will be set to `vpc`, which will also trigger its recreation in the account.
+
+### Features
+
+* **ec2:** enabling features for ipv6 and dualstack support with corresponding unit tests ([#33898](https://github.com/aws/aws-cdk/issues/33898)) ([47a65db](https://github.com/aws/aws-cdk/commit/47a65dbf00ce2a866be2546dcca5be818db70824)), closes [#3873](https://github.com/aws/aws-cdk/issues/3873) [#33493](https://github.com/aws/aws-cdk/issues/33493) [#33493](https://github.com/aws/aws-cdk/issues/33493)
+* **ec2:** throw ValidationErrors instead of untyped Errors ([#34127](https://github.com/aws/aws-cdk/issues/34127)) ([93313dd](https://github.com/aws/aws-cdk/commit/93313dded1d719691689c6fb59d7a7a77bb7dade))
+* **neptune-alpha:** add engine versions up to v1.4.5.0  ([#33989](https://github.com/aws/aws-cdk/issues/33989)) ([07f1d0a](https://github.com/aws/aws-cdk/commit/07f1d0a9d381fb9bceab0f836a2f1eb7977610c7)), closes [#33807](https://github.com/aws/aws-cdk/issues/33807)
+
+
+### Bug Fixes
+
+* **ec2-alpha:** add multiple NATGW to the VPC using addNatGateway method ([#34094](https://github.com/aws/aws-cdk/issues/34094)) ([ccd8de7](https://github.com/aws/aws-cdk/commit/ccd8de71c02068e43d36e2445dbb5e51f4aa695b))
+* **ec2-alpha:** update default config for Subnet's `assignIpv6AddressOnCreation` ([#34116](https://github.com/aws/aws-cdk/issues/34116)) ([dff2798](https://github.com/aws/aws-cdk/commit/dff279800edd9688fa5de04766ae2667472fe861))
+
+## [2.189.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.189.0-alpha.0...v2.189.1-alpha.0) (2025-04-14)
+
+## [2.189.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.188.0-alpha.0...v2.189.0-alpha.0) (2025-04-09)
+
+
+### Features
+
+* **ec2-alpha:** implement mapPublicIpOnLaunch prop in SubnetV2 ([#34057](https://github.com/aws/aws-cdk/issues/34057)) ([836c5cf](https://github.com/aws/aws-cdk/commit/836c5cf3e4c627f817e4dc8ed2af28a5bba54792)), closes [#32159](https://github.com/aws/aws-cdk/issues/32159)
+
+
+### Bug Fixes
+
+* **amplify:** unable to re-run integ test due to missing `status` field in `customRule` ([#33973](https://github.com/aws/aws-cdk/issues/33973)) ([6638c08](https://github.com/aws/aws-cdk/commit/6638c08d56afe7ecc4f23cff4cf334b887001e5e)), closes [#33962](https://github.com/aws/aws-cdk/issues/33962)
+
+## [2.188.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.187.0-alpha.0...v2.188.0-alpha.0) (2025-04-03)
+
+
+### Features
+
+* **ec2:** add mailmanager vpc endpoints ([#33996](https://github.com/aws/aws-cdk/issues/33996)) ([7ee77d7](https://github.com/aws/aws-cdk/commit/7ee77d71df569d21c280866976109333e3266132))
+* **eks-v2-alpha:** add new nodegroup ami type ([#34025](https://github.com/aws/aws-cdk/issues/34025)) ([864a7c6](https://github.com/aws/aws-cdk/commit/864a7c6f6811777971d1349e7552567604167f02))
+
+
+### Bug Fixes
+
+* **ec2-alpha:** addInternetGW handles shared route table for subnets ([#33824](https://github.com/aws/aws-cdk/issues/33824)) ([3154d01](https://github.com/aws/aws-cdk/commit/3154d016ba31455f2d57ff5d90ee7b394c25e88f)), closes [#33672](https://github.com/aws/aws-cdk/issues/33672)
+
+## [2.187.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.186.0-alpha.0...v2.187.0-alpha.0) (2025-03-31)
+
+
+### Features
+
+* **apprunner:** throw ValidationError instead of untyped errors ([#33914](https://github.com/aws/aws-cdk/issues/33914)) ([38f89af](https://github.com/aws/aws-cdk/commit/38f89afe2ffdf67b0918e38f861166bdb0f8738f))
+* **ec2:** adding `placementGroup` to `LaunchTemplateProps` and `LaunchTemplate` ([#33726](https://github.com/aws/aws-cdk/issues/33726)) ([e5f71db](https://github.com/aws/aws-cdk/commit/e5f71db53ce985172e565eb9da5692d77ab7b268)), closes [#33721](https://github.com/aws/aws-cdk/issues/33721)
+* **ec2:** support the new `SupportedRegions` property for `AWS::EC2::VPCEndpointService` ([#33959](https://github.com/aws/aws-cdk/issues/33959)) ([0c77cb6](https://github.com/aws/aws-cdk/commit/0c77cb627e1e7e729205624a9603331f5442af8e))
+* **iot:** backfill enum values in iot module ([#33969](https://github.com/aws/aws-cdk/issues/33969)) ([2a8a8a3](https://github.com/aws/aws-cdk/commit/2a8a8a36ed872f7f3de4b24fd7d9c874a3da9dbf))
+
+## [2.186.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.185.0-alpha.0...v2.186.0-alpha.0) (2025-03-26)
+
+
+### Features
+
+* **ec2:** backfill missing enums for ec2 ([#33821](https://github.com/aws/aws-cdk/issues/33821)) ([ae3fd67](https://github.com/aws/aws-cdk/commit/ae3fd67d3e153187d2e6fa53df9ec78080fe71d0)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html/issues/cfn-ec2) [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcendpoint.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcendpoint.html/issues/cfn-ec2)
+* **ec2:** support `PrefixList.fromLookup()` ([#33619](https://github.com/aws/aws-cdk/issues/33619)) ([b6a15f3](https://github.com/aws/aws-cdk/commit/b6a15f384e79eb0020f46ffeea20507f07380a97)), closes [aws/aws-cdk#33606](https://github.com/aws/aws-cdk/issues/33606) [aws/aws-cdk#15115](https://github.com/aws/aws-cdk/issues/15115)
+* **ec2:** support AWS::EC2::VPCEndpointService SupportedIpAddressTypes property ([#33877](https://github.com/aws/aws-cdk/issues/33877)) ([ed5df9c](https://github.com/aws/aws-cdk/commit/ed5df9cac46dd862ec67751f5d0e6a53f81e8d0a))
+
+
+### Bug Fixes
+
+* **eks-v2-alpha:** prevent IAM role creation when node pools are empty ([#33894](https://github.com/aws/aws-cdk/issues/33894)) ([55bf451](https://github.com/aws/aws-cdk/commit/55bf451c48da33ce2ecda1c17cccdedea4e3527f)), closes [#33771](https://github.com/aws/aws-cdk/issues/33771)
+
+## [2.185.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.184.1-alpha.0...v2.185.0-alpha.0) (2025-03-19)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **scheduler-targets-alpha:** The class `KinesisDataFirehosePutRecord` has been renamed to `FirehosePutRecord`.
+
+### Bug Fixes
+
+* **scheduler-targets-alpha:** rename `KinesisDataFirehosePutRecord` to `FirehosePutRecord` ([#33758](https://github.com/aws/aws-cdk/issues/33758)) ([e6f5bc8](https://github.com/aws/aws-cdk/commit/e6f5bc8915081a74a83e4055ccbaa11987ba943c)), closes [#33757](https://github.com/aws/aws-cdk/issues/33757) [#33798](https://github.com/aws/aws-cdk/issues/33798)
+
+## [2.184.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.184.0-alpha.0...v2.184.1-alpha.0) (2025-03-14)
+
+## [2.184.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.183.0-alpha.0...v2.184.0-alpha.0) (2025-03-13)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **glue-alpha:** Updated casing of `workflow.addconditionalTrigger` to `workflow.addConditionalTrigger`.
+
+### Bug Fixes
+
+* **glue-alpha:** inconsistent workflow addconditionalTrigger casing ([#33752](https://github.com/aws/aws-cdk/issues/33752)) ([4886a3e](https://github.com/aws/aws-cdk/commit/4886a3e503b22f3dfadca908501a2cb208c2ebee)), closes [#33751](https://github.com/aws/aws-cdk/issues/33751) [#33751](https://github.com/aws/aws-cdk/issues/33751)
+
+## [2.183.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.182.0-alpha.0...v2.183.0-alpha.0) (2025-03-11)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **scheduler-targets-alpha:** The `InspectorStartAssessmentRun` target's constructor now accepts `IAssessmentTemplate` instead of `CfnAssessmentTemplate` as its parameter type. To migrate existing code, use the `AssessmentTemplate.fromCfnAssessmentTemplate()` method to convert your `CfnAssessmentTemplate` instances to `IAssessmentTemplate`.
+
+### Features
+
+* **kinesisanalytics-flink-alpha** backfill missing enums for kinesisanalytics-flink-alpha ([#33632](https://github.com/aws/aws-cdk/pull/33632)) ([b55199a](https://github.com/aws/aws-cdk/pull/33740/commits/b55199a782582348408fb75123c533977b38326d))
+* **kinesisfirehose-destinations-alpha** backfill missing enums for kinesisfirehose-destinations-alpha ([#33633](https://github.com/aws/aws-cdk/pull/33633)) ([6ed7a45](https://github.com/aws/aws-cdk/pull/33740/commits/6ed7a452e261b0033b44d0b2b61b18466d6e6b48))
+
+
+### Bug Fixes
+
+* **scheduler-alpha:** deprecate `Group` in favour of `ScheduleGroup` ([#33678](https://github.com/aws/aws-cdk/issues/33678)) ([4d8eae9](https://github.com/aws/aws-cdk/commit/4d8eae9da577a94114602df261c98b65aa616956))
+* **scheduler-targets-alpha:** update inspector target to use IAssessmentTemplate instead of CfnAssessmentTemplate ([#33682](https://github.com/aws/aws-cdk/issues/33682)) ([50ba3ef](https://github.com/aws/aws-cdk/commit/50ba3efabca81a3c57ce34654f8ec1002deace6f))
+
+## [2.182.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.181.1-alpha.0...v2.182.0-alpha.0) (2025-03-04)
+
+
+### Features
+
+* **pipes-alpha:** support for customer-managed KMS keys to encrypt pipe data ([#33546](https://github.com/aws/aws-cdk/issues/33546)) ([dd0d62f](https://github.com/aws/aws-cdk/commit/dd0d62f84da06e2cafbe7a8bac80899d86b6f153)), closes [#31453](https://github.com/aws/aws-cdk/issues/31453)
+
+
+### Bug Fixes
+
+* **cognito-identitypool-alpha:** prevent stacks from not deploying correctly ([#33609](https://github.com/aws/aws-cdk/issues/33609)) ([e220bc8](https://github.com/aws/aws-cdk/commit/e220bc8ca9b75bcbb4bb7447703f32737b47fc77)), closes [#33510](https://github.com/aws/aws-cdk/issues/33510)
+* **eks-v2-alpha:** can't delete fargate cluster ([#33573](https://github.com/aws/aws-cdk/issues/33573)) ([4ada313](https://github.com/aws/aws-cdk/commit/4ada3132e73e8f6b299548003d46e68f9db353a5)), closes [#33347](https://github.com/aws/aws-cdk/issues/33347)
+* **scheduler-targets:** update kinesis firehose imports ([#33615](https://github.com/aws/aws-cdk/issues/33615)) ([1df1a78](https://github.com/aws/aws-cdk/commit/1df1a784ca4d4ed8c724f0a8840137724fb46ca9))
+
+## [2.181.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.181.0-alpha.0...v2.181.1-alpha.0) (2025-02-27)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **cognito-identitypool-alpha:** Any `IdentityPool` resources deployed in versions `>=2.179.0` will now fail to deploy. You will need to delete the `IdentityPoolRoleAttachment` from your stack via the console before redeploying.
+
+### Bug Fixes
+
+* **cognito-identitypool-alpha:** prevent stacks from not deploying correctly ([#33609](https://github.com/aws/aws-cdk/issues/33609)) ([a1e2afe](https://github.com/aws/aws-cdk/commit/a1e2afe67cc907fa278503ebc886aa3b5bf97887)), closes [#33510](https://github.com/aws/aws-cdk/issues/33510)
+
+## [2.181.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.180.0-alpha.0...v2.181.0-alpha.0) (2025-02-25)
+
+
+### Features
+
+* **eks-v2-alpha:** eks auto mode support ([#33373](https://github.com/aws/aws-cdk/issues/33373)) ([e03d112](https://github.com/aws/aws-cdk/commit/e03d1126231cc99a69c83d1f0146aa36b4d2b8ef))
+* **msk:** support for Kafka version 3.8.x and add deprecated labels to legacy versions ([#33553](https://github.com/aws/aws-cdk/issues/33553)) ([29623d1](https://github.com/aws/aws-cdk/commit/29623d1c1f27f5733dec9b6ae0dc3efb53e28fe5))
+* **redshift-alpha:** maintenance track name ([#33552](https://github.com/aws/aws-cdk/issues/33552)) ([9ac3084](https://github.com/aws/aws-cdk/commit/9ac30842b304e2a9814caf02c21a331736c258ce))
+
+## [2.180.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.179.0-alpha.0...v2.180.0-alpha.0) (2025-02-21)
+
+
+### Features
+
+* **glue-alpha:** include extra jars parameter in pyspark jobs ([#33238](https://github.com/aws/aws-cdk/issues/33238)) ([be3bce3](https://github.com/aws/aws-cdk/commit/be3bce385c18af99b1fb3d0940a2cbec4f51e8d3)), closes [#33225](https://github.com/aws/aws-cdk/issues/33225)
+
+## [2.179.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.178.2-alpha.0...v2.179.0-alpha.0) (2025-02-17)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **cognito-identitypool-alpha:** The `IdentityPoolRoleAttachment` construct and `IdentityPool.addRoleMappings()` function will no longer exist. This is to disambiguate that only one role attachment can exist per Identity Pool. If you are using the `IdentityPool` construct, this change will trigger a redeployment. If you need to add role mappings, please do so when the `IdentityPool` is created.
+
+### Features
+
+* **eks-v2-alpha:** support eks with k8s 1.32 ([#33344](https://github.com/aws/aws-cdk/issues/33344)) ([7175a04](https://github.com/aws/aws-cdk/commit/7175a042b66426864fae5199715f7076f4a95335))
+* **ivs:** support Multitrack Video ([#33370](https://github.com/aws/aws-cdk/issues/33370)) ([29d1945](https://github.com/aws/aws-cdk/commit/29d194513fb9da44c9f2c1b28484381d7fb9feb3))
+
+
+### Bug Fixes
+
+* **cognito-identitypool-alpha:** remove `RoleAttachment` construct ([#33305](https://github.com/aws/aws-cdk/issues/33305)) ([9449f9c](https://github.com/aws/aws-cdk/commit/9449f9c805b045bab11a27b21924470672e804fe)), closes [#23449](https://github.com/aws/aws-cdk/issues/23449)
+* **integ-tests:** http flattenResponse ([#30361](https://github.com/aws/aws-cdk/issues/30361)) ([4744ee5](https://github.com/aws/aws-cdk/commit/4744ee578116add497e5314a30629939925b015c)), closes [#30327](https://github.com/aws/aws-cdk/issues/30327)
+* **msk:** allow both sasl/scram and iam auth ([#31743](https://github.com/aws/aws-cdk/issues/31743)) ([fbcb732](https://github.com/aws/aws-cdk/commit/fbcb732ed5224d2ad5a8218229762efa13db689e)), closes [/github.com/aws/aws-cdk/pull/14647#issuecomment-2129517358](https://github.com/aws//github.com/aws/aws-cdk/pull/14647/issues/issuecomment-2129517358) [#32779](https://github.com/aws/aws-cdk/issues/32779)
+
+## [2.178.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.178.1-alpha.0...v2.178.2-alpha.0) (2025-02-12)
+
+## [2.178.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.178.0-alpha.0...v2.178.1-alpha.0) (2025-02-06)
+
+## [2.178.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.177.0-alpha.0...v2.178.0-alpha.0) (2025-02-05)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **ec2-alpha:** `operatingRegion` property under IPAM class is now renamed to `operatingRegions`.
+
+### Features
+
+* **ec2-alpha:**  `ec2-alpha` module is now in Developer Preview ([#33230](https://github.com/aws/aws-cdk/issues/33230)) ([a06f91a](https://github.com/aws/aws-cdk/commit/a06f91a79ff979b76f84dde4dec6f4d5db33e75f))
+* **ec2-alpha:** add Transit Gateway L2 ([#32956](https://github.com/aws/aws-cdk/issues/32956)) ([af44791](https://github.com/aws/aws-cdk/commit/af44791ab55188bad67bb4130f9139335708a2e5))
+* **eks-v2:** new eks v2 alpha module ([#33215](https://github.com/aws/aws-cdk/issues/33215)) ([ccc9f5e](https://github.com/aws/aws-cdk/commit/ccc9f5e213ed4001e31aaab9bb26ae472d511b77))
+* **msk:** support ServerlessCluster ([#32780](https://github.com/aws/aws-cdk/issues/32780)) ([86ce155](https://github.com/aws/aws-cdk/commit/86ce1550abf9809ca9c16a4842b7445f0cce34e3)), closes [#28709](https://github.com/aws/aws-cdk/issues/28709)
+
+
+### Bug Fixes
+
+* **ec2-alpha:** readme updates, new unit tests, logic update ([#33086](https://github.com/aws/aws-cdk/issues/33086)) ([bcb7f9b](https://github.com/aws/aws-cdk/commit/bcb7f9bb16d6a3df55ba8d49594031d18296ca6c)), closes [#30762](https://github.com/aws/aws-cdk/issues/30762)
+
+## [2.177.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.176.0-alpha.0...v2.177.0-alpha.0) (2025-01-24)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **glue-alpha:** Developers must refactor their existing Job
+instantiation method calls to choose the right job type and language,
+and use the new constants static values to define the associated Job
+configuration settings. See the RFC and/or new README for examples.
+
+### Description of how you validated changes
+
+Increased unit test coverage to > 90%, consulted with Glue service team
+on best practices and sane defaults, updated integration tests.
+
+### Features
+
+* **amplify-alpha:** throw `ValidationError` instead of untyped errors ([#33141](https://github.com/aws/aws-cdk/issues/33141)) ([a7cd9eb](https://github.com/aws/aws-cdk/commit/a7cd9ebc55f8fd70a469aea7dcf1c16919475982)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
+
+
+### Bug Fixes
+
+* **custom-resource-handlers:** do not allow unauthorized connection for iam OIDC connection (under feature flag) ([#32921](https://github.com/aws/aws-cdk/issues/32921)) ([3e4f377](https://github.com/aws/aws-cdk/commit/3e4f3773bfa48b75bf0adc7d53d46bbec7714a9e)), closes [#32920](https://github.com/aws/aws-cdk/issues/32920)
+
+
+### Code Refactoring
+
+* **glue-alpha:**  Refactored glue-alpha L2 CDK construct RFC 0497 ([#32521](https://github.com/aws/aws-cdk/issues/32521)) ([1a18dc9](https://github.com/aws/aws-cdk/commit/1a18dc951a3946430231b685bd3584f62055127c))
+
+## [2.176.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.175.1-alpha.0...v2.176.0-alpha.0) (2025-01-15)
+
+
+### Features
+
+* **scheduler-targets:** add support for universal target ([#32341](https://github.com/aws/aws-cdk/issues/32341)) ([021e6d6](https://github.com/aws/aws-cdk/commit/021e6d6ca6c01ecece485f7a51620fd42e632f0b)), closes [#32328](https://github.com/aws/aws-cdk/issues/32328)
+
+
+### Bug Fixes
+
+* **msk:** clusterName validation in Cluster class is incorrect ([#32792](https://github.com/aws/aws-cdk/issues/32792)) ([41ddd46](https://github.com/aws/aws-cdk/commit/41ddd46dc17e0afd551cce2737ecc11ed343de04)), closes [/github.com/aws/aws-cdk/pull/32505#discussion_r1891027876](https://github.com/aws//github.com/aws/aws-cdk/pull/32505/issues/discussion_r1891027876)
+
+## [2.175.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.175.0-alpha.0...v2.175.1-alpha.0) (2025-01-10)
+
+## [2.175.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.174.1-alpha.0...v2.175.0-alpha.0) (2025-01-09)
+
+
+### Features
+
+* **s3objectlambda:** open s3 access point arn ([#32661](https://github.com/aws/aws-cdk/issues/32661)) ([0486b9c](https://github.com/aws/aws-cdk/commit/0486b9c5e2b4286499a9d3f87a0db7c95741fb6b)), closes [#31950](https://github.com/aws/aws-cdk/issues/31950)
+
+
+### Bug Fixes
+
+* **apprunner:** the Service class does not implement IService ([#32771](https://github.com/aws/aws-cdk/issues/32771)) ([3d56efa](https://github.com/aws/aws-cdk/commit/3d56efa20ef92761ed22f12e4f651856b6889be3)), closes [#32745](https://github.com/aws/aws-cdk/issues/32745)
+* **integ-runner:** `ENOENT` no such file or directory 'recommended-feature-flags.json' ([#32750](https://github.com/aws/aws-cdk/issues/32750)) ([f809b94](https://github.com/aws/aws-cdk/commit/f809b94d9952b8203221e73e177d2615c21248a8))
+
+## [2.174.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.174.0-alpha.0...v2.174.1-alpha.0) (2025-01-07)
+
+## [2.174.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.173.4-alpha.0...v2.174.0-alpha.0) (2025-01-04)
+
+
+### Features
+
+* **glue:** support AWS Glue 5.0 ([#32467](https://github.com/aws/aws-cdk/issues/32467)) ([ca01a25](https://github.com/aws/aws-cdk/commit/ca01a25d1328685fc9a362a1e2cbe7738389956c))
+* **ec2:** add c8g and m8g instance classes ([#32528](https://github.com/aws/aws-cdk/issues/32528)) ([a81eec6](https://github.com/aws/aws-cdk/commit/a81eec66fecfc6dd27f3a4328888bd3f0c97b159)), closes [#32522](https://github.com/aws/aws-cdk/issues/32522)
+* **msk-alpha:** new KafkaVersions `3_7_X` and `3_7_X_KRAFT` ([#32515](https://github.com/aws/aws-cdk/issues/32515)) ([cbacf4d](https://github.com/aws/aws-cdk/commit/cbacf4d9adde9a06fc78387b37ba1f97b2de2493))
+
+
+### Bug Fixes
+
+* **ec2-alpha:** do not use string comparison in `rangesOverlap` ([#32269](https://github.com/aws/aws-cdk/issues/32269)) ([87e21d6](https://github.com/aws/aws-cdk/commit/87e21d625af86873716734dd5568940d41096c45)), closes [#32145](https://github.com/aws/aws-cdk/issues/32145) [#32145](https://github.com/aws/aws-cdk/issues/32145)
+* **redshift-alpha:** extract tableName from custom resource functions ([#32452](https://github.com/aws/aws-cdk/issues/32452)) ([283edd6](https://github.com/aws/aws-cdk/commit/283edd6601ac54cf868213d68edb7c76b3a45223)), closes [PR#24308](https://github.com/aws/PR/issues/24308)
+* **redshift-alpha:** use same role for database-query singleton function ([#32363](https://github.com/aws/aws-cdk/issues/32363)) ([db950b3](https://github.com/aws/aws-cdk/commit/db950b30271e5776915936f91fa975b121a6e62c)), closes [#32089](https://github.com/aws/aws-cdk/issues/32089)
+
+## [2.173.4-alpha.0](https://github.com/aws/aws-cdk/compare/v2.173.3-alpha.0...v2.173.4-alpha.0) (2024-12-27)
+
+## [2.173.3-alpha.0](https://github.com/aws/aws-cdk/compare/v2.173.2-alpha.0...v2.173.3-alpha.0) (2024-12-26)
+
+## [2.173.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.173.1-alpha.0...v2.173.2-alpha.0) (2024-12-17)
+
+## [2.173.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.173.0-alpha.0...v2.173.1-alpha.0) (2024-12-14)
+
+## [2.173.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.172.0-alpha.0...v2.173.0-alpha.0) (2024-12-11)
+
+
+### Features
+
+* **redshift-alpha:** add support for RA3.large node type ([#31637](https://github.com/aws/aws-cdk/issues/31637)) ([ce0e09f](https://github.com/aws/aws-cdk/commit/ce0e09fea17c78d40026df114796bc89ad365d18)), closes [#31634](https://github.com/aws/aws-cdk/issues/31634)
+
+## [2.172.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.171.1-alpha.0...v2.172.0-alpha.0) (2024-12-06)
+
+
+### Features
+
+* **ec2:** default BastionHostLinux to use Amazon Linux 2023 (under feature flag) ([#31996](https://github.com/aws/aws-cdk/issues/31996)) ([bf77e51](https://github.com/aws/aws-cdk/commit/bf77e51c90e3da972c464430d579695163160a13)), closes [#29493](https://github.com/aws/aws-cdk/issues/29493) [#29493](https://github.com/aws/aws-cdk/issues/29493)
+* **ec2:** instance support passing IAM instance profile ([#32073](https://github.com/aws/aws-cdk/issues/32073)) ([cf89d0f](https://github.com/aws/aws-cdk/commit/cf89d0f67f6d03bdeec38a4ffb48d3cda59db7cc)), closes [#8348](https://github.com/aws/aws-cdk/issues/8348)
+* **neptune:** auto minor version upgrade for an instance ([#31988](https://github.com/aws/aws-cdk/issues/31988)) ([d95db49](https://github.com/aws/aws-cdk/commit/d95db491f7c1fd11dd42299f99d40fd94b0d642f))
+* **pipes:** add LogDestination implementation ([#31672](https://github.com/aws/aws-cdk/issues/31672)) ([af5345e](https://github.com/aws/aws-cdk/commit/af5345e9ed2528bde2af6cd4b2428654b096eb93)), closes [#31671](https://github.com/aws/aws-cdk/issues/31671)
+* **pipes-targets:** add API Gateway ([#31954](https://github.com/aws/aws-cdk/issues/31954)) ([c77536f](https://github.com/aws/aws-cdk/commit/c77536f8999e221c8d6dae5742f484a04b05bac5))
+* **redshift:** execute resource action ([#31995](https://github.com/aws/aws-cdk/issues/31995)) ([40835a0](https://github.com/aws/aws-cdk/commit/40835a01536509daefa44e5e4cad5d8829d8dd1c))
+
+
+### Bug Fixes
+
+* **scheduler-targets-alpha:** incorrect validation of maximumEventAge ([#32284](https://github.com/aws/aws-cdk/issues/32284)) ([2eebc59](https://github.com/aws/aws-cdk/commit/2eebc5913966f0266efbad65c3f137c07c75270b))
+
+## [2.171.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.171.0-alpha.0...v2.171.1-alpha.0) (2024-11-27)
+
+## [2.171.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.170.0-alpha.0...v2.171.0-alpha.0) (2024-11-25)
+
+## [2.170.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.169.0-alpha.0...v2.170.0-alpha.0) (2024-11-22)
+
+## [2.169.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.168.0-alpha.0...v2.169.0-alpha.0) (2024-11-21)
+
+
+### Features
+
+* **location:** support Map ([#30648](https://github.com/aws/aws-cdk/issues/30648)) ([98b801c](https://github.com/aws/aws-cdk/commit/98b801cae9c7a957469ef61121878d81a09f4cfe)), closes [#30647](https://github.com/aws/aws-cdk/issues/30647)
+* **scheduler:** `scheduler` and `scheduler-targets` modules are now in Developer Preview ([#32207](https://github.com/aws/aws-cdk/issues/32207)) ([8776832](https://github.com/aws/aws-cdk/commit/877683233f1af9674cd2e715411eed6ebc4e3e11)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+
+
+### Bug Fixes
+
+* **location:** underscores are not allowed in the name ([#32046](https://github.com/aws/aws-cdk/issues/32046)) ([f6ad9c9](https://github.com/aws/aws-cdk/commit/f6ad9c99db902064ab62e236fec3d7fbfcca828a))
+
+## [2.168.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.167.2-alpha.0...v2.168.0-alpha.0) (2024-11-20)
+
+
+### Bug Fixes
+
+* **scheduler-targets-alpha:** imported target resources as schedule target throws synth error ([#32105](https://github.com/aws/aws-cdk/issues/32105)) ([1a8306f](https://github.com/aws/aws-cdk/commit/1a8306fab7d746fb66019979e8f353e17499cfbf)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785) [/github.com/aws/aws-cdk/pull/29615#issuecomment-2417858246](https://github.com/aws//github.com/aws/aws-cdk/pull/29615/issues/issuecomment-2417858246)
+* **scheduler-targets-alpha:** kinesis data firehose target uses l1 instead of l2 ([#32150](https://github.com/aws/aws-cdk/issues/32150)) ([11384f0](https://github.com/aws/aws-cdk/commit/11384f0718947aebe519e346ffe31429289a9a63)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+* **scheduler-targets-alpha:** scope down permissions for sqs and kinesis stream targets ([#32122](https://github.com/aws/aws-cdk/issues/32122)) ([6bb142e](https://github.com/aws/aws-cdk/commit/6bb142e805fdd754755cc54c31c0e6e7970be7f9)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+
+## [2.167.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.167.1-alpha.0...v2.167.2-alpha.0) (2024-11-18)
+
+## [2.167.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.167.0-alpha.0...v2.167.1-alpha.0) (2024-11-14)
+
+## [2.167.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.166.0-alpha.0...v2.167.0-alpha.0) (2024-11-13)
+
+
+### Features
+
+* **ivs:** support recording configuration for channel ([#31899](https://github.com/aws/aws-cdk/issues/31899)) ([8a3734d](https://github.com/aws/aws-cdk/commit/8a3734d25ce36460b6fee583a7e2049b17f79d87)), closes [#31780](https://github.com/aws/aws-cdk/issues/31780)
+* **redshift:** relocating a cluster ([#31993](https://github.com/aws/aws-cdk/issues/31993)) ([b763d86](https://github.com/aws/aws-cdk/commit/b763d866d660f72bf70c1cf37dadd58769642746))
+
+
+### Bug Fixes
+
+* **scheduler-targets-alpha:** add dlq policy to execution role instead of queue policy ([#32032](https://github.com/aws/aws-cdk/issues/32032)) ([b953b2a](https://github.com/aws/aws-cdk/commit/b953b2a3f01a1e75baf6426bbff5f63e49d3e626)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+
+## [2.166.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.165.0-alpha.0...v2.166.0-alpha.0) (2024-11-06)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **scheduler-targets-alpha:** Schedule Target will reuse role if target is re-used across schedules. This change triggered replacement of existing roles for Schedule as logical ID of the roles are changed.
+
+### Features
+
+* **glue-alpha:** add job run queuing to Glue job ([#31830](https://github.com/aws/aws-cdk/issues/31830)) ([5fca268](https://github.com/aws/aws-cdk/commit/5fca268e455c1ae7c424a4dec01c0c08bec3c16c)), closes [#31826](https://github.com/aws/aws-cdk/issues/31826)
+
+
+### Bug Fixes
+
+* **scheduler-targets-alpha:** create a role per target instead of singleton schedule target role ([#31895](https://github.com/aws/aws-cdk/issues/31895)) ([aee1b30](https://github.com/aws/aws-cdk/commit/aee1b30adabebe1712720d0d7d27ed4704ac9719)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+
+## [2.165.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.164.1-alpha.0...v2.165.0-alpha.0) (2024-10-31)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **ec2-alpha:** The new `VpcCidrBlock` L2 construct replaces `CfnVPCCidrBlock`. This change alters the logical ID of `AWS::EC2::VPCCidrBlock` resources in CloudFormation templates. Existing deployments will see errors like `CIDR range conflicts with x.xx.xx.xx/xx with association ID vpc-cidr-assoc-ABCD`. To resolve this, you must recreate your existing stacks to use the new module.
+
+### Features
+
+* **apprunner:** support vpc ingress connection ([#30623](https://github.com/aws/aws-cdk/issues/30623)) ([048e753](https://github.com/aws/aws-cdk/commit/048e7538dd71d69c2add28ff454b6d9c69b4f256)), closes [#22850](https://github.com/aws/aws-cdk/issues/22850)
+* **ec2-alpha:** adding imports for SubnetV2 and VpcV2 ([#31765](https://github.com/aws/aws-cdk/issues/31765)) ([d108a80](https://github.com/aws/aws-cdk/commit/d108a8003e463301acea15076501cd815b0eda4a))
+* **location:** support Tracker and TrackerConsumer ([#31268](https://github.com/aws/aws-cdk/issues/31268)) ([046f041](https://github.com/aws/aws-cdk/commit/046f0418a3de08a59c940a7a3d93148cb5f0659b)), closes [#30712](https://github.com/aws/aws-cdk/issues/30712)
+* **pipes-enrichments:** support API Gateway enrichment ([#31794](https://github.com/aws/aws-cdk/issues/31794)) ([09052c2](https://github.com/aws/aws-cdk/commit/09052c2060c410028896fd54e76a857b2141c8a4)), closes [#29384](https://github.com/aws/aws-cdk/issues/29384)
+* **pipes-targets:** add SageMaker ([#30696](https://github.com/aws/aws-cdk/issues/30696)) ([a5fdf57](https://github.com/aws/aws-cdk/commit/a5fdf570beb1456b1307276f56d90fd1ba0b46d8))
+* **redshift-alpha:** query execution timeout setting during table creation ([#31818](https://github.com/aws/aws-cdk/issues/31818)) ([40f07ae](https://github.com/aws/aws-cdk/commit/40f07ae330d074cfa7861e24a0427da7ec427f68)), closes [#31329](https://github.com/aws/aws-cdk/issues/31329)
+* **kinesisfirehose-alpha:** kinesis firehose and kinesis firehose destinations modules are now in Developer Preview ([#31952](https://github.com/aws/aws-cdk/pull/31952))
+
+### Bug Fixes
+
+* **location:** remove base class from PlaceIndex class ([#31287](https://github.com/aws/aws-cdk/issues/31287)) ([bc67866](https://github.com/aws/aws-cdk/commit/bc67866f579c401556d427eb150bcd118d69bd17)), closes [#30711](https://github.com/aws/aws-cdk/issues/30711) [#30682](https://github.com/aws/aws-cdk/issues/30682)
+* **scheduler-alpha:** scheduler input always get transformed to string with extra double quotes ([#31894](https://github.com/aws/aws-cdk/issues/31894)) ([186b8ab](https://github.com/aws/aws-cdk/commit/186b8abfab8452b31cba13b56998242f63c43159))
+* **scheduler-alpha:** too many KMS permissions granted ([#31923](https://github.com/aws/aws-cdk/issues/31923)) ([06678a3](https://github.com/aws/aws-cdk/commit/06678a39e029582af14c8b021f946b9ce9cac9be)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+
+## [2.164.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.164.0-alpha.0...v2.164.1-alpha.0) (2024-10-25)
+
+## [2.164.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.163.1-alpha.0...v2.164.0-alpha.0) (2024-10-24)
+
+
+### Features
+
+* **iot:** scheduled audit ([#31776](https://github.com/aws/aws-cdk/issues/31776)) ([366b492](https://github.com/aws/aws-cdk/commit/366b4927c50168113dd4057f6255ab6c76278135)), closes [#31779](https://github.com/aws/aws-cdk/issues/31779)
+
+
+### Bug Fixes
+
+* **ec2:** allow NAT instance to associate public IP ([#31812](https://github.com/aws/aws-cdk/issues/31812)) ([e96b4ce](https://github.com/aws/aws-cdk/commit/e96b4ce4ae64076e4c2e688c649c69fb15a624d6)), closes [#31711](https://github.com/aws/aws-cdk/issues/31711)
+* **scheduler-targets-alpha:** imported lambda function as schedule target throws synth error ([#31837](https://github.com/aws/aws-cdk/issues/31837)) ([d1d179f](https://github.com/aws/aws-cdk/commit/d1d179f617f83bbb3bf44d3cc629be8eed0d4e2b)), closes [#29284](https://github.com/aws/aws-cdk/issues/29284)
+
+## [2.163.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.163.0-alpha.0...v2.163.1-alpha.0) (2024-10-22)
+
+## [2.163.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.162.1-alpha.0...v2.163.0-alpha.0) (2024-10-21)
+
+
+### Features
+
+* **ec2:** disable api termination ([#30620](https://github.com/aws/aws-cdk/issues/30620)) ([108737d](https://github.com/aws/aws-cdk/commit/108737d613e2a2da20a53fe92a4dac2b43d21044))
+* **kinesisfirehose-alpha:** refactor sourceStream property to support multiple types of sources ([#31723](https://github.com/aws/aws-cdk/issues/31723)) ([0260046](https://github.com/aws/aws-cdk/commit/026004682f25d324b5f82b8d0ed92820c55233c1))
+* **pipes-enrichments:** support API destination enrichment ([#31312](https://github.com/aws/aws-cdk/issues/31312)) ([1557793](https://github.com/aws/aws-cdk/commit/1557793f696da77ab592e81165dbbb5c0886e7e2)), closes [#29383](https://github.com/aws/aws-cdk/issues/29383)
+* **pipes-targets:** add CloudWatch Logs ([#30665](https://github.com/aws/aws-cdk/issues/30665)) ([893769e](https://github.com/aws/aws-cdk/commit/893769ed22818a6c31ec1bdd58d458f50ba28c48))
+
+
+### Bug Fixes
+
+* **ec2:** exposed userDataCausesReplacement in BastionHostLinuxProps ([#31416](https://github.com/aws/aws-cdk/issues/31416)) ([029c298](https://github.com/aws/aws-cdk/commit/029c298db9875214eb16b88689b13f5e244b5ea4)), closes [#31348](https://github.com/aws/aws-cdk/issues/31348)
+* **scheduler-alpha:** remove `targetOverrides` prop from Schedule ([#31799](https://github.com/aws/aws-cdk/issues/31799)) ([be4154b](https://github.com/aws/aws-cdk/commit/be4154b3a2bba28700b8476dfb26af54da0bdc6f))
+
+## [2.162.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.162.0-alpha.0...v2.162.1-alpha.0) (2024-10-11)
+
+## [2.162.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.161.1-alpha.0...v2.162.0-alpha.0) (2024-10-10)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **kinesisfirehose-alpha:** replaced `destinations` property with `destination` (singular) and changed the type from array of Destinations to a single Destination. Old behaviour would only allow an array with a single Destination to be passed in anyway.
+
+### Features
+
+* **iot-alpha:** support for account audit configuration ([#31661](https://github.com/aws/aws-cdk/issues/31661)) ([fc19571](https://github.com/aws/aws-cdk/commit/fc19571c6392e905ff03998d0e8bc4e3b01399f4)), closes [#31663](https://github.com/aws/aws-cdk/issues/31663)
+* **pipes-targets:** add EventBridge ([#30654](https://github.com/aws/aws-cdk/issues/30654)) ([842f49a](https://github.com/aws/aws-cdk/commit/842f49a224ceadb1ef973dc3048ee3ac52d8f118))
+
+
+### Bug Fixes
+
+* **cli-lib:** cannot bootstrap specific environment ([#31713](https://github.com/aws/aws-cdk/issues/31713)) ([fec4bb1](https://github.com/aws/aws-cdk/commit/fec4bb1c26db54bbb151bd05239e1fc1be5de657))
+
+
+### Miscellaneous Chores
+
+* **kinesisfirehose-alpha:** replace`destinations` property with `destination` and change type from array to single IDestination ([#31630](https://github.com/aws/aws-cdk/issues/31630)) ([1e2cff1](https://github.com/aws/aws-cdk/commit/1e2cff19eec234e1d1f7f501230cba01b220a09b))
+
+## [2.161.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.161.0-alpha.0...v2.161.1-alpha.0) (2024-10-05)
+
+## [2.161.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.160.0-alpha.0...v2.161.0-alpha.0) (2024-10-03)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **kinesisfirehose-destinations:** the `logging` and `logGroup` properties in `DestinationLoggingProps` have been removed and replaced with a single optional property `loggingConfig` which accepts a class of type `LoggingConfig`.
+
+#### Details
+Combine the `logging` and `logGroup` properties into a single new optional property called `loggingConfig` which accepts a class of type `LoggingConfig`.
+
+`LoggingConfig` is an abstract class which can be instantiated through either an instance of `EnableLogging` or `DisableLogging` which can be used in the following 3 ways:
+
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+const logGroup = new logs.LogGroup(this, 'Log Group');
+declare const bucket: s3.Bucket;
+
+// 1. Enable logging with no parameters - a log group will be created for you
+const destinationWithLogging = new destinations.S3Bucket(bucket, {
+  loggingConfig: new destinations.EnableLogging(),
+});
+
+// 2. Enable a logging and pass in a logGroup to be used
+const destinationWithLoggingAndMyLogGroup = new destinations.S3Bucket(bucket, {
+  loggingConfig: new destinations.EnableLogging(logGroup),
+});
+
+// 3. Disable logging (does not accept any parameters so it is now impossible to provide a logGroup in this case)
+const destinationWithoutLogging = new destinations.S3Bucket(bucket, {
+  loggingConfig: new destinations.DisableLogging(),
+});
+
+```
+
+### Description of how you validated changes
+unit + integ test
+
+### Checklist
+- [x] My code adheres to the [CONTRIBUTING GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and [DESIGN GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
+
+### Features
+
+* **ec2:** add interface endpoint dynamodb ([#30162](https://github.com/aws/aws-cdk/issues/30162)) ([182804a](https://github.com/aws/aws-cdk/commit/182804a3b3116924e2f7a8e50a22e2e7d99c71ae)), closes [#29547](https://github.com/aws/aws-cdk/issues/29547)
+* **pipes-sources:** add Kinesis and DynamoDB ([#29476](https://github.com/aws/aws-cdk/issues/29476)) ([00c2efb](https://github.com/aws/aws-cdk/commit/00c2efb323fdba21191c69e7f970e2cd78c37d68)), closes [#29378](https://github.com/aws/aws-cdk/issues/29378) [#29377](https://github.com/aws/aws-cdk/issues/29377)
+* **pipes-targets:** add API destination ([#30756](https://github.com/aws/aws-cdk/issues/30756)) ([5e08c98](https://github.com/aws/aws-cdk/commit/5e08c981dd2a309c84abc01a0c8b358e55b5cc4c)), closes [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-events-targets/lib/api-gateway.ts#L11-L32](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-events-targets/lib/api-gateway.ts/issues/L11-L32)
+* **pipes-targets:** add Kinesis ([#30656](https://github.com/aws/aws-cdk/issues/30656)) ([d0c99d8](https://github.com/aws/aws-cdk/commit/d0c99d85e0bd85beea78ce65f843d319abd493ce))
+* **redshift:** supports excludeCharacters settings for DatabaseSecret ([#30563](https://github.com/aws/aws-cdk/issues/30563)) ([a1c46cf](https://github.com/aws/aws-cdk/commit/a1c46cfc5eefa58640324420a3dc15b32c37e7dd)), closes [#26847](https://github.com/aws/aws-cdk/issues/26847)
+
+
+### Bug Fixes
+
+* **custom-resource-handlers:** better fallback for require failures ([#31571](https://github.com/aws/aws-cdk/issues/31571)) ([00cdbcb](https://github.com/aws/aws-cdk/commit/00cdbcba93baa9a605f62ae8c18c0880ec15aea2)), closes [#30067](https://github.com/aws/aws-cdk/issues/30067)
+
+
+### Miscellaneous Chores
+
+* **kinesisfirehose-destinations:** refactor logging to combine logGroup and logging properties into loggingConfig ([#31488](https://github.com/aws/aws-cdk/issues/31488)) ([c4bda64](https://github.com/aws/aws-cdk/commit/c4bda6409cea78dbfa51fb6437f61fb13d0d0abb))
+
+## [2.160.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.159.1-alpha.0...v2.160.0-alpha.0) (2024-09-24)
+
+
+### Features
+
+* **kinesisanalytics-flink:** support Apache Flink 1.20 ([#31349](https://github.com/aws/aws-cdk/issues/31349)) ([b3b9aa8](https://github.com/aws/aws-cdk/commit/b3b9aa8a4584e178808f5babe0583749d1a87da5))
+
+
+### Bug Fixes
+
+* **cognito-identitypool-alpha:** cannot configure roleMappings with imported userPool and client ([#30421](https://github.com/aws/aws-cdk/issues/30421)) ([0fdd6a9](https://github.com/aws/aws-cdk/commit/0fdd6a92ac7196e5498969be2743019f825b9262)), closes [#30304](https://github.com/aws/aws-cdk/issues/30304) [/github.com/aws/aws-cdk/blob/c3003ab41f0efc763f39eb2cab490c8a005e146b/packages/aws-cdk-lib/aws-cognito/lib/user-pool.ts#L902](https://github.com/aws//github.com/aws/aws-cdk/blob/c3003ab41f0efc763f39eb2cab490c8a005e146b/packages/aws-cdk-lib/aws-cognito/lib/user-pool.ts/issues/L902)
+* **ec2:** instance resourceSignalTimeout overwrites initOptions.timeout ([#31446](https://github.com/aws/aws-cdk/issues/31446)) ([a29bf19](https://github.com/aws/aws-cdk/commit/a29bf19be1e17c13b85f6edd45c382c1f0d89702)), closes [#30052](https://github.com/aws/aws-cdk/issues/30052)
+
+## [2.159.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.159.0-alpha.0...v2.159.1-alpha.0) (2024-09-19)
+
+## [2.159.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.158.0-alpha.0...v2.159.0-alpha.0) (2024-09-18)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **kinesisfirehose-alpha:** `encryptionKey` property is removed and `encryption` property type has changed from the `StreamEncryption` enum to the `StreamEncryption` class.
+
+To pass in a KMS key for the customer managed key case, use `StreamEncryption.customerManagedKey(key)`
+
+#### Details
+Replaced `encryption` and `encryptionKey` properties with a single property `encryption` of type `StreamEncryption` and is used by calling one of the 3 methods:
+```ts
+SreamEncryption.unencrypted()
+StreamEncryption.awsOwnedKey()
+StreamEncryption.customerManagedKey(key?: IKey)
+```
+
+This makes it so it's not longer possible to pass in a key when the encryption type is AWS owned or unencrypted. The `key` is an optional parameter in `StreamEncryption.customerManagedKey(key?: IKey)` so following the previous behaviour, if a key is provided it will be used, otherwise a key will be created for the user.
+### Description of how you validated changes
+
+Generated templates do not change so behaviour remains the same.
+
+Updated integ/unit tests.
+
+### Checklist
+- [x] My code adheres to the [CONTRIBUTING GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and [DESIGN GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
+
+### Features
+
+* **ivs:** support RTMP ingest for IVS channel ([#31380](https://github.com/aws/aws-cdk/issues/31380)) ([a907a7e](https://github.com/aws/aws-cdk/commit/a907a7eb0a54f51b6e77ff57cac278de9574eee2))
+
+
+### Bug Fixes
+
+* **ec2:** fixing vpc endpoint pattern for ecr and ecr docker ([#31434](https://github.com/aws/aws-cdk/issues/31434)) ([95c49ab](https://github.com/aws/aws-cdk/commit/95c49abdfa4ad77a0c0fcb82a230778dcc2ea59a))
+
+
+### Miscellaneous Chores
+
+* **kinesisfirehose-alpha:** refactor encryption property to combine encryptionKey ([#31430](https://github.com/aws/aws-cdk/issues/31430)) ([8e92185](https://github.com/aws/aws-cdk/commit/8e9218525b606d72b2dfe55933fa1c515d26d386))
+
+## [2.158.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.157.0-alpha.0...v2.158.0-alpha.0) (2024-09-11)
+
+
+### Features
+
+* **amplify:** support cache configuration for app ([#31381](https://github.com/aws/aws-cdk/issues/31381)) ([b7bd041](https://github.com/aws/aws-cdk/commit/b7bd0416dc1f809eac22b9dbc49a1947e1cfc262))
+* **iot:** configure IoT Logging ([#31352](https://github.com/aws/aws-cdk/issues/31352)) ([6348717](https://github.com/aws/aws-cdk/commit/63487174736236e329488f4d06b29110d910a031)), closes [#31357](https://github.com/aws/aws-cdk/issues/31357)
+
+## [2.157.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.156.0-alpha.0...v2.157.0-alpha.0) (2024-09-09)
+
+## [2.156.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.155.0-alpha.0...v2.156.0-alpha.0) (2024-09-05)
+
+
+### Features
+
+* **location:** support RouteCalculator ([#30682](https://github.com/aws/aws-cdk/issues/30682)) ([574d383](https://github.com/aws/aws-cdk/commit/574d383ef0a5b78564bbba76e5a14a049129c042)), closes [#30681](https://github.com/aws/aws-cdk/issues/30681)
+* **neptune-alpha:** specify port for the cluster ([#31137](https://github.com/aws/aws-cdk/issues/31137)) ([130b62b](https://github.com/aws/aws-cdk/commit/130b62b7904a10145b810837323451263ec7d66f)), closes [#31074](https://github.com/aws/aws-cdk/issues/31074)
+* **scheduler:** validate schedule name length ([#31200](https://github.com/aws/aws-cdk/issues/31200)) ([d0f9688](https://github.com/aws/aws-cdk/commit/d0f9688423d1e12c00aebb7a9ff3cecd68d3bb3c))
+
+
+### Bug Fixes
+
+* **scheduler:** the value of the description property is not reflected to the resource. ([#31276](https://github.com/aws/aws-cdk/issues/31276)) ([a3332b6](https://github.com/aws/aws-cdk/commit/a3332b61514f13fa3c5aef87041cb2d7f81a1e92)), closes [#31269](https://github.com/aws/aws-cdk/issues/31269)
+
+## [2.155.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.154.1-alpha.0...v2.155.0-alpha.0) (2024-08-29)
+
+
+### Features
+
+* **ec2:** `ipv6AddressCount` property for an instance ([#31076](https://github.com/aws/aws-cdk/issues/31076)) ([e3e5e1c](https://github.com/aws/aws-cdk/commit/e3e5e1c5a29a5da8759c2e821ef108eade8b87ea)), closes [#31075](https://github.com/aws/aws-cdk/issues/31075)
+* **ec2:** support throughput on LaunchTemplate EBS volumes ([#30716](https://github.com/aws/aws-cdk/issues/30716)) ([6ed0bed](https://github.com/aws/aws-cdk/commit/6ed0bed61088765b9f0aa736d7daea4cbea05b3d)), closes [#24341](https://github.com/aws/aws-cdk/issues/24341) [#22441](https://github.com/aws/aws-cdk/issues/22441)
+* **location:** support GeofenceCollection ([#30711](https://github.com/aws/aws-cdk/issues/30711)) ([04d73ac](https://github.com/aws/aws-cdk/commit/04d73acc5e95568bd410a714ef00e7edb192681a)), closes [#30710](https://github.com/aws/aws-cdk/issues/30710)
+
+## [2.154.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.154.0-alpha.0...v2.154.1-alpha.0) (2024-08-23)
+
+## [2.154.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.153.0-alpha.0...v2.154.0-alpha.0) (2024-08-22)
+
+
+### Features
+
+* **amplify:** support custom certificate ([#30791](https://github.com/aws/aws-cdk/issues/30791)) ([8d76778](https://github.com/aws/aws-cdk/commit/8d767786fe88d0ed60104ea6f48176e8981dd0fa)), closes [#30594](https://github.com/aws/aws-cdk/issues/30594)
+* **ec2:** security group lookup via filters ([#30625](https://github.com/aws/aws-cdk/issues/30625)) ([abc78bf](https://github.com/aws/aws-cdk/commit/abc78bfa613453185e59d5d9a17e5c5cfb5437b3)), closes [#30331](https://github.com/aws/aws-cdk/issues/30331)
+* **sagemaker:** network isolation for a model ([#30657](https://github.com/aws/aws-cdk/issues/30657)) ([f1af7fc](https://github.com/aws/aws-cdk/commit/f1af7fc66b5ca5b3a4780ed695045d2da65df3ba))
+
+
+### Bug Fixes
+
+* **cli-lib-alpha:** bootstrap fails with "bad argument name" error for trust and trustForLookup ([#31159](https://github.com/aws/aws-cdk/issues/31159)) ([b11ca4a](https://github.com/aws/aws-cdk/commit/b11ca4ae27753e33f5c44baedf1529489c4e081a)), closes [#30404](https://github.com/aws/aws-cdk/issues/30404)
+* **cognito-identitypool-alpha:** validation error if provided id is a token ([#30882](https://github.com/aws/aws-cdk/issues/30882)) ([ad1b797](https://github.com/aws/aws-cdk/commit/ad1b7977768430da0ce262103e8a91f0e632ffe2)), closes [#29780](https://github.com/aws/aws-cdk/issues/29780) [#28184](https://github.com/aws/aws-cdk/issues/28184)
+* **ec2:** prevent deduplication of init command args ([#30821](https://github.com/aws/aws-cdk/issues/30821)) ([1e7c690](https://github.com/aws/aws-cdk/commit/1e7c690f5ec404d7c620dc54692999fee67b3eaf)), closes [#26221](https://github.com/aws/aws-cdk/issues/26221)
+
+## [2.153.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.152.0-alpha.0...v2.153.0-alpha.0) (2024-08-19)
+
+## [2.152.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.151.1-alpha.0...v2.152.0-alpha.0) (2024-08-14)
+
+## [2.151.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.151.0-alpha.0...v2.151.1-alpha.0) (2024-08-14)
+
+## [2.151.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.150.0-alpha.0...v2.151.0-alpha.0) (2024-08-01)
+
+
+### Features
+
+* **kinesisanalytics-flink:** add support for Flink 1.19 ([#30723](https://github.com/aws/aws-cdk/issues/30723)) ([c185194](https://github.com/aws/aws-cdk/commit/c185194e2bc5bb538672df51482e1bfb134698b5)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesisanalyticsv2-application.html#aws-resource-kinesisanalyticsv2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesisanalyticsv2-application.html/issues/aws-resource-kinesisanalyticsv2)
+
 ## [2.150.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.149.0-alpha.0...v2.150.0-alpha.0) (2024-07-22)
 
 ## [2.149.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.148.1-alpha.0...v2.149.0-alpha.0) (2024-07-12)

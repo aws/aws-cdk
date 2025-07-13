@@ -1,5 +1,3 @@
-const { cpus } = require('os');
-
 module.exports = {
   // The preset deals with preferring TS over JS
   moduleFileExtensions: [
@@ -7,9 +5,7 @@ module.exports = {
     'ts',
     'js',
   ],
-  testMatch: [
-    '<rootDir>/test/**/?(*.)+(test).ts',
-  ],
+  testMatch: ['<rootDir>/test/**/?(*.)+(test).ts'],
 
   // Transform TypeScript using ts-jest. Use of this preset still requires the depending
   // package to depend on `ts-jest` directly.
@@ -33,19 +29,10 @@ module.exports = {
   },
   collectCoverage: true,
   coverageReporters: [
-    'lcov',
-    'html',
-    'text-summary',
-    ['text', { file: 'coverage.txt' }],
+    'text-summary', // for console summary
+    'cobertura', // for codecov. see https://docs.codecov.com/docs/code-coverage-with-javascript
+    'html' // for local deep dive
   ],
-  coveragePathIgnorePatterns: [
-    '\\.generated\\.[jt]s$',
-    '<rootDir>/test/',
-    '.warnings.jsii.js$',
-    '/node_modules/',
-  ],
-  reporters: [
-    'default',
-    ['jest-junit', { suiteName: 'jest tests', outputDirectory: 'coverage' }],
-  ],
+  coveragePathIgnorePatterns: ['\\.generated\\.[jt]s$', '<rootDir>/test/', '.warnings.jsii.js$', '/node_modules/'],
+  reporters: ['default', ['jest-junit', { suiteName: 'jest tests', outputDirectory: 'coverage' }]],
 };

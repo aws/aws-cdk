@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { ValidationError } from './errors';
 
 // ----------------------------------------------------------------------
 // PROPERTY MAPPERS
@@ -49,6 +50,7 @@ function pad(x: number) {
  * Turn a tag object into the proper CloudFormation representation
  */
 export function cfnTagToCloudFormation(x: any): any {
+  if (!canInspect(x)) { return x; }
   return {
     Key: x.key,
     Value: x.value,
@@ -335,7 +337,7 @@ export function requiredValidator(x: any) {
 export function requireProperty(props: { [name: string]: any }, name: string, context: Construct): any {
   const value = props[name];
   if (value == null) {
-    throw new Error(`${context.toString()} is missing required property: ${name}`);
+    throw new ValidationError(`${context.toString()} is missing required property: ${name}`, context);
   }
   // Possibly add type-checking here...
   return value;

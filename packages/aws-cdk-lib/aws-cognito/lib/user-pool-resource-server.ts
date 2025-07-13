@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { CfnUserPoolResourceServer } from './cognito.generated';
 import { IUserPool } from './user-pool';
 import { IResource, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a Cognito user pool resource server
@@ -84,7 +86,11 @@ export interface UserPoolResourceServerProps extends UserPoolResourceServerOptio
 /**
  * Defines a User Pool OAuth2.0 Resource Server
  */
+@propertyInjectable
 export class UserPoolResourceServer extends Resource implements IUserPoolResourceServer {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cognito.UserPoolResourceServer';
+
   /**
    * Import a user pool resource client given its id.
    */
@@ -102,6 +108,8 @@ export class UserPoolResourceServer extends Resource implements IUserPoolResourc
     super(scope, id, {
       physicalName: props.identifier,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnUserPoolResourceServer(this, 'Resource', {
       identifier: this.physicalName,

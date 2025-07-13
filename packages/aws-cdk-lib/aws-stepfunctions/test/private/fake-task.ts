@@ -4,6 +4,7 @@ import * as sfn from '../../lib';
 
 export interface FakeTaskProps extends sfn.TaskStateBaseProps {
   readonly metrics?: sfn.TaskMetricsConfig;
+  readonly queryLanguage?: sfn.QueryLanguage;
 }
 
 export class FakeTask extends sfn.TaskStateBase {
@@ -16,14 +17,21 @@ export class FakeTask extends sfn.TaskStateBase {
   }
 
   /**
-     * @internal
-     */
+   * @internal
+   */
   protected _renderTask(): any {
+    const param = {
+      MyParameter: 'myParameter',
+    };
+    if (this.queryLanguage === sfn.QueryLanguage.JSONATA) {
+      return {
+        Resource: 'my-resource',
+        Arguments: param,
+      };
+    }
     return {
       Resource: 'my-resource',
-      Parameters: sfn.FieldUtils.renderObject({
-        MyParameter: 'myParameter',
-      }),
+      Parameters: sfn.FieldUtils.renderObject(param),
     };
   }
 }

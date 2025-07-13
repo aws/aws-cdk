@@ -29,15 +29,26 @@ test.each([
 test.each([
   ['tes'],
   ['test-observability-configuration-name-over-limitation'],
-  ['-test'],
-  ['test-?'],
-])('observabilityConfigurationName over length limitation (name: %s)', (observabilityConfigurationName: string) => {
+])('observabilityConfigurationName length is invalid (name: %s)', (observabilityConfigurationName: string) => {
   expect(() => {
     new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
       observabilityConfigurationName,
       traceConfigurationVendor: TraceConfigurationVendor.AWSXRAY,
     });
-  }).toThrow(`observabilityConfigurationName must match the \`^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$\` pattern, got ${observabilityConfigurationName}`);
+  }).toThrow(`\`observabilityConfigurationName\` must be between 4 and 32 characters, got: ${observabilityConfigurationName.length} characters.`);
+});
+
+test.each([
+  ['-test'],
+  ['test-?'],
+  ['test-\\'],
+])('observabilityConfigurationName includes invalid characters (name: %s)', (observabilityConfigurationName: string) => {
+  expect(() => {
+    new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
+      observabilityConfigurationName,
+      traceConfigurationVendor: TraceConfigurationVendor.AWSXRAY,
+    });
+  }).toThrow(`\`observabilityConfigurationName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${observabilityConfigurationName}.`);
 });
 
 test('create an Auto scaling Configuration with tags', () => {

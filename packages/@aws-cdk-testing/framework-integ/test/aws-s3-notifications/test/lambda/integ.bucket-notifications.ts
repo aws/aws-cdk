@@ -6,7 +6,12 @@ import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 import * as constructs from 'constructs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-s3:keepNotificationInImportedBucket': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'cdk-integ-lambda-bucket-s3-notifications');
 
@@ -29,8 +34,8 @@ bucketB.addEventNotification(s3.EventType.OBJECT_REMOVED, new s3n.LambdaDestinat
 const c1 = new constructs.Construct(stack, 'Construct1');
 const unmanagedBucket = s3.Bucket.fromBucketName(c1, 'IntegUnmanagedBucket1', bucketA.bucketName);
 
-unmanagedBucket.addObjectCreatedNotification(new s3n.LambdaDestination(fn), { prefix: 'TEST/', suffix: '.png' });
-unmanagedBucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(fn), { prefix: 'TEST1/' });
+unmanagedBucket.addObjectCreatedNotification(new s3n.LambdaDestination(fn), { prefix: 'TEST1/', suffix: '.png' });
+unmanagedBucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(fn), { prefix: 'TEST2/' });
 
 /* eslint-disable no-console */
 function handler(event: any, _context: any, callback: any) {
@@ -71,7 +76,7 @@ getNotifications.expect(integ.ExpectedResult.objectLike({
           FilterRules: [
             {
               Name: 'Prefix',
-              Value: 'TEST/',
+              Value: 'TEST1/',
             },
             {
               Name: 'Suffix',
@@ -90,7 +95,7 @@ getNotifications.expect(integ.ExpectedResult.objectLike({
           FilterRules: [
             {
               Name: 'Prefix',
-              Value: 'TEST1/',
+              Value: 'TEST2/',
             },
           ],
         },

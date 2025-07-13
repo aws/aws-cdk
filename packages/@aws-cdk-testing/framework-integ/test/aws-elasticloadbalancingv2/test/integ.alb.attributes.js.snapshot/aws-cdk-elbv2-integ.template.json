@@ -597,6 +597,63 @@
      "Ref": "VPCB9E5F0B4"
     }
    }
+  },
+  "Http2EnabledTrue1D814EE8": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     },
+     {
+      "Key": "routing.http2.enabled",
+      "Value": "true"
+     }
+    ],
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "Http2EnabledTrueSecurityGroupD6B38082",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "VPCPublicSubnet1SubnetB4246D30"
+     },
+     {
+      "Ref": "VPCPublicSubnet2Subnet74179F39"
+     }
+    ],
+    "Type": "application"
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC",
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
+  },
+  "Http2EnabledTrueSecurityGroupD6B38082": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB awscdkelbv2integHttp2EnabledTrue2D380E08",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
   }
  },
  "Parameters": {

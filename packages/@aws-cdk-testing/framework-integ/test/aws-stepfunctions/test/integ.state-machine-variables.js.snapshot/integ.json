@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "StateMachineVariables/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-state-machine-variables-integ"
+      ],
+      "assertionStack": "StateMachineVariables/DefaultTest/DeployAssert",
+      "assertionStackName": "StateMachineVariablesDefaultTestDeployAssert360B6DA0"
+    }
+  }
+}

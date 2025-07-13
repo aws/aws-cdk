@@ -12,7 +12,7 @@ class TestCase extends Construct {
   constructor(scope: Construct, id: string, props: TestCaseProps) {
     super(scope, id);
     const cluster = new rds.DatabaseCluster(this, 'Integ-Cluster', {
-      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_03_0 }),
+      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_1 }),
       writer: props.writer,
       readers: props.readers,
       removalPolicy: RemovalPolicy.DESTROY,

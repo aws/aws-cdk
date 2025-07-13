@@ -12,7 +12,7 @@ body:
 
         **⚠️ Please read this before filling out the form below:**  
         If the bug you are reporting is a security-related issue or a security vulnerability,
-        please report it via [Report a security vulnerability](https://github.com/aws/aws-cdk/security/advisories/new) instead of this template.
+        please report it via [Report a security vulnerability](https://github.com/aws/aws-cdk/security/policy) instead of this template.
   - type: textarea
     id: description
     attributes:
@@ -20,6 +20,21 @@ body:
       description: What is the problem? A clear and concise description of the bug.
     validations:
       required: true
+  - type: checkboxes
+    id: regression
+    attributes:
+      label: Regression Issue
+      description:  What is a regression? If it worked in a previous version but doesn’t in the latest version, it’s considered a regression. In this case, please provide specific version number in the report.
+      options:
+        - label: Select this option if this issue appears to be a regression.
+          required: false
+  - type: input
+    id: working-version
+    attributes:
+      label: Last Known Working CDK Library Version
+      description: Specify the last known CDK Library version where this code was functioning as expected (if applicable).
+    validations:
+      required: false
   - type: textarea
     id: expected
     attributes:
@@ -69,19 +84,20 @@ body:
       required: false
 
   - type: input
-    id: cdk-version
+    id: cdk-lib-version
     attributes:
-      label: CDK CLI Version
-      description: Output of `cdk version`
+      label: AWS CDK Library version (aws-cdk-lib)
+      description: Run `npm ls aws-cdk-lib` at the root of your CDK project
     validations:
       required: true
 
   - type: input
-    id: framework-version
+    id: cdk-cli-version
     attributes:
-      label: Framework Version
+      label: AWS CDK CLI version
+      description: Run `cdk --version` for global installation or `npx cdk --version` at the root of your CDK project
     validations:
-      required: false
+      required: true
 
   - type: input
     id: node-version

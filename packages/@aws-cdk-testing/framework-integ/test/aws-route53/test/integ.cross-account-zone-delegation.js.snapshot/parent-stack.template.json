@@ -24,7 +24,7 @@
   "TheVPCPublicSubnet1Subnet770D4FF2": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-east-1a",
+    "AvailabilityZone": "dummy1a",
     "CidrBlock": "10.0.0.0/19",
     "MapPublicIpOnLaunch": true,
     "Tags": [
@@ -125,7 +125,7 @@
   "TheVPCPublicSubnet2Subnet73F96DA9": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-east-1b",
+    "AvailabilityZone": "dummy1b",
     "CidrBlock": "10.0.32.0/19",
     "MapPublicIpOnLaunch": true,
     "Tags": [
@@ -226,7 +226,7 @@
   "TheVPCPublicSubnet3Subnet7C1E748F": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-east-1c",
+    "AvailabilityZone": "dummy1c",
     "CidrBlock": "10.0.64.0/19",
     "MapPublicIpOnLaunch": true,
     "Tags": [
@@ -327,7 +327,7 @@
   "TheVPCPrivateSubnet1Subnet571D3690": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-east-1a",
+    "AvailabilityZone": "dummy1a",
     "CidrBlock": "10.0.96.0/19",
     "MapPublicIpOnLaunch": false,
     "Tags": [
@@ -389,7 +389,7 @@
   "TheVPCPrivateSubnet2SubnetCC3D7013": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-east-1b",
+    "AvailabilityZone": "dummy1b",
     "CidrBlock": "10.0.128.0/19",
     "MapPublicIpOnLaunch": false,
     "Tags": [
@@ -451,7 +451,7 @@
   "TheVPCPrivateSubnet3Subnet69CC2C6F": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-east-1c",
+    "AvailabilityZone": "dummy1c",
     "CidrBlock": "10.0.160.0/19",
     "MapPublicIpOnLaunch": false,
     "Tags": [
@@ -614,7 +614,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-us-east-1",
-     "S3Key": "bde7b5c89cb43285f884c94f0b9e17cdb0f5eb5345005114dd60342e0b8a85a1.zip"
+     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -625,7 +625,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs22.x",
     "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
    },
    "DependsOn": [

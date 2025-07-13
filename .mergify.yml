@@ -1,31 +1,105 @@
 # See https://doc.mergify.io
+merge_queue:
+  # Hopefully this gets Mergify to stop creating PRs just to test merges (it both messes with statistics and our automatic validations)
+  max_parallel_checks: 1
 queue_rules:
-  - name: default
+  - name: default-merge
     update_method: merge
+    merge_method: merge
     conditions:
+      - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge)
+      # Only if no-squash is set
+      - label~=no-squash
+      - -merged
+      - -closed
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      # This is important! It makes the PR Linter work.
+      - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
+      - status-success=validate-pr
+    commit_message_template: |-
+      {{ title }} (#{{ number }})
+      {{ body }}
+
+  - name: priority-squash
+    update_method: merge
+    merge_method: squash
+    conditions:
+      - base!=release
+      - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge|no-squash)
+      - label~=priority-pr
+      - -merged
+      - -closed
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      # This is important! It makes the PR Linter work.
+      - "#changes-requested-reviews-by=0"
+      - status-success~=AWS CodeBuild us-east-1
+      - status-success=validate-pr
+    commit_message_template: |-
+      {{ title }} (#{{ number }})
+      {{ body }}
+
+  - name: default-squash
+    update_method: merge
+    merge_method: squash
+    conditions:
+      - base!=release
+      - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge|no-squash|priority-pr)
+      - -merged
+      - -closed
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      # This is important! It makes the PR Linter work.
+      - "#changes-requested-reviews-by=0"
+      - status-success~=AWS CodeBuild us-east-1
+      - status-success=validate-pr
+    commit_message_template: |-
+      {{ title }} (#{{ number }})
+      {{ body }}
 
 pull_request_rules:
   - name: label core
     actions:
       label:
-        add: [ contribution/core ]
+        add: [contribution/core]
     conditions:
-      - author~=^(rix0rrr|iliapolo|otaviomacedo|kaizencc|comcalvi|TheRealAmazonKendra|vinayak-kukreja|mrgrain|pahud|cgarvis|kellertk|HBobertz|sumupitchayan|SankyRed|udaypant|colifran|scanlonp|mikewrighton|moelasmar|paulhcsun|awsmjs|evgenyka|GavinZZ|aaythapa|xazhao|ConnorRobertson|ssenchenko|gracelu0|jfuss|SimonCMoore|shikha372|kirtishrinkhala|godwingrs22|bergjaak|samson-keung|IanKonlog|Leo10Gama|scorbiere)$
+      - author=@aws/aws-cdk-team
       - -label~="contribution/core"
   - name: automatic merge
     actions:
       comment:
         message: Thank you for contributing! Your pull request will be updated from main and then merged automatically (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
       queue:
-        name: default
-        method: squash
-        commit_message_template: |-
-          {{ title }} (#{{ number }})
-          {{ body }}
+        name: default-squash
     conditions:
       - base!=release
       - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge|no-squash|two-approvers|priority-pr)
+      - -merged
+      - -closed
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      # This is important! It makes the PR Linter work.
+      - "#changes-requested-reviews-by=0"
+      - status-success~=AWS CodeBuild us-east-1
+      - status-success=validate-pr
+  - name: automatic priority merge
+    actions:
+      comment:
+        message: Thank you for contributing! Your pull request will be updated from main and then merged automatically (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
+      queue:
+        name: priority-squash
+    conditions:
+      - base!=release
+      - -title~=(WIP|wip)
+      - label~=priority-pr
       - -label~=(blocked|do-not-merge|no-squash|two-approvers)
       - -merged
       - -closed
@@ -33,6 +107,7 @@ pull_request_rules:
       - author!=dependabot-preview[bot]
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
+      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
@@ -41,11 +116,7 @@ pull_request_rules:
       comment:
         message: Thank you for contributing! Your pull request will be automatically updated and merged (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
       queue:
-        name: default
-        method: squash
-        commit_message_template: |-
-          {{ title }} (#{{ number }})
-          {{ body }}
+        name: default-squash
     conditions:
       - base!=release
       - -title~=(WIP|wip)
@@ -57,6 +128,7 @@ pull_request_rules:
       - author!=dependabot-preview[bot]
       - "#approved-reviews-by>=2"
       - -approved-reviews-by~=author
+      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
@@ -65,11 +137,7 @@ pull_request_rules:
       comment:
         message: Thank you for contributing! Your pull request will be automatically updated and merged without squashing (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
       queue:
-        name: default
-        method: merge
-        commit_message_template: |-
-          {{ title }} (#{{ number }})
-          {{ body }}
+        name: default-merge
     conditions:
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
@@ -81,6 +149,7 @@ pull_request_rules:
       - author!=dependabot-preview[bot]
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
+      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
@@ -112,11 +181,7 @@ pull_request_rules:
       comment:
         message: Thanks Dependabot!
       queue:
-        name: default
-        method: squash
-        commit_message_template: |-
-          {{ title }} (#{{ number }})
-          {{ body }}
+        name: default-squash
     conditions:
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
@@ -124,6 +189,18 @@ pull_request_rules:
       - -closed
       - author~=dependabot
       - "#approved-reviews-by>=1"
+      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
+priority_rules:
+  - name: priority for queue `default-merge`
+    conditions:
+      - -label~=(blocked|do-not-merge)
+      - label~=no-squash
+    priority: 2500
+  - name: priority for queue `priority-squash`
+    conditions:
+      - -label~=(blocked|do-not-merge|no-squash)
+      - label~=priority-pr
+    priority: 2250

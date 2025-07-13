@@ -10,6 +10,9 @@ import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IAlias extends IFunction {
   /**
@@ -88,7 +91,11 @@ export interface AliasAttributes {
 /**
  * A new alias to a particular version of a Lambda function.
  */
+@propertyInjectable
 export class Alias extends QualifiedFunctionBase implements IAlias {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.Alias';
+
   public static fromAliasAttributes(scope: Construct, id: string, attrs: AliasAttributes): IAlias {
     class Imported extends QualifiedFunctionBase implements IAlias {
       public readonly aliasName = attrs.aliasName;
@@ -145,6 +152,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     super(scope, id, {
       physicalName: props.aliasName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.lambda = props.version.lambda;
     this.aliasName = this.physicalName;
@@ -201,6 +210,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     return this.version.role;
   }
 
+  @MethodMetadata()
   public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
     // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differs from the base behavior.
     return super.metric(metricName, {
@@ -221,9 +231,10 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    *
    * @param options Autoscaling options
    */
+  @MethodMetadata()
   public addAutoScaling(options: AutoScalingOptions): IScalableFunctionAttribute {
     if (this.scalableAlias) {
-      throw new Error('AutoScaling already enabled for this alias');
+      throw new ValidationError('AutoScaling already enabled for this alias', this);
     }
     return this.scalableAlias = new ScalableFunctionAttribute(this, 'AliasScaling', {
       minCapacity: options.minCapacity ?? 1,
@@ -262,12 +273,12 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    */
   private validateAdditionalWeights(weights: VersionWeight[]) {
     const total = weights.map(w => {
-      if (w.weight < 0 || w.weight > 1) { throw new Error(`Additional version weight must be between 0 and 1, got: ${w.weight}`); }
+      if (w.weight < 0 || w.weight > 1) { throw new ValidationError(`Additional version weight must be between 0 and 1, got: ${w.weight}`, this); }
       return w.weight;
     }).reduce((a, x) => a + x);
 
     if (total > 1) {
-      throw new Error(`Sum of additional version weights must not exceed 1, got: ${total}`);
+      throw new ValidationError(`Sum of additional version weights must not exceed 1, got: ${total}`, this);
     }
   }
 
@@ -282,7 +293,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     }
 
     if (props.provisionedConcurrentExecutions <= 0) {
-      throw new Error('provisionedConcurrentExecutions must have value greater than or equal to 1');
+      throw new ValidationError('provisionedConcurrentExecutions must have value greater than or equal to 1', this);
     }
 
     return { provisionedConcurrentExecutions: props.provisionedConcurrentExecutions };

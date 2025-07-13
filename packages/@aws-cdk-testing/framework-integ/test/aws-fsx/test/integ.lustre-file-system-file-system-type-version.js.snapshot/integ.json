@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "FsxLustreFileSystemTypeVersionTest/DefaultTest": {
+      "stacks": [
+        "FsxLustreFileSystemTypeVersionStack"
+      ],
+      "assertionStack": "FsxLustreFileSystemTypeVersionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "FsxLustreFileSystemTypeVersionTestDefaultTestDeployAssert045329BD"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}

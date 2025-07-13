@@ -1,4 +1,5 @@
 import { Template } from '../../assertions';
+import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as rds from '../lib';
@@ -109,7 +110,6 @@ describe('instance engine', () => {
   });
 
   describe('Oracle engine bindToInstance', () => {
-
     test('returns s3 integration feature', () => {
       const engine = rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 });
 
@@ -260,6 +260,71 @@ describe('instance engine', () => {
       const engineConfig = engineNewerVersion.bindToInstance(new cdk.Stack(), {});
       expect(engineConfig.features?.s3Import).toEqual('s3Import');
       expect(engineConfig.features?.s3Export).toEqual('s3Export');
+    });
+  });
+
+  describe('MariaDB engine version', () => {
+    test.each([
+      ['10.4', rds.MariaDbEngineVersion.VER_10_4],
+      ['10.4.29', rds.MariaDbEngineVersion.VER_10_4_29],
+      ['10.4.30', rds.MariaDbEngineVersion.VER_10_4_30],
+      ['10.4.31', rds.MariaDbEngineVersion.VER_10_4_31],
+      ['10.4.32', rds.MariaDbEngineVersion.VER_10_4_32],
+      ['10.4.33', rds.MariaDbEngineVersion.VER_10_4_33],
+      ['10.4.34', rds.MariaDbEngineVersion.VER_10_4_34],
+      ['10.5', rds.MariaDbEngineVersion.VER_10_5],
+      ['10.5.20', rds.MariaDbEngineVersion.VER_10_5_20],
+      ['10.5.21', rds.MariaDbEngineVersion.VER_10_5_21],
+      ['10.5.22', rds.MariaDbEngineVersion.VER_10_5_22],
+      ['10.5.23', rds.MariaDbEngineVersion.VER_10_5_23],
+      ['10.5.24', rds.MariaDbEngineVersion.VER_10_5_24],
+      ['10.5.25', rds.MariaDbEngineVersion.VER_10_5_25],
+      ['10.5.26', rds.MariaDbEngineVersion.VER_10_5_26],
+      ['10.5.27', rds.MariaDbEngineVersion.VER_10_5_27],
+      ['10.5.28', rds.MariaDbEngineVersion.VER_10_5_28],
+      ['10.5.29', rds.MariaDbEngineVersion.VER_10_5_29],
+      ['10.6', rds.MariaDbEngineVersion.VER_10_6],
+      ['10.6.13', rds.MariaDbEngineVersion.VER_10_6_13],
+      ['10.6.14', rds.MariaDbEngineVersion.VER_10_6_14],
+      ['10.6.15', rds.MariaDbEngineVersion.VER_10_6_15],
+      ['10.6.16', rds.MariaDbEngineVersion.VER_10_6_16],
+      ['10.6.17', rds.MariaDbEngineVersion.VER_10_6_17],
+      ['10.6.18', rds.MariaDbEngineVersion.VER_10_6_18],
+      ['10.6.19', rds.MariaDbEngineVersion.VER_10_6_19],
+      ['10.6.20', rds.MariaDbEngineVersion.VER_10_6_20],
+      ['10.6.21', rds.MariaDbEngineVersion.VER_10_6_21],
+      ['10.6.22', rds.MariaDbEngineVersion.VER_10_6_22],
+      ['10.11', rds.MariaDbEngineVersion.VER_10_11],
+      ['10.11.4', rds.MariaDbEngineVersion.VER_10_11_4],
+      ['10.11.5', rds.MariaDbEngineVersion.VER_10_11_5],
+      ['10.11.6', rds.MariaDbEngineVersion.VER_10_11_6],
+      ['10.11.7', rds.MariaDbEngineVersion.VER_10_11_7],
+      ['10.11.8', rds.MariaDbEngineVersion.VER_10_11_8],
+      ['10.11.9', rds.MariaDbEngineVersion.VER_10_11_9],
+      ['10.11.10', rds.MariaDbEngineVersion.VER_10_11_10],
+      ['10.11.11', rds.MariaDbEngineVersion.VER_10_11_11],
+      ['10.11.13', rds.MariaDbEngineVersion.VER_10_11_13],
+      ['11.4.3', rds.MariaDbEngineVersion.VER_11_4_3],
+      ['11.4.4', rds.MariaDbEngineVersion.VER_11_4_4],
+      ['11.4.5', rds.MariaDbEngineVersion.VER_11_4_5],
+      ['11.4.7', rds.MariaDbEngineVersion.VER_11_4_7],
+    ])('is passed correctly for %s', (engineVersion, version) => {
+      // WHEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mariaDb({ version }),
+        vpc,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::RDS::DBInstance', {
+        Properties: {
+          Engine: 'mariadb',
+          EngineVersion: engineVersion,
+        },
+      });
     });
   });
 });

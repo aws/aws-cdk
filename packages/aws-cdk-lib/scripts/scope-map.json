@@ -8,6 +8,9 @@
   "aws-acmpca": [
     "AWS::ACMPCA"
   ],
+  "aws-aiops": [
+    "AWS::AIOps"
+  ],
   "aws-amazonmq": [
     "AWS::AmazonMQ"
   ],
@@ -91,6 +94,9 @@
   ],
   "aws-bedrock": [
     "AWS::Bedrock"
+  ],
+  "aws-billing": [
+    "AWS::Billing"
   ],
   "aws-billingconductor": [
     "AWS::BillingConductor"
@@ -179,6 +185,9 @@
   "aws-connectcampaigns": [
     "AWS::ConnectCampaigns"
   ],
+  "aws-connectcampaignsv2": [
+    "AWS::ConnectCampaignsV2"
+  ],
   "aws-controltower": [
     "AWS::ControlTower"
   ],
@@ -229,6 +238,9 @@
   ],
   "aws-docdbelastic": [
     "AWS::DocDBElastic"
+  ],
+  "aws-dsql": [
+    "AWS::DSQL"
   ],
   "aws-dynamodb": [
     "AWS::DynamoDB"
@@ -284,6 +296,9 @@
   "aws-evidently": [
     "AWS::Evidently"
   ],
+  "aws-evs": [
+    "AWS::EVS"
+  ],
   "aws-finspace": [
     "AWS::FinSpace"
   ],
@@ -304,6 +319,9 @@
   ],
   "aws-gamelift": [
     "AWS::GameLift"
+  ],
+  "aws-gameliftstreams": [
+    "AWS::GameLiftStreams"
   ],
   "aws-globalaccelerator": [
     "AWS::GlobalAccelerator"
@@ -350,11 +368,11 @@
   "aws-internetmonitor": [
     "AWS::InternetMonitor"
   ],
+  "aws-invoicing": [
+    "AWS::Invoicing"
+  ],
   "aws-iot": [
     "AWS::IoT"
-  ],
-  "aws-iot1click": [
-    "AWS::IoT1Click"
   ],
   "aws-iotanalytics": [
     "AWS::IoTAnalytics"
@@ -423,6 +441,9 @@
   "aws-lambda": [
     "AWS::Lambda"
   ],
+  "aws-launchwizard": [
+    "AWS::LaunchWizard"
+  ],
   "aws-lex": [
     "AWS::Lex"
   ],
@@ -480,6 +501,9 @@
   "aws-memorydb": [
     "AWS::MemoryDB"
   ],
+  "aws-mpa": [
+    "AWS::MPA"
+  ],
   "aws-msk": [
     "AWS::MSK"
   ],
@@ -501,8 +525,17 @@
   "aws-nimblestudio": [
     "AWS::NimbleStudio"
   ],
+  "aws-notifications": [
+    "AWS::Notifications"
+  ],
+  "aws-notificationscontacts": [
+    "AWS::NotificationsContacts"
+  ],
   "aws-oam": [
     "AWS::Oam"
+  ],
+  "aws-odb": [
+    "AWS::ODB"
   ],
   "aws-omics": [
     "AWS::Omics"
@@ -534,6 +567,12 @@
   "aws-pcaconnectorad": [
     "AWS::PCAConnectorAD"
   ],
+  "aws-pcaconnectorscep": [
+    "AWS::PCAConnectorSCEP"
+  ],
+  "aws-pcs": [
+    "AWS::PCS"
+  ],
   "aws-personalize": [
     "AWS::Personalize"
   ],
@@ -560,6 +599,9 @@
   ],
   "aws-ram": [
     "AWS::RAM"
+  ],
+  "aws-rbin": [
+    "AWS::Rbin"
   ],
   "aws-rds": [
     "AWS::RDS"
@@ -621,6 +663,9 @@
   "aws-s3outposts": [
     "AWS::S3Outposts"
   ],
+  "aws-s3tables": [
+    "AWS::S3Tables"
+  ],
   "aws-sagemaker": [
     "AWS::SageMaker"
   ],
@@ -675,8 +720,14 @@
   "aws-ssmcontacts": [
     "AWS::SSMContacts"
   ],
+  "aws-ssmguiconnect": [
+    "AWS::SSMGuiConnect"
+  ],
   "aws-ssmincidents": [
     "AWS::SSMIncidents"
+  ],
+  "aws-ssmquicksetup": [
+    "AWS::SSMQuickSetup"
   ],
   "aws-sso": [
     "AWS::SSO"
@@ -722,6 +773,9 @@
   ],
   "aws-workspaces": [
     "AWS::WorkSpaces"
+  ],
+  "aws-workspacesinstances": [
+    "AWS::WorkspacesInstances"
   ],
   "aws-workspacesthinclient": [
     "AWS::WorkSpacesThinClient"

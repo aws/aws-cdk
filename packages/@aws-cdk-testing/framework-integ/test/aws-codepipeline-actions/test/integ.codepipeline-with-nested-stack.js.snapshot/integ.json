@@ -1,0 +1,12 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "integ-code-pipeline-nested-stack/DefaultTest": {
+      "stacks": [
+        "code-pipeline-nested-stack"
+      ],
+      "assertionStack": "integ-code-pipeline-nested-stack/DefaultTest/DeployAssert",
+      "assertionStackName": "integcodepipelinenestedstackDefaultTestDeployAssertCC253196"
+    }
+  }
+}

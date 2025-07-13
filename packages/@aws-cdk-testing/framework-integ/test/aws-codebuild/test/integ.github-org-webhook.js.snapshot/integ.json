@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "codebuild-github-org-webhook-integ/DefaultTest": {
+      "stacks": [
+        "codebuild-github-org-webhook"
+      ],
+      "stackUpdateWorkflow": true,
+      "assertionStack": "codebuild-github-org-webhook-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "codebuildgithuborgwebhookintegDefaultTestDeployAssertB287C481"
+    }
+  }
+}

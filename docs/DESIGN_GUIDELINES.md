@@ -9,7 +9,7 @@ the AWS Construct Library in order to ensure a consistent and integrated
 experience across the entire AWS surface area.
 
 * [Preface](#preface)
-* [What's Included](#what-s-included)
+* [What's Included](#whats-included)
 * [API Design](#api-design)
   * [Modules](#modules)
   * [Construct Class](#construct-class)
@@ -31,7 +31,7 @@ experience across the entire AWS surface area.
     * [Dropped Mutations](#dropped-mutations)
   * [Factories](#factories)
   * [Imports](#imports)
-    * [“from” Methods](#-from--methods)
+    * [“from” Methods](#from-methods)
     * [From-attributes](#from-attributes)
   * [Roles](#roles)
   * [Resource Policies](#resource-policies)
@@ -55,8 +55,8 @@ experience across the entire AWS surface area.
     * [Error reporting mechanism](#error-reporting-mechanism)
     * [Throwing exceptions](#throwing-exceptions)
     * [Never Catch Exceptions](#never-catch-exceptions)
-    * [Attaching (lazy) Validators](#attaching--lazy--validators)
-    * [Attaching Errors/Warnings](#attaching-errors-warnings)
+    * [Attaching (lazy) Validators](#attaching-lazy-validators)
+    * [Attaching Errors/Warnings](#attaching-errorswarnings)
     * [Error messages](#error-messages)
   * [Tokens](#tokens)
 * [Documentation](#documentation)
@@ -66,7 +66,7 @@ experience across the entire AWS surface area.
   * [Unit tests](#unit-tests)
   * [Integration tests](#integration-tests)
   * [Versioning](#versioning)
-* [Naming & Style](#naming---style)
+* [Naming & Style](#naming--style)
   * [Naming Conventions](#naming-conventions)
   * [Coding Style](#coding-style)
 

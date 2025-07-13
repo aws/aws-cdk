@@ -3,9 +3,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled': false,
+  },
+});
 const stack = new cdk.Stack(app, 'integ-init');
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
@@ -61,6 +66,11 @@ new ec2.Instance(stack, 'Instance2', {
       ]),
     },
   }),
+  resourceSignalTimeout: cdk.Duration.minutes(10),
+});
+
+new integ.IntegTest(app, 'instance-init-test', {
+  testCases: [stack],
 });
 
 app.synth();

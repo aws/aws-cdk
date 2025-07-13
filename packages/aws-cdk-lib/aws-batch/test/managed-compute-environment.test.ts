@@ -1,9 +1,10 @@
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { capitalizePropertyNames } from './utils';
 import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as eks from '../../aws-eks';
 import { ArnPrincipal, Role, ServicePrincipal } from '../../aws-iam';
-import { Stack, Duration, Tags } from '../../core';
+import { Stack, Duration, Tags, CfnParameter } from '../../core';
 import { AllocationStrategy, CfnComputeEnvironmentProps, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps, FargateComputeEnvironment, EcsMachineImageType, EksMachineImageType } from '../lib';
 
 const defaultExpectedEcsProps: CfnComputeEnvironmentProps = {
@@ -79,6 +80,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       kubernetesNamespace: 'cdk-test-namespace',
       eksCluster: new eks.Cluster(stack, 'eksTestCluster', {
         version: eks.KubernetesVersion.V1_24,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       }),
     };
     expectedProps = ComputeEnvironment === ManagedEc2EcsComputeEnvironment
@@ -133,6 +135,32 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
+  test('can specify parameterized maxvCpus', () => {
+    // WHEN
+    const maxVCpuParameter = new CfnParameter(stack, 'MaxVCpuParameter', {
+      default: 512,
+      minValue: 1,
+      type: 'Number',
+    });
+
+    new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
+      maxvCpus: maxVCpuParameter.valueAsNumber,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...expectedProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        MaxvCpus: {
+          Ref: 'MaxVCpuParameter',
+        },
+      },
+    });
+  });
+
   test('can specify minvCpus', () => {
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
@@ -147,6 +175,61 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       ComputeResources: {
         ...defaultComputeResources,
         MinvCpus: 8,
+      },
+    });
+  });
+
+  test('can specify parameterized minvCpus', () => {
+    // WHEN
+    const minVCpuParameter = new CfnParameter(stack, 'MinVCpuParameter', {
+      default: 512,
+      minValue: 1,
+      type: 'Number',
+    });
+
+    new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
+      minvCpus: minVCpuParameter.valueAsNumber,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...expectedProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        MinvCpus: {
+          Ref: 'MinVCpuParameter',
+        },
+      },
+    });
+  });
+
+  test('can specify spotBidPercentage as a parameter', () => {
+    // WHEN
+    const spotBidPercentageParameter = new CfnParameter(stack, 'SpotBidPercentageParameter', {
+      default: 100,
+      minValue: 1,
+      type: 'Number',
+    });
+
+    new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
+      spot: true,
+      spotBidPercentage: spotBidPercentageParameter.valueAsNumber,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...expectedProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        Type: 'SPOT',
+        AllocationStrategy: AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED,
+        BidPercentage: {
+          Ref: 'SpotBidPercentageParameter',
+        },
       },
     });
   });
@@ -675,6 +758,20 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'spotBidPercentage' without specifying 'spot'/);
   });
 
+  test('throws error when spotBidPercentage is a parameter and spot is not enabled', () => {
+    // THEN
+    expect(() => {
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        vpc,
+        spotBidPercentage: new CfnParameter(stack, 'SpotBidPercentageParameter', {
+          type: 'Number',
+        }),
+        spot: false,
+      });
+    }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'spotBidPercentage' without specifying 'spot'/);
+  });
+
   test('throws error when spotBidPercentage > 100', () => {
     // THEN
     expect(() => {
@@ -711,6 +808,38 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     }).toThrow(/Managed ComputeEnvironment 'MyCE' has 'minvCpus' = 1024 > 'maxvCpus' = 512; 'minvCpus' cannot be greater than 'maxvCpus'/);
   });
 
+  test('skips validation for minvCpus < maxvCpus check when either properties are tokens', () => {
+    // WHEN
+    const minVCpuParameter = new CfnParameter(stack, 'MinVCpuParameter', {
+      default: 512,
+      minValue: 0,
+      type: 'Number',
+    });
+
+    const maxVCpuParameter = new CfnParameter(stack, 'MaxVCpuParameter', {
+      default: 512,
+      minValue: 1,
+      type: 'Number',
+    });
+
+    // THEN
+    expect(() => {
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        vpc,
+        maxvCpus: maxVCpuParameter.valueAsNumber,
+        minvCpus: 1024,
+      });
+
+      new ComputeEnvironment(stack, 'MyOtherCE', {
+        ...defaultProps,
+        vpc,
+        maxvCpus: 1024,
+        minvCpus: minVCpuParameter.valueAsNumber,
+      });
+    }).not.toThrow(/Managed ComputeEnvironment 'MyCE' has 'minvCpus' = 1024 > 'maxvCpus' = 512; 'minvCpus' cannot be greater than 'maxvCpus'/);
+  });
+
   test('throws error when minvCpus < 0', () => {
     // THEN
     expect(() => {
@@ -719,7 +848,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
         vpc,
         minvCpus: -256,
       });
-    }).toThrowError(/Managed ComputeEnvironment 'MyCE' has 'minvCpus' = -256 < 0; 'minvCpus' cannot be less than zero/);
+    }).toThrow(/Managed ComputeEnvironment 'MyCE' has 'minvCpus' = -256 < 0; 'minvCpus' cannot be less than zero/);
   });
 });
 
@@ -740,6 +869,7 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
       kubernetesNamespace: 'cdk-test-namespace',
       eksCluster: new eks.Cluster(stack, 'eksTestCluster', {
         version: eks.KubernetesVersion.V1_24,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       }),
     };
   });
@@ -791,6 +921,52 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
           },
         ],
       },
+    });
+  });
+
+  test('Amazon Linux 2023 does not support A1 instances.', () => {
+    expect(() => new ManagedEc2EcsComputeEnvironment(stack, 'Al2023A1InstanceClass', {
+      ...defaultEcsProps,
+      instanceClasses: [ec2.InstanceClass.A1],
+      vpc,
+      images: [
+        {
+          imageType: EcsMachineImageType.ECS_AL2023,
+        },
+      ],
+    })).toThrow('Amazon Linux 2023 does not support A1 instances.');
+
+    expect(() => new ManagedEc2EcsComputeEnvironment(stack, 'Al2023A1XlargeInstance', {
+      ...defaultEcsProps,
+      instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.XLARGE2)],
+      vpc,
+      images: [
+        {
+          imageType: EcsMachineImageType.ECS_AL2023,
+        },
+      ],
+    })).toThrow('Amazon Linux 2023 does not support A1 instances.');
+
+    new ManagedEc2EcsComputeEnvironment(stack, 'Al2A1InstanceClass', {
+      ...defaultEcsProps,
+      instanceClasses: [ec2.InstanceClass.A1],
+      vpc,
+      images: [
+        {
+          imageType: EcsMachineImageType.ECS_AL2,
+        },
+      ],
+    });
+
+    new ManagedEc2EcsComputeEnvironment(stack, 'Al2A1XlargeInstance', {
+      ...defaultEcsProps,
+      instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.XLARGE2)],
+      vpc,
+      images: [
+        {
+          imageType: EcsMachineImageType.ECS_AL2,
+        },
+      ],
     });
   });
 
@@ -863,6 +1039,7 @@ describe('ManagedEc2EksComputeEnvironment', () => {
       kubernetesNamespace: 'cdk-test-namespace',
       eksCluster: new eks.Cluster(stack, 'eksTestCluster', {
         version: eks.KubernetesVersion.V1_24,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       }),
     };
   });

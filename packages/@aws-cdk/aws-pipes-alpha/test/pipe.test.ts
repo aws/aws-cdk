@@ -1,26 +1,11 @@
 import { App, Stack } from 'aws-cdk-lib';
-
 import { Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { TestEnrichment, TestSource, TestTarget } from './test-classes';
-import { DesiredState, IEnrichment, ILogDestination, IPipe, ISource, ITarget, IncludeExecutionData, LogDestinationConfig, LogLevel, Pipe } from '../lib';
-
-class TestLogDestination implements ILogDestination {
-
-  logDestinationArn = 'log-destination-arn';
-  parameters = {
-    cloudwatchLogsLogDestination: {
-      logGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/events/pipes/TestPipe',
-    },
-  };
-  public grantPush = jest.fn();
-  bind(_pipe: IPipe): LogDestinationConfig {
-    return {
-      parameters: this.parameters,
-    };
-  }
-
-}
+import * as kms from 'aws-cdk-lib/aws-kms';
+import { Topic } from 'aws-cdk-lib/aws-sns';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
+import { TestEnrichment, TestSource, TestSourceWithDeadLetterTarget, TestTarget } from './test-classes';
+import { DesiredState, IEnrichment, ISource, ITarget, Pipe } from '../lib';
 
 describe('Pipe', () => {
   let stack: Stack;
@@ -50,6 +35,107 @@ describe('Pipe', () => {
     // THEN
     template.resourceCountIs('AWS::Pipes::Pipe', 1);
     expect(template).toMatchSnapshot();
+  });
+
+  describe('kms key', () => {
+    test('specify a KMS key', () => {
+      // GIVEN
+      const kmsKey = new kms.Key(stack, 'Key');
+
+      // WHEN
+      new Pipe(stack, 'TestPipe', {
+        source,
+        target,
+        kmsKey,
+        pipeName: 'TestPipe',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Pipes::Pipe', {
+        Name: 'TestPipe',
+        KmsKeyIdentifier: {
+          'Fn::GetAtt': [
+            'Key961B73FD',
+            'Arn',
+          ],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: [
+            {
+              Action: 'kms:*',
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':iam::123456789012:root',
+                    ],
+                  ],
+                },
+              },
+              Resource: '*',
+            },
+            {
+              Action: [
+                'kms:Decrypt',
+                'kms:DescribeKey',
+                'kms:GenerateDataKey',
+              ],
+              Condition: {
+                'ArnLike': {
+                  'kms:EncryptionContext:aws:pipe:arn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':pipes:us-east-1:123456789012:pipe/TestPipe',
+                      ],
+                    ],
+                  },
+                },
+                'ForAnyValue:StringEquals': {
+                  'kms:EncryptionContextKeys': [
+                    'aws:pipe:arn',
+                  ],
+                },
+              },
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::GetAtt': [
+                    'TestPipeRole0FD00B2B',
+                    'Arn',
+                  ],
+                },
+              },
+              Resource: '*',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      });
+    });
+
+    test('throw error for not specifying pipe name', () => {
+      const kmsKey = new kms.Key(stack, 'Key');
+
+      expect(() => new Pipe(stack, 'TestPipe', {
+        source,
+        target,
+        kmsKey,
+      })).toThrow('`pipeName` is required when specifying a `kmsKey` prop.');
+    });
   });
 
   test('fromPipeName', () => {
@@ -105,7 +191,6 @@ describe('Pipe', () => {
         },
       },
       );
-
     });
 
     it('should add filter criteria to the source parameters', () => {
@@ -140,7 +225,6 @@ describe('Pipe', () => {
         },
       },
       );
-
     });
     it('should merge filter criteria and source parameters', () => {
       // GIVEN
@@ -184,12 +268,79 @@ describe('Pipe', () => {
         },
       },
       );
+    });
 
+    test('grantPush is called for sources with an SNS topic DLQ', () => {
+      // WHEN
+      const topic = new Topic(stack, 'MyTopic');
+      const sourceWithDeadLetterTarget = new TestSourceWithDeadLetterTarget(topic);
+
+      new Pipe(stack, 'TestPipe', {
+        pipeName: 'TestPipe',
+        source: sourceWithDeadLetterTarget,
+        target,
+      });
+
+      const template = Template.fromStack(stack);
+
+      // THEN
+      template.hasResource('AWS::IAM::Policy', {
+        Properties: {
+          Roles: [{
+            Ref: 'TestPipeRole0FD00B2B',
+          }],
+          PolicyDocument: {
+            Statement: [{
+              Action: 'sns:Publish',
+              Resource: {
+                Ref: 'MyTopic86869434',
+              },
+            }],
+          },
+        },
+      });
+    });
+
+    test('grantPush is called for sources with an SQS queue DLQ', () => {
+      // WHEN
+      const queue = new Queue(stack, 'MyQueue');
+      const sourceWithDeadLetterTarget = new TestSourceWithDeadLetterTarget(queue);
+
+      new Pipe(stack, 'TestPipe', {
+        pipeName: 'TestPipe',
+        source: sourceWithDeadLetterTarget,
+        target,
+      });
+
+      const template = Template.fromStack(stack);
+
+      // THEN
+      template.hasResource('AWS::IAM::Policy', {
+        Properties: {
+          Roles: [{
+            Ref: 'TestPipeRole0FD00B2B',
+          }],
+          PolicyDocument: {
+            Statement: [{
+              Action: [
+                'sqs:SendMessage',
+                'sqs:GetQueueAttributes',
+                'sqs:GetQueueUrl',
+              ],
+              Resource: {
+                'Fn::GetAtt': [
+                  'MyQueueE6CA6235',
+                  'Arn',
+                ],
+              },
+            }],
+          },
+        },
+      });
     });
   });
 
   describe('target', () => {
-
     it('should grant push permissions to the target', () => {
       // WHEN
       const pipe = new Pipe(stack, 'TestPipe', {
@@ -318,8 +469,8 @@ describe('Pipe', () => {
       expect(pipe.pipeRole).toBe(role);
       expect(source.grantRead).toHaveBeenCalledWith(role);
       expect(target.grantPush).toHaveBeenCalledWith(role);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(enrichment.grantInvoke).toHaveBeenCalledWith(role);
-
     });
 
     it('should call grant on the provided role', () => {
@@ -354,53 +505,6 @@ describe('Pipe', () => {
       expect(pipe.pipeRole).toBe(role);
       expect(source.grantRead).toHaveBeenCalledWith(role);
       expect(target.grantPush).toHaveBeenCalledWith(role);
-    });
-  });
-
-  describe('logs', () => {
-    const logDestination = new TestLogDestination();
-    it('should pass along log configuration', () => {
-      // WHEN
-      new Pipe(stack, 'TestPipe', {
-        pipeName: 'TestPipe',
-        source,
-        target,
-        logLevel: LogLevel.INFO,
-        logIncludeExecutionData: [IncludeExecutionData.ALL],
-        logDestinations: [
-          logDestination,
-        ],
-      });
-
-      const template = Template.fromStack(stack);
-
-      // THEN
-      template.hasResource('AWS::Pipes::Pipe', {
-        Properties: {
-          LogConfiguration: {
-            CloudwatchLogsLogDestination: {
-
-              LogGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/events/pipes/TestPipe',
-            },
-            Level: 'INFO',
-            IncludeExecutionData: ['ALL'],
-          },
-        },
-      },
-      );
-    } );
-
-    it('should call grantPush of the log destination with pipe role', () => {
-      // WHEN
-      const pipe = new Pipe(stack, 'TestPipe', {
-        pipeName: 'TestPipe',
-        source,
-        target,
-        logDestinations: [logDestination],
-      });
-
-      // THEN
-      expect(logDestination.grantPush).toHaveBeenCalledWith(pipe.pipeRole);
     });
   });
 });

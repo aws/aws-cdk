@@ -32,7 +32,8 @@
      }
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":\"Hello!\"}}",
-    "salt": "1712425490127"
+    "flattenResponse": "false",
+    "salt": "1748294872929"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -62,12 +63,20 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs18.x",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "980ab41b674bbe2a714081b8b83c3b7bc45c4f8bb52a347bc93fc308857eadec.zip"
+     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -118,7 +127,8 @@
      }
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":\"Received body: {\\\"key\\\":\\\"value\\\"}\"}}",
-    "salt": "1712425490128"
+    "flattenResponse": "false",
+    "salt": "1748294872930"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -155,7 +165,103 @@
      }
     },
     "expected": "{\"$ObjectLike\":{\"status\":403,\"ok\":false}}",
-    "salt": "1712425490128"
+    "flattenResponse": "false",
+    "salt": "1748294872931"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCallb4a073c2cf8d627c3401d840e86f6804": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "InvokeFunctionAssertions:ExportsOutputRefHttpApiF5A9A8A7F70B5BDD"
+        },
+        ".execute-api.",
+        {
+         "Ref": "AWS::Region"
+        },
+        ".",
+        {
+         "Ref": "AWS::URLSuffix"
+        },
+        "/dev/echo/HelloWorld"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "salt": "1748294872931"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCall926492d2f4793e05bf2949d16464966f": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "InvokeFunctionAssertions:ExportsOutputRefHttpApiF5A9A8A7F70B5BDD"
+        },
+        ".execute-api.",
+        {
+         "Ref": "AWS::Region"
+        },
+        ".",
+        {
+         "Ref": "AWS::URLSuffix"
+        },
+        "/dev/echo/",
+        {
+         "Fn::GetAtt": [
+          "HttpApiCallb4a073c2cf8d627c3401d840e86f6804",
+          "apiCallResponse.body"
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":\"",
+       {
+        "Fn::GetAtt": [
+         "HttpApiCallb4a073c2cf8d627c3401d840e86f6804",
+         "apiCallResponse.body"
+        ]
+       },
+       "\"}}"
+      ]
+     ]
+    },
+    "flattenResponse": "false",
+    "salt": "1748294872931"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -173,7 +279,8 @@
      "url": "https://httpbin.org/get?key=value#hash"
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":{\"url\":\"https://httpbin.org/get?key=value\",\"args\":{\"key\":\"value\"}}}}",
-    "salt": "1712425490129"
+    "flattenResponse": "false",
+    "salt": "1748294872932"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -198,7 +305,8 @@
      }
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":{\"url\":\"https://httpbin.org/post\",\"json\":{\"key\":\"value\"}}}}",
-    "salt": "1712425490129"
+    "flattenResponse": "false",
+    "salt": "1748294872932"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -216,7 +324,72 @@
      "url": "https://httpbin.org/status/403"
     },
     "expected": "{\"$ObjectLike\":{\"status\":403,\"ok\":false}}",
-    "salt": "1712425490129"
+    "flattenResponse": "false",
+    "salt": "1748294872932"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCallhttpbinorguuid578ccfacb1d0792dd6965cdddf794e02": {
+   "Type": "Custom::DeployAssert@HttpCallhttpbinorguuid",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": "https://httpbin.org/uuid"
+    },
+    "flattenResponse": "true",
+    "salt": "1748294872932"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCall01535207422a144ea98405a56eae8349": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://httpbin.org/anything/",
+        {
+         "Fn::GetAtt": [
+          "HttpApiCallhttpbinorguuid578ccfacb1d0792dd6965cdddf794e02",
+          "apiCallResponse.body.uuid"
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":{\"url\":\"https://httpbin.org/anything/",
+       {
+        "Fn::GetAtt": [
+         "HttpApiCallhttpbinorguuid578ccfacb1d0792dd6965cdddf794e02",
+         "apiCallResponse.body.uuid"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "flattenResponse": "false",
+    "salt": "1748294872932"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -247,6 +420,14 @@
     ]
    }
   },
+  "AssertionResultsHttpApiCall926492d2f4793e05bf2949d16464966f": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall926492d2f4793e05bf2949d16464966f",
+     "assertion"
+    ]
+   }
+  },
   "AssertionResultsHttpApiCallhttpbinorggetcd942067e1d112f86d205b2008dcab31": {
    "Value": {
     "Fn::GetAtt": [
@@ -269,6 +450,144 @@
      "HttpApiCallhttpbinorgstatus403241ddf94e19f31ae5405653ddcc7ea8b",
      "assertion"
     ]
+   }
+  },
+  "AssertionResultsHttpApiCall01535207422a144ea98405a56eae8349": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall01535207422a144ea98405a56eae8349",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs22.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs22.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs22.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs22.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs22.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "il-central-1": {
+    "value": "nodejs22.x"
+   },
+   "me-central-1": {
+    "value": "nodejs22.x"
+   },
+   "me-south-1": {
+    "value": "nodejs22.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs22.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-east-2": {
+    "value": "nodejs22.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs22.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs22.x"
+   },
+   "us-west-2": {
+    "value": "nodejs22.x"
    }
   }
  },

@@ -4,6 +4,9 @@ import { IDomainName } from './domain-name';
 import { IStage } from './stage';
 import { CfnApiMapping, CfnApiMappingProps } from '.././index';
 import { IResource, Resource } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
  * Represents an ApiGatewayV2 ApiMapping resource
@@ -61,7 +64,11 @@ export interface ApiMappingAttributes {
  * Create a new API mapping for API Gateway API endpoint.
  * @resource AWS::ApiGatewayV2::ApiMapping
  */
+@propertyInjectable
 export class ApiMapping extends Resource implements IApiMapping {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.ApiMapping';
+
   /**
    * import from API ID
    */
@@ -88,6 +95,8 @@ export class ApiMapping extends Resource implements IApiMapping {
 
   constructor(scope: Construct, id: string, props: ApiMappingProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // defaultStage is present in IHttpStage.
     // However, importing "http" or "websocket" must import "common", but creating dependencies
@@ -95,11 +104,11 @@ export class ApiMapping extends Resource implements IApiMapping {
     // So casting to 'any'
     let stage = props.stage ?? (props.api as any).defaultStage;
     if (!stage) {
-      throw new Error('stage property must be specified');
+      throw new ValidationError('stage property must be specified', scope);
     }
 
     if (props.apiMappingKey === '') {
-      throw new Error('empty string for api mapping key not allowed');
+      throw new ValidationError('empty string for api mapping key not allowed', scope);
     }
 
     const apiMappingProps: CfnApiMappingProps = {

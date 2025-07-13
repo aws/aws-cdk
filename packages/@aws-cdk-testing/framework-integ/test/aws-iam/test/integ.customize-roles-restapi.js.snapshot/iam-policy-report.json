@@ -1,0 +1,40 @@
+{
+  "roles": [
+    {
+      "roleConstructPath": "integ-customize-roles-restapi/RestApi/CloudWatchRole",
+      "roleName": "precreated-role-api",
+      "missing": false,
+      "assumeRolePolicy": [
+        {
+          "Action": "sts:AssumeRole",
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "apigateway.amazonaws.com"
+          }
+        }
+      ],
+      "managedPolicyArns": [
+        "arn:(PARTITION):iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+      ],
+      "managedPolicyStatements": [],
+      "identityPolicyStatements": []
+    },
+    {
+      "roleConstructPath": "integ-customize-roles-restapi/Role",
+      "roleName": "precreated-role",
+      "missing": false,
+      "assumeRolePolicy": [
+        {
+          "Action": "sts:AssumeRole",
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "sns.amazonaws.com"
+          }
+        }
+      ],
+      "managedPolicyArns": [],
+      "managedPolicyStatements": [],
+      "identityPolicyStatements": []
+    }
+  ]
+}

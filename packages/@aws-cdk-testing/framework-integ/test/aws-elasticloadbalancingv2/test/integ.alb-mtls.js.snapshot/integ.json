@@ -1,0 +1,15 @@
+{
+  "enableLookups": true,
+  "version": "45.0.0",
+  "testCases": {
+    "alb-mtls-integ/DefaultTest": {
+      "stacks": [
+        "alb-mtls-test-stack"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "alb-mtls-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "albmtlsintegDefaultTestDeployAssert30225695"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}

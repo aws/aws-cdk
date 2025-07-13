@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
-import { CfnUtilsResourceType } from './cfn-utils-provider/consts';
 import { CustomResource } from '../custom-resource';
+import { CfnUtilsResourceType } from './cfn-utils-provider/consts';
 import { CfnUtilsProvider as _CfnUtilsProvider } from '../dist/core/cfn-utils-provider.generated';
 
 /**

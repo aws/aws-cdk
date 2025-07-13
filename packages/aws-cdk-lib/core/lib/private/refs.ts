@@ -9,15 +9,19 @@ import { findTokens } from './resolve';
 import { makeUniqueId } from './uniqueid';
 import * as cxapi from '../../../cx-api';
 import { CfnElement } from '../cfn-element';
+import { Fn } from '../cfn-fn';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
 import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
+import { AssumptionError, UnscopedValidationError } from '../errors';
 import { Names } from '../names';
 import { Reference } from '../reference';
 import { IResolvable } from '../resolvable';
 import { Stack } from '../stack';
 import { Token, Tokenization } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
+
+export const STRING_LIST_REFERENCE_DELIMITER = '||';
 
 /**
  * This is called from the App level to resolve all references defined. Each
@@ -54,19 +58,19 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 
   // unsupported: stacks from different apps
   if (producer.node.root !== consumer.node.root) {
-    throw new Error('Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.');
+    throw new UnscopedValidationError('Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.');
   }
 
   // unsupported: stacks are not in the same account
   if (producerAccount !== consumerAccount) {
-    throw new Error(
+    throw new UnscopedValidationError(
       `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
       'Cross stack references are only supported for stacks deployed to the same account or between nested stacks and their parent stack');
   }
 
   // Stacks are in the same account, but different regions
   if (producerRegion !== consumerRegion && !consumer._crossRegionReferences) {
-    throw new Error(
+    throw new UnscopedValidationError(
       `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
       'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack. ' +
       'Set crossRegionReferences=true to enable cross region references');
@@ -100,7 +104,13 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // therefore, we can only export from a top-level stack.
   if (producer.nested) {
     const outputValue = createNestedStackOutput(producer, reference);
-    return resolveValue(consumer, outputValue);
+    const resolvedValue = resolveValue(consumer, outputValue);
+
+    if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
+      return Tokenization.reverseList(Fn.split(STRING_LIST_REFERENCE_DELIMITER, Token.asString(resolvedValue))) as IResolvable;
+    } else {
+      return resolvedValue;
+    }
   }
 
   // ----------------------------------------------------------------------
@@ -110,7 +120,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // Stacks are in the same account, but different regions
   if (producerRegion !== consumerRegion && consumer._crossRegionReferences) {
     if (producerRegion === cxapi.UNKNOWN_REGION || consumerRegion === cxapi.UNKNOWN_REGION) {
-      throw new Error(
+      throw new UnscopedValidationError(
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
         'Cross stack/region references are only supported for stacks with an explicit region defined. ');
     }
@@ -144,7 +154,6 @@ function renderReference(ref: CfnReference) {
 function findAllReferences(root: IConstruct) {
   const result = new Array<{ source: CfnElement; value: CfnReference }>();
   for (const consumer of root.node.findAll()) {
-
     // include only CfnElements (i.e. resources)
     if (!CfnElement.isCfnElement(consumer)) {
       continue;
@@ -156,7 +165,6 @@ function findAllReferences(root: IConstruct) {
       // iterate over all the tokens (e.g. intrinsic functions, lazies, etc) that
       // were found in the cloudformation representation of this resource.
       for (const token of tokens) {
-
         // include only CfnReferences (i.e. "Ref" and "Fn::GetAtt")
         if (!CfnReference.isCfnReference(token)) {
           continue;
@@ -226,7 +234,7 @@ function createCrossRegionImportValue(reference: Reference, importStack: Stack):
   const id = JSON.stringify(exportingStack.resolve(exportable));
   const exportName = generateExportName(importStack, reference, id);
   if (Token.isUnresolved(exportName)) {
-    throw new Error(`unresolved token in generated export name: ${JSON.stringify(exportingStack.resolve(exportName))}`);
+    throw new UnscopedValidationError(`unresolved token in generated export name: ${JSON.stringify(exportingStack.resolve(exportName))}`);
   }
 
   // get or create the export writer
@@ -262,7 +270,7 @@ function generateExportName(importStack: Stack, reference: Reference, id: string
   return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
 }
 
-export function getExportable(stack: Stack, reference: Reference): Reference {
+export function getExportable(stack: Stack, reference: Reference): Intrinsic {
   // could potentially be changed by a call to overrideLogicalId. This would cause our Export/Import
   // to have an incorrect id. For a better user experience, lock the logicalId and throw an error
   // if the user tries to override the id _after_ calling exportValue
@@ -291,7 +299,7 @@ function createNestedStackParameter(nested: Stack, reference: CfnReference, valu
 
     // Ugly little hack until we move NestedStack to this module.
     if (!('setParameter' in nested)) {
-      throw new Error('assertion failed: nested stack should have a "setParameter" method');
+      throw new UnscopedValidationError('assertion failed: nested stack should have a "setParameter" method');
     }
 
     (nested as any).setParameter(param.logicalId, Token.asString(value));
@@ -308,11 +316,15 @@ function createNestedStackOutput(producer: Stack, reference: Reference): CfnRefe
   const outputId = generateUniqueId(producer, reference);
   let output = producer.node.tryFindChild(outputId) as CfnOutput;
   if (!output) {
-    output = new CfnOutput(producer, outputId, { value: Token.asString(reference) });
+    if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
+      output = new CfnOutput(producer, outputId, { value: Fn.join(STRING_LIST_REFERENCE_DELIMITER, Token.asList(reference)) });
+    } else {
+      output = new CfnOutput(producer, outputId, { value: Token.asString(reference) });
+    }
   }
 
   if (!producer.nestedStackResource) {
-    throw new Error('assertion failed');
+    throw new AssumptionError('assertion failed');
   }
 
   return producer.nestedStackResource.getAtt(`Outputs.${output.logicalId}`) as CfnReference;
@@ -323,15 +335,21 @@ function createNestedStackOutput(producer: Stack, reference: Reference): CfnRefe
  *
  * Will create Outputs along the chain of Nested Stacks, and return the final `{ Fn::GetAtt }`.
  */
-export function referenceNestedStackValueInParent(reference: Reference, targetStack: Stack) {
+export function referenceNestedStackValueInParent(reference: Reference, targetStack: Stack): Intrinsic {
   let currentStack = Stack.of(reference.target);
   if (currentStack !== targetStack && !isNested(currentStack, targetStack)) {
-    throw new Error(`Referenced resource must be in stack '${targetStack.node.path}', got '${reference.target.node.path}'`);
+    throw new UnscopedValidationError(`Referenced resource must be in stack '${targetStack.node.path}', got '${reference.target.node.path}'`);
   }
+
+  const isNestedListReference = currentStack !== targetStack && reference.typeHint === ResolutionTypeHint.STRING_LIST;
 
   while (currentStack !== targetStack) {
     reference = createNestedStackOutput(Stack.of(reference.target), reference);
     currentStack = Stack.of(reference.target);
+  }
+
+  if (isNestedListReference) {
+    return Tokenization.reverseList(Fn.split(STRING_LIST_REFERENCE_DELIMITER, Token.asString(reference))) as Intrinsic;
   }
 
   return reference;

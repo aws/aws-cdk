@@ -45,7 +45,6 @@ describeDeprecated('BitBucket source Action', () => {
           },
         ],
       });
-
     });
   });
 
@@ -78,7 +77,6 @@ describeDeprecated('BitBucket source Action', () => {
         ],
       },
     });
-
   });
   test('grant s3 putObjectACL to the following CodeBuild Project', () => {
     const stack = new Stack();
@@ -112,7 +110,6 @@ describeDeprecated('BitBucket source Action', () => {
         ]),
       },
     });
-
   });
   test('setting triggerOnPush=false reflects in the configuration', () => {
     const stack = new Stack();
@@ -151,7 +148,6 @@ describeDeprecated('BitBucket source Action', () => {
         },
       ],
     });
-
   });
 });
 

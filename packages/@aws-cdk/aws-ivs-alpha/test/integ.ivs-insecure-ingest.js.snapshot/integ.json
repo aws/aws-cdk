@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "ivs-insecure-ingest-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ivs-insecure-ingest"
+      ],
+      "assertionStack": "ivs-insecure-ingest-test/DefaultTest/DeployAssert",
+      "assertionStackName": "ivsinsecureingesttestDefaultTestDeployAssert6FABA1ED"
+    }
+  }
+}

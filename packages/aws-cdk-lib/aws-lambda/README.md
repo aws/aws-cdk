@@ -11,13 +11,49 @@ const fn = new lambda.Function(this, 'MyFunction', {
 });
 ```
 
+When deployed, this construct creates or updates an existing
+`AWS::Lambda::Function` resource. When updating, AWS CloudFormation calls the
+[UpdateFunctionConfiguration](https://docs.aws.amazon.com/lambda/latest/api/API_UpdateFunctionConfiguration.html)
+and [UpdateFunctionCode](https://docs.aws.amazon.com/lambda/latest/api/API_UpdateFunctionCode.html)
+Lambda APIs under the hood. Because these calls happen sequentially, and
+invocations can happen between these calls, your function may encounter errors
+in the time between the calls. For example, if you update an existing Lambda
+function by removing an environment variable and the code that references that
+environment variable in the same CDK deployment, you may see invocation errors
+related to a missing environment variable. To work around this, you can invoke
+your function against a version or alias by default, rather than the `$LATEST`
+version.
+
+To further mitigate these issues, you can ensure consistency between your function code and infrastructure configuration by defining environment variables as a single source of truth in your CDK stack. You can define them in a separate `env.ts` file and reference them in both your handler and CDK configuration. This approach allows you to catch errors at compile time, benefit from improved IDE support, minimize the risk of mismatched configurations, and enhance maintainability.
+
 ## Handler Code
 
 The `lambda.Code` class includes static convenience methods for various types of
 runtime code.
 
- * `lambda.Code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object
+ * `lambda.Code.fromBucket(bucket, key, objectVersion)` - specify an S3 object
    that contains the archive of your runtime code.
+ * `lambda.Code.fromBucketV2(bucket, key, {objectVersion: version, sourceKMSKey: key})` - specify an S3 object
+  that contains the archive of your runtime code.
+
+  ```ts
+
+  import { Key } from 'aws-cdk-lib/aws-kms';
+  import * as s3 from 'aws-cdk-lib/aws-s3';
+
+  const bucket = new s3.Bucket(this, 'Bucket');
+  declare const key: Key;
+  
+  const options = {
+      sourceKMSKey: key,
+  };
+  const fnBucket = new lambda.Function(this, 'myFunction2', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+      code: lambda.Code.fromBucketV2(bucket, 'python-lambda-handler.zip', options),
+  });
+
+  ```
  * `lambda.Code.fromInline(code)` - inline the handle code as a string. This is
    limited to supported runtimes.
  * `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local
@@ -77,6 +113,10 @@ configurations as well as choosing a specific tag or digest. See their docs for 
 
 To deploy a `DockerImageFunction` on Lambda `arm64` architecture, specify `Architecture.ARM_64` in `architecture`.
 This will bundle docker image assets for `arm64` architecture with `--platform linux/arm64` even if build within an `x86_64` host.
+
+With that being said, if you are bundling `DockerImageFunction` for Lambda `amd64` architecture from a `arm64` machine like a Macbook with `arm64` CPU, you would 
+need to specify `architecture: lambda.Architecture.X86_64` as well. This ensures the `--platform` argument is passed to the image assets
+bundling process so you can bundle up `X86_64` images from the `arm64` machine.
 
 ```ts
 new lambda.DockerImageFunction(this, 'AssetFunction', {
@@ -178,6 +218,83 @@ new lambda.Function(this, 'Lambda', {
 ```
 
 To use `applicationLogLevelV2` and/or `systemLogLevelV2` you must set `loggingFormat` to `LoggingFormat.JSON`.
+
+## Customizing Log Group Creation
+
+### Log Group Creation Methods
+
+| Method | Description | Tag Propagation | Prop Injection | Aspects | Notes |
+|--------|-------------|-----------------|----------------|---------|-------|
+| **logRetention prop** | Legacy approach using Custom Resource | False | False | False | Does not support TPA |
+| **logGroup prop** | Explicitly supplied by user in CDK app | True | True | True | Full support for TPA |
+| **Lazy creation** | Lambda service creates logGroup on first invocation | False | False | False | Occurs when both logRetention and logGroup are undefined and USE_CDK_MANAGED_LAMBDA_LOGGROUP is false |
+| **USE_CDK_MANAGED_LAMBDA_LOGGROUP** | CDK Lambda function construct creates log group with default props | True | True | True | Feature flag must be enabled |
+
+*TPA: Tag propagation, Prop Injection, Aspects*
+
+#### Order of precedence 
+```text
+                       Highest Precedence
+                             |
+             +---------------+---------------+
+             |                               |
+  +-------------------------+      +------------------------+
+  |   logRetention is set   |      |     logGroup is set    |
+  +-----------+-------------+      +----------+-------------+
+              |                               |
+              v                               v
+      Create LogGroup via            Use the provided LogGroup
+  Custom Resource (retention       instance (CDK-managed, 
+  managed, logGroup disallowed)    logRetention disallowed)
+              |                               |
+              +---------------+---------------+
+                              |
+                              v
+          +-----------------------------------------------+
+          |         Feature flag enabled:                 |
+          | aws-cdk:aws-lambda:useCdkManagedLogGroup      |
+          +------------------ +---------------------------+
+                              |
+                              v
+              Create LogGroup at synth time 
+          (CDK-managed, default settings for logGroup)
+                              |
+                              v
+                  +---------------------------+
+                  | Default (no config set)   |
+                  +------------+--------------+
+                              |
+                              v
+     Lambda service creates log group on first invocation runtime
+            (CDK does not manage the log group resource)
+```
+### Tag Propagation
+
+Refer section `Log Group Creation Methods` to find out which modes support tag propagation. 
+As an example, adding the following line in your cdk app will also propagate to the logGroup. 
+```
+const fn = new lambda.Function(this, 'MyFunctionWithFFTrue', {
+  runtime: lambda.Runtime.NODEJS_20_X,
+  handler: 'handler.main',
+  code: lambda.Code.fromAsset('lambda'),
+});
+cdk.Tags.of(fn).add('env', 'dev'); // the tag is also added to the log group
+```
+
+### Log removal policy
+
+When using the deprecated `logRetention` property for creating a LogGroup, you can configure log removal policy:
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+const fn = new lambda.Function(this, 'MyFunctionWithFFTrue', {
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  handler: 'handler.main',
+  code: lambda.Code.fromAsset('lambda'),
+  logRetention: logs.RetentionDays.INFINITE,
+  logRemovalPolicy: RemovalPolicy.RETAIN,
+});
+```
 
 ## Resource-based Policies
 
@@ -284,7 +401,7 @@ resource policy.
 ```ts
 declare const fn: lambda.Function;
 const servicePrincipal = new iam.ServicePrincipal('my-service');
-const sourceArn = 'arn:aws:s3:::my-bucket';
+const sourceArn = 'arn:aws:s3:::amzn-s3-demo-bucket';
 const sourceAccount = '111122223333';
 const servicePrincipalWithConditions = servicePrincipal.withConditions({
   ArnLike: {
@@ -780,6 +897,80 @@ fn.addEventSource(new eventsources.DynamoEventSource(table, {
 }));
 ```
 
+By default, Lambda will encrypt Filter Criteria using AWS managed keys. But if you want to use a self managed KMS key to encrypt the filters, You can specify the self managed key using the `filterEncryption` property.
+
+```ts
+import * as eventsources from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import { Key } from 'aws-cdk-lib/aws-kms';
+
+declare const fn: lambda.Function;
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+  stream: dynamodb.StreamViewType.NEW_IMAGE,
+});
+// Your self managed KMS key
+const myKey = Key.fromKeyArn(
+  this,
+  'SourceBucketEncryptionKey',
+  'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+);
+
+fn.addEventSource(new eventsources.DynamoEventSource(table, {
+  startingPosition: lambda.StartingPosition.LATEST,
+  filters: [lambda.FilterCriteria.filter({ eventName: lambda.FilterRule.isEqual('INSERT') })],
+  filterEncryption: myKey,
+}));
+```
+
+> Lambda requires allow `kms:Decrypt` on Lambda principal `lambda.amazonaws.com` to use the key for Filter Criteria Encryption. If you create the KMS key in the stack, CDK will automatically add this permission to the Key when you creates eventSourceMapping. However, if you import the key using function like `Key.fromKeyArn` then you need to add the following permission to the KMS key before using it to encrypt Filter Criteria
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "lambda.amazonaws.com"
+            },
+            "Action": "kms:Decrypt",
+            "Resource": "*"
+        }
+    ]
+}
+```
+
+### Observability
+
+Customers can now opt-in to get enhanced metrics for their event source mapping that capture each stage of processing using the `MetricsConfig` property.
+
+The following code shows how to opt in for the enhanced metrics. 
+
+```ts
+import * as eventsources from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+
+declare const fn: lambda.Function;
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+  stream: dynamodb.StreamViewType.NEW_IMAGE,
+});
+
+fn.addEventSource(new eventsources.DynamoEventSource(table, {
+  startingPosition: lambda.StartingPosition.LATEST,
+  metricsConfig: {
+    metrics: [lambda.MetricType.EVENT_COUNT],
+  }
+}));
+```
+
 See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for more details.
 
 ## Imported Lambdas
@@ -962,12 +1153,11 @@ const fn = new lambda.Function(this, 'MyFunction', {
 });
 ```
 
-See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
-managing concurrency.
+https://docs.aws.amazon.com/lambda/latest/dg/invocation-recursion.html
 
 ## Lambda with SnapStart
 
-SnapStart is currently supported only on Java 11 and later [Java managed runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html). SnapStart does not support provisioned concurrency, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB. After you enable Lambda SnapStart for a particular Lambda function, publishing a new version of the function will trigger an optimization process.
+SnapStart is currently supported on Python 3.12, Python 3.13, .NET 8, and Java 11 and later [Java managed runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html). SnapStart does not support provisioned concurrency, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB. After you enable Lambda SnapStart for a particular Lambda function, publishing a new version of the function will trigger an optimization process.
 
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html) to learn more about AWS Lambda SnapStart
 
@@ -1038,6 +1228,26 @@ new lambda.Function(this, 'Lambda', {
 
 Providing a user-controlled log group was rolled out to commercial regions on 2023-11-16.
 If you are deploying to another type of region, please check regional availability first.
+
+## Lambda with Recursive Loop protection
+
+Recursive loop protection is to stop unintended loops. The customers are opted in by default for Lambda to detect and terminate unintended loops between Lambda and other AWS Services.
+The property can be assigned two values here, "Allow" and "Terminate". 
+
+The default value is set to "Terminate", which lets the Lambda to detect and terminate the recursive loops. 
+
+When the value is set to "Allow", the customers opt out of recursive loop detection and Lambda does not terminate recursive loops if any. 
+
+See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-recursion.html) to learn more about AWS Lambda Recusrive Loop Detection
+
+```ts
+const fn = new lambda.Function(this, 'MyFunction', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+  runtime: lambda.Runtime.JAVA_11,
+  handler: 'example.Handler::handleRequest',
+  recursiveLoop: lambda.RecursiveLoop.TERMINATE,
+  });
+```
 
 ### Legacy Log Retention
 
@@ -1143,6 +1353,26 @@ const fn = new lambda.Function(this, 'Lambda_with_IPv6_VPC', {
 });
 ```
 
+## Outbound traffic
+By default, when creating a Lambda function, it would add a security group outbound rule to allow sending all network traffic (except IPv6). This is controlled by `allowAllOutbound` in function properties, which has a default value of `true`.
+
+To allow outbound IPv6 traffic by default, explicitly set `allowAllIpv6Outbound` to `true` in function properties as shown below (the default value for `allowAllIpv6Outbound` is `false`):
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'Vpc');
+
+const fn = new lambda.Function(this, 'LambdaWithIpv6Outbound', {
+  code: new lambda.InlineCode('def main(event, context): pass'),
+  handler: 'index.main',
+  runtime: lambda.Runtime.PYTHON_3_9,
+  vpc: vpc,
+  allowAllIpv6Outbound: true,
+});
+```
+
+Do not specify `allowAllOutbound` or `allowAllIpv6Outbound` property if the `securityGroups` or `securityGroup` property is set. Instead, configure these properties directly on the security group.
+
 ## Ephemeral Storage
 
 You can configure ephemeral storage on a function to control the amount of storage it gets for reading
@@ -1235,6 +1465,8 @@ Code signing for AWS Lambda helps to ensure that only trusted code runs in your 
 When enabled, AWS Lambda checks every code deployment and verifies that the code package is signed by a trusted source.
 For more information, see [Configuring code signing for AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html).
 The following code configures a function with code signing.
+
+Please note the code will not be automatically signed before deployment. To ensure your code is properly signed, you'll need to conduct the code signing process either through the AWS CLI (Command Line Interface) [start-signing-job](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/signer/start-signing-job.html) or by accessing the AWS Signer console.
 
 ```ts
 import * as signer from 'aws-cdk-lib/aws-signer';

@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "cdk-integ-synthetics-canary-run-config/DefaultTest": {
+      "stacks": [
+        "cdk-synthetics-canary-run-config"
+      ],
+      "assertionStack": "cdk-integ-synthetics-canary-run-config/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegsyntheticscanaryrunconfigDefaultTestDeployAssertDF592B72"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

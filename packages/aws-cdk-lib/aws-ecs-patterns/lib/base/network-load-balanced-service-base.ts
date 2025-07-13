@@ -4,11 +4,12 @@ import {
   AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
   ICluster, LogDriver, PropagatedTagSource, Secret, CapacityProviderStrategy,
 } from '../../../aws-ecs';
-import { INetworkLoadBalancer, IpAddressType, NetworkListener, NetworkLoadBalancer, NetworkLoadBalancerProps, NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
+import { IListenerCertificate, INetworkLoadBalancer, IpAddressType, NetworkListener, NetworkLoadBalancer, NetworkLoadBalancerProps, NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { IRole } from '../../../aws-iam';
 import { ARecord, CnameRecord, IHostedZone, RecordTarget } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
 import * as cdk from '../../../core';
+import { ValidationError } from '../../../core';
 
 /**
  * Describes the type of DNS record the service should create
@@ -132,9 +133,18 @@ export interface NetworkLoadBalancedServiceBaseProps {
   /**
    * Listener port of the network load balancer that will serve traffic to the service.
    *
-   * @default 80
+   * @default 80 or 443 with listenerCertificate provided
    */
   readonly listenerPort?: number;
+
+  /**
+   * Listener certificate list of ACM cert ARNs.
+   * If you provide a certificate, the listener's protocol will be TLS.
+   * If not, the listener's protocol will be TCP.
+   *
+   * @default - none
+   */
+  readonly listenerCertificate?: IListenerCertificate;
 
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
@@ -168,11 +178,11 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly recordType?: NetworkLoadBalancedServiceRecordType;
 
   /**
- * Specifies which deployment controller to use for the service. For more information, see
- * [Amazon ECS Deployment Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html)
- *
- * @default - Rolling update (ECS)
- */
+   * Specifies which deployment controller to use for the service. For more information, see
+   * [Amazon ECS Deployment Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html)
+   *
+   * @default - Rolling update (ECS)
+   */
   readonly deploymentController?: DeploymentController;
 
   /**
@@ -279,7 +289,7 @@ export interface NetworkLoadBalancedTaskImageOptions {
    * For more information, see
    * [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
    *
-   * @default 80
+   * @default 80 or 443 with listenerCertificate provided
    */
   readonly containerPort?: number;
 
@@ -320,7 +330,7 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
    */
   public get loadBalancer(): NetworkLoadBalancer {
     if (!this._networkLoadBalancer) {
-      throw new Error('.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer');
+      throw new ValidationError('.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer', this);
     }
     return this._networkLoadBalancer;
   }
@@ -348,12 +358,12 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new Error('You can only specify either vpc or cluster. Alternatively, you can leave both blank');
+      throw new ValidationError('You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
     if (props.desiredCount !== undefined && props.desiredCount < 1) {
-      throw new Error('You must specify a desiredCount greater than 0');
+      throw new ValidationError('You must specify a desiredCount greater than 0', this);
     }
 
     this.desiredCount = props.desiredCount || 1;
@@ -368,17 +378,22 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
     };
 
     const loadBalancer = props.loadBalancer ?? new NetworkLoadBalancer(this, 'LB', lbProps);
-    const listenerPort = props.listenerPort ?? 80;
-    const targetProps = {
-      port: props.taskImageOptions?.containerPort ?? 80,
-    };
 
-    this.listener = loadBalancer.addListener('PublicListener', { port: listenerPort });
+    const defaultPort = props.listenerCertificate ? 443 : 80;
+    const listenerProps = {
+      port: props.listenerPort ?? defaultPort,
+      certificates: props.listenerCertificate ? [props.listenerCertificate] : undefined,
+    };
+    this.listener = loadBalancer.addListener('PublicListener', listenerProps);
+
+    const targetProps = {
+      port: props.taskImageOptions?.containerPort ?? defaultPort,
+    };
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {
-        throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
+        throw new ValidationError('A Route53 hosted domain zone name is required to configure the specified domain name', this);
       }
 
       switch (props.recordType ?? NetworkLoadBalancedServiceRecordType.ALIAS) {

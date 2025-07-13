@@ -5,6 +5,8 @@ import { Construct } from 'constructs';
 import { ContainerImage } from './container-image';
 import { ModelData } from './model-data';
 import { CfnModel } from 'aws-cdk-lib/aws-sagemaker';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Interface that defines a Model resource.
@@ -103,7 +105,7 @@ abstract class ModelBase extends cdk.Resource implements IModel {
       return;
     }
 
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 }
 
@@ -206,12 +208,27 @@ export interface ModelProps {
    * @default true
    */
   readonly allowAllOutbound?: boolean;
+
+  /**
+   * Whether to enable network isolation for the model container.
+   *
+   * When enabled, no inbound or outbound network calls can be made to or from the model container.
+   *
+   * @see https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html
+   *
+   * @default false
+   */
+  readonly networkIsolation?: boolean;
 }
 
 /**
  * Defines a SageMaker Model.
  */
+@propertyInjectable
 export class Model extends ModelBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-sagemaker-alpha.Model';
+
   /**
    * Imports a Model defined either outside the CDK or in a different CDK stack.
    * @param scope the Construct scope.
@@ -296,6 +313,8 @@ export class Model extends ModelBase {
     super(scope, id, {
       physicalName: props.modelName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this._connections = this.configureNetworking(props);
     this.subnets = (props.vpc) ? props.vpc.selectSubnets(props.vpcSubnets) : undefined;
@@ -312,6 +331,7 @@ export class Model extends ModelBase {
       primaryContainer: cdk.Lazy.any({ produce: () => this.renderPrimaryContainer() }),
       vpcConfig: cdk.Lazy.any({ produce: () => this.renderVpcConfig() }),
       containers: cdk.Lazy.any({ produce: () => this.renderContainers() }),
+      enableNetworkIsolation: props.networkIsolation,
     });
     this.modelName = this.getResourceNameAttribute(model.attrModelName);
     this.modelArn = this.getResourceArnAttribute(model.ref, {
@@ -334,6 +354,7 @@ export class Model extends ModelBase {
    *
    * @param container The container definition to add.
    */
+  @MethodMetadata()
   public addContainer(container: ContainerDefinition): void {
     this.containers.push(this.renderContainer(container));
   }

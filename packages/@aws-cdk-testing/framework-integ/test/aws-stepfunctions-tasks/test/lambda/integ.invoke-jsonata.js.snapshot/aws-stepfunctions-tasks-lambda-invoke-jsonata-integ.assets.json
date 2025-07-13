@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "c95771fa22eb894262b5115a45a4940d874b4ceb9b4df73d7b088a13b350af7f": {
+      "source": {
+        "path": "aws-stepfunctions-tasks-lambda-invoke-jsonata-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c95771fa22eb894262b5115a45a4940d874b4ceb9b4df73d7b088a13b350af7f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

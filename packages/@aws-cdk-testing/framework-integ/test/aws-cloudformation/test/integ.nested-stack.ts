@@ -6,7 +6,7 @@ import { App, CfnParameter, NestedStack, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-/* eslint-disable @aws-cdk/no-core-construct */
+/* eslint-disable @cdklabs/no-core-construct */
 
 interface MyNestedStackProps {
   readonly subscriber?: sqs.Queue;
@@ -64,6 +64,10 @@ class MyTestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 new MyTestStack(app, 'nested-stacks-test');
 app.synth();

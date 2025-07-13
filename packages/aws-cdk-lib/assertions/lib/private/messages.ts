@@ -46,7 +46,7 @@ export function hasNoMessage(messages: Messages, constructPath: string, props: a
 function redactTraces(match: any, redact: boolean = true): void {
   if (redact && match.entry?.trace !== undefined) {
     match.entry.trace = 'redacted';
-  };
+  }
 }
 
 function filterPath(section: { [key: string]: SynthesisMessage }, path: string): { [key: string]: SynthesisMessage } {

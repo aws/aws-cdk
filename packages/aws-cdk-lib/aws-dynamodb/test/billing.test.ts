@@ -48,3 +48,29 @@ describe('provisioned billing', () => {
     expect(billing.mode).toEqual(BillingMode.PROVISIONED);
   });
 });
+
+describe('max throughput on-demand billing', () => {
+  // GIVEN
+  let billing: Billing;
+  beforeEach(() => {
+    billing = Billing.onDemand({
+      maxReadRequestUnits: 10,
+      maxWriteRequestUnits: 100,
+    });
+  });
+
+  test('render read capacity', () => {
+    // WHEN / THEN
+    expect(billing._renderReadCapacity()).toBe(10);
+  });
+
+  test('render write capacity', () => {
+    // WHEN / THEN
+    expect(billing._renderWriteCapacity()).toBe(100);
+  });
+
+  test('billing mode is PAY_PER_REQUEST', () => {
+    // WHEN / THEN
+    expect(billing.mode).toEqual(BillingMode.PAY_PER_REQUEST);
+  });
+});

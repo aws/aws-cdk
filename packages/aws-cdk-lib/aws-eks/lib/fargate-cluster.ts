@@ -1,6 +1,8 @@
 import { Construct } from 'constructs';
 import { Cluster, ClusterOptions, CoreDnsComputeType } from './cluster';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Configuration props for EKS Fargate.
@@ -22,7 +24,13 @@ export interface FargateClusterProps extends ClusterOptions {
  * "default" and "kube-system" namespaces. You can add additional profiles using
  * `addFargateProfile`.
  */
+@propertyInjectable
 export class FargateCluster extends Cluster {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.FargateCluster';
+
   /**
    * Fargate Profile that was created with the cluster.
    */
@@ -35,6 +43,8 @@ export class FargateCluster extends Cluster {
       coreDnsComputeType: props.coreDnsComputeType ?? CoreDnsComputeType.FARGATE,
       version: props.version,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.defaultProfile = this.addFargateProfile(
       props.defaultProfile?.fargateProfileName ?? (props.defaultProfile ? 'custom' : 'default'),

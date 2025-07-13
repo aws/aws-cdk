@@ -18,7 +18,6 @@ describe('gameservergroup', () => {
     });
 
     test('default gameservergroup', () => {
-
       new gamelift.GameServerGroup(stack, 'MyGameServerGroup', {
         instanceDefinitions: [{
           instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),

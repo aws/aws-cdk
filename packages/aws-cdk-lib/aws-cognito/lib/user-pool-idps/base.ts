@@ -6,6 +6,8 @@ import { IUserPool } from '../user-pool';
 export class ProviderAttribute {
   /** The email attribute provided by Apple */
   public static readonly APPLE_EMAIL = new ProviderAttribute('email');
+  /** The email verified attribute provided by Apple */
+  public static readonly APPLE_EMAIL_VERIFIED = new ProviderAttribute('email_verified');
   /** The name attribute provided by Apple */
   public static readonly APPLE_NAME = new ProviderAttribute('name');
   /** The first name attribute provided by Apple */
@@ -51,6 +53,8 @@ export class ProviderAttribute {
   public static readonly GOOGLE_PHONE_NUMBERS = new ProviderAttribute('phoneNumbers');
   /** The email attribute provided by Google */
   public static readonly GOOGLE_EMAIL = new ProviderAttribute('email');
+  /** The email verified attribute provided by Google */
+  public static readonly GOOGLE_EMAIL_VERIFIED = new ProviderAttribute('email_verified');
   /** The name attribute provided by Google */
   public static readonly GOOGLE_NAME = new ProviderAttribute('name');
   /** The picture attribute provided by Google */
@@ -97,6 +101,12 @@ export interface AttributeMapping {
    * @default - not mapped
    */
   readonly email?: ProviderAttribute;
+
+  /**
+   * The user's e-mail address is verification.
+   * @default - not mapped
+   */
+  readonly emailVerified?: ProviderAttribute;
 
   /**
    * The surname or last name of user.

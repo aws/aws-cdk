@@ -14,6 +14,7 @@
   - [VPC Link](#vpc-link)
   - [Private Integration](#private-integration)
   - [Generating ARN for Execute API](#generating-arn-for-execute-api)
+  - [Access Logging](#access-logging)
 - [WebSocket API](#websocket-api)
   - [Manage Connections Permission](#manage-connections-permission)
   - [Managing access to WebSocket APIs](#managing-access-to-websocket-apis)
@@ -90,6 +91,23 @@ import { HttpUrlIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 new apigwv2.HttpApi(this, 'HttpProxyApi', {
   defaultIntegration: new HttpUrlIntegration('DefaultIntegration', 'https://example.com'),
+});
+```
+
+The `routeSelectionExpression` option allows configuring the HTTP API to accept only `${request.method} ${request.path}`. Setting it to `true` automatically applies this value.
+
+```ts
+new apigwv2.HttpApi(this, 'HttpProxyApi', {
+  routeSelectionExpression: true,
+});
+```
+
+You can configure IP address type for the API endpoint using `ipAddressType` property.
+Valid values are `IPV4` (default) and `DUAL_STACK`.
+
+```ts
+new apigwv2.HttpApi(this, 'HttpApi', {
+  ipAddressType: apigwv2.IpAddressType.DUAL_STACK,
 });
 ```
 
@@ -176,8 +194,24 @@ const api = new apigwv2.HttpApi(this, 'HttpProxyProdApi', {
 });
 ```
 
+The IP address type for the domain name can be configured by using the `ipAddressType`
+property. Valid values are `IPV4` (default) and `DUAL_STACK`.
+
+```ts
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+
+declare const certificate: acm.ICertificate;
+declare const domainName: string;
+
+const dn = new apigwv2.DomainName(this, 'DN', {
+  domainName: domainName,
+  certificate: certificate,
+  ipAddressType: apigwv2.IpAddressType.DUAL_STACK,
+});
+```
+
 To migrate a domain endpoint from one type to another, you can add a new endpoint configuration via `addEndpoint()`
-and then configure DNS records to route traffic to the new endpoint. After that, you can remove the previous endpoint configuration. 
+and then configure DNS records to route traffic to the new endpoint. After that, you can remove the previous endpoint configuration.
 Learn more at [Migrating a custom domain name](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-regional-api-custom-domain-migrate.html)
 
 To associate a specific `Stage` to a custom domain mapping -
@@ -340,15 +374,74 @@ const arn = api.arnForExecuteApi('GET', '/myApiPath', 'dev');
 - The 'ANY' method can be used for matching any HTTP methods not explicitly defined.
 - The function gracefully handles undefined parameters by using wildcards, making it flexible for various API configurations.
 
+## Access Logging
+
+You can turn on logging to write logs to CloudWatch Logs.
+Read more at [Configure logging for HTTP APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-logging.html)
+
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const api: apigwv2.HttpApi;
+declare const logGroup: logs.LogGroup;
+
+const stage = new apigwv2.HttpStage(this, 'Stage', {
+  httpApi: api,
+  accessLogSettings: {
+    destination: new apigwv2.LogGroupLogDestination(logGroup),
+  },
+});
+```
+
+The following code will generate the access log in the [CLF format](https://en.wikipedia.org/wiki/Common_Log_Format).
+
+```ts
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const api: apigwv2.HttpApi;
+declare const logGroup: logs.LogGroup;
+
+const stage = new apigwv2.HttpStage(this, 'Stage', {
+  httpApi: api,
+  accessLogSettings: {
+    destination: new apigwv2.LogGroupLogDestination(logGroup),
+    format: apigw.AccessLogFormat.clf(),
+  },
+});
+```
+
+You can also configure your own access log format by using the `AccessLogFormat.custom()` API.
+`AccessLogField` provides commonly used fields. The following code configures access log to contain.
+
+```ts
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const api: apigwv2.HttpApi;
+declare const logGroup: logs.LogGroup;
+
+const stage = new apigwv2.HttpStage(this, 'Stage', {
+  httpApi: api,
+  accessLogSettings: {
+    destination: new apigwv2.LogGroupLogDestination(logGroup),
+    format: apigw.AccessLogFormat.custom(
+      `${apigw.AccessLogField.contextRequestId()} ${apigw.AccessLogField.contextErrorMessage()} ${apigw.AccessLogField.contextErrorMessageString()}
+      ${apigw.AccessLogField.contextAuthorizerError()} ${apigw.AccessLogField.contextAuthorizerIntegrationStatus()}`
+    ),
+  },
+});
+```
+
 ## WebSocket API
 
-A WebSocket API in API Gateway is a collection of WebSocket routes that are integrated with backend HTTP endpoints, 
-Lambda functions, or other AWS services. You can use API Gateway features to help you with all aspects of the API 
+A WebSocket API in API Gateway is a collection of WebSocket routes that are integrated with backend HTTP endpoints,
+Lambda functions, or other AWS services. You can use API Gateway features to help you with all aspects of the API
 lifecycle, from creation through monitoring your production APIs. [Read more](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-overview.html)
 
 WebSocket APIs have two fundamental concepts - Routes and Integrations.
 
-WebSocket APIs direct JSON messages to backend integrations based on configured routes. (Non-JSON messages are directed 
+WebSocket APIs direct JSON messages to backend integrations based on configured routes. (Non-JSON messages are directed
 to the configured `$default` route.)
 
 Integrations define how the WebSocket API behaves when a client reaches a specific Route. Learn more at
@@ -425,11 +518,19 @@ To generate an ARN for Execute API:
 
 ```ts
 const api = new apigwv2.WebSocketApi(this, 'mywsapi');
-const arn = api.arnForExecuteApi('GET', '/myApiPath', 'dev');
+const arn = api.arnForExecuteApiV2('$connect', 'dev');
 ```
 
 For a detailed explanation of this function, including usage and examples, please refer to the [Generating ARN for Execute API](#generating-arn-for-execute-api) section under HTTP API.
 
+You can configure IP address type for the API endpoint using `ipAddressType` property.
+Valid values are `IPV4` (default) and `DUAL_STACK`.
+
+```ts
+new apigwv2.WebSocketApi(this, 'WebSocketApi', {
+  ipAddressType: apigwv2.IpAddressType.DUAL_STACK,
+});
+```
 
 ### Manage Connections Permission
 
@@ -465,5 +566,26 @@ To require an API Key when accessing the Websocket API:
 ```ts
 const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi',{
   apiKeySelectionExpression: apigwv2.WebSocketApiKeySelectionExpression.HEADER_X_API_KEY,
+});
+```
+
+## Common Config
+
+Common config for both HTTP API and WebSocket API
+
+### Route Settings
+
+Represents a collection of route settings.
+
+```ts
+declare const api: apigwv2.HttpApi;
+
+new apigwv2.HttpStage(this, 'Stage', {
+  httpApi: api,
+  throttle: {
+    rateLimit: 1000,
+    burstLimit: 1000,
+  },
+  detailedMetricsEnabled: true,
 });
 ```

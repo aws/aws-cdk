@@ -2,7 +2,7 @@ import { Match, Template } from '../../assertions';
 import { ArnPrincipal, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
-import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack } from '../../core';
+import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
 import {
   AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, TableV2,
   LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
@@ -151,6 +151,75 @@ describe('table', () => {
         },
       ],
     });
+  });
+
+  test('with point-in-time-recovery-specification', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      pointInTimeRecoverySpecification: {
+        pointInTimeRecoveryEnabled: true,
+        recoveryPeriodInDays: 4,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          PointInTimeRecoverySpecification: {
+            PointInTimeRecoveryEnabled: true,
+            RecoveryPeriodInDays: 4,
+          },
+        },
+      ],
+    });
+  });
+
+  test('both point-in-time-recovery-specification and point-in-time-recovery set', () => {
+    const stack = new Stack(undefined, 'Stack');
+    expect(() => {
+      new TableV2(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        pointInTimeRecovery: true,
+        pointInTimeRecoverySpecification: {
+          pointInTimeRecoveryEnabled: true,
+          recoveryPeriodInDays: 5,
+        },
+      });
+    }).toThrow('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.');
+  });
+
+  test('recoveryPeriodInDays set out of bounds', () => {
+    const stack = new Stack(undefined, 'Stack');
+    expect(() => {
+      new TableV2(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        pointInTimeRecoverySpecification: {
+          pointInTimeRecoveryEnabled: true,
+          recoveryPeriodInDays: 36,
+        },
+      });
+    }).toThrow('`recoveryPeriodInDays` must be a value between `1` and `35`.');
+  });
+
+  test('recoveryPeriodInDays set but pitr disabled', () => {
+    const stack = new Stack(undefined, 'Stack');
+    expect(() => {
+      new TableV2(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        pointInTimeRecoverySpecification: {
+          pointInTimeRecoveryEnabled: false,
+          recoveryPeriodInDays: 35,
+        },
+      });
+    }).toThrow('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.');
   });
 
   test('with STANDARD table class', () => {
@@ -1029,6 +1098,160 @@ describe('table', () => {
       table.replica('us-west-2');
     }).toThrow('Replica tables are not supported in a region agnostic stack');
   });
+
+  test('with on-demand maximum throughput', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      billing: Billing.onDemand({
+        maxReadRequestUnits: 10,
+        maxWriteRequestUnits: 10,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      KeySchema: [
+        { AttributeName: 'pk', KeyType: 'HASH' },
+      ],
+      AttributeDefinitions: [
+        { AttributeName: 'pk', AttributeType: 'S' },
+      ],
+      WriteOnDemandThroughputSettings: {
+        MaxWriteRequestUnits: 10,
+      },
+      BillingMode: 'PAY_PER_REQUEST',
+      StreamSpecification: Match.absent(),
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          ReadOnDemandThroughputSettings: {
+            MaxReadRequestUnits: 10,
+          },
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
+  });
+
+  test('with on-demand maximum throughput - read only', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      billing: Billing.onDemand({
+        maxReadRequestUnits: 10,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      KeySchema: [
+        { AttributeName: 'pk', KeyType: 'HASH' },
+      ],
+      AttributeDefinitions: [
+        { AttributeName: 'pk', AttributeType: 'S' },
+      ],
+      BillingMode: 'PAY_PER_REQUEST',
+      StreamSpecification: Match.absent(),
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          ReadOnDemandThroughputSettings: {
+            MaxReadRequestUnits: 10,
+          },
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
+  });
+
+  test('with on-demand maximum throughput - index', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      globalSecondaryIndexes: [
+        {
+          indexName: 'gsi1',
+          partitionKey: { name: 'pk', type: AttributeType.STRING },
+          maxReadRequestUnits: 100,
+        },
+        {
+          indexName: 'gsi2',
+          partitionKey: { name: 'pk', type: AttributeType.STRING },
+          maxReadRequestUnits: 1,
+          maxWriteRequestUnits: 1,
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      KeySchema: [
+        { AttributeName: 'pk', KeyType: 'HASH' },
+      ],
+      AttributeDefinitions: [
+        { AttributeName: 'pk', AttributeType: 'S' },
+      ],
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'gsi1',
+          KeySchema: [
+            { AttributeName: 'pk', KeyType: 'HASH' },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+        },
+        {
+          IndexName: 'gsi2',
+          KeySchema: [
+            { AttributeName: 'pk', KeyType: 'HASH' },
+          ],
+          Projection: {
+            ProjectionType: 'ALL',
+          },
+          WriteOnDemandThroughputSettings: {
+            MaxWriteRequestUnits: 1,
+          },
+        },
+      ],
+      BillingMode: 'PAY_PER_REQUEST',
+      StreamSpecification: Match.absent(),
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          GlobalSecondaryIndexes: [{
+            IndexName: 'gsi1',
+            ReadOnDemandThroughputSettings: {
+              MaxReadRequestUnits: 100,
+            },
+          },
+          {
+            IndexName: 'gsi2',
+            ReadOnDemandThroughputSettings: {
+              MaxReadRequestUnits: 1,
+            },
+          }],
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
+  });
 });
 
 describe('replica tables', () => {
@@ -1133,6 +1356,107 @@ describe('replica tables', () => {
         },
         {
           Region: 'us-east-1',
+        },
+      ],
+    });
+  });
+
+  test('with TagAspect', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{
+        region: 'us-west-1',
+      }],
+    });
+
+    Tags.of(table).add('tagKey', 'tagValue');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-1',
+          Tags: [{ Key: 'tagKey', Value: 'tagValue' }],
+        },
+        {
+          Region: 'us-east-1',
+          Tags: [{ Key: 'tagKey', Value: 'tagValue' }],
+        },
+      ],
+    });
+  });
+
+  test('with TagAspect on parent scope', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{
+        region: 'us-west-1',
+      }],
+    });
+
+    Tags.of(stack).add('stage', 'Prod');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-1',
+          Tags: [{ Key: 'stage', Value: 'Prod' }],
+        },
+        {
+          Region: 'us-east-1',
+          Tags: [{ Key: 'stage', Value: 'Prod' }],
+        },
+      ],
+    });
+  });
+
+  test('replica tags override tag aspect tags', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{
+        region: 'us-west-1',
+        tags: [{ key: 'tableTagProperty', value: 'replicaW1TagPropertyValue' }],
+      }, {
+        region: 'us-west-2',
+      }],
+      tags: [{ key: 'tableTagProperty', value: 'defaultReplicaTagPropertyValue' }],
+    });
+
+    Tags.of(table).add('tableTagProperty', 'tagAspectValue');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-1',
+          Tags: [
+            { Key: 'tableTagProperty', Value: 'replicaW1TagPropertyValue' },
+          ],
+        },
+        {
+          Region: 'us-west-2',
+          Tags: [
+            { Key: 'tableTagProperty', Value: 'tagAspectValue' },
+          ],
+        },
+        {
+          Region: 'us-east-1',
+          Tags: [
+            { Key: 'tableTagProperty', Value: 'defaultReplicaTagPropertyValue' },
+          ],
         },
       ],
     });
@@ -2056,7 +2380,7 @@ describe('secondary indexes', () => {
     });
   });
 
-  test('with global secondary index wihtout read capacity inherits from table when billing mode is provisioned', () => {
+  test('with global secondary index without read capacity inherits from table when billing mode is provisioned', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
 
@@ -2849,6 +3173,71 @@ test('Resource policy test', () => {
             Version: '2012-10-17',
           },
         },
+      },
+    ],
+  });
+});
+
+test('Warm Throughput test on-demand', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
+
+  // WHEN
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+    warmThroughput: {
+      readUnitsPerSecond: 13000,
+      writeUnitsPerSecond: 5000,
+    },
+    replicas: [{
+      region: 'us-west-2',
+    }],
+    globalSecondaryIndexes: [{
+      indexName: 'my-index-1',
+      partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+      warmThroughput: {
+        readUnitsPerSecond: 15000,
+        writeUnitsPerSecond: 6000,
+      },
+    },
+    {
+      indexName: 'my-index-2',
+      partitionKey: { name: 'gsi2pk', type: AttributeType.STRING },
+    }],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    KeySchema: [
+      { AttributeName: 'id', KeyType: 'HASH' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'id', AttributeType: 'S' },
+      { AttributeName: 'gsi1pk', AttributeType: 'S' },
+      { AttributeName: 'gsi2pk', AttributeType: 'S' },
+    ],
+    WarmThroughput: {
+      ReadUnitsPerSecond: 13000,
+      WriteUnitsPerSecond: 5000,
+    },
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'my-index-1',
+        KeySchema: [
+          { AttributeName: 'gsi1pk', KeyType: 'HASH' },
+        ],
+        Projection: { ProjectionType: 'ALL' },
+        WarmThroughput: {
+          ReadUnitsPerSecond: 15000,
+          WriteUnitsPerSecond: 6000,
+        },
+      },
+      {
+        IndexName: 'my-index-2',
+        KeySchema: [
+          { AttributeName: 'gsi2pk', KeyType: 'HASH' },
+        ],
+        Projection: { ProjectionType: 'ALL' },
       },
     ],
   });

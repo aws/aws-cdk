@@ -3,6 +3,8 @@ import { ISecret } from './secret';
 import { CfnResourcePolicy } from './secretsmanager.generated';
 import * as iam from '../../aws-iam';
 import { Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Construction properties for a ResourcePolicy
@@ -28,7 +30,10 @@ export interface ResourcePolicyProps {
  *
  * Prefer to use `addToResourcePolicy()` instead.
  */
+@propertyInjectable
 export class ResourcePolicy extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-secretsmanager.ResourcePolicy';
   /**
    * The IAM policy document for this policy.
    */
@@ -36,6 +41,8 @@ export class ResourcePolicy extends Resource {
 
   constructor(scope: Construct, id: string, props: ResourcePolicyProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     new CfnResourcePolicy(this, 'Resource', {
       resourcePolicy: this.document,

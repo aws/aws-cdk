@@ -1,8 +1,12 @@
 import { Construct } from 'constructs';
+import { IpAddressType } from './api';
 import { CfnDomainName, CfnDomainNameProps } from '.././index';
 import { ICertificate } from '../../../aws-certificatemanager';
 import { IBucket } from '../../../aws-s3';
 import { IResource, Lazy, Resource, Token } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.
@@ -124,6 +128,15 @@ export interface EndpointOptions {
    * @default - only required when configuring mTLS
    */
   readonly ownershipCertificate?: ICertificate;
+
+  /**
+   * The IP address types that can invoke the API.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-ip-address-type.html
+   *
+   * @default undefined - AWS default is IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
 }
 
 /**
@@ -150,7 +163,13 @@ export interface MTLSConfig {
 /**
  * Custom domain resource for the API
  */
+@propertyInjectable
 export class DomainName extends Resource implements IDomainName {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.DomainName';
+
   /**
    * Import from attributes
    */
@@ -170,14 +189,16 @@ export class DomainName extends Resource implements IDomainName {
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.domainName === '') {
-      throw new Error('empty string for domainName not allowed');
+      throw new ValidationError('empty string for domainName not allowed', scope);
     }
 
     // validation for ownership certificate
     if (props.ownershipCertificate && !props.mtls) {
-      throw new Error('ownership certificate can only be used with mtls domains');
+      throw new ValidationError('ownership certificate can only be used with mtls domains', scope);
     }
 
     const mtlsConfig = this.configureMTLS(props.mtls);
@@ -208,13 +229,15 @@ export class DomainName extends Resource implements IDomainName {
    * Adds an endpoint to a domain name.
    * @param options domain name endpoint properties to be set
    */
-  public addEndpoint(options: EndpointOptions) : void {
+  @MethodMetadata()
+  public addEndpoint(options: EndpointOptions): void {
     const domainNameConfig: CfnDomainName.DomainNameConfigurationProperty = {
       certificateArn: options.certificate.certificateArn,
       certificateName: options.certificateName,
       endpointType: options.endpointType ? options.endpointType?.toString() : 'REGIONAL',
       ownershipVerificationCertificateArn: options.ownershipCertificate?.certificateArn,
       securityPolicy: options.securityPolicy?.toString(),
+      ipAddressType: options.ipAddressType,
     };
 
     this.validateEndpointType(domainNameConfig.endpointType);
@@ -225,7 +248,7 @@ export class DomainName extends Resource implements IDomainName {
   private validateEndpointType(endpointType: string | undefined) : void {
     for (let config of this.domainNameConfigurations) {
       if (endpointType && endpointType == config.endpointType) {
-        throw new Error(`an endpoint with type ${endpointType} already exists`);
+        throw new ValidationError(`an endpoint with type ${endpointType} already exists`, this);
       }
     }
   }

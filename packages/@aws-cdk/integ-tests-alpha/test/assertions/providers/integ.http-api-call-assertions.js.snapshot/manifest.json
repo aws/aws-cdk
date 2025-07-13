@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "InvokeFunctionAssertions.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/36e80ce5dbc492c642dac9ca0257e10d8e34c3caf3f30260ac762e52e4b238c2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/875dcacc0af81ccfee7e3f488ba3671443e7cf754c69e52a7bd5ff326b64ee24.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,56 @@
         "InvokeFunctionAssertions.assets"
       ],
       "metadata": {
+        "/InvokeFunctionAssertions/HttpApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/InvokeFunctionAssertions/HttpApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HttpApiF5A9A8A7"
           }
         ],
+        "/InvokeFunctionAssertions/HttpApi/DefaultStage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/InvokeFunctionAssertions/HttpApi/DefaultStage/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HttpApiDefaultStage3EEB07D6"
+          }
+        ],
+        "/InvokeFunctionAssertions/HttpApi/GET--get": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/InvokeFunctionAssertions/HttpApi/GET--get/GetIntegration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/InvokeFunctionAssertions/HttpApi/GET--get/GetIntegration/Resource": [
@@ -64,6 +104,18 @@
             "data": "HttpApiGETget6DC8518D"
           }
         ],
+        "/InvokeFunctionAssertions/HttpApi/POST--post": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/InvokeFunctionAssertions/HttpApi/POST--post/PostIntegration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/InvokeFunctionAssertions/HttpApi/POST--post/PostIntegration/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -80,6 +132,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "HttpApiPOSTpost791E2291"
+          }
+        ],
+        "/InvokeFunctionAssertions/HttpApi/GET--status--403": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/InvokeFunctionAssertions/HttpApi/GET--status--403/ForbiddenIntegration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/InvokeFunctionAssertions/HttpApi/GET--status--403/ForbiddenIntegration/Resource": [
@@ -100,6 +164,68 @@
             "data": "HttpApiGETstatus403A55D5D16"
           }
         ],
+        "/InvokeFunctionAssertions/HttpApi/GET--echo--{echo}": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/InvokeFunctionAssertions/HttpApi/GET--echo--{echo}/EchoIntegration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/InvokeFunctionAssertions/HttpApi/GET--echo--{echo}/EchoIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiGETechoechoEchoIntegration7C9B7725"
+          }
+        ],
+        "/InvokeFunctionAssertions/HttpApi/GET--echo--{echo}/EchoIntegration-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiGETechoechoEchoIntegrationPermission23357605"
+          }
+        ],
+        "/InvokeFunctionAssertions/HttpApi/GET--echo--{echo}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiGETechoecho3FB8EAA5"
+          }
+        ],
+        "/InvokeFunctionAssertions/GetHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/InvokeFunctionAssertions/GetHandler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/InvokeFunctionAssertions/GetHandler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/InvokeFunctionAssertions/GetHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -110,6 +236,52 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "GetHandlerEF5E42BB"
+          }
+        ],
+        "/InvokeFunctionAssertions/GetHandler/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/InvokeFunctionAssertions/GetHandler/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetHandlerLogGroup488A16BF"
+          }
+        ],
+        "/InvokeFunctionAssertions/PostHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/InvokeFunctionAssertions/PostHandler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/InvokeFunctionAssertions/PostHandler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/InvokeFunctionAssertions/PostHandler/ServiceRole/Resource": [
@@ -124,6 +296,52 @@
             "data": "PostHandler0D20EBFB"
           }
         ],
+        "/InvokeFunctionAssertions/PostHandler/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/InvokeFunctionAssertions/PostHandler/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PostHandlerLogGroup75D47477"
+          }
+        ],
+        "/InvokeFunctionAssertions/ForbiddenHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/InvokeFunctionAssertions/ForbiddenHandler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/InvokeFunctionAssertions/ForbiddenHandler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/InvokeFunctionAssertions/ForbiddenHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,6 +352,84 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ForbiddenHandler630D1ED1"
+          }
+        ],
+        "/InvokeFunctionAssertions/ForbiddenHandler/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/InvokeFunctionAssertions/ForbiddenHandler/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ForbiddenHandlerLogGroup08BF0C77"
+          }
+        ],
+        "/InvokeFunctionAssertions/EchoHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/InvokeFunctionAssertions/EchoHandler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/InvokeFunctionAssertions/EchoHandler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/InvokeFunctionAssertions/EchoHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EchoHandlerServiceRole659EA5BA"
+          }
+        ],
+        "/InvokeFunctionAssertions/EchoHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EchoHandlerB75BC5D4"
+          }
+        ],
+        "/InvokeFunctionAssertions/EchoHandler/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/InvokeFunctionAssertions/EchoHandler/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EchoHandlerLogGroup2ACA3184"
+          }
+        ],
+        "/InvokeFunctionAssertions/Stage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/InvokeFunctionAssertions/Stage/Resource": [
@@ -180,7 +476,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/50a9f7f8eefab0b355a2ce03bbac0a10a5daafbdf65cdc3a014650815ee0731f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2288e9b0f0c5dcd52b13bf7048f4aa782dc53b3c00d1087fad36b9860e2f38dd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -197,6 +493,20 @@
         "AssertionsTestDefaultTestDeployAssertDC0672BB.assets"
       ],
       "metadata": {
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCall5f7069701a458c2283dbb422b313fd3a/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCall5f7069701a458c2283dbb422b313fd3a/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -221,6 +531,26 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
+        "/AssertionsTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCall1219698b15310d985020a947d89e593e/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCall1219698b15310d985020a947d89e593e/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -231,6 +561,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsHttpApiCall1219698b15310d985020a947d89e593e"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCallf16d32bb38fdf952b8530f86260d5337/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCallf16d32bb38fdf952b8530f86260d5337/Default/Default": [
@@ -245,6 +589,66 @@
             "data": "AssertionResultsHttpApiCallf16d32bb38fdf952b8530f86260d5337"
           }
         ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCallb4a073c2cf8d627c3401d840e86f6804/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCallb4a073c2cf8d627c3401d840e86f6804/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCallb4a073c2cf8d627c3401d840e86f6804"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCall926492d2f4793e05bf2949d16464966f/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCall926492d2f4793e05bf2949d16464966f/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCall926492d2f4793e05bf2949d16464966f"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCall926492d2f4793e05bf2949d16464966f/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsHttpApiCall926492d2f4793e05bf2949d16464966f"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCallhttpbin.org--getcd942067e1d112f86d205b2008dcab31/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCallhttpbin.org--getcd942067e1d112f86d205b2008dcab31/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -255,6 +659,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsHttpApiCallhttpbinorggetcd942067e1d112f86d205b2008dcab31"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCallhttpbin.org--post57c1eb9b16e045b0fe0eadcc8fcfe86f/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCallhttpbin.org--post57c1eb9b16e045b0fe0eadcc8fcfe86f/Default/Default": [
@@ -269,6 +687,20 @@
             "data": "AssertionResultsHttpApiCallhttpbinorgpost57c1eb9b16e045b0fe0eadcc8fcfe86f"
           }
         ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCallhttpbin.org--status--403241ddf94e19f31ae5405653ddcc7ea8b/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCallhttpbin.org--status--403241ddf94e19f31ae5405653ddcc7ea8b/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -279,6 +711,52 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsHttpApiCallhttpbinorgstatus403241ddf94e19f31ae5405653ddcc7ea8b"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCallhttpbin.org--uuid578ccfacb1d0792dd6965cdddf794e02/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCallhttpbin.org--uuid578ccfacb1d0792dd6965cdddf794e02/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCallhttpbinorguuid578ccfacb1d0792dd6965cdddf794e02"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCall01535207422a144ea98405a56eae8349/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCall01535207422a144ea98405a56eae8349/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCall01535207422a144ea98405a56eae8349"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCall01535207422a144ea98405a56eae8349/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsHttpApiCall01535207422a144ea98405a56eae8349"
           }
         ],
         "/AssertionsTest/DefaultTest/DeployAssert/BootstrapVersion": [
@@ -302,5 +780,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1016.1"
 }

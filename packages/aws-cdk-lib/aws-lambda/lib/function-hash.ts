@@ -1,6 +1,7 @@
 import { Function as LambdaFunction } from './function';
 import { ILayerVersion } from './layers';
 import { CfnResource, FeatureFlags, Stack, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION, LAMBDA_RECOGNIZE_VERSION_PROPS } from '../../cx-api';
 
@@ -12,7 +13,7 @@ export function calculateFunctionHash(fn: LambdaFunction, additional: string = '
 
   let stringifiedConfig;
   if (FeatureFlags.of(fn).isEnabled(LAMBDA_RECOGNIZE_VERSION_PROPS)) {
-    const updatedProps = sortFunctionProperties(filterUsefulKeys(properties));
+    const updatedProps = sortFunctionProperties(filterUsefulKeys(properties, fn));
     stringifiedConfig = JSON.stringify(updatedProps);
   } else {
     const sorted = sortFunctionProperties(properties);
@@ -62,6 +63,7 @@ export const VERSION_LOCKED: { [key: string]: boolean } = {
   Layers: true,
   MemorySize: true,
   PackageType: true,
+  RecursiveLoop: true,
   Role: true,
   Runtime: true,
   RuntimeManagementConfig: true,
@@ -77,14 +79,14 @@ export const VERSION_LOCKED: { [key: string]: boolean } = {
   Tags: false,
 };
 
-function filterUsefulKeys(properties: any) {
+function filterUsefulKeys(properties: any, fn: LambdaFunction) {
   const versionProps = { ...VERSION_LOCKED, ...LambdaFunction._VER_PROPS };
   const unclassified = Object.entries(properties)
     .filter(([k, v]) => v != null && !Object.keys(versionProps).includes(k))
     .map(([k, _]) => k);
   if (unclassified.length > 0) {
-    throw new Error(`The following properties are not recognized as version properties: [${unclassified}].`
-      + ' See the README of the aws-lambda module to learn more about this and to fix it.');
+    throw new ValidationError(`The following properties are not recognized as version properties: [${unclassified}].`
+      + ' See the README of the aws-lambda module to learn more about this and to fix it.', fn);
   }
   const notLocked = Object.entries(versionProps).filter(([_, v]) => !v).map(([k, _]) => k);
   notLocked.forEach(p => delete properties[p]);
@@ -201,7 +203,7 @@ function resolveSingleResourceProperties(stack: Stack, res: CfnResource): any {
   const resources = template.Resources;
   const resourceKeys = Object.keys(resources);
   if (resourceKeys.length !== 1) {
-    throw new Error(`Expected one rendered CloudFormation resource but found ${resourceKeys.length}`);
+    throw new ValidationError(`Expected one rendered CloudFormation resource but found ${resourceKeys.length}`, res);
   }
   const logicalId = resourceKeys[0];
   return { properties: resources[logicalId].Properties, template, logicalId };

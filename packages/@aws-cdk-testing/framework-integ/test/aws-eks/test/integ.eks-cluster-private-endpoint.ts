@@ -38,11 +38,15 @@ class EksClusterStack extends Stack {
         name: 'config-map',
       },
     });
-
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-private-endpoint-test');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-private-endpoint', {

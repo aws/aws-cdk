@@ -1,7 +1,7 @@
 import { StreamEventSource, StreamEventSourceProps } from './stream';
 import * as dynamodb from '../../aws-dynamodb';
 import * as lambda from '../../aws-lambda';
-import { Names, Token } from '../../core';
+import { Names, Token, ValidationError } from '../../core';
 
 export interface DynamoEventSourceProps extends StreamEventSourceProps {
 }
@@ -19,17 +19,21 @@ export class DynamoEventSource extends StreamEventSource {
     if (this.props.batchSize !== undefined
       && !Token.isUnresolved(this.props.batchSize)
       && (this.props.batchSize < 1 || this.props.batchSize > 10000)) {
-      throw new Error(`Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`);
+      throw new ValidationError(`Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`, table);
     }
   }
 
   public bind(target: lambda.IFunction) {
     if (!this.table.tableStreamArn) {
-      throw new Error(`DynamoDB Streams must be enabled on the table ${this.table.node.path}`);
+      throw new ValidationError(`DynamoDB Streams must be enabled on the table ${this.table.node.path}`, this.table);
     }
 
     const eventSourceMapping = target.addEventSourceMapping(`DynamoDBEventSource:${Names.nodeUniqueId(this.table.node)}`,
-      this.enrichMappingOptions({ eventSourceArn: this.table.tableStreamArn }),
+      this.enrichMappingOptions({
+        eventSourceArn: this.table.tableStreamArn,
+        metricsConfig: this.props.metricsConfig,
+        supportS3OnFailureDestination: true,
+      }),
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
     this._eventSourceMappingArn = eventSourceMapping.eventSourceMappingArn;
@@ -42,7 +46,7 @@ export class DynamoEventSource extends StreamEventSource {
    */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new Error('DynamoEventSource is not yet bound to an event source mapping');
+      throw new ValidationError('DynamoEventSource is not yet bound to an event source mapping', this.table);
     }
     return this._eventSourceMappingId;
   }
@@ -52,7 +56,7 @@ export class DynamoEventSource extends StreamEventSource {
    */
   public get eventSourceMappingArn(): string {
     if (!this._eventSourceMappingArn) {
-      throw new Error('DynamoEventSource is not yet bound to an event source mapping');
+      throw new ValidationError('DynamoEventSource is not yet bound to an event source mapping', this.table);
     }
     return this._eventSourceMappingArn;
   }

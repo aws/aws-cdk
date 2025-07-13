@@ -290,7 +290,7 @@ const domain = new Domain(this, 'Domain', {
 ```
 
 For more complex use-cases, for example, to set the domain up to receive data from a
-[cross-account Kinesis Firehose](https://aws.amazon.com/premiumsupport/knowledge-center/kinesis-firehose-cross-account-streaming/) the `addAccessPolicies` helper method
+[cross-account Amazon Data Firehose](https://aws.amazon.com/premiumsupport/knowledge-center/kinesis-firehose-cross-account-streaming/) the `addAccessPolicies` helper method
 allows for policies that include the explicit domain ARN.
 
 ```ts
@@ -464,7 +464,7 @@ const domain = new Domain(this, 'Domain', {
 });
 ```
 
-## Enable support for Multi-AZ with Standby deployment
+## Enable support for Multi-AZ with Standby deployment
 
 The domain can be configured to use [multi-AZ with standby](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html#managedomains-za-standby).
 
@@ -532,4 +532,30 @@ const domain = new Domain(this, 'Domain', {
   version: EngineVersion.OPENSEARCH_1_3,
   ipAddressType: IpAddressType.DUAL_STACK,
 });
+```
+
+## Using Coordinator node with NodeOptions
+
+You can specify coordinator as a valid value for node type.
+
+> Visit [Dedicated coordinator nodes in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/Dedicated-coordinator-nodes.html) for more details.
+
+```ts
+import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
+
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_3,
+  capacity: {
+    nodeOptions: [
+      {
+        nodeType: opensearch.NodeType.COORDINATOR,
+        nodeConfig: {
+          enabled: true,
+          count: 2,
+          type: 'm5.large.search',
+        },
+      },
+    ],
+  },
+})
 ```

@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { CfnResourcePolicy } from './logs.generated';
 import { PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { Resource, Lazy, Names } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties to define Cloudwatch log group resource policy
@@ -35,7 +37,10 @@ export interface ResourcePolicyProps {
  *
  * Prefer to use `addToResourcePolicy()` instead.
  */
+@propertyInjectable
 export class ResourcePolicy extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.ResourcePolicy';
   /**
    * The IAM policy document for this resource policy.
    */
@@ -45,6 +50,8 @@ export class ResourcePolicy extends Resource {
     super(scope, id, {
       physicalName: props?.resourcePolicyName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const l1 = new CfnResourcePolicy(this, 'ResourcePolicy', {
       policyName: Lazy.string({

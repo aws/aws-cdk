@@ -5,7 +5,7 @@ import { MAGIC_V2NEXT, compareVersions } from '../lib/private/flag-modeling';
 
 test('all future flags have defaults configured', () => {
   Object.keys(feats.FLAGS).forEach(flag => {
-    expect(typeof(feats.futureFlagDefault(flag))).toEqual('boolean');
+    expect(typeof (feats.futureFlagDefault(flag))).toEqual('boolean');
   });
 });
 
@@ -14,6 +14,9 @@ test('futureFlagDefault returns false if non existent flag was given', () => {
 });
 
 test('feature flag defaults may not be changed anymore', () => {
+  // Below comments may be misread. Whenever you add a feature flag in features.ts with
+  // defaults: { v2: true }
+  // make sure you add it in the list below for the test to pass.
   // In principle, these flags were decided upon during the v2 alpha period, and they are now frozen
   // and may not be changed anymore.
   //
@@ -37,8 +40,15 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
     [feats.LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
     [feats.CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
-    // Add new disabling feature flags below this line
     [feats.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE]: true,
+    [feats.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true,
+    [feats.PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE]: true,
+    [feats.PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE]: true,
+    [feats.ASPECT_STABILIZATION]: true,
+    // Add new disabling feature flags below this line
+    [feats.LOG_USER_POOL_CLIENT_SECRET_VALUE]: false,
+    [feats.USE_RESOURCEID_FOR_VPCV2_MIGRATION]: false,
+    [feats.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: false,
 
   });
 });
@@ -70,7 +80,7 @@ test.each([
   expect(compareVersions(b, a)).toBeCloseTo(-expected, 10); // Gets around expect(-0).toEqual(0) failing... :x
 });
 
-// eslint-disable-next-line @aws-cdk/no-invalid-path
+// eslint-disable-next-line @cdklabs/no-invalid-path
 const currentv2: string = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', '..', '..', 'version.v2.json'), { encoding: 'utf-8' })).version;
 
 describe(`introducedIn.v2 is either <= ${currentv2} or magic value "${MAGIC_V2NEXT}"`, () => {

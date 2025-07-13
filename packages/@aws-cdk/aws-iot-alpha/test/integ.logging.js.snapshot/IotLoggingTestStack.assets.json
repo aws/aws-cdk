@@ -1,0 +1,19 @@
+{
+  "version": "36.0.5",
+  "files": {
+    "80dad952a80add47db0c2defb1b49d40b8df265a05c17078bd78e294d48618f5": {
+      "source": {
+        "path": "IotLoggingTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "80dad952a80add47db0c2defb1b49d40b8df265a05c17078bd78e294d48618f5.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

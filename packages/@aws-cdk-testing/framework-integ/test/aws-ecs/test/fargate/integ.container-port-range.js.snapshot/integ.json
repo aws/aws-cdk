@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "testCases": {
     "EcsContainerPortRange/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "EcsContainerPortRange/DefaultTest/DeployAssert",
       "assertionStackName": "EcsContainerPortRangeDefaultTestDeployAssert87C0580C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

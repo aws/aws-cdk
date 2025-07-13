@@ -103,7 +103,7 @@
        {
         "Ref": "AWS::Region"
        },
-       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText.$\":\"States.Format('Alphabetize this list of first names:\\n{}', $.names)\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"Prompt3\":{\"End\":true,\"Type\":\"Task\",\"InputPath\":\"$.names\",\"OutputPath\":\"$.names\",\"Resource\":\"arn:",
+       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText.$\":\"States.Format('Alphabetize this list of first names:/n{}', $.names)\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"Prompt3\":{\"Next\":\"Prompt4\",\"Type\":\"Task\",\"OutputPath\":\"$.Body.results[0].outputText\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -115,7 +115,19 @@
        {
         "Ref": "AWS::Region"
        },
-       "::foundation-model/amazon.titan-text-express-v1\",\"Input\":{\"S3Uri.$\":\"$.names\"},\"Output\":{\"S3Uri.$\":\"$.names\"}}}},\"TimeoutSeconds\":30}"
+       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText.$\":\"States.Format('Echo list of first names: {}', $.names)\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"Prompt4\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::bedrock:invokeModel\",\"Parameters\":{\"ModelId\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/amazon.titan-text-express-v1\",\"Input\":{\"S3Uri\":\"$.names\"},\"Output\":{\"S3Uri\":\"$.names\"}}}},\"TimeoutSeconds\":30}"
       ]
      ]
     },
@@ -129,6 +141,201 @@
    "DependsOn": [
     "StateMachineRoleDefaultPolicyDF1E6607",
     "StateMachineRoleB840431D"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LlamaStateMachineRoleA1E51172": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "LlamaStateMachineRoleDefaultPolicy36666B63": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "bedrock:InvokeModel",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock:",
+           {
+            "Ref": "AWS::Region"
+           },
+           "::foundation-model/meta.llama3-2-11b-instruct-v1:0"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock:",
+           {
+            "Ref": "AWS::Region"
+           },
+           "::foundation-model/meta.llama3-2-1b-instruct-v1:0"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock:",
+           {
+            "Ref": "AWS::Region"
+           },
+           "::foundation-model/meta.llama3-2-3b-instruct-v1:0"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock:",
+           {
+            "Ref": "AWS::Region"
+           },
+           "::foundation-model/meta.llama3-2-90b-instruct-v1:0"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LlamaStateMachineRoleDefaultPolicy36666B63",
+    "Roles": [
+     {
+      "Ref": "LlamaStateMachineRoleA1E51172"
+     }
+    ]
+   }
+  },
+  "LlamaStateMachineD0B74BA3": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"LlamaPrompt1\",\"States\":{\"LlamaPrompt1\":{\"Next\":\"LlamaPrompt2\",\"Type\":\"Task\",\"ResultPath\":\"$\",\"ResultSelector\":{\"names.$\":\"$.Body.results[0].outputText\"},\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::bedrock:invokeModel\",\"Parameters\":{\"ModelId\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/meta.llama3-2-1b-instruct-v1:0\",\"Body\":{\"inputText\":\"Generate a list of five first names.\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"LlamaPrompt2\":{\"Next\":\"LlamaPrompt3\",\"Type\":\"Task\",\"ResultPath\":\"$\",\"ResultSelector\":{\"names.$\":\"$.Body.results[0].outputText\"},\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::bedrock:invokeModel\",\"Parameters\":{\"ModelId\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/meta.llama3-2-3b-instruct-v1:0\",\"Body\":{\"inputText.$\":\"States.Format('Alphabetize this list of first names:/n{}', $.names)\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"LlamaPrompt3\":{\"Next\":\"LlamaPrompt4\",\"Type\":\"Task\",\"OutputPath\":\"$.Body.results[0].outputText\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::bedrock:invokeModel\",\"Parameters\":{\"ModelId\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/meta.llama3-2-11b-instruct-v1:0\",\"Body\":{\"inputText.$\":\"States.Format('Echo list of first names: {}', $.names)\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"LlamaPrompt4\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::bedrock:invokeModel\",\"Parameters\":{\"ModelId\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/meta.llama3-2-90b-instruct-v1:0\",\"Input\":{\"S3Uri\":\"$.names\"},\"Output\":{\"S3Uri\":\"$.names\"}}}},\"TimeoutSeconds\":30}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "LlamaStateMachineRoleA1E51172",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "LlamaStateMachineRoleDefaultPolicy36666B63",
+    "LlamaStateMachineRoleA1E51172"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AppRole1AF9B530": {
+  "AppFLINK16RoleA21DF652": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -17,7 +17,7 @@
     }
    }
   },
-  "AppRoleDefaultPolicy9CADBAA1": {
+  "AppFLINK16RoleDefaultPolicy312C949D": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -97,7 +97,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "AppLogGroupC72EEC8C",
+         "AppFLINK16LogGroup6709DAA8",
          "Arn"
         ]
        }
@@ -123,11 +123,11 @@
           },
           ":log-group:",
           {
-           "Ref": "AppLogGroupC72EEC8C"
+           "Ref": "AppFLINK16LogGroup6709DAA8"
           },
           ":log-stream:",
           {
-           "Ref": "AppLogStream3CAF66A7"
+           "Ref": "AppFLINK16LogStream203A3C4A"
           }
          ]
         ]
@@ -136,15 +136,1340 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "AppRoleDefaultPolicy9CADBAA1",
+    "PolicyName": "AppFLINK16RoleDefaultPolicy312C949D",
     "Roles": [
      {
-      "Ref": "AppRole1AF9B530"
+      "Ref": "AppFLINK16RoleA21DF652"
      }
     ]
    }
   },
-  "AppF1B96344": {
+  "AppFLINK16C87388A5": {
+   "Type": "AWS::KinesisAnalyticsV2::Application",
+   "Properties": {
+    "ApplicationConfiguration": {
+     "ApplicationCodeConfiguration": {
+      "CodeContent": {
+       "S3ContentLocation": {
+        "BucketARN": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        },
+        "FileKey": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577.zip"
+       }
+      },
+      "CodeContentType": "ZIPFILE"
+     },
+     "ApplicationSnapshotConfiguration": {
+      "SnapshotsEnabled": true
+     }
+    },
+    "RuntimeEnvironment": "FLINK-1_6",
+    "ServiceExecutionRole": {
+     "Fn::GetAtt": [
+      "AppFLINK16RoleA21DF652",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AppFLINK16RoleDefaultPolicy312C949D",
+    "AppFLINK16RoleA21DF652"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AppFLINK16LogGroup6709DAA8": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AppFLINK16LogStream203A3C4A": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "AppFLINK16LogGroup6709DAA8"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AppFLINK16LoggingOption6A093E18": {
+   "Type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
+   "Properties": {
+    "ApplicationName": {
+     "Ref": "AppFLINK16C87388A5"
+    },
+    "CloudWatchLoggingOption": {
+     "LogStreamARN": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":logs:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":log-group:",
+        {
+         "Ref": "AppFLINK16LogGroup6709DAA8"
+        },
+        ":log-stream:",
+        {
+         "Ref": "AppFLINK16LogStream203A3C4A"
+        }
+       ]
+      ]
+     }
+    }
+   }
+  },
+  "AlarmFLINK16629EC33E": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "Application",
+      "Value": {
+       "Ref": "AppFLINK16C87388A5"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "fullRestarts",
+    "Namespace": "AWS/KinesisAnalytics",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 3
+   }
+  },
+  "AppFLINK18RoleF2B5E704": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "kinesisanalytics.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AppFLINK18RoleDefaultPolicy3E0E376C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "cloudwatch:PutMetricData",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "logs:DescribeLogGroups",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "logs:DescribeLogStreams",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AppFLINK18LogGroupEC247BE6",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "logs:PutLogEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:",
+          {
+           "Ref": "AppFLINK18LogGroupEC247BE6"
+          },
+          ":log-stream:",
+          {
+           "Ref": "AppFLINK18LogStream773D6792"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AppFLINK18RoleDefaultPolicy3E0E376C",
+    "Roles": [
+     {
+      "Ref": "AppFLINK18RoleF2B5E704"
+     }
+    ]
+   }
+  },
+  "AppFLINK18DFC0B750": {
+   "Type": "AWS::KinesisAnalyticsV2::Application",
+   "Properties": {
+    "ApplicationConfiguration": {
+     "ApplicationCodeConfiguration": {
+      "CodeContent": {
+       "S3ContentLocation": {
+        "BucketARN": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        },
+        "FileKey": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577.zip"
+       }
+      },
+      "CodeContentType": "ZIPFILE"
+     },
+     "ApplicationSnapshotConfiguration": {
+      "SnapshotsEnabled": true
+     }
+    },
+    "RuntimeEnvironment": "FLINK-1_8",
+    "ServiceExecutionRole": {
+     "Fn::GetAtt": [
+      "AppFLINK18RoleF2B5E704",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AppFLINK18RoleDefaultPolicy3E0E376C",
+    "AppFLINK18RoleF2B5E704"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AppFLINK18LogGroupEC247BE6": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AppFLINK18LogStream773D6792": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "AppFLINK18LogGroupEC247BE6"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AppFLINK18LoggingOptionFA3821B9": {
+   "Type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
+   "Properties": {
+    "ApplicationName": {
+     "Ref": "AppFLINK18DFC0B750"
+    },
+    "CloudWatchLoggingOption": {
+     "LogStreamARN": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":logs:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":log-group:",
+        {
+         "Ref": "AppFLINK18LogGroupEC247BE6"
+        },
+        ":log-stream:",
+        {
+         "Ref": "AppFLINK18LogStream773D6792"
+        }
+       ]
+      ]
+     }
+    }
+   }
+  },
+  "AlarmFLINK188AA6547E": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "Application",
+      "Value": {
+       "Ref": "AppFLINK18DFC0B750"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "fullRestarts",
+    "Namespace": "AWS/KinesisAnalytics",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 3
+   }
+  },
+  "AppFLINK111Role85754B20": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "kinesisanalytics.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AppFLINK111RoleDefaultPolicy76505541": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "cloudwatch:PutMetricData",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "logs:DescribeLogGroups",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "logs:DescribeLogStreams",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AppFLINK111LogGroup8B96ECB4",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "logs:PutLogEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:",
+          {
+           "Ref": "AppFLINK111LogGroup8B96ECB4"
+          },
+          ":log-stream:",
+          {
+           "Ref": "AppFLINK111LogStream9FBA643C"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AppFLINK111RoleDefaultPolicy76505541",
+    "Roles": [
+     {
+      "Ref": "AppFLINK111Role85754B20"
+     }
+    ]
+   }
+  },
+  "AppFLINK1115BD3FEB8": {
+   "Type": "AWS::KinesisAnalyticsV2::Application",
+   "Properties": {
+    "ApplicationConfiguration": {
+     "ApplicationCodeConfiguration": {
+      "CodeContent": {
+       "S3ContentLocation": {
+        "BucketARN": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        },
+        "FileKey": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577.zip"
+       }
+      },
+      "CodeContentType": "ZIPFILE"
+     },
+     "ApplicationSnapshotConfiguration": {
+      "SnapshotsEnabled": true
+     }
+    },
+    "RuntimeEnvironment": "FLINK-1_11",
+    "ServiceExecutionRole": {
+     "Fn::GetAtt": [
+      "AppFLINK111Role85754B20",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AppFLINK111RoleDefaultPolicy76505541",
+    "AppFLINK111Role85754B20"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AppFLINK111LogGroup8B96ECB4": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AppFLINK111LogStream9FBA643C": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "AppFLINK111LogGroup8B96ECB4"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AppFLINK111LoggingOptionB868A248": {
+   "Type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
+   "Properties": {
+    "ApplicationName": {
+     "Ref": "AppFLINK1115BD3FEB8"
+    },
+    "CloudWatchLoggingOption": {
+     "LogStreamARN": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":logs:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":log-group:",
+        {
+         "Ref": "AppFLINK111LogGroup8B96ECB4"
+        },
+        ":log-stream:",
+        {
+         "Ref": "AppFLINK111LogStream9FBA643C"
+        }
+       ]
+      ]
+     }
+    }
+   }
+  },
+  "AlarmFLINK111B1BFA12F": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "Application",
+      "Value": {
+       "Ref": "AppFLINK1115BD3FEB8"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "fullRestarts",
+    "Namespace": "AWS/KinesisAnalytics",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 3
+   }
+  },
+  "AppFLINK113RoleE0638828": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "kinesisanalytics.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AppFLINK113RoleDefaultPolicy701032C8": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "cloudwatch:PutMetricData",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "logs:DescribeLogGroups",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "logs:DescribeLogStreams",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AppFLINK113LogGroupF5F42067",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "logs:PutLogEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:",
+          {
+           "Ref": "AppFLINK113LogGroupF5F42067"
+          },
+          ":log-stream:",
+          {
+           "Ref": "AppFLINK113LogStream63C2732B"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AppFLINK113RoleDefaultPolicy701032C8",
+    "Roles": [
+     {
+      "Ref": "AppFLINK113RoleE0638828"
+     }
+    ]
+   }
+  },
+  "AppFLINK1138C7FE76E": {
+   "Type": "AWS::KinesisAnalyticsV2::Application",
+   "Properties": {
+    "ApplicationConfiguration": {
+     "ApplicationCodeConfiguration": {
+      "CodeContent": {
+       "S3ContentLocation": {
+        "BucketARN": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        },
+        "FileKey": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577.zip"
+       }
+      },
+      "CodeContentType": "ZIPFILE"
+     },
+     "ApplicationSnapshotConfiguration": {
+      "SnapshotsEnabled": true
+     }
+    },
+    "RuntimeEnvironment": "FLINK-1_13",
+    "ServiceExecutionRole": {
+     "Fn::GetAtt": [
+      "AppFLINK113RoleE0638828",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AppFLINK113RoleDefaultPolicy701032C8",
+    "AppFLINK113RoleE0638828"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AppFLINK113LogGroupF5F42067": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AppFLINK113LogStream63C2732B": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "AppFLINK113LogGroupF5F42067"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AppFLINK113LoggingOption98F806DA": {
+   "Type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
+   "Properties": {
+    "ApplicationName": {
+     "Ref": "AppFLINK1138C7FE76E"
+    },
+    "CloudWatchLoggingOption": {
+     "LogStreamARN": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":logs:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":log-group:",
+        {
+         "Ref": "AppFLINK113LogGroupF5F42067"
+        },
+        ":log-stream:",
+        {
+         "Ref": "AppFLINK113LogStream63C2732B"
+        }
+       ]
+      ]
+     }
+    }
+   }
+  },
+  "AlarmFLINK1136262934D": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "Application",
+      "Value": {
+       "Ref": "AppFLINK1138C7FE76E"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "fullRestarts",
+    "Namespace": "AWS/KinesisAnalytics",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 3
+   }
+  },
+  "AppFLINK115RoleD758509C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "kinesisanalytics.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AppFLINK115RoleDefaultPolicy402697BF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "cloudwatch:PutMetricData",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "logs:DescribeLogGroups",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "logs:DescribeLogStreams",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AppFLINK115LogGroupBACCAB69",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "logs:PutLogEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:",
+          {
+           "Ref": "AppFLINK115LogGroupBACCAB69"
+          },
+          ":log-stream:",
+          {
+           "Ref": "AppFLINK115LogStreamD7900E5F"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AppFLINK115RoleDefaultPolicy402697BF",
+    "Roles": [
+     {
+      "Ref": "AppFLINK115RoleD758509C"
+     }
+    ]
+   }
+  },
+  "AppFLINK11548C6DD0B": {
+   "Type": "AWS::KinesisAnalyticsV2::Application",
+   "Properties": {
+    "ApplicationConfiguration": {
+     "ApplicationCodeConfiguration": {
+      "CodeContent": {
+       "S3ContentLocation": {
+        "BucketARN": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        },
+        "FileKey": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577.zip"
+       }
+      },
+      "CodeContentType": "ZIPFILE"
+     },
+     "ApplicationSnapshotConfiguration": {
+      "SnapshotsEnabled": true
+     }
+    },
+    "RuntimeEnvironment": "FLINK-1_15",
+    "ServiceExecutionRole": {
+     "Fn::GetAtt": [
+      "AppFLINK115RoleD758509C",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AppFLINK115RoleDefaultPolicy402697BF",
+    "AppFLINK115RoleD758509C"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AppFLINK115LogGroupBACCAB69": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AppFLINK115LogStreamD7900E5F": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "AppFLINK115LogGroupBACCAB69"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AppFLINK115LoggingOption201B75CF": {
+   "Type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
+   "Properties": {
+    "ApplicationName": {
+     "Ref": "AppFLINK11548C6DD0B"
+    },
+    "CloudWatchLoggingOption": {
+     "LogStreamARN": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":logs:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":log-group:",
+        {
+         "Ref": "AppFLINK115LogGroupBACCAB69"
+        },
+        ":log-stream:",
+        {
+         "Ref": "AppFLINK115LogStreamD7900E5F"
+        }
+       ]
+      ]
+     }
+    }
+   }
+  },
+  "AlarmFLINK1151BBA9866": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "Application",
+      "Value": {
+       "Ref": "AppFLINK11548C6DD0B"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "fullRestarts",
+    "Namespace": "AWS/KinesisAnalytics",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 3
+   }
+  },
+  "AppFLINK118Role1B878112": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "kinesisanalytics.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AppFLINK118RoleDefaultPolicy1D8097BB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "cloudwatch:PutMetricData",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "logs:DescribeLogGroups",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "logs:DescribeLogStreams",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AppFLINK118LogGroupEF87F95A",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "logs:PutLogEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:",
+          {
+           "Ref": "AppFLINK118LogGroupEF87F95A"
+          },
+          ":log-stream:",
+          {
+           "Ref": "AppFLINK118LogStreamAFAF3379"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AppFLINK118RoleDefaultPolicy1D8097BB",
+    "Roles": [
+     {
+      "Ref": "AppFLINK118Role1B878112"
+     }
+    ]
+   }
+  },
+  "AppFLINK118BEACE639": {
    "Type": "AWS::KinesisAnalyticsV2::Application",
    "Properties": {
     "ApplicationConfiguration": {
@@ -178,19 +1503,19 @@
     "RuntimeEnvironment": "FLINK-1_18",
     "ServiceExecutionRole": {
      "Fn::GetAtt": [
-      "AppRole1AF9B530",
+      "AppFLINK118Role1B878112",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AppRoleDefaultPolicy9CADBAA1",
-    "AppRole1AF9B530"
+    "AppFLINK118RoleDefaultPolicy1D8097BB",
+    "AppFLINK118Role1B878112"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AppLogGroupC72EEC8C": {
+  "AppFLINK118LogGroupEF87F95A": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 731
@@ -198,21 +1523,21 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "AppLogStream3CAF66A7": {
+  "AppFLINK118LogStreamAFAF3379": {
    "Type": "AWS::Logs::LogStream",
    "Properties": {
     "LogGroupName": {
-     "Ref": "AppLogGroupC72EEC8C"
+     "Ref": "AppFLINK118LogGroupEF87F95A"
     }
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "AppLoggingOption75BE995E": {
+  "AppFLINK118LoggingOption6EEBD514": {
    "Type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
    "Properties": {
     "ApplicationName": {
-     "Ref": "AppF1B96344"
+     "Ref": "AppFLINK118BEACE639"
     },
     "CloudWatchLoggingOption": {
      "LogStreamARN": {
@@ -233,11 +1558,11 @@
         },
         ":log-group:",
         {
-         "Ref": "AppLogGroupC72EEC8C"
+         "Ref": "AppFLINK118LogGroupEF87F95A"
         },
         ":log-stream:",
         {
-         "Ref": "AppLogStream3CAF66A7"
+         "Ref": "AppFLINK118LogStreamAFAF3379"
         }
        ]
       ]
@@ -245,7 +1570,7 @@
     }
    }
   },
-  "Alarm7103F465": {
+  "AlarmFLINK118680AE078": {
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
@@ -253,7 +1578,537 @@
      {
       "Name": "Application",
       "Value": {
-       "Ref": "AppF1B96344"
+       "Ref": "AppFLINK118BEACE639"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "fullRestarts",
+    "Namespace": "AWS/KinesisAnalytics",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 3
+   }
+  },
+  "AppFLINK119Role6594F124": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "kinesisanalytics.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AppFLINK119RoleDefaultPolicy6EB1C39D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "cloudwatch:PutMetricData",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "logs:DescribeLogGroups",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "logs:DescribeLogStreams",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AppFLINK119LogGroup472EA32B",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "logs:PutLogEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:",
+          {
+           "Ref": "AppFLINK119LogGroup472EA32B"
+          },
+          ":log-stream:",
+          {
+           "Ref": "AppFLINK119LogStream5FD726B5"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AppFLINK119RoleDefaultPolicy6EB1C39D",
+    "Roles": [
+     {
+      "Ref": "AppFLINK119Role6594F124"
+     }
+    ]
+   }
+  },
+  "AppFLINK119DAC5CF3C": {
+   "Type": "AWS::KinesisAnalyticsV2::Application",
+   "Properties": {
+    "ApplicationConfiguration": {
+     "ApplicationCodeConfiguration": {
+      "CodeContent": {
+       "S3ContentLocation": {
+        "BucketARN": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        },
+        "FileKey": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577.zip"
+       }
+      },
+      "CodeContentType": "ZIPFILE"
+     },
+     "ApplicationSnapshotConfiguration": {
+      "SnapshotsEnabled": true
+     }
+    },
+    "RuntimeEnvironment": "FLINK-1_19",
+    "ServiceExecutionRole": {
+     "Fn::GetAtt": [
+      "AppFLINK119Role6594F124",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AppFLINK119RoleDefaultPolicy6EB1C39D",
+    "AppFLINK119Role6594F124"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AppFLINK119LogGroup472EA32B": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AppFLINK119LogStream5FD726B5": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "AppFLINK119LogGroup472EA32B"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AppFLINK119LoggingOption224F0C40": {
+   "Type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
+   "Properties": {
+    "ApplicationName": {
+     "Ref": "AppFLINK119DAC5CF3C"
+    },
+    "CloudWatchLoggingOption": {
+     "LogStreamARN": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":logs:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":log-group:",
+        {
+         "Ref": "AppFLINK119LogGroup472EA32B"
+        },
+        ":log-stream:",
+        {
+         "Ref": "AppFLINK119LogStream5FD726B5"
+        }
+       ]
+      ]
+     }
+    }
+   }
+  },
+  "AlarmFLINK1194841405B": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "Application",
+      "Value": {
+       "Ref": "AppFLINK119DAC5CF3C"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "fullRestarts",
+    "Namespace": "AWS/KinesisAnalytics",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 3
+   }
+  },
+  "AppFLINK120RoleDC5875D6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "kinesisanalytics.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AppFLINK120RoleDefaultPolicy2540C6BA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "cloudwatch:PutMetricData",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "logs:DescribeLogGroups",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "logs:DescribeLogStreams",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AppFLINK120LogGroupFFF89194",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "logs:PutLogEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":log-group:",
+          {
+           "Ref": "AppFLINK120LogGroupFFF89194"
+          },
+          ":log-stream:",
+          {
+           "Ref": "AppFLINK120LogStream155EEEF9"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AppFLINK120RoleDefaultPolicy2540C6BA",
+    "Roles": [
+     {
+      "Ref": "AppFLINK120RoleDC5875D6"
+     }
+    ]
+   }
+  },
+  "AppFLINK120E80F19CE": {
+   "Type": "AWS::KinesisAnalyticsV2::Application",
+   "Properties": {
+    "ApplicationConfiguration": {
+     "ApplicationCodeConfiguration": {
+      "CodeContent": {
+       "S3ContentLocation": {
+        "BucketARN": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        },
+        "FileKey": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577.zip"
+       }
+      },
+      "CodeContentType": "ZIPFILE"
+     },
+     "ApplicationSnapshotConfiguration": {
+      "SnapshotsEnabled": true
+     }
+    },
+    "RuntimeEnvironment": "FLINK-1_20",
+    "ServiceExecutionRole": {
+     "Fn::GetAtt": [
+      "AppFLINK120RoleDC5875D6",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AppFLINK120RoleDefaultPolicy2540C6BA",
+    "AppFLINK120RoleDC5875D6"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AppFLINK120LogGroupFFF89194": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AppFLINK120LogStream155EEEF9": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "AppFLINK120LogGroupFFF89194"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AppFLINK120LoggingOption6B00A786": {
+   "Type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
+   "Properties": {
+    "ApplicationName": {
+     "Ref": "AppFLINK120E80F19CE"
+    },
+    "CloudWatchLoggingOption": {
+     "LogStreamARN": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":logs:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":log-group:",
+        {
+         "Ref": "AppFLINK120LogGroupFFF89194"
+        },
+        ":log-stream:",
+        {
+         "Ref": "AppFLINK120LogStream155EEEF9"
+        }
+       ]
+      ]
+     }
+    }
+   }
+  },
+  "AlarmFLINK120DB2152C4": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "Application",
+      "Value": {
+       "Ref": "AppFLINK120E80F19CE"
       }
      }
     ],

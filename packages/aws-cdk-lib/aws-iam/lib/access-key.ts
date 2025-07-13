@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { CfnAccessKey } from './iam.generated';
 import { IUser } from './user';
 import { IResource, Resource, SecretValue } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Valid statuses for an IAM Access Key.
@@ -73,12 +75,17 @@ export interface AccessKeyProps {
 /**
  * Define a new IAM Access Key.
  */
+@propertyInjectable
 export class AccessKey extends Resource implements IAccessKey {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.AccessKey';
   public readonly accessKeyId: string;
   public readonly secretAccessKey: SecretValue;
 
   constructor(scope: Construct, id: string, props: AccessKeyProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     const accessKey = new CfnAccessKey(this, 'Resource', {
       userName: props.user.userName,
       serial: props.serial,

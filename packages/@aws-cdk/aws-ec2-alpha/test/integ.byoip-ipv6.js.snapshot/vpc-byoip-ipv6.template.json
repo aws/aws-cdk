@@ -1,0 +1,186 @@
+{
+ "Resources": {
+  "VPCintegtest1EBA1CB75": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.1.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "vpc-byoip-ipv6/VPC-integ-test-1"
+     }
+    ]
+   }
+  },
+  "VPCintegtest1MyByoipIpv6BlockC474849A": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "Ipv6CidrBlock": "2600:f0f0:8::/56",
+    "Ipv6Pool": "ipv6pool-ec2-0a95217e154b65493",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "Subnetintegtest1Subnet33DEE36B": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-west-2a",
+    "CidrBlock": "10.1.1.0/24",
+    "Ipv6CidrBlock": "2600:f0f0:8:1::/64",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCintegtest1MyByoipIpv6BlockC474849A"
+   ]
+  },
+  "Subnetintegtest1RouteTableD7246BB7": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCintegtest1MyByoipIpv6BlockC474849A"
+   ]
+  },
+  "Subnetintegtest1RouteTableAssociation25E3C72D": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "Subnetintegtest1RouteTableD7246BB7",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "Subnetintegtest1Subnet33DEE36B"
+    }
+   },
+   "DependsOn": [
+    "VPCintegtest1MyByoipIpv6BlockC474849A"
+   ]
+  },
+  "Subnetintegtest2Subnet5A56D422": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-west-2a",
+    "CidrBlock": "10.1.0.0/24",
+    "Ipv6CidrBlock": "2600:f0f0:8:0::/64",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCintegtest1MyByoipIpv6BlockC474849A"
+   ]
+  },
+  "Subnetintegtest2RouteTable2528D856": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtest1EBA1CB75",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCintegtest1MyByoipIpv6BlockC474849A"
+   ]
+  },
+  "Subnetintegtest2RouteTableAssociation9569A2C6": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "Subnetintegtest2RouteTable2528D856",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "Subnetintegtest2Subnet5A56D422"
+    }
+   },
+   "DependsOn": [
+    "VPCintegtest1MyByoipIpv6BlockC474849A"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

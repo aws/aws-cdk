@@ -3,12 +3,16 @@ import { User } from '../../../aws-iam';
 import { Stack } from '../../../core';
 import { WebSocketApi, WebSocketStage } from '../../lib';
 
+let stack: Stack;
+let api: WebSocketApi;
+
+beforeEach(() => {
+  stack = new Stack();
+  api = new WebSocketApi(stack, 'Api');
+});
+
 describe('WebSocketStage', () => {
   test('default', () => {
-    // GIVEN
-    const stack = new Stack();
-    const api = new WebSocketApi(stack, 'Api');
-
     // WHEN
     const defaultStage = new WebSocketStage(stack, 'Stage', {
       webSocketApi: api,
@@ -24,10 +28,6 @@ describe('WebSocketStage', () => {
   });
 
   test('import', () => {
-    // GIVEN
-    const stack = new Stack();
-    const api = new WebSocketApi(stack, 'Api');
-
     // WHEN
     const stage = new WebSocketStage(stack, 'Stage', {
       webSocketApi: api,
@@ -46,10 +46,6 @@ describe('WebSocketStage', () => {
   });
 
   test('callback URL', () => {
-    // GIVEN
-    const stack = new Stack();
-    const api = new WebSocketApi(stack, 'Api');
-
     // WHEN
     const defaultStage = new WebSocketStage(stack, 'Stage', {
       webSocketApi: api,
@@ -64,8 +60,6 @@ describe('WebSocketStage', () => {
   describe('grantManageConnections', () => {
     test('adds an IAM policy to the principal', () => {
       // GIVEN
-      const stack = new Stack();
-      const api = new WebSocketApi(stack, 'Api');
       const defaultStage = new WebSocketStage(stack, 'Stage', {
         webSocketApi: api,
         stageName: 'dev',
@@ -109,10 +103,6 @@ describe('WebSocketStage', () => {
   });
 
   test('correctly sets throttle settings', () => {
-    // GIVEN
-    const stack = new Stack();
-    const api = new WebSocketApi(stack, 'Api');
-
     // WHEN
     new WebSocketStage(stack, 'DefaultStage', {
       webSocketApi: api,
@@ -134,11 +124,49 @@ describe('WebSocketStage', () => {
     });
   });
 
-  test('specify description', () => {
-    // GIVEN
-    const stack = new Stack();
-    const api = new WebSocketApi(stack, 'Api');
+  test('correctly sets details metrics settings', () => {
+    // WHEN
+    new WebSocketStage(stack, 'DefaultStage', {
+      webSocketApi: api,
+      stageName: 'dev',
+      detailedMetricsEnabled: true,
+    });
 
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: 'dev',
+      DefaultRouteSettings: {
+        DetailedMetricsEnabled: true,
+      },
+    });
+  });
+
+  test('correctly sets route settings', () => {
+    // WHEN
+    new WebSocketStage(stack, 'DefaultStage', {
+      webSocketApi: api,
+      stageName: 'dev',
+      throttle: {
+        burstLimit: 1000,
+        rateLimit: 1000,
+      },
+      detailedMetricsEnabled: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: 'dev',
+      DefaultRouteSettings: {
+        ThrottlingBurstLimit: 1000,
+        ThrottlingRateLimit: 1000,
+        DetailedMetricsEnabled: true,
+      },
+    });
+  });
+
+  test('specify description', () => {
     // WHEN
     new WebSocketStage(stack, 'DefaultStage', {
       webSocketApi: api,
@@ -149,6 +177,29 @@ describe('WebSocketStage', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
       Description: 'My Stage',
+    });
+  });
+
+  test('can add stage variables after creation', () => {
+    // WHEN
+    const stage = new WebSocketStage(stack, 'DefaultStage', {
+      webSocketApi: api,
+      stageName: 'dev',
+      stageVariables: {
+        env: 'dev',
+      },
+    });
+
+    stage.addStageVariable('timeout', '600');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: 'dev',
+      StageVariables: {
+        env: 'dev',
+        timeout: '600',
+      },
     });
   });
 });

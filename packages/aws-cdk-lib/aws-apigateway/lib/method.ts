@@ -14,8 +14,10 @@ import { validateHttpMethod } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { Annotations, ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID } from '../../cx-api';
-
 export interface MethodOptions {
   /**
    * A friendly operation name for the method. For example, you can assign the
@@ -162,7 +164,13 @@ export interface MethodProps {
   readonly options?: MethodOptions;
 }
 
+@propertyInjectable
 export class Method extends Resource {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.Method';
+
   /** @attribute */
   public readonly methodId: string;
 
@@ -177,6 +185,8 @@ export class Method extends Resource {
 
   constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.resource = props.resource;
     this.api = props.resource.api;
@@ -185,22 +195,35 @@ export class Method extends Resource {
     validateHttpMethod(this.httpMethod);
 
     const options = props.options || {};
-
     const defaultMethodOptions = props.resource.defaultMethodOptions || {};
+
     // do not use the default authorizer config in case if the provided authorizer type is None
     const authorizer =
         options.authorizationType === AuthorizationType.NONE
         && options.authorizer == undefined ? undefined : options.authorizer || defaultMethodOptions.authorizer;
     const authorizerId = authorizer?.authorizerId ? authorizer.authorizerId : undefined;
 
-    const authorizationTypeOption = options.authorizationType || defaultMethodOptions.authorizationType;
-    const authorizationType = authorizer?.authorizationType || authorizationTypeOption || AuthorizationType.NONE;
-
-    // if the authorizer defines an authorization type and we also have an explicit option set, check that they are the same
-    if (authorizer?.authorizationType && authorizationTypeOption && authorizer?.authorizationType !== authorizationTypeOption) {
-      throw new Error(`${this.resource}/${this.httpMethod} - Authorization type is set to ${authorizationTypeOption} ` +
-        `which is different from what is required by the authorizer [${authorizer.authorizationType}]`);
-    }
+    /**
+     * Get and validate authorization type from the values set by API resource and method.
+     *
+     * REST API Resource
+     * └── defaultMethodOptions: Method options to use as a default for all methods created within this API unless custom options are specified.
+     *    ├── authorizationType: Specifies the default authorization type unless custom options are specified, recommended to not be specified.
+     *    └── authorizer: Specifies the default authorizer for all methods created within this API unless custom options are specified.
+     *        └── authorizerType: The default authorization type of this authorizer.
+     *
+     * REST API Method
+     * └── options: Method options.
+     *    ├── authorizationType: Specifies the authorization type, recommended to not be specified.
+     *    └── authorizer: Specifies an authorizer to use for this method.
+     *        └── authorizerType: The authorization type of this authorizer.
+     *
+     * Authorization type is first set to "authorizer.authorizerType", falling back to method's "authorizationType",
+     * falling back to API resource's default "authorizationType", and lastly "Authorizer.NONE".
+     *
+     * Note that "authorizer.authorizerType" should match method or resource's "authorizationType" if exists.
+     */
+    const authorizationType = this.getMethodAuthorizationType(options, defaultMethodOptions, authorizer);
 
     // AuthorizationScope should only be applied to COGNITO_USER_POOLS AuthorizationType.
     const defaultScopes = options.authorizationScopes ?? defaultMethodOptions.authorizationScopes;
@@ -295,12 +318,34 @@ export class Method extends Resource {
    * for historical reasons, but will add a warning if this happens. If you do, your Method
    * will nondeterministically use one of the responses, and ignore the rest.
    */
+  @MethodMetadata()
   public addMethodResponse(methodResponse: MethodResponse): void {
     const mr = this.methodResponses.find((x) => x.statusCode === methodResponse.statusCode);
     if (mr) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-apigateway:duplicateStatusCodes', `addMethodResponse called multiple times with statusCode=${methodResponse.statusCode}, deployment will be nondeterministic. Use a single addMethodResponse call to configure the entire response.`);
     }
     this.methodResponses.push(methodResponse);
+  }
+
+  /**
+   * Get API Gateway Method's authorization type
+   * @param options API Gateway Method's options to use
+   * @param defaultMethodOptions API Gateway resource's default Method's options to use
+   * @param authorizer Authorizer used for API Gateway Method
+   * @returns API Gateway Method's authorizer type
+   */
+  private getMethodAuthorizationType(options: MethodOptions, defaultMethodOptions: MethodOptions, authorizer?: IAuthorizer): string {
+    const authorizerAuthType = authorizer?.authorizationType;
+    const optionsAuthType = options.authorizationType || defaultMethodOptions.authorizationType;
+    const finalAuthType = authorizerAuthType || optionsAuthType || AuthorizationType.NONE;
+
+    // if the authorizer defines an authorization type and we also have an explicit option set, check that they are the same
+    if (authorizerAuthType && optionsAuthType && authorizerAuthType !== optionsAuthType) {
+      throw new ValidationError(`${this.resource}/${this.httpMethod} - Authorization type is set to ${optionsAuthType} ` +
+        `which is different from what is required by the authorizer [${authorizerAuthType}]`, this);
+    }
+
+    return finalAuthType;
   }
 
   private renderIntegration(bindResult: IntegrationConfig): CfnMethod.IntegrationProperty {
@@ -374,7 +419,7 @@ export class Method extends Resource {
 
   private requestValidatorId(options: MethodOptions): string | undefined {
     if (options.requestValidator && options.requestValidatorOptions) {
-      throw new Error('Only one of \'requestValidator\' or \'requestValidatorOptions\' must be specified.');
+      throw new ValidationError('Only one of \'requestValidator\' or \'requestValidatorOptions\' must be specified.', this);
     }
 
     if (options.requestValidatorOptions) {
@@ -393,6 +438,7 @@ export class Method extends Resource {
   /**
    * Returns the given named metric for this API method
    */
+  @MethodMetadata()
   public metric(metricName: string, stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/ApiGateway',
@@ -407,6 +453,7 @@ export class Method extends Resource {
    *
    * @default - sum over 5 minutes
    */
+  @MethodMetadata()
   public metricClientError(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics._4XxErrorSum, stage, props);
   }
@@ -416,6 +463,7 @@ export class Method extends Resource {
    *
    * @default - sum over 5 minutes
    */
+  @MethodMetadata()
   public metricServerError(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics._5XxErrorSum, stage, props);
   }
@@ -425,6 +473,7 @@ export class Method extends Resource {
    *
    * @default - sum over 5 minutes
    */
+  @MethodMetadata()
   public metricCacheHitCount(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.cacheHitCountSum, stage, props);
   }
@@ -435,6 +484,7 @@ export class Method extends Resource {
    *
    * @default - sum over 5 minutes
    */
+  @MethodMetadata()
   public metricCacheMissCount(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.cacheMissCountSum, stage, props);
   }
@@ -444,6 +494,7 @@ export class Method extends Resource {
    *
    * @default - sample count over 5 minutes
    */
+  @MethodMetadata()
   public metricCount(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.countSum, stage, {
       statistic: 'SampleCount',
@@ -457,6 +508,7 @@ export class Method extends Resource {
    *
    * @default - average over 5 minutes.
    */
+  @MethodMetadata()
   public metricIntegrationLatency(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.integrationLatencyAverage, stage, props);
   }
@@ -468,6 +520,7 @@ export class Method extends Resource {
    *
    * @default - average over 5 minutes.
    */
+  @MethodMetadata()
   public metricLatency(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.latencyAverage, stage, props);
   }
@@ -477,6 +530,7 @@ export class Method extends Resource {
    *
    * @param grantee the principal
    */
+  @MethodMetadata()
   public grantExecute(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,

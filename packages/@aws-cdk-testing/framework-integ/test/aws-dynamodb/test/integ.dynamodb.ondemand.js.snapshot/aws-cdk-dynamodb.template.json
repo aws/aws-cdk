@@ -3,19 +3,23 @@
   "TableCD117FA1": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "KeySchema": [
-     {
-      "AttributeName": "hashKey",
-      "KeyType": "HASH"
-     }
-    ],
     "AttributeDefinitions": [
      {
       "AttributeName": "hashKey",
       "AttributeType": "S"
      }
     ],
-    "BillingMode": "PAY_PER_REQUEST"
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "hashKey",
+      "KeyType": "HASH"
+     }
+    ],
+    "OnDemandThroughput": {
+     "MaxReadRequestUnits": 100,
+     "MaxWriteRequestUnits": 200
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -23,16 +27,6 @@
   "TableWithGlobalAndLocalSecondaryIndexBC540710": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "KeySchema": [
-     {
-      "AttributeName": "hashKey",
-      "KeyType": "HASH"
-     },
-     {
-      "AttributeName": "sortKey",
-      "KeyType": "RANGE"
-     }
-    ],
     "AttributeDefinitions": [
      {
       "AttributeName": "hashKey",
@@ -65,6 +59,10 @@
         "KeyType": "HASH"
        }
       ],
+      "OnDemandThroughput": {
+       "MaxReadRequestUnits": 100,
+       "MaxWriteRequestUnits": 100
+      },
       "Projection": {
        "ProjectionType": "ALL"
       }
@@ -144,6 +142,16 @@
       "Projection": {
        "ProjectionType": "ALL"
       }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "hashKey",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sortKey",
+      "KeyType": "RANGE"
      }
     ],
     "LocalSecondaryIndexes": [
@@ -250,12 +258,6 @@
   "TableWithGlobalSecondaryIndexCC8E841E": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "KeySchema": [
-     {
-      "AttributeName": "hashKey",
-      "KeyType": "HASH"
-     }
-    ],
     "AttributeDefinitions": [
      {
       "AttributeName": "hashKey",
@@ -280,6 +282,12 @@
        "ProjectionType": "ALL"
       }
      }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "hashKey",
+      "KeyType": "HASH"
+     }
     ]
    },
    "UpdateReplacePolicy": "Delete",
@@ -288,16 +296,6 @@
   "TableWithLocalSecondaryIndex4DA3D08F": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "KeySchema": [
-     {
-      "AttributeName": "hashKey",
-      "KeyType": "HASH"
-     },
-     {
-      "AttributeName": "sortKey",
-      "KeyType": "RANGE"
-     }
-    ],
     "AttributeDefinitions": [
      {
       "AttributeName": "hashKey",
@@ -313,6 +311,16 @@
      }
     ],
     "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "hashKey",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sortKey",
+      "KeyType": "RANGE"
+     }
+    ],
     "LocalSecondaryIndexes": [
      {
       "IndexName": "LSI-PartitionAndSortKey",

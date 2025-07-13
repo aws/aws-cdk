@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "integ-tests/DefaultTest": {
+      "stacks": [
+        "aws-cdk-firehose-delivery-stream-events-target"
+      ],
+      "assertionStack": "integ-tests/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestsDefaultTestDeployAssert44C8D370"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

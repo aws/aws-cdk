@@ -7,7 +7,9 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    new PlaceIndex(this, 'PlaceIndex');
+    new PlaceIndex(this, 'PlaceIndex', {
+      placeIndexName: 'my_place_index',
+    });
   }
 }
 

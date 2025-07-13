@@ -51,6 +51,47 @@ test('create basic endpoint config', () => {
   });
 });
 
+test('create basic endpoint config - using JSONata', () => {
+  // WHEN
+  const task = tasks.SageMakerCreateEndpointConfig.jsonata(stack, 'SagemakerEndpointConfig', {
+    endpointConfigName: 'MyEndpointConfig',
+    productionVariants: [{
+      initialInstanceCount: 2,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
+      modelName: 'MyModel',
+      variantName: 'awesome-variant',
+    }],
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::sagemaker:createEndpointConfig',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      EndpointConfigName: 'MyEndpointConfig',
+      ProductionVariants: [{
+        InitialInstanceCount: 2,
+        InstanceType: 'ml.m5.xlarge',
+        ModelName: 'MyModel',
+        VariantName: 'awesome-variant',
+      }],
+    },
+  });
+});
+
 test('create complex endpoint config', () => {
   // WHEN
   const key = new kms.Key(stack, 'Key');
@@ -128,7 +169,7 @@ test('Cannot create a SageMaker create enpoint config task with empty production
     endpointConfigName: 'MyEndpointConfig',
     productionVariants: [],
   }))
-    .toThrowError(/Must specify from 1 to 10 production variants per endpoint configuration/);
+    .toThrow(/Must specify from 1 to 10 production variants per endpoint configuration/);
 });
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
@@ -142,6 +183,6 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       variantName: 'awesome-variant',
     }],
   }))
-    .toThrowError(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/i);
+    .toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/i);
 });
 

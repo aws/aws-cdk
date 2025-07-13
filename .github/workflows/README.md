@@ -55,6 +55,11 @@ When approved this pushes the PR to the testing pipeline,
 thus starting the cli integ test build.
 Owner: Core CDK team
 
+### Initial Priority Assignment
+
+[project-prioritization-assignment.yml](project-prioritization-assignment.yml): GitHub action for automatically adding PR's with priorities to the project priority board based on their labels.
+Owner: CDK Support team
+
 ## Issue Triggered
 
 ### Closed Issue Message
@@ -66,6 +71,11 @@ Owner: CDK support team
 ### Label Assigner
 
 [issue-label-assign.yml](issue-label-assign.yml): Github action for automatically adding labels and/or setting assignees when an Issue or PR is opened or edited based on user-defined Area
+Owner: CDK support team
+
+### P1 Bug Priority Assignment
+
+[project-prioritization-bug.yml](project-prioritization-bug.yml): Github action for automatically adding P1 bugs to the prioritization project board
 Owner: CDK support team
 
 ## Scheduled Actions
@@ -80,6 +90,12 @@ Owner: CDK support team
 
 [yarn-upgrade.yml](yarn-upgrade.yml): Upgrades yarn dependencies and creates a
 patch file for downloading.
+Owner: Core CDK team
+
+### Yarn Upgrader for deps needing manual work
+
+[yarn-upgrade-need-manual-work.yml](yarn-upgrade-need-manual-work.yml): Upgrades specific dependencies that require manual intervention and creates a PR for review.
+For example, some dependency upgrades require manual updates to the integ test snapshots.
 Owner: Core CDK team
 
 ### AWS Service Spec Update
@@ -103,3 +119,23 @@ Owner: Core CDK team
 
 [update-contributors.yml](update-contributors.yml): GitHub action that runs monthly to create a pull request for updating a CONTRIBUTORS file with the top contributors.
 Owner: Core CDK team
+
+### R2 Priority Assignment
+
+[project-prioritization-r2-assignment.yml](project-prioritization-r2-assignment.yml): GitHub action that runs every 6 hours to add PR's to the priority project board that satisfies R2 Priority.
+Owner: CDK Support team
+
+### R5 Priority Assignment
+
+[project-prioritization-r5-assignment.yml](project-prioritization-r5-assignment.yml): GitHub action that runs every day to add PR's to the priority project board that satisfies R5 Priority.
+Owner: CDK Support team
+
+### Needs Attention Status Update
+
+[project-prioritization-needs-attention.yml](project-prioritization-needs-attention.yml): GitHub action that runs every day to update Needs Attention field in the prioritization project board.
+Owner: CDK Support team
+
+### PR Prioritization AddedOn update
+
+[project-prioritization-added-on.yml](project-prioritization-added-on.yml): GitHub action that runs every day to update AddedOn field in the prioritization project board.
+Owner: CDK Support team

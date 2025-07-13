@@ -412,6 +412,20 @@
      {
       "Key": "access_logs.s3.prefix",
       "Value": ""
+     },
+     {
+      "Key": "connection_logs.s3.enabled",
+      "Value": "true"
+     },
+     {
+      "Key": "connection_logs.s3.bucket",
+      "Value": {
+       "Ref": "LBALBConnectionLogsBucket4BFA48DB"
+      }
+     },
+     {
+      "Key": "connection_logs.s3.prefix",
+      "Value": ""
      }
     ],
     "Scheme": "internet-facing",
@@ -434,7 +448,8 @@
     "Type": "application"
    },
    "DependsOn": [
-    "LBALBAccessLogsBucket6AE92937",
+    "LBALBAccessLogsBucketPolicy1E4EBAFE",
+    "LBALBConnectionLogsBucketPolicy62509153",
     "VPCPublicSubnet1DefaultRoute91CEF279",
     "VPCPublicSubnet1RouteTableAssociation0B0896DC",
     "VPCPublicSubnet2DefaultRouteB7481BBA",
@@ -638,6 +653,185 @@
        "Resource": {
         "Fn::GetAtt": [
          "LBALBAccessLogsBucket6AE92937",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "LBALBConnectionLogsBucket4BFA48DB": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "LoggingConfiguration": {
+     "LogFilePrefix": "selflog/"
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "LBALBConnectionLogsBucketPolicy62509153": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "LBALBConnectionLogsBucket4BFA48DB"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "LBALBConnectionLogsBucket4BFA48DB",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "LBALBConnectionLogsBucket4BFA48DB",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "s3:PutObject",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "LBALBConnectionLogsBucket4BFA48DB",
+           "Arn"
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "logging.s3.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "LBALBConnectionLogsBucket4BFA48DB",
+            "Arn"
+           ]
+          },
+          "/selflog/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "s3:PutObject",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "arn:aws:iam::797873946194:root"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "LBALBConnectionLogsBucket4BFA48DB",
+            "Arn"
+           ]
+          },
+          "/AWSLogs/",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          "/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "s3:PutObject",
+       "Condition": {
+        "StringEquals": {
+         "s3:x-amz-acl": "bucket-owner-full-control"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "delivery.logs.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "LBALBConnectionLogsBucket4BFA48DB",
+            "Arn"
+           ]
+          },
+          "/AWSLogs/",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          "/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "s3:GetBucketAcl",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "delivery.logs.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "LBALBConnectionLogsBucket4BFA48DB",
          "Arn"
         ]
        }

@@ -1,5 +1,6 @@
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from '../../assertions';
-import { App, CfnOutput, Stack } from '../../core';
+import { App, Stack } from '../../core';
 import { Addon, KubernetesVersion, Cluster } from '../lib';
 
 describe('Addon', () => {
@@ -11,13 +12,12 @@ describe('Addon', () => {
     app = new App();
     stack = new Stack(app, 'Stack');
     cluster = new Cluster(stack, 'Cluster', {
-      version: KubernetesVersion.V1_30,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      version: KubernetesVersion.V1_33,
     });
   });
 
   test('creates a new Addon', () => {
-    // GIVEN
-
     // WHEN
     new Addon(stack, 'TestAddon', {
       addonName: 'test-addon',
@@ -52,6 +52,46 @@ describe('Addon', () => {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
+    });
+  });
+  test('create a new Addon with preserveOnDelete', () => {
+    // GIVEN
+
+    // WHEN
+    new Addon(stack, 'TestAddonWithPreserveOnDelete', {
+      addonName: 'test-addon',
+      cluster,
+      preserveOnDelete: false,
+    });
+
+    // THEN
+    const t = Template.fromStack(stack);
+    t.hasResourceProperties('AWS::EKS::Addon', {
+      AddonName: 'test-addon',
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      PreserveOnDelete: false,
+    });
+  });
+
+  test('create a new Addon with configurationValues', () => {
+    // WHEN
+    new Addon(stack, 'TestAddonWithPreserveOnDelete', {
+      addonName: 'test-addon',
+      cluster,
+      configurationValues: {
+        replicaCount: 2,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Addon', {
+      AddonName: 'test-addon',
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      ConfigurationValues: '{\"replicaCount\":2}',
     });
   });
 

@@ -1,0 +1,463 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "IotAuditConfigurationTestStack": {
+        "id": "IotAuditConfigurationTestStack",
+        "path": "IotAuditConfigurationTestStack",
+        "children": {
+          "Topic": {
+            "id": "Topic",
+            "path": "IotAuditConfigurationTestStack/Topic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "IotAuditConfigurationTestStack/Topic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "AuditConfiguration": {
+            "id": "AuditConfiguration",
+            "path": "IotAuditConfigurationTestStack/AuditConfiguration",
+            "children": {
+              "AuditRole": {
+                "id": "AuditRole",
+                "path": "IotAuditConfigurationTestStack/AuditConfiguration/AuditRole",
+                "children": {
+                  "ImportAuditRole": {
+                    "id": "ImportAuditRole",
+                    "path": "IotAuditConfigurationTestStack/AuditConfiguration/AuditRole/ImportAuditRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "IotAuditConfigurationTestStack/AuditConfiguration/AuditRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "iot.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSIoTDeviceDefenderAudit"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              },
+              "NotificationRole": {
+                "id": "NotificationRole",
+                "path": "IotAuditConfigurationTestStack/AuditConfiguration/NotificationRole",
+                "children": {
+                  "ImportNotificationRole": {
+                    "id": "ImportNotificationRole",
+                    "path": "IotAuditConfigurationTestStack/AuditConfiguration/NotificationRole/ImportNotificationRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "IotAuditConfigurationTestStack/AuditConfiguration/NotificationRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "iot.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "NotificationPolicy",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sns:Publish",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "TopicBFC7AF6E"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "IotAuditConfigurationTestStack/AuditConfiguration/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoT::AccountAuditConfiguration",
+                  "aws:cdk:cloudformation:props": {
+                    "accountId": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "auditCheckConfigurations": {
+                      "authenticatedCognitoRoleOverlyPermissiveCheck": {
+                        "enabled": true
+                      },
+                      "caCertificateExpiringCheck": {
+                        "enabled": true
+                      },
+                      "caCertificateKeyQualityCheck": {
+                        "enabled": true
+                      },
+                      "conflictingClientIdsCheck": {
+                        "enabled": true
+                      },
+                      "deviceCertificateAgeCheck": {
+                        "enabled": true,
+                        "configuration": {
+                          "certAgeThresholdInDays": "1229"
+                        }
+                      },
+                      "deviceCertificateExpiringCheck": {
+                        "enabled": true
+                      },
+                      "deviceCertificateKeyQualityCheck": {
+                        "enabled": true
+                      },
+                      "deviceCertificateSharedCheck": {
+                        "enabled": true
+                      },
+                      "intermediateCaRevokedForActiveDeviceCertificatesCheck": {
+                        "enabled": true
+                      },
+                      "iotPolicyOverlyPermissiveCheck": {
+                        "enabled": true
+                      },
+                      "ioTPolicyPotentialMisConfigurationCheck": {
+                        "enabled": true
+                      },
+                      "iotRoleAliasAllowsAccessToUnusedServicesCheck": {
+                        "enabled": true
+                      },
+                      "iotRoleAliasOverlyPermissiveCheck": {
+                        "enabled": true
+                      },
+                      "loggingDisabledCheck": {
+                        "enabled": true
+                      },
+                      "revokedCaCertificateStillActiveCheck": {
+                        "enabled": true
+                      },
+                      "revokedDeviceCertificateStillActiveCheck": {
+                        "enabled": true
+                      },
+                      "unauthenticatedCognitoRoleOverlyPermissiveCheck": {
+                        "enabled": true
+                      }
+                    },
+                    "auditNotificationTargetConfigurations": {
+                      "sns": {
+                        "enabled": true,
+                        "targetArn": {
+                          "Ref": "TopicBFC7AF6E"
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "AuditConfigurationNotificationRole9774BAD4",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "AuditConfigurationAuditRole0FFA1461",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iot-alpha.AccountAuditConfiguration",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "DailyAudit": {
+            "id": "DailyAudit",
+            "path": "IotAuditConfigurationTestStack/DailyAudit",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "IotAuditConfigurationTestStack/DailyAudit/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoT::ScheduledAudit",
+                  "aws:cdk:cloudformation:props": {
+                    "frequency": "DAILY",
+                    "targetCheckNames": [
+                      "AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK"
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iot-alpha.ScheduledAudit",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "WeeklyAudit": {
+            "id": "WeeklyAudit",
+            "path": "IotAuditConfigurationTestStack/WeeklyAudit",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "IotAuditConfigurationTestStack/WeeklyAudit/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoT::ScheduledAudit",
+                  "aws:cdk:cloudformation:props": {
+                    "dayOfWeek": "SUN",
+                    "frequency": "WEEKLY",
+                    "targetCheckNames": [
+                      "CA_CERTIFICATE_EXPIRING_CHECK"
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iot-alpha.ScheduledAudit",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "MonthlyAudit": {
+            "id": "MonthlyAudit",
+            "path": "IotAuditConfigurationTestStack/MonthlyAudit",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "IotAuditConfigurationTestStack/MonthlyAudit/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoT::ScheduledAudit",
+                  "aws:cdk:cloudformation:props": {
+                    "dayOfMonth": "LAST",
+                    "frequency": "MONTHLY",
+                    "targetCheckNames": [
+                      "CA_CERTIFICATE_KEY_QUALITY_CHECK",
+                      "CONFLICTING_CLIENT_IDS_CHECK",
+                      "DEVICE_CERTIFICATE_EXPIRING_CHECK",
+                      "DEVICE_CERTIFICATE_KEY_QUALITY_CHECK",
+                      "DEVICE_CERTIFICATE_SHARED_CHECK",
+                      "IOT_POLICY_OVERLY_PERMISSIVE_CHECK",
+                      "IOT_ROLE_ALIAS_ALLOWS_ACCESS_TO_UNUSED_SERVICES_CHECK",
+                      "IOT_ROLE_ALIAS_OVERLY_PERMISSIVE_CHECK",
+                      "LOGGING_DISABLED_CHECK",
+                      "REVOKED_CA_CERTIFICATE_STILL_ACTIVE_CHECK",
+                      "REVOKED_DEVICE_CERTIFICATE_STILL_ACTIVE_CHECK",
+                      "UNAUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK"
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iot-alpha.ScheduledAudit",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "IotAuditConfigurationTestStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "IotAuditConfigurationTestStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      },
+      "IotAuditConfigurationTest": {
+        "id": "IotAuditConfigurationTest",
+        "path": "IotAuditConfigurationTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "IotAuditConfigurationTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "IotAuditConfigurationTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "IotAuditConfigurationTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "IotAuditConfigurationTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "IotAuditConfigurationTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.4.2"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "testCases": {
     "Rooute53DeleteExistingRecordSetInteg/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "Rooute53DeleteExistingRecordSetInteg/DefaultTest/DeployAssert",
       "assertionStackName": "Rooute53DeleteExistingRecordSetIntegDefaultTestDeployAssert62638412"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

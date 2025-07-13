@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "testCases": {
     "ServerDeploymentGroupZonalConfig/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "ServerDeploymentGroupZonalConfig/DefaultTest/DeployAssert",
       "assertionStackName": "ServerDeploymentGroupZonalConfigDefaultTestDeployAssertEA00EA72"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

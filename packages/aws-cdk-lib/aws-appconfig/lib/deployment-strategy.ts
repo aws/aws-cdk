@@ -1,6 +1,8 @@
 import { Construct } from 'constructs';
 import { CfnDeploymentStrategy } from './appconfig.generated';
-import { Resource, IResource, Stack, ArnFormat, Names, Duration } from '../../core';
+import { Resource, IResource, Stack, ArnFormat, Names, Duration, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for DeploymentStrategy.
@@ -34,7 +36,11 @@ export interface DeploymentStrategyProps {
  * @resource AWS::AppConfig::DeploymentStrategy
  * @see https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-deployment-strategy.html
  */
+@propertyInjectable
 export class DeploymentStrategy extends Resource implements IDeploymentStrategy {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appconfig.DeploymentStrategy';
+
   /**
    * Imports a deployment strategy into the CDK using its Amazon Resource Name (ARN).
    *
@@ -46,7 +52,7 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
     const parsedArn = Stack.of(scope).splitArn(deploymentStrategyArn, ArnFormat.SLASH_RESOURCE_NAME);
     const deploymentStrategyId = parsedArn.resourceName;
     if (!deploymentStrategyId) {
-      throw new Error('Missing required deployment strategy id from deployment strategy ARN');
+      throw new ValidationError('Missing required deployment strategy id from deployment strategy ARN', scope);
     }
 
     class Import extends Resource implements IDeploymentStrategy {
@@ -132,6 +138,8 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
     super(scope, id, {
       physicalName: props.deploymentStrategyName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.deploymentDurationInMinutes = props.rolloutStrategy.deploymentDuration.toMinutes();
     this.growthFactor = props.rolloutStrategy.growthFactor;

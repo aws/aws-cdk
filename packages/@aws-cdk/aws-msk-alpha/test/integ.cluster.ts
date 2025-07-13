@@ -10,8 +10,11 @@ import * as cdk from 'aws-cdk-lib';
 import { IntegTest, AssertionsProvider, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as msk from '../lib';
 
-const app = new cdk.App();
-
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 class FeatureFlagStack extends cdk.Stack {
   public readonly bucketArn: string;
   public readonly bucket: s3.IBucket;
@@ -195,7 +198,6 @@ class FeatureFlagStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     new cdk.CfnOutput(this, 'BootstrapBrokers9', { value: cluster7.bootstrapBrokersTls });
-
   }
 }
 

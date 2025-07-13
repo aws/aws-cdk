@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "cdk-integ-elasticsearch.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/15cdd86e355b43a3a887a18d1ba8bc078798a3e1cf0156368862837dcb7597cf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4e28dc309e1d8bdad3502933fd26be9dc4e516aeced7e9f2eeaf119aff241ee7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,57 @@
         "cdk-integ-elasticsearch.assets"
       ],
       "metadata": {
+        "/cdk-integ-elasticsearch/Domain1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "version": "*",
+              "ebs": {
+                "volumeSize": "*",
+                "volumeType": "gp2"
+              },
+              "logging": {
+                "slowSearchLogEnabled": true,
+                "appLogEnabled": true
+              },
+              "nodeToNodeEncryption": true,
+              "encryptionAtRest": {
+                "enabled": true
+              },
+              "advancedOptions": "*",
+              "accessPolicies": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAccessPolicies": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-elasticsearch/Domain1/SlowSearchLogs": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "retention": 30
+            }
+          }
+        ],
         "/cdk-integ-elasticsearch/Domain1/SlowSearchLogs/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain1SlowSearchLogs8F3B0506"
+          }
+        ],
+        "/cdk-integ-elasticsearch/Domain1/AppLogs": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "retention": 30
+            }
           }
         ],
         "/cdk-integ-elasticsearch/Domain1/AppLogs/Resource": [
@@ -46,10 +93,93 @@
             "data": "Domain1AppLogs6E8D1D67"
           }
         ],
+        "/cdk-integ-elasticsearch/Domain1/ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6/Provider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-elasticsearch/Domain1/ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-integ-elasticsearch/Domain1/ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain1ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6D8BDCF36"
+          }
+        ],
+        "/cdk-integ-elasticsearch/Domain1/ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/cdk-integ-elasticsearch/Domain1/ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6/CustomResourcePolicy/Resource": [
@@ -64,10 +194,85 @@
             "data": "Domain19FCBCB91"
           }
         ],
+        "/cdk-integ-elasticsearch/Domain1/ESAccessPolicy/Provider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-elasticsearch/Domain1/ESAccessPolicy/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-integ-elasticsearch/Domain1/ESAccessPolicy/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain1ESAccessPolicy5D846A31"
+          }
+        ],
+        "/cdk-integ-elasticsearch/Domain1/ESAccessPolicy/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/cdk-integ-elasticsearch/Domain1/ESAccessPolicy/CustomResourcePolicy/Resource": [
@@ -82,6 +287,109 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/cdk-integ-elasticsearch/AWS679f53fac002430cb0da5b7982bd2287": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
+        "/cdk-integ-elasticsearch/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-elasticsearch/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-integ-elasticsearch/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -94,10 +402,57 @@
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
+        "/cdk-integ-elasticsearch/Domain2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "version": "*",
+              "ebs": {
+                "volumeSize": "*",
+                "volumeType": "gp2"
+              },
+              "logging": {
+                "slowSearchLogEnabled": true,
+                "appLogEnabled": true
+              },
+              "nodeToNodeEncryption": true,
+              "encryptionAtRest": {
+                "enabled": true
+              },
+              "advancedOptions": "*",
+              "accessPolicies": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAccessPolicies": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-elasticsearch/Domain2/SlowSearchLogs": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "retention": 30
+            }
+          }
+        ],
         "/cdk-integ-elasticsearch/Domain2/SlowSearchLogs/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain2SlowSearchLogs0C75F64B"
+          }
+        ],
+        "/cdk-integ-elasticsearch/Domain2/AppLogs": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "retention": 30
+            }
           }
         ],
         "/cdk-integ-elasticsearch/Domain2/AppLogs/Resource": [
@@ -106,10 +461,93 @@
             "data": "Domain2AppLogs810876E2"
           }
         ],
+        "/cdk-integ-elasticsearch/Domain2/ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71/Provider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-elasticsearch/Domain2/ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-integ-elasticsearch/Domain2/ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain2ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71F1DE93A1"
+          }
+        ],
+        "/cdk-integ-elasticsearch/Domain2/ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/cdk-integ-elasticsearch/Domain2/ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71/CustomResourcePolicy/Resource": [
@@ -124,10 +562,85 @@
             "data": "Domain2644FE48C"
           }
         ],
+        "/cdk-integ-elasticsearch/Domain2/ESAccessPolicy/Provider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "lambdaPurpose": "*",
+              "memorySize": "*",
+              "timeout": "*",
+              "role": "*",
+              "logGroup": "*",
+              "functionName": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-elasticsearch/Domain2/ESAccessPolicy/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-integ-elasticsearch/Domain2/ESAccessPolicy/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain2ESAccessPolicy3DF4C2BA"
+          }
+        ],
+        "/cdk-integ-elasticsearch/Domain2/ESAccessPolicy/CustomResourcePolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/cdk-integ-elasticsearch/Domain2/ESAccessPolicy/CustomResourcePolicy/Resource": [
@@ -157,5 +670,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

@@ -1,4 +1,5 @@
 import { AWS_REGIONS } from './aws-entities';
+import { UnscopedValidationError } from '../../core/lib/errors';
 
 /**
  * A database of regional information.
@@ -56,7 +57,7 @@ export class Fact {
     const foundFact = this.find(region, name);
 
     if (!foundFact) {
-      throw new Error(`No fact ${name} could be found for region: ${region} and name: ${name}.`);
+      throw new UnscopedValidationError(`No fact ${name} could be found for region: ${region} and name: ${name}.`);
     }
 
     return foundFact;
@@ -71,7 +72,7 @@ export class Fact {
   public static register(fact: IFact, allowReplacing = false): void {
     const regionFacts = this.database[fact.region] || (this.database[fact.region] = {});
     if (fact.name in regionFacts && regionFacts[fact.name] !== fact.value && !allowReplacing) {
-      throw new Error(`Region ${fact.region} already has a fact ${fact.name}, with value ${regionFacts[fact.name]}`);
+      throw new UnscopedValidationError(`Region ${fact.region} already has a fact ${fact.name}, with value ${regionFacts[fact.name]}`);
     }
     if (fact.value !== undefined) {
       regionFacts[fact.name] = fact.value;
@@ -88,7 +89,7 @@ export class Fact {
   public static unregister(region: string, name: string, value?: string): void {
     const regionFacts = this.database[region] || {};
     if (name in regionFacts && value && regionFacts[name] !== value) {
-      throw new Error(`Attempted to remove ${name} from ${region} with value ${value}, but the fact's value is ${regionFacts[name]}`);
+      throw new UnscopedValidationError(`Attempted to remove ${name} from ${region} with value ${value}, but the fact's value is ${regionFacts[name]}`);
     }
     delete regionFacts[name];
   }
@@ -96,7 +97,7 @@ export class Fact {
   private static readonly database: { [region: string]: { [name: string]: string } } = {};
 
   private constructor() {
-    throw new Error('Use the static methods of Fact instead!');
+    throw new UnscopedValidationError('Use the static methods of Fact instead!');
   }
 }
 
@@ -186,7 +187,7 @@ export class FactName {
   public static readonly APPMESH_ECR_ACCOUNT = 'appMeshRepositoryAccount';
 
   /**
-   * The CIDR block used by Kinesis Data Firehose servers.
+   * The CIDR block used by Amazon Data Firehose servers.
    */
   public static readonly FIREHOSE_CIDR_BLOCK = 'firehoseCidrBlock';
 

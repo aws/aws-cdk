@@ -21,7 +21,13 @@ class S3EventSourceTest extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-s3:keepNotificationInImportedBucket': false,
+  },
+});
+
 const stack = new S3EventSourceTest(app, 'lambda-event-source-s3');
 new IntegTest(app, 'LambdaEventSourceS3Integ', {
   testCases: [stack],

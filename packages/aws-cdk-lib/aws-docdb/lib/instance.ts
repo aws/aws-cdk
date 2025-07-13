@@ -6,6 +6,8 @@ import * as ec2 from '../../aws-ec2';
 import { CaCertificate } from '../../aws-rds';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A database instance
@@ -191,7 +193,10 @@ export interface DatabaseInstanceProps {
  *
  * @resource AWS::DocDB::DBInstance
  */
+@propertyInjectable
 export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseInstance {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-docdb.DatabaseInstance';
   /**
    * The instance's database cluster
    */
@@ -219,6 +224,8 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const instance = new CfnDBInstance(this, 'Resource', {
       dbClusterIdentifier: props.cluster.clusterIdentifier,

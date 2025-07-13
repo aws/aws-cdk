@@ -393,7 +393,7 @@
                       "Ref": "PostgresSourceSubnetGroupBEEB1740"
                     },
                     "engine": "postgres",
-                    "EngineVersion": "16.3",
+                    "engineVersion": "16.3",
                     "masterUsername": {
                       "Fn::Join": [
                         "",
@@ -883,6 +883,7 @@
                     "dbSubnetGroupName": {
                       "Ref": "MysqlReplicaSubnetGroup79E1F72A"
                     },
+                    "enableIamDatabaseAuthentication": true,
                     "publiclyAccessible": false,
                     "sourceDbInstanceIdentifier": {
                       "Fn::Join": [
@@ -926,6 +927,156 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_rds.DatabaseInstanceReadReplica",
+              "version": "0.0.0"
+            }
+          },
+          "DBRole": {
+            "id": "DBRole",
+            "path": "cdk-rds-read-replica/DBRole",
+            "children": {
+              "ImportDBRole": {
+                "id": "ImportDBRole",
+                "path": "cdk-rds-read-replica/DBRole/ImportDBRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-rds-read-replica/DBRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "cdk-rds-read-replica/DBRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-rds-read-replica/DBRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "rds-db:connect",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":rds-db:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":dbuser:",
+                                    {
+                                      "Fn::GetAtt": [
+                                        "MysqlReplica87D29F78",
+                                        "DbiResourceId"
+                                      ]
+                                    },
+                                    "/",
+                                    {
+                                      "Ref": "DBUser03089649"
+                                    }
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "DBRoleDefaultPolicyDBB64848",
+                        "roles": [
+                          {
+                            "Ref": "DBRole890CB76D"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "DBUser": {
+            "id": "DBUser",
+            "path": "cdk-rds-read-replica/DBUser",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-rds-read-replica/DBUser/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {
+                    "userName": "dbuser"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.User",
               "version": "0.0.0"
             }
           },

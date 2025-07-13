@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "DistributedMap-ResultWriter-with-WriterConfig/DefaultTest": {
+      "stacks": [
+        "distributed-map-with-result-writer-v2-having-writer-config"
+      ],
+      "assertionStack": "DistributedMap-ResultWriter-with-WriterConfig/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributedMapResultWriterwithWriterConfigDefaultTestDeployAssert6B4CFE00"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

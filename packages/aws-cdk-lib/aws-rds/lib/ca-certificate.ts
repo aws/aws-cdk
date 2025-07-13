@@ -6,6 +6,7 @@
 export class CaCertificate {
   /**
    * rds-ca-2019 certificate authority
+   * @deprecated rds-ca-2019 expired in August, 2024.
    */
   public static readonly RDS_CA_2019 = CaCertificate.of('rds-ca-2019');
 

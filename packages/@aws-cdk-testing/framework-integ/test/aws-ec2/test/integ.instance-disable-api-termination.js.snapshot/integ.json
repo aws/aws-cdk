@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "instance-disable-api-termination/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-disable-api-termination"
+      ],
+      "assertionStack": "instance-disable-api-termination/DefaultTest/DeployAssert",
+      "assertionStackName": "instancedisableapiterminationDefaultTestDeployAssertE3D2E0F8"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

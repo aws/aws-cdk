@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "DynamoDBFilterBoolean/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-filter-boolean-dynamodb"
+      ],
+      "assertionStack": "DynamoDBFilterBoolean/DefaultTest/DeployAssert",
+      "assertionStackName": "DynamoDBFilterBooleanDefaultTestDeployAssert8561382F"
+    }
+  }
+}

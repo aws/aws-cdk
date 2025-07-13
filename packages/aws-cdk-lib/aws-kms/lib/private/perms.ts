@@ -27,6 +27,14 @@ export const DECRYPT_ACTIONS = [
   'kms:Decrypt',
 ];
 
+export const SIGN_ACTIONS = [
+  'kms:Sign',
+];
+
+export const VERIFY_ACTIONS = [
+  'kms:Verify',
+];
+
 export const GENERATE_HMAC_ACTIONS = [
   'kms:GenerateMac',
 ];

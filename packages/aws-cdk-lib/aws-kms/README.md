@@ -41,6 +41,15 @@ const key = new kms.Key(this, 'MyKey', {
 });
 ```
 
+
+Create a multi-Region primary key:
+
+```ts
+const key = new kms.Key(this, 'MyKey', {
+  multiRegion: true, // Default is false
+});
+```
+
 ## Sharing keys between stacks
 
 To use a KMS key in a different stack in the same CDK application,
@@ -82,9 +91,10 @@ const trail = new cloudtrail.Trail(this, 'myCloudTrail', {
 });
 ```
 
-Note that calls to `addToResourcePolicy` and `grant*` methods on `myKeyAlias` will be
-no-ops, and `addAlias` and `aliasTargetKey` will fail, as the imported alias does not
-have a reference to the underlying KMS Key.
+Note that calls to `addToResourcePolicy` method on `myKeyAlias` will be a no-op, `addAlias` and `aliasTargetKey` will fail.
+The `grant*` methods will not modify the key policy, as the imported alias does not have a reference to the underlying KMS Key.
+For the `grant*` methods to modify the principal's IAM policy, the feature flag `@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal`
+must be set to `true`. By default, this flag is `false` and `grant*` calls on an imported alias are a no-op.
 
 ### Lookup key by alias
 
@@ -113,6 +123,24 @@ myKeyLookup.grantEncryptDecrypt(role);
 Note that a call to `.addToResourcePolicy(statement)` on `myKeyLookup` will not have
 an affect on the key's policy because it is not owned by your stack. The call
 will be a no-op.
+
+If the target key is not found in your account, an error will be thrown.
+To prevent the error in the case, you can receive a dummy key without the error
+by setting `returnDummyKeyOnMissing` to `true`. The dummy key has a `keyId` of
+`1234abcd-12ab-34cd-56ef-1234567890ab`. The value of the dummy key id can also be
+referenced using the `Key.DEFAULT_DUMMY_KEY_ID` variable, and you can check if the
+key is a dummy key by using the `Key.isLookupDummy()` method.
+
+```ts
+const dummy = kms.Key.fromLookup(this, 'MyKeyLookup', {
+  aliasName: 'alias/NonExistentAlias',
+  returnDummyKeyOnMissing: true,
+});
+
+if (kms.Key.isLookupDummy(dummy)) {
+  // alternative process
+}
+```
 
 ## Key Policies
 
@@ -209,9 +237,30 @@ runs the risk of the key becoming unmanageable if that user or role is deleted.
 It is highly recommended that the key policy grants access to the account root, rather than specific principals.
 See https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html for more information.
 
+### Signing and Verification key policies
+
+Creating signatures and verifying them with KMS requires specific permissions.
+The respective policies can be attached to a principal via the `grantSign` and `grantVerify` methods.
+
+```ts
+const key = new kms.Key(this, 'MyKey');
+const user = new iam.User(this, 'MyUser');
+key.grantSign(user); // Adds 'kms:Sign' to the principal's policy
+key.grantVerify(user); // Adds 'kms:Verify' to the principal's policy
+```
+
+If both sign and verify permissions are required, they can be applied with one method called `grantSignVerify`.
+
+```ts
+const key = new kms.Key(this, 'MyKey');
+const user = new iam.User(this, 'MyUser');
+key.grantSignVerify(user); // Adds 'kms:Sign' and 'kms:Verify' to the principal's policy
+```
+
+
 ### HMAC specific key policies
 
-HMAC keys have a different key policy than other KMS keys. They have a policy for generating and for verifying a MAC. 
+HMAC keys have a different key policy than other KMS keys. They have a policy for generating and for verifying a MAC.
 The respective policies can be attached to a principal via the `grantGenerateMac` and `grantVerifyMac` methods.
 
 ```ts

@@ -1,6 +1,7 @@
 import { TestFunction } from './test-function';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
+import { Key } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
@@ -55,7 +56,6 @@ describe('SQSEventSource', () => {
         'Ref': 'Fn9270CBC0',
       },
     });
-
   });
 
   test('specific batch size', () => {
@@ -82,7 +82,6 @@ describe('SQSEventSource', () => {
       },
       'BatchSize': 5,
     });
-
   });
 
   test('unresolved batch size', () => {
@@ -105,7 +104,6 @@ describe('SQSEventSource', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'BatchSize': 500,
     });
-
   });
 
   test('fails if batch size is < 1', () => {
@@ -118,7 +116,6 @@ describe('SQSEventSource', () => {
     expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
       batchSize: 0,
     }))).toThrow(/Maximum batch size must be between 1 and 10 inclusive \(given 0\) when batching window is not specified\./);
-
   });
 
   test('fails if batch size is > 10', () => {
@@ -131,7 +128,6 @@ describe('SQSEventSource', () => {
     expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
       batchSize: 11,
     }))).toThrow(/Maximum batch size must be between 1 and 10 inclusive \(given 11\) when batching window is not specified\./);
-
   });
 
   test('batch size is > 10 and batch window is defined', () => {
@@ -151,7 +147,6 @@ describe('SQSEventSource', () => {
       'BatchSize': 1000,
       'MaximumBatchingWindowInSeconds': 300,
     });
-
   });
 
   test('fails if batch size is > 10000 and batch window is defined', () => {
@@ -165,7 +160,6 @@ describe('SQSEventSource', () => {
       batchSize: 11000,
       maxBatchingWindow: cdk.Duration.minutes(5),
     }))).toThrow(/Maximum batch size must be between 1 and 10000 inclusive/i);
-
   });
 
   test('specific batch window', () => {
@@ -183,7 +177,6 @@ describe('SQSEventSource', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'MaximumBatchingWindowInSeconds': 300,
     });
-
   });
 
   test('fails if batch window defined for FIFO queue', () => {
@@ -198,7 +191,6 @@ describe('SQSEventSource', () => {
     expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
       maxBatchingWindow: cdk.Duration.minutes(5),
     }))).toThrow(/Batching window is not supported for FIFO queues/);
-
   });
 
   test('fails if batch window is > 5', () => {
@@ -211,7 +203,6 @@ describe('SQSEventSource', () => {
     expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
       maxBatchingWindow: cdk.Duration.minutes(7),
     }))).toThrow(/Maximum batching window must be 300 seconds or less/i);
-
   });
 
   test('contains eventSourceMappingId after lambda binding', () => {
@@ -226,7 +217,6 @@ describe('SQSEventSource', () => {
 
     // THEN
     expect(eventSource.eventSourceMappingId).toBeDefined();
-
   });
 
   test('contains eventSourceMappingArn after lambda binding', () => {
@@ -241,7 +231,6 @@ describe('SQSEventSource', () => {
 
     // THEN
     expect(eventSource.eventSourceMappingArn).toBeDefined();
-
   });
 
   test('eventSourceMappingId throws error before binding to lambda', () => {
@@ -252,7 +241,6 @@ describe('SQSEventSource', () => {
 
     // WHEN/THEN
     expect(() => eventSource.eventSourceMappingId).toThrow(/SqsEventSource is not yet bound to an event source mapping/);
-
   });
 
   test('eventSourceMappingArn throws error before binding to lambda', () => {
@@ -263,7 +251,6 @@ describe('SQSEventSource', () => {
 
     // WHEN/THEN
     expect(() => eventSource.eventSourceMappingArn).toThrow(/SqsEventSource is not yet bound to an event source mapping/);
-
   });
 
   test('event source disabled', () => {
@@ -281,7 +268,6 @@ describe('SQSEventSource', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'Enabled': false,
     });
-
   });
 
   test('reportBatchItemFailures', () => {
@@ -439,6 +425,92 @@ describe('SQSEventSource', () => {
     });
   });
 
+  test('adding filter criteria encryption', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+    const myKey = Key.fromKeyArn(
+      stack,
+      'SourceBucketEncryptionKey',
+      'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+    );
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      filters: [
+        lambda.FilterCriteria.filter({
+          body: {
+            id: lambda.FilterRule.exists(),
+          },
+        }),
+      ],
+      filterEncryption: myKey,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'FilterCriteria': {
+        'Filters': [
+          {
+            'Pattern': '{"body":{"id":[{"exists":true}]}}',
+          },
+        ],
+      },
+      KmsKeyArn: 'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+    });
+  });
+
+  test('adding filter criteria encryption with stack key', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+    const myKey = new Key(stack, 'fc-test-key-name', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      pendingWindow: cdk.Duration.days(7),
+      description: 'KMS key for test fc encryption',
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      filters: [
+        lambda.FilterCriteria.filter({
+          body: {
+            id: lambda.FilterRule.exists(),
+          },
+        }),
+      ],
+      filterEncryption: myKey,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+              },
+            },
+            Resource: '*',
+          },
+          {
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'lambda.amazonaws.com',
+            },
+            Resource: '*',
+          },
+        ],
+      },
+    });
+  });
+
   test('fails if maxConcurrency < 2', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -466,7 +538,6 @@ describe('SQSEventSource', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       ScalingConfig: { MaximumConcurrency: 5 },
     });
-
   });
 
   test('fails if maxConcurrency > 1001', () => {
@@ -479,5 +550,47 @@ describe('SQSEventSource', () => {
     expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
       maxConcurrency: 1,
     }))).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
+  });
+
+  test('adding maxConcurrency of 5', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      maxConcurrency: 5,
+      metricsConfig: {
+        metrics: [],
+      },
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      ScalingConfig: { MaximumConcurrency: 5 },
+      MetricsConfig: { Metrics: [] },
+    });
+  });
+
+  test('adding maxConcurrency of 5', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      maxConcurrency: 5,
+      metricsConfig: {
+        metrics: [lambda.MetricType.EVENT_COUNT],
+      },
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      ScalingConfig: { MaximumConcurrency: 5 },
+      MetricsConfig: { Metrics: ['EventCount'] },
+    });
   });
 });

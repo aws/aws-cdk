@@ -273,12 +273,12 @@ test('should validate acceleratorName minimum and maximum length', () => {
     new ga.Accelerator(stack, 'AcceleratorShort', {
       acceleratorName: '',
     });
-  }).toThrowError(/must have length between 1 and 64/);
+  }).toThrow(/must have length between 1 and 64/);
   expect(() => {
     new ga.Accelerator(stack, 'AcceleratorLong', {
       acceleratorName: 'a'.repeat(100),
     });
-  }).toThrowError(/must have length between 1 and 64/);
+  }).toThrow(/must have length between 1 and 64/);
 });
 
 test('should validate ipAddresses minimum and maximum length', () => {

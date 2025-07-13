@@ -5,6 +5,8 @@ import { Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties for a PythonFunction
@@ -47,7 +49,11 @@ export interface PythonFunctionProps extends FunctionOptions {
 /**
  * A Python Lambda function
  */
+@propertyInjectable
 export class PythonFunction extends Function {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-lambda-python-alpha.PythonFunction';
+
   constructor(scope: Construct, id: string, props: PythonFunctionProps) {
     const { index = 'index.py', handler = 'handler', runtime } = props;
     if (props.index && !/\.py$/.test(props.index)) {
@@ -61,7 +67,7 @@ export class PythonFunction extends Function {
       throw new Error(`Cannot find index file at ${resolvedIndex}`);
     }
 
-    const resolvedHandler =`${index.slice(0, -3)}.${handler}`.replace(/\//g, '.');
+    const resolvedHandler = `${index.slice(0, -3)}.${handler}`.replace(/\//g, '.');
 
     if (props.runtime && props.runtime.family !== RuntimeFamily.PYTHON) {
       throw new Error('Only `PYTHON` runtimes are supported.');
@@ -74,11 +80,14 @@ export class PythonFunction extends Function {
         entry,
         runtime,
         skip: !Stack.of(scope).bundlingRequired,
-        // define architecture based on the target architecture of the function, possibly overriden in bundling options
+        // define architecture based on the target architecture of the function, possibly overridden in bundling options
         architecture: props.architecture,
         ...props.bundling,
       }),
       handler: resolvedHandler,
     });
+
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }

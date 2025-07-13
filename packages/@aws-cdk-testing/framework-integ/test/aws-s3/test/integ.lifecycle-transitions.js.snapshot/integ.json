@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "cdk-integ-s3-lifecycle-transitions/DefaultTest": {
+      "stacks": [
+        "s3-lifecycle-transitions"
+      ],
+      "assertionStack": "cdk-integ-s3-lifecycle-transitions/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegs3lifecycletransitionsDefaultTestDeployAssert9A611ED6"
+    }
+  }
+}

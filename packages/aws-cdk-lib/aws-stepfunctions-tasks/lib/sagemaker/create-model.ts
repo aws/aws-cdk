@@ -4,14 +4,10 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for creating an Amazon SageMaker model
- *
- * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
- */
-export interface SageMakerCreateModelProps extends sfn.TaskStateBaseProps {
+interface SageMakerCreateModelOptions {
   /**
    * An execution role that you can pass in a CreateModel API request
    *
@@ -65,11 +61,58 @@ export interface SageMakerCreateModelProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for creating an Amazon SageMaker model using JSONPath
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
+ */
+export interface SageMakerCreateModelJsonPathProps extends sfn.TaskStateJsonPathBaseProps, SageMakerCreateModelOptions {}
+
+/**
+ * Properties for creating an Amazon SageMaker model using JSONata
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
+ */
+export interface SageMakerCreateModelJsonataProps extends sfn.TaskStateJsonataBaseProps, SageMakerCreateModelOptions {}
+
+/**
+ * Properties for creating an Amazon SageMaker model
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
+ */
+export interface SageMakerCreateModelProps extends sfn.TaskStateBaseProps, SageMakerCreateModelOptions {}
+
+/**
  * A Step Functions Task to create a SageMaker model
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
  */
+@propertyInjectable
 export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGrantable, ec2.IConnectable {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-stepfunctions-tasks.SageMakerCreateModel';
+
+  /**
+   * A Step Functions Task using JSONPath to create a SageMaker model
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
+   */
+  public static jsonPath(scope: Construct, id: string, props: SageMakerCreateModelJsonPathProps) {
+    return new SageMakerCreateModel(scope, id, props);
+  }
+
+  /**
+   * A Step Functions Task using JSONata to create a SageMaker model
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
+   */
+  public static jsonata(scope: Construct, id: string, props: SageMakerCreateModelJsonataProps) {
+    return new SageMakerCreateModel(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
@@ -119,10 +162,11 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('sagemaker', 'createModel', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
+      ...this._renderParametersOrArguments(this.renderParameters(), queryLanguage),
     };
   }
 
@@ -149,7 +193,7 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
             resource: 'model',
             // If the model name comes from input, we cannot target the policy to a particular ARN prefix reliably.
             // SageMaker uses lowercase for resource name in the arn
-            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.modelName) ? '*' : `${this.props.modelName.toLowerCase()}*`,
+            resourceName: isJsonPathOrJsonataExpression(this.props.modelName) ? '*' : `${this.props.modelName.toLowerCase()}*`,
           }),
         ],
       }),

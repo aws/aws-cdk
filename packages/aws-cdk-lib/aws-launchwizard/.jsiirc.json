@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.launchwizard"
+    },
+    "dotnet": {
+      "package": "Amazon.CDK.AWS.LaunchWizard"
+    },
+    "python": {
+      "module": "aws_cdk.aws_launchwizard"
+    }
+  }
+}

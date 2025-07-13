@@ -1,4 +1,5 @@
 import { IConstruct } from 'constructs';
+import { UnscopedValidationError } from './errors';
 import { Lazy } from './lazy';
 import { unresolved } from './private/encoding';
 import { Intrinsic } from './private/intrinsic';
@@ -59,7 +60,7 @@ export class Token {
    *
    * @param obj The object to test.
    */
-  public static isUnresolved(obj: any): boolean {
+  public static isUnresolved(this: void, obj: any): boolean {
     return unresolved(obj);
   }
 
@@ -144,7 +145,7 @@ export class Tokenization {
   public static reverseCompleteString(s: string): IResolvable | undefined {
     const fragments = Tokenization.reverseString(s);
     if (fragments.length !== 1) {
-      throw new Error(`Tokenzation.reverseCompleteString: argument must not be a concatentation, got '${s}'`);
+      throw new UnscopedValidationError(`Tokenzation.reverseCompleteString: argument must not be a concatenation, got '${s}'`);
     }
     return fragments.firstToken;
   }

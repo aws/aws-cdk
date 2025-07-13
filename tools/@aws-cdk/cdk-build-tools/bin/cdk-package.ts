@@ -1,6 +1,5 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import * as path from 'path';
-import { Bundle } from '@aws-cdk/node-bundle';
-import * as yarnCling from '@aws-cdk/yarn-cling';
 import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
 import { shell } from '../lib/os';
@@ -24,6 +23,7 @@ async function main() {
     })
     .option('pre-only', { type: 'boolean', default: false, desc: 'run pre package steps only' })
     .option('post-only', { type: 'boolean', default: false, desc: 'run post package steps only' })
+    .option('private', { type: 'boolean', default: false, desc: 'Also package private packages for local usage' })
     .argv;
 
   if (args['pre-only'] && args['post-only']) {
@@ -43,8 +43,9 @@ async function main() {
   const outdir = 'dist';
 
   // if this is a private module, don't package
-  if (isPrivate()) {
-    process.stdout.write('No packaging for private modules.\n');
+  const packPrivate = args.private || options.private;
+  if (isPrivate() && !packPrivate) {
+    process.stdout.write('No packaging for private modules.\nUse --private to force packing private packages for local testing.\n');
     return;
   }
 
@@ -54,14 +55,6 @@ async function main() {
   }
   if (args['pre-only']) {
     return;
-  }
-
-  // If we need to shrinkwrap this, do so now.
-  if (options.shrinkWrap) {
-    await yarnCling.generateShrinkwrap({
-      packageJsonFile: 'package.json',
-      outputFile: 'npm-shrinkwrap.json',
-    });
   }
 
   // if this is a jsii package, use jsii-packmak
@@ -75,15 +68,9 @@ async function main() {
     const target = path.join(outdir, 'js');
     await fs.remove(target);
     await fs.mkdirp(target);
-    if (options.bundle) {
-      // bundled packages have their own bundler.
-      const bundle = new Bundle({ packageDir: process.cwd(), ...options.bundle });
-      bundle.pack({ target });
-    } else {
-      // just "npm pack" and deploy to "outdir"
-      const tarball = (await shell(['npm', 'pack'], { timers })).trim();
-      await fs.move(tarball, path.join(target, path.basename(tarball)));
-    }
+    // just "npm pack" and deploy to "outdir"
+    const tarball = (await shell(['npm', 'pack'], { timers })).trim();
+    await fs.move(tarball, path.join(target, path.basename(tarball)));
   }
 
   if (options.post) {

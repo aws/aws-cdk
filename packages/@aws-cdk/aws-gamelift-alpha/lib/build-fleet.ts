@@ -5,6 +5,8 @@ import { IBuild } from './build';
 import { FleetBase, FleetProps, IFleet } from './fleet-base';
 import { CfnFleet } from 'aws-cdk-lib/aws-gamelift';
 import { Port, IPeer, IngressRule } from './ingress-rule';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents a GameLift Fleet used to run a custom game build.
@@ -43,7 +45,10 @@ export interface BuildFleetProps extends FleetProps {
  *
  * @resource AWS::GameLift::Fleet
  */
+@propertyInjectable
 export class BuildFleet extends FleetBase implements IBuildFleet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-gamelift-alpha.BuildFleet';
 
   /**
    * Import an existing fleet from its identifier.
@@ -90,6 +95,8 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
     super(scope, id, {
       physicalName: props.fleetName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!cdk.Token.isUnresolved(props.fleetName)) {
       if (props.fleetName.length > 1024) {
@@ -172,6 +179,7 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
    * @param source A range of allowed IP addresses
    * @param port The port range used for ingress traffic
    */
+  @MethodMetadata()
   public addIngressRule(source: IPeer, port: Port) {
     this.addInternalIngressRule({
       source: source,

@@ -353,7 +353,7 @@ describe('proxy', () => {
   test('new Proxy with a single Secret can use grantConnect() without a dbUser passed', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
-      engine: rds.DatabaseClusterEngine.AURORA,
+      engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: { vpc },
     });
 
@@ -409,7 +409,7 @@ describe('proxy', () => {
   test('new Proxy with multiple Secrets cannot use grantConnect() without a dbUser passed', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
-      engine: rds.DatabaseClusterEngine.AURORA,
+      engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: { vpc },
     });
 
@@ -436,7 +436,7 @@ describe('proxy', () => {
   test('new Proxy with kms encrypted Secrets has permissions to kms:Decrypt that secret using its key', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
-      engine: rds.DatabaseClusterEngine.AURORA,
+      engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: { vpc },
     });
 
@@ -481,13 +481,13 @@ describe('proxy', () => {
   test('DBProxyTargetGroup should have dependency on the proxy targets', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'cluster', {
-      engine: rds.DatabaseClusterEngine.AURORA,
+      engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: {
         vpc,
       },
     });
 
-    //WHEN
+    // WHEN
     new rds.DatabaseProxy(stack, 'proxy', {
       proxyTarget: rds.ProxyTarget.fromCluster(cluster),
       secrets: [cluster.secret!],
@@ -513,13 +513,13 @@ describe('proxy', () => {
   test('Correct dependencies are created when multiple DatabaseProxy are created with addProxy', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'cluster', {
-      engine: rds.DatabaseClusterEngine.AURORA,
+      engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: {
         vpc,
       },
     });
 
-    //WHEN
+    // WHEN
     cluster.addProxy('Proxy', {
       vpc,
       secrets: [cluster.secret!],
@@ -554,6 +554,86 @@ describe('proxy', () => {
         'clusterInstance183584D40',
         'clusterInstance23D1AD8B2',
         'cluster611F8AFF',
+      ],
+    });
+  });
+
+  test('DBProxyTargetGroup should have dependency on the proxy targets when using cluster with writer and readers properties', () => {
+    // GIVEN
+    const cluster = new rds.DatabaseCluster(stack, 'cluster', {
+      engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      writer: rds.ClusterInstance.provisioned('writer'),
+      readers: [rds.ClusterInstance.provisioned('reader')],
+    });
+
+    // WHEN
+    new rds.DatabaseProxy(stack, 'proxy', {
+      proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+      secrets: [cluster.secret!],
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::RDS::DBProxyTargetGroup', {
+      Properties: {
+        DBProxyName: {
+          Ref: 'proxy3A1DA9C7',
+        },
+        TargetGroupName: 'default',
+      },
+      DependsOn: [
+        'clusterreaderE226030A',
+        'cluster611F8AFF',
+        'clusterwriter3FDF01F3',
+      ],
+    });
+  });
+
+  test('Correct dependencies are created when multiple DatabaseProxy are created with addProxy for cluster with writer and readers properties', () => {
+    // GIVEN
+    const cluster = new rds.DatabaseCluster(stack, 'cluster', {
+      engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      writer: rds.ClusterInstance.provisioned('writer'),
+      readers: [rds.ClusterInstance.provisioned('reader')],
+    });
+
+    // WHEN
+    cluster.addProxy('Proxy', {
+      vpc,
+      secrets: [cluster.secret!],
+    });
+    cluster.addProxy('Proxy2', {
+      vpc,
+      secrets: [cluster.secret!],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::RDS::DBProxyTargetGroup', {
+      Properties: {
+        DBProxyName: {
+          Ref: 'clusterProxy22303E35D',
+        },
+        TargetGroupName: 'default',
+      },
+      DependsOn: [
+        'clusterreaderE226030A',
+        'cluster611F8AFF',
+        'clusterwriter3FDF01F3',
+      ],
+    });
+    Template.fromStack(stack).hasResource('AWS::RDS::DBProxyTargetGroup', {
+      Properties: {
+        DBProxyName: {
+          Ref: 'clusterProxyC4BEF551',
+        },
+        TargetGroupName: 'default',
+      },
+      DependsOn: [
+        'clusterreaderE226030A',
+        'cluster611F8AFF',
+        'clusterwriter3FDF01F3',
       ],
     });
   });

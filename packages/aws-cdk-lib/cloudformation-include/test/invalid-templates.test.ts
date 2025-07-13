@@ -245,17 +245,201 @@ describe('CDK Include', () => {
       },
     );
   });
+
+  test('throws an exception if Tags contains invalid intrinsics', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'tags-with-invalid-intrinsics.json');
+    }).toThrow(/expression does not exist in the template/);
+  });
+
+  test('non-leaf Intrinsics cannot be used in the top-level creation policy', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-create-policy.json');
+    }).toThrow(/Cannot convert resource 'CreationPolicyIntrinsic' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify 'CreationPolicyIntrinsic' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output./);
+  });
+
+  test('Intrinsics cannot be used in the autoscaling creation policy', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-create-policy-autoscaling.json');
+    }).toThrow(/Cannot convert resource 'AutoScalingCreationPolicyIntrinsic' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify 'AutoScalingCreationPolicyIntrinsic' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output./);
+  });
+
+  test('Intrinsics cannot be used in the create policy resource signal', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-create-policy-resource-signal.json');
+    }).toThrow(/Cannot convert resource 'ResourceSignalIntrinsic' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify 'ResourceSignalIntrinsic' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output./);
+  });
+
+  test('Intrinsics cannot be used in the top-level update policy', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-update-policy.json');
+    }).toThrow(/Cannot convert resource 'ASG' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify 'ASG' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output./);
+  });
+
+  test('Intrinsics cannot be used in the auto scaling rolling update update policy', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-update-policy-autoscaling-rolling-update.json');
+    }).toThrow(/Cannot convert resource 'ASG' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify 'ASG' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output./);
+  });
+
+  test('Intrinsics cannot be used in the auto scaling replacing update update policy', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-update-policy-autoscaling-replacing-update.json');
+    }).toThrow(/Cannot convert resource 'ASG' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify 'ASG' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output./);
+  });
+
+  test('Intrinsics cannot be used in the auto scaling scheduled action update policy', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-update-policy-autoscaling-scheduled-action.json');
+    }).toThrow(/Cannot convert resource 'ASG' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify 'ASG' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output./);
+  });
+
+  test('Intrinsics cannot be used in the code deploy lambda alias update policy', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-update-policy-code-deploy-lambda-alias-update.json');
+    }).toThrow(/Cannot convert resource 'Alias' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify 'Alias' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output./);
+  });
+
+  test('FF toggles error checking', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, false);
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-update-policy-code-deploy-lambda-alias-update.json');
+    }).not.toThrow();
+  });
+
+  test('FF disabled with dehydratedResources does not throw', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, false);
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-update-policy-code-deploy-lambda-alias-update.json', {
+        dehydratedResources: ['Alias'],
+      });
+    }).not.toThrow();
+  });
+
+  test('dehydrated resources retain attributes with complex Intrinsics', () => {
+    stack.node.setContext(cxapi.CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, true);
+    includeTestTemplate(stack, 'intrinsics-update-policy-code-deploy-lambda-alias-update.json', {
+      dehydratedResources: ['Alias'],
+    });
+
+    expect(Template.fromStack(stack).hasResource('AWS::Lambda::Alias', {
+      UpdatePolicy: {
+        CodeDeployLambdaAliasUpdate: {
+          'Fn::If': [
+            'SomeCondition',
+            {
+              AfterAllowTrafficHook: 'SomeOtherHook',
+              ApplicationName: 'SomeApp',
+              BeforeAllowTrafficHook: 'SomeHook',
+              DeploymentGroupName: 'SomeDeploymentGroup',
+            },
+            {
+              AfterAllowTrafficHook: 'SomeOtherOtherHook',
+              ApplicationName: 'SomeOtherApp',
+              BeforeAllowTrafficHook: 'SomeOtherHook',
+              DeploymentGroupName: 'SomeOtherDeploymentGroup',
+
+            },
+          ],
+        },
+      },
+    }));
+  });
+
+  test('dehydrated resources retain all attributes', () => {
+    includeTestTemplate(stack, 'resource-all-attributes.json', {
+      dehydratedResources: ['Foo'],
+    });
+
+    expect(Template.fromStack(stack).hasResource('AWS::Foo::Bar', {
+      Properties: { Blinky: 'Pinky' },
+      Type: 'AWS::Foo::Bar',
+      CreationPolicy: { Inky: 'Clyde' },
+      DeletionPolicy: { DeletionPolicyKey: 'DeletionPolicyValue' },
+      Metadata: { SomeKey: 'SomeValue' },
+      Version: '1.2.3.4.5.6',
+      UpdateReplacePolicy: { Oh: 'No' },
+      Description: 'This resource does not match the spec, but it does have every possible attribute',
+      UpdatePolicy: {
+        Foo: 'Bar',
+      },
+    }));
+  });
+
+  test('synth-time validation does not run on dehydrated resources', () => {
+    // synth-time validation fails if resource is hydrated
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-tags-resource-validation.json');
+      Template.fromStack(stack);
+    }).toThrow(`Resolution error: Supplied properties not correct for \"CfnLoadBalancerProps\"
+  tags: element 1: {} should have a 'key' and a 'value' property.`);
+
+    app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    stack = new core.Stack(app);
+
+    // synth-time validation not run if resource is dehydrated
+    includeTestTemplate(stack, 'intrinsics-tags-resource-validation.json', {
+      dehydratedResources: ['MyLoadBalancer'],
+    });
+
+    expect(Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Properties: {
+        Tags: [
+          {
+            Key: 'Name',
+            Value: 'MyLoadBalancer',
+          },
+          {
+            data: [
+              'IsExtraTag',
+              {
+                Key: 'Name2',
+                Value: 'MyLoadBalancer2',
+              },
+              {
+                data: 'AWS::NoValue',
+                type: 'Ref',
+                isCfnFunction: true,
+              },
+            ],
+            type: 'Fn::If',
+            isCfnFunction: true,
+          },
+        ],
+      },
+    }));
+  });
+
+  test('throws on dehydrated resources not present in the template', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'intrinsics-tags-resource-validation.json', {
+        dehydratedResources: ['ResourceNotExistingHere'],
+      });
+    }).toThrow(/Logical ID 'ResourceNotExistingHere' was specified in 'dehydratedResources', but does not belong to a resource in the template./);
+  });
 });
 
 interface IncludeTestTemplateProps {
   /** @default false */
   readonly allowCyclicalReferences?: boolean;
+
+  /** @default none */
+  readonly dehydratedResources?: string[];
 }
 
 function includeTestTemplate(scope: constructs.Construct, testTemplate: string, props: IncludeTestTemplateProps = {}): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
     allowCyclicalReferences: props.allowCyclicalReferences,
+    dehydratedResources: props.dehydratedResources,
   });
 }
 

@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "integtest-model/DefaultTest": {
+      "stacks": [
+        "vpc-byoip-ipv6"
+      ],
+      "assertionStack": "integtest-model/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestmodelDefaultTestDeployAssertCF40BD53"
+    }
+  }
+}

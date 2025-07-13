@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib/core';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 import { Construct } from 'constructs';
 import { IApplication } from './application';
 import { CheckedStageStackAssociator } from './aspects/stack-associator';
@@ -50,7 +51,9 @@ export class ApplicationAssociator extends Construct {
     this.associateCrossAccountStacks = targetBindResult.associateCrossAccountStacks;
     cdk.Aspects.of(scope).add(new CheckedStageStackAssociator(this, {
       associateCrossAccountStacks: this.associateCrossAccountStacks,
-    }));
+    }), {
+      priority: cdk.FeatureFlags.of(this).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? cdk.AspectPriority.MUTATING : undefined,
+    });
   }
 
   /**
@@ -61,7 +64,9 @@ export class ApplicationAssociator extends Construct {
     this.associatedStages.add(stage);
     cdk.Aspects.of(stage).add(new CheckedStageStackAssociator(this, {
       associateCrossAccountStacks: this.associateCrossAccountStacks,
-    }));
+    }), {
+      priority: cdk.FeatureFlags.of(this).isEnabled(cxapi.ASPECT_PRIORITIES_MUTATING) ? cdk.AspectPriority.MUTATING : undefined,
+    });
     return stage;
   }
 

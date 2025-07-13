@@ -4,6 +4,8 @@ import * as kms from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Aws, Names } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Construction properties for a DatabaseSecret.
@@ -74,7 +76,13 @@ export interface DatabaseSecretProps {
  *
  * @resource AWS::SecretsManager::Secret
  */
+@propertyInjectable
 export class DatabaseSecret extends secretsmanager.Secret {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseSecret';
+
   constructor(scope: Construct, id: string, props: DatabaseSecretProps) {
     const excludeCharacters = props.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS;
 
@@ -94,12 +102,14 @@ export class DatabaseSecret extends secretsmanager.Secret {
       },
       replicaRegions: props.replicaRegions,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.replaceOnPasswordCriteriaChanges) {
       const hash = md5hash(JSON.stringify({
         // Use here the options that influence the password generation.
         // If at some point we add other password customization options
-        // they sould be added here below (e.g. `passwordLength`).
+        // they should be added here below (e.g. `passwordLength`).
         excludeCharacters,
       }));
       const logicalId = `${Names.uniqueId(this)}${hash}`;

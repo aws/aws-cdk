@@ -4,8 +4,13 @@ import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { TestFunction } from './test-function';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { Key } from 'aws-cdk-lib/aws-kms';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'lambda-event-source-filter-criteria-sqs');
 
@@ -21,6 +26,26 @@ fn.addEventSource(new SqsEventSource(queue, {
       },
     }),
   ],
+}));
+
+const myKey = new Key(stack, 'fc-test-key-name', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  pendingWindow: cdk.Duration.days(7),
+  description: 'KMS key for test fc encryption',
+});
+
+const fn2 = new TestFunction(stack, 'F2');
+
+fn2.addEventSource(new SqsEventSource(queue, {
+  batchSize: 5,
+  filters: [
+    lambda.FilterCriteria.filter({
+      body: {
+        id: lambda.FilterRule.exists(),
+      },
+    }),
+  ],
+  filterEncryption: myKey,
 }));
 
 new integ.IntegTest(app, 'SQSFilterCriteria', {

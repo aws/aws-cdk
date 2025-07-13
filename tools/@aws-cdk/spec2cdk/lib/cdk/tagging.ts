@@ -32,6 +32,18 @@ export function resourceTaggabilityStyle(resource: Resource): TaggabilityStyle |
   return undefined;
 }
 
+/**
+ * Mapping of legacy taggable resources to their tag property name and variant
+ *
+ * Before the introduction of iTaggablev2 the CDK defined a `tags` property on constructs
+ * which contained the tagManager, however in cases where the resource itself contained a
+ * property named 'tags', the CDK would create a `tagsRaw` property to represent that CFN tags property.
+ *
+ * Upon the introduction of iTaggablev2, the CDK now uses the `cdkTagManager` property to manage tags.
+ * This mapping of legacy resources is used to preserve the legacy behavior of applying tags so customers
+ * who previously were tagging these constructs using `myConstruct.tags.setTag('key', 'value')` will
+ * continue to be able to do so, without breaking changes.
+ */
 const LEGACY_TAGGABLES: Record<string, [string, TagInformation['variant']]> = {
   'AWS::ACMPCA::CertificateAuthority': ['Tags', 'standard'],
   'AWS::AccessAnalyzer::Analyzer': ['Tags', 'standard'],

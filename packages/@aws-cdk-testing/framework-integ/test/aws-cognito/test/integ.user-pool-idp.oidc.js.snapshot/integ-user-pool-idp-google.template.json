@@ -73,7 +73,8 @@
    "Type": "AWS::Cognito::UserPoolIdentityProvider",
    "Properties": {
     "AttributeMapping": {
-     "phone_number": "phone_number"
+     "phone_number": "phone_number",
+     "email_verified": "email_verified"
     },
     "ProviderDetails": {
      "client_id": "client-id",

@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { CfnRequestValidator, CfnRequestValidatorProps } from './apigateway.generated';
 import { IRestApi, RestApi } from './restapi';
 import { IResource, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IRequestValidator extends IResource {
   /**
@@ -48,7 +50,11 @@ export interface RequestValidatorProps extends RequestValidatorOptions {
   readonly restApi: IRestApi;
 }
 
+@propertyInjectable
 export class RequestValidator extends Resource implements IRequestValidator {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.RequestValidator';
+
   public static fromRequestValidatorId(scope: Construct, id: string, requestValidatorId: string): IRequestValidator {
     class Import extends Resource implements IRequestValidator {
       public readonly requestValidatorId = requestValidatorId;
@@ -68,6 +74,8 @@ export class RequestValidator extends Resource implements IRequestValidator {
     super(scope, id, {
       physicalName: props.requestValidatorName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const validatorProps: CfnRequestValidatorProps = {
       name: this.physicalName,

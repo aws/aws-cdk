@@ -1,0 +1,27 @@
+{
+  "Resources": {
+    "Foo": {
+      "Type": "AWS::Foo::Bar",
+      "Properties": {
+        "Blinky": "Pinky"
+      },
+      "CreationPolicy": {
+        "Inky": "Clyde"
+      },
+      "UpdatePolicy": {
+        "Foo": "Bar"
+      },
+      "DeletionPolicy": {
+        "DeletionPolicyKey": "DeletionPolicyValue"
+      },
+      "UpdateReplacePolicy": {
+        "Oh": "No"
+      },
+      "Version": "1.2.3.4.5.6" ,
+      "Description": "This resource does not match the spec, but it does have every possible attribute",
+      "Metadata": {
+        "SomeKey": "SomeValue"
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScalingPolicy } from './autoscaling.generated';
-import { Annotations, Duration, Lazy } from '../../core';
+import { Annotations, Duration, Lazy, ValidationError } from '../../core';
 
 /**
  * Properties for a scaling policy
@@ -93,11 +93,11 @@ export class StepScalingAction extends Construct {
   }
 
   /**
-   * Add an adjusment interval to the ScalingAction
+   * Add an adjustment interval to the ScalingAction
    */
   public addAdjustment(adjustment: AdjustmentTier) {
     if (adjustment.lowerBound === undefined && adjustment.upperBound === undefined) {
-      throw new Error('At least one of lowerBound or upperBound is required');
+      throw new ValidationError('At least one of lowerBound or upperBound is required', this);
     }
     this.adjustments.push({
       metricIntervalLowerBound: adjustment.lowerBound,
@@ -159,7 +159,7 @@ export interface AdjustmentTier {
   /**
    * What number to adjust the capacity with
    *
-   * The number is interpeted as an added capacity, a new fixed capacity or an
+   * The number is interpreted as an added capacity, a new fixed capacity or an
    * added percentage depending on the AdjustmentType value of the
    * StepScalingPolicy.
    *

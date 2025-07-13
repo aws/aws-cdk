@@ -1,6 +1,7 @@
 {
   "folders": [{ "path": "." }],
   "settings": {
+    "files.insertFinalNewline": true,
     "jest.jestCommandLine": "node_modules/.bin/jest",
     "jest.autoRun": "off",
     "jest.virtualFolders": [
@@ -29,7 +30,9 @@
       {
         "name": "aws-custom-resource-sdk-adapter",
         "rootPath": "packages/@aws-cdk/aws-custom-resource-sdk-adapter"
-      }
+      },
+      { "name": "toolkit", "rootPath": "packages/@aws-cdk/toolkit" },
+      { "name": "user-input-gen", "rootPath": "tools/@aws-cdk/user-input-gen" }
     ]
   },
   "extensions": {

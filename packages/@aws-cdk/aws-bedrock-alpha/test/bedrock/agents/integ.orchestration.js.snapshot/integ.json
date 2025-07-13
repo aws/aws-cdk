@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "BedrockOrchestration/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-orchestration-1"
+      ],
+      "assertionStack": "BedrockOrchestration/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockOrchestrationDefaultTestDeployAssertACFAFF30"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

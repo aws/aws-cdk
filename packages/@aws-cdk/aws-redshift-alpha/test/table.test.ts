@@ -322,4 +322,39 @@ describe('cluster table', () => {
       ).toThrow(`sortStyle of '${redshift.TableSortStyle.AUTO}' cannot be configured when sortKey is also configured.`);
     });
   });
+
+  describe('timeout', () => {
+    test('specify timeout', () => {
+      new redshift.Table(stack, 'Table', {
+        ...databaseOptions,
+        tableColumns,
+        timeout: cdk.Duration.minutes(5),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        Timeout: 300,
+        Role: { 'Fn::GetAtt': ['QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRole0A90D717', 'Arn'] },
+        Handler: 'index.handler',
+        Code: {
+          S3Bucket: { 'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}' },
+        },
+      });
+    });
+
+    test('throw error for timeout being too short', () => {
+      expect(() => new redshift.Table(stack, 'Table', {
+        ...databaseOptions,
+        tableColumns,
+        timeout: cdk.Duration.millis(999),
+      })).toThrow('The timeout for the handler must be BETWEEN 1 second and 15 minutes, got 999 milliseconds.');
+    });
+
+    test('throw error for timeout being too long', () => {
+      expect(() => new redshift.Table(stack, 'Table', {
+        ...databaseOptions,
+        tableColumns,
+        timeout: cdk.Duration.minutes(16),
+      })).toThrow('The timeout for the handler must be between 1 second and 15 minutes, got 960 seconds.');
+    });
+  });
 });

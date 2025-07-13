@@ -1,5 +1,7 @@
 {
   "exclude": [
-    "no-unused-type:@aws-cdk/aws-iot-alpha.ActionConfig"
+    "no-unused-type:@aws-cdk/aws-iot-alpha.ActionConfig",
+    "props-physical-name:@aws-cdk/aws-iot-alpha.LoggingProps",
+    "props-physical-name:@aws-cdk/aws-iot-alpha.AccountAuditConfigurationProps"
   ]
 }

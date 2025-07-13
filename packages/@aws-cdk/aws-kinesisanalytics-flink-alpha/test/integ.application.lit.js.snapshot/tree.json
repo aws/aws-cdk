@@ -8,17 +8,17 @@
         "id": "FlinkAppTest",
         "path": "FlinkAppTest",
         "children": {
-          "App": {
-            "id": "App",
-            "path": "FlinkAppTest/App",
+          "App-FLINK-1_6": {
+            "id": "App-FLINK-1_6",
+            "path": "FlinkAppTest/App-FLINK-1_6",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "FlinkAppTest/App/Role",
+                "path": "FlinkAppTest/App-FLINK-1_6/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "FlinkAppTest/App/Role/ImportRole",
+                    "path": "FlinkAppTest/App-FLINK-1_6/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -26,7 +26,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "FlinkAppTest/App/Role/Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_6/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -51,11 +51,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "FlinkAppTest/App/Role/DefaultPolicy",
+                    "path": "FlinkAppTest/App-FLINK-1_6/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "FlinkAppTest/App/Role/DefaultPolicy/Resource",
+                        "path": "FlinkAppTest/App-FLINK-1_6/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -136,7 +136,7 @@
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
-                                      "AppLogGroupC72EEC8C",
+                                      "AppFLINK16LogGroup6709DAA8",
                                       "Arn"
                                     ]
                                   }
@@ -162,11 +162,11 @@
                                         },
                                         ":log-group:",
                                         {
-                                          "Ref": "AppLogGroupC72EEC8C"
+                                          "Ref": "AppFLINK16LogGroup6709DAA8"
                                         },
                                         ":log-stream:",
                                         {
-                                          "Ref": "AppLogStream3CAF66A7"
+                                          "Ref": "AppFLINK16LogStream203A3C4A"
                                         }
                                       ]
                                     ]
@@ -175,10 +175,10 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "AppRoleDefaultPolicy9CADBAA1",
+                            "policyName": "AppFLINK16RoleDefaultPolicy312C949D",
                             "roles": [
                               {
-                                "Ref": "AppRole1AF9B530"
+                                "Ref": "AppFLINK16RoleA21DF652"
                               }
                             ]
                           }
@@ -202,11 +202,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "FlinkAppTest/App/Code",
+                "path": "FlinkAppTest/App-FLINK-1_6/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "FlinkAppTest/App/Code/Stage",
+                    "path": "FlinkAppTest/App-FLINK-1_6/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -214,7 +214,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "FlinkAppTest/App/Code/AssetBucket",
+                    "path": "FlinkAppTest/App-FLINK-1_6/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -228,7 +228,2032 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "FlinkAppTest/App/Resource",
+                "path": "FlinkAppTest/App-FLINK-1_6/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::Application",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationConfiguration": {
+                      "applicationCodeConfiguration": {
+                        "codeContent": {
+                          "s3ContentLocation": {
+                            "bucketArn": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":s3:::",
+                                  {
+                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                  }
+                                ]
+                              ]
+                            },
+                            "fileKey": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577.zip"
+                          }
+                        },
+                        "codeContentType": "ZIPFILE"
+                      },
+                      "applicationSnapshotConfiguration": {
+                        "snapshotsEnabled": true
+                      }
+                    },
+                    "runtimeEnvironment": "FLINK-1_6",
+                    "serviceExecutionRole": {
+                      "Fn::GetAtt": [
+                        "AppFLINK16RoleA21DF652",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisanalytics.CfnApplicationV2",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "FlinkAppTest/App-FLINK-1_6/LogGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_6/LogGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 731
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "LogStream": {
+                "id": "LogStream",
+                "path": "FlinkAppTest/App-FLINK-1_6/LogStream",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_6/LogStream/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogStream",
+                      "aws:cdk:cloudformation:props": {
+                        "logGroupName": {
+                          "Ref": "AppFLINK16LogGroup6709DAA8"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogStream",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogStream",
+                  "version": "0.0.0"
+                }
+              },
+              "LoggingOption": {
+                "id": "LoggingOption",
+                "path": "FlinkAppTest/App-FLINK-1_6/LoggingOption",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationName": {
+                      "Ref": "AppFLINK16C87388A5"
+                    },
+                    "cloudWatchLoggingOption": {
+                      "logStreamArn": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":logs:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":log-group:",
+                            {
+                              "Ref": "AppFLINK16LogGroup6709DAA8"
+                            },
+                            ":log-stream:",
+                            {
+                              "Ref": "AppFLINK16LogStream203A3C4A"
+                            }
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisanalytics.CfnApplicationCloudWatchLoggingOptionV2",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "Alarm-FLINK-1_6": {
+            "id": "Alarm-FLINK-1_6",
+            "path": "FlinkAppTest/Alarm-FLINK-1_6",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "FlinkAppTest/Alarm-FLINK-1_6/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "dimensions": [
+                      {
+                        "name": "Application",
+                        "value": {
+                          "Ref": "AppFLINK16C87388A5"
+                        }
+                      }
+                    ],
+                    "evaluationPeriods": 1,
+                    "metricName": "fullRestarts",
+                    "namespace": "AWS/KinesisAnalytics",
+                    "period": 300,
+                    "statistic": "Sum",
+                    "threshold": 3
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "App-FLINK-1_8": {
+            "id": "App-FLINK-1_8",
+            "path": "FlinkAppTest/App-FLINK-1_8",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "FlinkAppTest/App-FLINK-1_8/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "FlinkAppTest/App-FLINK-1_8/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_8/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "kinesisanalytics.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "FlinkAppTest/App-FLINK-1_8/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "FlinkAppTest/App-FLINK-1_8/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "cloudwatch:PutMetricData",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": "logs:DescribeLogGroups",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "logs:DescribeLogStreams",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "AppFLINK18LogGroupEC247BE6",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "logs:PutLogEvents",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:",
+                                        {
+                                          "Ref": "AppFLINK18LogGroupEC247BE6"
+                                        },
+                                        ":log-stream:",
+                                        {
+                                          "Ref": "AppFLINK18LogStream773D6792"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "AppFLINK18RoleDefaultPolicy3E0E376C",
+                            "roles": [
+                              {
+                                "Ref": "AppFLINK18RoleF2B5E704"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "FlinkAppTest/App-FLINK-1_8/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "FlinkAppTest/App-FLINK-1_8/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "FlinkAppTest/App-FLINK-1_8/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "FlinkAppTest/App-FLINK-1_8/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::Application",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationConfiguration": {
+                      "applicationCodeConfiguration": {
+                        "codeContent": {
+                          "s3ContentLocation": {
+                            "bucketArn": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":s3:::",
+                                  {
+                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                  }
+                                ]
+                              ]
+                            },
+                            "fileKey": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577.zip"
+                          }
+                        },
+                        "codeContentType": "ZIPFILE"
+                      },
+                      "applicationSnapshotConfiguration": {
+                        "snapshotsEnabled": true
+                      }
+                    },
+                    "runtimeEnvironment": "FLINK-1_8",
+                    "serviceExecutionRole": {
+                      "Fn::GetAtt": [
+                        "AppFLINK18RoleF2B5E704",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisanalytics.CfnApplicationV2",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "FlinkAppTest/App-FLINK-1_8/LogGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_8/LogGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 731
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "LogStream": {
+                "id": "LogStream",
+                "path": "FlinkAppTest/App-FLINK-1_8/LogStream",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_8/LogStream/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogStream",
+                      "aws:cdk:cloudformation:props": {
+                        "logGroupName": {
+                          "Ref": "AppFLINK18LogGroupEC247BE6"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogStream",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogStream",
+                  "version": "0.0.0"
+                }
+              },
+              "LoggingOption": {
+                "id": "LoggingOption",
+                "path": "FlinkAppTest/App-FLINK-1_8/LoggingOption",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationName": {
+                      "Ref": "AppFLINK18DFC0B750"
+                    },
+                    "cloudWatchLoggingOption": {
+                      "logStreamArn": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":logs:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":log-group:",
+                            {
+                              "Ref": "AppFLINK18LogGroupEC247BE6"
+                            },
+                            ":log-stream:",
+                            {
+                              "Ref": "AppFLINK18LogStream773D6792"
+                            }
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisanalytics.CfnApplicationCloudWatchLoggingOptionV2",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "Alarm-FLINK-1_8": {
+            "id": "Alarm-FLINK-1_8",
+            "path": "FlinkAppTest/Alarm-FLINK-1_8",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "FlinkAppTest/Alarm-FLINK-1_8/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "dimensions": [
+                      {
+                        "name": "Application",
+                        "value": {
+                          "Ref": "AppFLINK18DFC0B750"
+                        }
+                      }
+                    ],
+                    "evaluationPeriods": 1,
+                    "metricName": "fullRestarts",
+                    "namespace": "AWS/KinesisAnalytics",
+                    "period": 300,
+                    "statistic": "Sum",
+                    "threshold": 3
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "App-FLINK-1_11": {
+            "id": "App-FLINK-1_11",
+            "path": "FlinkAppTest/App-FLINK-1_11",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "FlinkAppTest/App-FLINK-1_11/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "FlinkAppTest/App-FLINK-1_11/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_11/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "kinesisanalytics.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "FlinkAppTest/App-FLINK-1_11/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "FlinkAppTest/App-FLINK-1_11/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "cloudwatch:PutMetricData",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": "logs:DescribeLogGroups",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "logs:DescribeLogStreams",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "AppFLINK111LogGroup8B96ECB4",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "logs:PutLogEvents",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:",
+                                        {
+                                          "Ref": "AppFLINK111LogGroup8B96ECB4"
+                                        },
+                                        ":log-stream:",
+                                        {
+                                          "Ref": "AppFLINK111LogStream9FBA643C"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "AppFLINK111RoleDefaultPolicy76505541",
+                            "roles": [
+                              {
+                                "Ref": "AppFLINK111Role85754B20"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "FlinkAppTest/App-FLINK-1_11/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "FlinkAppTest/App-FLINK-1_11/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "FlinkAppTest/App-FLINK-1_11/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "FlinkAppTest/App-FLINK-1_11/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::Application",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationConfiguration": {
+                      "applicationCodeConfiguration": {
+                        "codeContent": {
+                          "s3ContentLocation": {
+                            "bucketArn": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":s3:::",
+                                  {
+                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                  }
+                                ]
+                              ]
+                            },
+                            "fileKey": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577.zip"
+                          }
+                        },
+                        "codeContentType": "ZIPFILE"
+                      },
+                      "applicationSnapshotConfiguration": {
+                        "snapshotsEnabled": true
+                      }
+                    },
+                    "runtimeEnvironment": "FLINK-1_11",
+                    "serviceExecutionRole": {
+                      "Fn::GetAtt": [
+                        "AppFLINK111Role85754B20",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisanalytics.CfnApplicationV2",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "FlinkAppTest/App-FLINK-1_11/LogGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_11/LogGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 731
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "LogStream": {
+                "id": "LogStream",
+                "path": "FlinkAppTest/App-FLINK-1_11/LogStream",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_11/LogStream/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogStream",
+                      "aws:cdk:cloudformation:props": {
+                        "logGroupName": {
+                          "Ref": "AppFLINK111LogGroup8B96ECB4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogStream",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogStream",
+                  "version": "0.0.0"
+                }
+              },
+              "LoggingOption": {
+                "id": "LoggingOption",
+                "path": "FlinkAppTest/App-FLINK-1_11/LoggingOption",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationName": {
+                      "Ref": "AppFLINK1115BD3FEB8"
+                    },
+                    "cloudWatchLoggingOption": {
+                      "logStreamArn": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":logs:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":log-group:",
+                            {
+                              "Ref": "AppFLINK111LogGroup8B96ECB4"
+                            },
+                            ":log-stream:",
+                            {
+                              "Ref": "AppFLINK111LogStream9FBA643C"
+                            }
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisanalytics.CfnApplicationCloudWatchLoggingOptionV2",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "Alarm-FLINK-1_11": {
+            "id": "Alarm-FLINK-1_11",
+            "path": "FlinkAppTest/Alarm-FLINK-1_11",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "FlinkAppTest/Alarm-FLINK-1_11/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "dimensions": [
+                      {
+                        "name": "Application",
+                        "value": {
+                          "Ref": "AppFLINK1115BD3FEB8"
+                        }
+                      }
+                    ],
+                    "evaluationPeriods": 1,
+                    "metricName": "fullRestarts",
+                    "namespace": "AWS/KinesisAnalytics",
+                    "period": 300,
+                    "statistic": "Sum",
+                    "threshold": 3
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "App-FLINK-1_13": {
+            "id": "App-FLINK-1_13",
+            "path": "FlinkAppTest/App-FLINK-1_13",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "FlinkAppTest/App-FLINK-1_13/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "FlinkAppTest/App-FLINK-1_13/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_13/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "kinesisanalytics.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "FlinkAppTest/App-FLINK-1_13/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "FlinkAppTest/App-FLINK-1_13/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "cloudwatch:PutMetricData",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": "logs:DescribeLogGroups",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "logs:DescribeLogStreams",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "AppFLINK113LogGroupF5F42067",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "logs:PutLogEvents",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:",
+                                        {
+                                          "Ref": "AppFLINK113LogGroupF5F42067"
+                                        },
+                                        ":log-stream:",
+                                        {
+                                          "Ref": "AppFLINK113LogStream63C2732B"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "AppFLINK113RoleDefaultPolicy701032C8",
+                            "roles": [
+                              {
+                                "Ref": "AppFLINK113RoleE0638828"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "FlinkAppTest/App-FLINK-1_13/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "FlinkAppTest/App-FLINK-1_13/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "FlinkAppTest/App-FLINK-1_13/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "FlinkAppTest/App-FLINK-1_13/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::Application",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationConfiguration": {
+                      "applicationCodeConfiguration": {
+                        "codeContent": {
+                          "s3ContentLocation": {
+                            "bucketArn": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":s3:::",
+                                  {
+                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                  }
+                                ]
+                              ]
+                            },
+                            "fileKey": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577.zip"
+                          }
+                        },
+                        "codeContentType": "ZIPFILE"
+                      },
+                      "applicationSnapshotConfiguration": {
+                        "snapshotsEnabled": true
+                      }
+                    },
+                    "runtimeEnvironment": "FLINK-1_13",
+                    "serviceExecutionRole": {
+                      "Fn::GetAtt": [
+                        "AppFLINK113RoleE0638828",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisanalytics.CfnApplicationV2",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "FlinkAppTest/App-FLINK-1_13/LogGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_13/LogGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 731
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "LogStream": {
+                "id": "LogStream",
+                "path": "FlinkAppTest/App-FLINK-1_13/LogStream",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_13/LogStream/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogStream",
+                      "aws:cdk:cloudformation:props": {
+                        "logGroupName": {
+                          "Ref": "AppFLINK113LogGroupF5F42067"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogStream",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogStream",
+                  "version": "0.0.0"
+                }
+              },
+              "LoggingOption": {
+                "id": "LoggingOption",
+                "path": "FlinkAppTest/App-FLINK-1_13/LoggingOption",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationName": {
+                      "Ref": "AppFLINK1138C7FE76E"
+                    },
+                    "cloudWatchLoggingOption": {
+                      "logStreamArn": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":logs:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":log-group:",
+                            {
+                              "Ref": "AppFLINK113LogGroupF5F42067"
+                            },
+                            ":log-stream:",
+                            {
+                              "Ref": "AppFLINK113LogStream63C2732B"
+                            }
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisanalytics.CfnApplicationCloudWatchLoggingOptionV2",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "Alarm-FLINK-1_13": {
+            "id": "Alarm-FLINK-1_13",
+            "path": "FlinkAppTest/Alarm-FLINK-1_13",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "FlinkAppTest/Alarm-FLINK-1_13/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "dimensions": [
+                      {
+                        "name": "Application",
+                        "value": {
+                          "Ref": "AppFLINK1138C7FE76E"
+                        }
+                      }
+                    ],
+                    "evaluationPeriods": 1,
+                    "metricName": "fullRestarts",
+                    "namespace": "AWS/KinesisAnalytics",
+                    "period": 300,
+                    "statistic": "Sum",
+                    "threshold": 3
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "App-FLINK-1_15": {
+            "id": "App-FLINK-1_15",
+            "path": "FlinkAppTest/App-FLINK-1_15",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "FlinkAppTest/App-FLINK-1_15/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "FlinkAppTest/App-FLINK-1_15/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_15/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "kinesisanalytics.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "FlinkAppTest/App-FLINK-1_15/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "FlinkAppTest/App-FLINK-1_15/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "cloudwatch:PutMetricData",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": "logs:DescribeLogGroups",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "logs:DescribeLogStreams",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "AppFLINK115LogGroupBACCAB69",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "logs:PutLogEvents",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:",
+                                        {
+                                          "Ref": "AppFLINK115LogGroupBACCAB69"
+                                        },
+                                        ":log-stream:",
+                                        {
+                                          "Ref": "AppFLINK115LogStreamD7900E5F"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "AppFLINK115RoleDefaultPolicy402697BF",
+                            "roles": [
+                              {
+                                "Ref": "AppFLINK115RoleD758509C"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "FlinkAppTest/App-FLINK-1_15/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "FlinkAppTest/App-FLINK-1_15/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "FlinkAppTest/App-FLINK-1_15/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "FlinkAppTest/App-FLINK-1_15/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::Application",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationConfiguration": {
+                      "applicationCodeConfiguration": {
+                        "codeContent": {
+                          "s3ContentLocation": {
+                            "bucketArn": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":s3:::",
+                                  {
+                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                  }
+                                ]
+                              ]
+                            },
+                            "fileKey": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577.zip"
+                          }
+                        },
+                        "codeContentType": "ZIPFILE"
+                      },
+                      "applicationSnapshotConfiguration": {
+                        "snapshotsEnabled": true
+                      }
+                    },
+                    "runtimeEnvironment": "FLINK-1_15",
+                    "serviceExecutionRole": {
+                      "Fn::GetAtt": [
+                        "AppFLINK115RoleD758509C",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisanalytics.CfnApplicationV2",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "FlinkAppTest/App-FLINK-1_15/LogGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_15/LogGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 731
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "LogStream": {
+                "id": "LogStream",
+                "path": "FlinkAppTest/App-FLINK-1_15/LogStream",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_15/LogStream/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogStream",
+                      "aws:cdk:cloudformation:props": {
+                        "logGroupName": {
+                          "Ref": "AppFLINK115LogGroupBACCAB69"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogStream",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogStream",
+                  "version": "0.0.0"
+                }
+              },
+              "LoggingOption": {
+                "id": "LoggingOption",
+                "path": "FlinkAppTest/App-FLINK-1_15/LoggingOption",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationName": {
+                      "Ref": "AppFLINK11548C6DD0B"
+                    },
+                    "cloudWatchLoggingOption": {
+                      "logStreamArn": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":logs:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":log-group:",
+                            {
+                              "Ref": "AppFLINK115LogGroupBACCAB69"
+                            },
+                            ":log-stream:",
+                            {
+                              "Ref": "AppFLINK115LogStreamD7900E5F"
+                            }
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisanalytics.CfnApplicationCloudWatchLoggingOptionV2",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "Alarm-FLINK-1_15": {
+            "id": "Alarm-FLINK-1_15",
+            "path": "FlinkAppTest/Alarm-FLINK-1_15",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "FlinkAppTest/Alarm-FLINK-1_15/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "dimensions": [
+                      {
+                        "name": "Application",
+                        "value": {
+                          "Ref": "AppFLINK11548C6DD0B"
+                        }
+                      }
+                    ],
+                    "evaluationPeriods": 1,
+                    "metricName": "fullRestarts",
+                    "namespace": "AWS/KinesisAnalytics",
+                    "period": 300,
+                    "statistic": "Sum",
+                    "threshold": 3
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "App-FLINK-1_18": {
+            "id": "App-FLINK-1_18",
+            "path": "FlinkAppTest/App-FLINK-1_18",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "FlinkAppTest/App-FLINK-1_18/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "FlinkAppTest/App-FLINK-1_18/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_18/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "kinesisanalytics.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "FlinkAppTest/App-FLINK-1_18/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "FlinkAppTest/App-FLINK-1_18/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "cloudwatch:PutMetricData",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": "logs:DescribeLogGroups",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "logs:DescribeLogStreams",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "AppFLINK118LogGroupEF87F95A",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "logs:PutLogEvents",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:",
+                                        {
+                                          "Ref": "AppFLINK118LogGroupEF87F95A"
+                                        },
+                                        ":log-stream:",
+                                        {
+                                          "Ref": "AppFLINK118LogStreamAFAF3379"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "AppFLINK118RoleDefaultPolicy1D8097BB",
+                            "roles": [
+                              {
+                                "Ref": "AppFLINK118Role1B878112"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "FlinkAppTest/App-FLINK-1_18/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "FlinkAppTest/App-FLINK-1_18/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "FlinkAppTest/App-FLINK-1_18/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "FlinkAppTest/App-FLINK-1_18/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::Application",
                   "aws:cdk:cloudformation:props": {
@@ -263,7 +2288,7 @@
                     "runtimeEnvironment": "FLINK-1_18",
                     "serviceExecutionRole": {
                       "Fn::GetAtt": [
-                        "AppRole1AF9B530",
+                        "AppFLINK118Role1B878112",
                         "Arn"
                       ]
                     }
@@ -276,11 +2301,11 @@
               },
               "LogGroup": {
                 "id": "LogGroup",
-                "path": "FlinkAppTest/App/LogGroup",
+                "path": "FlinkAppTest/App-FLINK-1_18/LogGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "FlinkAppTest/App/LogGroup/Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_18/LogGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                       "aws:cdk:cloudformation:props": {
@@ -300,16 +2325,16 @@
               },
               "LogStream": {
                 "id": "LogStream",
-                "path": "FlinkAppTest/App/LogStream",
+                "path": "FlinkAppTest/App-FLINK-1_18/LogStream",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "FlinkAppTest/App/LogStream/Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_18/LogStream/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Logs::LogStream",
                       "aws:cdk:cloudformation:props": {
                         "logGroupName": {
-                          "Ref": "AppLogGroupC72EEC8C"
+                          "Ref": "AppFLINK118LogGroupEF87F95A"
                         }
                       }
                     },
@@ -326,12 +2351,12 @@
               },
               "LoggingOption": {
                 "id": "LoggingOption",
-                "path": "FlinkAppTest/App/LoggingOption",
+                "path": "FlinkAppTest/App-FLINK-1_18/LoggingOption",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
                   "aws:cdk:cloudformation:props": {
                     "applicationName": {
-                      "Ref": "AppF1B96344"
+                      "Ref": "AppFLINK118BEACE639"
                     },
                     "cloudWatchLoggingOption": {
                       "logStreamArn": {
@@ -352,11 +2377,11 @@
                             },
                             ":log-group:",
                             {
-                              "Ref": "AppLogGroupC72EEC8C"
+                              "Ref": "AppFLINK118LogGroupEF87F95A"
                             },
                             ":log-stream:",
                             {
-                              "Ref": "AppLogStream3CAF66A7"
+                              "Ref": "AppFLINK118LogStreamAFAF3379"
                             }
                           ]
                         ]
@@ -371,17 +2396,17 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-kinesisanalytics-flink-alpha.Application",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
-          "Alarm": {
-            "id": "Alarm",
-            "path": "FlinkAppTest/Alarm",
+          "Alarm-FLINK-1_18": {
+            "id": "Alarm-FLINK-1_18",
+            "path": "FlinkAppTest/Alarm-FLINK-1_18",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "FlinkAppTest/Alarm/Resource",
+                "path": "FlinkAppTest/Alarm-FLINK-1_18/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
                   "aws:cdk:cloudformation:props": {
@@ -390,7 +2415,817 @@
                       {
                         "name": "Application",
                         "value": {
-                          "Ref": "AppF1B96344"
+                          "Ref": "AppFLINK118BEACE639"
+                        }
+                      }
+                    ],
+                    "evaluationPeriods": 1,
+                    "metricName": "fullRestarts",
+                    "namespace": "AWS/KinesisAnalytics",
+                    "period": 300,
+                    "statistic": "Sum",
+                    "threshold": 3
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "App-FLINK-1_19": {
+            "id": "App-FLINK-1_19",
+            "path": "FlinkAppTest/App-FLINK-1_19",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "FlinkAppTest/App-FLINK-1_19/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "FlinkAppTest/App-FLINK-1_19/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_19/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "kinesisanalytics.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "FlinkAppTest/App-FLINK-1_19/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "FlinkAppTest/App-FLINK-1_19/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "cloudwatch:PutMetricData",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": "logs:DescribeLogGroups",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "logs:DescribeLogStreams",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "AppFLINK119LogGroup472EA32B",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "logs:PutLogEvents",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:",
+                                        {
+                                          "Ref": "AppFLINK119LogGroup472EA32B"
+                                        },
+                                        ":log-stream:",
+                                        {
+                                          "Ref": "AppFLINK119LogStream5FD726B5"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "AppFLINK119RoleDefaultPolicy6EB1C39D",
+                            "roles": [
+                              {
+                                "Ref": "AppFLINK119Role6594F124"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "FlinkAppTest/App-FLINK-1_19/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "FlinkAppTest/App-FLINK-1_19/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "FlinkAppTest/App-FLINK-1_19/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "FlinkAppTest/App-FLINK-1_19/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::Application",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationConfiguration": {
+                      "applicationCodeConfiguration": {
+                        "codeContent": {
+                          "s3ContentLocation": {
+                            "bucketArn": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":s3:::",
+                                  {
+                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                  }
+                                ]
+                              ]
+                            },
+                            "fileKey": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577.zip"
+                          }
+                        },
+                        "codeContentType": "ZIPFILE"
+                      },
+                      "applicationSnapshotConfiguration": {
+                        "snapshotsEnabled": true
+                      }
+                    },
+                    "runtimeEnvironment": "FLINK-1_19",
+                    "serviceExecutionRole": {
+                      "Fn::GetAtt": [
+                        "AppFLINK119Role6594F124",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisanalytics.CfnApplicationV2",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "FlinkAppTest/App-FLINK-1_19/LogGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_19/LogGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 731
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "LogStream": {
+                "id": "LogStream",
+                "path": "FlinkAppTest/App-FLINK-1_19/LogStream",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_19/LogStream/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogStream",
+                      "aws:cdk:cloudformation:props": {
+                        "logGroupName": {
+                          "Ref": "AppFLINK119LogGroup472EA32B"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogStream",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogStream",
+                  "version": "0.0.0"
+                }
+              },
+              "LoggingOption": {
+                "id": "LoggingOption",
+                "path": "FlinkAppTest/App-FLINK-1_19/LoggingOption",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationName": {
+                      "Ref": "AppFLINK119DAC5CF3C"
+                    },
+                    "cloudWatchLoggingOption": {
+                      "logStreamArn": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":logs:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":log-group:",
+                            {
+                              "Ref": "AppFLINK119LogGroup472EA32B"
+                            },
+                            ":log-stream:",
+                            {
+                              "Ref": "AppFLINK119LogStream5FD726B5"
+                            }
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisanalytics.CfnApplicationCloudWatchLoggingOptionV2",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "Alarm-FLINK-1_19": {
+            "id": "Alarm-FLINK-1_19",
+            "path": "FlinkAppTest/Alarm-FLINK-1_19",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "FlinkAppTest/Alarm-FLINK-1_19/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "dimensions": [
+                      {
+                        "name": "Application",
+                        "value": {
+                          "Ref": "AppFLINK119DAC5CF3C"
+                        }
+                      }
+                    ],
+                    "evaluationPeriods": 1,
+                    "metricName": "fullRestarts",
+                    "namespace": "AWS/KinesisAnalytics",
+                    "period": 300,
+                    "statistic": "Sum",
+                    "threshold": 3
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "App-FLINK-1_20": {
+            "id": "App-FLINK-1_20",
+            "path": "FlinkAppTest/App-FLINK-1_20",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "FlinkAppTest/App-FLINK-1_20/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "FlinkAppTest/App-FLINK-1_20/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_20/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "kinesisanalytics.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "FlinkAppTest/App-FLINK-1_20/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "FlinkAppTest/App-FLINK-1_20/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "cloudwatch:PutMetricData",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": "logs:DescribeLogGroups",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "logs:DescribeLogStreams",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "AppFLINK120LogGroupFFF89194",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "logs:PutLogEvents",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:",
+                                        {
+                                          "Ref": "AppFLINK120LogGroupFFF89194"
+                                        },
+                                        ":log-stream:",
+                                        {
+                                          "Ref": "AppFLINK120LogStream155EEEF9"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "AppFLINK120RoleDefaultPolicy2540C6BA",
+                            "roles": [
+                              {
+                                "Ref": "AppFLINK120RoleDC5875D6"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "FlinkAppTest/App-FLINK-1_20/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "FlinkAppTest/App-FLINK-1_20/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "FlinkAppTest/App-FLINK-1_20/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "FlinkAppTest/App-FLINK-1_20/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::Application",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationConfiguration": {
+                      "applicationCodeConfiguration": {
+                        "codeContent": {
+                          "s3ContentLocation": {
+                            "bucketArn": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":s3:::",
+                                  {
+                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                  }
+                                ]
+                              ]
+                            },
+                            "fileKey": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577.zip"
+                          }
+                        },
+                        "codeContentType": "ZIPFILE"
+                      },
+                      "applicationSnapshotConfiguration": {
+                        "snapshotsEnabled": true
+                      }
+                    },
+                    "runtimeEnvironment": "FLINK-1_20",
+                    "serviceExecutionRole": {
+                      "Fn::GetAtt": [
+                        "AppFLINK120RoleDC5875D6",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisanalytics.CfnApplicationV2",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "FlinkAppTest/App-FLINK-1_20/LogGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_20/LogGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 731
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "LogStream": {
+                "id": "LogStream",
+                "path": "FlinkAppTest/App-FLINK-1_20/LogStream",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "FlinkAppTest/App-FLINK-1_20/LogStream/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogStream",
+                      "aws:cdk:cloudformation:props": {
+                        "logGroupName": {
+                          "Ref": "AppFLINK120LogGroupFFF89194"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogStream",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogStream",
+                  "version": "0.0.0"
+                }
+              },
+              "LoggingOption": {
+                "id": "LoggingOption",
+                "path": "FlinkAppTest/App-FLINK-1_20/LoggingOption",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationName": {
+                      "Ref": "AppFLINK120E80F19CE"
+                    },
+                    "cloudWatchLoggingOption": {
+                      "logStreamArn": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":logs:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":log-group:",
+                            {
+                              "Ref": "AppFLINK120LogGroupFFF89194"
+                            },
+                            ":log-stream:",
+                            {
+                              "Ref": "AppFLINK120LogStream155EEEF9"
+                            }
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisanalytics.CfnApplicationCloudWatchLoggingOptionV2",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "Alarm-FLINK-1_20": {
+            "id": "Alarm-FLINK-1_20",
+            "path": "FlinkAppTest/Alarm-FLINK-1_20",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "FlinkAppTest/Alarm-FLINK-1_20/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "dimensions": [
+                      {
+                        "name": "Application",
+                        "value": {
+                          "Ref": "AppFLINK120E80F19CE"
                         }
                       }
                     ],
@@ -432,6 +3267,60 @@
         },
         "constructInfo": {
           "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ApplicationTest": {
+        "id": "ApplicationTest",
+        "path": "ApplicationTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ApplicationTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ApplicationTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ApplicationTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "ApplicationTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "ApplicationTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },

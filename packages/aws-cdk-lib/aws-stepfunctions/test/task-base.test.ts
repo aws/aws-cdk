@@ -45,6 +45,35 @@ describe('Task base', () => {
     });
   });
 
+  test('instantiate a concrete implementation with JSONata properties', () => {
+    // WHEN
+    task = new FakeTask(stack, 'my-exciting-task', {
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+      comment: 'my exciting task',
+      outputs: {
+        FakeName: '{% $states.result.FakeName %}',
+      },
+    });
+
+    // THEN
+    expect(renderGraph(task)).toEqual({
+      StartAt: 'my-exciting-task',
+      States: {
+        'my-exciting-task': {
+          End: true,
+          Type: 'Task',
+          QueryLanguage: 'JSONata',
+          Comment: 'my exciting task',
+          Resource: 'my-resource',
+          Arguments: { MyParameter: 'myParameter' },
+          Output: {
+            FakeName: '{% $states.result.FakeName %}',
+          },
+        },
+      },
+    });
+  });
+
   test('instantiate a concrete implementation with credentials of a specified role', () => {
     // WHEN
     const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/example-role');
@@ -331,6 +360,24 @@ describe('Task base', () => {
         'my-exciting-task': expect.objectContaining({
           HeartbeatSecondsPath: '$.heartbeat',
           TimeoutSecondsPath: '$.timeout',
+        }),
+      },
+    }));
+  });
+
+  test('taskTimeout and heartbeatTimeout specified with a JSONata expression', () => {
+    // WHEN
+    task = new FakeTask(stack, 'my-exciting-task', {
+      heartbeatTimeout: sfn.Timeout.jsonata('{% $heartbeat %}'),
+      taskTimeout: sfn.Timeout.jsonata('{% $timeout %}'),
+    });
+
+    // THEN
+    expect(renderGraph(task)).toEqual(expect.objectContaining({
+      States: {
+        'my-exciting-task': expect.objectContaining({
+          HeartbeatSeconds: '{% $heartbeat %}',
+          TimeoutSeconds: '{% $timeout %}',
         }),
       },
     }));

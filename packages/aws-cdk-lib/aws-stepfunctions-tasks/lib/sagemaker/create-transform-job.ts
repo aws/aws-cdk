@@ -1,17 +1,14 @@
+
 import { Construct } from 'constructs';
 import { BatchStrategy, ModelClientOptions, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
 import { renderEnvironment, renderTags } from './private/utils';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
-import { Size, Stack, Token } from '../../../core';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+import { Size, Stack, Token, ValidationError } from '../../../core';
+import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for creating an Amazon SageMaker transform job task
- *
- */
-export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps {
+interface SageMakerCreateTransformJobOptions {
   /**
    * Transform Job Name.
    */
@@ -91,10 +88,41 @@ export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps
 }
 
 /**
+ * Properties for creating an Amazon SageMaker transform job task using JSONPath
+ */
+export interface SageMakerCreateTransformJobJsonPathProps extends sfn.TaskStateJsonPathBaseProps, SageMakerCreateTransformJobOptions {}
+
+/**
+ * Properties for creating an Amazon SageMaker transform job task using JSONata
+ */
+export interface SageMakerCreateTransformJobJsonataProps extends sfn.TaskStateJsonataBaseProps, SageMakerCreateTransformJobOptions {}
+
+/**
+ * Properties for creating an Amazon SageMaker transform job task
+ */
+export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps, SageMakerCreateTransformJobOptions {}
+
+/**
  * Class representing the SageMaker Create Transform Job task.
- *
  */
 export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
+  /**
+   * Class representing the SageMaker Create Transform Job task using JSONPath.
+   */
+  public static jsonPath(scope: Construct, id: string, props: SageMakerCreateTransformJobJsonPathProps) {
+    return new SageMakerCreateTransformJob(scope, id, props);
+  }
+
+  /**
+   * Class representing the SageMaker Create Transform Job task using JSONata.
+   */
+  public static jsonata(scope: Construct, id: string, props: SageMakerCreateTransformJobJsonataProps) {
+    return new SageMakerCreateTransformJob(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
+
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -144,10 +172,11 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('sagemaker', 'createTransformJob', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
+      ...this._renderParametersOrArguments(this.renderParameters(), queryLanguage),
     };
   }
 
@@ -158,7 +187,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
    */
   public get role(): iam.IRole {
     if (this._role === undefined) {
-      throw new Error('role not available yet--use the object in a Task first');
+      throw new ValidationError('role not available yet--use the object in a Task first', this);
     }
     return this._role;
   }
@@ -182,11 +211,11 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
   private renderModelClientOptions(options: ModelClientOptions): { [key: string]: any } {
     const retries = options.invocationsMaxRetries;
     if (!Token.isUnresolved(retries) && retries? (retries < 0 || retries > 3): false) {
-      throw new Error(`invocationsMaxRetries should be between 0 and 3. Received: ${retries}.`);
+      throw new ValidationError(`invocationsMaxRetries should be between 0 and 3. Received: ${retries}.`, this);
     }
     const timeout = options.invocationsTimeout?.toSeconds();
     if (!Token.isUnresolved(timeout) && timeout? (timeout < 1 || timeout > 3600): false) {
-      throw new Error(`invocationsTimeout should be between 1 and 3600 seconds. Received: ${timeout}.`);
+      throw new ValidationError(`invocationsTimeout should be between 1 and 3600 seconds. Received: ${timeout}.`, this);
     }
     return {
       ModelClientConfig: {
@@ -227,7 +256,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     return {
       TransformResources: {
         InstanceCount: resources.instanceCount,
-        InstanceType: sfn.JsonPath.isEncodedJsonPath(resources.instanceType.toString())
+        InstanceType: isJsonPathOrJsonataExpression(resources.instanceType.toString())
           ? resources.instanceType.toString() : `ml.${resources.instanceType}`,
         ...(resources.volumeEncryptionKey ? { VolumeKmsKeyId: resources.volumeEncryptionKey.keyArn } : {}),
       },

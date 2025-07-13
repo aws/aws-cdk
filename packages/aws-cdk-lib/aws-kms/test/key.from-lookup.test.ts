@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
-import { ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '../../core';
+import { App, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 import { Key } from '../lib';
 
@@ -39,6 +39,65 @@ test('return correct key', () => {
   restoreContextProvider(previous);
 });
 
+test('return dummy key if returnDummyKeyOnMissing is true', () => {
+  const app = new App();
+  const stack = new Stack(app, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
+  const key = Key.fromLookup(stack, 'Key', {
+    aliasName: 'alias/foo',
+    returnDummyKeyOnMissing: true,
+  });
+
+  expect(key.keyId).toEqual(Key.DEFAULT_DUMMY_KEY_ID);
+  expect(app.synth().manifest.missing).toEqual([
+    {
+      key: 'key-provider:account=123456789012:aliasName=alias/foo:region=us-east-1',
+      props: {
+        account: '123456789012',
+        aliasName: 'alias/foo',
+        ignoreErrorOnMissingContext: true,
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-us-east-1',
+        dummyValue: {
+          keyId: '1234abcd-12ab-34cd-56ef-1234567890ab',
+        },
+        region: 'us-east-1',
+      },
+      provider: 'key-provider',
+    },
+  ]);
+});
+
+describe('isLookupDummy method', () => {
+  test('return false if the lookup key is not a dummy key', () => {
+    const previous = mockKeyContextProviderWith({
+      keyId: '12345678-1234-1234-1234-123456789012',
+    }, options => {
+      expect(options.aliasName).toEqual('alias/foo');
+    });
+
+    const app = new App();
+    const stack = new Stack(app, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
+    const key = Key.fromLookup(stack, 'Key', {
+      aliasName: 'alias/foo',
+      returnDummyKeyOnMissing: true,
+    });
+
+    expect(Key.isLookupDummy(key)).toEqual(false);
+
+    restoreContextProvider(previous);
+  });
+
+  test('return true if the lookup key is a dummy key', () => {
+    const app = new App();
+    const stack = new Stack(app, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
+    const key = Key.fromLookup(stack, 'Key', {
+      aliasName: 'alias/foo',
+      returnDummyKeyOnMissing: true,
+    });
+
+    expect(Key.isLookupDummy(key)).toEqual(true);
+  });
+});
+
 interface MockKeyContextResponse {
   readonly keyId: string;
 }
@@ -46,6 +105,7 @@ interface MockKeyContextResponse {
 function mockKeyContextProviderWith(
   response: MockKeyContextResponse,
   paramValidator?: (options: cxschema.KeyContextQuery) => void) {
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const previous = ContextProvider.getValue;
   ContextProvider.getValue = (_scope: Construct, options: GetContextValueOptions) => {
     // do some basic sanity checks

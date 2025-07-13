@@ -1,0 +1,45 @@
+<precreated-role-api> (integ-customize-roles-restapi/RestApi/CloudWatchRole)
+
+AssumeRole Policy:
+[
+  {
+    "Action": "sts:AssumeRole",
+    "Effect": "Allow",
+    "Principal": {
+      "Service": "apigateway.amazonaws.com"
+    }
+  }
+]
+
+Managed Policy ARNs:
+[
+  "arn:(PARTITION):iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+]
+
+Managed Policies Statements:
+NONE
+
+Identity Policy Statements:
+NONE
+
+<precreated-role> (integ-customize-roles-restapi/Role)
+
+AssumeRole Policy:
+[
+  {
+    "Action": "sts:AssumeRole",
+    "Effect": "Allow",
+    "Principal": {
+      "Service": "sns.amazonaws.com"
+    }
+  }
+]
+
+Managed Policy ARNs:
+NONE
+
+Managed Policies Statements:
+NONE
+
+Identity Policy Statements:
+NONE

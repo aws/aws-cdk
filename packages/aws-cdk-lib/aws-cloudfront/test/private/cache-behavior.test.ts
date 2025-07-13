@@ -97,3 +97,53 @@ test('throws if edgeLambda includeBody is set for wrong event type', () => {
     }],
   })).toThrow(/'includeBody' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types./);
 });
+
+describe('gRPC', () => {
+  test.each([true, false, undefined])('enableGrpc is %s', (enableGrpc) => {
+    const behavior = new CacheBehavior('origin_id', {
+      pathPattern: '*',
+      allowedMethods: AllowedMethods.ALLOW_ALL,
+      enableGrpc,
+    });
+
+    expect(behavior._renderBehavior()).toEqual({
+      targetOriginId: 'origin_id',
+      cachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+      compress: true,
+      pathPattern: '*',
+      allowedMethods: ['GET', 'HEAD', 'OPTIONS', 'PUT', 'PATCH', 'POST', 'DELETE'],
+      viewerProtocolPolicy: 'allow-all',
+      grpcConfig: enableGrpc !== undefined
+        ? {
+          enabled: enableGrpc,
+        }
+        : undefined,
+    });
+  });
+
+  test.each([
+    AllowedMethods.ALLOW_GET_HEAD,
+    AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+    undefined,
+  ])('throws if allowedMethods is not ALLOW_ALL but %s and enableGrpc is true', (allowedMethods) => {
+    expect(() => new CacheBehavior('origin_id', {
+      pathPattern: '*',
+      allowedMethods,
+      enableGrpc: true,
+    })).toThrow(/'allowedMethods' can only be AllowedMethods.ALLOW_ALL if 'enableGrpc' is true/);
+  });
+
+  test('throws if edgeLambda is set and enableGrpc is true', () => {
+    const fnVersion = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:testregion:111111111111:function:myTestFun:v1');
+
+    expect(() => new CacheBehavior('origin_id', {
+      pathPattern: '*',
+      allowedMethods: AllowedMethods.ALLOW_ALL,
+      enableGrpc: true,
+      edgeLambdas: [{
+        eventType: LambdaEdgeEventType.ORIGIN_RESPONSE,
+        functionVersion: fnVersion,
+      }],
+    })).toThrow(/'edgeLambdas' cannot be specified if 'enableGrpc' is true/);
+  });
+});

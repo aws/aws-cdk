@@ -9,7 +9,20 @@ import { ISecurityGroup, SecurityGroup } from './security-group';
 import { IVpc, SubnetSelection } from './vpc';
 import { ISamlProvider } from '../../aws-iam';
 import * as logs from '../../aws-logs';
-import { CfnOutput, Resource, Token } from '../../core';
+import { CfnOutput, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+
+/**
+ * Options for Client Route Enforcement
+ */
+export interface ClientRouteEnforcementOptions {
+  /**
+   * Enable or disable Client Route Enforcement.
+   * The state can either be true (enabled) or false (disabled).
+   */
+  readonly enforced: boolean;
+}
 
 /**
  * Options for a client VPN endpoint
@@ -167,6 +180,18 @@ export interface ClientVpnEndpointOptions {
    * @default - no banner is presented to the client
    */
   readonly clientLoginBanner?: string;
+
+  /**
+   * Options for Client Route Enforcement.
+   *
+   * Client Route Enforcement is a feature of Client VPN that helps enforce administrator defined routes on devices connected through the VPN.
+   * This feature helps improve your security posture by ensuring that network traffic originating from a connected client is not inadvertently sent outside the VPN tunnel.
+   *
+   * @see https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-cre.html
+   *
+   * @default undefined - AWS Client VPN default setting is disable client route enforcement
+   */
+  readonly clientRouteEnforcementOptions?: ClientRouteEnforcementOptions;
 }
 
 /**
@@ -264,9 +289,15 @@ export interface ClientVpnEndpointAttributes {
 }
 
 /**
- * A client VPN connnection
+ * A client VPN connection
  */
+@propertyInjectable
 export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.ClientVpnEndpoint';
+
   /**
    * Import an existing client VPN endpoint
    */
@@ -292,33 +323,42 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
 
   constructor(scope: Construct, id: string, props: ClientVpnEndpointProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!Token.isUnresolved(props.vpc.vpcCidrBlock)) {
       const clientCidr = new CidrBlock(props.cidr);
       const vpcCidr = new CidrBlock(props.vpc.vpcCidrBlock);
       if (vpcCidr.containsCidr(clientCidr)) {
-        throw new Error('The client CIDR cannot overlap with the local CIDR of the VPC');
+        throw new ValidationError('The client CIDR cannot overlap with the local CIDR of the VPC', this);
       }
     }
 
     if (props.dnsServers && props.dnsServers.length > 2) {
-      throw new Error('A client VPN endpoint can have up to two DNS servers');
+      throw new ValidationError('A client VPN endpoint can have up to two DNS servers', this);
     }
 
     if (props.logging == false && (props.logGroup || props.logStream)) {
-      throw new Error('Cannot specify `logGroup` or `logStream` when logging is disabled');
+      throw new ValidationError('Cannot specify `logGroup` or `logStream` when logging is disabled', this);
     }
 
     if (props.clientConnectionHandler
       && !Token.isUnresolved(props.clientConnectionHandler.functionName)
       && !props.clientConnectionHandler.functionName.startsWith('AWSClientVPN-')) {
-      throw new Error('The name of the Lambda function must begin with the `AWSClientVPN-` prefix');
+      throw new ValidationError('The name of the Lambda function must begin with the `AWSClientVPN-` prefix', this);
     }
 
     if (props.clientLoginBanner
       && !Token.isUnresolved(props.clientLoginBanner)
       && props.clientLoginBanner.length > 1400) {
-      throw new Error(`The maximum length for the client login banner is 1400, got ${props.clientLoginBanner.length}`);
+      throw new ValidationError(`The maximum length for the client login banner is 1400, got ${props.clientLoginBanner.length}`, this);
+    }
+
+    if (props.clientRouteEnforcementOptions?.enforced && props.splitTunnel) {
+      throw new ValidationError(
+        'Client Route Enforcement cannot be enabled when splitTunnel is true.',
+        this,
+      );
     }
 
     const logging = props.logging ?? true;
@@ -347,6 +387,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       },
       description: props.description,
       dnsServers: props.dnsServers,
+      clientRouteEnforcementOptions: props.clientRouteEnforcementOptions,
       securityGroupIds: securityGroups.map(s => s.securityGroupId),
       selfServicePortal: booleanToEnabledDisabled(props.selfServicePortal),
       serverCertificateArn: props.serverCertificateArn,
@@ -376,7 +417,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
     const subnetIds = props.vpc.selectSubnets(props.vpcSubnets).subnetIds;
 
     if (Token.isUnresolved(subnetIds)) {
-      throw new Error('Cannot associate subnets when VPC are imported from parameters or exports containing lists of subnet IDs.');
+      throw new ValidationError('Cannot associate subnets when VPC are imported from parameters or exports containing lists of subnet IDs.', this);
     }
 
     for (const [idx, subnetId] of Object.entries(subnetIds)) {
@@ -397,6 +438,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
   /**
    * Adds an authorization rule to this endpoint
    */
+  @MethodMetadata()
   public addAuthorizationRule(id: string, props: ClientVpnAuthorizationRuleOptions): ClientVpnAuthorizationRule {
     return new ClientVpnAuthorizationRule(this, id, {
       ...props,
@@ -407,6 +449,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
   /**
    * Adds a route to this endpoint
    */
+  @MethodMetadata()
   public addRoute(id: string, props: ClientVpnRouteOptions): ClientVpnRoute {
     return new ClientVpnRoute(this, id, {
       ...props,
@@ -434,7 +477,7 @@ function renderAuthenticationOptions(
   }
 
   if (authenticationOptions.length === 0) {
-    throw new Error('A client VPN endpoint must use at least one authentication option');
+    throw new UnscopedValidationError('A client VPN endpoint must use at least one authentication option');
   }
   return authenticationOptions;
 }

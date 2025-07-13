@@ -86,7 +86,6 @@ export function normalizeStatement(s: StatementSchema) {
   });
 
   function _norm(values: any, { unique = false }: { unique: boolean } = { unique: false }) {
-
     if (values == null) {
       return undefined;
     }

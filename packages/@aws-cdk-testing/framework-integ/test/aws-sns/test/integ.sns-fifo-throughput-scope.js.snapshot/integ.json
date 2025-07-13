@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "sns-fifo-throughput-scope-test/DefaultTest": {
+      "stacks": [
+        "sns-fifo-throughput-scope"
+      ],
+      "assertionStack": "sns-fifo-throughput-scope-test/DefaultTest/DeployAssert",
+      "assertionStackName": "snsfifothroughputscopetestDefaultTestDeployAssertBAF90E92"
+    }
+  }
+}

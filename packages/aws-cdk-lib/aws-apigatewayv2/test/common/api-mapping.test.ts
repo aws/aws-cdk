@@ -8,7 +8,6 @@ const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
 
 describe('ApiMapping', () => {
   test('default stage', () => {
-
     const stack = new Stack();
     const api = new HttpApi(stack, 'Api');
 
@@ -31,7 +30,6 @@ describe('ApiMapping', () => {
   });
 
   test('beta stage mapping', () => {
-
     const stack = new Stack();
     const api = new HttpApi(stack, 'Api', {
       createDefaultStage: false,
@@ -63,7 +61,6 @@ describe('ApiMapping', () => {
   });
 
   test('apiMappingKey validation - empty string not allowed', () => {
-
     const stack = new Stack();
     const api = new HttpApi(stack, 'Api');
 
@@ -82,7 +79,6 @@ describe('ApiMapping', () => {
   });
 
   test('import mapping', () => {
-
     const stack = new Stack();
     const api = new HttpApi(stack, 'Api');
 

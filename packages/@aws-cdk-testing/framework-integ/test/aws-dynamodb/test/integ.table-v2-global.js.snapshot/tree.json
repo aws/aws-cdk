@@ -31,7 +31,13 @@
                           "KeyId": "alias/aws/kinesis"
                         }
                       ]
-                    }
+                    },
+                    "tags": [
+                      {
+                        "key": "stage",
+                        "value": "IntegTest"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -188,6 +194,14 @@
                         },
                         "tags": [
                           {
+                            "key": "stage",
+                            "value": "IntegTest"
+                          },
+                          {
+                            "key": "tagAspectKey",
+                            "value": "tagAspectValue"
+                          },
+                          {
                             "key": "USE2ReplicaTagKey",
                             "value": "USE2ReplicaTagValue"
                           }
@@ -223,6 +237,14 @@
                           "readCapacityUnits": 10
                         },
                         "tags": [
+                          {
+                            "key": "stage",
+                            "value": "IntegTest"
+                          },
+                          {
+                            "key": "tagAspectKey",
+                            "value": "tagAspectValue"
+                          },
                           {
                             "key": "USW2ReplicaTagKey",
                             "value": "USW2ReplicaTagValue"
@@ -270,6 +292,14 @@
                           "readCapacityUnits": 10
                         },
                         "tags": [
+                          {
+                            "key": "stage",
+                            "value": "IntegTest"
+                          },
+                          {
+                            "key": "tagAspectKey",
+                            "value": "tagAspectValue"
+                          },
                           {
                             "key": "primaryTableTagKey",
                             "value": "primaryTableTagValue"
@@ -347,7 +377,7 @@
                 "path": "aws-cdk-global-table-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -393,7 +423,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

@@ -4,6 +4,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnGameServerGroup } from 'aws-cdk-lib/aws-gamelift';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Configuration settings for intelligent automatic scaling that uses target tracking.
@@ -319,10 +321,10 @@ export interface GameServerGroupProps {
   readonly deleteOption?: DeleteOption;
 
   /**
-    * Indicates how GameLift FleetIQ balances the use of Spot Instances and On-Demand Instances in the game server group.
-    *
-    * @default SPOT_PREFERRED
-    */
+   * Indicates how GameLift FleetIQ balances the use of Spot Instances and On-Demand Instances in the game server group.
+   *
+   * @default SPOT_PREFERRED
+   */
   readonly balancingStrategy?: BalancingStrategy;
 }
 
@@ -347,7 +349,11 @@ export interface GameServerGroupProps {
  *
  * @resource AWS::GameLift::GameServerGroup
  */
+@propertyInjectable
 export class GameServerGroup extends GameServerGroupBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-gamelift-alpha.GameServerGroup';
+
   /**
    * Import an existing game server group from its attributes.
    */
@@ -424,6 +430,8 @@ export class GameServerGroup extends GameServerGroupBase {
     super(scope, id, {
       physicalName: props.gameServerGroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!cdk.Token.isUnresolved(props.gameServerGroupName)) {
       if (props.gameServerGroupName.length > 128) {

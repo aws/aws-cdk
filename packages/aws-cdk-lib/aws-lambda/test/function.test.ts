@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { testDeprecated, bockfs } from '@aws-cdk/cdk-build-tools';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import { Annotations, Match, Template } from '../../assertions';
@@ -16,6 +16,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
 import { Aspects, Lazy, Size } from '../../core';
+import { JSII_RUNTIME_SYMBOL } from '../../core/lib/constants';
 import { getWarnings } from '../../core/test/util';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
@@ -222,7 +223,7 @@ describe('function', () => {
       fn.addPermission('S1', { principal: new iam.ServicePrincipal('my-service') });
       fn.addPermission('S2', { principal: new iam.AccountPrincipal('account') });
       fn.addPermission('S3', { principal: new iam.ArnPrincipal('my:arn') });
-      fn.addPermission('S4', { principal: new iam.OrganizationPrincipal('my:org') });
+      fn.addPermission('S4', { principal: new iam.OrganizationPrincipal('o-12345abcde') });
     });
 
     test('does not show warning if skipPermissions is set', () => {
@@ -253,22 +254,7 @@ describe('function', () => {
 
       expect(getWarnings(app.synth())).toEqual([
         {
-          message: {
-            'Fn::Join': [
-              '',
-              [
-                'addPermission() has no effect on a Lambda Function with region=us-west-2, account=123456789012, in a Stack with region=',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ', account=',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                '. Suppress this warning if this is is intentional, or pass sameEnvironment=true to fromFunctionAttributes() if you would like to add the permissions. [ack: UnclearLambdaEnvironment]',
-              ],
-            ],
-          },
+          message: expect.stringMatching(/^addPermission\(\) has no effect on a Lambda Function with region=us-west-2, account=123456789012, in a Stack with region=\${Token\[AWS\.Region\.\d+]}, account=\${Token\[AWS\.AccountId\.\d+]}. Suppress this warning if this is is intentional, or pass sameEnvironment=true to fromFunctionAttributes\(\) if you would like to add the permissions\. \[ack: UnclearLambdaEnvironment]$/),
           path: '/Default/Imported',
         },
       ]);
@@ -401,9 +387,61 @@ describe('function', () => {
       })).toThrow(/PrincipalWithConditions had unsupported condition combinations for Lambda permission statement/);
     });
 
-    test('BYORole', () => {
+    test('BYORole @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App({
+        context: {
+          [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+        },
+      });
+      const stack = new cdk.Stack(app);
+      const role = new iam.Role(stack, 'SomeRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+      role.addToPolicy(new iam.PolicyStatement({ actions: ['confirm:itsthesame'], resources: ['*'] }));
+
+      // WHEN
+      const fn = new lambda.Function(stack, 'Function', {
+        code: new lambda.InlineCode('test'),
+        runtime: lambda.Runtime.PYTHON_3_9,
+        handler: 'index.test',
+        role,
+        initialPolicy: [
+          new iam.PolicyStatement({ actions: ['inline:inline'], resources: ['*'] }),
+        ],
+      });
+
+      fn.addToRolePolicy(new iam.PolicyStatement({ actions: ['explicit:explicit'], resources: ['*'] }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            { Action: 'confirm:itsthesame', Effect: 'Allow', Resource: '*' },
+            { Action: 'inline:inline', Effect: 'Allow', Resource: '*' },
+          ],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            { Action: 'explicit:explicit', Effect: 'Allow', Resource: '*' },
+          ],
+        },
+      });
+    });
+
+    test('BYORole @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+      // GIVEN
+      const app = new cdk.App({
+        context: {
+          [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+        },
+      });
+      const stack = new cdk.Stack(app);
       const role = new iam.Role(stack, 'SomeRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       });
@@ -786,8 +824,109 @@ describe('function', () => {
     });
   });
 
-  test('default function with SQS DLQ when client sets deadLetterQueueEnabled to true and functionName defined by client', () => {
-    const stack = new cdk.Stack();
+  test('default function with SQS DLQ when client sets deadLetterQueueEnabled to true and functionName defined by client @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+      },
+    });
+    const stack = new cdk.Stack(app);
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      functionName: 'OneFunctionToRuleThemAll',
+      deadLetterQueueEnabled: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'lambda.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+            ],
+          ],
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'MyLambdaDeadLetterQueue399EEA2D',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyLambdainlinePolicyAddedToExecutionRole0E0144580',
+      Roles: [
+        {
+          Ref: 'MyLambdaServiceRole4539ECB6',
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          ZipFile: 'foo',
+        },
+        Handler: 'index.handler',
+        Role: {
+          'Fn::GetAtt': [
+            'MyLambdaServiceRole4539ECB6',
+            'Arn',
+          ],
+        },
+        Runtime: lambda.Runtime.NODEJS_LATEST.name,
+        DeadLetterConfig: {
+          TargetArn: {
+            'Fn::GetAtt': [
+              'MyLambdaDeadLetterQueue399EEA2D',
+              'Arn',
+            ],
+          },
+        },
+        FunctionName: 'OneFunctionToRuleThemAll',
+      },
+      DependsOn: [
+        'MyLambdaServiceRole4539ECB6',
+      ],
+    });
+  });
+
+  test('default function with SQS DLQ when client sets deadLetterQueueEnabled to true and functionName defined by client @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new cdk.Stack(app);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -1115,8 +1254,73 @@ describe('function', () => {
     })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
   });
 
-  test('default function with Active tracing', () => {
-    const stack = new cdk.Stack();
+  test('default function with Active tracing @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+      },
+    });
+    const stack = new cdk.Stack(app);
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tracing: lambda.Tracing.ACTIVE,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'xray:PutTraceSegments',
+              'xray:PutTelemetryRecords',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyLambdainlinePolicyAddedToExecutionRole0E0144580',
+      Roles: [
+        {
+          Ref: 'MyLambdaServiceRole4539ECB6',
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          ZipFile: 'foo',
+        },
+        Handler: 'index.handler',
+        Role: {
+          'Fn::GetAtt': [
+            'MyLambdaServiceRole4539ECB6',
+            'Arn',
+          ],
+        },
+        Runtime: lambda.Runtime.NODEJS_LATEST.name,
+        TracingConfig: {
+          Mode: 'Active',
+        },
+      },
+      DependsOn: [
+        'MyLambdaServiceRole4539ECB6',
+      ],
+    });
+  });
+
+  test('default function with Active tracing @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new cdk.Stack(app);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -1171,8 +1375,73 @@ describe('function', () => {
     });
   });
 
-  test('default function with PassThrough tracing', () => {
-    const stack = new cdk.Stack();
+  test('default function with PassThrough tracing @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+      },
+    });
+    const stack = new cdk.Stack(app);
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tracing: lambda.Tracing.PASS_THROUGH,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'xray:PutTraceSegments',
+              'xray:PutTelemetryRecords',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyLambdainlinePolicyAddedToExecutionRole0E0144580',
+      Roles: [
+        {
+          Ref: 'MyLambdaServiceRole4539ECB6',
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          ZipFile: 'foo',
+        },
+        Handler: 'index.handler',
+        Role: {
+          'Fn::GetAtt': [
+            'MyLambdaServiceRole4539ECB6',
+            'Arn',
+          ],
+        },
+        Runtime: lambda.Runtime.NODEJS_LATEST.name,
+        TracingConfig: {
+          Mode: 'PassThrough',
+        },
+      },
+      DependsOn: [
+        'MyLambdaServiceRole4539ECB6',
+      ],
+    });
+  });
+
+  test('default function with PassThrough tracing @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new cdk.Stack(app);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -1461,7 +1730,7 @@ describe('function', () => {
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_LATEST,
       });
-      const org = new iam.OrganizationPrincipal('my-org-id');
+      const org = new iam.OrganizationPrincipal('o-12345abcde');
 
       // WHEN
       fn.grantInvoke(org);
@@ -1476,7 +1745,7 @@ describe('function', () => {
           ],
         },
         Principal: '*',
-        PrincipalOrgID: 'my-org-id',
+        PrincipalOrgID: 'o-12345abcde',
       });
     });
 
@@ -1690,7 +1959,7 @@ describe('function', () => {
         new iam.AccountPrincipal('1234'),
         new iam.ServicePrincipal('apigateway.amazonaws.com'),
         new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole'),
-        new iam.OrganizationPrincipal('my-org-id'),
+        new iam.OrganizationPrincipal('o-12345abcde'),
       );
 
       const fn = new lambda.Function(stack, 'Function', {
@@ -1742,7 +2011,7 @@ describe('function', () => {
           ],
         },
         Principal: '*',
-        PrincipalOrgID: 'my-org-id',
+        PrincipalOrgID: 'o-12345abcde',
       });
     });
   });
@@ -1996,6 +2265,7 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS,
       logRetention: logs.RetentionDays.ONE_MONTH,
+      logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     // THEN
@@ -2012,7 +2282,36 @@ describe('function', () => {
         ],
       },
       RetentionInDays: 30,
+      RemovalPolicy: 'destroy',
     });
+  });
+
+  test('cannot use logRemovalPolicy and logGroup', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN/THEN
+    expect(() => new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      logGroup: new logs.LogGroup(stack, 'CustomLogGroup'),
+      logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+    })).toThrow(/Cannot use `logRemovalPolicy` and `logGroup`/);
+  });
+
+  test('cannot use logRemovalPolicy and USE_CDK_MANAGED_LAMBDA_LOGGROUP', () => {
+    // GIVEN
+    const app = new cdk.App({ context: { [cxapi.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: true } });
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN/THEN
+    expect(() => new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+    })).toThrow(/Cannot use `logRemovalPolicy` and `@aws-cdk\/aws-lambda:useCdkManagedLogGroup`/);
   });
 
   test('imported lambda with imported security group and allowAllOutbound set to false', () => {
@@ -2801,7 +3100,6 @@ describe('function', () => {
   });
 
   describe('filesystem', () => {
-
     test('mount efs filesystem', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -2921,6 +3219,99 @@ describe('function', () => {
           'VpcPrivateSubnet2RouteTableAssociationA89CAD56',
         ],
       });
+    });
+
+    test('validate localMountPath format when mounting efs', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+      const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+        vpc,
+        allowAllOutbound: false,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      // THEN
+      expect(() => {
+        new lambda.Function(stack, 'MyFunction', {
+          vpc,
+          handler: 'foo',
+          securityGroups: [securityGroup],
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/not-mnt/foo-bar'),
+        });
+      }).toThrow('Local mount path should match with ^/mnt/[a-zA-Z0-9-_.]+$ but given /not-mnt/foo-bar');
+    });
+
+    test('validate localMountPath length when mounting efs', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+      const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+        vpc,
+        allowAllOutbound: false,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      // THEN
+      expect(() => {
+        new lambda.Function(stack, 'MyFunction', {
+          vpc,
+          handler: 'foo',
+          securityGroups: [securityGroup],
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, `/mnt/${'a'.repeat(160)}`),
+        });
+      }).toThrow('Local mount path can not be longer than 160 characters but has 165 characters');
+    });
+
+    test('No error when local mount path is Tokenized and Unresolved', () => {
+      // GIVEN
+      const realLocalMountPath = '/not-mnt/foo-bar';
+      const tokenizedLocalMountPath = cdk.Token.asString(new cdk.Intrinsic(realLocalMountPath));
+
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+      const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+        vpc,
+        allowAllOutbound: false,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      // THEN
+      expect(() => {
+        new lambda.Function(stack, 'MyFunction', {
+          vpc,
+          handler: 'foo',
+          securityGroups: [securityGroup],
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, tokenizedLocalMountPath),
+        });
+      }).not.toThrow();
     });
 
     test('correct security group is created when deployed in separate stacks', () => {
@@ -3397,7 +3788,7 @@ describe('function', () => {
 
     test('function using SnapStart', () => {
       const stack = new cdk.Stack();
-      //WHEN
+      // WHEN
       new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'example.Handler::handleRequest',
@@ -3405,7 +3796,7 @@ describe('function', () => {
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       });
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties:
             {
@@ -3426,12 +3817,12 @@ describe('function', () => {
         handler: 'bar',
         runtime: lambda.Runtime.NODEJS_18_X,
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrowError('SnapStart currently not supported by runtime nodejs18.x');
+      })).toThrow('SnapStart currently not supported by runtime nodejs18.x');
     });
 
     test('arm64 function using snapStart', () => {
       const stack = new cdk.Stack();
-      //WHEN
+      // WHEN
       new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'example.Handler::handleRequest',
@@ -3440,7 +3831,7 @@ describe('function', () => {
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       });
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties:
             {
@@ -3473,7 +3864,7 @@ describe('function', () => {
         runtime: lambda.Runtime.JAVA_11,
         filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrowError('SnapStart is currently not supported using EFS');
+      })).toThrow('SnapStart is currently not supported using EFS');
     });
 
     test('ephemeral storage limit validation for snapStart', () => {
@@ -3485,7 +3876,68 @@ describe('function', () => {
         runtime: lambda.Runtime.JAVA_11,
         ephemeralStorageSize: Size.mebibytes(1024),
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrowError('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
+      })).toThrow('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
+    });
+  });
+
+  describe('Recursive Loop', () => {
+    test('with recursive loop protection', () => {
+      const stack = new cdk.Stack();
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'bar',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        recursiveLoop: lambda.RecursiveLoop.TERMINATE,
+      });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+        {
+          Code: { ZipFile: 'foo' },
+          Handler: 'bar',
+          Runtime: lambda.Runtime.NODEJS_LATEST.name,
+          RecursiveLoop: 'Terminate',
+        },
+      });
+    });
+
+    test('without recursive loop protection', () => {
+      const stack = new cdk.Stack();
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'bar',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        recursiveLoop: lambda.RecursiveLoop.ALLOW,
+      });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+        {
+          Code: { ZipFile: 'foo' },
+          Handler: 'bar',
+          Runtime: lambda.Runtime.NODEJS_LATEST.name,
+          RecursiveLoop: 'Allow',
+        },
+      });
+    });
+
+    test('default recursive loop protection', () => {
+      const stack = new cdk.Stack();
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'bar',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+        {
+          Code: { ZipFile: 'foo' },
+          Handler: 'bar',
+          Runtime: lambda.Runtime.NODEJS_LATEST.name,
+          // for default, if the property is not set up in stack it doesn't show up in the template.
+        },
+      });
     });
   });
 
@@ -3571,14 +4023,14 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_LATEST,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_32_0),
+        layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_32_0_1),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:3'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:4'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-handler',
@@ -3600,14 +4052,14 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_9,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_25_0),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_29_0),
         execWrapper: lambda.AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-25-0:1'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-29-0:1'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-instrument',
@@ -3624,7 +4076,7 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_10,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_25_0),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_29_0),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     })).toThrow(/Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER/);
@@ -3643,11 +4095,82 @@ describe('function', () => {
         new lambda.DockerImageFunction(stack, 'MyLambda', {
           code: lambda.DockerImageCode.fromImageAsset(dockerLambdaHandlerPath),
           adotInstrumentation: {
-            layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_32_0),
+            layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_32_0_1),
             execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
           },
         }),
     ).toThrow(/ADOT Lambda layer can't be configured with container image package type/);
+  });
+
+  describe('allowAllIpv6Outbound', () => {
+    test('allowAllIpv6Outbound set to true', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        allowAllIpv6Outbound: true,
+        vpc,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'Allow all outbound traffic by default',
+            IpProtocol: '-1',
+          },
+          {
+            CidrIpv6: '::/0',
+            Description: 'Allow all outbound ipv6 traffic by default',
+            IpProtocol: '-1',
+          },
+        ],
+      });
+    });
+
+    test('throws when allowAllIpv6Outbound is defined without vpc', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        allowAllIpv6Outbound: true,
+      })).toThrow(/Cannot configure \'allowAllIpv6Outbound\' without configuring a VPC/);
+    });
+
+    test('throws when both allowAllIpv6Outbound and securityGroup are defined', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc: vpc });
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        allowAllIpv6Outbound: true,
+        vpc,
+        securityGroup: securityGroup,
+      })).toThrow(/Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroup./);
+    });
+
+    test('throws when both allowAllIpv6Outbound and securityGroups are defined', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc: vpc });
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        allowAllIpv6Outbound: true,
+        vpc,
+        securityGroups: [securityGroup],
+      })).toThrow(/Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroups./);
+    });
   });
 });
 
@@ -4073,94 +4596,94 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasMapping('LatestNodeRuntimeMap', {
       'af-south-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-east-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-northeast-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-northeast-2': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-northeast-3': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-south-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-south-2': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-southeast-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-southeast-2': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-southeast-3': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ap-southeast-4': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'ca-central-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'cn-north-1': {
-        value: 'nodejs18.x',
+        value: 'nodejs22.x',
       },
       'cn-northwest-1': {
-        value: 'nodejs18.x',
+        value: 'nodejs22.x',
       },
       'eu-central-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'eu-central-2': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'eu-north-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'eu-south-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'eu-south-2': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'eu-west-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'eu-west-2': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'eu-west-3': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'il-central-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'me-central-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'me-south-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'sa-east-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'us-east-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'us-east-2': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'us-gov-east-1': {
-        value: 'nodejs18.x',
+        value: 'nodejs22.x',
       },
       'us-gov-west-1': {
-        value: 'nodejs18.x',
+        value: 'nodejs22.x',
       },
       'us-iso-east-1': {
         value: 'nodejs18.x',
@@ -4172,10 +4695,10 @@ describe('latest Lambda node runtime', () => {
         value: 'nodejs18.x',
       },
       'us-west-1': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
       'us-west-2': {
-        value: 'nodejs20.x',
+        value: 'nodejs22.x',
       },
     });
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
@@ -4207,7 +4730,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs20.x',
+        Runtime: 'nodejs22.x',
       },
     });
   });
@@ -4226,7 +4749,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs22.x',
       },
     });
   });
@@ -4264,7 +4787,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs22.x',
       },
     });
   });
@@ -4286,6 +4809,387 @@ describe('latest Lambda node runtime', () => {
         Runtime: 'nodejs18.x',
       },
     });
+  });
+});
+
+// Test sourceKMSKeyArn feature
+describe('CMCMK', () => {
+  test('set sourceKMSKeyArn using fromAsset', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'myImportedKey', {
+      enableKeyRotation: true,
+    });
+    const option = {
+      sourceKMSKey: key,
+    };
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip'), option),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('no sourceKMSKey provided using fromAsset', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: Match.absent(),
+        },
+      },
+    });
+  });
+
+  test('set sourceKMSKeyArn using fromBucket', () => {
+    const stack = new cdk.Stack();
+    // S3 Bucket
+    const key = 'script';
+    let bucket: s3.IBucket;
+    bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
+
+    // KMS
+    const KMSkey = new kms.Key(stack, 'myImportedKey', {
+      enableKeyRotation: true,
+    });
+    const option = {
+      sourceKMSKey: KMSkey,
+    };
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromBucketV2(bucket, key, option),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('no sourceKMSKey provided using fromBucket', () => {
+    const stack = new cdk.Stack();
+    // S3 Bucket
+    const key = 'script';
+    let bucket: s3.IBucket;
+    bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromBucketV2(bucket, key),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: Match.absent(),
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('set sourceKMSKeyArn using fromCfnParameters', () => {
+    const stack = new cdk.Stack();
+    // KMS
+    const KMSkey = new kms.Key(stack, 'myImportedKey', {
+      enableKeyRotation: true,
+    });
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromCfnParameters({
+        sourceKMSKey: KMSkey,
+      }),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('no sourceKMSKey provided using fromCfnParameters', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromCfnParameters(),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: Match.absent(),
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('set sourceKMSKeyArn using fromCustomCommand', () => {
+    const mockCallsites = jest.fn();
+    jest.mock('../lib/util', () => ({
+      ...jest.requireActual('../lib/util'),
+      callsites: () => mockCallsites(),
+    }));
+    bockfs({
+      '/home/project/function.test.handler7.zip': '// nothing',
+    });
+    const bockPath = bockfs.workingDirectory('/home/project');
+    mockCallsites.mockImplementation(() => [
+      { getFunctionName: () => 'NodejsFunction' },
+      { getFileName: () => bockPath`function.test.ts` },
+    ]);
+
+    const stack = new cdk.Stack();
+    // KMS
+    const KMSkey = new kms.Key(stack, 'myImportedKey', {
+      enableKeyRotation: true,
+    });
+    // const command = ;
+    const commandOptions = { sourceKMSKey: KMSkey };
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node'], commandOptions),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
+        },
+        Runtime: 'nodejs18.x',
+        Handler: 'index.handler',
+      },
+    });
+    bockfs.restore();
+  });
+
+  test('no sourceKMSKey provided using fromCustomCommand', () => {
+    const mockCallsites = jest.fn();
+    jest.mock('../lib/util', () => ({
+      ...jest.requireActual('../lib/util'),
+      callsites: () => mockCallsites(),
+    }));
+    bockfs({
+      '/home/project/function.test.handler7.zip': '// nothing',
+    });
+    const bockPath = bockfs.workingDirectory('/home/project');
+    mockCallsites.mockImplementation(() => [
+      { getFunctionName: () => 'NodejsFunction' },
+      { getFileName: () => bockPath`function.test.ts` },
+    ]);
+
+    const stack = new cdk.Stack();
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node']),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: Match.absent(),
+        },
+        Runtime: 'nodejs18.x',
+        Handler: 'index.handler',
+      },
+    });
+    bockfs.restore();
+  });
+});
+
+describe('tag propagation to logGroup on FF USE_CDK_MANAGED_LAMBDA_LOGGROUP enabled', () => {
+  it('log group inherits tags from function when USE_CDK_MANAGED_LAMBDA_LOGGROUP is enabled', () => {
+    const app = new cdk.App({ context: { [cxapi.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: true } });
+    const stack = new cdk.Stack(app, 'Stack');
+
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    cdk.Tags.of(fn).add('Environment', 'Test');
+    cdk.Tags.of(fn).add('Owner', 'CDKTeam');
+
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      Tags: Match.arrayWith([
+        Match.objectLike({ Key: 'Environment', Value: 'Test' }),
+        Match.objectLike({ Key: 'Owner', Value: 'CDKTeam' }),
+      ]),
+    });
+  });
+});
+
+describe('USE_CDK_MANAGED_LAMBDA_LOGGROUP defaults to false when not specified', () => {
+  it('does not create a managed log group when context flag is not specified', () => {
+    // GIVEN
+    const app = new cdk.App(); // No context provided
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    new lambda.Function(stack, 'Function', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Logs::LogGroup', 0); // No log group should be created
+  });
+});
+
+describe('Lambda Function log group behavior', () => {
+  it('throws if both logRetention and logGroup are set', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+
+    expect(() => {
+      new lambda.Function(stack, 'TestFunction', {
+        code: lambda.Code.fromInline('exports.handler = async () => {};'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_20_X,
+        logRetention: logs.RetentionDays.ONE_WEEK,
+        logGroup: new logs.LogGroup(stack, 'CustomLogGroup'),
+      });
+    }).toThrow('CDK does not support setting logRetention and logGroup');
+  });
+
+  it('does not throw if only logRetention is set', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+
+    expect(() => {
+      new lambda.Function(stack, 'LogRetentionOnlyFunction', {
+        code: lambda.Code.fromInline('exports.handler = async () => {};'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_20_X,
+        logRetention: logs.RetentionDays.ONE_WEEK,
+      });
+    }).not.toThrow();
+  });
+
+  it('does not throw if only logGroup is set', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+
+    expect(() => {
+      new lambda.Function(stack, 'LogGroupOnlyFunction', {
+        code: lambda.Code.fromInline('exports.handler = async () => {};'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_20_X,
+        logGroup: new logs.LogGroup(stack, 'MyLogGroup'),
+      });
+    }).not.toThrow();
+  });
+});
+
+describe('telemetry metadata', () => {
+  it('redaction happens when feature flag is enabled', () => {
+    const app = new cdk.App();
+    app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
+    const stack = new cdk.Stack(app);
+
+    const mockConstructor = {
+      [JSII_RUNTIME_SYMBOL]: {
+        fqn: 'aws-cdk-lib.aws-lambda.Function',
+      },
+    };
+    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
+      constructor: mockConstructor,
+    });
+
+    const fn = new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+
+    fn.addEnvironment('foo', '1234567890', {
+      removeInEdge: true,
+    });
+
+    expect(fn.node.metadata).toStrictEqual([
+      {
+        data: { code: '*', handler: '*', runtime: '*' },
+        trace: undefined,
+        type: 'aws:cdk:analytics:construct',
+      },
+      {
+        data: { addEnvironment: ['*', '*', { removeInEdge: true }] },
+        trace: undefined,
+        type: 'aws:cdk:analytics:method',
+      },
+    ]);
+  });
+
+  it('redaction happens when feature flag is disabled', () => {
+    const app = new cdk.App();
+    app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
+    const stack = new cdk.Stack(app);
+
+    const mockConstructor = {
+      [JSII_RUNTIME_SYMBOL]: {
+        fqn: 'aws-cdk-lib.aws-lambda.Function',
+      },
+    };
+    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
+      constructor: mockConstructor,
+    });
+
+    const fn = new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+
+    expect(fn.node.metadata).toStrictEqual([]);
   });
 });
 

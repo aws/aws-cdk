@@ -3,6 +3,8 @@ import { Resource, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IFirewallRuleGroup } from './firewall-rule-group';
 import { CfnFirewallRuleGroupAssociation } from 'aws-cdk-lib/aws-route53resolver';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Options for a Firewall Rule Group Association
@@ -52,7 +54,10 @@ export interface FirewallRuleGroupAssociationProps extends FirewallRuleGroupAsso
 /**
  * A Firewall Rule Group Association
  */
+@propertyInjectable
 export class FirewallRuleGroupAssociation extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-route53resolver-alpha.FirewallRuleGroupAssociation';
   /**
    * The ARN (Amazon Resource Name) of the association
    * @attribute
@@ -60,15 +65,15 @@ export class FirewallRuleGroupAssociation extends Resource {
   public readonly firewallRuleGroupAssociationArn: string;
 
   /**
-    * The date and time that the association was created
-    * @attribute
-    */
+   * The date and time that the association was created
+   * @attribute
+   */
   public readonly firewallRuleGroupAssociationCreationTime: string;
 
   /**
-    * The creator request ID
-    * @attribute
-    */
+   * The creator request ID
+   * @attribute
+   */
   public readonly firewallRuleGroupAssociationCreatorRequestId: string;
 
   /**
@@ -79,33 +84,35 @@ export class FirewallRuleGroupAssociation extends Resource {
   public readonly firewallRuleGroupAssociationId: string;
 
   /**
-    * The owner of the association, used only for lists that are not managed by you.
-    * If you use AWS Firewall Manager to manage your firewallls from DNS Firewall,
-    * then this reports Firewall Manager as the managed owner.
-    * @attribute
-    */
+   * The owner of the association, used only for lists that are not managed by you.
+   * If you use AWS Firewall Manager to manage your firewalls from DNS Firewall,
+   * then this reports Firewall Manager as the managed owner.
+   * @attribute
+   */
   public readonly firewallRuleGroupAssociationManagedOwnerName: string;
 
   /**
-    * The date and time that the association was last modified
-    * @attribute
-    */
+   * The date and time that the association was last modified
+   * @attribute
+   */
   public readonly firewallRuleGroupAssociationModificationTime: string;
 
   /**
-    * The status of the association
-    * @attribute
-    */
+   * The status of the association
+   * @attribute
+   */
   public readonly firewallRuleGroupAssociationStatus: string;
 
   /**
-    * Additional information about the status of the association
-    * @attribute
-    */
+   * Additional information about the status of the association
+   * @attribute
+   */
   public readonly firewallRuleGroupAssociationStatusMessage: string;
 
   constructor(scope: Construct, id: string, props: FirewallRuleGroupAssociationProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!Token.isUnresolved(props.priority) && (props.priority <= 100 || props.priority >= 9000)) {
       throw new Error(`Priority must be greater than 100 and less than 9000, got ${props.priority}`);

@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { IKey } from '../../aws-kms';
 import { ISecret, Secret } from '../../aws-secretsmanager';
 import { Aws } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Construction properties for a DatabaseSecret.
@@ -47,8 +49,10 @@ export interface DatabaseSecretProps {
  *
  * @resource AWS::SecretsManager::Secret
  */
+@propertyInjectable
 export class DatabaseSecret extends Secret {
-
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-docdb.DatabaseSecret';
   /**
    * the excluded characters for this Secret
    * @internal
@@ -80,6 +84,8 @@ export class DatabaseSecret extends Secret {
         excludeCharacters: excludedCharacters,
       },
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this._excludedCharacters = excludedCharacters;
   }

@@ -29,7 +29,7 @@ new codestar.GitHubRepository(this, 'GitHubRepo', {
   accessToken: SecretValue.secretsManager('my-github-token', {
     jsonField: 'token',
   }),
-  contentsBucket: s3.Bucket.fromBucketName(this, 'Bucket', 'bucket-name'),
+  contentsBucket: s3.Bucket.fromBucketName(this, 'Bucket', 'amzn-s3-demo-bucket'),
   contentsKey: 'import.zip',
 });
 ```

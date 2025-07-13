@@ -19,7 +19,7 @@
    "Properties": {
     "Content": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
+     "S3Key": "12157b27d30ab71eb24ae65825f672ba5cc2c09dbb1703cd7adfcff3aeaca136.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -48,12 +48,18 @@
      {},
      {}
     ],
+    "SourceMarkersConfig": [
+     {},
+     {},
+     {}
+    ],
     "DestinationBucketName": {
      "Ref": "AssetBucket1D025086"
     },
     "RetainOnDelete": true,
     "Extract": false,
-    "Prune": false
+    "Prune": false,
+    "OutputObjectKeys": false
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -181,7 +187,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "9eb41a5505d37607ac419321497a4f8c21cf0ee1f9b4a6b29aa04301aea5c7fd.zip"
+     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
     },
     "Environment": {
      "Variables": {
@@ -200,7 +206,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.9",
+    "Runtime": "python3.11",
     "Timeout": 900
    },
    "DependsOn": [

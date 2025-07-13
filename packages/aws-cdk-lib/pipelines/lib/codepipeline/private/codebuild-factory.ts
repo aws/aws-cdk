@@ -7,7 +7,7 @@ import * as codepipeline from '../../../../aws-codepipeline';
 import * as codepipeline_actions from '../../../../aws-codepipeline-actions';
 import * as ec2 from '../../../../aws-ec2';
 import * as iam from '../../../../aws-iam';
-import { Stack, Token } from '../../../../core';
+import { Stack, Token, UnscopedValidationError } from '../../../../core';
 import { FileSetLocation, ShellStep, StackOutputReference } from '../../blueprint';
 import { StepOutput } from '../../helpers-internal/step-output';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../../private/construct-internals';
@@ -184,13 +184,12 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
   private constructor(
     private readonly constructId: string,
     private readonly props: CodeBuildFactoryProps) {
-
     this.stepId = props.stepId ?? constructId;
   }
 
   public get project(): codebuild.IProject {
     if (!this._project) {
-      throw new Error('Project becomes available after produce() has been called');
+      throw new UnscopedValidationError('Project becomes available after produce() has been called');
     }
     return this._project;
   }
@@ -200,7 +199,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
 
     if ((!projectOptions.buildEnvironment?.privileged || projectOptions.vpc === undefined) &&
       (projectOptions.fileSystemLocations !== undefined && projectOptions.fileSystemLocations.length != 0)) {
-      throw new Error('Setting fileSystemLocations requires a vpc to be set and privileged to be set to true.');
+      throw new UnscopedValidationError('Setting fileSystemLocations requires a vpc to be set and privileged to be set to true.');
     }
 
     const inputs = this.props.inputs ?? [];
@@ -218,7 +217,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     if (!inputArtifact) {
       // This should actually never happen because CodeBuild projects shouldn't be added before the
       // Source, which always produces at least an artifact.
-      throw new Error(`CodeBuild action '${this.stepId}' requires an input (and the pipeline doesn't have a Source to fall back to). Add an input or a pipeline source.`);
+      throw new UnscopedValidationError(`CodeBuild action '${this.stepId}' requires an input (and the pipeline doesn't have a Source to fall back to). Add an input or a pipeline source.`);
     }
 
     const installCommands = [
@@ -270,7 +269,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       const fileContents = Stack.of(scope).resolve(actualBuildSpec.toBuildSpec());
 
       if (typeof fileContents !== 'string') {
-        throw new Error(`This BuildSpec contains CloudFormation references and is supported by publishInParallel=false: ${JSON.stringify(fileContents, undefined, 2)}`);
+        throw new UnscopedValidationError(`This BuildSpec contains CloudFormation references and is supported by publishInParallel=false: ${JSON.stringify(fileContents, undefined, 2)}`);
       }
       fs.writeFileSync(absSpecFile, fileContents, { encoding: 'utf-8' });
       projectBuildSpec = codebuild.BuildSpec.fromSourceFilename(relativeSpecFile);
@@ -287,7 +286,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       buildSpecString: actualBuildSpec.toBuildSpec(),
     }));
 
-    const actionName = options.actionName ?? this.stepId;
+    const actionName = options.actionName;
 
     let projectScope = scope;
     if (this.props.additionalConstructLevel ?? true) {
@@ -334,11 +333,14 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     // Start all CodeBuild projects from a single (shared) Action Role, so that we don't have to generate an Action Role for each
     // individual CodeBuild Project and blow out the pipeline policy size (and potentially # of resources in the stack).
     const actionRoleCid = 'CodeBuildActionRole';
+
     const actionRole = this.props.actionRole
-      ?? options.pipeline.node.tryFindChild(actionRoleCid) as iam.IRole
+      ?? ( options.pipeline.usePipelineRoleForActions ?
+        undefined :
+        (options.pipeline.node.tryFindChild(actionRoleCid) as iam.IRole
       ?? new iam.Role(options.pipeline, actionRoleCid, {
         assumedBy: options.pipeline.pipeline.role,
-      });
+      })));
 
     stage.addAction(new codepipeline_actions.CodeBuildAction({
       actionName: actionName,
@@ -407,7 +409,7 @@ function renderArtifactsBuildSpec(artifactMap: ArtifactMap, outputs: FileSetLoca
     const art = artifactMap.toCodePipeline(output.fileSet);
 
     if (!art.artifactName) {
-      throw new Error('You must give the output artifact a name');
+      throw new UnscopedValidationError('You must give the output artifact a name');
     }
     secondary[art.artifactName] = {
       'base-directory': output.directory,

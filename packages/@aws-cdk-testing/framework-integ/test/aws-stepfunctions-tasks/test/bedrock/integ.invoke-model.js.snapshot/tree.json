@@ -12,24 +12,32 @@
             "id": "Prompt1",
             "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Prompt1",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.BedrockInvokeModel",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "Prompt2": {
             "id": "Prompt2",
             "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Prompt2",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.BedrockInvokeModel",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "Prompt3": {
             "id": "Prompt3",
             "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Prompt3",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.BedrockInvokeModel",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "Prompt4": {
+            "id": "Prompt4",
+            "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Prompt4",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "StateMachine": {
@@ -44,8 +52,8 @@
                     "id": "ImportRole",
                     "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/StateMachine/Role/ImportRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "Resource": {
@@ -69,8 +77,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -136,20 +144,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Resource": {
@@ -186,7 +194,7 @@
                           {
                             "Ref": "AWS::Region"
                           },
-                          "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText.$\":\"States.Format('Alphabetize this list of first names:\\n{}', $.names)\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"Prompt3\":{\"End\":true,\"Type\":\"Task\",\"InputPath\":\"$.names\",\"OutputPath\":\"$.names\",\"Resource\":\"arn:",
+                          "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText.$\":\"States.Format('Alphabetize this list of first names:/n{}', $.names)\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"Prompt3\":{\"Next\":\"Prompt4\",\"Type\":\"Task\",\"OutputPath\":\"$.Body.results[0].outputText\",\"Resource\":\"arn:",
                           {
                             "Ref": "AWS::Partition"
                           },
@@ -198,7 +206,19 @@
                           {
                             "Ref": "AWS::Region"
                           },
-                          "::foundation-model/amazon.titan-text-express-v1\",\"Input\":{\"S3Uri.$\":\"$.names\"},\"Output\":{\"S3Uri.$\":\"$.names\"}}}},\"TimeoutSeconds\":30}"
+                          "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText.$\":\"States.Format('Echo list of first names: {}', $.names)\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"Prompt4\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::bedrock:invokeModel\",\"Parameters\":{\"ModelId\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":bedrock:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "::foundation-model/amazon.titan-text-express-v1\",\"Input\":{\"S3Uri\":\"$.names\"},\"Output\":{\"S3Uri\":\"$.names\"}}}},\"TimeoutSeconds\":30}"
                         ]
                       ]
                     },
@@ -211,36 +231,319 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "LlamaPrompt1": {
+            "id": "LlamaPrompt1",
+            "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaPrompt1",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "LlamaPrompt2": {
+            "id": "LlamaPrompt2",
+            "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaPrompt2",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "LlamaPrompt3": {
+            "id": "LlamaPrompt3",
+            "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaPrompt3",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "LlamaPrompt4": {
+            "id": "LlamaPrompt4",
+            "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaPrompt4",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "LlamaStateMachine": {
+            "id": "LlamaStateMachine",
+            "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaStateMachine",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaStateMachine/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaStateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaStateMachine/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaStateMachine/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaStateMachine/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "bedrock:InvokeModel",
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":bedrock:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          "::foundation-model/meta.llama3-2-11b-instruct-v1:0"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":bedrock:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          "::foundation-model/meta.llama3-2-1b-instruct-v1:0"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":bedrock:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          "::foundation-model/meta.llama3-2-3b-instruct-v1:0"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":bedrock:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          "::foundation-model/meta.llama3-2-90b-instruct-v1:0"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": [
+                                    "s3:GetObject",
+                                    "s3:PutObject"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":s3:::*"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "LlamaStateMachineRoleDefaultPolicy36666B63",
+                            "roles": [
+                              {
+                                "Ref": "LlamaStateMachineRoleA1E51172"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/LlamaStateMachine/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "definitionString": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"StartAt\":\"LlamaPrompt1\",\"States\":{\"LlamaPrompt1\":{\"Next\":\"LlamaPrompt2\",\"Type\":\"Task\",\"ResultPath\":\"$\",\"ResultSelector\":{\"names.$\":\"$.Body.results[0].outputText\"},\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::bedrock:invokeModel\",\"Parameters\":{\"ModelId\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":bedrock:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "::foundation-model/meta.llama3-2-1b-instruct-v1:0\",\"Body\":{\"inputText\":\"Generate a list of five first names.\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"LlamaPrompt2\":{\"Next\":\"LlamaPrompt3\",\"Type\":\"Task\",\"ResultPath\":\"$\",\"ResultSelector\":{\"names.$\":\"$.Body.results[0].outputText\"},\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::bedrock:invokeModel\",\"Parameters\":{\"ModelId\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":bedrock:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "::foundation-model/meta.llama3-2-3b-instruct-v1:0\",\"Body\":{\"inputText.$\":\"States.Format('Alphabetize this list of first names:/n{}', $.names)\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"LlamaPrompt3\":{\"Next\":\"LlamaPrompt4\",\"Type\":\"Task\",\"OutputPath\":\"$.Body.results[0].outputText\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::bedrock:invokeModel\",\"Parameters\":{\"ModelId\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":bedrock:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "::foundation-model/meta.llama3-2-11b-instruct-v1:0\",\"Body\":{\"inputText.$\":\"States.Format('Echo list of first names: {}', $.names)\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}}}},\"LlamaPrompt4\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::bedrock:invokeModel\",\"Parameters\":{\"ModelId\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":bedrock:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "::foundation-model/meta.llama3-2-90b-instruct-v1:0\",\"Input\":{\"S3Uri\":\"$.names\"},\"Output\":{\"S3Uri\":\"$.names\"}}}},\"TimeoutSeconds\":30}"
+                        ]
+                      ]
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "LlamaStateMachineRoleA1E51172",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
         }
       },
       "InvokeModel": {
@@ -267,22 +570,22 @@
                     "id": "BootstrapVersion",
                     "path": "InvokeModel/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "InvokeModel/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
@@ -307,8 +610,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
     }
   }
 }

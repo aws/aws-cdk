@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "aws-cdk-rds-s3-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-rds-s3-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/847a7253a365d747181fde2a1ce016fb160617357972f277a1dc32b6a4e60587.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0f3c05c73cb7de271ddaaf14fe63d3a0f30b8ecbfb74c08c85c75c9188b9a480.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -222,37 +223,25 @@
         "/aws-cdk-rds-s3-integ/Database/ClusterParameterGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseClusterParameterGroupF2A52087",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "DatabaseClusterParameterGroupF2A52087"
           }
         ],
         "/aws-cdk-rds-s3-integ/Database/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseB269D8BB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
-            ]
+            "data": "DatabaseB269D8BB"
           }
         ],
         "/aws-cdk-rds-s3-integ/Database/Instance1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseInstance1844F58FD",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
-            ]
+            "data": "DatabaseInstance1844F58FD"
           }
         ],
         "/aws-cdk-rds-s3-integ/Database/Instance2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseInstance2AA380DEE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
-            ]
+            "data": "DatabaseInstance2AA380DEE"
           }
         ],
         "/aws-cdk-rds-s3-integ/BootstrapVersion": [
@@ -266,27 +255,57 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "DatabaseS3ExportRole9E328562": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseS3ExportRole9E328562",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "DatabaseS3ExportRoleDefaultPolicy8FEADB68": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseS3ExportRoleDefaultPolicy8FEADB68",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-cdk-rds-s3-integ"
+    },
+    "testrdsclusters3DefaultTestDeployAssert4BF11861.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "testrdsclusters3DefaultTestDeployAssert4BF11861.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "testrdsclusters3DefaultTestDeployAssert4BF11861": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "testrdsclusters3DefaultTestDeployAssert4BF11861.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "testrdsclusters3DefaultTestDeployAssert4BF11861.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "testrdsclusters3DefaultTestDeployAssert4BF11861.assets"
+      ],
+      "metadata": {
+        "/test-rds-cluster-s3/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/test-rds-cluster-s3/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "test-rds-cluster-s3/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

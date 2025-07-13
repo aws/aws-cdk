@@ -2,7 +2,7 @@
 import * as fs from 'fs';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
-import { ISource, SourceConfig, Source } from './source';
+import { ISource, SourceConfig, Source, MarkersConfig } from './source';
 import * as cloudfront from '../../aws-cloudfront';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
@@ -11,6 +11,8 @@ import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { BucketDeploymentSingletonFunction } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
@@ -32,9 +34,12 @@ export interface BucketDeploymentProps {
   readonly destinationBucket: s3.IBucket;
 
   /**
-   * Key prefix in the destination bucket.
+   * Key prefix in the destination bucket. Must be <=104 characters
    *
-   * Must be <=104 characters
+   * If it's set with prune: true, it will only prune files with the prefix.
+   *
+   * We recommend to always configure the `destinationKeyPrefix` property. This will prevent the deployment
+   * from accidentally deleting data that wasn't uploaded by it.
    *
    * @default "/" (unzip to root of the destination bucket)
    */
@@ -71,6 +76,9 @@ export interface BucketDeploymentProps {
   readonly include?: string[];
 
   /**
+   * By default, files in the destination bucket that don't exist in the source will be deleted
+   * when the BucketDeployment resource is created or updated.
+   *
    * If this is set to false, files in the destination bucket that
    * do not exist in the asset, will NOT be deleted during deployment (create/update).
    *
@@ -265,13 +273,29 @@ export interface BucketDeploymentProps {
    * @default - `x-amz-content-sha256` will not be computed
    */
   readonly signContent?: boolean;
+
+  /**
+   * If set to false, the custom resource will not send back the SourceObjectKeys.
+   * This is useful when you are facing the error `Response object is too long`
+   *
+   * See https://github.com/aws/aws-cdk/issues/28579
+   *
+   * @default true
+   */
+  readonly outputObjectKeys?: boolean;
 }
 
 /**
  * `BucketDeployment` populates an S3 bucket with the contents of .zip files from
  * other S3 buckets or from local disk
  */
+@propertyInjectable
 export class BucketDeployment extends Construct {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-s3-deployment.BucketDeployment';
+
   private readonly cr: cdk.CustomResource;
   private _deployedBucket?: s3.IBucket;
   private requestDestinationArn: boolean = false;
@@ -288,17 +312,17 @@ export class BucketDeployment extends Construct {
 
     if (props.distributionPaths) {
       if (!props.distribution) {
-        throw new Error('Distribution must be specified if distribution paths are specified');
+        throw new ValidationError('Distribution must be specified if distribution paths are specified', this);
       }
       if (!cdk.Token.isUnresolved(props.distributionPaths)) {
         if (!props.distributionPaths.every(distributionPath => cdk.Token.isUnresolved(distributionPath) || distributionPath.startsWith('/'))) {
-          throw new Error('Distribution paths must start with "/"');
+          throw new ValidationError('Distribution paths must start with "/"', this);
         }
       }
     }
 
     if (props.useEfs && !props.vpc) {
-      throw new Error('Vpc must be specified if useEfs is set');
+      throw new ValidationError('Vpc must be specified if useEfs is set', this);
     }
 
     this.destinationBucket = props.destinationBucket;
@@ -360,7 +384,7 @@ export class BucketDeployment extends Construct {
     });
 
     const handlerRole = handler.role;
-    if (!handlerRole) { throw new Error('lambda.SingletonFunction should have created a Role'); }
+    if (!handlerRole) { throw new ValidationError('lambda.SingletonFunction should have created a Role', this); }
     this.handlerRole = handlerRole;
 
     this.sources = props.sources.map((source: ISource) => source.bind(this, { handlerRole: this.handlerRole }));
@@ -410,6 +434,18 @@ export class BucketDeployment extends Construct {
             }, [] as Array<Record<string, any>>);
           },
         }, { omitEmptyArray: true }),
+        SourceMarkersConfig: cdk.Lazy.uncachedAny({
+          produce: () => {
+            return this.sources.reduce((acc, source) => {
+              if (source.markersConfig) {
+                acc.push(source.markersConfig);
+              } else if (this.sources.length > 1) {
+                acc.push({});
+              }
+              return acc;
+            }, [] as Array<MarkersConfig>);
+          },
+        }, { omitEmptyArray: true }),
         DestinationBucketName: this.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
@@ -422,6 +458,7 @@ export class BucketDeployment extends Construct {
         DistributionId: props.distribution?.distributionId,
         DistributionPaths: props.distributionPaths,
         SignContent: props.signContent,
+        OutputObjectKeys: props.outputObjectKeys ?? true,
         // Passing through the ARN sequences dependency on the deployment
         DestinationBucketArn: cdk.Lazy.string({ produce: () => this.requestDestinationArn ? this.destinationBucket.bucketArn : undefined }),
       },
@@ -438,7 +475,7 @@ export class BucketDeployment extends Construct {
     // '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long?????'
     // better to throw an error here than wait for CloudFormation to fail
     if (!cdk.Token.isUnresolved(tagKey) && tagKey.length > 128) {
-      throw new Error('The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters.');
+      throw new ValidationError('The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters.', this);
     }
 
     /*
@@ -481,7 +518,6 @@ export class BucketDeployment extends Construct {
      * be set to true on the Bucket.
      */
     cdk.Tags.of(this.destinationBucket).add(tagKey, 'true');
-
   }
 
   /**
@@ -550,7 +586,7 @@ export class BucketDeployment extends Construct {
     // configurations since we have a singleton.
     if (memoryLimit) {
       if (cdk.Token.isUnresolved(memoryLimit)) {
-        throw new Error("Can't use tokens when specifying 'memoryLimit' since we use it to identify the singleton custom resource handler.");
+        throw new ValidationError("Can't use tokens when specifying 'memoryLimit' since we use it to identify the singleton custom resource handler.", this);
       }
 
       uuid += `-${memoryLimit.toString()}MiB`;
@@ -561,7 +597,7 @@ export class BucketDeployment extends Construct {
     // configurations since we have a singleton.
     if (ephemeralStorageSize) {
       if (ephemeralStorageSize.isUnresolved()) {
-        throw new Error("Can't use tokens when specifying 'ephemeralStorageSize' since we use it to identify the singleton custom resource handler.");
+        throw new ValidationError("Can't use tokens when specifying 'ephemeralStorageSize' since we use it to identify the singleton custom resource handler.", this);
       }
 
       uuid += `-${ephemeralStorageSize.toMebibytes().toString()}MiB`;
@@ -639,16 +675,15 @@ export interface DeployTimeSubstitutedFileProps {
  * upload individual files and specify to make substitutions in the file.
  */
 export class DeployTimeSubstitutedFile extends BucketDeployment {
-
   public readonly objectKey: string;
 
   constructor(scope: Construct, id: string, props: DeployTimeSubstitutedFileProps) {
     if (!fs.existsSync(props.source)) {
-      throw new Error(`No file found at 'source' path ${props.source}`);
+      throw new ValidationError(`No file found at 'source' path ${props.source}`, scope);
     }
     // Makes substitutions on the file
     let fileData = fs.readFileSync(props.source, 'utf-8');
-    fileData = fileData.replace(/{{\s*(\w+)\s*}}/g, function(match, expr) {
+    fileData = fileData.replace(/{{\s*(\w+)\s*}}/g, function (match, expr) {
       return props.substitutions[expr] ?? match;
     });
 
@@ -709,7 +744,6 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
  */
 export class CacheControl {
-
   /**
    * Sets 'must-revalidate'.
    */
@@ -804,6 +838,11 @@ export enum ServerSideEncryption {
    * 'aws:kms'
    */
   AWS_KMS = 'aws:kms',
+
+  /**
+   * 'aws:kms:dsse'
+   */
+  AWS_KMS_DSSE = 'aws:kms:dsse',
 }
 
 /**

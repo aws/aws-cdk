@@ -32,6 +32,7 @@ def make_event(request_type: str, managed: bool):
             "Managed": str(managed),
             "BucketName": "BucketName",
             "NotificationConfiguration": make_notification_configuration(),
+            "SkipDestinationValidation": str(False),
         },
     }
 
@@ -43,6 +44,19 @@ def make_event_with_eventbridge(request_type: str, managed: bool):
             "Managed": str(managed),
             "BucketName": "BucketName",
             "NotificationConfiguration": make_notification_configuration_with_eventbridge(),
+            "SkipDestinationValidation": str(False),
+        },
+    }
+
+def make_event_with_skip_destination_validation(request_type: str, managed: bool):
+    return {
+        "StackId": "StackId",
+        "RequestType": request_type,
+        "ResourceProperties": {
+            "Managed": str(managed),
+            "BucketName": "BucketName",
+            "NotificationConfiguration": make_notification_configuration(),
+            "SkipDestinationValidation": str(True),
         },
     }
 
@@ -96,6 +110,7 @@ class ManagedBucketTest(unittest.TestCase):
         mock_s3.put_bucket_notification_configuration.assert_called_once_with(
             Bucket=event["ResourceProperties"]["BucketName"],
             NotificationConfiguration=event["ResourceProperties"]["NotificationConfiguration"],
+            SkipDestinationValidation=False,
         )
 
     @patch('index.s3')
@@ -109,6 +124,7 @@ class ManagedBucketTest(unittest.TestCase):
         mock_s3.put_bucket_notification_configuration.assert_called_once_with(
             Bucket=event["ResourceProperties"]["BucketName"],
             NotificationConfiguration=event["ResourceProperties"]["NotificationConfiguration"],
+            SkipDestinationValidation=False,
         )
 
     @patch('index.s3')
@@ -119,7 +135,25 @@ class ManagedBucketTest(unittest.TestCase):
 
         index.handler(event, {})
 
-        mock_s3.put_bucket_notification_configuration.assert_called_once_with(Bucket=event["ResourceProperties"]["BucketName"], NotificationConfiguration={})
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration={},
+            SkipDestinationValidation=False,
+        )
+
+    @patch('index.s3')
+    @patch("index.submit_response")
+    def test_skip_destination_validation(self, _, mock_s3: MagicMock):
+        
+        event = make_event_with_skip_destination_validation("Create", True)
+
+        index.handler(event, {})
+
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=event["ResourceProperties"]["NotificationConfiguration"],
+            SkipDestinationValidation=True,
+        )
 
 
 class UnmanagedCleanBucketTest(unittest.TestCase):
@@ -136,6 +170,7 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
         mock_s3.put_bucket_notification_configuration.assert_called_once_with(
             Bucket=event["ResourceProperties"]["BucketName"],
             NotificationConfiguration=event["ResourceProperties"]["NotificationConfiguration"],
+            SkipDestinationValidation=False,
         )
 
     @patch('index.s3')
@@ -151,6 +186,7 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
         mock_s3.put_bucket_notification_configuration.assert_called_once_with(
             Bucket=event["ResourceProperties"]["BucketName"],
             NotificationConfiguration=event["ResourceProperties"]["NotificationConfiguration"],
+            SkipDestinationValidation=False,
         )
 
     @patch('index.s3')
@@ -171,6 +207,7 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"]
             ),
+            SkipDestinationValidation=False,
         )
 
 
@@ -192,6 +229,7 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"]
             ),
+            SkipDestinationValidation=False,
         )
         
     @patch('index.s3')
@@ -212,6 +250,7 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"]
             ),
+            SkipDestinationValidation=False,
         )
 
 
@@ -233,6 +272,7 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
+            SkipDestinationValidation=False,
         )
 
     @patch('index.s3')
@@ -250,6 +290,7 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
         mock_s3.put_bucket_notification_configuration.assert_called_once_with(
             Bucket=event["ResourceProperties"]["BucketName"],
             NotificationConfiguration=make_empty_notification_configuration(),
+            SkipDestinationValidation=False,
         )
 
     @patch('index.s3')
@@ -267,6 +308,7 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
         mock_s3.put_bucket_notification_configuration.assert_called_once_with(
             Bucket=event["ResourceProperties"]["BucketName"],
             NotificationConfiguration=make_empty_notification_configuration_with_eventbridge(),
+            SkipDestinationValidation=False,
         )
 
 
@@ -289,6 +331,7 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
+            SkipDestinationValidation=False,
         )
 
     @patch('index.s3')
@@ -309,6 +352,7 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
+            SkipDestinationValidation=False,
         )
 
     @patch('index.s3')
@@ -329,6 +373,7 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
+            SkipDestinationValidation=False,
         )
 
     @patch('index.s3')
@@ -349,6 +394,7 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
+            SkipDestinationValidation=False,
         )
 
     @patch('index.s3')
@@ -369,6 +415,7 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
+            SkipDestinationValidation=False,
         )
 
     @patch('index.s3')
@@ -387,6 +434,7 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
+            SkipDestinationValidation=False,
         )
 
     @patch('index.s3')
@@ -404,6 +452,7 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
         mock_s3.put_bucket_notification_configuration.assert_called_once_with(
             Bucket=event["ResourceProperties"]["BucketName"],
             NotificationConfiguration=current_notifications,
+            SkipDestinationValidation=False,
         )
 
     @patch('index.s3')
@@ -421,6 +470,7 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
         mock_s3.put_bucket_notification_configuration.assert_called_once_with(
             Bucket=event["ResourceProperties"]["BucketName"],
             NotificationConfiguration=current_notifications,
+            SkipDestinationValidation=False,
         )
 
 
