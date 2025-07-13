@@ -348,6 +348,7 @@
      "Type": "NO_ARTIFACTS"
     },
     "Cache": {
+     "CacheNamespace": "cache-namespace",
      "Location": {
       "Fn::Join": [
        "/",
@@ -590,6 +591,7 @@
      "Type": "NO_ARTIFACTS"
     },
     "Cache": {
+     "CacheNamespace": "cache-namespace",
      "Location": {
       "Fn::Join": [
        "/",
