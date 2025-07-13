@@ -132,6 +132,10 @@ The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, only runtimes
 of the Node.js family are supported.
 
+It also supports a `architecture` prop to specify the CPU architecture
+of the Lambda runtime that will be used to evaluate the expression.
+Defaults to `x86_64` if not specified.
+
 ## API Gateway
 
 Step Functions supports [API Gateway](https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html) through the service integration pattern.
