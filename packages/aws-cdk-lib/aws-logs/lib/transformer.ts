@@ -75,7 +75,7 @@ export enum QuoteCharacter {
   /** Double quote character (default) */
   DOUBLE_QUOTE = '"',
   /** Single quote character */
-  SINGLE_QUOTE = '\'',
+  SINGLE_QUOTE = "'",
 }
 
 /**
