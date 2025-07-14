@@ -187,6 +187,17 @@ export interface StackProps {
   readonly crossRegionReferences?: boolean;
 
   /**
+   * Enable this to use SSM parameters for cross-stack references instead of CloudFormation exports.
+   *
+   * When enabled, this stack will consume cross-stack references via SSM parameters,
+   * which allows the producing stack to be updated without the constraints of CloudFormation exports.
+   * The producing stack will automatically create SSM parameters when this stack references its resources.
+   *
+   * @default false
+   */
+  readonly softDependency?: boolean;
+
+  /**
    * Options for applying a permissions boundary to all IAM Roles
    * and Users created within this Stage
    *
@@ -386,6 +397,13 @@ export class Stack extends Construct implements ITaggable {
   public readonly _crossRegionReferences: boolean;
 
   /**
+   * Whether soft dependencies are enabled for this stack
+   *
+   * @internal
+   */
+  public readonly _softDependency: boolean;
+
+  /**
    * SNS Notification ARNs to receive stack events.
    *
    * @internal
@@ -456,6 +474,7 @@ export class Stack extends Construct implements ITaggable {
     this._stackDependencies = { };
     this.templateOptions = { };
     this._crossRegionReferences = !!props.crossRegionReferences;
+    this._softDependency = !!props.softDependency;
     this._suppressTemplateIndentation = props.suppressTemplateIndentation ?? this.node.tryGetContext(SUPPRESS_TEMPLATE_INDENTATION_CONTEXT) ?? false;
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });

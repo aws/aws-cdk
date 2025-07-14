@@ -1,0 +1,14 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "CrossStackSSMReferences/DefaultTest": {
+      "stacks": [
+        "Producer",
+        "Consumer"
+      ],
+      "assertionStack": "CrossStackSSMReferences/DefaultTest/DeployAssert",
+      "assertionStackName": "CrossStackSSMReferencesDefaultTestDeployAssertCB964624"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}

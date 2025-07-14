@@ -2,7 +2,7 @@
 // CROSS REFERENCES
 // ----------------------------------------------------
 
-import { IConstruct } from 'constructs';
+import { IConstruct, Construct } from 'constructs';
 import { CfnReference } from './cfn-reference';
 import { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
@@ -12,7 +12,9 @@ import { CfnElement } from '../cfn-element';
 import { Fn } from '../cfn-fn';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
+import { CfnResource } from '../cfn-resource';
 import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
+import { SSM_EXPORT_PATH_PREFIX } from '../custom-resource-provider/cross-region-export-providers/types';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { Names } from '../names';
 import { Reference } from '../reference';
@@ -130,13 +132,18 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   }
 
   // export the value through a cloudformation "export name" and use an
-  // Fn::ImportValue in the consumption site.
+  // Fn::ImportValue in the consumption site, OR use SSM parameters for soft dependencies.
 
   // add a dependency between the producer and the consumer. dependency logic
   // will take care of applying the dependency at the right level (e.g. the
   // top-level stacks).
   consumer.addDependency(producer,
     `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
+
+  // Check if consumer wants soft dependency (SSM parameters)
+  if (consumer._softDependency) {
+    return createSoftDependencyImportValue(reference, consumer);
+  }
 
   return createImportValue(reference);
 }
@@ -268,6 +275,120 @@ function generateExportName(importStack: Stack, reference: Reference, id: string
   // arn:aws:ssm:us-east-2:111122223333:parameter/cdk/exports/${stackName}/${name}
   const maxLength = 900;
   return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
+}
+
+/**
+ * Get or create the "Exports" scope for soft dependencies (same as CloudFormation exports)
+ */
+function getCreateExportsScopeForSoftDependency(stack: Stack): Construct {
+  const exportsName = 'Exports';
+  let stackExports = stack.node.tryFindChild(exportsName) as Construct;
+  if (stackExports === undefined) {
+    stackExports = new Construct(stack, exportsName);
+  }
+  return stackExports;
+}
+
+/**
+ * Generate export name for soft dependencies using the same pattern as CloudFormation exports
+ * Format: stackName:ExportsOutput... becomes /cdk/exports/stackName/ExportsOutput...
+ */
+function generateExportNameForSoftDependency(stackExports: Construct, id: string): string {
+  const stack = Stack.of(stackExports);
+
+  const components = [
+    ...stackExports.node.scopes
+      .slice(2) // Same as CloudFormation exports
+      .map(c => c.node.id),
+    id,
+  ];
+  const localPart = makeUniqueId(components);
+
+  // For SSM parameters, use the format: stackName/ExportsOutput...
+  const stackPrefix = stack.stackName ? stack.stackName + '/' : '';
+  const maxLength = 900; // SSM parameter name limit
+  return stackPrefix + localPart.slice(Math.max(0, localPart.length - maxLength + stackPrefix.length));
+}
+
+/**
+ * Imports a value from another stack in the same region using SSM parameters for soft dependencies.
+ * Creates an SSM parameter in the producer stack and a CloudFormation parameter in the consumer stack.
+ * Uses the same deduplication logic as CloudFormation exports.
+ */
+function createSoftDependencyImportValue(reference: Reference, importStack: Stack): Intrinsic {
+  const referenceStack = Stack.of(reference.target);
+  const exportingStack = referenceStack.nestedStackParent ?? referenceStack;
+
+  // Use the same logic as exportValue() to resolve the exported value and generate consistent names
+  const exportable = getExportable(exportingStack, reference);
+  const resolved = exportingStack.resolve(exportable);
+  const id = 'Output' + JSON.stringify(resolved);
+
+  // Generate export name using the same pattern as CloudFormation exports
+  const exportsScope = getCreateExportsScopeForSoftDependency(exportingStack);
+  const exportName = generateExportNameForSoftDependency(exportsScope, id);
+
+  if (Token.isUnresolved(exportName)) {
+    throw new UnscopedValidationError(`unresolved token in generated export name: ${JSON.stringify(exportingStack.resolve(exportName))}`);
+  }
+
+  // Create SSM parameter in the producer stack (with deduplication like CloudFormation exports)
+  createSSMParameterInProducer(exportsScope, id, exportName, exportable);
+
+  // Create CloudFormation parameter in the consumer stack
+  return createSSMParameterReference(importStack, exportName, reference);
+}
+
+/**
+ * Creates an SSM parameter in the producer stack for the exported value
+ * Uses the same deduplication logic as CloudFormation exports
+ */
+function createSSMParameterInProducer(exportsScope: Construct, id: string,
+  exportName: string, exportable: any ): void {
+  const parameterName = `/${SSM_EXPORT_PATH_PREFIX}${exportName}`;
+
+  // Use the same deduplication logic as CloudFormation exports
+  // Check if SSM parameter already exists using the same ID
+  const existingParam = exportsScope.node.tryFindChild(id);
+  if (existingParam) {
+    return; // Already created, just like CloudFormation exports
+  }
+
+  // Create the SSM parameter using CloudFormation resource
+  new CfnResource(exportsScope, id, {
+    type: 'AWS::SSM::Parameter',
+    properties: {
+      Name: parameterName,
+      Type: 'String',
+      Value: Token.asString(exportable),
+      Description: `Soft dependency export: ${exportName}`,
+    },
+  });
+}
+
+/**
+ * Creates a CloudFormation parameter in the consumer stack that references the SSM parameter
+ */
+function createSSMParameterReference(consumerStack: Stack, exportName: string, reference: Reference): Intrinsic {
+  const parameterName = `/${SSM_EXPORT_PATH_PREFIX}${exportName}`;
+  const paramId = `SoftRef${makeUniqueId([exportName])}`;
+
+  // Check if parameter already exists
+  let param = consumerStack.node.tryFindChild(paramId) as CfnParameter;
+  if (!param) {
+    param = new CfnParameter(consumerStack, paramId, {
+      type: 'AWS::SSM::Parameter::Value<String>',
+      default: parameterName,
+      description: `Soft dependency import: ${exportName}`,
+    });
+  }
+
+  if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
+    return Tokenization.reverseList(Fn.split(STRING_LIST_REFERENCE_DELIMITER, param.valueAsString)) as Intrinsic;
+  }
+
+  // Convert the parameter value to an Intrinsic using the same approach as createImportValue
+  return Tokenization.reverseCompleteString(param.valueAsString) as Intrinsic;
 }
 
 export function getExportable(stack: Stack, reference: Reference): Intrinsic {
