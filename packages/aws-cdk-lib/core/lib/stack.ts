@@ -3,7 +3,7 @@ import * as path from 'path';
 import { IConstruct, Construct, Node } from 'constructs';
 import { Annotations } from './annotations';
 import { App } from './app';
-import { Arn, ArnComponents, ArnFormat } from './arn';
+import { Arn, ArnComponents, ArnFormat, ArnSplitOptions } from './arn';
 import { Aspects } from './aspect';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
@@ -844,9 +844,10 @@ export class Stack extends Construct implements ITaggable {
    *
    * @param arn the ARN to split into its components
    * @param arnFormat the expected format of 'arn' - depends on what format the service 'arn' represents uses
+   * @param options options for parsing the ARN, including hierarchicalDepth for hierarchical ARN formats
    */
-  public splitArn(arn: string, arnFormat: ArnFormat): ArnComponents {
-    return Arn.split(arn, arnFormat);
+  public splitArn(arn: string, arnFormat: ArnFormat, options?: ArnSplitOptions): ArnComponents {
+    return Arn.split(arn, arnFormat, options);
   }
 
   /**

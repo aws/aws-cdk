@@ -50,6 +50,17 @@ export enum ArnFormat {
    */
   // eslint-disable-next-line @cdklabs/no-literal-partition
   SLASH_RESOURCE_SLASH_RESOURCE_NAME = 'arn:aws:service:region:account:/resource/resourceName',
+
+  /**
+   * This represents a hierarchical ARN format where resource types and names
+   * are organized in nested levels separated by slashes.
+   * Like in: 'arn:aws:service:region:account:resourceType1/resourceName1/resourceType2/resourceName2'.
+   *
+   * Requires specifying hierarchicalDepth in ArnSplitOptions to determine which level to extract
+   * as the final 'resource' and 'resourceName'.
+   */
+  // eslint-disable-next-line @cdklabs/no-literal-partition
+  HIERARCHICAL_SLASH_RESOURCE_NAME = 'arn:aws:service:region:account:resourceType1/resourceName1/resourceType2/resourceName2',
 }
 
 export interface ArnComponents {
@@ -115,6 +126,43 @@ export interface ArnComponents {
    *   `ArnFormat.SLASH_RESOURCE_NAME` if that property was also not provided
    */
   readonly arnFormat?: ArnFormat;
+
+  /**
+   * For hierarchical ARN formats, contains the parent resource hierarchy
+   * leading up to the target resource specified by hierarchicalDepth.
+   *
+   * This field is populated when parsing hierarchical ARNs and used when
+   * formatting to reconstruct the complete resource path.
+   *
+   * @example
+   * For ARN: 'arn:aws:pcs:region:account:cluster/clusterId/computenodegroup/nodeGroupId'
+   * With `hierarchicalDepth=2`: resource=computenodegroup, resourceName=nodeGroupId,
+   *   hierarchicalParents=['cluster', 'clusterId']
+   *
+   * @default - undefined for non-hierarchical ARNs
+   */
+  readonly hierarchicalParents?: string[];
+}
+
+/**
+ * Options for parsing ARN components with Arn.split().
+ */
+export interface ArnSplitOptions {
+  /**
+   * For hierarchical ARN formats, specifies which level of the hierarchy
+   * to extract as the final 'resource' and 'resourceName'.
+   *
+   * Required when using ArnFormat.HIERARCHICAL_SLASH_RESOURCE_NAME.
+   *
+   * @example
+   * For arn:aws:pcs:us-east-1:account:cluster/clusterId/computenodegroup/nodeGroupId
+   *
+   * For `hierarchicalDepth=1`: extract first level (cluster/clusterId)
+   * For `hierarchicalDepth=2`: extract second level (computenodegroup/nodeGroupId)
+   *
+   * @default - undefined, must be specified when using HIERARCHICAL_SLASH_RESOURCE_NAME format
+   */
+  readonly hierarchicalDepth?: number;
 }
 
 export class Arn {
@@ -150,16 +198,27 @@ export class Arn {
     const values = [
       'arn', ':', partition, ':', components.service, ':', region, ':', account, ':',
       ...(components.arnFormat === ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME ? ['/'] : []),
-      components.resource,
     ];
 
     if (sep !== '/' && sep !== ':' && sep !== '') {
       throw new UnscopedValidationError('resourcePathSep may only be ":", "/" or an empty string');
     }
 
-    if (components.resourceName != null) {
-      values.push(sep);
-      values.push(components.resourceName);
+    if (components.arnFormat === ArnFormat.HIERARCHICAL_SLASH_RESOURCE_NAME && components.hierarchicalParents) {
+      values.push(components.hierarchicalParents.join('/'));
+      values.push('/');
+      values.push(components.resource);
+      if (components.resourceName != null) {
+        values.push('/');
+        values.push(components.resourceName);
+      }
+    } else {
+      // Standard ARN formatting
+      values.push(components.resource);
+      if (components.resourceName != null) {
+        values.push(sep);
+        values.push(components.resourceName);
+      }
     }
 
     return values.join('');
@@ -224,11 +283,18 @@ export class Arn {
    *
    * @param arn the ARN to split into its components
    * @param arnFormat the expected format of 'arn' - depends on what format the service 'arn' represents uses
+   * @param options options for parsing the ARN, including hierarchicalDepth for hierarchical ARN formats
    */
-  public static split(arn: string, arnFormat: ArnFormat): ArnComponents {
+  public static split(arn: string, arnFormat: ArnFormat, options?: ArnSplitOptions): ArnComponents {
+    if (arnFormat === ArnFormat.HIERARCHICAL_SLASH_RESOURCE_NAME) {
+      if (!options?.hierarchicalDepth) {
+        throw new UnscopedValidationError('hierarchicalDepth is required in options when using HIERARCHICAL_SLASH_RESOURCE_NAME format');
+      }
+    }
+
     const components = parseArnShape(arn);
     if (components === 'token') {
-      return parseTokenArn(arn, arnFormat);
+      return parseTokenArn(arn, arnFormat, options);
     }
 
     const [, partition, service, region, account, resourceTypeOrName, ...rest] = components;
@@ -268,21 +334,50 @@ export class Arn {
       detectedArnFormat = ArnFormat.NO_RESOURCE_NAME;
     }
 
-    if (slashIndex !== -1) {
-      resource = resourceTypeOrName.substring(resourcePartStartIndex, slashIndex);
-      resourceName = resourceTypeOrName.substring(slashIndex + 1);
-    } else {
-      resource = resourceTypeOrName;
-    }
+    if (arnFormat === ArnFormat.HIERARCHICAL_SLASH_RESOURCE_NAME && options?.hierarchicalDepth) {
+      const resourceParts = resourceTypeOrName.split('/');
+      const targetIndex = (options.hierarchicalDepth - 1) * 2;
 
-    if (rest.length > 0) {
-      if (!resourceName) {
-        resourceName = '';
-      } else {
-        resourceName += ':';
+      if (targetIndex + 1 >= resourceParts.length) {
+        throw new UnscopedValidationError(`Insufficient hierarchy depth in ARN. Requested depth ${options.hierarchicalDepth} but ARN only has ${Math.floor(resourceParts.length / 2)} levels: ${arn}`);
       }
 
-      resourceName += rest.join(':');
+      resource = resourceParts[targetIndex];
+      resourceName = resourceParts[targetIndex + 1];
+      sep = '/';
+      detectedArnFormat = ArnFormat.HIERARCHICAL_SLASH_RESOURCE_NAME;
+
+      const hierarchicalParents: string[] = [];
+      for (let i = 0; i < targetIndex; i++) {
+        hierarchicalParents.push(resourceParts[i]);
+      }
+      return filterUndefined({
+        service: service || undefined,
+        resource: resource || undefined,
+        partition: partition || undefined,
+        region,
+        account,
+        resourceName,
+        sep,
+        arnFormat: detectedArnFormat,
+        hierarchicalParents: hierarchicalParents.length > 0 ? hierarchicalParents : undefined,
+      });
+    } else {
+      if (slashIndex !== -1) {
+        resource = resourceTypeOrName.substring(resourcePartStartIndex, slashIndex);
+        resourceName = resourceTypeOrName.substring(slashIndex + 1);
+      } else {
+        resource = resourceTypeOrName;
+      }
+
+      if (rest.length > 0) {
+        if (!resourceName) {
+          resourceName = '';
+        } else {
+          resourceName += ':';
+        }
+        resourceName += rest.join(':');
+      }
     }
 
     // "|| undefined" will cause empty strings to be treated as "undefined".
@@ -352,8 +447,9 @@ export class Arn {
  *
  * @param arnToken The input token that contains an ARN
  * @param arnFormat the expected format of 'arn' - depends on what format the service the ARN represents uses
+ * @param options options for parsing the ARN, including hierarchicalDepth for hierarchical ARN formats
  */
-function parseTokenArn(arnToken: string, arnFormat: ArnFormat): ArnComponents {
+function parseTokenArn(arnToken: string, arnFormat: ArnFormat, options?: ArnSplitOptions): ArnComponents {
   // ARN looks like:
   // arn:partition:service:region:account:resource
   // arn:partition:service:region:account:resource:resourceName
@@ -380,6 +476,30 @@ function parseTokenArn(arnToken: string, arnFormat: ArnFormat): ArnComponents {
       resourceName = undefined;
       sep = undefined;
     }
+  } else if (arnFormat === ArnFormat.HIERARCHICAL_SLASH_RESOURCE_NAME && options?.hierarchicalDepth) {
+    const lastComponents = Fn.split('/', Fn.select(5, components));
+    const targetIndex = (options.hierarchicalDepth - 1) * 2;
+
+    resource = Fn.select(targetIndex, lastComponents);
+    resourceName = Fn.select(targetIndex + 1, lastComponents);
+    sep = '/';
+
+    const hierarchicalParents: string[] = [];
+    for (let i = 0; i < targetIndex; i++) {
+      hierarchicalParents.push(Fn.select(i, lastComponents));
+    }
+
+    return {
+      partition,
+      service,
+      region,
+      account,
+      resource,
+      resourceName,
+      sep,
+      arnFormat,
+      hierarchicalParents: hierarchicalParents.length > 0 ? hierarchicalParents : undefined,
+    };
   } else {
     // we know that the 'resource' and 'resourceName' parts are separated by slash here,
     // so we split the 6th segment from the colon-separated ones with a slash
