@@ -766,6 +766,35 @@ describe('PropertyUpdater', () => {
   });
 });
 
+describe('EnumsUpdater', () => {
+  let enumsUpdater: any;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    enumsUpdater = new (require('../lib/metadata-updater').EnumsUpdater)('/mock/dir');
+  });
+
+  describe('generateFileContent', () => {
+    it('should handle quote replacement correctly', () => {
+      const testEnums = {
+        'TestEnum': ['simple', '"quoted"', 'double quotes "hi"', '\'', 'double quote"', '\\', 'end\\']
+      };
+
+      const result = enumsUpdater['generateFileContent'](testEnums);
+      console.log(result);
+
+      expect(result).toContain("'TestEnum'");
+      expect(result).toContain("'simple'");
+      expect(result).toContain("'\"quoted\"'");
+      expect(result).toContain("'double quotes \"hi\"'");
+      expect(result).toContain("'\\'"); // Need two backslashes because one backslash has to be in the final output
+      expect(result).toContain("'double quote\"'");
+      expect(result).toContain("'\\\\'");
+      expect(result).toContain("'end\\\\'");
+    });
+  });
+});
+
 describe('EnumLikeUpdater', () => {
   let enumLikeUpdater: EnumLikeUpdater;
 
