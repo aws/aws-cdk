@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "integ-user-pool-client-secret-test/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "integ-user-pool-client-secret-test/DefaultTest/DeployAssert",
       "assertionStackName": "integuserpoolclientsecrettestDefaultTestDeployAssert4FDD1661"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

@@ -116,7 +116,10 @@
    "DependsOn": [
     "helloapihelloGETE6A58337",
     "helloapihello4AA00177"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "helloapiDeploymentStageprod677E2C4F": {
    "Type": "AWS::ApiGateway::Stage",
@@ -332,7 +335,10 @@
    "DependsOn": [
     "secondapihelloGETDC5BBB18",
     "secondapihello7264EB69"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "secondapiDeploymentStageprod40491DF0": {
    "Type": "AWS::ApiGateway::Stage",

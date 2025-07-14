@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "PipelinesFileSystemLocationsBetaStack18199ECAE.assets": {
       "type": "cdk:asset-manifest",
@@ -50,5 +50,6 @@
       },
       "displayName": "PipelinesFileSystemLocations/Beta/Stack1"
     }
-  }
+  },
+"minimumCliVersion": "2.1019.2"
 }

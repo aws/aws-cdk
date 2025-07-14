@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "ScramSecretIntegTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "ScramSecretIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "ScramSecretIntegTestDefaultTestDeployAssert4206AED8"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

@@ -8,6 +8,9 @@
   "aws-acmpca": [
     "AWS::ACMPCA"
   ],
+  "aws-aiops": [
+    "AWS::AIOps"
+  ],
   "aws-amazonmq": [
     "AWS::AmazonMQ"
   ],
@@ -91,6 +94,9 @@
   ],
   "aws-bedrock": [
     "AWS::Bedrock"
+  ],
+  "aws-billing": [
+    "AWS::Billing"
   ],
   "aws-billingconductor": [
     "AWS::BillingConductor"
@@ -289,6 +295,9 @@
   ],
   "aws-evidently": [
     "AWS::Evidently"
+  ],
+  "aws-evs": [
+    "AWS::EVS"
   ],
   "aws-finspace": [
     "AWS::FinSpace"
@@ -492,6 +501,9 @@
   "aws-memorydb": [
     "AWS::MemoryDB"
   ],
+  "aws-mpa": [
+    "AWS::MPA"
+  ],
   "aws-msk": [
     "AWS::MSK"
   ],
@@ -521,6 +533,9 @@
   ],
   "aws-oam": [
     "AWS::Oam"
+  ],
+  "aws-odb": [
+    "AWS::ODB"
   ],
   "aws-omics": [
     "AWS::Omics"
@@ -705,6 +720,9 @@
   "aws-ssmcontacts": [
     "AWS::SSMContacts"
   ],
+  "aws-ssmguiconnect": [
+    "AWS::SSMGuiConnect"
+  ],
   "aws-ssmincidents": [
     "AWS::SSMIncidents"
   ],
@@ -755,6 +773,9 @@
   ],
   "aws-workspaces": [
     "AWS::WorkSpaces"
+  ],
+  "aws-workspacesinstances": [
+    "AWS::WorkspacesInstances"
   ],
   "aws-workspacesthinclient": [
     "AWS::WorkSpacesThinClient"

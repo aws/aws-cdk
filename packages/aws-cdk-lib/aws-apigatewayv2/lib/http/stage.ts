@@ -2,9 +2,10 @@ import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { CfnStage } from '.././index';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
-import { Stack } from '../../../core';
+import { Lazy, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { StageOptions, IStage, StageAttributes } from '../common';
 import { IApi } from '../common/api';
 import { StageBase } from '../common/base';
@@ -135,7 +136,11 @@ abstract class HttpStageBase extends StageBase implements IHttpStage {
  * Represents a stage where an instance of the API is deployed.
  * @resource AWS::ApiGatewayV2::Stage
  */
+@propertyInjectable
 export class HttpStage extends HttpStageBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.HttpStage';
+
   /**
    * Import an existing stage into this CDK app.
    */
@@ -167,6 +172,12 @@ export class HttpStage extends HttpStageBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    if (props.stageVariables) {
+      Object.entries(props.stageVariables).forEach(([key, value]) => {
+        this.addStageVariable(key, value);
+      });
+    }
+
     new CfnStage(this, 'Resource', {
       apiId: props.httpApi.apiId,
       stageName: this.physicalName,
@@ -178,6 +189,7 @@ export class HttpStage extends HttpStageBase {
         detailedMetricsEnabled: props.detailedMetricsEnabled,
       } : undefined,
       description: props.description,
+      stageVariables: Lazy.any({ produce: () => this._stageVariables }),
     });
 
     this.stageName = this.physicalName;

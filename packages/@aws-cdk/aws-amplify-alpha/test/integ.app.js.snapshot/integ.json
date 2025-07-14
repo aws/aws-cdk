@@ -1,5 +1,4 @@
 {
-  "enableLookups": true,
   "version": "41.0.0",
   "testCases": {
     "cdk-amplify-app-integ/DefaultTest": {

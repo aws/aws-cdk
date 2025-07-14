@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "FlowLogsTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -29,7 +29,7 @@
         }
       }
     },
-    "d7480d2e287316ff8e35a835608c55001a5c76b75617c264461f6124886bd336": {
+    "87ef3abef30bf9354533dd33ff093bb61008f2077a2640413edba5f07acc6a61": {
       "displayName": "FlowLogsTestStack Template",
       "source": {
         "path": "FlowLogsTestStack.template.json",
@@ -38,7 +38,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d7480d2e287316ff8e35a835608c55001a5c76b75617c264461f6124886bd336.json",
+          "objectKey": "87ef3abef30bf9354533dd33ff093bb61008f2077a2640413edba5f07acc6a61.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

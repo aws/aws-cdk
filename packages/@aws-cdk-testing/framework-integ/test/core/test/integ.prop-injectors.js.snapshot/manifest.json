@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "TestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5a731d8d6c5f074d582a704f2b6ff9390b3cd0213a302d3ff5d8702318e91476.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/51be5c700988373b0bb0825b102bcd47005481113922f7c84b71ac752ff19c34.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -607,6 +607,129 @@
             "data": "Policy23B91518"
           }
         ],
+        "/TestStack/MyRestAPI": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "endpointTypes": [
+                "REGIONAL"
+              ],
+              "deploy": false,
+              "restApiName": "*",
+              "defaultIntegration": "*",
+              "disableExecuteApiEndpoint": false,
+              "handler": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "disableExecuteApiEndpoint": false,
+              "restApiName": "*",
+              "handler": "*"
+            }
+          }
+        ],
+        "/TestStack/MyRestAPI/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestAPI3E28346C"
+          }
+        ],
+        "/TestStack/MyRestAPI/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/TestStack/MyRestAPI/Default/{proxy+}": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "defaultIntegration": "*",
+              "defaultMethodOptions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethod": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/TestStack/MyRestAPI/Default/{proxy+}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestAPIproxy2FB7B099"
+          }
+        ],
+        "/TestStack/MyRestAPI/Default/{proxy+}/ANY": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          }
+        ],
+        "/TestStack/MyRestAPI/Default/{proxy+}/ANY/ApiPermission.TestStackMyRestAPIC2110DF7.ANY..{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestAPIproxyANYApiPermissionTestStackMyRestAPIC2110DF7ANYproxy61217372"
+          }
+        ],
+        "/TestStack/MyRestAPI/Default/{proxy+}/ANY/ApiPermission.Test.TestStackMyRestAPIC2110DF7.ANY..{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestAPIproxyANYApiPermissionTestTestStackMyRestAPIC2110DF7ANYproxyAA075AE5"
+          }
+        ],
+        "/TestStack/MyRestAPI/Default/{proxy+}/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestAPIproxyANY2543C5C3"
+          }
+        ],
+        "/TestStack/MyRestAPI/Default/ANY": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
+          }
+        ],
+        "/TestStack/MyRestAPI/Default/ANY/ApiPermission.TestStackMyRestAPIC2110DF7.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestAPIANYApiPermissionTestStackMyRestAPIC2110DF7ANYB4C9B6E3"
+          }
+        ],
+        "/TestStack/MyRestAPI/Default/ANY/ApiPermission.Test.TestStackMyRestAPIC2110DF7.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestAPIANYApiPermissionTestTestStackMyRestAPIC2110DF7ANY8F157E85"
+          }
+        ],
+        "/TestStack/MyRestAPI/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestAPIANY1A0443FA"
+          }
+        ],
         "/TestStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -677,5 +800,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1019.2"
 }

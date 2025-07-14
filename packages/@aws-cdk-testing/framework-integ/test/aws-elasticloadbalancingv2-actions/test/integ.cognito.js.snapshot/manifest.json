@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "integ-cognito.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c042194ca6a45a8cf67ee794f608b28988e270a44c9057ea648efc2ebc6709b1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/93d41dcde8d3976111e048cd300b7f90a6153d514d8f911435b06ea0c8634c8c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -88,7 +88,10 @@
         "/integ-cognito/Stack/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet1Subnet0AD81D22"
+            "data": "StackPublicSubnet1Subnet0AD81D22",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-cognito/Stack/PublicSubnet1/RouteTable": [
@@ -100,7 +103,10 @@
         "/integ-cognito/Stack/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet1RouteTableAssociation74F1C1B6"
+            "data": "StackPublicSubnet1RouteTableAssociation74F1C1B6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-cognito/Stack/PublicSubnet1/DefaultRoute": [
@@ -118,7 +124,10 @@
         "/integ-cognito/Stack/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet1NATGatewayD2E1ABF7"
+            "data": "StackPublicSubnet1NATGatewayD2E1ABF7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-cognito/Stack/PublicSubnet2": [
@@ -160,7 +169,10 @@
         "/integ-cognito/Stack/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet2Subnet3C7D2288"
+            "data": "StackPublicSubnet2Subnet3C7D2288",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-cognito/Stack/PublicSubnet2/RouteTable": [
@@ -172,7 +184,10 @@
         "/integ-cognito/Stack/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet2RouteTableAssociation5E8F73F1"
+            "data": "StackPublicSubnet2RouteTableAssociation5E8F73F1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-cognito/Stack/PublicSubnet2/DefaultRoute": [
@@ -190,7 +205,10 @@
         "/integ-cognito/Stack/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet2NATGatewayA8E03AB3"
+            "data": "StackPublicSubnet2NATGatewayA8E03AB3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-cognito/Stack/PrivateSubnet1": [
@@ -224,7 +242,10 @@
         "/integ-cognito/Stack/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet1Subnet47AC2BC7"
+            "data": "StackPrivateSubnet1Subnet47AC2BC7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-cognito/Stack/PrivateSubnet1/RouteTable": [
@@ -236,7 +257,10 @@
         "/integ-cognito/Stack/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet1RouteTableAssociationFFE38495"
+            "data": "StackPrivateSubnet1RouteTableAssociationFFE38495",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-cognito/Stack/PrivateSubnet1/DefaultRoute": [
@@ -276,7 +300,10 @@
         "/integ-cognito/Stack/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet2SubnetA2F8EDD8"
+            "data": "StackPrivateSubnet2SubnetA2F8EDD8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-cognito/Stack/PrivateSubnet2/RouteTable": [
@@ -288,7 +315,10 @@
         "/integ-cognito/Stack/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet2RouteTableAssociation68ACB8C1"
+            "data": "StackPrivateSubnet2RouteTableAssociation68ACB8C1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-cognito/Stack/PrivateSubnet2/DefaultRoute": [
@@ -901,7 +931,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6f84deef29d5e815cfe82150000fcaaea26d9d3a9cda851de955cd3799bbe94e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d6c655c04f2c9ab2d7fdd2cc50550cac76d4a0b30b80aa85c4b02436b918ba90.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1016,5 +1046,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1020.2"
 }

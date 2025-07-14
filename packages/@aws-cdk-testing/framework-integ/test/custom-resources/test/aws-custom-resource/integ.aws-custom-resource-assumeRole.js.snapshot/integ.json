@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "testCases": {
     "AwsCustomResourceAssumeRoleTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "AwsCustomResourceAssumeRoleTest/DefaultTest/DeployAssert",
       "assertionStackName": "AwsCustomResourceAssumeRoleTestDefaultTestDeployAssert9FD5C886"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

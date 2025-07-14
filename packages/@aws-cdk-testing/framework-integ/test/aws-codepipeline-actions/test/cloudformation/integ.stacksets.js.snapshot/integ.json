@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "StackSetPipelineStackInteg/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "StackSetPipelineStackInteg/DefaultTest/DeployAssert",
       "assertionStackName": "StackSetPipelineStackIntegDefaultTestDeployAssertFF0B72DB"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

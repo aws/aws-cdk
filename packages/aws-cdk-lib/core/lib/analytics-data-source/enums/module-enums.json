@@ -40,6 +40,63 @@
       "DUAL_STACK"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent-collaborator.ts": {
+    "AgentCollaboratorType": [
+      "SUPERVISOR",
+      "DISABLED",
+      "SUPERVISOR_ROUTER"
+    ],
+    "RelayConversationHistoryType": [
+      "TO_COLLABORATOR",
+      "DISABLED"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/api-executor.ts": {
+    "CustomControl": [
+      "RETURN_CONTROL"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/function-schema.ts": {
+    "ParameterType": [
+      "string",
+      "number",
+      "integer",
+      "boolean",
+      "array",
+      "object"
+    ],
+    "RequireConfirmation": [
+      "ENABLED",
+      "DISABLED"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/memory.ts": {
+    "MemoryType": [
+      "SESSION_SUMMARY"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/orchestration-executor.ts": {
+    "OrchestrationType": [
+      "DEFAULT",
+      "CUSTOM_ORCHESTRATION"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/prompt-override.ts": {
+    "AgentStepType": [
+      "PRE_PROCESSING",
+      "ORCHESTRATION",
+      "POST_PROCESSING",
+      "ROUTING_CLASSIFIER",
+      "MEMORY_SUMMARIZATION",
+      "KNOWLEDGE_BASE_RESPONSE_GENERATION"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts": {
+    "VectorType": [
+      "FLOAT32",
+      "BINARY"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-cloud9-alpha/lib/environment.ts": {
     "ConnectionType": [
       "CONNECT_SSH",
@@ -527,7 +584,33 @@
       "requirements.txt",
       "poetry.lock",
       "Pipfile.lock",
+      "uv.lock",
       ""
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/api-key.ts": {
+    "AllowMapsAction": [
+      "geo-maps:GetStaticMap",
+      "geo-maps:GetTile",
+      "geo-maps:*"
+    ],
+    "AllowPlacesAction": [
+      "geo-places:Autocomplete",
+      "geo-places:Geocode",
+      "geo-places:GetPlace",
+      "geo-places:ReverseGeocode",
+      "geo-places:SearchNearby",
+      "geo-places:SearchText",
+      "geo-places:Suggest",
+      "geo-places:*"
+    ],
+    "AllowRoutesAction": [
+      "geo-routes:CalculateIsolines",
+      "geo-routes:CalculateRoutes",
+      "geo-routes:CalculateRouteMatrix",
+      "geo-routes:OptimizeWaypoints",
+      "geo-routes:SnapToRoads",
+      "geo-routes:*"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/map.ts": {
@@ -743,6 +826,10 @@
     "UnreferencedFileRemovalStatus": [
       "Enabled",
       "Disabled"
+    ],
+    "TableBucketEncryption": [
+      "aws:kms",
+      "AES256"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts": {
@@ -859,6 +946,10 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts": {
+    "IpAddressType": [
+      "ipv4",
+      "dualstack"
+    ],
     "ApiKeySourceType": [
       "HEADER",
       "AUTHORIZER"
@@ -1220,7 +1311,8 @@
       "AMAZON_OPENSEARCH_SERVICE",
       "HTTP",
       "RELATIONAL_DATABASE",
-      "AMAZON_BEDROCK_RUNTIME"
+      "AMAZON_BEDROCK_RUNTIME",
+      "AMAZON_ELASTICSEARCH"
     ],
     "LambdaInvokeType": [
       "EVENT",
@@ -2035,6 +2127,12 @@
       "S3_OBJECT_KEY"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ec2/deploy-action.ts": {
+    "Ec2InstanceType": [
+      "EC2",
+      "SSM_MANAGED_NODE"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ecr/build-and-publish-action.ts": {
     "RegistryType": [
       "private",
@@ -2419,6 +2517,8 @@
       "r7a",
       "memory8-graviton",
       "r8g",
+      "memory8-graviton4-nvme-drive",
+      "r8gd",
       "compute3",
       "c3",
       "compute4",
@@ -2451,6 +2551,8 @@
       "c6gd",
       "compute7-graviton3-nvme-drive",
       "c7gd",
+      "compute8-graviton4-nvme-drive",
+      "c8gd",
       "compute6-graviton2-high-network-bandwidth",
       "c6gn",
       "compute7-graviton3-high-network-bandwidth",
@@ -2491,6 +2593,8 @@
       "is4gen",
       "storage7-intel-storage-optimized",
       "i7ie",
+      "io7_intel",
+      "i7i",
       "storage8-graviton",
       "i8g",
       "burstable2",
@@ -2577,6 +2681,8 @@
       "m8g",
       "standard7-graviton3-nvme-drive",
       "m7gd",
+      "standard8-graviton4-nvme-drive",
+      "m8gd",
       "standard7-intel",
       "m7i",
       "standard7-intel-flex",
@@ -4374,10 +4480,6 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts": {
-    "EngineLifecycleSupport": [
-      "open-source-rds-extended-support",
-      "open-source-rds-extended-support-disabled"
-    ],
     "DBClusterStorageType": [
       "aurora",
       "aurora-iopt1"
@@ -4444,6 +4546,10 @@
       682,
       713,
       731
+    ],
+    "EngineLifecycleSupport": [
+      "open-source-rds-extended-support",
+      "open-source-rds-extended-support-disabled"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.ts": {
@@ -4730,6 +4836,11 @@
       "REQUIRE",
       "OPTIONAL"
     ],
+    "HttpsPolicy": [
+      "REQUIRE",
+      "REQUIRE_OPEN_ONLY",
+      "OPTIONAL"
+    ],
     "SuppressionReasons": [
       "BOUNCES_AND_COMPLAINTS",
       "BOUNCES_ONLY",
@@ -4880,6 +4991,13 @@
       "SSE_S3",
       "SSE_KMS",
       "CSE_KMS"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/bedrock/create-model-customization-job.ts": {
+    "CustomizationType": [
+      "FINE_TUNING",
+      "CONTINUED_PRE_TRAINING",
+      "DISTILLATION"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/dynamodb/private/utils.ts": {
@@ -5258,7 +5376,8 @@
       "nodejs14.x",
       "nodejs16.x",
       "nodejs18.x",
-      "nodejs20.x"
+      "nodejs20.x",
+      "nodejs22.x"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/deps.ts": {
@@ -5391,11 +5510,13 @@
       "aws-iso",
       "aws-iso-b",
       "aws-iso-f",
-      "aws-iso-e"
+      "aws-iso-e",
+      "aws-eusc"
     ],
     "Runtime": [
       "nodejs18.x",
-      "nodejs20.x"
+      "nodejs20.x",
+      "nodejs22.x"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/triggers/lib/trigger.ts": {

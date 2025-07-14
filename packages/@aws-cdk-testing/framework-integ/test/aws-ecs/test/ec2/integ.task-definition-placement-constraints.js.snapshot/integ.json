@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "aws-cdk-ecs-integration-test-stack/TaskDefinitionPlacementConstraints/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "aws-cdk-ecs-integration-test-stack/TaskDefinitionPlacementConstraints/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkecsintegrationteststackTaskDefinitionPlacementConstraintsDefaultTestDeployAssert906A0CF3"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

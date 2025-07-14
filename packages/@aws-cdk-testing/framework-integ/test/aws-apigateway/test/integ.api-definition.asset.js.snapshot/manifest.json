@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "44.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "integtest-restapi-fromdefinition-asset.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integtest-restapi-fromdefinition-asset.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2fcb710210eb75f31b39dd1787cc4271df763ad6b541a188cb417095e1b83aa7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/38853cb73e6e3d1f6a10d7370a6dee8d866636f0777a0c55a46ca1f1d03c346e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,10 +34,34 @@
         "integtest-restapi-fromdefinition-asset.assets"
       ],
       "metadata": {
+        "/integtest-restapi-fromdefinition-asset/my-api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cloudWatchRole": true,
+              "apiDefinition": "*"
+            }
+          }
+        ],
         "/integtest-restapi-fromdefinition-asset/my-api/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapi4C7BF186"
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/my-api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/my-api/Default/books": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
           }
         ],
         "/integtest-restapi-fromdefinition-asset/my-api/Default/books/Resource": [
@@ -51,10 +70,67 @@
             "data": "myapibooks51D54548"
           }
         ],
+        "/integtest-restapi-fromdefinition-asset/my-api/Default/books/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "methodResponses": [
+                  {
+                    "statusCode": "*"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*"
+                }
+              ]
+            }
+          }
+        ],
         "/integtest-restapi-fromdefinition-asset/my-api/Default/books/GET/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapibooksGETD6B2F597"
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/my-api/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "applyRemovalPolicy": [
+                "retain"
+              ]
+            }
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/my-api/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integtest-restapi-fromdefinition-asset/my-api/CloudWatchRole/Resource": [
@@ -69,10 +145,44 @@
             "data": "myapiAccountEC421A0A"
           }
         ],
+        "/integtest-restapi-fromdefinition-asset/my-api/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/integtest-restapi-fromdefinition-asset/my-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapiDeployment92F2CB49d7e5c9cfe50a1616e1cef4517d6b8f96"
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/my-api/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/integtest-restapi-fromdefinition-asset/my-api/DeploymentStage.prod/Resource": [
@@ -127,6 +237,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "restapifromdefinitionDefaultTestDeployAssertDF3B0845.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -160,6 +271,13 @@
         ]
       },
       "displayName": "restapi-fromdefinition/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

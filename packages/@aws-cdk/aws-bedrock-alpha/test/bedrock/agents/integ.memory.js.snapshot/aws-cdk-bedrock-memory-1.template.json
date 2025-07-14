@@ -1,0 +1,584 @@
+{
+ "Resources": {
+  "DefaultMemoryFunctionServiceRoleD8C5CDAF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "DefaultMemoryFunctionAC6D5374": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n    exports.handler = async (event) => {\n      console.log('Event:', JSON.stringify(event));\n      return {\n        messageVersion: '1.0',\n        response: {\n          actionGroup: event.actionGroup,\n          apiPath: event.apiPath,\n          httpMethod: event.httpMethod,\n          httpStatusCode: 200,\n          responseBody: {\n            application_json: { result: 'Success from default memory action group' }\n          }\n        }\n      };\n    };\n  "
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "DefaultMemoryFunctionServiceRoleD8C5CDAF",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "DefaultMemoryFunctionServiceRoleD8C5CDAF"
+   ]
+  },
+  "DefaultMemoryFunctionLogGroupD9F7BD3F": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "DefaultMemoryFunctionAC6D5374"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "DefaultMemoryFunctionLambdaInvocationPolicyc809bacfbaa9d9a5AC2FFF6B": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "DefaultMemoryFunctionAC6D5374",
+      "Arn"
+     ]
+    },
+    "Principal": "bedrock.amazonaws.com",
+    "SourceAccount": {
+     "Ref": "AWS::AccountId"
+    }
+   }
+  },
+  "CustomMemoryFunctionServiceRoleA64B0AD5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "CustomMemoryFunctionB4B5CB9A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n    exports.handler = async (event) => {\n      console.log('Event:', JSON.stringify(event));\n      return {\n        messageVersion: '1.0',\n        response: {\n          actionGroup: event.actionGroup,\n          apiPath: event.apiPath,\n          httpMethod: event.httpMethod,\n          httpStatusCode: 200,\n          responseBody: {\n            application_json: { result: 'Success from custom memory action group' }\n          }\n        }\n      };\n    };\n  "
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomMemoryFunctionServiceRoleA64B0AD5",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "CustomMemoryFunctionServiceRoleA64B0AD5"
+   ]
+  },
+  "CustomMemoryFunctionLogGroup61F2359A": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "CustomMemoryFunctionB4B5CB9A"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "CustomMemoryFunctionLambdaInvocationPolicyc8492664c8e1cb16AC1ED6E1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "CustomMemoryFunctionB4B5CB9A",
+      "Arn"
+     ]
+    },
+    "Principal": "bedrock.amazonaws.com",
+    "SourceAccount": {
+     "Ref": "AWS::AccountId"
+    }
+   }
+  },
+  "AgentWithDefaultMemoryRole0AEE1FD1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":agent/*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": "agent-awscdkbedrockmemorwithdefaultmemory-230a5dbf-bedrockagent"
+   }
+  },
+  "AgentWithDefaultMemoryRoleDefaultPolicyCF8B3F25": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DefaultMemoryFunctionAC6D5374",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DefaultMemoryFunctionAC6D5374",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "bedrock:GetFoundationModel",
+        "bedrock:InvokeModel*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":bedrock:",
+          {
+           "Ref": "AWS::Region"
+          },
+          "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AgentWithDefaultMemoryRoleDefaultPolicyCF8B3F25",
+    "Roles": [
+     {
+      "Ref": "AgentWithDefaultMemoryRole0AEE1FD1"
+     }
+    ]
+   }
+  },
+  "AgentWithDefaultMemoryA1F31830": {
+   "Type": "AWS::Bedrock::Agent",
+   "Properties": {
+    "ActionGroups": [
+     {
+      "ActionGroupName": "UserInputAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.UserInput",
+      "SkipResourceInUseCheckOnDelete": false
+     },
+     {
+      "ActionGroupName": "CodeInterpreterAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.CodeInterpreter",
+      "SkipResourceInUseCheckOnDelete": false
+     },
+     {
+      "ActionGroupExecutor": {
+       "Lambda": {
+        "Fn::GetAtt": [
+         "DefaultMemoryFunctionAC6D5374",
+         "Arn"
+        ]
+       }
+      },
+      "ActionGroupName": "DefaultMemoryActionGroup",
+      "ActionGroupState": "ENABLED",
+      "ApiSchema": {
+       "Payload": "\nopenapi: 3.0.3\ninfo:\n  title: Simple API\n  version: 1.0.0\npaths:\n  /hello:\n    get:\n      operationId: helloWorld\n      summary: Say hello\n      description: Returns a greeting message\n      responses:\n        '200':\n          description: Successful response\n          content:\n            application/json:\n              schema:\n                type: object\n                properties:\n                  message:\n                    type: string\n"
+      },
+      "Description": "An action group for testing default memory configuration",
+      "SkipResourceInUseCheckOnDelete": false
+     }
+    ],
+    "AgentName": "agent-with-default-memory",
+    "AgentResourceRoleArn": {
+     "Fn::GetAtt": [
+      "AgentWithDefaultMemoryRole0AEE1FD1",
+      "Arn"
+     ]
+    },
+    "AutoPrepare": false,
+    "FoundationModel": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+      ]
+     ]
+    },
+    "IdleSessionTTLInSeconds": 600,
+    "Instruction": "This is an agent using default memory configuration with at least 40 characters of instruction",
+    "MemoryConfiguration": {
+     "EnabledMemoryTypes": [
+      "SESSION_SUMMARY"
+     ],
+     "SessionSummaryConfiguration": {
+      "MaxRecentSessions": 20
+     },
+     "StorageDays": 30
+    },
+    "OrchestrationType": "DEFAULT",
+    "SkipResourceInUseCheckOnDelete": true
+   },
+   "DependsOn": [
+    "AgentWithDefaultMemoryRoleDefaultPolicyCF8B3F25"
+   ]
+  },
+  "AgentWithCustomMemoryRole3B7BD09F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":agent/*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": "agent-awscdkbedrockmemortwithcustommemory-12bba032-bedrockagent"
+   }
+  },
+  "AgentWithCustomMemoryRoleDefaultPolicyB8F9AA78": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CustomMemoryFunctionB4B5CB9A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "CustomMemoryFunctionB4B5CB9A",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "bedrock:GetFoundationModel",
+        "bedrock:InvokeModel*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":bedrock:",
+          {
+           "Ref": "AWS::Region"
+          },
+          "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AgentWithCustomMemoryRoleDefaultPolicyB8F9AA78",
+    "Roles": [
+     {
+      "Ref": "AgentWithCustomMemoryRole3B7BD09F"
+     }
+    ]
+   }
+  },
+  "AgentWithCustomMemoryD0BD498B": {
+   "Type": "AWS::Bedrock::Agent",
+   "Properties": {
+    "ActionGroups": [
+     {
+      "ActionGroupName": "UserInputAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.UserInput",
+      "SkipResourceInUseCheckOnDelete": false
+     },
+     {
+      "ActionGroupName": "CodeInterpreterAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.CodeInterpreter",
+      "SkipResourceInUseCheckOnDelete": false
+     },
+     {
+      "ActionGroupExecutor": {
+       "Lambda": {
+        "Fn::GetAtt": [
+         "CustomMemoryFunctionB4B5CB9A",
+         "Arn"
+        ]
+       }
+      },
+      "ActionGroupName": "CustomMemoryActionGroup",
+      "ActionGroupState": "ENABLED",
+      "ApiSchema": {
+       "Payload": "\nopenapi: 3.0.3\ninfo:\n  title: Simple API\n  version: 1.0.0\npaths:\n  /hello:\n    get:\n      operationId: helloWorld\n      summary: Say hello\n      description: Returns a greeting message\n      responses:\n        '200':\n          description: Successful response\n          content:\n            application/json:\n              schema:\n                type: object\n                properties:\n                  message:\n                    type: string\n"
+      },
+      "Description": "An action group for testing custom memory configuration",
+      "SkipResourceInUseCheckOnDelete": false
+     }
+    ],
+    "AgentName": "agent-with-custom-memory",
+    "AgentResourceRoleArn": {
+     "Fn::GetAtt": [
+      "AgentWithCustomMemoryRole3B7BD09F",
+      "Arn"
+     ]
+    },
+    "AutoPrepare": false,
+    "FoundationModel": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+      ]
+     ]
+    },
+    "IdleSessionTTLInSeconds": 600,
+    "Instruction": "This is an agent using custom memory configuration with at least 40 characters of instruction",
+    "MemoryConfiguration": {
+     "EnabledMemoryTypes": [
+      "SESSION_SUMMARY"
+     ],
+     "SessionSummaryConfiguration": {
+      "MaxRecentSessions": 5
+     },
+     "StorageDays": 15
+    },
+    "OrchestrationType": "DEFAULT",
+    "SkipResourceInUseCheckOnDelete": true
+   },
+   "DependsOn": [
+    "AgentWithCustomMemoryRoleDefaultPolicyB8F9AA78"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

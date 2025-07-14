@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "codepipeline-type-v2-test/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "codepipeline-type-v2-test/DefaultTest/DeployAssert",
       "assertionStackName": "codepipelinetypev2testDefaultTestDeployAssertD8DB1C31"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

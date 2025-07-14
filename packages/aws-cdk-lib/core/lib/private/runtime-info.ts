@@ -1,5 +1,6 @@
 import { IConstruct, MetadataEntry } from 'constructs';
 import { App } from '../app';
+import { AssumptionError } from '../errors';
 import { isResource, MetadataType } from '../metadata-resource';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
@@ -41,7 +42,7 @@ export function constructInfoFromConstruct(construct: IConstruct): ConstructInfo
     };
   } else if (jsiiRuntimeInfo) {
     // There is something defined, but doesn't match our expectations. Fail fast and hard.
-    throw new Error(`malformed jsii runtime info for construct: '${construct.node.path}'`);
+    throw new AssumptionError(`malformed jsii runtime info for construct: '${construct.node.path}'`);
   }
   return undefined;
 }

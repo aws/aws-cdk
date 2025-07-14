@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "JsResolverIntegTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "JsResolverIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "JsResolverIntegTestDefaultTestDeployAssert57AD8D20"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

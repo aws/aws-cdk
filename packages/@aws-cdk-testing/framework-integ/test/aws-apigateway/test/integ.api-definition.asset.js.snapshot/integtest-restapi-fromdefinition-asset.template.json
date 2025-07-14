@@ -30,14 +30,8 @@
   "myapibooksGETD6B2F597": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "GET",
-    "ResourceId": {
-     "Ref": "myapibooks51D54548"
-    },
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
     "Integration": {
      "IntegrationResponses": [
       {
@@ -54,7 +48,13 @@
      {
       "StatusCode": "200"
      }
-    ]
+    ],
+    "ResourceId": {
+     "Ref": "myapibooks51D54548"
+    },
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    }
    }
   },
   "myapiCloudWatchRole095452E5": {
@@ -109,24 +109,27 @@
   "myapiDeployment92F2CB49d7e5c9cfe50a1616e1cef4517d6b8f96": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "myapi4C7BF186"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "myapibooksGETD6B2F597",
     "myapibooks51D54548"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "myapiDeploymentStageprod298F01AF": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    },
     "DeploymentId": {
      "Ref": "myapiDeployment92F2CB49d7e5c9cfe50a1616e1cef4517d6b8f96"
+    },
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
     },
     "StageName": "prod"
    },

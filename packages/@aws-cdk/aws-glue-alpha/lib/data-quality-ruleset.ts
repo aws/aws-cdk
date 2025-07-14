@@ -3,6 +3,7 @@ import * as constructs from 'constructs';
 import { IResource, Resource } from 'aws-cdk-lib/core';
 import { CfnDataQualityRuleset } from 'aws-cdk-lib/aws-glue';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties of a DataQualityTargetTable.
@@ -82,7 +83,11 @@ export interface DataQualityRulesetProps {
 /**
  * A Glue Data Quality ruleset.
  */
+@propertyInjectable
 export class DataQualityRuleset extends Resource implements IDataQualityRuleset {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.DataQualityRuleset';
+
   public static fromRulesetArn(scope: constructs.Construct, id: string, rulesetArn: string): IDataQualityRuleset {
     class Import extends Resource implements IDataQualityRuleset {
       public rulesetArn = rulesetArn;

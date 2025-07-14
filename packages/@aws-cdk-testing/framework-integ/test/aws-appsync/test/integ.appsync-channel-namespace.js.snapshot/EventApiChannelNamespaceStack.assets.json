@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "c9e084a249774d97a978bed2e1976874a70517128a904136b8737f0792322c1f": {
       "displayName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
@@ -29,7 +29,7 @@
         }
       }
     },
-    "d3d8e2385904b928bd00534dd1c44393f9009bc238893084edfbeec74abd37fc": {
+    "b2c7d7c67b57522eaa99a04a80bf75e2ef05512bafae1e49acfbba50894b1a95": {
       "displayName": "EventApiChannelNamespaceStack Template",
       "source": {
         "path": "EventApiChannelNamespaceStack.template.json",
@@ -38,7 +38,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d3d8e2385904b928bd00534dd1c44393f9009bc238893084edfbeec74abd37fc.json",
+          "objectKey": "b2c7d7c67b57522eaa99a04a80bf75e2ef05512bafae1e49acfbba50894b1a95.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

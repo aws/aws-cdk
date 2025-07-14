@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "45.0.0",
   "artifacts": {
     "integ-https-redirect.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "integ-https-redirect.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/4b171dbdc5e649f6b25a035938c58dd21ba254673df667005e3da8ac41da7c6e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/2f01c69d4dc31653f21047e53ccfa64b2a2fc2711f11d4f1d60d803ee1490054.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -36,10 +35,48 @@
         "integ-https-redirect.assets"
       ],
       "metadata": {
+        "/integ-https-redirect/redirect/RedirectBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "websiteRedirect": {
+                "hostName": "*",
+                "protocol": "https"
+              },
+              "removalPolicy": "destroy",
+              "blockPublicAccess": "*"
+            }
+          }
+        ],
         "/integ-https-redirect/redirect/RedirectBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "redirectRedirectBucketAA44E2FE"
+          }
+        ],
+        "/integ-https-redirect/redirect/RedirectDistribution": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "defaultRootObject": "*",
+              "originConfigs": [
+                {
+                  "behaviors": [
+                    {
+                      "isDefaultBehavior": true
+                    }
+                  ],
+                  "customOriginSource": {
+                    "domainName": "*",
+                    "originProtocolPolicy": "http-only"
+                  }
+                }
+              ],
+              "viewerCertificate": "*",
+              "comment": "*",
+              "priceClass": "PriceClass_All",
+              "viewerProtocolPolicy": "redirect-to-https"
+            }
           }
         ],
         "/integ-https-redirect/redirect/RedirectDistribution/CFDistribution": [
@@ -48,10 +85,46 @@
             "data": "redirectRedirectDistributionCFDistribution1A4C48E3"
           }
         ],
+        "/integ-https-redirect/redirect/RedirectAliasRecord700dc5": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "recordName": "*",
+              "zone": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "recordName": "*",
+              "zone": "*",
+              "target": "*"
+            }
+          }
+        ],
         "/integ-https-redirect/redirect/RedirectAliasRecord700dc5/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "redirectRedirectAliasRecord700dc535A8D685"
+          }
+        ],
+        "/integ-https-redirect/redirect/RedirectAliasRecordSix700dc5": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "recordName": "*",
+              "zone": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "recordName": "*",
+              "zone": "*",
+              "target": "*"
+            }
           }
         ],
         "/integ-https-redirect/redirect/RedirectAliasRecordSix700dc5/Resource": [
@@ -64,6 +137,16 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AWSCloudFrontPartitionHostedZoneIdMap"
+          }
+        ],
+        "/integ-https-redirect/ExportsReader/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-https-redirect/ExportsReader/Resource/Default": [
@@ -120,10 +203,9 @@
         "templateFile": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/ec6056f9b9d90c7febe5aba1df41d3b2ab1656376185cd44b6f4bffc3658983c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/4fe920f82fdf8c4b39ffeef0b6c6d5e2271b21cde96faca4fa2b46f75a98aa4e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -139,10 +221,26 @@
         "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61.assets"
       ],
       "metadata": {
+        "/certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/RedirectCertificatec8615644f6b8e5372f779988c9aad3c31ec249ee76": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "domainName": "*",
+              "subjectAlternativeNames": "*",
+              "validation": "*"
+            }
+          }
+        ],
         "/certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/RedirectCertificatec8615644f6b8e5372f779988c9aad3c31ec249ee76/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RedirectCertificatec8615644f6b8e5372f779988c9aad3c31ec249ee76D1272753"
+          }
+        ],
+        "/certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/ExportsWriteruseast2828FA26B/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/ExportsWriteruseast2828FA26B/Resource/Default": [
@@ -199,7 +297,6 @@
         "templateFile": "integtestDefaultTestDeployAssert24D5C536.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
@@ -239,5 +336,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }

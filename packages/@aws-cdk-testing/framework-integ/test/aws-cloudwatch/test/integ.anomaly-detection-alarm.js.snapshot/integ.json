@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "AnomalyDetectionAlarmIntegTest/DefaultTest": {
+      "stacks": [
+        "AnomalyDetectionAlarmTestStack"
+      ],
+      "assertionStack": "AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433"
+    }
+  }
+}

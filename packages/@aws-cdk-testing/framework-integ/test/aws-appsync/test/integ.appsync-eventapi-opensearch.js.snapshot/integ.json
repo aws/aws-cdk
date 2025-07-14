@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "appsync-eventapi-opensearch-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "appsync-eventapi-opensearch-test/DefaultTest/DeployAssert",
       "assertionStackName": "appsynceventapiopensearchtestDefaultTestDeployAssert2641AA09"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

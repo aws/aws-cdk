@@ -219,6 +219,83 @@ new lambda.Function(this, 'Lambda', {
 
 To use `applicationLogLevelV2` and/or `systemLogLevelV2` you must set `loggingFormat` to `LoggingFormat.JSON`.
 
+## Customizing Log Group Creation
+
+### Log Group Creation Methods
+
+| Method | Description | Tag Propagation | Prop Injection | Aspects | Notes |
+|--------|-------------|-----------------|----------------|---------|-------|
+| **logRetention prop** | Legacy approach using Custom Resource | False | False | False | Does not support TPA |
+| **logGroup prop** | Explicitly supplied by user in CDK app | True | True | True | Full support for TPA |
+| **Lazy creation** | Lambda service creates logGroup on first invocation | False | False | False | Occurs when both logRetention and logGroup are undefined and USE_CDK_MANAGED_LAMBDA_LOGGROUP is false |
+| **USE_CDK_MANAGED_LAMBDA_LOGGROUP** | CDK Lambda function construct creates log group with default props | True | True | True | Feature flag must be enabled |
+
+*TPA: Tag propagation, Prop Injection, Aspects*
+
+#### Order of precedence 
+```text
+                       Highest Precedence
+                             |
+             +---------------+---------------+
+             |                               |
+  +-------------------------+      +------------------------+
+  |   logRetention is set   |      |     logGroup is set    |
+  +-----------+-------------+      +----------+-------------+
+              |                               |
+              v                               v
+      Create LogGroup via            Use the provided LogGroup
+  Custom Resource (retention       instance (CDK-managed, 
+  managed, logGroup disallowed)    logRetention disallowed)
+              |                               |
+              +---------------+---------------+
+                              |
+                              v
+          +-----------------------------------------------+
+          |         Feature flag enabled:                 |
+          | aws-cdk:aws-lambda:useCdkManagedLogGroup      |
+          +------------------ +---------------------------+
+                              |
+                              v
+              Create LogGroup at synth time 
+          (CDK-managed, default settings for logGroup)
+                              |
+                              v
+                  +---------------------------+
+                  | Default (no config set)   |
+                  +------------+--------------+
+                              |
+                              v
+     Lambda service creates log group on first invocation runtime
+            (CDK does not manage the log group resource)
+```
+### Tag Propagation
+
+Refer section `Log Group Creation Methods` to find out which modes support tag propagation. 
+As an example, adding the following line in your cdk app will also propagate to the logGroup. 
+```
+const fn = new lambda.Function(this, 'MyFunctionWithFFTrue', {
+  runtime: lambda.Runtime.NODEJS_20_X,
+  handler: 'handler.main',
+  code: lambda.Code.fromAsset('lambda'),
+});
+cdk.Tags.of(fn).add('env', 'dev'); // the tag is also added to the log group
+```
+
+### Log removal policy
+
+When using the deprecated `logRetention` property for creating a LogGroup, you can configure log removal policy:
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+const fn = new lambda.Function(this, 'MyFunctionWithFFTrue', {
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  handler: 'handler.main',
+  code: lambda.Code.fromAsset('lambda'),
+  logRetention: logs.RetentionDays.INFINITE,
+  logRemovalPolicy: RemovalPolicy.RETAIN,
+});
+```
+
 ## Resource-based Policies
 
 AWS Lambda supports resource-based policies for controlling access to Lambda
