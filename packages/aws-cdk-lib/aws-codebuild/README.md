@@ -258,9 +258,73 @@ new codebuild.Project(this, 'Project', {
 });
 ```
 
-Note that two different CodeBuild Projects using the same S3 bucket will *not*
-share their cache: each Project will get a unique file in the S3 bucket to store
-the cache in.
+If you want to [share the same cache between multiple projects](https://docs.aws.amazon.com/codebuild/latest/userguide/caching-s3.html#caching-s3-sharing), you must must do the following:
+
+- Use the same `cacheNamespace`.
+- Specify the same cache key.
+- Define identical cache paths.
+- Use the same Amazon S3 buckets and `pathPrefix` if set.
+
+```ts
+declare const sourceBucket: s3.Bucket;
+declare const myCachingBucket: s3.Bucket;
+
+new codebuild.Project(this, 'ProjectA', {
+  source: codebuild.Source.s3({
+    bucket: sourceBucket,
+    path: 'path/to/source-a.zip',
+  }),
+  // configure the same bucket and path prefix
+  cache: codebuild.Cache.bucket(myCachingBucket, {
+    prefix: 'cache',
+    // use the same cache namespace
+    cacheNamespace: 'cache-namespace',
+  }),
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+    phases: {
+      build: {
+        commands: ['...'],
+      },
+    },
+    // specify the same cache key and paths
+    cache: {
+      key: 'unique-key',
+      paths: [
+        '/root/cachedir/**/*',
+      ],
+    },
+  }),
+});
+
+new codebuild.Project(this, 'ProjectB', {
+  source: codebuild.Source.s3({
+    bucket: sourceBucket,
+    path: 'path/to/source-b.zip',
+  }),
+  // configure the same bucket and path prefix
+  cache: codebuild.Cache.bucket(myCachingBucket, {
+    prefix: 'cache',
+    // use the same cache namespace
+    cacheNamespace: 'cache-namespace',
+  }),
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+    phases: {
+      build: {
+        commands: ['...'],
+      },
+    },
+    // specify the same cache key and paths
+    cache: {
+      key: 'unique-key',
+      paths: [
+        '/root/cachedir/**/*',
+      ],
+    },
+  }),
+});
+```
 
 ### Local Caching
 
