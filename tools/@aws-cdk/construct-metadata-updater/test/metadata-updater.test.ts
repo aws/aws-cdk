@@ -781,7 +781,6 @@ describe('EnumsUpdater', () => {
       };
 
       const result = enumsUpdater['generateFileContent'](testEnums);
-      console.log(result);
 
       expect(result).toContain("'TestEnum'");
       expect(result).toContain("'simple'");
