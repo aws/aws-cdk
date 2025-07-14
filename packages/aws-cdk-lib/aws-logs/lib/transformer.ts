@@ -43,7 +43,7 @@ export enum TypeConverterType {
  */
 export enum DateTimeFormat {
   /** ISO 8601 format (yyyy-MM-ddTHH:mm:ssZ) */
-  ISO_8601 = 'yyyy-MM-dd\'T\'HH:mm:ss\'Z\'',
+  ISO_8601 = "yyyy-MM-dd'T'HH:mm:ss'Z'",
   /** Unix timestamp (seconds since epoch) */
   UNIX_TIMESTAMP = 'epoch',
   /** Custom format specified by the targetFormat parameter */
