@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "15f4987ccbbd41912a8433ab226ffb9f8549c327152df7850757644d59c86a2b": {
+      "displayName": "SNSDataProtectionInteg Template",
+      "source": {
+        "path": "SNSDataProtectionInteg.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "15f4987ccbbd41912a8433ab226ffb9f8549c327152df7850757644d59c86a2b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
