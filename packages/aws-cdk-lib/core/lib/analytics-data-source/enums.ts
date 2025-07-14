@@ -2843,10 +2843,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'KMS',
     'SQS_MANAGED'
   ],
-  'QuoteCharacter': [
-    '\'',
-    '''
-  ],
   'ReadWriteType': [
     'ReadOnly',
     'WriteOnly',
