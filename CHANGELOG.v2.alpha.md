@@ -5,10 +5,6 @@ All notable changes to this project will be documented in this file. See [standa
 ## [2.205.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.204.0-alpha.0...v2.205.0-alpha.0) (2025-07-14)
 
 
-### Features
-
-* **ec2:** add c8gn instance class ([#34866](https://github.com/aws/aws-cdk/issues/34866)) ([aaf442b](https://github.com/aws/aws-cdk/commit/aaf442b87ec64576ddb9dc88919134665cee3fa7))
-
 ## [2.204.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.203.1-alpha.0...v2.204.0-alpha.0) (2025-07-04)
 
 

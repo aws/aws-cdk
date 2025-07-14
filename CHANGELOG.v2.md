@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. See [standa
 * cloudwatch logs transformer support ([#34863](https://github.com/aws/aws-cdk/issues/34863)) ([481a9d2](https://github.com/aws/aws-cdk/commit/481a9d2734e9ff67a62bec81b92ee62ddc9c4da1)), closes [#34861](https://github.com/aws/aws-cdk/issues/34861)
 * update L1 CloudFormation resource definitions ([#34915](https://github.com/aws/aws-cdk/issues/34915)) ([748d03c](https://github.com/aws/aws-cdk/commit/748d03c99de6242e0b9bed91d8c015249106fdca))
 * **cloudwatch-dashboards:** add support for queryLanguage property ([#34547](https://github.com/aws/aws-cdk/issues/34547)) ([8a77828](https://github.com/aws/aws-cdk/commit/8a77828ab14f635953af27a1b00174d988e85303)), closes [#34482](https://github.com/aws/aws-cdk/issues/34482) [/github.com/aws/aws-cdk/issues/34482#issuecomment-2887841701](https://github.com/aws//github.com/aws/aws-cdk/issues/34482/issues/issuecomment-2887841701)
+* **ec2:** add c8gn instance class ([#34866](https://github.com/aws/aws-cdk/issues/34866)) ([aaf442b](https://github.com/aws/aws-cdk/commit/aaf442b87ec64576ddb9dc88919134665cee3fa7))
 * **events:** add `arnForPolicy` attribute for api destination ([#34315](https://github.com/aws/aws-cdk/issues/34315)) ([e0ac9f8](https://github.com/aws/aws-cdk/commit/e0ac9f8ee3394f666bf84066b89eb83be9b7361e))
 * **synthetics:** add support for tag replication for aws synthetics ([#34830](https://github.com/aws/aws-cdk/issues/34830)) ([5ff59d9](https://github.com/aws/aws-cdk/commit/5ff59d9c7e4959b9de8754b5a8d838810335240a))
 * report feature flag info into Cloud Assembly ([#34919](https://github.com/aws/aws-cdk/issues/34919)) ([72733ea](https://github.com/aws/aws-cdk/commit/72733ea4528911a11fb0d0411e7641ddd47fc60a))
@@ -26,9 +27,12 @@ All notable changes to this project will be documented in this file. See [standa
 * **tags:** excludeResourceTypes does not work for tags applied at stack level (under feature flag) ([#31443](https://github.com/aws/aws-cdk/issues/31443)) ([4c7d9f4](https://github.com/aws/aws-cdk/commit/4c7d9f41090992dbd91aa8c783cbfd4da4571fa7)), closes [#28017](https://github.com/aws/aws-cdk/issues/28017) [#33945](https://github.com/aws/aws-cdk/issues/33945) [#30055](https://github.com/aws/aws-cdk/issues/30055)
 
 
-### Reverts
+### ⚠ CHANGES TO L1 RESOURCES
 
-* **ci:** require the GitHub Actions PR build for mergify ([#34938](https://github.com/aws/aws-cdk/issues/34938)) ([e400228](https://github.com/aws/aws-cdk/commit/e400228eacfa49cc08dc97a87a2c962339acdb06)), closes [aws/aws-cdk#34836](https://github.com/aws/aws-cdk/issues/34836)
+L1 resources are automatically generated from public CloudFormation Resource Schemas. They are build to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+* **aws-cdk-lib.aws_ec2.CfnTrafficMirrorFilterRule**: attribute `Id` was removed
+* **aws-cdk-lib.aws_neptune.CfnDBInstance**: attribute `Id` was removed
+
 
 ## [2.204.0](https://github.com/aws/aws-cdk/compare/v2.203.1...v2.204.0) (2025-07-04)
 
