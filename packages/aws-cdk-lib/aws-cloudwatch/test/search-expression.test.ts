@@ -1,10 +1,10 @@
 import { Duration, Stack, UnscopedValidationError } from '../../core';
-import {GraphWidget, SearchExpression } from '../lib';
+import { GraphWidget, SearchExpression } from '../lib';
 import { dispatchMetric } from '../lib/private/metric-util';
 
 describe('SearchExpression', () => {
   let searchExpr: SearchExpression;
-  let stack: Stack
+  let stack: Stack;
 
   beforeEach(() => {
     searchExpr = new SearchExpression({
@@ -91,12 +91,12 @@ describe('SearchExpression', () => {
         view: 'timeSeries',
         region: { Ref: 'AWS::Region' },
         metrics: [
-          [{ 
+          [{
             accountId: '123456789012',
             color: '#ff0000',
-            expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)", 
+            expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
             label: 'CPU Usage',
-            region: 'us-west-2'
+            region: 'us-west-2',
           }],
         ],
         yAxis: {},
