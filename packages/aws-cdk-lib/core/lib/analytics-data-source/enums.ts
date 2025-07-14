@@ -919,11 +919,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'standard',
     'advanced'
   ],
-  'DateTimeFormat': [
-    'yyyy-MM-dd'T'HH:mm:ss'Z'',
-    'epoch',
-    'custom'
-  ],
   'DayOfWeek': [
     'SUN',
     'MON',
