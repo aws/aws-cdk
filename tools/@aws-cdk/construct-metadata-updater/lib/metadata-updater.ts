@@ -742,7 +742,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = $ENUMS;
       acc[key] = enums[key];
       return acc;
     }, {});
-    const jsonContent = JSON.stringify(sortedEnums, null, 2).replace(/"/g, "'");
+    const jsonContent = JSON.stringify(sortedEnums, null, 2)
+      .replace(/'/g, "\\'")
+      .replace(/"((?:\\.|[^"\\])*)"/g, (_match, content) => {
+        return "'" + content.replace(/\\"/g, '"') + "'";
+      });
 
     // Replace the placeholder with the JSON object
     return template.replace("$ENUMS", jsonContent);
