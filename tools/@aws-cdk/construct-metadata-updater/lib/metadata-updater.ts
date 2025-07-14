@@ -743,8 +743,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = $ENUMS;
       return acc;
     }, {});
     const jsonContent = JSON.stringify(sortedEnums, null, 2)
+      // Step 1: Escape any existing single quotes
       .replace(/'/g, "\\'")
-      .replace(/"((?:\\.|[^"\\])*)"/g, (_match, content) => {
+      // Step 2: Replace double-quoted strings with single-quoted strings
+      .replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, (_match, content) => {
+        // Step 3: Unescape any double quotes inside the string
         return "'" + content.replace(/\\"/g, '"') + "'";
       });
 
