@@ -423,6 +423,21 @@ export enum KeySpec {
    * Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY
    */
   SM2 = 'SM2',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  ML_DSA_44 = 'ML_DSA_44',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  ML_DSA_65 = 'ML_DSA_65',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  ML_DSA_87 = 'ML_DSA_87',
 }
 
 /**
