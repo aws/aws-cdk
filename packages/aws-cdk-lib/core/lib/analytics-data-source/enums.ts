@@ -956,6 +956,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'requirements.txt',
     'poetry.lock',
     'Pipfile.lock',
+    'uv.lock',
     ''
   ],
   'DependencyOperation': [
@@ -2575,7 +2576,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'aws-iso',
     'aws-iso-b',
     'aws-iso-f',
-    'aws-iso-e'
+    'aws-iso-e',
+    'aws-eusc'
   ],
   'PartitionDateSource': [
     'EventTime',

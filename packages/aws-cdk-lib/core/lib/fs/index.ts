@@ -18,7 +18,6 @@ export class FileSystem {
    * @param destDir Destination directory
    * @param options options
    * @param rootDir Root directory to calculate exclusions from
-   * @param scope The construct that the function is called from, used to get feature flags
    */
   public static copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
     return copyDirectory(srcDir, destDir, options, rootDir);

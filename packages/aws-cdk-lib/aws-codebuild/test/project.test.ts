@@ -394,6 +394,7 @@ describe('caching', () => {
       }),
       cache: codebuild.Cache.bucket(new s3.Bucket(stack, 'Bucket'), {
         prefix: 'cache-prefix',
+        cacheNamespace: 'namespace',
       }),
     });
 
@@ -412,6 +413,7 @@ describe('caching', () => {
             ],
           ],
         },
+        CacheNamespace: 'namespace',
       },
     });
   });
