@@ -151,8 +151,7 @@ Search expressions allow you to dynamically discover and display metrics that ma
 
 #### Using SearchExpression Class
 
-Following is an example of a search expression that returns all CPUUtilization metrics that it finds, with the
-graph showing the Average statistic with an aggregation period of 5 minutes:
+Following is an example of a search expression that returns all CPUUtilization metrics with the graph showing the Average statistic with an aggregation period of 5 minutes:
 
 ```ts
 const cpuUtilization = new cloudwatch.SearchExpression({

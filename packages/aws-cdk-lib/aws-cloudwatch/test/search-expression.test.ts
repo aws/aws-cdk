@@ -1,9 +1,10 @@
-import { Duration, UnscopedValidationError } from '../../core';
-import { SearchExpression } from '../lib';
+import { Duration, Stack, UnscopedValidationError } from '../../core';
+import {GraphWidget, SearchExpression } from '../lib';
 import { dispatchMetric } from '../lib/private/metric-util';
 
 describe('SearchExpression', () => {
   let searchExpr: SearchExpression;
+  let stack: Stack
 
   beforeEach(() => {
     searchExpr = new SearchExpression({
@@ -17,7 +18,11 @@ describe('SearchExpression', () => {
   });
 
   test('should create SearchExpression with minimal required props', () => {
-    expect(searchExpr.expression).toBe("SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)");
+    searchExpr = new SearchExpression({
+      expression: "SEARCH('{AWS/Lambda, InstanceId} Invocations', 'Average', 300)",
+    });
+
+    expect(searchExpr.expression).toBe("SEARCH('{AWS/Lambda, InstanceId} Invocations', 'Average', 300)");
     expect(searchExpr.period).toEqual(Duration.minutes(5));
     expect(searchExpr.label).toBeUndefined();
     expect(searchExpr.color).toBeUndefined();
@@ -28,10 +33,10 @@ describe('SearchExpression', () => {
   });
 
   test('should create SearchExpression with all optional properties', () => {
-    expect(searchExpr.expression).toBe("SEARCH('{AWS/Lambda,FunctionName} Duration', 'Average', 300)");
-    expect(searchExpr.label).toBe('Lambda Duration');
-    expect(searchExpr.color).toBe('#1f77b4');
-    expect(searchExpr.period).toEqual(Duration.minutes(10));
+    expect(searchExpr.expression).toBe("SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)");
+    expect(searchExpr.label).toBe('CPU Usage');
+    expect(searchExpr.color).toBe('#ff0000');
+    expect(searchExpr.period).toEqual(Duration.minutes(5));
     expect(searchExpr.searchAccount).toBe('123456789012');
     expect(searchExpr.searchRegion).toBe('us-west-2');
   });
@@ -70,6 +75,35 @@ describe('SearchExpression', () => {
     expect(result.searchRegion).toBe('eu-west-1');
   });
 
+  test('SearchExpressions can be added to a graph', () => {
+    // GIVEN
+    stack = new Stack();
+    const graph = new GraphWidget({
+      left: [searchExpr],
+    });
+
+    // THEN
+    expect(stack.resolve(graph.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          [{ 
+            accountId: '123456789012',
+            color: '#ff0000',
+            expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)", 
+            label: 'CPU Usage',
+            region: 'us-west-2'
+          }],
+        ],
+        yAxis: {},
+      },
+    }]);
+  });
+
   test('searchExpression properties are included in toMetricConfig', () => {
     // WHEN
     const config = searchExpr.toMetricConfig();
@@ -82,8 +116,6 @@ describe('SearchExpression', () => {
     expect(config.searchExpression!.expression).toBe("SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)");
     expect(config.searchExpression!.period).toBe(300);
     expect(config.searchExpression!.usingMetrics).toEqual({});
-    expect(config.searchExpression!.searchAccount).toBeUndefined();
-    expect(config.searchExpression!.searchRegion).toBeUndefined();
     expect(config.renderingProperties).toBeDefined();
     expect(config.renderingProperties!.label).toBe('CPU Usage');
     expect(config.renderingProperties!.color).toBe('#ff0000');

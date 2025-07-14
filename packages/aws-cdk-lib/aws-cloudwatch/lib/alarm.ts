@@ -619,7 +619,7 @@ function isAnomalyDetectionMetric(metric: IMetric): boolean {
       isAnomalyDetection = mathExpr.expression.includes('ANOMALY_DETECTION_BAND');
     },
     withSearchExpression() {
-      // Search expressions are not anomaly detection metrics
+      // Search expressions return multiple metrics; anomaly is only applicable for a single metric
       isAnomalyDetection = false;
     },
   });
