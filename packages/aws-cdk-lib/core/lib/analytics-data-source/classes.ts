@@ -19307,6 +19307,20 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'filterName': '*',
       'distribution': 'Distribution'
+    },
+    'Transformer': {
+      'transformerName': '*',
+      'logGroup': {
+        'logGroupArn': '*',
+        'logGroupName': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'transformerConfig': '*'
     }
   },
   'aws-cdk-lib.aws-opensearchservice': {
@@ -24030,6 +24044,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'timeToLive': '*',
       'schedule': '*',
+      'maxRetries': '*',
       'startAfterCreation': 'boolean',
       'successRetentionPeriod': '*',
       'failureRetentionPeriod': '*',
@@ -24129,6 +24144,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'node': '*'
       },
       'dryRunAndUpdate': 'boolean',
+      'resourcesToReplicateTags': 'ResourceToReplicateTags',
       'metricDuration': [
         {
           'period': '*',

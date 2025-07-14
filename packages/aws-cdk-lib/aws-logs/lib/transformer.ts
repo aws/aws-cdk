@@ -20,6 +20,7 @@ import { Construct } from 'constructs';
 import { CfnTransformer } from '.';
 import { ILogGroup } from './log-group';
 import { Resource, Token, ValidationError, UnscopedValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -1197,6 +1198,8 @@ export class Transformer extends Resource {
     super(scope, id, {
       physicalName: props.transformerName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Validate the transformer configuration
     this.validateProcessorCount(props.transformerConfig);

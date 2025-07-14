@@ -902,6 +902,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'aurora',
     'aurora-iopt1'
   ],
+  'DataConverterType': [
+    0,
+    1
+  ],
   'DataResourceType': [
     'AWS::Lambda::Function',
     'AWS::S3::Object'
@@ -914,6 +918,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'DatabaseInsightsMode': [
     'standard',
     'advanced'
+  ],
+  'DateTimeFormat': [
+    'yyyy-MM-dd'T'HH:mm:ss'Z'',
+    'epoch',
+    'custom'
   ],
   'DayOfWeek': [
     'SUN',
@@ -951,6 +960,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'ACCOUNT_DEFAULT',
     'APPLY',
     'BYPASS'
+  ],
+  'DelimiterCharacter': [
+    ',',
+    '\t',
+    ' ',
+    ';',
+    '|'
   ],
   'DependenciesFile': [
     'requirements.txt',
@@ -1710,6 +1726,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'c6gn',
     'compute7-graviton3-high-network-bandwidth',
     'c7gn',
+    'compute8-graviton4-high-network-bandwidth',
+    'c8gn',
     'compute7-intel',
     'c7i',
     'compute7-intel-flex',
@@ -2047,6 +2065,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'pythonshell',
     'glueray'
   ],
+  'JsonMutatorType': [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
   'JsonSchemaType': [
     'null',
     'boolean',
@@ -2092,6 +2118,16 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'SIGN_VERIFY',
     'GENERATE_VERIFY_MAC',
     'KEY_AGREEMENT'
+  ],
+  'KeyValueDelimiter': [
+    '=',
+    ':'
+  ],
+  'KeyValuePairDelimiter': [
+    '&',
+    ';',
+    ' ',
+    '\n'
   ],
   'KinesisStartingPosition': [
     'TRIM_HORIZON',
@@ -2203,6 +2239,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'ALL',
     'ERROR',
     'FATAL'
+  ],
+  'LogQueryLanguage': [
+    'Logs',
+    'SQL',
+    'PPL'
   ],
   'LogQueryVisualizationType': [
     'table',
@@ -2423,6 +2464,16 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'SET_TO_NULL',
     'DROP_ROW'
   ],
+  'OCSFSourceType': [
+    'CloudTrail',
+    'Route53Resolver',
+    'VPCFlow',
+    'EKSAudit',
+    'AWSWAF'
+  ],
+  'OCSFVersion': [
+    'V1.1'
+  ],
   'ObjectLockMode': [
     'GOVERNANCE',
     'COMPLIANCE'
@@ -2568,6 +2619,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'ParamsAndSecretsVersions': [
     '1.0.103'
+  ],
+  'ParserProcessorType': [
+    0,
+    1,
+    2,
+    3,
+    4
   ],
   'Partition': [
     'aws',
@@ -2790,6 +2848,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'KMS',
     'SQS_MANAGED'
   ],
+  'QuoteCharacter': [
+    '\'',
+    '''
+  ],
   'ReadWriteType': [
     'ReadOnly',
     'WriteOnly',
@@ -2920,6 +2982,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'pause-cluster',
     'resume-cluster',
     'failover-primary-compute'
+  ],
+  'ResourceToReplicateTags': [
+    'lambda-function'
   ],
   'RestApiMode': [
     'overwrite',
@@ -3300,6 +3365,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'NEW_AND_OLD_IMAGES',
     'KEYS_ONLY'
   ],
+  'StringMutatorType': [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
   'Style': [
     'VectorEsriNavigation',
     'RasterEsriImagery',
@@ -3583,6 +3655,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'TriggerInvalidation': [
     'WHEN_FUNCTION_CHANGES'
   ],
+  'TypeConverterType': [
+    'boolean',
+    'integer',
+    'double',
+    'string'
+  ],
   'URLEncodingFormat': [
     'BRACKETS',
     'COMMAS',
@@ -3686,6 +3764,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'VectorType': [
     'FLOAT32',
     'BINARY'
+  ],
+  'VendedLogType': [
+    0,
+    1,
+    2,
+    3,
+    4
   ],
   'VerificationEmailStyle': [
     'CONFIRM_WITH_CODE',
