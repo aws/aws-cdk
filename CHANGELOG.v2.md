@@ -10,14 +10,14 @@ All notable changes to this project will be documented in this file. See [standa
 * **kinesisfirehose:** support custom time zone settings for S3 destination ([#34738](https://github.com/aws/aws-cdk/issues/34738)) ([2bbe762](https://github.com/aws/aws-cdk/commit/2bbe7629ef6a7bf89001501037a988385a94f926)), closes [#34737](https://github.com/aws/aws-cdk/issues/34737)
 * update L1 CloudFormation resource definitions ([#34979](https://github.com/aws/aws-cdk/issues/34979)) ([2e0e536](https://github.com/aws/aws-cdk/commit/2e0e5362826449410210e82e17e052d384b37f36))
 * **codebuild:** cache sharing of CodeBuild projects ([#34257](https://github.com/aws/aws-cdk/issues/34257)) ([21e2d1e](https://github.com/aws/aws-cdk/commit/21e2d1e73ed8ba0d1f7bc2683dec7d5fe0fec25f)), closes [/docs.aws.amazon.com/codebuild/latest/userguide/caching-s3.html#caching-s3](https://github.com/aws//docs.aws.amazon.com/codebuild/latest/userguide/caching-s3.html/issues/caching-s3)
-* cloudwatch logs transformer support ([#34863](https://github.com/aws/aws-cdk/issues/34863)) ([481a9d2](https://github.com/aws/aws-cdk/commit/481a9d2734e9ff67a62bec81b92ee62ddc9c4da1)), closes [#34861](https://github.com/aws/aws-cdk/issues/34861)
 * update L1 CloudFormation resource definitions ([#34915](https://github.com/aws/aws-cdk/issues/34915)) ([748d03c](https://github.com/aws/aws-cdk/commit/748d03c99de6242e0b9bed91d8c015249106fdca))
 * **cloudwatch-dashboards:** add support for queryLanguage property ([#34547](https://github.com/aws/aws-cdk/issues/34547)) ([8a77828](https://github.com/aws/aws-cdk/commit/8a77828ab14f635953af27a1b00174d988e85303)), closes [#34482](https://github.com/aws/aws-cdk/issues/34482) [/github.com/aws/aws-cdk/issues/34482#issuecomment-2887841701](https://github.com/aws//github.com/aws/aws-cdk/issues/34482/issues/issuecomment-2887841701)
+* **ec2:** add c8gn instance class ([#34866](https://github.com/aws/aws-cdk/issues/34866)) ([aaf442b](https://github.com/aws/aws-cdk/commit/aaf442b87ec64576ddb9dc88919134665cee3fa7))
 * **events:** add `arnForPolicy` attribute for api destination ([#34315](https://github.com/aws/aws-cdk/issues/34315)) ([e0ac9f8](https://github.com/aws/aws-cdk/commit/e0ac9f8ee3394f666bf84066b89eb83be9b7361e))
 * **rds:** add `fromLookup` method for Amazon Aurora Database Cluster  ([#34849](https://github.com/aws/aws-cdk/issues/34849)) ([23ca6fc](https://github.com/aws/aws-cdk/commit/23ca6fca7a0d029aa76dbdedb99770e8069024ca)), closes [#34848](https://github.com/aws/aws-cdk/issues/34848) [#33258](https://github.com/aws/aws-cdk/issues/33258)
 * **synthetics:** add `maxRetries` prop to configure automatic retries on canary runs ([#34541](https://github.com/aws/aws-cdk/issues/34541)) ([54d8a84](https://github.com/aws/aws-cdk/commit/54d8a84b88c1bbde4937cc1b28e27d11aa813b0b)), closes [#34511](https://github.com/aws/aws-cdk/issues/34511)
 * **synthetics:** add support for tag replication for aws synthetics ([#34830](https://github.com/aws/aws-cdk/issues/34830)) ([5ff59d9](https://github.com/aws/aws-cdk/commit/5ff59d9c7e4959b9de8754b5a8d838810335240a))
-* report feature flag info into Cloud Assembly ([#34919](https://github.com/aws/aws-cdk/issues/34919)) ([72733ea](https://github.com/aws/aws-cdk/commit/72733ea4528911a11fb0d0411e7641ddd47fc60a))
+* **core:** report feature flag info into Cloud Assembly ([#34919](https://github.com/aws/aws-cdk/issues/34919)) ([72733ea](https://github.com/aws/aws-cdk/commit/72733ea4528911a11fb0d0411e7641ddd47fc60a))
 
 
 ### Bug Fixes
@@ -28,11 +28,11 @@ All notable changes to this project will be documented in this file. See [standa
 * **region-info:** integ use standalone package ([#34782](https://github.com/aws/aws-cdk/issues/34782)) ([6d1bcb3](https://github.com/aws/aws-cdk/commit/6d1bcb3cc66490afb3c707cf3f3fd63d88d0a08b)), closes [#34692](https://github.com/aws/aws-cdk/issues/34692) [/github.com/aws/aws-cdk/blob/1ae14635cbbc8ba0f2dab8cbeb72c4af0fddce7a/packages/aws-cdk-lib/package.json#L507-L511](https://github.com/aws//github.com/aws/aws-cdk/blob/1ae14635cbbc8ba0f2dab8cbeb72c4af0fddce7a/packages/aws-cdk-lib/package.json/issues/L507-L511)
 * **tags:** excludeResourceTypes does not work for tags applied at stack level (under feature flag) ([#31443](https://github.com/aws/aws-cdk/issues/31443)) ([4c7d9f4](https://github.com/aws/aws-cdk/commit/4c7d9f41090992dbd91aa8c783cbfd4da4571fa7)), closes [#28017](https://github.com/aws/aws-cdk/issues/28017) [#33945](https://github.com/aws/aws-cdk/issues/33945) [#30055](https://github.com/aws/aws-cdk/issues/30055)
 
-
-### Reverts
-
-* "feat: cloudwatch logs transformer support" ([#34984](https://github.com/aws/aws-cdk/issues/34984)) ([3774f78](https://github.com/aws/aws-cdk/commit/3774f789b0a5c186131cd114eef9dfd9d414d37c)), closes [aws/aws-cdk#34863](https://github.com/aws/aws-cdk/issues/34863)
-* **ci:** require the GitHub Actions PR build for mergify ([#34938](https://github.com/aws/aws-cdk/issues/34938)) ([e400228](https://github.com/aws/aws-cdk/commit/e400228eacfa49cc08dc97a87a2c962339acdb06)), closes [aws/aws-cdk#34836](https://github.com/aws/aws-cdk/issues/34836)
+### ⚠ CHANGES TO L1 RESOURCES
+L1 resources are automatically generated from public CloudFormation Resource Schemas. They are build to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+* ***aws-cdk-lib.aws_ec2.CfnTrafficMirrorFilterRule***: `Id` attribute was removed
+* ***aws-cdk-lib.aws_kinesis.StreamConsumer***: `Id` attribute was removed
+* ***aws-cdk-lib.aws_neptune.DBInstance***: `Id` attribute was removed
 
 ## [2.204.0](https://github.com/aws/aws-cdk/compare/v2.203.1...v2.204.0) (2025-07-04)
 
