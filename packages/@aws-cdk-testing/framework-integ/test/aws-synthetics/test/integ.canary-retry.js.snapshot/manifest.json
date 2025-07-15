@@ -1,0 +1,181 @@
+{
+  "version": "45.0.0",
+  "artifacts": {
+    "SyntheticsCanaryRetryStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SyntheticsCanaryRetryStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SyntheticsCanaryRetryStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SyntheticsCanaryRetryStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bb7088ad2a940f3f3e4e2bddcb75f539d2fd3fb5128081ffa02f6054249b0098.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SyntheticsCanaryRetryStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SyntheticsCanaryRetryStack.assets"
+      ],
+      "metadata": {
+        "/SyntheticsCanaryRetryStack/RetryCanary": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "canaryName": "*",
+              "runtime": "*",
+              "test": "*",
+              "memory": "*",
+              "timeout": "*"
+            }
+          }
+        ],
+        "/SyntheticsCanaryRetryStack/RetryCanary/ArtifactsBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryption": "KMS_MANAGED",
+              "enforceSSL": true,
+              "lifecycleRules": "*"
+            }
+          }
+        ],
+        "/SyntheticsCanaryRetryStack/RetryCanary/ArtifactsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RetryCanaryArtifactsBucket96F3BE6A"
+          }
+        ],
+        "/SyntheticsCanaryRetryStack/RetryCanary/ArtifactsBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
+        "/SyntheticsCanaryRetryStack/RetryCanary/ArtifactsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RetryCanaryArtifactsBucketPolicy381668A7"
+          }
+        ],
+        "/SyntheticsCanaryRetryStack/RetryCanary/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*",
+              "managedPolicies": []
+            }
+          }
+        ],
+        "/SyntheticsCanaryRetryStack/RetryCanary/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/SyntheticsCanaryRetryStack/RetryCanary/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RetryCanaryServiceRole6EAC7F33"
+          }
+        ],
+        "/SyntheticsCanaryRetryStack/RetryCanary/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RetryCanary3B0C27B7"
+          }
+        ],
+        "/SyntheticsCanaryRetryStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SyntheticsCanaryRetryStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SyntheticsCanaryRetryStack"
+    },
+    "SyntheticsCanaryRetryDefaultTestDeployAssert341E434F.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SyntheticsCanaryRetryDefaultTestDeployAssert341E434F.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SyntheticsCanaryRetryDefaultTestDeployAssert341E434F": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SyntheticsCanaryRetryDefaultTestDeployAssert341E434F.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SyntheticsCanaryRetryDefaultTestDeployAssert341E434F.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SyntheticsCanaryRetryDefaultTestDeployAssert341E434F.assets"
+      ],
+      "metadata": {
+        "/SyntheticsCanaryRetry/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SyntheticsCanaryRetry/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SyntheticsCanaryRetry/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

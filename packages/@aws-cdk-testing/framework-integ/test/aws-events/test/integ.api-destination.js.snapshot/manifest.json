@@ -1,0 +1,162 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "events-api-destination-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "events-api-destination-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "events-api-destination-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "events-api-destination-stack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/512a8bdfd70bd68811f6023967a2e87fa76600dfc24a6bda1fa2487a325e1aa2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "events-api-destination-stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "events-api-destination-stack.assets"
+      ],
+      "metadata": {
+        "/events-api-destination-stack/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secretStringValue": "*"
+            }
+          }
+        ],
+        "/events-api-destination-stack/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretA720EF05"
+          }
+        ],
+        "/events-api-destination-stack/Connection": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "authorization": "*",
+              "description": "*",
+              "connectionName": "*"
+            }
+          }
+        ],
+        "/events-api-destination-stack/Connection/Connection": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Connection07624BCD"
+          }
+        ],
+        "/events-api-destination-stack/Destination": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/events-api-destination-stack/Destination/ApiDestination": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DestinationApiDestinationA879FAE5"
+          }
+        ],
+        "/events-api-destination-stack/DestinationArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DestinationArn"
+          }
+        ],
+        "/events-api-destination-stack/DestinationArnForPolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DestinationArnForPolicy"
+          }
+        ],
+        "/events-api-destination-stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/events-api-destination-stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "events-api-destination-stack"
+    },
+    "eventsapidestinationintegDefaultTestDeployAssert460ADA7C.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "eventsapidestinationintegDefaultTestDeployAssert460ADA7C.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "eventsapidestinationintegDefaultTestDeployAssert460ADA7C": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "eventsapidestinationintegDefaultTestDeployAssert460ADA7C.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "eventsapidestinationintegDefaultTestDeployAssert460ADA7C.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "eventsapidestinationintegDefaultTestDeployAssert460ADA7C.assets"
+      ],
+      "metadata": {
+        "/events-api-destination-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/events-api-destination-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "events-api-destination-integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}

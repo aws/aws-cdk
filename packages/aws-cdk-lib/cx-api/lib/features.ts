@@ -112,6 +112,7 @@ export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefau
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
 export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
+export const EXPLICIT_STACK_TAGS = '@aws-cdk/core:explicitStackTags';
 export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS = '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions';
 export const DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA = '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica';
 export const EC2_SUM_TIMEOUT_ENABLED = '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled';
@@ -1177,6 +1178,26 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
+  [EXPLICIT_STACK_TAGS]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, stack tags need to be assigned explicitly on a Stack.',
+    detailsMd: `
+    Without this feature flag enabled, if tags are added to a Stack using
+    \`Tags.of(scope).add(...)\`, they will be added to both the stack and all resources
+    in the stack template.
+
+    That leads to the tags being applied twice: once in the template, and once
+    again automatically by CloudFormation, which will apply all stack tags to
+    all resources in the stack. This leads to loss of control, as the
+    \`excludeResourceTypes\` option of the Tags API will not have any effect.
+
+    With this flag enabled, tags added to a stack using \`Tags.of(...)\` are ignored,
+    and Stack tags must be configured explicitly on the Stack object.
+    `,
+    introducedIn: { v2: '2.205.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Configure stack-level tags using `new Stack(..., { tags: { ... } })`.',
+  },
   [Enable_IMDS_Blocking_Deprecated_Feature]: {
     type: FlagType.Temporary,
     summary: 'When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated ' +

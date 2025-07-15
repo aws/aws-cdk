@@ -44,7 +44,7 @@ test('use custom synthesizer', () => {
     dockerImages: expect.objectContaining({
       '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14': {
         destinations: {
-          'current_account-current_region': {
+          'current_account-current_region-2db33560': {
             repositoryName: 'write-repo',
             imageTag: '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
           },
