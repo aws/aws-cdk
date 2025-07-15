@@ -1710,6 +1710,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'c6gn',
     'compute7-graviton3-high-network-bandwidth',
     'c7gn',
+    'compute8-graviton4-high-network-bandwidth',
+    'c8gn',
     'compute7-intel',
     'c7i',
     'compute7-intel-flex',
@@ -2203,6 +2205,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'ALL',
     'ERROR',
     'FATAL'
+  ],
+  'LogQueryLanguage': [
+    'Logs',
+    'SQL',
+    'PPL'
   ],
   'LogQueryVisualizationType': [
     'table',
@@ -2920,6 +2927,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'pause-cluster',
     'resume-cluster',
     'failover-primary-compute'
+  ],
+  'ResourceToReplicateTags': [
+    'lambda-function'
   ],
   'RestApiMode': [
     'overwrite',
