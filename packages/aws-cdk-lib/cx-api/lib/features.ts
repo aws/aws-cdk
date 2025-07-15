@@ -1194,7 +1194,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     With this flag enabled, tags added to a stack using \`Tags.of(...)\` are ignored,
     and Stack tags must be configured explicitly on the Stack object.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.205.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Configure stack-level tags using `new Stack(..., { tags: { ... } })`.',
   },
