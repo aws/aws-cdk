@@ -122,6 +122,284 @@
       ]
     }
   },
+  "bedrock": {
+    "AgentCollaboratorType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent-collaborator.ts",
+      "enumLike": false,
+      "values": [
+        "SUPERVISOR",
+        "DISABLED",
+        "SUPERVISOR_ROUTER"
+      ]
+    },
+    "RelayConversationHistoryType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent-collaborator.ts",
+      "enumLike": false,
+      "values": [
+        "TO_COLLABORATOR",
+        "DISABLED"
+      ]
+    },
+    "CustomControl": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/api-executor.ts",
+      "enumLike": false,
+      "values": [
+        "RETURN_CONTROL"
+      ]
+    },
+    "ParameterType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/function-schema.ts",
+      "enumLike": false,
+      "values": [
+        "string",
+        "number",
+        "integer",
+        "boolean",
+        "array",
+        "object"
+      ]
+    },
+    "RequireConfirmation": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/function-schema.ts",
+      "enumLike": false,
+      "values": [
+        "ENABLED",
+        "DISABLED"
+      ]
+    },
+    "MemoryType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/memory.ts",
+      "enumLike": false,
+      "values": [
+        "SESSION_SUMMARY"
+      ]
+    },
+    "OrchestrationType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/orchestration-executor.ts",
+      "enumLike": false,
+      "values": [
+        "DEFAULT",
+        "CUSTOM_ORCHESTRATION"
+      ]
+    },
+    "AgentStepType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/prompt-override.ts",
+      "enumLike": false,
+      "values": [
+        "PRE_PROCESSING",
+        "ORCHESTRATION",
+        "POST_PROCESSING",
+        "ROUTING_CLASSIFIER",
+        "MEMORY_SUMMARIZATION",
+        "KNOWLEDGE_BASE_RESPONSE_GENERATION"
+      ]
+    },
+    "VectorType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts",
+      "enumLike": false,
+      "values": [
+        "FLOAT32",
+        "BINARY"
+      ]
+    },
+    "ParentActionGroupSignature": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/action-group.ts",
+      "enumLike": true,
+      "values": [
+        "USER_INPUT",
+        "CODE_INTERPRETER"
+      ]
+    },
+    "ActionGroupExecutor": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/api-executor.ts",
+      "enumLike": true,
+      "values": [
+        "RETURN_CONTROL"
+      ]
+    },
+    "Memory": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/memory.ts",
+      "enumLike": true,
+      "values": [
+        "SESSION_SUMMARY"
+      ]
+    },
+    "BedrockFoundationModel": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts",
+      "enumLike": true,
+      "values": [
+        "AI21_JAMBA_1_5_LARGE_V1",
+        "AI21_JAMBA_1_5_MINI_V1",
+        "AI21_JAMBA_INSTRUCT_V1",
+        "AMAZON_TITAN_TEXT_EXPRESS_V1",
+        "AMAZON_TITAN_PREMIER_V1_0",
+        "AMAZON_NOVA_MICRO_V1",
+        "AMAZON_NOVA_LITE_V1",
+        "AMAZON_NOVA_PRO_V1",
+        "AMAZON_NOVA_PREMIER_V1",
+        "TITAN_EMBED_TEXT_V1",
+        "TITAN_EMBED_TEXT_V2_1024",
+        "TITAN_EMBED_TEXT_V2_512",
+        "TITAN_EMBED_TEXT_V2_256",
+        "ANTHROPIC_CLAUDE_3_7_SONNET_V1_0",
+        "ANTHROPIC_CLAUDE_3_5_SONNET_V2_0",
+        "ANTHROPIC_CLAUDE_3_5_SONNET_V1_0",
+        "ANTHROPIC_CLAUDE_3_5_HAIKU_V1_0",
+        "ANTHROPIC_CLAUDE_OPUS_V1_0",
+        "ANTHROPIC_CLAUDE_SONNET_V1_0",
+        "ANTHROPIC_CLAUDE_HAIKU_V1_0",
+        "ANTHROPIC_CLAUDE_V2_1",
+        "ANTHROPIC_CLAUDE_V2",
+        "ANTHROPIC_CLAUDE_INSTANT_V1_2",
+        "COHERE_EMBED_ENGLISH_V3",
+        "COHERE_EMBED_MULTILINGUAL_V3",
+        "DEEPSEEK_R1_V1",
+        "META_LLAMA_3_1_8B_INSTRUCT_V1",
+        "META_LLAMA_3_1_70B_INSTRUCT_V1",
+        "META_LLAMA_3_2_11B_INSTRUCT_V1",
+        "META_LLAMA_3_2_3B_INSTRUCT_V1",
+        "META_LLAMA_3_2_1B_INSTRUCT_V1",
+        "META_LLAMA_3_3_70B_INSTRUCT_V1",
+        "META_LLAMA_4_MAVERICK_17B_INSTRUCT_V1",
+        "META_LLAMA_4_SCOUT_17B_INSTRUCT_V1",
+        "MISTRAL_7B_INSTRUCT_V0",
+        "MISTRAL_MIXTRAL_8X7B_INSTRUCT_V0",
+        "MISTRAL_SMALL_2402_V1",
+        "MISTRAL_LARGE_2402_V1",
+        "MISTRAL_LARGE_2407_V1",
+        "MISTRAL_PIXTRAL_LARGE_2502_V1"
+      ]
+    },
+    "FoundationModelIdentifier": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-bedrock/lib/foundation-model.ts",
+      "enumLike": true,
+      "values": [
+        "AMAZON_TITAN_TG1_LARGE",
+        "AMAZON_TITAN_TEXT_LITE_V1",
+        "AMAZON_TITAN_TEXT_LITE_V1_0_4K",
+        "AMAZON_TITAN_TEXT_EXPRESS_V1_0_8K",
+        "AMAZON_TITAN_TEXT_G1_EXPRESS_V1",
+        "AMAZON_TITAN_TEXT_G1_LITE_V1",
+        "AMAZON_TITAN_TEXT_PREMIER_V1",
+        "AMAZON_TITAN_EMBEDDINGS_G1_TEXT_V1",
+        "AMAZON_TITAN_EMBED_TEXT_V1_2_8K",
+        "AMAZON_TITAN_EMBED_G1_TEXT_02",
+        "AMAZON_TITAN_EMBED_TEXT_V2_0",
+        "AMAZON_TITAN_EMBED_TEXT_V2_0_8K",
+        "AMAZON_TITAN_IMAGE_GENERATOR_G1_V1",
+        "AMAZON_TITAN_IMAGE_GENERATOR_V1_0",
+        "AMAZON_TITAN_IMAGE_GENERATOR_V2_0",
+        "AMAZON_TITAN_EMBED_IMAGE_V1_0",
+        "AMAZON_TITAN_MULTIMODAL_EMBEDDINGS_G1_V1",
+        "AMAZON_RERANK_V1",
+        "AMAZON_NOVA_CANVAS_V1_0",
+        "AMAZON_NOVA_LITE_V1_0",
+        "AMAZON_NOVA_LITE_V1_0_300_K",
+        "AMAZON_NOVA_MICRO_V1_0",
+        "AMAZON_NOVA_MICRO_V1_0_128_K",
+        "AMAZON_NOVA_PRO_V1_0",
+        "AMAZON_NOVA_PRO_V1_0_300_K",
+        "AMAZON_NOVA_REEL_V1_0",
+        "AMAZON_NOVA_REEL_V1_1",
+        "AMAZON_NOVA_SONIC_V1_0",
+        "AMAZON_NOVA_PREMIER_V1_0",
+        "AI21_J2_MID",
+        "AI21_LABS_JURASSIC_2_MID_V1",
+        "AI21_J2_ULTRA",
+        "AI21_LABS_JURASSIC_2_ULTRA_V1",
+        "AI21_LABS_JURASSIC_2_ULTRA_V1_0_8K",
+        "AI21_J2_GRANDE_INSTRUCT",
+        "AI21_J2_JUMBO_INSTRUCT",
+        "AI21_J2_JAMBA_INSTRUCT_V1_0",
+        "AI21_JAMBA_1_5_LARGE_V_1_0",
+        "AI21_JAMBA_1_5_MINI_V_1_0",
+        "ANTHROPIC_CLAUDE_V1",
+        "ANTHROPIC_CLAUDE_V2",
+        "ANTHROPIC_CLAUDE_V2_0_18K",
+        "ANTHROPIC_CLAUDE_V2_0_100K",
+        "ANTHROPIC_CLAUDE_V2_1",
+        "ANTHROPIC_CLAUDE_V2_1_18K",
+        "ANTHROPIC_CLAUDE_V2_1_200K",
+        "ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0",
+        "ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0_28K",
+        "ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0_200K",
+        "ANTHROPIC_CLAUDE_3_5_SONNET_20240620_V1_0",
+        "ANTHROPIC_CLAUDE_3_5_SONNET_20240620_V1_0_18K",
+        "ANTHROPIC_CLAUDE_3_5_SONNET_20240620_V1_0_51K",
+        "ANTHROPIC_CLAUDE_3_5_SONNET_20240620_V1_0_200K",
+        "ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0",
+        "ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_18K",
+        "ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_51K",
+        "ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_200K",
+        "ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0",
+        "ANTHROPIC_CLAUDE_SONNET_4_20250514_V1_0",
+        "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0",
+        "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_48K",
+        "ANTHROPIC_CLAUDE_3_5_HAIKU_20241022_V1_0",
+        "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_200K",
+        "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0",
+        "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_12K",
+        "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_28K",
+        "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_200K",
+        "ANTHROPIC_CLAUDE_OPUS_4_20250514_V1_0",
+        "ANTHROPIC_CLAUDE_INSTANT_V1",
+        "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
+        "COHERE_COMMAND_V14",
+        "COHERE_COMMAND_LIGHT_V14",
+        "COHERE_COMMAND_TEXT_V14_7_4K",
+        "COHERE_COMMAND_LIGHT_TEXT_V14_7_4K",
+        "COHERE_COMMAND_R_V1",
+        "COHERE_COMMAND_R_PLUS_V1",
+        "COHERE_RERANK_V3_5",
+        "COHERE_EMBED_ENGLISH_V3",
+        "COHERE_EMBED_ENGLISH_V3_0_512",
+        "COHERE_EMBED_MULTILINGUAL_V3",
+        "COHERE_EMBED_MULTILINGUAL_V3_0_512",
+        "DEEP_SEEK_R1_V1_0",
+        "LUMA_RAY_V2_0",
+        "META_LLAMA_2_13B_V1",
+        "META_LLAMA_2_13B_V1_0_4K",
+        "META_LLAMA_2_13B_CHAT_V1_0_4K",
+        "META_LLAMA_2_70B_V1",
+        "META_LLAMA_2_70B_V1_0_4K",
+        "META_LLAMA_2_CHAT_13B_V1",
+        "META_LLAMA_2_CHAT_70B_V1",
+        "META_LLAMA_2_70B_CHAT_V1_0_4K",
+        "META_LLAMA_3_8B_INSTRUCT_V1",
+        "META_LLAMA_3_70_INSTRUCT_V1",
+        "META_LLAMA_3_1_8B_INSTRUCT_V1",
+        "META_LLAMA_3_1_8B_INSTRUCT_V_128K",
+        "META_LLAMA_3_1_70_INSTRUCT_V1",
+        "META_LLAMA_3_1_70_INSTRUCT_V1_128K",
+        "META_LLAMA_3_1_405_INSTRUCT_V1",
+        "META_LLAMA_3_2_1B_INSTRUCT_V1",
+        "META_LLAMA_3_2_3B_INSTRUCT_V1",
+        "META_LLAMA_3_2_11B_INSTRUCT_V1",
+        "META_LLAMA_3_2_90B_INSTRUCT_V1",
+        "META_LLAMA_3_3_70B_INSTRUCT_V1",
+        "META_LLAMA_4_MAVERICK_17B_INSTRUCT_V1_0",
+        "META_LLAMA_4_SCOUT_17B_INSTRUCT_V1_0",
+        "MISTRAL_MISTRAL_7B_INSTRUCT_V0_2",
+        "MISTRAL_MIXTRAL_8X7B_INSTRUCT_V0_1",
+        "MISTRAL_LARGE_V0_1",
+        "MISTRAL_SMALL_V0_1",
+        "MISTRAL_LARGE_2_V0_1",
+        "MISTRAL_PIXTRAL_LARGE_2502_V1_0",
+        "STABILITY_STABLE_DIFFUSION_XL",
+        "STABILITY_STABLE_DIFFUSION_XL_V0",
+        "STABILITY_STABLE_DIFFUSION_XL_V1",
+        "STABILITY_STABLE_DIFFUSION_XL_V1_0",
+        "STABILITY_SD3_LARGE_V1_0",
+        "STABILITY_SD3_5_LARGE_V1_0",
+        "STABILITY_STABLE_IMAGE_ULTRA_V1_0",
+        "STABILITY_STABLE_IMAGE_ULTRA_V1_1",
+        "STABILITY_STABLE_IMAGE_CORE_V1_0",
+        "STABILITY_STABLE_IMAGE_CORE_V1_1",
+        "WRITER_PALMYRA_X4_V1_0",
+        "WRITER_PALMYRA_X5_V1_0"
+      ]
+    }
+  },
   "cloud9": {
     "ConnectionType": {
       "path": "aws-cdk/packages/@aws-cdk/aws-cloud9-alpha/lib/environment.ts",
@@ -1627,6 +1905,7 @@
         "DEVOPS_GURU",
         "DIRECTORY_SERVICE",
         "DIRECTORY_SERVICE_DATA",
+        "DSQL_MANAGEMENT",
         "DYNAMODB",
         "DYNAMODB_FIPS",
         "DYNAMODB_STREAMS",
@@ -1854,10 +2133,13 @@
         "SERVER_MIGRATION_SERVICE_AWSCONNECTOR",
         "SERVERLESS_APPLICATION_REPOSITORY",
         "SES",
+        "SHIELD",
+        "SHIELD_FIPS",
         "SIMSPACE_WEAVER",
         "SNOW_DEVICE_MANAGEMENT",
         "SNS",
         "SQS",
+        "SQS_FIPS",
         "SSM",
         "SSM_FIPS",
         "SSM_MESSAGES",
@@ -1868,6 +2150,7 @@
         "STEP_FUNCTIONS_SYNC",
         "STORAGE_GATEWAY",
         "STS",
+        "STS_FIPS",
         "SUPPLY_CHAIN",
         "SWF",
         "SWF_FIPS",
@@ -2815,6 +3098,7 @@
         "requirements.txt",
         "poetry.lock",
         "Pipfile.lock",
+        "uv.lock",
         ""
       ]
     }
@@ -5587,6 +5871,14 @@
         "S3_OBJECT_KEY"
       ]
     },
+    "Ec2InstanceType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ec2/deploy-action.ts",
+      "enumLike": false,
+      "values": [
+        "EC2",
+        "SSM_MANAGED_NODE"
+      ]
+    },
     "RegistryType": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ecr/build-and-publish-action.ts",
       "enumLike": false,
@@ -7261,7 +7553,8 @@
         "V1_29",
         "V1_30",
         "V1_31",
-        "V1_32"
+        "V1_32",
+        "V1_33"
       ]
     }
   },
@@ -8148,6 +8441,31 @@
         "FROM_IMAGE"
       ]
     },
+    "EventRecordFormat": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/schema-registry.ts",
+      "enumLike": true,
+      "values": [
+        "JSON",
+        "SOURCE"
+      ]
+    },
+    "KafkaSchemaRegistryAccessConfigType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/schema-registry.ts",
+      "enumLike": true,
+      "values": [
+        "BASIC_AUTH",
+        "CLIENT_CERTIFICATE_TLS_AUTH",
+        "SERVER_ROOT_CA_CERTIFICATE"
+      ]
+    },
+    "KafkaSchemaValidationAttribute": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/schema-registry.ts",
+      "enumLike": true,
+      "values": [
+        "KEY",
+        "VALUE"
+      ]
+    },
     "SnapStartConf": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/snapstart-config.ts",
       "enumLike": true,
@@ -8381,14 +8699,6 @@
         "SERVERLESS_V2"
       ]
     },
-    "EngineLifecycleSupport": {
-      "path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts",
-      "enumLike": false,
-      "values": [
-        "open-source-rds-extended-support",
-        "open-source-rds-extended-support-disabled"
-      ]
-    },
     "DBClusterStorageType": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts",
       "enumLike": false,
@@ -8486,6 +8796,14 @@
         682,
         713,
         731
+      ]
+    },
+    "EngineLifecycleSupport": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/props.ts",
+      "enumLike": false,
+      "values": [
+        "open-source-rds-extended-support",
+        "open-source-rds-extended-support-disabled"
       ]
     },
     "ClientPasswordAuthType": {
@@ -8858,6 +9176,7 @@
         "VER_10_5_26",
         "VER_10_5_27",
         "VER_10_5_28",
+        "VER_10_5_29",
         "VER_10_6",
         "VER_10_6_5",
         "VER_10_6_7",
@@ -8874,6 +9193,7 @@
         "VER_10_6_19",
         "VER_10_6_20",
         "VER_10_6_21",
+        "VER_10_6_22",
         "VER_10_11",
         "VER_10_11_4",
         "VER_10_11_5",
@@ -8883,9 +9203,11 @@
         "VER_10_11_9",
         "VER_10_11_10",
         "VER_10_11_11",
+        "VER_10_11_13",
         "VER_11_4_3",
         "VER_11_4_4",
-        "VER_11_4_5"
+        "VER_11_4_5",
+        "VER_11_4_7"
       ]
     },
     "MysqlEngineVersion": {
@@ -9069,6 +9391,7 @@
         "VER_11_22_RDS_20240509",
         "VER_11_22_RDS_20240808",
         "VER_11_22_RDS_20241121",
+        "VER_11_22_RDS_20250508",
         "VER_12",
         "VER_12_2",
         "VER_12_3",
@@ -9091,6 +9414,7 @@
         "VER_12_20",
         "VER_12_21",
         "VER_12_22",
+        "VER_12_22_RDS_20250508",
         "VER_13",
         "VER_13_1",
         "VER_13_2",
@@ -10592,6 +10916,7 @@
         "SYNTHETICS_NODEJS_PUPPETEER_9_0",
         "SYNTHETICS_NODEJS_PUPPETEER_9_1",
         "SYNTHETICS_NODEJS_PLAYWRIGHT_1_0",
+        "SYNTHETICS_NODEJS_PLAYWRIGHT_2_0",
         "SYNTHETICS_PYTHON_SELENIUM_1_0",
         "SYNTHETICS_PYTHON_SELENIUM_1_1",
         "SYNTHETICS_PYTHON_SELENIUM_1_2",
@@ -10602,7 +10927,8 @@
         "SYNTHETICS_PYTHON_SELENIUM_4_0",
         "SYNTHETICS_PYTHON_SELENIUM_4_1",
         "SYNTHETICS_PYTHON_SELENIUM_5_0",
-        "SYNTHETICS_PYTHON_SELENIUM_5_1"
+        "SYNTHETICS_PYTHON_SELENIUM_5_1",
+        "SYNTHETICS_PYTHON_SELENIUM_6_0"
       ]
     }
   },
@@ -11326,7 +11652,8 @@
         "aws-iso",
         "aws-iso-b",
         "aws-iso-f",
-        "aws-iso-e"
+        "aws-iso-e",
+        "aws-eusc"
       ]
     },
     "Runtime": {
@@ -11507,137 +11834,6 @@
         "NEPTUNE_1_2",
         "NEPTUNE_1_3",
         "NEPTUNE_1_4"
-      ]
-    }
-  },
-  "bedrock": {
-    "FoundationModelIdentifier": {
-      "path": "aws-cdk/packages/aws-cdk-lib/aws-bedrock/lib/foundation-model.ts",
-      "enumLike": true,
-      "values": [
-        "AMAZON_TITAN_TG1_LARGE",
-        "AMAZON_TITAN_TEXT_LITE_V1",
-        "AMAZON_TITAN_TEXT_LITE_V1_0_4K",
-        "AMAZON_TITAN_TEXT_EXPRESS_V1_0_8K",
-        "AMAZON_TITAN_TEXT_G1_EXPRESS_V1",
-        "AMAZON_TITAN_TEXT_G1_LITE_V1",
-        "AMAZON_TITAN_TEXT_PREMIER_V1",
-        "AMAZON_TITAN_EMBEDDINGS_G1_TEXT_V1",
-        "AMAZON_TITAN_EMBED_TEXT_V1_2_8K",
-        "AMAZON_TITAN_EMBED_G1_TEXT_02",
-        "AMAZON_TITAN_EMBED_TEXT_V2_0",
-        "AMAZON_TITAN_EMBED_TEXT_V2_0_8K",
-        "AMAZON_TITAN_IMAGE_GENERATOR_G1_V1",
-        "AMAZON_TITAN_IMAGE_GENERATOR_V1_0",
-        "AMAZON_TITAN_IMAGE_GENERATOR_V2_0",
-        "AMAZON_TITAN_EMBED_IMAGE_V1_0",
-        "AMAZON_TITAN_MULTIMODAL_EMBEDDINGS_G1_V1",
-        "AMAZON_RERANK_V1",
-        "AMAZON_NOVA_CANVAS_V1_0",
-        "AMAZON_NOVA_LITE_V1_0",
-        "AMAZON_NOVA_LITE_V1_0_300_K",
-        "AMAZON_NOVA_MICRO_V1_0",
-        "AMAZON_NOVA_MICRO_V1_0_128_K",
-        "AMAZON_NOVA_PRO_V1_0",
-        "AMAZON_NOVA_PRO_V1_0_300_K",
-        "AMAZON_NOVA_REEL_V1_0",
-        "AMAZON_NOVA_REEL_V1_1",
-        "AMAZON_NOVA_SONIC_V1_0",
-        "AMAZON_NOVA_PREMIER_V1_0",
-        "AI21_J2_MID",
-        "AI21_LABS_JURASSIC_2_MID_V1",
-        "AI21_J2_ULTRA",
-        "AI21_LABS_JURASSIC_2_ULTRA_V1",
-        "AI21_LABS_JURASSIC_2_ULTRA_V1_0_8K",
-        "AI21_J2_GRANDE_INSTRUCT",
-        "AI21_J2_JUMBO_INSTRUCT",
-        "AI21_J2_JAMBA_INSTRUCT_V1_0",
-        "AI21_JAMBA_1_5_LARGE_V_1_0",
-        "AI21_JAMBA_1_5_MINI_V_1_0",
-        "ANTHROPIC_CLAUDE_V1",
-        "ANTHROPIC_CLAUDE_V2",
-        "ANTHROPIC_CLAUDE_V2_0_18K",
-        "ANTHROPIC_CLAUDE_V2_0_100K",
-        "ANTHROPIC_CLAUDE_V2_1",
-        "ANTHROPIC_CLAUDE_V2_1_18K",
-        "ANTHROPIC_CLAUDE_V2_1_200K",
-        "ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0",
-        "ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0_28K",
-        "ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0_200K",
-        "ANTHROPIC_CLAUDE_3_5_SONNET_20240620_V1_0",
-        "ANTHROPIC_CLAUDE_3_5_SONNET_20240620_V1_0_18K",
-        "ANTHROPIC_CLAUDE_3_5_SONNET_20240620_V1_0_51K",
-        "ANTHROPIC_CLAUDE_3_5_SONNET_20240620_V1_0_200K",
-        "ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0",
-        "ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_18K",
-        "ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_51K",
-        "ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_200K",
-        "ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0",
-        "ANTHROPIC_CLAUDE_SONNET_4_20250514_V1_0",
-        "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0",
-        "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_48K",
-        "ANTHROPIC_CLAUDE_3_5_HAIKU_20241022_V1_0",
-        "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_200K",
-        "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0",
-        "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_12K",
-        "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_28K",
-        "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_200K",
-        "ANTHROPIC_CLAUDE_OPUS_4_20250514_V1_0",
-        "ANTHROPIC_CLAUDE_INSTANT_V1",
-        "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
-        "COHERE_COMMAND_V14",
-        "COHERE_COMMAND_LIGHT_V14",
-        "COHERE_COMMAND_TEXT_V14_7_4K",
-        "COHERE_COMMAND_LIGHT_TEXT_V14_7_4K",
-        "COHERE_COMMAND_R_V1",
-        "COHERE_COMMAND_R_PLUS_V1",
-        "COHERE_RERANK_V3_5",
-        "COHERE_EMBED_ENGLISH_V3",
-        "COHERE_EMBED_ENGLISH_V3_0_512",
-        "COHERE_EMBED_MULTILINGUAL_V3",
-        "COHERE_EMBED_MULTILINGUAL_V3_0_512",
-        "DEEP_SEEK_R1_V1_0",
-        "LUMA_RAY_V2_0",
-        "META_LLAMA_2_13B_V1",
-        "META_LLAMA_2_13B_V1_0_4K",
-        "META_LLAMA_2_13B_CHAT_V1_0_4K",
-        "META_LLAMA_2_70B_V1",
-        "META_LLAMA_2_70B_V1_0_4K",
-        "META_LLAMA_2_CHAT_13B_V1",
-        "META_LLAMA_2_CHAT_70B_V1",
-        "META_LLAMA_2_70B_CHAT_V1_0_4K",
-        "META_LLAMA_3_8B_INSTRUCT_V1",
-        "META_LLAMA_3_70_INSTRUCT_V1",
-        "META_LLAMA_3_1_8B_INSTRUCT_V1",
-        "META_LLAMA_3_1_8B_INSTRUCT_V_128K",
-        "META_LLAMA_3_1_70_INSTRUCT_V1",
-        "META_LLAMA_3_1_70_INSTRUCT_V1_128K",
-        "META_LLAMA_3_1_405_INSTRUCT_V1",
-        "META_LLAMA_3_2_1B_INSTRUCT_V1",
-        "META_LLAMA_3_2_3B_INSTRUCT_V1",
-        "META_LLAMA_3_2_11B_INSTRUCT_V1",
-        "META_LLAMA_3_2_90B_INSTRUCT_V1",
-        "META_LLAMA_3_3_70B_INSTRUCT_V1",
-        "META_LLAMA_4_MAVERICK_17B_INSTRUCT_V1_0",
-        "META_LLAMA_4_SCOUT_17B_INSTRUCT_V1_0",
-        "MISTRAL_MISTRAL_7B_INSTRUCT_V0_2",
-        "MISTRAL_MIXTRAL_8X7B_INSTRUCT_V0_1",
-        "MISTRAL_LARGE_V0_1",
-        "MISTRAL_SMALL_V0_1",
-        "MISTRAL_LARGE_2_V0_1",
-        "MISTRAL_PIXTRAL_LARGE_2502_V1_0",
-        "STABILITY_STABLE_DIFFUSION_XL",
-        "STABILITY_STABLE_DIFFUSION_XL_V0",
-        "STABILITY_STABLE_DIFFUSION_XL_V1",
-        "STABILITY_STABLE_DIFFUSION_XL_V1_0",
-        "STABILITY_SD3_LARGE_V1_0",
-        "STABILITY_SD3_5_LARGE_V1_0",
-        "STABILITY_STABLE_IMAGE_ULTRA_V1_0",
-        "STABILITY_STABLE_IMAGE_ULTRA_V1_1",
-        "STABILITY_STABLE_IMAGE_CORE_V1_0",
-        "STABILITY_STABLE_IMAGE_CORE_V1_1",
-        "WRITER_PALMYRA_X4_V1_0",
-        "WRITER_PALMYRA_X5_V1_0"
       ]
     }
   },
