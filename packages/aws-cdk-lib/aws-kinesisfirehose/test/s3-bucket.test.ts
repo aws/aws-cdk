@@ -658,4 +658,20 @@ describe('S3 destination', () => {
       }).toThrow("fileExtension can contain allowed characters: 0-9a-z!-_.*'()");
     });
   });
+
+  it('sets customTimeZone', () => {
+    const destination = new firehose.S3Bucket(bucket, {
+      role: destinationRole,
+      timeZone: cdk.TimeZone.ASIA_TOKYO,
+    });
+    new firehose.DeliveryStream(stack, 'DeliveryStream', {
+      destination: destination,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+      ExtendedS3DestinationConfiguration: {
+        CustomTimeZone: 'Asia/Tokyo',
+      },
+    });
+  });
 });
