@@ -2621,7 +2621,8 @@
       "VER_16_8_LIMITLESS",
       "VER_17_1",
       "VER_17_2",
-      "VER_17_4"
+      "VER_17_4",
+      "VER_17_5"
     ],
     "DatabaseClusterEngine": [
       "AURORA",
