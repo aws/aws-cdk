@@ -148,11 +148,11 @@
        {
         "Ref": "myStream547FAD7F"
        },
-       "\",{\"visible\":false,\"id\":\"count\"}],[\"AWS/Kinesis\",\"PutRecords.TotalRecords\",\"StreamName\",\"",
+       "\",{\"id\":\"count\",\"visible\":false}],[\"AWS/Kinesis\",\"PutRecords.TotalRecords\",\"StreamName\",\"",
        {
         "Ref": "myStream547FAD7F"
        },
-       "\",{\"visible\":false,\"id\":\"total\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":12,\"y\":35,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Put records failed records - average (Percent)\",\"region\":\"",
+       "\",{\"id\":\"total\",\"visible\":false}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":12,\"y\":35,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Put records failed records - average (Percent)\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
@@ -160,11 +160,11 @@
        {
         "Ref": "myStream547FAD7F"
        },
-       "\",{\"visible\":false,\"id\":\"count\"}],[\"AWS/Kinesis\",\"PutRecords.TotalRecords\",\"StreamName\",\"",
+       "\",{\"id\":\"count\",\"visible\":false}],[\"AWS/Kinesis\",\"PutRecords.TotalRecords\",\"StreamName\",\"",
        {
         "Ref": "myStream547FAD7F"
        },
-       "\",{\"visible\":false,\"id\":\"total\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":0,\"y\":40,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Put records throttled records - average (Percent)\",\"region\":\"",
+       "\",{\"id\":\"total\",\"visible\":false}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":5,\"x\":0,\"y\":40,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Put records throttled records - average (Percent)\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
@@ -172,11 +172,11 @@
        {
         "Ref": "myStream547FAD7F"
        },
-       "\",{\"visible\":false,\"id\":\"count\"}],[\"AWS/Kinesis\",\"PutRecords.TotalRecords\",\"StreamName\",\"",
+       "\",{\"id\":\"count\",\"visible\":false}],[\"AWS/Kinesis\",\"PutRecords.TotalRecords\",\"StreamName\",\"",
        {
         "Ref": "myStream547FAD7F"
        },
-       "\",{\"visible\":false,\"id\":\"total\"}]],\"yAxis\":{}}}]}"
+       "\",{\"id\":\"total\",\"visible\":false}]],\"yAxis\":{}}}]}"
       ]
      ]
     }
