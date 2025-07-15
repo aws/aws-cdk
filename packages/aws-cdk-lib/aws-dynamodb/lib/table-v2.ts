@@ -48,7 +48,7 @@ const MAX_NON_KEY_ATTRIBUTES = 100;
 /**
  * Options used to configure global secondary indexes on a replica table.
  */
-export interface ReplicaGlobalSecondaryIndexOptions {
+export interface ReplicaGlobalSecondaryIndexOptions extends IContributorInsightsConfigurable {
   /**
    * Whether CloudWatch contributor insights is enabled for a specific global secondary
    * index on a replica table.
@@ -144,12 +144,29 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
 }
 
 /**
- * Options used to configure a DynamoDB table.
+ * Common interface for types that can configure contributor insights
+ * @internal
  */
-export interface TableOptionsV2 {
+interface IContributorInsightsConfigurable {
   /**
    * Whether CloudWatch contributor insights is enabled.
-   * @deprecated use `contributorInsightsSpecification` instead @deprecated use `contributorInsightsSpecification` instead
+   * @deprecated use `contributorInsightsSpecification` instead
+   */
+  readonly contributorInsights?: boolean;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled and what mode is selected
+   */
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
+}
+
+/**
+ * Options used to configure a DynamoDB table.
+ */
+export interface TableOptionsV2 extends IContributorInsightsConfigurable {
+  /**
+   * Whether CloudWatch contributor insights is enabled.
+   * @deprecated use `contributorInsightsSpecification` instead
    * @default false
    */
   readonly contributorInsights?: boolean;
@@ -1148,7 +1165,7 @@ export class TableV2 extends TableBaseV2 {
     }
   }
 
-  private validateCCI (props: TablePropsV2 | ReplicaTableProps | ReplicaGlobalSecondaryIndexOptions): ContributorInsightsSpecification | undefined {
+  private validateCCI (props: IContributorInsightsConfigurable): ContributorInsightsSpecification | undefined {
     const contributorInsights =
     props?.contributorInsights ?? this.tableOptions?.contributorInsights;
 
