@@ -9,3 +9,5 @@ export * from './stream';
 export * from './sqs';
 export * from './sqs-dlq';
 export * from './s3-onfailuire-destination';
+export * from './confluent-schema-registry';
+export * from './glue-schema-registry';

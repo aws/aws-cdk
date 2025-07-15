@@ -78,6 +78,20 @@ export enum Cleanup {
 }
 
 /**
+ * Resources that tags applied to a canary should be replicated to.
+ */
+export enum ResourceToReplicateTags {
+  /**
+   * Replicate canary tags to the Lambda function.
+   *
+   * When specified, CloudWatch Synthetics will keep the tags of the canary
+   * and the Lambda function synchronized. Any future changes made to the
+   * canary's tags will also be applied to the function.
+   */
+  LAMBDA_FUNCTION = 'lambda-function',
+}
+
+/**
  * Options for specifying the s3 location that stores the data of each canary run. The artifacts bucket location **cannot**
  * be updated once the canary is created.
  */
@@ -137,6 +151,16 @@ export interface CanaryProps {
    * @default 'rate(5 minutes)'
    */
   readonly schedule?: Schedule;
+
+  /**
+   * The amount of times the canary will automatically retry a failed run.
+   * This is only supported on the following runtimes or newer: `Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0`, `Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0`, `Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1`.
+   * Max retries can be set between 0 and 2. Canaries which time out after 10 minutes are automatically limited to one retry.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_autoretry.html
+   * @default 0
+   */
+  readonly maxRetries?: number;
 
   /**
    * Whether or not the canary should start after creation.
@@ -293,6 +317,34 @@ export interface CanaryProps {
    * @default - no kms key if `artifactS3EncryptionMode` is set to `S3_MANAGED`. A key will be created if one is not provided and `artifactS3EncryptionMode` is set to `KMS`.
    */
   readonly artifactS3KmsKey?: kms.IKey;
+
+  /**
+   * Specifies whether to perform a dry run before updating the canary.
+   *
+   * If set to true, CDK will execute a dry run to validate the changes before applying them to the canary.
+   * If the dry run succeeds, the canary will be updated with the changes.
+   * If the dry run fails, the CloudFormation deployment will fail with the dry run's failure reason.
+   *
+   * If set to false or omitted, the canary will be updated directly without first performing a dry run.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/performing-safe-canary-upgrades.html
+   *
+   * @default undefined - AWS CloudWatch default is false
+   */
+  readonly dryRunAndUpdate?: boolean;
+
+  /**
+   * Specifies which resources should have their tags replicated to this canary.
+   *
+   * To have the tags that you apply to this canary also be applied to the Lambda
+   * function that the canary uses, specify this property with the value
+   * ResourceToReplicateTags.LAMBDA_FUNCTION. If you do this, CloudWatch Synthetics will keep the tags of the canary and the
+   * Lambda function synchronized. Any future changes you make to the canary's tags
+   * will also be applied to the function.
+   *
+   * @default - No resources will have their tags replicated to this canary
+   */
+  readonly resourcesToReplicateTags?: ResourceToReplicateTags[];
 }
 
 /**
@@ -387,6 +439,8 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       this._connections = new ec2.Connections({});
     }
 
+    this.validateDryRunAndUpdate(props.runtime, props.dryRunAndUpdate);
+
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
       executionRoleArn: this.role.roleArn,
@@ -405,6 +459,8 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
           ? 'AUTOMATIC'
           : 'OFF'
         : undefined,
+      dryRunAndUpdate: props.dryRunAndUpdate,
+      resourcesToReplicateTags: props.resourcesToReplicateTags,
     });
     this._resource = resource;
 
@@ -414,6 +470,26 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
     if (props.cleanup === Cleanup.LAMBDA) {
       this.cleanupUnderlyingResources();
+    }
+  }
+
+  private validateDryRunAndUpdate(runtime: Runtime, dryRunAndUpdate?: boolean) {
+    const runtimeName = runtime.name;
+    if (dryRunAndUpdate !== true || cdk.Token.isUnresolved(runtimeName)) {
+      return;
+    }
+
+    const RUNTIME_REGEX = /^syn-(nodejs-puppeteer|nodejs-playwright|python-selenium)-(\d+\.\d+)$/;
+    const MIN_SUPPORTED_VERSIONS: { [family: string]: number } = {
+      'nodejs-puppeteer': 10.0,
+      'nodejs-playwright': 2.0,
+      'python-selenium': 5.1,
+    };
+
+    const match = runtimeName.match(RUNTIME_REGEX);
+
+    if (!match || match.length < 3 || MIN_SUPPORTED_VERSIONS[match[1]] === undefined || parseFloat(match[2]) < MIN_SUPPORTED_VERSIONS[match[1]]) {
+      throw new ValidationError(`dryRunAndUpdate is only supported for canary runtime versions 'syn-nodejs-puppeteer-10.0+', 'syn-nodejs-playwright-2.0+', or 'syn-python-selenium-5.1+', got: ${runtimeName}`, this);
     }
   }
 
@@ -670,6 +746,9 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     return {
       durationInSeconds: String(`${props.timeToLive?.toSeconds() ?? 0}`),
       expression: props.schedule?.expressionString ?? 'rate(5 minutes)',
+      retryConfig: props.maxRetries ? {
+        maxRetries: props.maxRetries,
+      } : undefined,
     };
   }
 
