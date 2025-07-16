@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "93d96d34e0d3cd20eb082652b91012b131bdc34fcf2bc16eb4170e04772fddb1": {
       "displayName": "NodeProxyAgentLayer/Code",
@@ -43,7 +43,7 @@
         }
       }
     },
-    "61cf0917263943427814288e0b0929666b1f5172accdb7b5b81e1d98859afa74": {
+    "17773dd3bd53d783ea9d2abb22be1e1b2a74121b63a4ccd358ce26ebb72eb39d": {
       "displayName": "lambda-layer-node-proxy-agent-integ-stack Template",
       "source": {
         "path": "lambda-layer-node-proxy-agent-integ-stack.template.json",
@@ -52,7 +52,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "61cf0917263943427814288e0b0929666b1f5172accdb7b5b81e1d98859afa74.json",
+          "objectKey": "17773dd3bd53d783ea9d2abb22be1e1b2a74121b63a4ccd358ce26ebb72eb39d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

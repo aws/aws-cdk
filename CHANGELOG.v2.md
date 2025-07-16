@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.206.0](https://github.com/aws/aws-cdk/compare/v2.205.0...v2.206.0) (2025-07-16)
+
+
+### Features
+
+* **custom-resource:** Added async custom resource provider framework logging off by default ([1302e3d](https://github.com/aws/aws-cdk/commit/1302e3d81a2df8e5976c9a10603efb238dcf35ae))
+* **ecs:** add L1 native blue/green deployment support for ECS services ([3ef87e4](https://github.com/aws/aws-cdk/commit/3ef87e496965dc9c8efec6d5924658f45719134e))
+
 ## [2.205.0](https://github.com/aws/aws-cdk/compare/v2.204.0...v2.205.0) (2025-07-15)
 
 

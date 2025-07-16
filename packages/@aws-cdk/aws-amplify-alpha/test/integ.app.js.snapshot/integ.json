@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "testCases": {
     "cdk-amplify-app-integ/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "cdk-amplify-app-integ/DefaultTest/DeployAssert",
       "assertionStackName": "cdkamplifyappintegDefaultTestDeployAssert2B61C472"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }
