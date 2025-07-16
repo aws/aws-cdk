@@ -656,6 +656,7 @@ export class LogGroup extends LogGroupBase {
     }
 
     let logGroupClass = props.logGroupClass;
+    const stack = Stack.of(scope);
 
     const dataProtectionPolicy = props.dataProtectionPolicy?._bind(this);
     const fieldIndexPolicies: any[] = [];
