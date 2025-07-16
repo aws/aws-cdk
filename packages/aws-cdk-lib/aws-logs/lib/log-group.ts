@@ -7,6 +7,7 @@ import { MetricFilter } from './metric-filter';
 import { FilterPattern, IFilterPattern } from './pattern';
 import { ResourcePolicy } from './policy';
 import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
+import { IProcessor, Transformer } from './transformer';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -51,6 +52,14 @@ export interface ILogGroup extends iam.IResourceWithPolicy {
    * @param props Properties for creating the MetricFilter
    */
   addMetricFilter(id: string, props: MetricFilterOptions): MetricFilter;
+
+  /**
+   * Create a new Transformer on this Log Group
+   *
+   * @param id Unique identifier for the construct in its parent
+   * @param props Properties for creating the Transformer
+   */
+  addTransformer(id: string, props: TransformerOptions): Transformer;
 
   /**
    * Extract a metric from structured log events in the LogGroup
@@ -165,6 +174,19 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    */
   public addMetricFilter(id: string, props: MetricFilterOptions): MetricFilter {
     return new MetricFilter(this, id, {
+      logGroup: this,
+      ...props,
+    });
+  }
+
+  /**
+   * Create a new Transformer on this Log Group
+   *
+   * @param id Unique identifier for the construct in its parent
+   * @param props Properties for creating the Transformer
+   */
+  public addTransformer(id: string, props: TransformerOptions): Transformer {
+    return new Transformer(this, id, {
       logGroup: this,
       ...props,
     });
@@ -790,4 +812,14 @@ export interface MetricFilterOptions {
    * @default - Cloudformation generated name.
    */
   readonly filterName?: string;
+}
+
+/**
+ * Properties for Transformer created from LogGroup.
+ */
+export interface TransformerOptions {
+  /** Name of the transformer. */
+  readonly transformerName: string;
+  /** List of processors in a transformer */
+  readonly transformerConfig: Array<IProcessor>;
 }
