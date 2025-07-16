@@ -1116,6 +1116,10 @@ export class SearchExpression implements IMetric {
       },
     };
   }
+
+  public toString() {
+    return this.label || this.expression;
+  }
 }
 
 /**
