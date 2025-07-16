@@ -69,7 +69,8 @@
 "@aws-cdk/aws-lambda-python-alpha@file:packages/@aws-cdk/aws-lambda-python-alpha":
   version "0.0.0"
 
-"@aws-cdk/aws-service-spec@0.1.84", "@aws-cdk/aws-service-spec@^0.1.84":
+
+"@aws-cdk/aws-service-spec@0.1.84":
   version "0.1.84"
   resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.84.tgz#520b4d69365bed901813fac1821750d899f6cc7e"
   integrity sha512-anurRdTvmebg3VhHeXDE7c039jJqVZNBtDvnxmbmjENDLch+jmu7uxIx0DXRLT7201raR7BKA28/nQh2srCzNA==
@@ -84,6 +85,14 @@
   dependencies:
     jsonschema "~1.4.1"
     semver "^7.7.2"
+
+"@aws-cdk/aws-service-spec@^0.1.86":
+  version "0.1.86"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.86.tgz#ef9a74a3a9ff6a2901e5489bab465ed5ee6163ab"
+  integrity sha512-/el9RfmBfwVnz1D7/Y3pKImLUnEpm+qTwaLSbWEg0iS7owYOvU/Ab5WivLN3EOVCZpE9XHkMhbaHiJ9WUGXdcg==
+  dependencies:
+    "@aws-cdk/service-spec-types" "^0.0.152"
+    "@cdklabs/tskb" "^0.0.3"
 
 "@aws-cdk/cloud-assembly-schema@^45.0.0":
   version "45.2.0"
@@ -160,6 +169,13 @@
   version "0.0.150"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.150.tgz#3a42559d9f81663f089b7ac518116c33a726c5ff"
   integrity sha512-s/hDl+Q+ste5xtriLBxKFreH3GfG9YFBsxpvz+oYEjMtc9ILrtVPcUqcU3SonprRdgDNkuB8Kghecp5iRBTgpA==
+  dependencies:
+    "@cdklabs/tskb" "^0.0.3"
+
+"@aws-cdk/service-spec-types@^0.0.152":
+  version "0.0.152"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.152.tgz#09370362ef9fd26604f79075d9e7759cdfdd658c"
+  integrity sha512-zTEzp4EwUXrwqts48xV11GknGnQuEw3/l4tBZ1mePJXRZzBHcP5q4h/Q4AGJ9jrBtCqSks9EAoX2kTlgjkU4fg==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
