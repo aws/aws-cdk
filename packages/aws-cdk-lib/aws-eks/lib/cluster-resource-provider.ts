@@ -36,6 +36,12 @@ export interface ClusterResourceProviderProps {
    * @default - No security group.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+  /**
+   * Disable logging for provider
+   *
+   * @default true
+   */
+  readonly disableLogging?: boolean;
 }
 
 /**
@@ -90,6 +96,8 @@ export class ClusterResourceProvider extends NestedStack {
       layers: [nodeProxyAgentLayer],
     });
 
+    const disableLogging = props.disableLogging ?? true;
+
     this.provider = new cr.Provider(this, 'Provider', {
       onEventHandler: onEvent,
       isCompleteHandler: isComplete,
@@ -98,6 +106,11 @@ export class ClusterResourceProvider extends NestedStack {
       vpc: props.subnets ? props.vpc : undefined,
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
       securityGroups: props.securityGroup ? [props.securityGroup] : undefined,
+      disableWaiterStateMachineLogging: disableLogging,
+      // If logging is not disabled use default INFO level logging for provider lambdas
+      ...(disableLogging ? {} : {
+        frameworkLambdaLoggingLevel: lambda.ApplicationLogLevel.INFO,
+      }),
     });
   }
 
