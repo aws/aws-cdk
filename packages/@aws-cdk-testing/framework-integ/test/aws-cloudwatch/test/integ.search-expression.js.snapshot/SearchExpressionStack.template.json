@@ -11,7 +11,7 @@
        {
         "Ref": "AWS::Region"
        },
-       "\",\"metrics\":[[{\"label\":\"[object Object]\",\"expression\":\"SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)\"}],[{\"label\":\"Custom Lambda Duration\",\"color\":\"#e377c2\",\"expression\":\"SEARCH('{AWS/Lambda,FunctionName} Duration', 'Average', 300)\",\"accountId\":\"123456789012\",\"region\":\"us-west-2\",\"period\":600,\"yAxis\":\"right\"}],[{\"label\":\"Cross-Account Cross-Region S3\",\"color\":\"#9467bd\",\"expression\":\"SEARCH('{AWS/S3,BucketName} BucketSizeBytes', 'Average', 86400)\",\"accountId\":\"123456789012\",\"region\":\"ap-southeast-1\",\"period\":3600,\"yAxis\":\"right\"}]],\"yAxis\":{}}}]}"
+       "\",\"metrics\":[[{\"label\":\"SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)\",\"expression\":\"SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)\"}],[{\"label\":\"Custom Lambda Duration\",\"color\":\"#e377c2\",\"expression\":\"SEARCH('{AWS/Lambda,FunctionName} Duration', 'Average', 300)\",\"accountId\":\"123456789012\",\"region\":\"us-west-2\",\"period\":600,\"yAxis\":\"right\"}],[{\"label\":\"Cross-Account Cross-Region S3\",\"color\":\"#9467bd\",\"expression\":\"SEARCH('{AWS/S3,BucketName} BucketSizeBytes', 'Average', 86400)\",\"accountId\":\"123456789012\",\"region\":\"ap-southeast-1\",\"period\":3600,\"yAxis\":\"right\"}]],\"yAxis\":{}}}]}"
       ]
      ]
     },
