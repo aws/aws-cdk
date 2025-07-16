@@ -1,6 +1,7 @@
 import { CommonPromptVariantProps, PromptTemplateType, IPromptVariant } from './prompt-variant';
 import { PromptInferenceConfiguration } from './prompt-inference-configuration';
 import { PromptTemplateConfiguration } from './prompt-template-configuration';
+import { ValidationError } from '../agents/validation-helpers';
 
 /**
  * Properties for creating a text prompt variant.
@@ -27,6 +28,10 @@ export interface TextPromptVariantProps extends CommonPromptVariantProps {
  * @returns A PromptVariant configured for text processing
  */
 export function createTextPromptVariant(props: TextPromptVariantProps): IPromptVariant {
+  if (!props.promptText || props.promptText.trim() === '') {
+    throw new ValidationError('promptText cannot be empty');
+  }
+
   return {
     name: props.variantName,
     templateType: PromptTemplateType.TEXT,

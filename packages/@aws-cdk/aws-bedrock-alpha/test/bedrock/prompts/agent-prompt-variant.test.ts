@@ -1,5 +1,6 @@
 import { App, Stack } from 'aws-cdk-lib';
 import * as bedrock from '../../../bedrock';
+import { ValidationError } from '../../../bedrock/agents/validation-helpers';
 
 describe('AgentPromptVariant', () => {
   let stack: Stack;
@@ -192,14 +193,14 @@ And includes {{variable}} placeholders.`;
     });
 
     test('handles empty prompt text', () => {
-      const variant = bedrock.PromptVariant.agent({
-        variantName: 'empty-text-agent-variant',
-        model: foundationModel,
-        agentAlias: mockAgentAlias,
-        promptText: '',
-      });
-
-      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
+      expect(() => {
+        bedrock.PromptVariant.agent({
+          variantName: 'empty-text-agent-variant',
+          model: foundationModel,
+          agentAlias: mockAgentAlias,
+          promptText: '',
+        });
+      }).toThrow(ValidationError);
     });
 
     test('handles very long prompt text', () => {

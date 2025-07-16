@@ -118,7 +118,7 @@ class ChatTemplateConfiguration extends PromptTemplateConfiguration {
         toolConfiguration: this.props.toolConfiguration
           ? {
             toolChoice: this.props.toolConfiguration.toolChoice._render(),
-            tools: this.props.toolConfiguration.tools,
+            tools: this.props.toolConfiguration.tools.map(tool => tool._render()),
           }
           : undefined,
       },

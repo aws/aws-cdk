@@ -12,7 +12,66 @@ export interface ToolConfiguration {
   /**
    * The tools available to the model.
    */
-  readonly tools: CfnPrompt.ToolProperty[];
+  readonly tools: Tool[];
+}
+
+/**
+ * Properties for creating a function tool.
+ */
+export interface FunctionToolProps {
+  /**
+   * The name of the function.
+   */
+  readonly name: string;
+
+  /**
+   * A description of what the function does.
+   */
+  readonly description: string;
+
+  /**
+   * The input schema for the function parameters.
+   */
+  readonly inputSchema: any;
+}
+
+/**
+ * Abstract base class for tools that can be used by the model.
+ */
+export abstract class Tool {
+  /**
+   * Creates a function tool.
+   */
+  public static function(props: FunctionToolProps): Tool {
+    return new FunctionTool(props);
+  }
+
+  /**
+   * Renders the tool as a CloudFormation property.
+   * @internal This is an internal core function and should not be called directly.
+   */
+  public abstract _render(): CfnPrompt.ToolProperty;
+}
+
+/**
+ * A function tool that can be called by the model.
+ */
+class FunctionTool extends Tool {
+  constructor(private readonly props: FunctionToolProps) {
+    super();
+  }
+
+  public _render(): CfnPrompt.ToolProperty {
+    return {
+      toolSpec: {
+        name: this.props.name,
+        description: this.props.description,
+        inputSchema: {
+          json: this.props.inputSchema,
+        },
+      },
+    };
+  }
 }
 
 /**

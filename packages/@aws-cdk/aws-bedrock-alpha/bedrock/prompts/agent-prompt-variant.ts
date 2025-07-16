@@ -2,6 +2,7 @@ import { CommonPromptVariantProps, PromptTemplateType, IPromptVariant } from './
 import { IAgentAlias } from '../agents/agent-alias';
 import { PromptTemplateConfiguration } from './prompt-template-configuration';
 import { PromptGenAiResource } from './prompt-genai-resource';
+import { ValidationError } from '../agents/validation-helpers';
 
 /**
  * Properties for creating an agent prompt variant.
@@ -26,6 +27,10 @@ export interface AgentPromptVariantProps extends CommonPromptVariantProps {
  * @returns A PromptVariant configured for agent interactions
  */
 export function createAgentPromptVariant(props: AgentPromptVariantProps): IPromptVariant {
+  if (!props.promptText || props.promptText.trim() === '') {
+    throw new ValidationError('promptText cannot be empty');
+  }
+
   return {
     name: props.variantName,
     templateType: PromptTemplateType.TEXT,

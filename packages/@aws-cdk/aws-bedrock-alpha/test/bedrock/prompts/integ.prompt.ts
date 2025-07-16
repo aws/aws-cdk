@@ -110,47 +110,39 @@ const encryptedPrompt = new bedrock.Prompt(stack, 'EncryptedPrompt', {
 const toolConfig = {
   toolChoice: bedrock.ToolChoice.AUTO,
   tools: [
-    {
-      toolSpec: {
-        name: 'weather_tool',
-        description: 'Get current weather information for a location',
-        inputSchema: {
-          json: {
-            type: 'object',
-            properties: {
-              location: {
-                type: 'string',
-                description: 'The city and state, e.g. San Francisco, CA',
-              },
-              unit: {
-                type: 'string',
-                enum: ['celsius', 'fahrenheit'],
-                description: 'The unit for temperature',
-              },
-            },
-            required: ['location'],
+    bedrock.Tool.function({
+      name: 'weather_tool',
+      description: 'Get current weather information for a location',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          location: {
+            type: 'string',
+            description: 'The city and state, e.g. San Francisco, CA',
+          },
+          unit: {
+            type: 'string',
+            enum: ['celsius', 'fahrenheit'],
+            description: 'The unit for temperature',
           },
         },
+        required: ['location'],
       },
-    },
-    {
-      toolSpec: {
-        name: 'calculator',
-        description: 'Perform mathematical calculations',
-        inputSchema: {
-          json: {
-            type: 'object',
-            properties: {
-              expression: {
-                type: 'string',
-                description: 'Mathematical expression to evaluate',
-              },
-            },
-            required: ['expression'],
+    }),
+    bedrock.Tool.function({
+      name: 'calculator',
+      description: 'Perform mathematical calculations',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          expression: {
+            type: 'string',
+            description: 'Mathematical expression to evaluate',
           },
         },
+        required: ['expression'],
       },
-    },
+    }),
   ],
 };
 

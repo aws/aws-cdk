@@ -180,29 +180,25 @@ const toolPrompt = new bedrock.Prompt(stack, 'ToolPrompt', {
       toolConfiguration: {
         toolChoice: bedrock.ToolChoice.AUTO,
         tools: [
-          {
-            toolSpec: {
-              name: 'data_analyzer',
-              description: 'Analyze data and provide insights',
-              inputSchema: {
-                json: {
-                  type: 'object',
-                  properties: {
-                    data: {
-                      type: 'string',
-                      description: 'Data to analyze',
-                    },
-                    analysis_type: {
-                      type: 'string',
-                      enum: ['statistical', 'trend', 'comparative'],
-                      description: 'Type of analysis to perform',
-                    },
-                  },
-                  required: ['data'],
+          bedrock.Tool.function({
+            name: 'data_analyzer',
+            description: 'Analyze data and provide insights',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                data: {
+                  type: 'string',
+                  description: 'Data to analyze',
+                },
+                analysis_type: {
+                  type: 'string',
+                  enum: ['statistical', 'trend', 'comparative'],
+                  description: 'Type of analysis to perform',
                 },
               },
+              required: ['data'],
             },
-          },
+          }),
         ],
       },
       inferenceConfiguration: bedrock.PromptInferenceConfiguration.text({

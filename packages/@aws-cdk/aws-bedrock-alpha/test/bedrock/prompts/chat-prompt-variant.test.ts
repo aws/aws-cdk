@@ -1,5 +1,6 @@
 import { App, Stack } from 'aws-cdk-lib';
 import * as bedrock from '../../../bedrock';
+import { ValidationError } from '../../../bedrock/agents/validation-helpers';
 
 describe('ChatPromptVariant', () => {
   let stack: Stack;
@@ -110,20 +111,16 @@ describe('ChatPromptVariant', () => {
       const toolConfig = {
         toolChoice: bedrock.ToolChoice.AUTO,
         tools: [
-          {
-            toolSpec: {
-              name: 'weather_tool',
-              description: 'Get weather information',
-              inputSchema: {
-                json: {
-                  type: 'object',
-                  properties: {
-                    city: { type: 'string' },
-                  },
-                },
+          bedrock.Tool.function({
+            name: 'weather_tool',
+            description: 'Get weather information',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                city: { type: 'string' },
               },
             },
-          },
+          }),
         ],
       };
 
@@ -256,7 +253,7 @@ describe('ChatPromptVariant', () => {
           model: foundationModel,
           messages: [],
         });
-      }).not.toThrow();
+      }).toThrow(ValidationError);
     });
 
     test('handles single message', () => {
@@ -391,6 +388,194 @@ And includes {{variable}} placeholders.`;
       });
 
       expect(variant.inferenceConfiguration).toBe(inferenceConfig);
+    });
+  });
+
+  describe('validation', () => {
+    test('throws ValidationError for empty messages array', () => {
+      expect(() => {
+        bedrock.PromptVariant.chat({
+          variantName: 'test-variant',
+          model: foundationModel,
+          messages: [],
+        });
+      }).toThrow(ValidationError);
+    });
+
+    test('throws ValidationError for undefined messages', () => {
+      expect(() => {
+        bedrock.PromptVariant.chat({
+          variantName: 'test-variant',
+          model: foundationModel,
+          messages: undefined as any,
+        });
+      }).toThrow(ValidationError);
+    });
+
+    test('throws ValidationError for null messages', () => {
+      expect(() => {
+        bedrock.PromptVariant.chat({
+          variantName: 'test-variant',
+          model: foundationModel,
+          messages: null as any,
+        });
+      }).toThrow(ValidationError);
+    });
+
+    test('throws ValidationError when first message is not user message', () => {
+      expect(() => {
+        bedrock.PromptVariant.chat({
+          variantName: 'test-variant',
+          model: foundationModel,
+          messages: [
+            bedrock.ChatMessage.assistant('I am an assistant'),
+          ],
+        });
+      }).toThrow(ValidationError);
+    });
+
+    test('throws ValidationError for consecutive user messages', () => {
+      expect(() => {
+        bedrock.PromptVariant.chat({
+          variantName: 'test-variant',
+          model: foundationModel,
+          messages: [
+            bedrock.ChatMessage.user('First user message'),
+            bedrock.ChatMessage.user('Second user message'),
+          ],
+        });
+      }).toThrow(ValidationError);
+    });
+
+    test('throws ValidationError for consecutive assistant messages', () => {
+      expect(() => {
+        bedrock.PromptVariant.chat({
+          variantName: 'test-variant',
+          model: foundationModel,
+          messages: [
+            bedrock.ChatMessage.user('User message'),
+            bedrock.ChatMessage.assistant('First assistant message'),
+            bedrock.ChatMessage.assistant('Second assistant message'),
+          ],
+        });
+      }).toThrow(ValidationError);
+    });
+
+    test('accepts valid alternating user-assistant pattern', () => {
+      expect(() => {
+        bedrock.PromptVariant.chat({
+          variantName: 'test-variant',
+          model: foundationModel,
+          messages: [
+            bedrock.ChatMessage.user('User message 1'),
+            bedrock.ChatMessage.assistant('Assistant response 1'),
+            bedrock.ChatMessage.user('User message 2'),
+            bedrock.ChatMessage.assistant('Assistant response 2'),
+          ],
+        });
+      }).not.toThrow();
+    });
+
+    test('accepts single user message', () => {
+      expect(() => {
+        bedrock.PromptVariant.chat({
+          variantName: 'test-variant',
+          model: foundationModel,
+          messages: [
+            bedrock.ChatMessage.user('Single user message'),
+          ],
+        });
+      }).not.toThrow();
+    });
+
+    test('accepts user-assistant pattern', () => {
+      expect(() => {
+        bedrock.PromptVariant.chat({
+          variantName: 'test-variant',
+          model: foundationModel,
+          messages: [
+            bedrock.ChatMessage.user('User message'),
+            bedrock.ChatMessage.assistant('Assistant response'),
+          ],
+        });
+      }).not.toThrow();
+    });
+
+    test('validation error messages are descriptive', () => {
+      expect(() => {
+        bedrock.PromptVariant.chat({
+          variantName: 'test-variant',
+          model: foundationModel,
+          messages: [],
+        });
+      }).toThrow('At least one message must be provided');
+
+      expect(() => {
+        bedrock.PromptVariant.chat({
+          variantName: 'test-variant',
+          model: foundationModel,
+          messages: [
+            bedrock.ChatMessage.assistant('Assistant first'),
+          ],
+        });
+      }).toThrow('The first message must be a User message');
+
+      expect(() => {
+        bedrock.PromptVariant.chat({
+          variantName: 'test-variant',
+          model: foundationModel,
+          messages: [
+            bedrock.ChatMessage.user('User message'),
+            bedrock.ChatMessage.user('Another user message'),
+          ],
+        });
+      }).toThrow('Messages must alternate between User and Assistant roles');
+    });
+
+    test('validation works with complex message patterns', () => {
+      // Valid long alternating pattern
+      expect(() => {
+        bedrock.PromptVariant.chat({
+          variantName: 'test-variant',
+          model: foundationModel,
+          messages: [
+            bedrock.ChatMessage.user('User 1'),
+            bedrock.ChatMessage.assistant('Assistant 1'),
+            bedrock.ChatMessage.user('User 2'),
+            bedrock.ChatMessage.assistant('Assistant 2'),
+            bedrock.ChatMessage.user('User 3'),
+            bedrock.ChatMessage.assistant('Assistant 3'),
+          ],
+        });
+      }).not.toThrow();
+
+      // Invalid pattern with consecutive messages in the middle
+      expect(() => {
+        bedrock.PromptVariant.chat({
+          variantName: 'test-variant',
+          model: foundationModel,
+          messages: [
+            bedrock.ChatMessage.user('User 1'),
+            bedrock.ChatMessage.assistant('Assistant 1'),
+            bedrock.ChatMessage.assistant('Assistant 2'), // Invalid consecutive
+            bedrock.ChatMessage.user('User 2'),
+          ],
+        });
+      }).toThrow(ValidationError);
+    });
+
+    test('validation error includes position information', () => {
+      expect(() => {
+        bedrock.PromptVariant.chat({
+          variantName: 'test-variant',
+          model: foundationModel,
+          messages: [
+            bedrock.ChatMessage.user('User 1'),
+            bedrock.ChatMessage.assistant('Assistant 1'),
+            bedrock.ChatMessage.assistant('Assistant 2'), // Position 2 and 3
+          ],
+        });
+      }).toThrow('positions 2 and 3');
     });
   });
 });

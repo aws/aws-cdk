@@ -75,24 +75,20 @@ const toolChatVariant = bedrock.PromptVariant.chat({
   toolConfiguration: {
     toolChoice: bedrock.ToolChoice.AUTO,
     tools: [
-      {
-        toolSpec: {
-          name: 'search_tool',
-          description: 'Search for information on the internet',
-          inputSchema: {
-            json: {
-              type: 'object',
-              properties: {
-                query: {
-                  type: 'string',
-                  description: 'Search query',
-                },
-              },
-              required: ['query'],
+      bedrock.Tool.function({
+        name: 'search_tool',
+        description: 'Search for information on the internet',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            query: {
+              type: 'string',
+              description: 'Search query',
             },
           },
+          required: ['query'],
         },
-      },
+      }),
     ],
   },
   inferenceConfiguration: bedrock.PromptInferenceConfiguration.text({
@@ -111,24 +107,20 @@ const specificToolChatVariant = bedrock.PromptVariant.chat({
   toolConfiguration: {
     toolChoice: bedrock.ToolChoice.specificTool('calculator'),
     tools: [
-      {
-        toolSpec: {
-          name: 'calculator',
-          description: 'Perform mathematical calculations',
-          inputSchema: {
-            json: {
-              type: 'object',
-              properties: {
-                expression: {
-                  type: 'string',
-                  description: 'Mathematical expression to evaluate',
-                },
-              },
-              required: ['expression'],
+      bedrock.Tool.function({
+        name: 'calculator',
+        description: 'Perform mathematical calculations',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            expression: {
+              type: 'string',
+              description: 'Mathematical expression to evaluate',
             },
           },
+          required: ['expression'],
         },
-      },
+      }),
     ],
   },
 });

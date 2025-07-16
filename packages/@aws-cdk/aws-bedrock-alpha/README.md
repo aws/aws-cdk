@@ -680,25 +680,20 @@ const variantChat = bedrock.PromptVariant.chat({
   toolConfiguration: {
     toolChoice: bedrock.ToolChoice.AUTO,
     tools: [
-      {
-        toolSpec: {
-          name: 'top_song',
-          description: 'Get the most popular song played on a radio station.',
-          inputSchema: {
-            json: {
-              type: 'object',
-              properties: {
-                sign: {
-                  type: 'string',
-                  description:
-                    'The call sign for the radio station for which you want the most popular song. Example calls signs are WZPZ and WKR.',
-                },
-              },
-              required: ['sign'],
+      bedrock.Tool.function({
+        name: 'top_song',
+        description: 'Get the most popular song played on a radio station.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            sign: {
+              type: 'string',
+              description: 'The call sign for the radio station for which you want the most popular song. Example calls signs are WZPZ and WKR.',
             },
           },
+          required: ['sign'],
         },
-      },
+      }),
     ],
   },
 });

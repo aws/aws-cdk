@@ -1,5 +1,6 @@
 import { App, Stack } from 'aws-cdk-lib';
 import * as bedrock from '../../../bedrock';
+import { ValidationError } from '../../../bedrock/agents/validation-helpers';
 
 describe('TextPromptVariant', () => {
   let stack: Stack;
@@ -149,13 +150,13 @@ And includes {{variable}} placeholders.`;
     });
 
     test('handles empty prompt text', () => {
-      const variant = bedrock.PromptVariant.text({
-        variantName: 'empty-text-variant',
-        model: foundationModel,
-        promptText: '',
-      });
-
-      expect(variant.templateConfiguration).toBeInstanceOf(bedrock.PromptTemplateConfiguration);
+      expect(() => {
+        bedrock.PromptVariant.text({
+          variantName: 'empty-text-variant',
+          model: foundationModel,
+          promptText: '',
+        });
+      }).toThrow(ValidationError);
     });
 
     test('handles very long prompt text', () => {
@@ -211,6 +212,78 @@ And includes {{variable}} placeholders.`;
       });
 
       expect(variant.inferenceConfiguration).toBe(inferenceConfig);
+    });
+  });
+
+  describe('validation', () => {
+    test('throws ValidationError for empty promptText', () => {
+      expect(() => {
+        bedrock.PromptVariant.text({
+          variantName: 'test-variant',
+          model: foundationModel,
+          promptText: '',
+        });
+      }).toThrow(ValidationError);
+    });
+
+    test('throws ValidationError for whitespace-only promptText', () => {
+      expect(() => {
+        bedrock.PromptVariant.text({
+          variantName: 'test-variant',
+          model: foundationModel,
+          promptText: '   \n\t  ',
+        });
+      }).toThrow(ValidationError);
+    });
+
+    test('throws ValidationError for undefined promptText', () => {
+      expect(() => {
+        bedrock.PromptVariant.text({
+          variantName: 'test-variant',
+          model: foundationModel,
+          promptText: undefined as any,
+        });
+      }).toThrow(ValidationError);
+    });
+
+    test('throws ValidationError for null promptText', () => {
+      expect(() => {
+        bedrock.PromptVariant.text({
+          variantName: 'test-variant',
+          model: foundationModel,
+          promptText: null as any,
+        });
+      }).toThrow(ValidationError);
+    });
+
+    test('accepts valid promptText with content', () => {
+      expect(() => {
+        bedrock.PromptVariant.text({
+          variantName: 'test-variant',
+          model: foundationModel,
+          promptText: 'Valid prompt text',
+        });
+      }).not.toThrow();
+    });
+
+    test('accepts promptText with only spaces but some content', () => {
+      expect(() => {
+        bedrock.PromptVariant.text({
+          variantName: 'test-variant',
+          model: foundationModel,
+          promptText: '  valid content  ',
+        });
+      }).not.toThrow();
+    });
+
+    test('validation error message is descriptive', () => {
+      expect(() => {
+        bedrock.PromptVariant.text({
+          variantName: 'test-variant',
+          model: foundationModel,
+          promptText: '',
+        });
+      }).toThrow('promptText cannot be empty');
     });
   });
 });

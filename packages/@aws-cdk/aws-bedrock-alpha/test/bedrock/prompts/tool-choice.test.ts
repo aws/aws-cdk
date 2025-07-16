@@ -1,5 +1,167 @@
 import * as bedrock from '../../../bedrock';
 
+describe('Tool', () => {
+  describe('function factory method', () => {
+    test('creates a function tool with basic properties', () => {
+      const tool = bedrock.Tool.function({
+        name: 'calculator',
+        description: 'Perform mathematical calculations',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            expression: {
+              type: 'string',
+              description: 'Mathematical expression to evaluate',
+            },
+          },
+          required: ['expression'],
+        },
+      });
+
+      expect(tool).toBeDefined();
+      expect(typeof tool._render).toBe('function');
+    });
+
+    test('renders function tool correctly', () => {
+      const tool = bedrock.Tool.function({
+        name: 'weather',
+        description: 'Get current weather information',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            location: {
+              type: 'string',
+              description: 'City name or coordinates',
+            },
+          },
+          required: ['location'],
+        },
+      });
+
+      const rendered = tool._render();
+
+      expect(rendered).toEqual({
+        toolSpec: {
+          name: 'weather',
+          description: 'Get current weather information',
+          inputSchema: {
+            json: {
+              type: 'object',
+              properties: {
+                location: {
+                  type: 'string',
+                  description: 'City name or coordinates',
+                },
+              },
+              required: ['location'],
+            },
+          },
+        },
+      });
+    });
+
+    test('handles complex input schemas', () => {
+      const tool = bedrock.Tool.function({
+        name: 'search',
+        description: 'Search for information',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            query: {
+              type: 'string',
+              description: 'Search query',
+            },
+            category: {
+              type: 'string',
+              description: 'Category to search in',
+              enum: ['general', 'news', 'academic', 'technical'],
+            },
+            limit: {
+              type: 'number',
+              description: 'Maximum number of results',
+              minimum: 1,
+              maximum: 100,
+            },
+          },
+          required: ['query'],
+        },
+      });
+
+      const rendered = tool._render();
+
+      expect((rendered.toolSpec as any).inputSchema.json).toEqual({
+        type: 'object',
+        properties: {
+          query: {
+            type: 'string',
+            description: 'Search query',
+          },
+          category: {
+            type: 'string',
+            description: 'Category to search in',
+            enum: ['general', 'news', 'academic', 'technical'],
+          },
+          limit: {
+            type: 'number',
+            description: 'Maximum number of results',
+            minimum: 1,
+            maximum: 100,
+          },
+        },
+        required: ['query'],
+      });
+    });
+
+    test('handles empty input schema', () => {
+      const tool = bedrock.Tool.function({
+        name: 'simple_tool',
+        description: 'A simple tool with no parameters',
+        inputSchema: {},
+      });
+
+      const rendered = tool._render();
+
+      expect((rendered.toolSpec as any).inputSchema.json).toEqual({});
+    });
+
+    test('handles special characters in tool names and descriptions', () => {
+      const tool = bedrock.Tool.function({
+        name: 'tool_with-special.chars@123',
+        description: 'A tool with special characters: !@#$%^&*()',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+        },
+      });
+
+      const rendered = tool._render();
+
+      expect((rendered.toolSpec as any).name).toBe('tool_with-special.chars@123');
+      expect((rendered.toolSpec as any).description).toBe('A tool with special characters: !@#$%^&*()');
+    });
+  });
+
+  describe('multiple tools', () => {
+    test('creates multiple different tools', () => {
+      const calculator = bedrock.Tool.function({
+        name: 'calculator',
+        description: 'Perform calculations',
+        inputSchema: { type: 'object', properties: {} },
+      });
+
+      const weather = bedrock.Tool.function({
+        name: 'weather',
+        description: 'Get weather info',
+        inputSchema: { type: 'object', properties: {} },
+      });
+
+      expect((calculator._render().toolSpec as any).name).toBe('calculator');
+      expect((weather._render().toolSpec as any).name).toBe('weather');
+      expect(calculator).not.toBe(weather);
+    });
+  });
+});
+
 describe('ToolChoice', () => {
   describe('static factory methods', () => {
     test('creates ANY tool choice', () => {
