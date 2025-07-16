@@ -25,6 +25,12 @@ export interface ReplicaProviderProps {
    * @default Duration.minutes(30)
    */
   readonly timeout?: Duration;
+  /**
+   * Disable logging for provider
+   *
+   * @default true
+   */
+  readonly disableLogging?: boolean;
 }
 
 export class ReplicaProvider extends NestedStack {
@@ -99,11 +105,18 @@ export class ReplicaProvider extends NestedStack {
       }),
     );
 
+    const disableLogging = props.disableLogging ?? true;
+
     this.provider = new cr.Provider(this, 'Provider', {
       onEventHandler: this.onEventHandler,
       isCompleteHandler: this.isCompleteHandler,
       queryInterval: Duration.seconds(10),
       totalTimeout: props.timeout,
+      disableWaiterStateMachineLogging: disableLogging,
+      // If logging is not disabled use default INFO level logging for provider lambdas
+      ...(disableLogging ? {} : {
+        frameworkLambdaLoggingLevel: lambda.ApplicationLogLevel.INFO,
+      }),
     });
   }
 }
