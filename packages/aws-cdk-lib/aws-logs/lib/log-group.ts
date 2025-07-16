@@ -11,7 +11,7 @@ import { IProcessor, Transformer } from './transformer';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Annotations, Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
