@@ -534,8 +534,8 @@ export class Alarm extends AlarmBase {
                   returnData,
                 };
               },
-              withSearchExpression(_searchExpr, _conf) {
-                throw new UnscopedValidationError('Search expressions are not supported in CloudWatch Alarms. Use search expressions only in dashboard graphs.');
+              withSearchExpression: (_searchExpr, _conf) => {
+                throw new ValidationError('Search expressions are not supported in CloudWatch Alarms. Use search expressions only in dashboard graphs.', this);
               },
             });
           }),
@@ -547,8 +547,8 @@ export class Alarm extends AlarmBase {
 
         return { props, primaryId };
       },
-      withSearchExpression() {
-        throw new UnscopedValidationError('Search expressions are not supported in CloudWatch Alarms. Use search expressions only in dashboard graphs.');
+      withSearchExpression: () => {
+        throw new ValidationError('Search expressions are not supported in CloudWatch Alarms. Use search expressions only in dashboard graphs.', this);
       },
     });
   }
