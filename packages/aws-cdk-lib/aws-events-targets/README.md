@@ -369,11 +369,16 @@ const connection = events.Connection.fromEventBusArn(
   'arn:aws:secretsmanager:us-east-1:123456789012:secret:SecretName-f3gDy9',
 );
 
-const apiDestinationArn = 'arn:aws:events:us-east-1:123456789012:api-destination/DestinationName';
+const apiDestinationArn = 'arn:aws:events:us-east-1:123456789012:api-destination/DestinationName/11111111-1111-1111-1111-111111111111';
+const apiDestinationArnForPolicy = 'arn:aws:events:us-east-1:123456789012:api-destination/DestinationName';
 const destination = events.ApiDestination.fromApiDestinationAttributes(
   this,
   'Destination',
-  { apiDestinationArn, connection },
+  {
+    apiDestinationArn,
+    connection,
+    apiDestinationArnForPolicy // optional
+  },
 );
 
 const rule = new events.Rule(this, 'OtherRule', {

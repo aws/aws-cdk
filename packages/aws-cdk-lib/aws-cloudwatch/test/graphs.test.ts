@@ -8,6 +8,7 @@ import {
   GraphWidget,
   GraphWidgetView,
   LegendPosition,
+  LogQueryLanguage,
   LogQueryVisualizationType,
   LogQueryWidget,
   Metric,
@@ -104,11 +105,11 @@ describe('Graphs', () => {
     }]);
   });
 
-  test('label and color are respected in constructor', () => {
+  test('label, color, id and visible are respected in constructor', () => {
     // WHEN
     const stack = new Stack();
     const widget = new GraphWidget({
-      left: [new Metric({ namespace: 'CDK', metricName: 'Test', label: 'MyMetric', color: '000000' })],
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test', label: 'MyMetric', color: '000000', id: 'custom_id', visible: false })],
     });
 
     // THEN
@@ -120,7 +121,7 @@ describe('Graphs', () => {
         view: 'timeSeries',
         region: { Ref: 'AWS::Region' },
         metrics: [
-          ['CDK', 'Test', { label: 'MyMetric', color: '000000' }],
+          ['CDK', 'Test', { label: 'MyMetric', color: '000000', id: 'custom_id', visible: false }],
         ],
         yAxis: {},
       },
@@ -315,6 +316,62 @@ describe('Graphs', () => {
         stacked: true,
         region: { Ref: 'AWS::Region' },
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+      },
+    }]);
+  });
+
+  test('query result widget - sql', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = { logGroupName: 'my-log-group' };
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      view: LogQueryVisualizationType.STACKEDAREA,
+      queryString: "SELECT count(*) as count FROM 'my-log-group'",
+      queryLanguage: LogQueryLanguage.SQL,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        stacked: true,
+        region: { Ref: 'AWS::Region' },
+        query: "SOURCE 'my-log-group' | SELECT count(*) as count FROM 'my-log-group'",
+        queryLanguage: 'SQL',
+      },
+    }]);
+  });
+
+  test('query result widget - ppl', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = { logGroupName: 'my-log-group' };
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      view: LogQueryVisualizationType.STACKEDAREA,
+      queryString: 'fields `@message`\ | sort - `@timestamp`',
+      queryLanguage: LogQueryLanguage.PPL,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        stacked: true,
+        region: { Ref: 'AWS::Region' },
+        query: "SOURCE 'my-log-group' | fields `@message`\ | sort - `@timestamp`",
+        queryLanguage: 'PPL',
       },
     }]);
   });

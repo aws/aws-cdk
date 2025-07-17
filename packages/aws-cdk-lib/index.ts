@@ -195,6 +195,7 @@ export * as aws_nimblestudio from './aws-nimblestudio';
 export * as aws_notifications from './aws-notifications';
 export * as aws_notificationscontacts from './aws-notificationscontacts';
 export * as aws_oam from './aws-oam';
+export * as aws_odb from './aws-odb';
 export * as aws_omics from './aws-omics';
 export * as aws_opensearchserverless from './aws-opensearchserverless';
 export * as aws_opensearchservice from './aws-opensearchservice';

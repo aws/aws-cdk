@@ -579,6 +579,7 @@
       }
      },
      "CompressionFormat": "GZIP",
+     "CustomTimeZone": "Asia/Tokyo",
      "EncryptionConfiguration": {
       "KMSEncryptionConfig": {
        "AWSKMSKeyARN": {
@@ -907,6 +908,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

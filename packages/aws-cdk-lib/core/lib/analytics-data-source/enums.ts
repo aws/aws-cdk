@@ -956,6 +956,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'requirements.txt',
     'poetry.lock',
     'Pipfile.lock',
+    'uv.lock',
     ''
   ],
   'DependencyOperation': [
@@ -1709,6 +1710,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'c6gn',
     'compute7-graviton3-high-network-bandwidth',
     'c7gn',
+    'compute8-graviton4-high-network-bandwidth',
+    'c8gn',
     'compute7-intel',
     'c7i',
     'compute7-intel-flex',
@@ -2203,6 +2206,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'ERROR',
     'FATAL'
   ],
+  'LogQueryLanguage': [
+    'Logs',
+    'SQL',
+    'PPL'
+  ],
   'LogQueryVisualizationType': [
     'table',
     'line',
@@ -2575,7 +2583,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'aws-iso',
     'aws-iso-b',
     'aws-iso-f',
-    'aws-iso-e'
+    'aws-iso-e',
+    'aws-eusc'
   ],
   'PartitionDateSource': [
     'EventTime',
@@ -2918,6 +2927,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'pause-cluster',
     'resume-cluster',
     'failover-primary-compute'
+  ],
+  'ResourceToReplicateTags': [
+    'lambda-function'
   ],
   'RestApiMode': [
     'overwrite',

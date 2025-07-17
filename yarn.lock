@@ -58,15 +58,7 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.1.0.tgz#6d3c7860354d4856a7e75375f2f0ecab313b4989"
   integrity sha512-7bY3J8GCVxLupn/kNmpPc5VJz8grx+4RKfnnJiO1LG+uxkZfANZG3RMHhE+qQxxwkyQ9/MfPtTpf748UhR425A==
 
-"@aws-cdk/aws-service-spec@0.1.82":
-  version "0.1.82"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.82.tgz#d9d0b9e918daea01912de11e670e29e669b0f718"
-  integrity sha512-Vn0qMU00ozjmzxMgAluhS8V8H+/tk0Zk8VwKKf4kDJ3i1uFp15mfQM5vch8JwNs5Tn/xAOCX7jIavh1PiKfKYg==
-  dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.148"
-    "@cdklabs/tskb" "^0.0.3"
-
-"@aws-cdk/aws-service-spec@^0.1.84":
+"@aws-cdk/aws-service-spec@0.1.84":
   version "0.1.84"
   resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.84.tgz#520b4d69365bed901813fac1821750d899f6cc7e"
   integrity sha512-anurRdTvmebg3VhHeXDE7c039jJqVZNBtDvnxmbmjENDLch+jmu7uxIx0DXRLT7201raR7BKA28/nQh2srCzNA==
@@ -74,21 +66,29 @@
     "@aws-cdk/service-spec-types" "^0.0.150"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/cloud-assembly-schema@^44.8.0":
-  version "44.8.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-44.8.0.tgz#52da129bd718cc354c2970a6922c2346459f3945"
-  integrity sha512-Bxyj0VH8phE1uHJ6LiG3/UC/HYK91EBZnXSOzwtLsMJ0ZPuaQCYDRVAAfjDCSsEOwAk56/Waks8b5pXHpgz/xw==
+"@aws-cdk/aws-service-spec@^0.1.86":
+  version "0.1.86"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.86.tgz#ef9a74a3a9ff6a2901e5489bab465ed5ee6163ab"
+  integrity sha512-/el9RfmBfwVnz1D7/Y3pKImLUnEpm+qTwaLSbWEg0iS7owYOvU/Ab5WivLN3EOVCZpE9XHkMhbaHiJ9WUGXdcg==
+  dependencies:
+    "@aws-cdk/service-spec-types" "^0.0.152"
+    "@cdklabs/tskb" "^0.0.3"
+
+"@aws-cdk/cloud-assembly-schema@^45.0.0":
+  version "45.0.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-45.0.0.tgz#32fe09103cae5f964b313403505391c4b25272fc"
+  integrity sha512-tHUX60ZevKlxAfnhQgjt5CcDEswImYuf25Ewg/+0aB6UnbvECT3eSkrUfhEXJ2T5zYO/w1Dy8ockfBXjE+QUNQ==
   dependencies:
     jsonschema "~1.4.1"
     semver "^7.7.2"
 
-"@aws-cdk/integ-runner@^2.188.0":
-  version "2.188.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.188.0.tgz#0ab613d491adf601dc000b2526ebcff562be00b5"
-  integrity sha512-MD8SFp9YfQEV/e3PONjTY58+gooU63KUUtZ62+RXFdgZDVn96oE/DwHz9CdOFARXjMX+BmtcFKiDNQEq2PgZMQ==
+"@aws-cdk/integ-runner@^2.188.3":
+  version "2.188.3"
+  resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.188.3.tgz#11ba5df5dd15414f18f7f1cc03af9103430dee74"
+  integrity sha512-+3A+HP7Yqt2j6/wKU24AOceVr2JggM/avmEL3T+raGLKxqOL5szMBcr0x3TqNDAoIWTiETQss8ArBS28n0h7nQ==
   dependencies:
-    "@aws-cdk/aws-service-spec" "0.1.82"
-    aws-cdk "2.1019.2"
+    "@aws-cdk/aws-service-spec" "0.1.84"
+    aws-cdk "2.1020.2"
   optionalDependencies:
     fsevents "2.3.2"
 
@@ -145,17 +145,17 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/service-spec-types@^0.0.148":
-  version "0.0.148"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.148.tgz#8ec4fa34d4bbb7e9542bce09da0641a20795f771"
-  integrity sha512-efHu3o1r/OWpwtz0415EEyXOLtxq7Wd4m7vb+bSg/QybNK9wwwlmYqDQaA8bDzygGJr4Kyq6losvGZhiBuYkiA==
-  dependencies:
-    "@cdklabs/tskb" "^0.0.3"
-
 "@aws-cdk/service-spec-types@^0.0.150":
   version "0.0.150"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.150.tgz#3a42559d9f81663f089b7ac518116c33a726c5ff"
   integrity sha512-s/hDl+Q+ste5xtriLBxKFreH3GfG9YFBsxpvz+oYEjMtc9ILrtVPcUqcU3SonprRdgDNkuB8Kghecp5iRBTgpA==
+  dependencies:
+    "@cdklabs/tskb" "^0.0.3"
+
+"@aws-cdk/service-spec-types@^0.0.152":
+  version "0.0.152"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.152.tgz#09370362ef9fd26604f79075d9e7759cdfdd658c"
+  integrity sha512-zTEzp4EwUXrwqts48xV11GknGnQuEw3/l4tBZ1mePJXRZzBHcP5q4h/Q4AGJ9jrBtCqSks9EAoX2kTlgjkU4fg==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
@@ -5212,10 +5212,10 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-aws-cdk@2.1019.2:
-  version "2.1019.2"
-  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1019.2.tgz#acbdd3be7e095d3347168cd37aab437b3bd777f7"
-  integrity sha512-LkWZ3IKBkfCPTCu60t4Wb9JMSkb+0Uzk+HIxZeW5sFohq8bxDGV0OP1hcqEC2+KbVYRn7q+YhMeSJ/FOQcgpiw==
+aws-cdk@2.1020.2:
+  version "2.1020.2"
+  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1020.2.tgz#7e0a4113666a6d162cf40b6b1ebf9e310c22dd44"
+  integrity sha512-yWdt3dJh4aPm1VNyEgfG3lozGrvddw0i7avt+Cl9KOYixmisQtAg39/aZqzVVqjzVZVEanXmz+tlhzzh75Z69A==
   optionalDependencies:
     fsevents "2.3.2"
 
