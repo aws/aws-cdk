@@ -29,25 +29,25 @@ export function allMetricsGraphJson(left: IMetric[], right: IMetric[]): any[] {
   return mset.entries.map(entry => new DropEmptyObjectAtTheEndOfAnArray(metricGraphJson(entry.metric, entry.tag, entry.id)));
 }
 
+// The options for both search expression and math expression are same. Thus, can be handled by a common function.
+const applyExpressionOptions = (options: any, exprConfig: MetricExpressionConfig) => {
+  options.expression = exprConfig.expression;
+  if (exprConfig.searchAccount) {
+    options.accountId = accountIfDifferentFromStack(exprConfig.searchAccount);
+  }
+  if (exprConfig.searchRegion) {
+    options.region = regionIfDifferentFromStack(exprConfig.searchRegion);
+  }
+  if (exprConfig.period && exprConfig.period !== 300) {
+    options.period = exprConfig.period;
+  }
+};
+
 function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
   const config = metric.toMetricConfig();
 
   const ret: any[] = [];
   const options: any = { ...config.renderingProperties };
-
-  // The options for both search expression and math expression are same. Thus, can be handled by a common function.
-  const applyExpressionOptions = (exprConfig: MetricExpressionConfig) => {
-    options.expression = exprConfig.expression;
-    if (exprConfig.searchAccount) {
-      options.accountId = accountIfDifferentFromStack(exprConfig.searchAccount);
-    }
-    if (exprConfig.searchRegion) {
-      options.region = regionIfDifferentFromStack(exprConfig.searchRegion);
-    }
-    if (exprConfig.period && exprConfig.period !== 300) {
-      options.period = exprConfig.period;
-    }
-  };
 
   dispatchMetric(metric, {
     withStat(stat) {
@@ -77,10 +77,10 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
     },
 
     withMathExpression(mathExpr) {
-      applyExpressionOptions(mathExpr);
+      applyExpressionOptions(options, mathExpr);
     },
     withSearchExpression(searchExpr) {
-      applyExpressionOptions(searchExpr);
+      applyExpressionOptions(options, searchExpr);
     },
   });
 
