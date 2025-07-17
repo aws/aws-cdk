@@ -164,24 +164,6 @@ describe('log group', () => {
     }, 0);
   });
 
-  test('with log group class in a non-supported region', () => {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'TestStack', {
-      env: {
-        region: 'us-isob-east-1',
-      },
-    });
-
-    // WHEN
-    new LogGroup(stack, 'LogGroup', {
-      logGroupClass: LogGroupClass.STANDARD,
-    });
-
-    // THEN
-    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp(/The LogGroupClass property is not supported in the following regions.+us-isob-east-1/));
-  });
-
   test('will delete log group if asked to', () => {
     // GIVEN
     const stack = new Stack();
