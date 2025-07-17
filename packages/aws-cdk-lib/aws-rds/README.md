@@ -1514,7 +1514,20 @@ new rds.DatabaseCluster(this, 'Database', {
 });
 ```
 
-Note: Database Insights are only supported for Amazon Aurora MySQL and Amazon Aurora PostgreSQL clusters.
+Database Insights is also supported for RDS instances:
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.DatabaseInstance(this, 'PostgresInstance', {
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_5 }),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+  vpc,
+  // If you enable the advanced mode of Database Insights,
+  // Performance Insights is enabled and you must set the `performanceInsightRetention` to 465(15 months).
+  databaseInsightsMode: rds.DatabaseInsightsMode.ADVANCED,
+  performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_15,
+});
+```
 
 > Visit [CloudWatch Database Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Database-Insights.html) for more details.
 
