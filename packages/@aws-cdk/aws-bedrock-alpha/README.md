@@ -35,6 +35,14 @@ This construct library facilitates the deployment of Bedrock Agents, enabling yo
   - [Agent Collaboration](#agent-collaboration)
   - [Custom Orchestration](#custom-orchestration)
   - [Agent Alias](#agent-alias)
+- [Prompts](#prompts)
+  - [Prompt Variants](#prompt-variants)
+  - [Basic Text Prompt](#basic-text-prompt)
+  - [Chat Prompt](#chat-prompt)
+  - [Agent Prompt](#agent-prompt)
+  - [Prompt Properties](#prompt-properties)
+  - [Prompt Version](#prompt-version)
+  - [Import Methods](#import-methods)
 
 ## Agents
 
@@ -604,5 +612,198 @@ const agentAlias = new bedrock.AgentAlias(this, 'myAlias', {
   agentAliasName: 'production',
   agent: agent,
   description: `Production version of my agent. Created at ${agent.lastUpdated}` // ensure the version update
+});
+```
+
+## Prompts
+
+Amazon Bedrock provides the ability to create and save prompts using Prompt management so that you can save time by applying the same prompt to different workflows. You can include variables in the prompt so that you can adjust the prompt for different use case.
+
+The `Prompt` resource allows you to create a new prompt.
+
+### Prompt Variants
+
+Prompt variants in the context of Amazon Bedrock refer to alternative configurations of a prompt, including its message or the model and inference configurations used. Prompt variants are the building blocks of prompts - you must create at least one prompt variant to create a prompt. Prompt variants allow you to create different versions of a prompt, test them, and save the variant that works best for your use case.
+
+There are three types of prompt variants:
+
+- **Basic Text Prompt**: Simple text-based prompts for straightforward interactions
+- **Chat variant**: Conversational prompts that support system messages, user/assistant message history, and tools
+- **Agent variant**: Prompts designed to work with Bedrock Agents
+
+### Basic Text Prompt
+
+Text prompts are the simplest form of prompts, consisting of plain text instructions with optional variables. They are ideal for straightforward tasks like summarization, content generation, or question answering where you need a direct text-based interaction with the model.
+
+```ts fixture=default
+const cmk = new kms.Key(this, 'cmk', {});
+const claudeModel = bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_SONNET_V1_0;
+
+const variant1 = bedrock.PromptVariant.text({
+  variantName: 'variant1',
+  model: claudeModel,
+  promptVariables: ['topic'],
+  promptText: 'This is my first text prompt. Please summarize our conversation on: {{topic}}.',
+  inferenceConfiguration: bedrock.PromptInferenceConfiguration.text({
+    temperature: 1.0,
+    topP: 0.999,
+    maxTokens: 2000,
+  }),
+});
+
+const prompt1 = new bedrock.Prompt(this, 'prompt1', {
+  promptName: 'prompt1',
+  description: 'my first prompt',
+  defaultVariant: variant1,
+  variants: [variant1],
+  kmsKey: cmk,
+});
+```
+
+### Chat Prompt
+
+Use this template type when the model supports the Converse API or the Anthropic Claude Messages API. This allows you to include a System prompt and previous User messages and Assistant messages for context.
+
+```ts fixture=default
+const cmk = new kms.Key(this, 'cmk', {});
+
+const variantChat = bedrock.PromptVariant.chat({
+  variantName: 'variant1',
+  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+  messages: [
+    bedrock.ChatMessage.user('From now on, you speak Japanese!'),
+    bedrock.ChatMessage.assistant('Konnichiwa!'),
+    bedrock.ChatMessage.user('From now on, you speak {{language}}!'),
+  ],
+  system: 'You are a helpful assistant that only speaks the language you`re told.',
+  promptVariables: ['language'],
+  toolConfiguration: {
+    toolChoice: bedrock.ToolChoice.AUTO,
+    tools: [
+      bedrock.Tool.function({
+        name: 'top_song',
+        description: 'Get the most popular song played on a radio station.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            sign: {
+              type: 'string',
+              description: 'The call sign for the radio station for which you want the most popular song. Example calls signs are WZPZ and WKR.',
+            },
+          },
+          required: ['sign'],
+        },
+      }),
+    ],
+  },
+});
+
+new bedrock.Prompt(this, 'prompt1', {
+  promptName: 'prompt-chat',
+  description: 'my first chat prompt',
+  defaultVariant: variantChat,
+  variants: [variantChat],
+  kmsKey: cmk,
+});
+```
+
+### Agent Prompt
+
+Agent prompts are designed to work with Bedrock Agents, allowing you to create prompts that can be used by agents to perform specific tasks. Agent prompts use text prompts as their foundation and can reference agent aliases and include custom instructions for how the agent should behave.
+
+```ts fixture=default
+const cmk = new kms.Key(this, 'cmk', {});
+
+// Assuming you have an existing agent and alias
+const agent = bedrock.Agent.fromAgentAttributes(this, 'ImportedAgent', {
+  agentArn: 'arn:aws:bedrock:region:account:agent/agent-id',
+  roleArn: 'arn:aws:iam::account:role/agent-role',
+});
+
+const agentAlias = bedrock.AgentAlias.fromAttributes(this, 'ImportedAlias', {
+  aliasId: 'alias-id',
+  aliasName: 'my-alias',
+  agentVersion: '1',
+  agent: agent,
+});
+
+const agentVariant = bedrock.PromptVariant.agent({
+  variantName: 'agent-variant',
+  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+  agentAlias: agentAlias,
+  promptText: 'Use the agent to help with: {{task}}. Please be thorough and provide detailed explanations.',
+  promptVariables: ['task'],
+});
+
+new bedrock.Prompt(this, 'agentPrompt', {
+  promptName: 'agent-prompt',
+  description: 'Prompt for agent interactions',
+  defaultVariant: agentVariant,
+  variants: [agentVariant],
+  kmsKey: cmk,
+});
+```
+
+### Prompt Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| promptName | string | Yes | The name of the prompt |
+| description | string | No | A description of the prompt |
+| defaultVariant | PromptVariant | Yes | The default variant to use for the prompt |
+| variants | PromptVariant[] | No | Additional variants for the prompt |
+| kmsKey | kms.IKey | No | The KMS key to use for encrypting the prompt. Defaults to AWS managed key |
+| tags | Record<string, string> | No | Tags to apply to the prompt |
+
+### Prompt Version
+
+A prompt version is a snapshot of a prompt at a specific point in time that you create when you are satisfied with a set of configurations. Versions allow you to deploy your prompt and easily switch between different configurations for your prompt and update your application with the most appropriate version for your use-case.
+
+You can create a Prompt version by using the PromptVersion class or by using the .createVersion(..) on a Prompt object. It is recommended to use the .createVersion(..) method. It uses a hash based mechanism to update the version whenever a certain configuration property changes.
+
+```ts fixture=default
+const cmk = new kms.Key(this, 'cmk', {});
+const claudeModel = bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_SONNET_V1_0;
+
+const variant1 = bedrock.PromptVariant.text({
+  variantName: 'variant1',
+  model: claudeModel,
+  promptVariables: ['topic'],
+  promptText: 'This is my first text prompt. Please summarize our conversation on: {{topic}}.',
+  inferenceConfiguration: bedrock.PromptInferenceConfiguration.text({
+    temperature: 1.0,
+    topP: 0.999,
+    maxTokens: 2000,
+  }),
+});
+
+const prompt1 = new bedrock.Prompt(this, 'prompt1', {
+  promptName: 'prompt1',
+  description: 'my first prompt',
+  defaultVariant: variant1,
+  variants: [variant1],
+  kmsKey: cmk,
+});
+
+const promptVersion = new bedrock.PromptVersion(this, 'MyPromptVersion', {
+  prompt: prompt1,
+  description: 'my first version',
+});
+//or alternatively:
+// const promptVersion = prompt1.createVersion('my first version');
+const versionString = promptVersion.version;
+
+```
+
+### Import Methods
+
+You can use the `fromPromptAttributes` method to import an existing Bedrock Prompt into your CDK application.
+
+```ts fixture=default
+// Import an existing prompt by ARN
+const importedPrompt = bedrock.Prompt.fromPromptAttributes(this, 'ImportedPrompt', {
+  promptArn: 'arn:aws:bedrock:region:account:prompt/prompt-id',
+  kmsKey: kms.Key.fromKeyArn(this, 'ImportedKey', 'arn:aws:kms:region:account:key/key-id'), // optional
+  promptVersion: '1', // optional, defaults to 'DRAFT'
 });
 ```
