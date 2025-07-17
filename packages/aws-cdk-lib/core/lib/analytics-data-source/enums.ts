@@ -103,6 +103,19 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'AUDIT',
     'OFF'
   ],
+  'AgentCollaboratorType': [
+    'SUPERVISOR',
+    'DISABLED',
+    'SUPERVISOR_ROUTER'
+  ],
+  'AgentStepType': [
+    'PRE_PROCESSING',
+    'ORCHESTRATION',
+    'POST_PROCESSING',
+    'ROUTING_CLASSIFIER',
+    'MEMORY_SUMMARIZATION',
+    'KNOWLEDGE_BASE_RESPONSE_GENERATION'
+  ],
   'AlarmBehavior': [
     'ROLLBACK_ON_ALARM',
     'FAIL_ON_ALARM'
@@ -857,6 +870,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'FIRST_ROW',
     'GIVEN'
   ],
+  'CustomControl': [
+    'RETURN_CONTROL'
+  ],
   'CustomLambdaDeploymentConfigType': [
     'Canary',
     'Linear'
@@ -940,6 +956,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'requirements.txt',
     'poetry.lock',
     'Pipfile.lock',
+    'uv.lock',
     ''
   ],
   'DependencyOperation': [
@@ -1066,6 +1083,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'terminate',
     'recover',
     'reboot'
+  ],
+  'Ec2InstanceType': [
+    'EC2',
+    'SSM_MANAGED_NODE'
   ],
   'EcsMachineImageType': [
     'ECS_AL2',
@@ -1689,6 +1710,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'c6gn',
     'compute7-graviton3-high-network-bandwidth',
     'c7gn',
+    'compute8-graviton4-high-network-bandwidth',
+    'c8gn',
     'compute7-intel',
     'c7i',
     'compute7-intel-flex',
@@ -2183,6 +2206,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'ERROR',
     'FATAL'
   ],
+  'LogQueryLanguage': [
+    'Logs',
+    'SQL',
+    'PPL'
+  ],
   'LogQueryVisualizationType': [
     'table',
     'line',
@@ -2265,6 +2293,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'FULL_HD',
     'HD',
     'SD'
+  ],
+  'MemoryType': [
+    'SESSION_SUMMARY'
   ],
   'MergeType': [
     'MANUAL_MERGE',
@@ -2469,6 +2500,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'name',
     'position'
   ],
+  'OrchestrationType': [
+    'DEFAULT',
+    'CUSTOM_ORCHESTRATION'
+  ],
   'OriginAccessControlOriginType': [
     's3',
     'lambda',
@@ -2511,10 +2546,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Standard'
   ],
   'ParameterType': [
-    'String',
-    'SecureString',
-    'StringList',
-    'AWS::EC2::Image::Id'
+    'string',
+    'number',
+    'integer',
+    'boolean',
+    'array',
+    'object'
   ],
   'ParameterValueType': [
     'String',
@@ -2546,7 +2583,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'aws-iso',
     'aws-iso-b',
     'aws-iso-f',
-    'aws-iso-e'
+    'aws-iso-e',
+    'aws-eusc'
   ],
   'PartitionDateSource': [
     'EventTime',
@@ -2824,6 +2862,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'private',
     'public'
   ],
+  'RelayConversationHistoryType': [
+    'TO_COLLABORATOR',
+    'DISABLED'
+  ],
   'RemovalPolicy': [
     'destroy',
     'retain',
@@ -2866,6 +2908,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
+  'RequireConfirmation': [
+    'ENABLED',
+    'DISABLED'
+  ],
   'Resolution': [
     'FULL_HD',
     'HD',
@@ -2881,6 +2927,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'pause-cluster',
     'resume-cluster',
     'failover-primary-compute'
+  ],
+  'ResourceToReplicateTags': [
+    'lambda-function'
   ],
   'RestApiMode': [
     'overwrite',
@@ -3643,6 +3692,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'VariableType': [
     'property',
     'pattern'
+  ],
+  'VectorType': [
+    'FLOAT32',
+    'BINARY'
   ],
   'VerificationEmailStyle': [
     'CONFIRM_WITH_CODE',

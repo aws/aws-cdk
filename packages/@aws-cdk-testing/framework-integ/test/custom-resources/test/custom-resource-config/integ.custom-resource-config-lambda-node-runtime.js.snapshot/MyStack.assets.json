@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "files": {
     "7e256f5e4a92713cc232cd23819cb666756ee6023ce380130abac3b6a3fcea6a": {
       "displayName": "@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Code",
@@ -29,7 +29,7 @@
         }
       }
     },
-    "11196d385d1913c4608461c17fad65cae4b3756d7a73de6115d8a1b4d1e19322": {
+    "68b5d47295662a0652c9f9cfa1142766550418bc97cdcbb9a4fae67c770cd80d": {
       "displayName": "@aws-cdk--aws-dynamodb.ReplicaProvider Nested Stack Template",
       "source": {
         "path": "MyStackawscdkawsdynamodbReplicaProvider4F7C92F8.nested.template.json",
@@ -38,12 +38,12 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "11196d385d1913c4608461c17fad65cae4b3756d7a73de6115d8a1b4d1e19322.json",
+          "objectKey": "68b5d47295662a0652c9f9cfa1142766550418bc97cdcbb9a4fae67c770cd80d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "0b1814124ce990d1916bc66ab3ba1b279c71bf8100faa0ea51f0234900cffd06": {
+    "685cdeb0781887cc8ce64ceb84895129c47ac490041e339a7afe40236bf929ea": {
       "displayName": "MyStack Template",
       "source": {
         "path": "MyStack.template.json",
@@ -52,7 +52,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0b1814124ce990d1916bc66ab3ba1b279c71bf8100faa0ea51f0234900cffd06.json",
+          "objectKey": "685cdeb0781887cc8ce64ceb84895129c47ac490041e339a7afe40236bf929ea.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

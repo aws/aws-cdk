@@ -7,6 +7,7 @@ import { UnscopedValidationError } from '../errors';
 import { resolvedOr } from '../helpers-internal/string-specializer';
 import { Stack } from '../stack';
 import { Token } from '../token';
+import { contentHash } from './_shared';
 
 /**
  * Build an asset manifest from assets added to a stack
@@ -103,7 +104,14 @@ export class AssetManifestBuilder {
         destinations: {},
       };
     }
-    this.files[sourceHash].destinations[this.manifestEnvName(stack)] = dest;
+
+    // Create destination key by appending hash of destination properties to manifestEnvName
+    // This ensures assets with same content but different destinations are published separately
+    const baseEnvName = this.manifestEnvName(stack);
+    const destHash = contentHash(JSON.stringify(dest)).slice(0, 8);
+    const destinationKey = `${baseEnvName}-${destHash}`;
+
+    this.files[sourceHash].destinations[destinationKey] = dest;
     return dest;
   }
 
@@ -126,7 +134,14 @@ export class AssetManifestBuilder {
         destinations: {},
       };
     }
-    this.dockerImages[sourceHash].destinations[this.manifestEnvName(stack)] = dest;
+
+    // Create destination key by appending hash of destination properties to manifestEnvName
+    // This ensures assets with same content but different destinations are published separately
+    const baseEnvName = this.manifestEnvName(stack);
+    const destHash = contentHash(JSON.stringify(dest)).slice(0, 8);
+    const destinationKey = `${baseEnvName}-${destHash}`;
+
+    this.dockerImages[sourceHash].destinations[destinationKey] = dest;
     return dest;
   }
 

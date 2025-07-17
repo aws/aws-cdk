@@ -1,16 +1,18 @@
 {
-  "version": "38.0.1",
+  "version": "45.0.0",
   "files": {
-    "372f425b8759d50d81ad1eb78afe8753479b917886bfd962747635c6f7dc9170": {
+    "b1c54444f16fe8c4dba44440e1fc61b2fee50418abfc284af4db92eca55d9119": {
+      "displayName": "AzRelocationClusterStack Template",
       "source": {
         "path": "AzRelocationClusterStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "372f425b8759d50d81ad1eb78afe8753479b917886bfd962747635c6f7dc9170.json",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        "123456789012-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "objectKey": "b1c54444f16fe8c4dba44440e1fc61b2fee50418abfc284af4db92eca55d9119.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-east-1"
         }
       }
     }

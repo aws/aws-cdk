@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7088b3cc688c2990cc3e59c4636a433a6fab1500854d9c74aa84e5ac1a2dc582.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ce07a18405d4d04dd9c754aec85d13459d94925baadfad29c2ff5953d3733a39.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -78,6 +78,20 @@
             "data": "AssetActionGroupFunction98EC70AB"
           }
         ],
+        "/aws-cdk-bedrock-api-schema-1/AssetActionGroupFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-api-schema-1/AssetActionGroupFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetActionGroupFunctionLogGroup3638096F"
+          }
+        ],
         "/aws-cdk-bedrock-api-schema-1/AssetActionGroupFunction/LambdaInvocationPolicy-c8dfda1d62217f42": [
           {
             "type": "aws:cdk:logicalId",
@@ -128,6 +142,20 @@
             "data": "InlineActionGroupFunction566CD00A"
           }
         ],
+        "/aws-cdk-bedrock-api-schema-1/InlineActionGroupFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-api-schema-1/InlineActionGroupFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InlineActionGroupFunctionLogGroup58BAB9BB"
+          }
+        ],
         "/aws-cdk-bedrock-api-schema-1/InlineActionGroupFunction/LambdaInvocationPolicy-c8dfda1d62217f42": [
           {
             "type": "aws:cdk:logicalId",
@@ -176,6 +204,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "S3ActionGroupFunctionA4648C25"
+          }
+        ],
+        "/aws-cdk-bedrock-api-schema-1/S3ActionGroupFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-api-schema-1/S3ActionGroupFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3ActionGroupFunctionLogGroup79BCEE92"
           }
         ],
         "/aws-cdk-bedrock-api-schema-1/S3ActionGroupFunction/LambdaInvocationPolicy-c8dfda1d62217f42": [
@@ -472,6 +514,20 @@
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
           }
         ],
+        "/aws-cdk-bedrock-api-schema-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-api-schema-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CLogGroup817B64E9"
+          }
+        ],
         "/aws-cdk-bedrock-api-schema-1/ApiSchemaAgent/Role": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -712,5 +768,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1017.1"
+  "minimumCliVersion": "2.1019.2"
 }

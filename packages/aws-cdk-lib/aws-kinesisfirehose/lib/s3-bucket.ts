@@ -4,7 +4,7 @@ import { DestinationBindOptions, DestinationConfig, IDestination } from './desti
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
-import { Token, UnscopedValidationError, ValidationError } from '../../core';
+import { TimeZone, Token, UnscopedValidationError, ValidationError } from '../../core';
 
 /**
  * Props for defining an S3 destination of an Amazon Data Firehose delivery stream.
@@ -20,6 +20,15 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
    * @default - The default file extension appended by Data Format Conversion or S3 compression features
    */
   readonly fileExtension?: string;
+
+  /**
+   * The time zone you prefer.
+   *
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html#timestamp-namespace
+   *
+   * @default - UTC
+   */
+  readonly timeZone?: TimeZone;
 }
 
 /**
@@ -71,6 +80,7 @@ export class S3Bucket implements IDestination {
         errorOutputPrefix: this.props.errorOutputPrefix,
         prefix: this.props.dataOutputPrefix,
         fileExtension: this.props.fileExtension,
+        customTimeZone: this.props.timeZone?.timezoneName,
       },
       dependables: [bucketGrant, ...(loggingDependables ?? []), ...(backupDependables ?? [])],
     };

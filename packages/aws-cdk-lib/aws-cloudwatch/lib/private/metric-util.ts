@@ -1,5 +1,5 @@
 import { Duration, UnscopedValidationError } from '../../../core';
-import { MathExpression } from '../metric';
+import { MathExpression, SearchExpression } from '../metric';
 import { IMetric, MetricConfig, MetricExpressionConfig, MetricStatConfig } from '../metric-types';
 
 const METRICKEY_SYMBOL = Symbol('@aws-cdk/aws-cloudwatch.MetricKey');
@@ -30,6 +30,15 @@ export function metricKey(metric: IMetric): string {
     }
     if (conf.mathExpression.searchAccount) {
       parts.push(conf.mathExpression.searchAccount);
+    }
+  }
+  if (conf.searchExpression) {
+    parts.push(conf.searchExpression.expression);
+    if (conf.searchExpression.searchRegion) {
+      parts.push(conf.searchExpression.searchRegion);
+    }
+    if (conf.searchExpression.searchAccount) {
+      parts.push(conf.searchExpression.searchAccount);
     }
   }
   if (conf.metricStat) {
@@ -63,16 +72,21 @@ export function metricKey(metric: IMetric): string {
  *
  * For a stat metric, return the immediate period.
  *
- * For an expression metric, all metrics used in it have been made to have the
+ * For a math expression metric, all metrics used in it have been made to have the
  * same period, so we return the period of the first inner metric.
+ *
+ * For a search expression metric, return the period of the search expression.
  */
 export function metricPeriod(metric: IMetric): Duration {
   return dispatchMetric(metric, {
     withStat(stat) {
       return stat.period;
     },
-    withExpression() {
+    withMathExpression() {
       return (metric as MathExpression).period || Duration.minutes(5);
+    },
+    withSearchExpression() {
+      return (metric as SearchExpression).period || Duration.minutes(5);
     },
   });
 }
@@ -80,7 +94,7 @@ export function metricPeriod(metric: IMetric): Duration {
 /**
  * Given a metric object, inspect it and call the correct function for the type of output
  *
- * In addition to the metric object itself, takes a callback object with two
+ * In addition to the metric object itself, takes a callback object with three
  * methods, to be invoked for the particular type of metric.
  *
  * If the metric represent a metric query (nominally generated through an
@@ -89,10 +103,15 @@ export function metricPeriod(metric: IMetric): Duration {
  * (to wit, `metricStat`) and the `withStat()` callback will be called with
  * that object.
  *
- * If the metric represents an expression (usually by instantiating `MathExpression`
+ * If the metric represents a math expression (usually by instantiating `MathExpression`
  * but users can implement `IMetric` arbitrarily) the `mathExpression` field
  * will be set in the object returned from `toMetricConfig` and the callback
- * called `withExpression` will be applied to that object.
+ * called `withMathExpression` will be applied to that object.
+ *
+ * If the metric represents a search expression (usually by instantiating `SearchExpression`
+ * but users can implement `IMetric` arbitrarily) the `searchExpression` field
+ * will be set in the object returned from `toMetricConfig` and the callback
+ * called `withSearchExpression` will be applied to that object.
  *
  * Will return the values returned by the callbacks.
  *
@@ -104,9 +123,13 @@ export function metricPeriod(metric: IMetric): Duration {
  *     // do something with stat
  *     return 1;
  *   },
- *   withExpression(expr) {
- *     // do something with expr
+ *   withMathExpression(mathExpr) {
+ *     // do something with math expression
  *     return 2;
+ *   },
+ *   withSearchExpression(searchExpr) {
+ *     // do something with search expression
+ *     return 3;
  *   },
  * });
  * ```
@@ -116,15 +139,20 @@ export function metricPeriod(metric: IMetric): Duration {
  * of metric object that is being passed.
  */
 // eslint-disable-next-line max-len
-export function dispatchMetric<A, B>(metric: IMetric, fns: { withStat: (x: MetricStatConfig, c: MetricConfig) => A; withExpression: (x: MetricExpressionConfig, c: MetricConfig) => B }): A | B {
+export function dispatchMetric<A, B, C>(metric: IMetric, fns: { withStat: (x: MetricStatConfig, c: MetricConfig) => A; withMathExpression: (x: MetricExpressionConfig, c: MetricConfig) => B; withSearchExpression: (x: MetricExpressionConfig, c: MetricConfig) => C }): A | B | C {
   const conf = metric.toMetricConfig();
-  if (conf.metricStat && conf.mathExpression) {
-    throw new UnscopedValidationError('Metric object must not produce both \'metricStat\' and \'mathExpression\'');
-  } else if (conf.metricStat) {
+  const typeCount = [conf.metricStat, conf.mathExpression, conf.searchExpression].map(Boolean).filter(Boolean).length;
+
+  if (typeCount > 1) {
+    throw new UnscopedValidationError('Metric object must not produce more than one of \'metricStat\', \'mathExpression\', or \'searchExpression\'');
+  }
+  if (conf.metricStat) {
     return fns.withStat(conf.metricStat, conf);
   } else if (conf.mathExpression) {
-    return fns.withExpression(conf.mathExpression, conf);
+    return fns.withMathExpression(conf.mathExpression, conf);
+  } else if (conf.searchExpression) {
+    return fns.withSearchExpression(conf.searchExpression, conf);
   } else {
-    throw new UnscopedValidationError('Metric object must have either \'metricStat\' or \'mathExpression\'');
+    throw new UnscopedValidationError('Metric object must have either \'metricStat\', \'mathExpression\', or \'searchExpression\'');
   }
 }
