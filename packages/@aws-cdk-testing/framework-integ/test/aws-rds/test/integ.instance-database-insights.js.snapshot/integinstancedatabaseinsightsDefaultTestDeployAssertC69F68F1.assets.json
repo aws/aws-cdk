@@ -1,16 +1,16 @@
 {
   "version": "44.0.0",
   "files": {
-    "bc013a08b2de90e77fe02236b6cfab6ee59d7facb23b70876fa1779583e9d251": {
-      "displayName": "aws-cdk-asg-integ Template",
+    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+      "displayName": "integinstancedatabaseinsightsDefaultTestDeployAssertC69F68F1 Template",
       "source": {
-        "path": "aws-cdk-asg-integ.template.json",
+        "path": "integinstancedatabaseinsightsDefaultTestDeployAssertC69F68F1.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "bc013a08b2de90e77fe02236b6cfab6ee59d7facb23b70876fa1779583e9d251.json",
+          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
