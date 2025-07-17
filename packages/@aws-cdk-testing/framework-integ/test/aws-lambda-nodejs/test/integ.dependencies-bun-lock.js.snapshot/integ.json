@@ -1,0 +1,14 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "BunTest/DefaultTest": {
+      "stacks": [
+        "TestStack"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "BunTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BunTestDefaultTestDeployAssert773BA602"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}
