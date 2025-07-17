@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535": {
       "displayName": "AwsCliLayer/Code",
@@ -43,7 +43,7 @@
         }
       }
     },
-    "a2017db38f5485bd9ad8afbb21d9a333de91b358240ad35df40bf8a71d930e96": {
+    "ecf833f8b0e97eafb047a28e4d5e73356fd42dc6dcadf7911d67dd4ef0e4e80c": {
       "displayName": "lambda-layer-awscli-integ-stack Template",
       "source": {
         "path": "lambda-layer-awscli-integ-stack.template.json",
@@ -52,7 +52,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a2017db38f5485bd9ad8afbb21d9a333de91b358240ad35df40bf8a71d930e96.json",
+          "objectKey": "ecf833f8b0e97eafb047a28e4d5e73356fd42dc6dcadf7911d67dd4ef0e4e80c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
