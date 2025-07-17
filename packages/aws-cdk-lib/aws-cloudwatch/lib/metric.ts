@@ -972,10 +972,10 @@ export class MathExpression implements IMetric {
             visit(subMetric);
           }
         },
-        withSearchExpression: (searchExpr) => {
-          // search expression should not contain anything inside  `usingMetric`
+        withSearchExpression(searchExpr) {
+          // search expression should not contain anything inside  `usingMetric
           if (Object.entries(searchExpr.usingMetrics).length > 0) {
-            throw new cdk.ValidationError(`Search expression '${searchExpr.expression}' should not contain any 'usingMetrics'.`, this);
+            throw new cdk.UnscopedValidationError(`Search expression '${searchExpr.expression}' should not contain any 'usingMetrics'.`);
           }
         },
       });
