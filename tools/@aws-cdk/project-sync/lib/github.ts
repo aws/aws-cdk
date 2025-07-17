@@ -1,8 +1,9 @@
 import { REPOSITORY, REPOSITORY_OWNER } from './config';
+import { backOff } from 'exponential-backoff';
 
 const issueQuery = `
   createdAt
-  timelineItems(last: 100) {
+  timelineItems(last: 16) {
     nodes{
       ... on IssueComment {
         createdAt
@@ -69,6 +70,96 @@ const issueQuery = `
   }
 `;
 
+const prQuery = `
+  createdAt
+  timelineItems(last: 16) {
+    nodes {
+      ... on PullRequestCommit {
+        commit {
+          committedDate
+          author {
+            user {
+              login
+            }
+          }
+        }
+      }
+      ... on IssueComment {
+        createdAt
+        author {
+          login
+        }
+      }
+      ... on CrossReferencedEvent {
+        createdAt
+        actor {
+            login
+        }
+      }
+      ... on ClosedEvent {
+        createdAt
+        actor {
+            login
+        }
+      }
+      ... on ReopenedEvent {
+        createdAt
+        actor {
+            login
+        }
+      }
+      ... on LabeledEvent {
+        createdAt
+        actor {
+            login
+        }
+      }
+      ... on UnlabeledEvent {
+        createdAt
+        actor {
+            login
+        }
+      }
+      ... on AssignedEvent {
+        createdAt
+        actor {
+            login
+        }
+      }
+      ... on UnassignedEvent {
+        createdAt
+        actor {
+            login
+        }
+      }
+    }
+  }
+  reactions(last: 1) {
+    nodes {
+      createdAt
+    }
+  }
+  projectItems(first: 100) {
+    nodes {
+      id
+      project {
+          number
+      }
+    }
+  }
+`
+
+const backoffOptions = {
+  numOfAttempts: 5,
+  startingDelay: 1000,
+  timeMultiple: 2,
+  maxDelay: 30000,
+  retry: (error: Error) => {
+    console.log(`GitHub API request failed, retrying: ${error.message}`);
+    return true;
+  }
+};
+
 export class Github {
   static default(): Github {
     if (!process.env.GITHUB_TOKEN) {
@@ -85,23 +176,26 @@ export class Github {
   }
 
   async authGraphQL(query: string) {
-    const response = await fetch('https://api.github.com/graphql', {
-      method: 'POST',
-      headers: {
-        'Authorization': `token ${this.token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query }),
-    });
+    return await backOff(async () => {
+      const response = await fetch('https://api.github.com/graphql', {
+        method: 'POST',
+        headers: {
+          'Authorization': `token ${this.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query }),
+      });
 
-    if (!response.ok) {
-      throw new Error(`GitHub GraphQL request failed: ${response.statusText}`);
-    }
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`GitHub GraphQL request failed: ${response.status} ${response.statusText} - ${errorText}`);
+      }
 
-    return response.json();
+      return response.json();
+    }, backoffOptions);
   }
 
-  getProjectIssues(project: string, cursor?: string) {
+  getProjectItems(project: string, cursor?: string) {
     return this.authGraphQL(`
       query {
         repository(owner: "${REPOSITORY_OWNER}", name: "${REPOSITORY}") {
@@ -114,9 +208,16 @@ export class Github {
               nodes {
                 content {
                   ... on Issue {
+                    __typename
                     number
                     title
                     ${issueQuery}
+                  }
+                  ... on PullRequest {
+                    __typename
+                    number
+                    title
+                    ${prQuery}
                   }
                 }
               }
@@ -153,6 +254,18 @@ export class Github {
         repository(owner: "${REPOSITORY_OWNER}", name: "${REPOSITORY}") {
           issue(number: ${issue}) {
             ${issueQuery}
+          }
+        }
+      }
+    `);
+  }
+
+  getPr(pr: string) {
+    return this.authGraphQL(`
+      query {
+        repository(owner: "${REPOSITORY_OWNER}", name: "${REPOSITORY}") {
+          pullRequest(number: ${pr}) {
+            ${prQuery}
           }
         }
       }

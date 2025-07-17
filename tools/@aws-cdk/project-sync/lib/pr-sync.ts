@@ -2,28 +2,28 @@ import { Github } from './github.js';
 import { PROJECT_NUMBER, REPOSITORY } from './config.js';
 import { projectIds } from './utils.js';
 
-export const syncIssue = async (issue: string) => {
+export const syncPr = async (pr: string) => {
   const github = Github.default();
 
   // 1. Fetch the issue details
-  const issueData = await github.getIssue(issue) as Record<any, any>;
+  const prData = await github.getPr(pr) as Record<any, any>;
 
   // Extract repository data
-  const repoData = issueData?.data?.repository;
-  if (!repoData || !repoData.issue) {
-    throw new Error(`Issue ${issue} not found on repository ${REPOSITORY}`);
+  const repoData = prData?.data?.repository;
+  if (!repoData || !repoData.pullRequest) {
+    throw new Error(`PR ${pr} not found on repository ${REPOSITORY}`);
   }
 
-  await syncIssueData(repoData.issue);
+  await syncPrData(repoData.pullRequest);
 };
 
-export const syncIssueData = async (issueDetails: any) => {
+export const syncPrData = async (prDetails: any) => {
   const github = Github.default();
 
   // If issue is part of the project, set the issue's project properties
   let projectItemId = undefined;
-  if (issueDetails.projectItems?.nodes) {
-    for (const node of issueDetails.projectItems.nodes) {
+  if (prDetails.projectItems?.nodes) {
+    for (const node of prDetails.projectItems.nodes) {
       if (`${node.project?.number}` === PROJECT_NUMBER) {
         projectItemId = node.id;
         break;
@@ -32,31 +32,31 @@ export const syncIssueData = async (issueDetails: any) => {
   }
 
   if (projectItemId === undefined) {
-    console.log(`Issue is not included in project ${PROJECT_NUMBER}, skipping.`);
+    console.log(`PR is not included in project ${PROJECT_NUMBER}, skipping.`);
     return;
   }
 
   const {projectId, createFieldId, updateFieldId} = await projectIds(github);
 
   // Get timeline items to determine the last update date (excluding github-actions)
-  const timelineItems = issueDetails.timelineItems?.nodes ?? [];
+  const timelineItems = prDetails.timelineItems?.nodes ?? [];
 
   // Get creation date from the first reaction or use current date
-  const creationDate = new Date(issueDetails.createdAt);
+  const creationDate = new Date(prDetails.createdAt);
 
   // Get update date from the last timeline item or use creation date
   let updateDate = creationDate;
 
   for (let index = 0; index < timelineItems.length; index++) {
     const item = timelineItems[timelineItems.length-index-1];
-    if (item?.createdAt !== undefined && item.author?.login !== 'github-actions' && item.actor?.login !== 'github-actions') {
-      updateDate = new Date(item.createdAt);
+    if (item?.createdAt !== undefined && item.author?.login !== 'github-actions' && item.actor?.login !== 'github-actions' && item.commit?.author?.user?.login !== 'github-actions') {
+      updateDate = new Date(item.createdAt ?? item.commit.committedDate);
       break;
     }
   }
 
-  if (issueDetails.reactions.nodes.length > 0) {
-    const reactionDate = new Date(issueDetails.reactions.nodes[0].createdAt);
+  if (prDetails.reactions.nodes.length > 0) {
+    const reactionDate = new Date(prDetails.reactions.nodes[0].createdAt);
     if (reactionDate > updateDate) {updateDate = reactionDate;}
   }
 

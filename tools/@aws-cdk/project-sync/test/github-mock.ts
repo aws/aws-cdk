@@ -20,6 +20,10 @@ export class GithubMock {
     return JSON.parse((await fs.readFile(join(__dirname, 'snapshots', 'get-issue', `${issue}.json`))).toString());
   }
 
+  async getPr(pr: string) {
+    return JSON.parse((await fs.readFile(join(__dirname, 'snapshots', 'get-pr', `${pr}.json`))).toString());
+  }
+
   async setProjectItem(_projectId: string, _itemId: string, _fields: Record<
     string,
         {date: Date} | {text: string} | {number: number} | {singleSelectOptionId: string} | {iterationId: string}

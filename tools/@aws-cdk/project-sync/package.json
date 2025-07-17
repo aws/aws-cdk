@@ -14,11 +14,12 @@
     "test:watch": "jest --watch",
     "watch": "tsc --build -w tsconfig.json",
     "gen-snapshots": "yarn run build && node test/snapshots/generate.js",
-    "issue-sync-all": "yarn run build && node bin/issue-sync-all.js"
+    "sync-all": "yarn run build && node bin/sync-all.js"
   },
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@jest/globals": "^30.0.0",
+    "exponential-backoff": "^3.1.2",
     "jest": "^29",
     "ts-jest": "^29.4.0",
     "typescript": "~5.5.4"
