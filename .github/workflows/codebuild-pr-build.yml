@@ -20,6 +20,7 @@ concurrency:
 
 jobs:
   build:
+    if: github.repository != 'aws/aws-cdk'
     runs-on: codebuild-aws-cdk-github-actions-runner-${{ github.run_id }}-${{ github.run_attempt }}
 
     env:
