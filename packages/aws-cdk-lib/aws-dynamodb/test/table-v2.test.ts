@@ -3450,6 +3450,41 @@ test('Contributor Insights Specification - tableV2', () => {
   );
 });
 
+test('Contributor Insights Specification - tableV2 - without mode', () => {
+  const stack = new Stack();
+
+  const table = new TableV2(stack, 'TableV2', {
+    partitionKey: { name: 'hashKey', type: AttributeType.STRING },
+    sortKey: { name: 'sortKey', type: AttributeType.NUMBER },
+    contributorInsightsSpecification: {
+      enabled: true,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable',
+    {
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+        { AttributeName: 'sortKey', AttributeType: 'N' },
+      ],
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
+      ],
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          ContributorInsightsSpecification: {
+            Enabled: true,
+          },
+        },
+      ],
+    },
+  );
+});
+
 test('Contributor Insights Specification - index', () => {
   const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
 

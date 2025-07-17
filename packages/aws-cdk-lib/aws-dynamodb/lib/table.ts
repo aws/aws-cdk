@@ -233,6 +233,23 @@ export enum ApproximateCreationDateTimePrecision {
 }
 
 /**
+ * Common interface for types that can configure contributor insights
+ * @internal
+ */
+interface IContributorInsightsConfigurable {
+  /**
+   * Whether CloudWatch contributor insights is enabled.
+   * @deprecated use `contributorInsightsSpecification` instead
+   */
+  readonly contributorInsightsEnabled?: boolean;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled and what mode is selected
+   */
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
+}
+
+/**
  * Properties of a DynamoDB Table
  *
  * Use `TableProps` for all table properties
@@ -1603,7 +1620,7 @@ export class Table extends TableBase {
         : undefined);
   }
 
-  private validateCCI (props: TableProps | GlobalSecondaryIndexProps): ContributorInsightsSpecification | undefined {
+  private validateCCI (props: IContributorInsightsConfigurable): ContributorInsightsSpecification | undefined {
     if (props.contributorInsightsSpecification !==undefined && props.contributorInsightsEnabled !== undefined) {
       throw new ValidationError('`contributorInsightsSpecification` and `contributorInsightsEnabled` are set. Use `contributorInsightsSpecification` only.', this);
     }

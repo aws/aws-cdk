@@ -4152,6 +4152,35 @@ test('Contributor Insights Specification - table', () => {
   );
 });
 
+test('Contributor Insights Specification - table - without mode', () => {
+  const stack = new Stack();
+
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    partitionKey: TABLE_PARTITION_KEY,
+    sortKey: TABLE_SORT_KEY,
+    contributorInsightsSpecification: {
+      enabled: true,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+        { AttributeName: 'sortKey', AttributeType: 'N' },
+      ],
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
+      ],
+      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      ContributorInsightsSpecification: {
+        Enabled: true,
+      },
+    },
+  );
+});
+
 test('Contributor Insights Specification - index', () => {
   const stack = new Stack();
 
