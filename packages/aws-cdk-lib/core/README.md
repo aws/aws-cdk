@@ -1559,15 +1559,14 @@ Alternatively, you can set this context key-value pair using the `cdk.json` or
 `cdk.context.json` files in your project directory (see
 [Runtime context](https://docs.aws.amazon.com/cdk/v2/guide/context.html)).
 
-This will enable both formats.  The human-readable format must be explicitly disabled
-to be suppressed, using the
-`@aws-cdk/core:validationReportPrettyPrint` context key:
+It is also possible to enable both JSON and human-readable formats by setting
+`@aws-cdk/core:validationReportPrettyPrint` context key explicitly:
 
 ```ts
 const app = new App({
   context: {
     '@aws-cdk/core:validationReportJson': true,
-    '@aws-cdk/core:validationReportPrettyPrint': false,
+    '@aws-cdk/core:validationReportPrettyPrint': true,
   },
 });
 ```
