@@ -11,7 +11,7 @@ import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
-import { ArnFormat, Lazy, Stack, Token, Annotations, ValidationError, AssumptionError, UnscopedValidationError } from '../../core';
+import { ArnFormat, Lazy, Stack, Token, Annotations, ValidationError, AssumptionError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -475,7 +475,7 @@ export class Alarm extends AlarmBase {
         };
       },
 
-      withMathExpression() {
+      withMathExpression: () => {
         // Expand the math expression metric into a set
         const mset = new MetricSet<boolean>();
         mset.addTopLevel(true, metric);
@@ -534,8 +534,8 @@ export class Alarm extends AlarmBase {
                   returnData,
                 };
               },
-              withSearchExpression(_searchExpr, _conf) {
-                throw new UnscopedValidationError('Search expressions are not supported in CloudWatch Alarms. Use search expressions only in dashboard graphs.');
+              withSearchExpression: (_searchExpr, _conf) => {
+                throw new ValidationError('Search expressions are not supported in CloudWatch Alarms. Use search expressions only in dashboard graphs.', this);
               },
             });
           }),
@@ -547,8 +547,8 @@ export class Alarm extends AlarmBase {
 
         return { props, primaryId };
       },
-      withSearchExpression() {
-        throw new UnscopedValidationError('Search expressions are not supported in CloudWatch Alarms. Use search expressions only in dashboard graphs.');
+      withSearchExpression: () => {
+        throw new ValidationError('Search expressions are not supported in CloudWatch Alarms. Use search expressions only in dashboard graphs.', this);
       },
     });
   }
