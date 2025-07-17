@@ -16,13 +16,11 @@ const app = new cdk.App({
   },
   context: {
     ...useColumnIds,
-    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
   },
 });
 
 const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database', {
   env: {
-    account: '123456789012',
     region: 'us-east-1',
   },
 });
@@ -40,6 +38,7 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { restrictDefaultSecurityGroup: false });
 const databaseName = 'my_db';
 const cluster = new redshift.Cluster(stack, 'Cluster', {
   vpc: vpc,
+  nodeType: redshift.NodeType.RA3_LARGE,
   vpcSubnets: {
     subnetType: ec2.SubnetType.PUBLIC,
   },
