@@ -1,4 +1,4 @@
-# Don't include original .ts files when doing `npm pack`
+Don't include original .ts files when doing `npm pack`
 *.ts
 !*.d.ts
 coverage
@@ -26,3 +26,5 @@ jest.config.js
 junit.xml
 !*.lit.ts
 **/*.snapshot
+
+test/
