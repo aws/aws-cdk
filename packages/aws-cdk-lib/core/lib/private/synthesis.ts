@@ -148,8 +148,9 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
   if (reports.length > 0) {
     const tree = new ConstructTree(root);
     const formatter = new PolicyValidationReportFormatter(tree);
-    const formatPretty = root.node.tryGetContext(VALIDATION_REPORT_PRETTY_CONTEXT) ?? true;
+    let formatPretty = root.node.tryGetContext(VALIDATION_REPORT_PRETTY_CONTEXT) ?? false;
     const formatJson = root.node.tryGetContext(VALIDATION_REPORT_JSON_CONTEXT) ?? false;
+    formatPretty = formatPretty || !(formatPretty || formatJson); // if neither is set, default to pretty print
     const reportFile = path.join(assembly.directory, POLICY_VALIDATION_FILE_PATH);
     if (formatPretty) {
       const output = formatter.formatPrettyPrinted(reports);
