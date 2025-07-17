@@ -1076,6 +1076,10 @@
      }
     },
     "Handler": "framework.onEvent",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
     "Role": {
      "Fn::GetAtt": [
       "ClusterKubectlProviderframeworkonEventServiceRoleFD0BA8C5",
