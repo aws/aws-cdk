@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0bca6a0f3e772619c12a9797febf9a3981aca7bb0ba76c6e10e8666187e4b4ad.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6756a79e2c9f82aeb52ed336d347b03de141dd522c3e0882e88da56d82e7ed52.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -577,8 +577,6 @@
               "runtime": "*",
               "handler": "*",
               "timeout": "*",
-              "loggingFormat": "JSON",
-              "applicationLogLevelV2": "FATAL",
               "logGroup": "*",
               "vpc": "*",
               "vpcSubnets": "*",
@@ -768,15 +766,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ClusterKubectlProviderframeworkonEventSecurityGroupE2538617": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterKubectlProviderframeworkonEventSecurityGroupE2538617",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
@@ -1039,6 +1028,7 @@
             "explanation": "KMS Alias name and keyArn will have implicit reference to KMS Key"
           },
           "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition"
           },
@@ -1153,6 +1143,10 @@
           },
           "@aws-cdk/core:explicitStackTags": {
             "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
+          },
+          "@aws-cdk/core:explicitStackTags": {
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
           },

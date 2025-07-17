@@ -1036,10 +1036,6 @@
      }
     },
     "Handler": "framework.onEvent",
-    "LoggingConfig": {
-     "ApplicationLogLevel": "FATAL",
-     "LogFormat": "JSON"
-    },
     "Role": {
      "Fn::GetAtt": [
       "helloeksclusterKubectlProviderframeworkonEventServiceRole7DA17438",
