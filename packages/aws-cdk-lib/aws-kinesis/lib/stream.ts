@@ -919,6 +919,17 @@ export class Stream extends StreamBase {
 
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
 
+    if (props.shardLevelMetrics) {
+      if (props.shardLevelMetrics.includes(ShardLevelMetrics.ALL) && props.shardLevelMetrics.length > 1) {
+        throw new ValidationError(`shardLevelMetrics cannot include ${ShardLevelMetrics.ALL} and other metrics at the same time.`, this);
+      }
+      // Check for duplicate items in shardLevelMetrics
+      const uniqueMetrics = new Set(props.shardLevelMetrics);
+      if (uniqueMetrics.size !== props.shardLevelMetrics.length) {
+        throw new ValidationError('shardLevelMetrics cannot contain duplicate items.', this);
+      }
+    }
+
     this.stream = new CfnStream(this, 'Resource', {
       name: this.physicalName,
       retentionPeriodHours,
