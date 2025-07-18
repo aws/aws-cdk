@@ -311,13 +311,11 @@ export class DeliveryStream extends DeliveryStreamBase {
   private _role?: iam.IRole;
 
   public get grantPrincipal(): iam.IPrincipal {
-    if (this._role) {
-      return this._role;
-    }
-    // backwards compatibility
-    return new iam.Role(this, 'Service Role', {
+    // backwards compatibility - create role only once
+    this._role = this._role ?? new iam.Role(this, 'Service Role', {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
+    return this._role;
   }
 
   constructor(scope: Construct, id: string, props: DeliveryStreamProps) {
