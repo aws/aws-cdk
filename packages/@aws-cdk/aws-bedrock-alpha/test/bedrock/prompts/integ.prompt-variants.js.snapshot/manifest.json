@@ -1,0 +1,308 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "aws-cdk-bedrock-prompt-variants-1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-bedrock-prompt-variants-1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-bedrock-prompt-variants-1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-bedrock-prompt-variants-1.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f60feedb05109bcf33eebc508eb90460ea82e378aeecb2d502b4d572ebc57721.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-bedrock-prompt-variants-1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-bedrock-prompt-variants-1.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-bedrock-prompt-variants-1/VariantTestAgent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/VariantTestAgent/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/VariantTestAgent/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/VariantTestAgent/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VariantTestAgentRoleC9A545DF"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/VariantTestAgent/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/VariantTestAgent/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VariantTestAgentRoleDefaultPolicy8DF33543"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/VariantTestAgent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VariantTestAgentF108F9C0"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/VariantTestAgentAlias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/VariantTestAgentAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VariantTestAgentAliasA65ABA7F"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/TextVariantsPrompt/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TextVariantsPromptCFD00E4C"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/ChatVariantsPrompt/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChatVariantsPrompt6690AAAD"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/AgentVariantsPrompt/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AgentVariantsPromptF927CAE0"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/BasicTextPrompt/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BasicTextPromptE114549F"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/ConfiguredTextPrompt/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfiguredTextPrompt99F96F19"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/BasicChatPrompt/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BasicChatPrompt83672E0B"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/ToolChatPrompt/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ToolChatPromptEFE87A41"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/SpecificToolChatPrompt/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SpecificToolChatPromptF67685B4"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/BasicAgentPrompt/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BasicAgentPrompt34C82930"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/LowTempPrompt/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LowTempPromptFAAF1985"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/HighTempPrompt/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HighTempPrompt63FDD5BF"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/ChatConfigPrompt/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChatConfigPrompt31EAF347"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/TextVariantsVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TextVariantsVersion181CEB9C"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/ChatVariantsVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChatVariantsVersionDC43ACD8"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-variants-1/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-bedrock-prompt-variants-1"
+    },
+    "BedrockPromptVariantsDefaultTestDeployAssert990A2F33.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "BedrockPromptVariantsDefaultTestDeployAssert990A2F33.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "BedrockPromptVariantsDefaultTestDeployAssert990A2F33": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "BedrockPromptVariantsDefaultTestDeployAssert990A2F33.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "BedrockPromptVariantsDefaultTestDeployAssert990A2F33.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "BedrockPromptVariantsDefaultTestDeployAssert990A2F33.assets"
+      ],
+      "metadata": {
+        "/BedrockPromptVariants/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/BedrockPromptVariants/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "BedrockPromptVariants/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

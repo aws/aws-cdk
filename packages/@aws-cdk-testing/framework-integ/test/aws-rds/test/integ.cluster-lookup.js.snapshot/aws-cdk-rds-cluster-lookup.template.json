@@ -1,0 +1,217 @@
+{
+ "Outputs": {
+  "LookedUpClusterEndpoint": {
+   "Value": "TESTADDRESS:5432"
+  },
+  "LookedUpClusterReadEndpoint": {
+   "Value": "TESTREADERADDRESS:5432"
+  },
+  "LookedUpClusterIdentifier": {
+   "Value": "test-cluster-lookup"
+  },
+  "LookedUpClusterResourceIdentifier": {
+   "Value": "TESTID"
+  },
+  "LookedUpClusterArn": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arn:",
+      {
+       "Ref": "AWS::Partition"
+      },
+      ":rds:test-region:12345678:cluster:test-cluster-lookup"
+     ]
+    ]
+   }
+  },
+  "SecurityGroupIds": {
+   "Value": ""
+  }
+ },
+ "Resources": {
+  "DbAccessRole408BD73D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role for accessing the Aurora cluster via IAM authentication"
+   }
+  },
+  "DbAccessRoleDefaultPolicy8020DC70": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "rds-db:connect",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":rds-db:test-region:12345678:dbuser:TESTID/admin"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "rds-data:BatchExecuteStatement",
+        "rds-data:BeginTransaction",
+        "rds-data:CommitTransaction",
+        "rds-data:ExecuteStatement",
+        "rds-data:RollbackTransaction"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":rds:test-region:12345678:cluster:test-cluster-lookup"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DbAccessRoleDefaultPolicy8020DC70",
+    "Roles": [
+     {
+      "Ref": "DbAccessRole408BD73D"
+     }
+    ]
+   }
+  },
+  "HighConnectionsAlarm3E20B33C": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "Database has high number of connections",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "DBClusterIdentifier",
+      "Value": "test-cluster-lookup"
+     }
+    ],
+    "EvaluationPeriods": 3,
+    "MetricName": "DatabaseConnections",
+    "Namespace": "AWS/RDS",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 100
+   }
+  },
+  "HighCPUAlarm56BE6E7D": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "Database CPU utilization is high",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "DBClusterIdentifier",
+      "Value": "test-cluster-lookup"
+     }
+    ],
+    "EvaluationPeriods": 3,
+    "MetricName": "CPUUtilization",
+    "Namespace": "AWS/RDS",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 90
+   }
+  },
+  "LowMemoryAlarmD9E02E14": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "Database is running low on memory",
+    "ComparisonOperator": "LessThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "DBClusterIdentifier",
+      "Value": "test-cluster-lookup"
+     }
+    ],
+    "EvaluationPeriods": 3,
+    "MetricName": "FreeableMemory",
+    "Namespace": "AWS/RDS",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 104857600
+   }
+  },
+  "DeadlockAlarmC7257573": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "Database has deadlocks",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "DBClusterIdentifier",
+      "Value": "test-cluster-lookup"
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "Deadlocks",
+    "Namespace": "AWS/RDS",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 5
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

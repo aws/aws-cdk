@@ -95,6 +95,9 @@
   "aws-bedrock": [
     "AWS::Bedrock"
   ],
+  "aws-billing": [
+    "AWS::Billing"
+  ],
   "aws-billingconductor": [
     "AWS::BillingConductor"
   ],
@@ -530,6 +533,9 @@
   ],
   "aws-oam": [
     "AWS::Oam"
+  ],
+  "aws-odb": [
+    "AWS::ODB"
   ],
   "aws-omics": [
     "AWS::Omics"
