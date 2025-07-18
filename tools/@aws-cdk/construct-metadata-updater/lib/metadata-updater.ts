@@ -724,7 +724,8 @@ export class EnumsUpdater extends MetadataUpdater {
    * Generate the file content for the enum metadats.
    */
   private generateFileContent(enums: Record<string, (string | number)[]> = {}): string {
-    const template = `/* eslint-disable quote-props */
+    const template = `/* eslint-disable quotes */
+/* eslint-disable quote-props */
 /* eslint-disable @stylistic/comma-dangle */
 /* eslint-disable @cdklabs/no-literal-partition */
 /*
@@ -742,7 +743,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = $ENUMS;
       acc[key] = enums[key];
       return acc;
     }, {});
-    const jsonContent = JSON.stringify(sortedEnums, null, 2).replace(/"/g, "'");
+    const jsonContent = JSON.stringify(sortedEnums, null, 2);
 
     // Replace the placeholder with the JSON object
     return template.replace("$ENUMS", jsonContent);
