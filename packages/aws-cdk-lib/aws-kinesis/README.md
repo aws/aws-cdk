@@ -15,6 +15,7 @@ intake and aggregation.
     - [Write Permissions](#write-permissions)
     - [Custom Permissions](#custom-permissions)
   - [Metrics](#metrics)
+    - [Shard-level Metrics](#shard-level-metrics)
 - [Stream Consumers](#stream-consumers)
   - [Read Permissions](#read-permissions-1)
 - [Resource Policy](#resource-policy)
@@ -190,6 +191,47 @@ stream.metricGetRecordsSuccess();
 // using pre-defined and overriding the statistic
 stream.metricGetRecordsSuccess({ statistic: 'Maximum' });
 ```
+
+#### Shard-level Metrics
+
+You can enable enhanced shard-level metrics for your Kinesis stream to get detailed monitoring of individual shards. Shard-level metrics provide more granular insights into the performance and health of your stream.
+
+```ts
+const stream = new kinesis.Stream(this, 'MyStream', {
+  shardLevelMetrics: [kinesis.ShardLevelMetrics.ALL],
+});
+```
+
+You can also specify individual metrics that you want to monitor:
+
+```ts
+const stream = new kinesis.Stream(this, 'MyStream', {
+  shardLevelMetrics: [
+    kinesis.ShardLevelMetrics.INCOMING_BYTES,
+    kinesis.ShardLevelMetrics.INCOMING_RECORDS,
+    kinesis.ShardLevelMetrics.ITERATOR_AGE_MILLISECONDS,
+    kinesis.ShardLevelMetrics.OUTGOING_BYTES,
+    kinesis.ShardLevelMetrics.OUTGOING_RECORDS,
+    kinesis.ShardLevelMetrics.READ_PROVISIONED_THROUGHPUT_EXCEEDED,
+    kinesis.ShardLevelMetrics.WRITE_PROVISIONED_THROUGHPUT_EXCEEDED,
+  ],
+});
+```
+
+Available shard-level metrics include:
+
+- `INCOMING_BYTES` - The number of bytes successfully put to the shard
+- `INCOMING_RECORDS` - The number of records successfully put to the shard
+- `ITERATOR_AGE_MILLISECONDS` - The age of the last record in all GetRecords calls made against a shard
+- `OUTGOING_BYTES` - The number of bytes retrieved from the shard
+- `OUTGOING_RECORDS` - The number of records retrieved from the shard
+- `READ_PROVISIONED_THROUGHPUT_EXCEEDED` - The number of GetRecords calls throttled for the shard
+- `WRITE_PROVISIONED_THROUGHPUT_EXCEEDED` - The number of records rejected due to throttling for the shard
+- `ALL` - All available metrics
+
+Note: You cannot specify `ALL` together with other individual metrics. If you want all metrics, use `ALL` alone.
+
+For more information about shard-level metrics, see [Monitoring the Amazon Kinesis Data Streams Service with Amazon CloudWatch](https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html#kinesis-metrics-shard).
 
 ## Stream Consumers
 
