@@ -61,14 +61,14 @@
        "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
        "Compress": true,
        "PathPattern": "/api",
-       "TargetOriginId": "cloudfrontorigingroupDistributionOriginGroup10B57F1D1",
+       "TargetOriginId": "CustomGroupId",
        "ViewerProtocolPolicy": "allow-all"
       }
      ],
      "DefaultCacheBehavior": {
       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
       "Compress": true,
-      "TargetOriginId": "cloudfrontorigingroupDistributionOriginGroup10B57F1D1",
+      "TargetOriginId": "CustomGroupId",
       "ViewerProtocolPolicy": "allow-all"
      },
      "Enabled": true,
@@ -88,7 +88,7 @@
           "Quantity": 4
          }
         },
-        "Id": "cloudfrontorigingroupDistributionOriginGroup10B57F1D1",
+        "Id": "CustomGroupId",
         "Members": {
          "Items": [
           {
