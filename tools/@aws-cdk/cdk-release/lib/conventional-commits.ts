@@ -134,7 +134,6 @@ export function createScopeVariations(names: string[]) {
   const transforms: Array<(x: string) => string> = [
     (name) => name.replace(/^aws-/, ''),
     (name) => name.replace(/^aws-/, 'aws'),
-    (name) => name.replace(/-alpha$/, ''),
   ];
 
   for (const transform of transforms) {
