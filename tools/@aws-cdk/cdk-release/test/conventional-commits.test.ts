@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import * as stream from 'stream';
-import { ConventionalCommit, createScopeVariations, filterCommits, getConventionalCommitsFromGitHistory } from '../lib/conventional-commits';
+import { ConventionalCommit, filterCommits, getConventionalCommitsFromGitHistory } from '../lib/conventional-commits';
 import { ReleaseOptions } from '../lib/types';
 
 // mock out Git interactions
@@ -105,8 +105,19 @@ describe('filterCommits', () => {
     expect(filteredCommits[0].scope).toEqual('aws-stable');
   });
 
-  test('scope variants take alpha packages into account', () => {
-    expect(createScopeVariations(['@aws-cdk/aws-batch-alpha'])).toContain('batch');
+  test('alpha packages are not considered stable', () => {
+    const ec2Commits = [
+      commitWithScope('aws-ec2-alpha'),
+      commitWithScope('ec2'),
+      commitWithScope('aws-ec2'),
+    ];
+
+    const filteredCommits = filterCommits(ec2Commits, {
+      includePackages: ['@aws-cdk/aws-ec2-alpha'],
+    });
+
+    expect(filteredCommits.length).toEqual(1);
+    expect(filteredCommits[0].scope).toEqual('aws-ec2-alpha');
   });
 });
 
