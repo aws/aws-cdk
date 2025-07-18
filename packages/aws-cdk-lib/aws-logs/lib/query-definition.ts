@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnQueryDefinition } from '.';
 import { ILogGroup } from './log-group';
-import { Resource } from '../../core';
+import { Annotations, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -107,11 +107,16 @@ export class QueryString {
   private readonly limit?: Number;
   private readonly display?: string;
 
+  public readonly statsStatementsLength?: number;
+  public readonly hasStatsAndStatsStatements: boolean;
+
   constructor(props: QueryStringProps = {}) {
     this.fields = props.fields;
     this.sort = props.sort;
     this.limit = props.limit;
     this.display = props.display;
+    this.statsStatementsLength = props.statsStatements?.length;
+    this.hasStatsAndStatsStatements = !!(props.statsStatements && props.stats);
 
     // Determine parsing by either the parseStatements or parse properties, or default to empty array
     if (props.parseStatements) {
@@ -228,6 +233,15 @@ export class QueryDefinition extends Resource {
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    if (props.queryString.statsStatementsLength && props.queryString.statsStatementsLength > 2) {
+      throw new ValidationError(`CloudWatch Logs Insights only supports up to two stats commands in a single query, received ${props.queryString.statsStatementsLength}.`, this);
+    }
+
+    if (props.queryString.hasStatsAndStatsStatements) {
+      Annotations.of(this).addWarningV2('QueryDefinitionStatsWarning',
+        'Both stats and statsStatements properties are provided. The stats property is deprecated and will be ignored in favor of statsStatements.');
+    }
 
     const queryDefinition = new CfnQueryDefinition(this, 'Resource', {
       name: props.queryDefinitionName,
