@@ -921,7 +921,7 @@ export class Stream extends StreamBase {
 
     if (props.shardLevelMetrics) {
       if (props.shardLevelMetrics.includes(ShardLevelMetrics.ALL) && props.shardLevelMetrics.length > 1) {
-        throw new ValidationError(`shardLevelMetrics cannot include ${ShardLevelMetrics.ALL} and other metrics at the same time.`, this);
+        throw new ValidationError('shardLevelMetrics cannot include `ShardLevelMetrics.ALL` and other metrics at the same time.', this);
       }
       // Check for duplicate items in shardLevelMetrics
       const uniqueMetrics = new Set(props.shardLevelMetrics);
