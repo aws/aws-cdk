@@ -971,10 +971,7 @@ export enum NetworkMode {
   HOST = 'host',
 
   /**
-   * The task utilizes NAT network mode required by Windows containers.
-   *
-   * This is the only supported network mode for Windows containers. For more information, see
-   * [Task Definition Parameters](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#network_mode).
+   * The task utilizes Docker's built-in virtual network which runs inside each Windows container instance.
    */
   NAT = 'nat',
 }
