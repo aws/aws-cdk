@@ -1057,7 +1057,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/765ef6fa51b285b0c95845b543ef922a05bd8170ea38e5d4c2abffa90da40afc.json"
+       "/f35ac439cc58dcf23012fb036da09eb7802e1096868b030abfe64f314cdfb4f3.json"
       ]
      ]
     }
@@ -1107,7 +1107,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/abcf277699474780b06cdd38f8f76c2b12c15a0cb01c6773af28bae23ce4648a.json"
+       "/79eea88c968b6c1449fdf954d6586a2e12b00c187f453783dcdbb341e0555ea9.json"
       ]
      ]
     }
@@ -1235,19 +1235,24 @@
         "ec2:DescribeCoipPools",
         "ec2:DescribeInstances",
         "ec2:DescribeInternetGateways",
+        "ec2:DescribeIpamPools",
         "ec2:DescribeNetworkInterfaces",
+        "ec2:DescribeRouteTables",
         "ec2:DescribeSecurityGroups",
         "ec2:DescribeSubnets",
         "ec2:DescribeTags",
         "ec2:DescribeVpcPeeringConnections",
         "ec2:DescribeVpcs",
         "ec2:GetCoipPoolUsage",
+        "ec2:GetSecurityGroupsForVpc",
         "ec2:RevokeSecurityGroupIngress",
         "elasticloadbalancing:AddListenerCertificates",
         "elasticloadbalancing:CreateListener",
         "elasticloadbalancing:CreateRule",
         "elasticloadbalancing:DeleteListener",
         "elasticloadbalancing:DeleteRule",
+        "elasticloadbalancing:DescribeCapacityReservation",
+        "elasticloadbalancing:DescribeListenerAttributes",
         "elasticloadbalancing:DescribeListenerCertificates",
         "elasticloadbalancing:DescribeListeners",
         "elasticloadbalancing:DescribeLoadBalancerAttributes",
@@ -1262,6 +1267,7 @@
         "elasticloadbalancing:ModifyListener",
         "elasticloadbalancing:ModifyRule",
         "elasticloadbalancing:RemoveListenerCertificates",
+        "elasticloadbalancing:SetRulePriorities",
         "elasticloadbalancing:SetWebAcl",
         "iam:GetServerCertificate",
         "iam:ListServerCertificates",
@@ -1337,6 +1343,9 @@
         "ec2:RevokeSecurityGroupIngress",
         "elasticloadbalancing:DeleteLoadBalancer",
         "elasticloadbalancing:DeleteTargetGroup",
+        "elasticloadbalancing:ModifyCapacityReservation",
+        "elasticloadbalancing:ModifyIpPools",
+        "elasticloadbalancing:ModifyListenerAttributes",
         "elasticloadbalancing:ModifyLoadBalancerAttributes",
         "elasticloadbalancing:ModifyTargetGroup",
         "elasticloadbalancing:ModifyTargetGroupAttributes",
@@ -1623,7 +1632,7 @@
     },
     "Release": "aws-load-balancer-controller",
     "Chart": "aws-load-balancer-controller",
-    "Version": "1.8.2",
+    "Version": "1.13.3",
     "Wait": true,
     "Timeout": "900s",
     "Values": {
@@ -1642,7 +1651,7 @@
        {
         "Ref": "Vpc8378EB38"
        },
-       "\",\"image\":{\"repository\":\"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller\",\"tag\":\"v2.8.2\"},\"enableWafv2\":false}"
+       "\",\"image\":{\"repository\":\"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller\",\"tag\":\"v2.13.3\"},\"enableWafv2\":false}"
       ]
      ]
     },
@@ -2022,10 +2031,6 @@
      }
     },
     "Handler": "framework.onEvent",
-    "LoggingConfig": {
-     "ApplicationLogLevel": "FATAL",
-     "LogFormat": "JSON"
-    },
     "Role": {
      "Fn::GetAtt": [
       "IngressPingerProviderframeworkonEventServiceRole89300FAD",
