@@ -49,6 +49,26 @@ export class KafkaSchemaRegistryAccessConfigType {
    * The Secrets Manager ARN of your secret key containing the root CA certificate (X.509 PEM) used for TLS encryption of your schema registry.
    */
   public static readonly SERVER_ROOT_CA_CERTIFICATE = new KafkaSchemaRegistryAccessConfigType('SERVER_ROOT_CA_CERTIFICATE');
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  public static readonly VIRTUAL_HOST = new KafkaSchemaRegistryAccessConfigType('VIRTUAL_HOST');
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  public static readonly SASL_SCRAM_256_AUTH = new KafkaSchemaRegistryAccessConfigType('SASL_SCRAM_256_AUTH');
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  public static readonly SASL_SCRAM_512_AUTH = new KafkaSchemaRegistryAccessConfigType('SASL_SCRAM_512_AUTH');
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  public static readonly VPC_SECURITY_GROUP = new KafkaSchemaRegistryAccessConfigType('VPC_SECURITY_GROUP');
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  public static readonly VPC_SUBNET = new KafkaSchemaRegistryAccessConfigType('VPC_SUBNET');
 
   /** A custom source access configuration property for schema registry */
   public static of(name: string): KafkaSchemaRegistryAccessConfigType {
