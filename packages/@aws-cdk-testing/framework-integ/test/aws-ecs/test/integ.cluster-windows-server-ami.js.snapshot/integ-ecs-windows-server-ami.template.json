@@ -503,9 +503,9 @@
       }
      },
      "ImageId": {
-      "Ref": "SsmParameterValueawsserviceamiwindowslatestWindowsServer2022EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsserviceamiwindowslatestWindowsServer2025EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
-     "InstanceType": "t2.large",
+     "InstanceType": "t3.small",
      "Monitoring": {
       "Enabled": false
      },
@@ -915,11 +915,10 @@
    "Properties": {
     "ContainerDefinitions": [
      {
-      "Cpu": 1024,
       "Essential": true,
-      "Image": "public.ecr.aws/aws-observability/aws-for-fluent-bit:windowsservercore-stable",
-      "Memory": 2096,
-      "Name": "fluent-bit"
+      "Image": "hello-world",
+      "Memory": 256,
+      "Name": "main"
      }
     ],
     "Family": "integecswindowsserveramiTaskDef7E874ECF",
@@ -1091,9 +1090,9 @@
   }
  },
  "Parameters": {
-  "SsmParameterValueawsserviceamiwindowslatestWindowsServer2022EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsserviceamiwindowslatestWindowsServer2025EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-   "Default": "/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-ECS_Optimized/image_id"
+   "Default": "/aws/service/ami-windows-latest/Windows_Server-2025-English-Full-ECS_Optimized/image_id"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
