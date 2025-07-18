@@ -6,7 +6,7 @@ import * as fs from 'fs-extra';
 import * as sinon from 'sinon';
 import { FileAssetPackaging } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage, BundlingFileAccess } from '../lib';
+import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, NestedStack, Stage, BundlingFileAccess } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
@@ -1129,6 +1129,48 @@ describe('staging', () => {
     });
 
     new AssetStaging(stack2, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.MULTIPLE_FILES],
+      },
+    });
+
+    // THEN
+    const dockerStubInput = readDockerStubInputConcat();
+    // Docker ran for the asset in Stack1
+    expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
+    // Docker did not run for the asset in Stack2
+    expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
+  });
+
+  test('correctly skips bundling with stack under stage and nested stack', () => {
+    // GIVEN
+    const app = new App();
+
+    const stage = new Stage(app, 'Stage');
+    stage.node.setContext(cxapi.BUNDLING_STACKS, ['Stage/Stack1']);
+
+    const stack1 = new Stack(stage, 'Stack1', { stackName: 'unrelated-stack1-name' });
+    const stack1Nested = new NestedStack(stack1, 'Stack1Nest');
+
+    const stack2 = new Stack(stage, 'Stack2', { stackName: 'unrelated-stack2-name' });
+    const stack2Nested = new NestedStack(stack2, 'Stack2Nest');
+
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(stack1Nested, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    new AssetStaging(stack2Nested, 'Asset', {
       sourcePath: directory,
       assetHashType: AssetHashType.OUTPUT,
       bundling: {

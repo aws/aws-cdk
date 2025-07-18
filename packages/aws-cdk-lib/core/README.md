@@ -1812,6 +1812,17 @@ warning by the `id`.
 Annotations.of(this).acknowledgeWarning('IAM:Group:MaxPoliciesExceeded', 'Account has quota increased to 20');
 ```
 
+### Acknowledging Infos
+
+Informational messages can also be emitted and acknowledged. Use `addInfoV2()`
+to add an info message that can later be suppressed with `acknowledgeInfo()`.
+Unlike warnings, info messages are not affected by the `--strict` mode and will never cause synthesis to fail.
+
+```ts
+Annotations.of(this).addInfoV2('my-lib:Construct.someInfo', 'Some message explaining the info');
+Annotations.of(this).acknowledgeInfo('my-lib:Construct.someInfo', 'This info can be ignored');
+```
+
 ## RemovalPolicies
 
 The `RemovalPolicies` class provides a convenient way to manage removal policies for AWS CDK resources within a construct scope. It allows you to apply removal policies to multiple resources at once, with options to include or exclude specific resource types.
