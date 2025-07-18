@@ -9,7 +9,7 @@ import { Pinger } from './pinger/pinger';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
-const LATEST_VERSION: eks.AlbControllerVersion = eks.AlbControllerVersion.V2_8_2;
+const LATEST_VERSION: eks.AlbControllerVersion = eks.AlbControllerVersion.V2_13_3;
 class EksClusterAlbControllerStack extends Stack {
   constructor(scope: App, id: string) {
     super(scope, id);
