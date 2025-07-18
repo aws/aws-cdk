@@ -11,10 +11,29 @@ export * from './agents/memory';
 export * from './agents/agent-collaborator';
 export * from './agents/agent-collaboration';
 export * from './agents/orchestration-executor';
-export * from './models';
 export * from './agents/function-schema';
+
 // ===================================
 // Guardrails
 // ===================================
 export * from './guardrails/guardrail-filters';
 export * from './guardrails/guardrails';
+
+// ===================================
+// Prompts
+// ===================================
+export * from './prompts/prompt';
+export * from './prompts/prompt-variant';
+export * from './prompts/prompt-version';
+export * from './prompts/tool-choice';
+export * from './prompts/text-prompt-variant';
+export * from './prompts/chat-prompt-variant';
+export * from './prompts/agent-prompt-variant';
+export * from './prompts/prompt-inference-configuration';
+export * from './prompts/prompt-template-configuration';
+export * from './prompts/prompt-genai-resource';
+
+// ===================================
+// Models
+// ===================================
+export * from './models';
