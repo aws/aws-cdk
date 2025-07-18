@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallSNSpublisha9ef09f51d38c4f6bf69abf5932e9639": {
+  "AwsApiCallSNSpublish1ed44e75b058a4b9f26876a86fe8a97a": {
    "Type": "Custom::DeployAssert@SdkCallSNSpublish",
    "Properties": {
     "ServiceToken": {
@@ -12,14 +12,14 @@
     "service": "SNS",
     "api": "publish",
     "parameters": {
-     "Message": "\"{\\\"color\\\":\\\"green\\\",\\\"price\\\":200}\"",
+     "Message": "\"{\\\"background\\\":{\\\"color\\\":\\\"green\\\"},\\\"price\\\":200,\\\"store\\\":\\\"fans\\\"}\"",
      "TopicArn": {
       "Fn::Join": [
        "",
        [
         "\"",
         {
-         "Fn::ImportValue": "SnsToSqsStack:ExportsOutputRefMyTopic868694349D03D60F"
+         "Fn::ImportValue": "sns-sqs-subscription-filter:ExportsOutputRefMyTopic868694349D03D60F"
         },
         "\""
        ]
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1750329459376"
+    "salt": "1750332985002"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -61,6 +61,24 @@
         {
          "Action": [
           "sns:Publish"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "sns:Publish"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "sqs:ReceiveMessage"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -110,7 +128,39 @@
     }
    }
   },
-  "AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7": {
+  "AwsApiCallSNSpublishd0438513bea402ba99deda3ee780813d": {
+   "Type": "Custom::DeployAssert@SdkCallSNSpublish",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SNS",
+    "api": "publish",
+    "parameters": {
+     "Message": "\"{\\\"background\\\":{\\\"color\\\":\\\"blue\\\"},\\\"price\\\":150}\"",
+     "TopicArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "sns-sqs-subscription-filter:ExportsOutputRefMyTopic868694349D03D60F"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1750332985004"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallSQSreceiveMessagea4a3f449de51fc58592c8d26238a5c3e": {
    "Type": "Custom::DeployAssert@SdkCallSQSreceiveMessage",
    "Properties": {
     "ServiceToken": {
@@ -121,7 +171,7 @@
     },
     "service": "SQS",
     "api": "receiveMessage",
-    "expected": "{\"$ObjectLike\":{\"Messages\":[{\"Body\":\"{\\\"color\\\":\\\"green\\\",\\\"price\\\":200}\"}]}}",
+    "expected": "{\"$ObjectLike\":{\"Messages\":[{\"Body\":\"{\\\"background\\\":{\\\"color\\\":\\\"green\\\"},\\\"price\\\":200,\\\"store\\\":\\\"fans\\\"}\"}]}}",
     "parameters": {
      "QueueUrl": {
       "Fn::Join": [
@@ -129,7 +179,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "SnsToSqsStack:ExportsOutputRefMyQueueE6CA623512A57419"
+         "Fn::ImportValue": "sns-sqs-subscription-filter:ExportsOutputRefMyQueue13ECD6C63493C83EE"
         },
         "\""
        ]
@@ -138,7 +188,40 @@
      "WaitTimeSeconds": "20"
     },
     "flattenResponse": "false",
-    "salt": "1750329459377"
+    "salt": "1750332985005"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallSQSreceiveMessageda8a6d34acbbf0f5244c08cd96703b6d": {
+   "Type": "Custom::DeployAssert@SdkCallSQSreceiveMessage",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SQS",
+    "api": "receiveMessage",
+    "expected": "{\"$ObjectLike\":{\"Messages\":[{\"Body\":\"{\\\"background\\\":{\\\"color\\\":\\\"blue\\\"},\\\"price\\\":150}\"}]}}",
+    "parameters": {
+     "QueueUrl": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "sns-sqs-subscription-filter:ExportsOutputRefMyQueue22D001D59CA385180"
+        },
+        "\""
+       ]
+      ]
+     },
+     "WaitTimeSeconds": "20"
+    },
+    "flattenResponse": "false",
+    "salt": "1750332985006"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -275,10 +358,18 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7": {
+  "AssertionResultsAwsApiCallSQSreceiveMessagea4a3f449de51fc58592c8d26238a5c3e": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7",
+     "AwsApiCallSQSreceiveMessagea4a3f449de51fc58592c8d26238a5c3e",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallSQSreceiveMessageda8a6d34acbbf0f5244c08cd96703b6d": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSQSreceiveMessageda8a6d34acbbf0f5244c08cd96703b6d",
      "assertion"
     ]
    }
