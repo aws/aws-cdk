@@ -11,7 +11,7 @@ import { IProcessor, Transformer } from './transformer';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Annotations, Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -656,15 +656,6 @@ export class LogGroup extends LogGroupBase {
     }
 
     let logGroupClass = props.logGroupClass;
-    const stack = Stack.of(scope);
-    const logGroupClassUnsupportedRegions = [
-      'us-iso-west-1', // APA
-      'us-iso-east-1', // DCA
-      'us-isob-east-1', // LCK
-    ];
-    if (logGroupClass !== undefined && !Token.isUnresolved(stack.region) && logGroupClassUnsupportedRegions.includes(stack.region)) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-logs:propertyNotSupported', `The LogGroupClass property is not supported in the following regions: ${logGroupClassUnsupportedRegions}`);
-    }
 
     const dataProtectionPolicy = props.dataProtectionPolicy?._bind(this);
     const fieldIndexPolicies: any[] = [];
