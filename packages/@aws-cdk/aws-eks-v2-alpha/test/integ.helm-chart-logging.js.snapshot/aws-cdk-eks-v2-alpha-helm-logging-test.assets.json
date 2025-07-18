@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "6094cb0ff874f89ab5ab24fb6b9417df0fdeb6966645f90c88ec1d7e28130112": {
       "displayName": "kubectlLayer/Code",
@@ -57,7 +57,7 @@
         }
       }
     },
-    "fa4eaa65dba5befa0851a317f34b7211aac67ad617b0b605c5bfe124ea1d4911": {
+    "190da6f37835b48a290582861394ef645069b2adac63251ffd2214c5bdb06f89": {
       "displayName": "aws-cdk-eks-v2-alpha-helm-logging-test Template",
       "source": {
         "path": "aws-cdk-eks-v2-alpha-helm-logging-test.template.json",
@@ -66,7 +66,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "fa4eaa65dba5befa0851a317f34b7211aac67ad617b0b605c5bfe124ea1d4911.json",
+          "objectKey": "190da6f37835b48a290582861394ef645069b2adac63251ffd2214c5bdb06f89.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

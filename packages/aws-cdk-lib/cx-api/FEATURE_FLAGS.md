@@ -104,7 +104,7 @@ Flags come in three types:
 | [@aws-cdk/aws-s3:publicAccessBlockedByDefault](#aws-cdkaws-s3publicaccessblockedbydefault) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | 2.196.0 | fix |
 | [@aws-cdk/aws-lambda:useCdkManagedLogGroup](#aws-cdkaws-lambdausecdkmanagedloggroup) | When enabled, CDK creates and manages loggroup for the lambda function | 2.200.0 | new default |
 | [@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal](#aws-cdkaws-kmsapplyimportedaliaspermissionstoprincipal) | Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition | 2.202.0 | fix |
-| [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | V2NEXT | new default |
+| [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | 2.205.0 | new default |
 
 <!-- END table -->
 
@@ -2220,7 +2220,7 @@ and Stack tags must be configured explicitly on the Stack object.
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.205.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Configure stack-level tags using `new Stack(..., { tags: { ... } })`.
 
