@@ -973,6 +973,264 @@ export class DsRecord extends RecordSet {
 }
 
 /**
+ * The ALPN protocol identifier.
+ */
+export class Alpn {
+  /** HTTP/1.1 */
+  public static readonly HTTP1_1 = Alpn.of('http1.1');
+  /** HTTP2 */
+  public static readonly H2 = Alpn.of('h2');
+  /** HTTP3 (QUIC) */
+  public static readonly H3 = Alpn.of('h3');
+
+  /**
+   * A custom ALPN protocol identifier.
+   * @param protocol The ALPN protocol identifier.
+   */
+  public static of(protocol: string): Alpn {
+    return new Alpn(protocol);
+  }
+
+  /**
+   * @param protocol The ALPN protocol identifier.
+   */
+  private constructor(public readonly protocol: string) {}
+}
+
+/**
+ * Common properties of an SVCB and an HTTPS record value.
+ */
+interface SvcbRecordValueCommonProps {
+  /**
+   * Indicates mandatory keys.
+   *
+   * @default - No mandatory keys
+   */
+  readonly mandatory?: string[];
+
+  /**
+   * Indicates the set of Application-Layer Protocol Negotiation (ALPN) protocol identifiers
+   * and associated transport protocols supported by this service endpoint.
+   *
+   * @default - No ALPN protocol identifiers
+   */
+  readonly alpn?: Alpn[];
+
+  /**
+   * Indicates no default ALPN protocol identifiers.
+   * The `alpn` parameter must be supplied together.
+   *
+   * @default false
+   */
+  readonly noDefaultAlpn?: boolean;
+
+  /**
+   * The alternative port number.
+   *
+   * @default - Use the default port
+   */
+  readonly port?: number;
+
+  /**
+   * Conveys that clients may use to reach the service.
+   *
+   * @default - No hints.
+   */
+  readonly ipv4hint?: string[];
+
+  /**
+   * Conveys that clients may use to reach the service.
+   *
+   * @default - No hints.
+   */
+  readonly ipv6hint?: string[];
+}
+
+/**
+ * Base properties of an SVCB and an HTTPS record value.
+ */
+interface SvcbRecordValueBaseProps extends SvcbRecordValueCommonProps {
+  /**
+   * The priority.
+   */
+  readonly priority: number;
+
+  /**
+   * The domain name of the alternative endpoint.
+   */
+  readonly targetName: string;
+}
+
+/**
+ * Represents an SVCB and an HTTPS record value.
+ */
+abstract class SvcbRecordValueBase {
+  protected constructor(private readonly props: SvcbRecordValueBaseProps) {}
+
+  /**
+   * Returns the string representation of SVCB and HTTPS record value.
+   */
+  public toString(): string {
+    const parts: string[] = [`${this.props.priority}`, this.props.targetName];
+    if (this.props.mandatory?.length) {
+      parts.push(`mandatory="${this.props.mandatory.join(',')}"`);
+    }
+    if (this.props.alpn?.length) {
+      parts.push(`alpn="${this.props.alpn.map((alpn) => alpn.protocol).join(',')}"`);
+    }
+    if (this.props.noDefaultAlpn) {
+      parts.push('no-default-alpn');
+    }
+    if (this.props.port !== undefined) {
+      parts.push(`port=${this.props.port}`);
+    }
+    if (this.props.ipv4hint?.length) {
+      parts.push(`ipv4hint="${this.props.ipv4hint.join(',')}"`);
+    }
+    if (this.props.ipv6hint?.length) {
+      parts.push(`ipv6hint="${this.props.ipv6hint.join(',')}"`);
+    }
+    return parts.join(' ');
+  }
+}
+
+/**
+ * Base properties of an SVCB ServiceMode record value.
+ */
+export interface SvcbRecordServiceModeProps extends SvcbRecordValueCommonProps {
+  /**
+   * The priority.
+   *
+   * @default 1
+   */
+  readonly priority?: number;
+
+  /**
+   * The domain name of the alternative endpoint.
+   *
+   * @default '.' - The record name of the record itself
+   */
+  readonly targetName?: string;
+}
+
+/**
+ * Represents an SVCB record value.
+ */
+export class SvcbRecordValue extends SvcbRecordValueBase {
+  /**
+   * An SVCB AliasMode record value.
+   *
+   * @param targetName The domain name of the alternative endpoint.
+   */
+  public static alias(targetName: string): SvcbRecordValue {
+    return new SvcbRecordValue({ priority: 0, targetName });
+  }
+
+  /**
+   * An SVCB ServiceMode record value.
+   */
+  public static service(props?: SvcbRecordServiceModeProps): SvcbRecordValue {
+    return new SvcbRecordValue({ priority: 1, targetName: '.', ...props });
+  }
+
+  private constructor(props: SvcbRecordValueBaseProps) {
+    super(props);
+  }
+}
+
+/**
+ * Construction properties for an SvcbRecord.
+ */
+export interface SvcbRecordProps extends RecordSetOptions {
+  /**
+   * The values.
+   */
+  readonly values: SvcbRecordValue[];
+}
+
+/**
+ * A DNS SVCB record
+ *
+ * @resource AWS::Route53::RecordSet
+ */
+@propertyInjectable
+export class SvcbRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.SvcbRecord';
+
+  constructor(scope: Construct, id: string, props: SvcbRecordProps) {
+    super(scope, id, {
+      ...props,
+      recordType: RecordType.SVCB,
+      target: RecordTarget.fromValues(...props.values.map((v) => v.toString())),
+    });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+  }
+}
+
+/**
+ * Properties of an HTTPS ServiceMode record.
+ */
+export interface HttpsRecordServiceModeProps extends SvcbRecordServiceModeProps {}
+
+/**
+ * Represents an HTTPS record value.
+ */
+export class HttpsRecordValue extends SvcbRecordValueBase {
+  /**
+   * An HTTPS AliasMode record value.
+   *
+   * @param targetName The domain name of the alternative endpoint.
+   */
+  public static alias(targetName: string): HttpsRecordValue {
+    return new HttpsRecordValue({ priority: 0, targetName });
+  }
+
+  /**
+   * An HTTPS ServiceMode record value.
+   */
+  public static service(props?: HttpsRecordServiceModeProps): HttpsRecordValue {
+    return new HttpsRecordValue({ priority: 1, targetName: '.', ...props });
+  }
+
+  private constructor(props: SvcbRecordValueBaseProps) {
+    super(props);
+  }
+}
+
+/**
+ * Construction properties for an HttpsRecord.
+ */
+export interface HttpsRecordProps extends RecordSetOptions {
+  /**
+   * The values.
+   */
+  readonly values: HttpsRecordValue[];
+}
+
+/**
+ * A DNS HTTPS record
+ *
+ * @resource AWS::Route53::RecordSet
+ */
+@propertyInjectable
+export class HttpsRecord extends RecordSet {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.HttpsRecord';
+
+  constructor(scope: Construct, id: string, props: HttpsRecordProps) {
+    super(scope, id, {
+      ...props,
+      recordType: RecordType.HTTPS,
+      target: RecordTarget.fromValues(...props.values.map((v) => v.toString())),
+    });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+  }
+}
+
+/**
  * Construction properties for a ZoneDelegationRecord
  */
 export interface ZoneDelegationRecordProps extends RecordSetOptions {
