@@ -37,6 +37,7 @@ export enum AmiHardwareType {
  * ECS-optimized Windows version list
  */
 export enum WindowsOptimizedVersion {
+  SERVER_2025 = '2025',
   SERVER_2022 = '2022',
   SERVER_2019 = '2019',
   SERVER_2016 = '2016',
