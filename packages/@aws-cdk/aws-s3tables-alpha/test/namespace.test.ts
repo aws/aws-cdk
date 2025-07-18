@@ -23,7 +23,7 @@ describe('Namespace', () => {
         tableBucketName: 'test-bucket',
       }),
       namespace = new s3tables.Namespace(stack, 'ExampleNamespace', {
-        namespaceName: 'test-namespace',
+        namespaceName: 'test_namespace',
         tableBucket,
       });
     });
@@ -31,6 +31,7 @@ describe('Namespace', () => {
     test(`creates a ${NAMESPACE_CFN_RESOURCE} resource`, () => {
       namespace;
       Template.fromStack(stack).resourceCountIs(NAMESPACE_CFN_RESOURCE, 1);
+      expect(Template.fromStack(stack)).toBe('');
     });
 
     test('with tableBucketARN property', () => {

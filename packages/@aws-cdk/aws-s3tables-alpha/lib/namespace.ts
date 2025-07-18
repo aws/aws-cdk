@@ -1,11 +1,29 @@
 import { Construct } from 'constructs';
-import { RemovalPolicy, Resource } from 'aws-cdk-lib/core';
+import { IResource, RemovalPolicy, Resource, Token, UnscopedValidationError } from 'aws-cdk-lib/core';
 import { ITableBucket } from './table-bucket';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { CfnNamespace } from 'aws-cdk-lib/aws-s3tables';
+import { EOL } from 'os';
 
 /**
- * Parameters for constructing a TableBucketPolicy
+ * Represents an S3 Tables Namespace.
+ */
+export interface INamespace extends IResource {
+  /**
+   * The name of this namespace
+   * @attribute
+   */
+  readonly namespaceName: string;
+
+  /**
+   * The table bucket which this namespace belongs to
+   * @attribute
+   */
+  readonly tableBucket: ITableBucket;
+}
+
+/**
+ * Parameters for constructing a Namespace
  */
 export interface NamespaceProps {
   /**
@@ -24,23 +42,123 @@ export interface NamespaceProps {
 }
 
 /**
+ * Attributes for importing an existing namespace
+ */
+export interface NamespaceAttributes {
+  /**
+   * The name of the namespace
+   */
+  readonly namespaceName: string;
+
+  /**
+   * The table bucket this namespace belongs to
+   */
+  readonly tableBucket: ITableBucket;
+}
+
+/**
  * An S3 Tables Namespace with helpers.
  *
+ * A namespace is a logical container for tables within a table bucket.
  */
-export class Namespace extends Resource {
+export class Namespace extends Resource implements INamespace {
+  /**
+   * Import an existing namespace from its attributes
+   */
+  public static fromNamespaceAttributes(scope: Construct, id: string, attrs: NamespaceAttributes): INamespace {
+    class Import extends Resource implements INamespace {
+      public readonly namespaceName = attrs.namespaceName;
+      public readonly tableBucket = attrs.tableBucket;
+    }
+
+    return new Import(scope, id);
+  }
+  /**
+   * See https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-buckets-naming.html
+   * @param namespaceName Name of the namespace
+   * @throws UnscopedValidationError if any naming errors are detected
+   */
+  public static validateNamespaceName(namespaceName: string) {
+    if (namespaceName == undefined || Token.isUnresolved(namespaceName)) {
+      // the name is a late-bound value, not a defined string, so skip validation
+      return;
+    }
+
+    const errors: string[] = [];
+
+    // Length validation
+    if (namespaceName.length < 1 || namespaceName.length > 255) {
+      errors.push(
+        'Namespace name must be at least 1 and no more than 255 characters',
+      );
+    }
+
+    // Character set validation
+    const illegalCharsetRegEx = /[^a-z0-9_]/;
+    const allowedEdgeCharsetRegEx = /[a-z0-9]/;
+
+    const illegalCharMatch = namespaceName.match(illegalCharsetRegEx);
+    if (illegalCharMatch) {
+      errors.push(
+        'Namespace name must only contain lowercase characters, numbers, and hyphens (-)' +
+          ` (offset: ${illegalCharMatch.index})`,
+      );
+    }
+
+    // Edge character validation
+    if (!allowedEdgeCharsetRegEx.test(namespaceName.charAt(0))) {
+      errors.push(
+        'Namespace name must start with a lowercase letter or number (offset: 0)',
+      );
+    }
+    if (
+      !allowedEdgeCharsetRegEx.test(namespaceName.charAt(namespaceName.length - 1))
+    ) {
+      errors.push(
+        `Namespace name must end with a lowercase letter or number (offset: ${
+          namespaceName.length - 1
+        })`,
+      );
+    }
+
+    if (namespaceName.startsWith('aws')) {
+      errors.push('Namespace name must not start with reserved prefix \'aws\'');
+    }
+
+    if (errors.length > 0) {
+      throw new UnscopedValidationError(
+        `Invalid S3 table name (value: ${namespaceName})${EOL}${errors.join(EOL)}`,
+      );
+    }
+  }
+
   /**
    * @internal The underlying policy resource.
    */
   private readonly _resource: CfnNamespace;
+
+  /**
+   * The name of this namespace
+   */
+  public readonly namespaceName: string;
+
+  /**
+   * The table bucket which this namespace belongs to
+   */
+  public readonly tableBucket: ITableBucket;
 
   constructor(scope: Construct, id: string, props: NamespaceProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    Namespace.validateNamespaceName(props.namespaceName);
+
+    this.tableBucket = props.tableBucket;
+    this.namespaceName = props.namespaceName;
     this._resource = new CfnNamespace(this, id, {
       namespace: props.namespaceName,
-      tableBucketArn: props.tableBucket.tableBucketArn,
+      tableBucketArn: this.tableBucket.tableBucketArn,
     });
 
     if (props.removalPolicy) {
