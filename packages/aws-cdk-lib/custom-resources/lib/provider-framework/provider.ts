@@ -324,7 +324,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
 
-      logFormat: lambda.LogFormat.JSON,
+      loggingFormat: lambda.LoggingFormat.JSON,
       applicationLogLevelV2: loggingLevel,
       // props.logRetention is deprecated, make sure we only set it if it is actually provided
       // otherwise jsii will print warnings even for users that don't use this directly
