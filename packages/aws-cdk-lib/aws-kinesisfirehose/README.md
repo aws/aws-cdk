@@ -102,10 +102,13 @@ will be used for files successfully delivered to S3. `errorOutputPrefix` will be
 failed records before writing them to S3.
 
 ```ts
+import { TimeZone } from 'aws-cdk-lib';
 declare const bucket: s3.Bucket;
 const s3Destination = new firehose.S3Bucket(bucket, {
   dataOutputPrefix: 'myFirehose/DeliveredYear=!{timestamp:yyyy}/anyMonth/rand=!{firehose:random-string}',
   errorOutputPrefix: 'myFirehoseFailures/!{firehose:error-output-type}/!{timestamp:yyyy}/anyMonth/!{timestamp:dd}',
+  // The time zone of timestamps (default UTC)
+  timeZone: TimeZone.ASIA_TOKYO,
 });
 ```
 

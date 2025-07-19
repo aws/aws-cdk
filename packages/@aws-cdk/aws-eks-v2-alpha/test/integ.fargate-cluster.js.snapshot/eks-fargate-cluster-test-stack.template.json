@@ -918,6 +918,10 @@
      }
     },
     "Handler": "framework.onEvent",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
     "Role": {
      "Fn::GetAtt": [
       "FargateTestClusterKubectlProviderframeworkonEventServiceRole7B0EE1EE",

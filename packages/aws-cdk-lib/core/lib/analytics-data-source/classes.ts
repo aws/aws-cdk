@@ -24030,6 +24030,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'timeToLive': '*',
       'schedule': '*',
+      'maxRetries': '*',
       'startAfterCreation': 'boolean',
       'successRetentionPeriod': '*',
       'failureRetentionPeriod': '*',
@@ -24129,6 +24130,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'node': '*'
       },
       'dryRunAndUpdate': 'boolean',
+      'resourcesToReplicateTags': 'ResourceToReplicateTags',
       'metricDuration': [
         {
           'period': '*',
