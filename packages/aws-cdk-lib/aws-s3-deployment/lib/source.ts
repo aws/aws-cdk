@@ -5,8 +5,9 @@ import { renderData } from './render-data';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
-import { FileSystem, Stack } from '../../core';
+import { FileSystem, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import * as yaml_cfn from '../../core/lib/private/yaml-cfn';
 
 /**
  * Source information.
@@ -193,7 +194,7 @@ export class Source {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
         const workdir = FileSystem.mkdtemp('s3-deployment');
         const outputPath = join(workdir, objectKey);
-        const rendered = renderData(scope, data);
+        const rendered = renderData(data);
         fs.mkdirSync(dirname(outputPath), { recursive: true });
         fs.writeFileSync(outputPath, rendered.text);
         const asset = this.asset(workdir).bind(scope, context);
@@ -224,7 +225,15 @@ export class Source {
     }
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
-        return Source.data(objectKey, Stack.of(scope).toJsonString(obj), markersConfig).bind(scope, context);
+        // toJsonString can generate extra tokens that would not be needed if the obj is not a token
+        // in the first place. Therefore, if obj is not a token, we should use the regular JSON serializer.
+        const serializedObj = Token.isUnresolved(obj)? Stack.of(scope).toJsonString(obj) : JSON.stringify(obj);
+
+        return Source.data(
+          objectKey,
+          serializedObj,
+          markersConfig,
+        ).bind(scope, context);
       },
     };
   }
@@ -241,7 +250,14 @@ export class Source {
   public static yamlData(objectKey: string, obj: any): ISource {
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
-        return Source.data(objectKey, Stack.of(scope).toYamlString(obj)).bind(scope, context);
+        // toYamlString can generate extra tokens that would not be needed if the obj is not a token
+        // in the first place. Therefore, if obj is not a token, we should use the regular YAML serializer.
+        const serializedObj = Token.isUnresolved(obj)? Stack.of(scope).toYamlString(obj) : yaml_cfn.serialize(obj);
+
+        return Source.data(
+          objectKey,
+          serializedObj,
+        ).bind(scope, context);
       },
     };
   }

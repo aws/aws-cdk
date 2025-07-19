@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "6094cb0ff874f89ab5ab24fb6b9417df0fdeb6966645f90c88ec1d7e28130112": {
       "displayName": "kubectlLayer/Code",
@@ -71,7 +71,7 @@
         }
       }
     },
-    "2e1ca75ebfa0b107c8b4d925f2b8624fdaf00c28805dec809a44b56c7c4d78a8": {
+    "d805f00c4268a7f8cdd3ffa7fb352d47df887c851ca2181180e6a4245634010c": {
       "displayName": "eks-fargate-cluster-test-stack Template",
       "source": {
         "path": "eks-fargate-cluster-test-stack.template.json",
@@ -80,7 +80,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2e1ca75ebfa0b107c8b4d925f2b8624fdaf00c28805dec809a44b56c7c4d78a8.json",
+          "objectKey": "d805f00c4268a7f8cdd3ffa7fb352d47df887c851ca2181180e6a4245634010c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

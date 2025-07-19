@@ -1,0 +1,630 @@
+{
+ "Resources": {
+  "SimplePrompt20F445DA": {
+   "Type": "AWS::Bedrock::Prompt",
+   "Properties": {
+    "Description": "A simple prompt for integration testing",
+    "Name": "simple-test-prompt",
+    "Variants": []
+   }
+  },
+  "TextPrompt9846B9B3": {
+   "Type": "AWS::Bedrock::Prompt",
+   "Properties": {
+    "DefaultVariant": "text-variant",
+    "Description": "A text prompt for comprehensive testing",
+    "Name": "text-test-prompt",
+    "Tags": {
+     "Environment": "test",
+     "Purpose": "integration-testing",
+     "Team": "bedrock-team",
+     "Type": "text"
+    },
+    "Variants": [
+     {
+      "InferenceConfiguration": {
+       "Text": {
+        "MaxTokens": 200,
+        "Temperature": 0.7,
+        "TopP": 0.9
+       }
+      },
+      "ModelId": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":bedrock:",
+         {
+          "Ref": "AWS::Region"
+         },
+         "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+        ]
+       ]
+      },
+      "Name": "text-variant",
+      "TemplateConfiguration": {
+       "Text": {
+        "InputVariables": [
+         {
+          "Name": "name"
+         },
+         {
+          "Name": "topic"
+         }
+        ],
+        "Text": "Hello {{name}}, how can I help you with {{topic}} today?"
+       }
+      },
+      "TemplateType": "TEXT"
+     }
+    ]
+   }
+  },
+  "TextPromptPromptVersiona9d8ed0d16ecad41aa9a65941b3b315c349071D9": {
+   "Type": "AWS::Bedrock::PromptVersion",
+   "Properties": {
+    "Description": "Version 1.1 created via prompt method",
+    "PromptArn": {
+     "Fn::GetAtt": [
+      "TextPrompt9846B9B3",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "ChatPrompt7050E95A": {
+   "Type": "AWS::Bedrock::Prompt",
+   "Properties": {
+    "DefaultVariant": "chat-variant",
+    "Description": "A chat prompt for comprehensive testing",
+    "Name": "chat-test-prompt",
+    "Tags": {
+     "Environment": "test",
+     "Purpose": "integration-testing",
+     "Team": "bedrock-team",
+     "Type": "chat"
+    },
+    "Variants": [
+     {
+      "InferenceConfiguration": {
+       "Text": {
+        "MaxTokens": 300,
+        "Temperature": 0.8
+       }
+      },
+      "ModelId": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":bedrock:",
+         {
+          "Ref": "AWS::Region"
+         },
+         "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+        ]
+       ]
+      },
+      "Name": "chat-variant",
+      "TemplateConfiguration": {
+       "Chat": {
+        "InputVariables": [
+         {
+          "Name": "topic"
+         },
+         {
+          "Name": "concept"
+         }
+        ],
+        "Messages": [
+         {
+          "Content": [
+           {
+            "Text": "Hello, I need help with {{topic}}"
+           }
+          ],
+          "Role": "user"
+         },
+         {
+          "Content": [
+           {
+            "Text": "I'd be happy to help you with that topic. What specific questions do you have?"
+           }
+          ],
+          "Role": "assistant"
+         },
+         {
+          "Content": [
+           {
+            "Text": "Please explain {{concept}} in simple terms"
+           }
+          ],
+          "Role": "user"
+         }
+        ],
+        "System": [
+         {
+          "Text": "You are a helpful assistant that explains complex topics in simple, easy-to-understand language."
+         }
+        ]
+       }
+      },
+      "TemplateType": "CHAT"
+     }
+    ]
+   }
+  },
+  "ChatPromptPromptVersiona6be9dc24f50fe69e0c02a396d5256e2AA9DDC0C": {
+   "Type": "AWS::Bedrock::PromptVersion",
+   "Properties": {
+    "Description": "Version 1.1 created via prompt method",
+    "PromptArn": {
+     "Fn::GetAtt": [
+      "ChatPrompt7050E95A",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "TextPromptVersion56B52E42": {
+   "Type": "AWS::Bedrock::PromptVersion",
+   "Properties": {
+    "Description": "Version 1.0 of the text prompt for production deployment",
+    "PromptArn": {
+     "Fn::GetAtt": [
+      "TextPrompt9846B9B3",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "ChatPromptVersion86656235": {
+   "Type": "AWS::Bedrock::PromptVersion",
+   "Properties": {
+    "Description": "Version 1.0 of the chat prompt for production deployment",
+    "PromptArn": {
+     "Fn::GetAtt": [
+      "ChatPrompt7050E95A",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "EncryptedPromptDF76BEA0": {
+   "Type": "AWS::Bedrock::Prompt",
+   "Properties": {
+    "Description": "A prompt encrypted with customer-managed KMS key",
+    "Name": "encrypted-test-prompt",
+    "Variants": [
+     {
+      "ModelId": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":bedrock:",
+         {
+          "Ref": "AWS::Region"
+         },
+         "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+        ]
+       ]
+      },
+      "Name": "encrypted-variant",
+      "TemplateConfiguration": {
+       "Text": {
+        "InputVariables": [
+         {
+          "Name": "data"
+         }
+        ],
+        "Text": "This is an encrypted prompt with sensitive data: {{data}}"
+       }
+      },
+      "TemplateType": "TEXT"
+     }
+    ]
+   }
+  },
+  "ToolPrompt6CE27C3F": {
+   "Type": "AWS::Bedrock::Prompt",
+   "Properties": {
+    "DefaultVariant": "chat-with-tools",
+    "Description": "A prompt that demonstrates tool usage capabilities",
+    "Name": "tool-enabled-prompt",
+    "Variants": [
+     {
+      "InferenceConfiguration": {
+       "Text": {
+        "MaxTokens": 500,
+        "Temperature": 0.6
+       }
+      },
+      "ModelId": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":bedrock:",
+         {
+          "Ref": "AWS::Region"
+         },
+         "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+        ]
+       ]
+      },
+      "Name": "chat-with-tools",
+      "TemplateConfiguration": {
+       "Chat": {
+        "InputVariables": [
+         {
+          "Name": "request"
+         }
+        ],
+        "Messages": [
+         {
+          "Content": [
+           {
+            "Text": "I need help with {{request}}. Please use the appropriate tools if needed."
+           }
+          ],
+          "Role": "user"
+         }
+        ],
+        "System": [
+         {
+          "Text": "You are a helpful assistant with access to weather and calculator tools. Use them when appropriate to help users."
+         }
+        ],
+        "ToolConfiguration": {
+         "ToolChoice": {
+          "Auto": {}
+         },
+         "Tools": [
+          {
+           "ToolSpec": {
+            "Description": "Get current weather information for a location",
+            "InputSchema": {
+             "Json": {
+              "type": "object",
+              "properties": {
+               "location": {
+                "type": "string",
+                "description": "The city and state, e.g. San Francisco, CA"
+               },
+               "unit": {
+                "type": "string",
+                "enum": [
+                 "celsius",
+                 "fahrenheit"
+                ],
+                "description": "The unit for temperature"
+               }
+              },
+              "required": [
+               "location"
+              ]
+             }
+            },
+            "Name": "weather_tool"
+           }
+          },
+          {
+           "ToolSpec": {
+            "Description": "Perform mathematical calculations",
+            "InputSchema": {
+             "Json": {
+              "type": "object",
+              "properties": {
+               "expression": {
+                "type": "string",
+                "description": "Mathematical expression to evaluate"
+               }
+              },
+              "required": [
+               "expression"
+              ]
+             }
+            },
+            "Name": "calculator"
+           }
+          }
+         ]
+        }
+       }
+      },
+      "TemplateType": "CHAT"
+     }
+    ]
+   }
+  },
+  "TestAgentRole522C6259": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":agent/*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": "agent-awscdkbedrockprompt1-testagent-18c0dbd9-bedrockagent"
+   }
+  },
+  "TestAgentRoleDefaultPolicy0A38CDBA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "bedrock:GetFoundationModel",
+        "bedrock:InvokeModel*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":bedrock:",
+          {
+           "Ref": "AWS::Region"
+          },
+          "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TestAgentRoleDefaultPolicy0A38CDBA",
+    "Roles": [
+     {
+      "Ref": "TestAgentRole522C6259"
+     }
+    ]
+   }
+  },
+  "TestAgent44AF1AE6": {
+   "Type": "AWS::Bedrock::Agent",
+   "Properties": {
+    "ActionGroups": [
+     {
+      "ActionGroupName": "UserInputAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.UserInput",
+      "SkipResourceInUseCheckOnDelete": false
+     },
+     {
+      "ActionGroupName": "CodeInterpreterAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.CodeInterpreter",
+      "SkipResourceInUseCheckOnDelete": false
+     }
+    ],
+    "AgentName": "integration-test-agent",
+    "AgentResourceRoleArn": {
+     "Fn::GetAtt": [
+      "TestAgentRole522C6259",
+      "Arn"
+     ]
+    },
+    "AutoPrepare": false,
+    "FoundationModel": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+      ]
+     ]
+    },
+    "IdleSessionTTLInSeconds": 600,
+    "Instruction": "This is a test agent for integration testing prompt variants with agent capabilities",
+    "OrchestrationType": "DEFAULT",
+    "SkipResourceInUseCheckOnDelete": true
+   },
+   "DependsOn": [
+    "TestAgentRoleDefaultPolicy0A38CDBA"
+   ]
+  },
+  "TestAgentAliasB1EC95BA": {
+   "Type": "AWS::Bedrock::AgentAlias",
+   "Properties": {
+    "AgentAliasName": "test-alias",
+    "AgentId": {
+     "Fn::GetAtt": [
+      "TestAgent44AF1AE6",
+      "AgentId"
+     ]
+    }
+   }
+  },
+  "AgentPrompt5B46B9D1": {
+   "Type": "AWS::Bedrock::Prompt",
+   "Properties": {
+    "DefaultVariant": "agent-variant",
+    "Description": "A prompt that uses an agent variant for specialized task handling",
+    "Name": "agent-integration-prompt",
+    "Variants": [
+     {
+      "GenAiResource": {
+       "Agent": {
+        "AgentIdentifier": {
+         "Fn::GetAtt": [
+          "TestAgentAliasB1EC95BA",
+          "AgentAliasArn"
+         ]
+        }
+       }
+      },
+      "Name": "agent-variant",
+      "TemplateConfiguration": {
+       "Text": {
+        "InputVariables": [
+         {
+          "Name": "task"
+         }
+        ],
+        "Text": "Agent, please help the user with {{task}} using your specialized capabilities."
+       }
+      },
+      "TemplateType": "TEXT"
+     }
+    ]
+   }
+  },
+  "TestRole6C9272DF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role for testing prompt permissions"
+   }
+  },
+  "TestRoleDefaultPolicyD1C92014": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "bedrock:GetPrompt",
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:bedrock:us-east-1:123456789012:prompt/IMPORTED12345",
+        {
+         "Fn::GetAtt": [
+          "ChatPrompt7050E95A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "EncryptedPromptDF76BEA0",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TextPrompt9846B9B3",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TestRoleDefaultPolicyD1C92014",
+    "Roles": [
+     {
+      "Ref": "TestRole6C9272DF"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

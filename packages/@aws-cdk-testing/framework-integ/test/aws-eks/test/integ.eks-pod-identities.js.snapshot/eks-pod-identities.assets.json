@@ -99,7 +99,7 @@
         }
       }
     },
-    "e6138fe57827802863ae6b1cd6ad57bc6ceade44f9b5ccb82709e5e079bc9ea7": {
+    "325458a7602556eca547db2f64dd9032bb127175afb3a61b6fcaa5d46059a484": {
       "displayName": "@aws-cdk--aws-eks.ClusterResourceProvider Nested Stack Template",
       "source": {
         "path": "ekspodidentitiesawscdkawseksClusterResourceProvider33590767.nested.template.json",
@@ -108,12 +108,12 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e6138fe57827802863ae6b1cd6ad57bc6ceade44f9b5ccb82709e5e079bc9ea7.json",
+          "objectKey": "325458a7602556eca547db2f64dd9032bb127175afb3a61b6fcaa5d46059a484.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "63c5ed0e42e0ee6306e95fd2061f0070029f7597459b4c6a5d2e4e968c96f9a7": {
+    "e174d6e40aaff3be305727e1b62fa983566a0fea5969883ab6133336b45c8837": {
       "displayName": "@aws-cdk--aws-eks.KubectlProvider Nested Stack Template",
       "source": {
         "path": "ekspodidentitiesawscdkawseksKubectlProviderED318AC2.nested.template.json",
@@ -122,12 +122,12 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "63c5ed0e42e0ee6306e95fd2061f0070029f7597459b4c6a5d2e4e968c96f9a7.json",
+          "objectKey": "e174d6e40aaff3be305727e1b62fa983566a0fea5969883ab6133336b45c8837.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "305d7879e41f44c01e06a0101e2f55ce6144e98d0ab9e1e62241337ddb75e35b": {
+    "36c5ba57c1de06c57916c030f24f50b950a903e8a67887346d432c236cd3ce87": {
       "displayName": "eks-pod-identities Template",
       "source": {
         "path": "eks-pod-identities.template.json",
@@ -136,7 +136,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "305d7879e41f44c01e06a0101e2f55ce6144e98d0ab9e1e62241337ddb75e35b.json",
+          "objectKey": "36c5ba57c1de06c57916c030f24f50b950a903e8a67887346d432c236cd3ce87.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
