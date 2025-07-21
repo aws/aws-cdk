@@ -461,9 +461,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "6094cb0ff874f89ab5ab24fb6b9417df0fdeb6966645f90c88ec1d7e28130112.zip"
+     "S3Key": "e995b7fa13f3d9f946ff291512015444c90346ee68f0067f80037541a4b54d62.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.32.3; /opt/helm/helm 3.17.2",
+    "Description": "/opt/kubectl/kubectl 1.33.0; /opt/helm/helm 3.18.0",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -647,7 +647,8 @@
      "ElasticLoadBalancing": {
       "Enabled": false
      },
-     "IpFamily": "ipv4"
+     "IpFamily": "ipv4",
+     "ServiceIpv4Cidr": "172.20.0.0/16"
     },
     "Logging": {
      "ClusterLogging": {
@@ -707,7 +708,7 @@
       "Value": "bar"
      }
     ],
-    "Version": "1.32"
+    "Version": "1.33"
    },
    "DependsOn": [
     "VpcIGWD7BA715C",
@@ -1222,7 +1223,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+     "S3Key": "b8ab94266984268614c3fb2824a1c3a55395746c48b28c003b08bc1d08688f3e.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1541,7 +1542,7 @@
   "ClusterNodegroupDefaultCapacityDA0920A3": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
-    "AmiType": "AL2_x86_64",
+    "AmiType": "AL2023_x86_64_STANDARD",
     "ClusterName": {
      "Ref": "ClusterEB0386A7"
     },
@@ -1863,7 +1864,7 @@
       }
      },
      "ImageId": {
-      "Ref": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsserviceeksoptimizedami133amazonlinux2023x8664standardrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
      "InstanceType": "t2.medium",
      "Monitoring": {
@@ -1936,25 +1937,25 @@
        "Fn::Join": [
         "",
         [
-         "#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ",
+         "\n---\napiVersion: node.eks.aws/v1alpha1\nkind: NodeConfig\nspec:\n  cluster:\n    name: ",
          {
           "Ref": "ClusterEB0386A7"
          },
-         " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --apiserver-endpoint '",
+         "\n    apiServerEndpoint: ",
          {
           "Fn::GetAtt": [
            "ClusterEB0386A7",
            "Endpoint"
           ]
          },
-         "' --b64-cluster-ca '",
+         "\n    certificateAuthority: ",
          {
           "Fn::GetAtt": [
            "ClusterEB0386A7",
            "CertificateAuthorityData"
           ]
          },
-         "' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster --resource ClusterNodesASGF172BD19 --region us-east-1"
+         "\n    cidr: 172.20.0.0/16\n  kubelet:\n    flags:\n    - \"--node-labels=lifecycle=OnDemand\"\n  "
         ]
        ]
       }
@@ -2040,6 +2041,39 @@
    "UpdatePolicy": {
     "AutoScalingScheduledAction": {
      "IgnoreUnmodifiedGroupSizeProperties": true
+    }
+   }
+  },
+  "Clusterx86Access1B39AB74": {
+   "Type": "AWS::EKS::AccessEntry",
+   "Properties": {
+    "AccessPolicies": [
+     {
+      "AccessScope": {
+       "Type": "cluster"
+      },
+      "PolicyArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+        ]
+       ]
+      }
+     }
+    ],
+    "ClusterName": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "PrincipalArn": {
+     "Fn::GetAtt": [
+      "ClusterNodesInstanceRoleC3C01328",
+      "Arn"
+     ]
     }
    }
   },
@@ -2211,6 +2245,18 @@
         {
          "Ref": "AWS::Partition"
         },
+        ":iam::aws:policy/AmazonSSMManagedInstanceCore"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
         ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
        ]
       ]
@@ -2285,7 +2331,7 @@
       }
      },
      "ImageId": {
-      "Ref": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsserviceeksoptimizedami133amazonlinux2023arm64standardrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
      "InstanceType": "m6g.medium",
      "Monitoring": {
@@ -2358,25 +2404,25 @@
        "Fn::Join": [
         "",
         [
-         "#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ",
+         "\n---\napiVersion: node.eks.aws/v1alpha1\nkind: NodeConfig\nspec:\n  cluster:\n    name: ",
          {
           "Ref": "ClusterEB0386A7"
          },
-         " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --apiserver-endpoint '",
+         "\n    apiServerEndpoint: ",
          {
           "Fn::GetAtt": [
            "ClusterEB0386A7",
            "Endpoint"
           ]
          },
-         "' --b64-cluster-ca '",
+         "\n    certificateAuthority: ",
          {
           "Fn::GetAtt": [
            "ClusterEB0386A7",
            "CertificateAuthorityData"
           ]
          },
-         "' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster --resource ClusterNodesArmASG40A593D0 --region us-east-1"
+         "\n    cidr: 172.20.0.0/16\n  kubelet:\n    flags:\n    - \"--node-labels=lifecycle=OnDemand\"\n  "
         ]
        ]
       }
@@ -2462,6 +2508,39 @@
    "UpdatePolicy": {
     "AutoScalingScheduledAction": {
      "IgnoreUnmodifiedGroupSizeProperties": true
+    }
+   }
+  },
+  "ClusterArmAccess24FF282A": {
+   "Type": "AWS::EKS::AccessEntry",
+   "Properties": {
+    "AccessPolicies": [
+     {
+      "AccessScope": {
+       "Type": "cluster"
+      },
+      "PolicyArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+        ]
+       ]
+      }
+     }
+    ],
+    "ClusterName": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "PrincipalArn": {
+     "Fn::GetAtt": [
+      "ClusterNodesArmInstanceRoleB93D3298",
+      "Arn"
+     ]
     }
    }
   },
@@ -2707,7 +2786,7 @@
       }
      },
      "ImageId": {
-      "Ref": "SsmParameterValueawsservicebottlerocketawsk8s132x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsservicebottlerocketawsk8s133x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
      "InstanceType": "t3.small",
      "Monitoring": {
@@ -2884,6 +2963,39 @@
    "UpdatePolicy": {
     "AutoScalingScheduledAction": {
      "IgnoreUnmodifiedGroupSizeProperties": true
+    }
+   }
+  },
+  "ClusterBottleRocketAccess0FA043D0": {
+   "Type": "AWS::EKS::AccessEntry",
+   "Properties": {
+    "AccessPolicies": [
+     {
+      "AccessScope": {
+       "Type": "cluster"
+      },
+      "PolicyArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+        ]
+       ]
+      }
+     }
+    ],
+    "ClusterName": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "PrincipalArn": {
+     "Fn::GetAtt": [
+      "ClusterBottlerocketNodesInstanceRole68E4BCFB",
+      "Arn"
+     ]
     }
    }
   },
@@ -3129,7 +3241,7 @@
       }
      },
      "ImageId": {
-      "Ref": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsserviceeksoptimizedami133amazonlinux2023x8664standardrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
      "InstanceMarketOptions": {
       "MarketType": "spot",
@@ -3208,25 +3320,25 @@
        "Fn::Join": [
         "",
         [
-         "#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ",
+         "\n---\napiVersion: node.eks.aws/v1alpha1\nkind: NodeConfig\nspec:\n  cluster:\n    name: ",
          {
           "Ref": "ClusterEB0386A7"
          },
-         " --kubelet-extra-args \"--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule --node-labels foo=bar,goo=far\" --apiserver-endpoint '",
+         "\n    apiServerEndpoint: ",
          {
           "Fn::GetAtt": [
            "ClusterEB0386A7",
            "Endpoint"
           ]
          },
-         "' --b64-cluster-ca '",
+         "\n    certificateAuthority: ",
          {
           "Fn::GetAtt": [
            "ClusterEB0386A7",
            "CertificateAuthorityData"
           ]
          },
-         "' --use-max-pods true --aws-api-retry-attempts 5\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster --resource ClusterspotASG857494B6 --region us-east-1"
+         "\n    cidr: 172.20.0.0/16\n  kubelet:\n    flags:\n    - \"--node-labels=lifecycle=Ec2Spot\"\n  "
         ]
        ]
       }
@@ -3315,6 +3427,39 @@
     }
    }
   },
+  "ClusterSpotAccess0767D563": {
+   "Type": "AWS::EKS::AccessEntry",
+   "Properties": {
+    "AccessPolicies": [
+     {
+      "AccessScope": {
+       "Type": "cluster"
+      },
+      "PolicyArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+        ]
+       ]
+      }
+     }
+    ],
+    "ClusterName": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "PrincipalArn": {
+     "Fn::GetAtt": [
+      "ClusterspotInstanceRole39043830",
+      "Arn"
+     ]
+    }
+   }
+  },
   "ClusterNodegroupextrangNodeGroupRole23AE23D0": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -3373,7 +3518,7 @@
   "ClusterNodegroupextrangF9406A09": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
-    "AmiType": "AL2_x86_64",
+    "AmiType": "AL2023_x86_64_STANDARD",
     "ClusterName": {
      "Ref": "ClusterEB0386A7"
     },
@@ -3463,7 +3608,7 @@
   "ClusterNodegroupextrangspotB327AE6B": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
-    "AmiType": "AL2_x86_64",
+    "AmiType": "AL2023_x86_64_STANDARD",
     "CapacityType": "SPOT",
     "ClusterName": {
      "Ref": "ClusterEB0386A7"
@@ -3553,7 +3698,7 @@
   "ClusterNodegroupextrangarm7773987A": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
-    "AmiType": "AL2_ARM_64",
+    "AmiType": "AL2023_ARM_64_STANDARD",
     "ClusterName": {
      "Ref": "ClusterEB0386A7"
     },
@@ -3643,7 +3788,7 @@
   "ClusterNodegroupextrangarm327128311": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
-    "AmiType": "AL2_ARM_64",
+    "AmiType": "AL2023_ARM_64_STANDARD",
     "ClusterName": {
      "Ref": "ClusterEB0386A7"
     },
@@ -3769,13 +3914,12 @@
   "ClusterNodegroupextranggpu928E9016": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
-    "AmiType": "AL2_x86_64_GPU",
+    "AmiType": "AL2023_x86_64_NVIDIA",
     "ClusterName": {
      "Ref": "ClusterEB0386A7"
     },
     "ForceUpdateEnabled": true,
     "InstanceTypes": [
-     "p2.xlarge",
      "g5.xlarge",
      "g6e.xlarge"
     ],
@@ -4203,7 +4347,7 @@
    "Properties": {
     "LaunchTemplateData": {
      "ImageId": {
-      "Ref": "SsmParameterValueawsserviceeksoptimizedami125amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsserviceeksoptimizedami133amazonlinux2023x8664standardrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
      "InstanceType": "t3.small",
      "UserData": {
@@ -4211,10 +4355,25 @@
        "Fn::Join": [
         "",
         [
-         "#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ",
+         "---\napiVersion: node.eks.aws/v1alpha1\nkind: NodeConfig\nspec:\n  cluster:\n    name: ",
          {
           "Ref": "ClusterEB0386A7"
-         }
+         },
+         "\n    apiServerEndpoint: ",
+         {
+          "Fn::GetAtt": [
+           "ClusterEB0386A7",
+           "Endpoint"
+          ]
+         },
+         "\n    certificateAuthority: ",
+         {
+          "Fn::GetAtt": [
+           "ClusterEB0386A7",
+           "CertificateAuthorityData"
+          ]
+         },
+         "\n    cidr: 172.20.0.0/16\n    "
         ]
        ]
       }
@@ -4496,21 +4655,17 @@
   }
  },
  "Parameters": {
-  "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsserviceeksoptimizedami133amazonlinux2023x8664standardrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/aws/service/eks/optimized-ami/1.32/amazon-linux-2/recommended/image_id"
+   "Default": "/aws/service/eks/optimized-ami/1.33/amazon-linux-2023/x86_64/standard/recommended/image_id"
   },
-  "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsserviceeksoptimizedami133amazonlinux2023arm64standardrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/aws/service/eks/optimized-ami/1.32/amazon-linux-2-arm64/recommended/image_id"
+   "Default": "/aws/service/eks/optimized-ami/1.33/amazon-linux-2023/arm64/standard/recommended/image_id"
   },
-  "SsmParameterValueawsservicebottlerocketawsk8s132x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsservicebottlerocketawsk8s133x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/aws/service/bottlerocket/aws-k8s-1.32/x86_64/latest/image_id"
-  },
-  "SsmParameterValueawsserviceeksoptimizedami125amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/aws/service/eks/optimized-ami/1.25/amazon-linux-2/recommended/image_id"
+   "Default": "/aws/service/bottlerocket/aws-k8s-1.33/x86_64/latest/image_id"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
