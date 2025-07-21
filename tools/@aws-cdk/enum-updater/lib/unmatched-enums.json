@@ -854,6 +854,9 @@
     "LogQueryVisualizationType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/log-query.ts"
     },
+    "LogQueryLanguage": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/log-query.ts"
+    },
     "TextWidgetBackground": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/text.ts"
     },
