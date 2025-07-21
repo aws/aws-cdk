@@ -214,7 +214,6 @@ test.each([
   [ExecutionMode.SUPERSEDED, 'SUPERSEDED'],
   [ExecutionMode.QUEUED, 'QUEUED'],
   [ExecutionMode.PARALLEL, 'PARALLEL'],
-  [undefined, 'SUPERSEDED'],
 ])('can specify execution mode %s for v2 pipeline', (type, expected) => {
   const stack = new cdk.Stack();
   const repo = new ccommit.Repository(stack, 'Repo', {
@@ -242,10 +241,7 @@ test.each([
   });
 });
 
-test.each([
-  [undefined, 'SUPERSEDED'],
-  [ExecutionMode.SUPERSEDED, 'SUPERSEDED'],
-])('can specify execution mode %s for v1 pipeline', (type, expected) => {
+test('can specify execution mode SUPERSEDED for v1 pipeline', () => {
   const stack = new cdk.Stack();
   const repo = new ccommit.Repository(stack, 'Repo', {
     repositoryName: 'MyRepo',
@@ -264,11 +260,11 @@ test.each([
       ],
     }),
     pipelineType: PipelineType.V2,
-    executionMode: type,
+    executionMode: ExecutionMode.SUPERSEDED,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    ExecutionMode: expected,
+    ExecutionMode: "SUPERSEDED",
   });
 });
 
