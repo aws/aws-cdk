@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "490d27ef21bb3ac87467fee9ab15bcd01f8e502d63cb57a37ef3946cd106f90a": {
+      "displayName": "SchemaTableStack Template",
+      "source": {
+        "path": "SchemaTableStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4b1bbb27": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "490d27ef21bb3ac87467fee9ab15bcd01f8e502d63cb57a37ef3946cd106f90a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

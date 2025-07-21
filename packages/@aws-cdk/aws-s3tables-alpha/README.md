@@ -24,7 +24,7 @@ Amazon S3 Tables deliver the first cloud object store with built-in Apache Icebe
 
 ## Usage
 
-### Define an S3 Table Bucket
+### Define an S3 Table Bucket, Namespace, and Table
 
 ```ts
 // Build a Table bucket
@@ -36,6 +36,59 @@ const sampleTableBucket = new TableBucket(scope, 'ExampleTableBucket', {
         noncurrentDays: 20,
         unreferencedDays: 20,
     }
+});
+```
+
+### Define an S3 Tables Namespace
+
+```ts
+// Build a namespace
+const sampleNamespace = new Namespace(scope, 'ExampleNamespace', {
+    namespaceName: 'example-namespace-1',
+    tableBucket: tableBucket,
+});
+```
+
+### Define an S3 Table
+
+```ts
+// Build a table
+const sampleTable = new Table(scope, 'ExampleTable', {
+    tableName: 'example_table',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    withoutMetadata: true,
+});
+
+// Build a table with an Iceberg Schema
+const sampleTableWithSchema = new Table(scope, 'ExampleSchemaTable', {
+    tableName: 'example_table_with_schema',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    icebergMetadata: {
+        icebergSchema: {
+            schemaFieldList: [
+            {
+                name: 'id',
+                type: 'int',
+                required: true,
+            },
+            {
+                name: 'name',
+                type: 'string',
+            },
+            ],
+        },
+    },
+    compaction: {
+        status: Status.ENABLED,
+        targetFileSizeMb: 128,
+    },
+    snapshotManagement: {
+        status: Status.ENABLED,
+        maxSnapshotAgeHours: 48,
+        minSnapshotsToKeep: 5,
+    },
 });
 ```
 

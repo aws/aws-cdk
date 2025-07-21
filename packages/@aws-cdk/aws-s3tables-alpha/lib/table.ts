@@ -372,5 +372,6 @@ export class Table extends TableBase {
     this.tableName = this.getResourceNameAttribute(this._resource.ref);
     this.tableArn = this._resource.attrTableArn;
     this._resource.applyRemovalPolicy(props.removalPolicy);
+    this.node.addDependency(this.namespace);
   }
 }
