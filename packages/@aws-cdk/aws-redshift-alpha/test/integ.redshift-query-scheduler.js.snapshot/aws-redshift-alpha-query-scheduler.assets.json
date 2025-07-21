@@ -1,0 +1,21 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "f27dadc20a85045fc9be37fb3ace65041eaceb01056d77d611b893ca42ae9d7d": {
+      "displayName": "aws-redshift-alpha-query-scheduler Template",
+      "source": {
+        "path": "aws-redshift-alpha-query-scheduler.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "123456789012-us-east-1-c1b676f7": {
+          "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "objectKey": "f27dadc20a85045fc9be37fb3ace65041eaceb01056d77d611b893ca42ae9d7d.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
