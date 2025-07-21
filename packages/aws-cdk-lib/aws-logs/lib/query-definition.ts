@@ -112,7 +112,7 @@ export class QueryString {
    */
   public readonly statsStatementsLength?: number;
   /**
-   * If the props for the query string has both stats and statsStatements
+   * If the props for the query string have both stats and statsStatements
    */
   public readonly hasStatsAndStatsStatements: boolean;
 
