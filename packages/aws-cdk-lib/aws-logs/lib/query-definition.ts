@@ -107,7 +107,13 @@ export class QueryString {
   private readonly limit?: Number;
   private readonly display?: string;
 
+  /**
+   * Length of statsStatements
+   */
   public readonly statsStatementsLength?: number;
+  /**
+   * If the props for the query string has both stats and statsStatements
+   */
   public readonly hasStatsAndStatsStatements: boolean;
 
   constructor(props: QueryStringProps = {}) {
