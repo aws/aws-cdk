@@ -24,7 +24,7 @@ Amazon S3 Tables deliver the first cloud object store with built-in Apache Icebe
 
 ## Usage
 
-### Define an S3 Table Bucket, Namespace, and Table
+### Define an S3 Table Bucket
 
 ```ts
 // Build a Table bucket
