@@ -1,4 +1,5 @@
 import { IAlarm } from './alarm-base';
+import { CompositeAlarm } from './composite-alarm';
 import { IMetric } from './metric-types';
 import { allMetricsGraphJson } from './private/rendering';
 import { ConcreteWidget } from './widget';
@@ -114,8 +115,14 @@ export class AlarmWidget extends ConcreteWidget {
   }
 
   public toJson(): any[] {
+    // Detect if the alarm is a CompositeAlarm to determine widget type
+    // Check both instanceof for created CompositeAlarms and marker for imported ones
+    const isCompositeAlarm = this.props.alarm instanceof CompositeAlarm ||
+      (this.props.alarm as any).isCompositeAlarm === true;
+    const widgetType = isCompositeAlarm ? 'alarm' : 'metric';
+
     return [{
-      type: 'metric',
+      type: widgetType,
       width: this.width,
       height: this.height,
       x: this.x,
