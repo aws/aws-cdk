@@ -152,6 +152,10 @@
       "properties": {
         "module": "aws-cdk-lib",
         "flags": {
+          "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "recommendedValue": true,
+            "explanation": "Pass signingProfileName to CfnSigningProfile"
+          },
           "@aws-cdk/core:enableStackNameDuplicates": {
             "recommendedValue": true,
             "explanation": "Allow multiple stacks with the same name"

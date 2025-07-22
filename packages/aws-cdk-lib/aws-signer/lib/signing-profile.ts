@@ -1,8 +1,11 @@
 import { Construct } from 'constructs';
 import { CfnSigningProfile } from './signer.generated';
-import { Duration, IResource, Resource, Stack } from '../../core';
+import { Duration, FeatureFlags, IResource, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as cxapi from '../../cx-api';
+
+// Feature flag is defined in cx-api
 
 /**
  * Platforms that are allowed with signing config.
@@ -180,9 +183,11 @@ export class SigningProfile extends Resource implements ISigningProfile {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    const useProfileNameInCfn = FeatureFlags.of(this).isEnabled(cxapi.SIGNER_PROFILE_NAME_PASSED_TO_CFN);
+
     const resource = new CfnSigningProfile(this, 'Resource', {
       platformId: props.platform.platformId,
-      profileName: props.signingProfileName,
+      profileName: useProfileNameInCfn ? props.signingProfileName : undefined,
       signatureValidityPeriod: props.signatureValidity ? {
         type: 'DAYS',
         value: props.signatureValidity?.toDays(),
