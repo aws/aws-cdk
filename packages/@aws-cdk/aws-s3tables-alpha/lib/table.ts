@@ -302,7 +302,7 @@ export class Table extends TableBase {
     const illegalCharMatch = tableName.match(illegalCharsetRegEx);
     if (illegalCharMatch) {
       errors.push(
-        'Table name must only contain lowercase characters, numbers, and hyphens (-)' +
+        'Table name must only contain lowercase characters, numbers, and underscores (_)' +
           ` (offset: ${illegalCharMatch.index})`,
       );
     }

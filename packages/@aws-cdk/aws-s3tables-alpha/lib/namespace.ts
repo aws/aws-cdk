@@ -100,7 +100,7 @@ export class Namespace extends Resource implements INamespace {
     const illegalCharMatch = namespaceName.match(illegalCharsetRegEx);
     if (illegalCharMatch) {
       errors.push(
-        'Namespace name must only contain lowercase characters, numbers, and hyphens (-)' +
+        'Namespace name must only contain lowercase characters, numbers, and underscores (_)' +
           ` (offset: ${illegalCharMatch.index})`,
       );
     }
@@ -127,7 +127,7 @@ export class Namespace extends Resource implements INamespace {
 
     if (errors.length > 0) {
       throw new UnscopedValidationError(
-        `Invalid S3 table name (value: ${namespaceName})${EOL}${errors.join(EOL)}`,
+        `Invalid S3 Tables namespace name (value: ${namespaceName})${EOL}${errors.join(EOL)}`,
       );
     }
   }
