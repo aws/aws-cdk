@@ -264,7 +264,7 @@ test('can specify execution mode SUPERSEDED for v1 pipeline', () => {
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    ExecutionMode: "SUPERSEDED",
+    ExecutionMode: 'SUPERSEDED',
   });
 });
 
