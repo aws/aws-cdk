@@ -225,7 +225,7 @@ describe('Table', () => {
 
       invalidNames.forEach(name => {
         expect(() => s3tables.Table.validateTableName(name)).toThrow(
-          /must only contain lowercase characters, numbers, and hyphens/,
+          /must only contain lowercase characters, numbers, and underscores/,
         );
       });
     });
