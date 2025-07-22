@@ -97,6 +97,9 @@ export class CompositeAlarm extends AlarmBase {
     class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = compositeAlarmArn;
       public readonly alarmName = Stack.of(scope).splitArn(compositeAlarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
+
+      // Add a marker to identify this as a composite alarm import
+      public readonly isCompositeAlarm = true;
     }
     return new Import(scope, id);
   }
