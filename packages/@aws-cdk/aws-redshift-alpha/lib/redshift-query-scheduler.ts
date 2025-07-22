@@ -38,7 +38,7 @@ export interface RedshiftQuerySchedulerProps {
   readonly workgroupArn?: string;
 
   /**
-   * The database user name for authentication. Cannot be used together with secretArn.
+   * The database user name for authentication. Cannot be used together with secret.
    * Cannot be used when workgroupArn is specified.
    *
    * @default - No database user specified
@@ -46,11 +46,11 @@ export interface RedshiftQuerySchedulerProps {
   readonly dbUser?: string;
 
   /**
-   * The ARN of the secret containing database credentials. Cannot be used together with dbUser.
+   * The secret containing database credentials. Cannot be used together with dbUser.
    *
-   * @default - No secret ARN specified
+   * @default - No secret specified
    */
-  readonly secretArn?: string;
+  readonly secret?: secretsmanager.ISecret;
 
   /**
    * A single SQL statement to execute. Cannot be used together with sqls.
@@ -141,7 +141,7 @@ export class RedshiftQueryScheduler extends Construct {
     const redshiftQueryProps: targets.RedshiftQueryProps = {
       database: props.database,
       dbUser: props.dbUser,
-      secret: props.secretArn ? secretsmanager.Secret.fromSecretCompleteArn(this, 'Secret', props.secretArn) : undefined,
+      secret: props.secret,
       sql: props.sql ? [props.sql] : props.sqls!,
       statementName: statementName,
       sendEventBridgeEvent: true, // Maps to WithEvent: true
@@ -167,10 +167,14 @@ export class RedshiftQueryScheduler extends Construct {
 
     // Validate authentication
     const hasDbUser = !!props.dbUser;
-    const hasSecretArn = !!props.secretArn;
+    const hasSecret = !!props.secret;
 
-    if (hasDbUser && hasSecretArn) {
-      throw new ValidationError('Cannot specify both dbUser and secretArn. Choose exactly one.', this);
+    if (hasDbUser && hasSecret) {
+      throw new ValidationError('Cannot specify both dbUser and secret. Choose exactly one.', this);
+    }
+
+    if (!hasDbUser && !hasSecret) {
+      throw new ValidationError('Must specify exactly one of dbUser or secret.', this);
     }
 
     // Validate workgroup + dbUser restriction

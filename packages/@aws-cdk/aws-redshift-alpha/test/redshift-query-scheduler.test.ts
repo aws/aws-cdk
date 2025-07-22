@@ -3,6 +3,7 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Duration, Stack } from 'aws-cdk-lib/core';
 import { RedshiftQueryScheduler } from '../lib/redshift-query-scheduler';
 
@@ -54,33 +55,35 @@ describe('RedshiftQueryScheduler', () => {
       template.resourceCountIs('AWS::Scheduler::Schedule', 0);
     });
 
-    test('creates scheduled rule with workgroup ARN and secretArn', () => {
+    test('creates scheduled rule with workgroup ARN and secret object', () => {
       // ARRANGE
+      const secret = secretsmanager.Secret.fromSecretNameV2(stack, 'TestSecret', 'test-secret');
+
       const props = {
-        schedulerName: 'workgroup-scheduler',
+        schedulerName: 'secret-scheduler',
         database: 'test-db',
         workgroupArn: 'arn:aws:redshift-serverless:us-east-1:123456789012:workgroup/test-workgroup',
-        secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret-abc123',
-        sqls: ['SELECT 1', 'SELECT 2'],
+        secret: secret,
+        sql: 'SELECT 1',
         schedule: scheduler.ScheduleExpression.rate(Duration.hours(1)),
       };
 
       // ACT
-      new RedshiftQueryScheduler(stack, 'WorkgroupScheduler', props);
+      new RedshiftQueryScheduler(stack, 'SecretScheduler', props);
 
       // ASSERT
       const template = Template.fromStack(stack);
 
       template.hasResourceProperties('AWS::Events::Rule', {
-        Name: 'QS2-workgroup-scheduler',
+        Name: 'QS2-secret-scheduler',
         ScheduleExpression: 'rate(1 hour)',
         Targets: [{
           Arn: 'arn:aws:redshift-serverless:us-east-1:123456789012:workgroup/test-workgroup',
           RedshiftDataParameters: {
             Database: 'test-db',
-            SecretManagerArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret-abc123',
-            Sqls: ['SELECT 1', 'SELECT 2'],
-            StatementName: 'QS2-workgroup-scheduler',
+            SecretManagerArn: 'test-secret',
+            Sql: 'SELECT 1',
+            StatementName: 'QS2-secret-scheduler',
             WithEvent: true,
           },
         }],
@@ -177,22 +180,24 @@ describe('RedshiftQueryScheduler', () => {
       }).toThrow('Must specify exactly one of clusterArn or workgroupArn.');
     });
 
-    test('throws error when both dbUser and secretArn are provided', () => {
+    test('throws error when both dbUser and secret are provided', () => {
       // ARRANGE
+      const secret = secretsmanager.Secret.fromSecretNameV2(stack, 'TestSecret2', 'test-secret');
+
       const props = {
         schedulerName: 'invalid-scheduler',
         database: 'test-db',
         clusterArn: 'arn:aws:redshift:us-east-1:123456789012:cluster:test-cluster',
         dbUser: 'test-user',
-        secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret-abc123',
+        secret: secret,
         sql: 'SELECT 1',
         schedule: scheduler.ScheduleExpression.rate(Duration.minutes(5)),
       };
 
       // ACT & ASSERT
       expect(() => {
-        new RedshiftQueryScheduler(stack, 'InvalidScheduler', props);
-      }).toThrow('Cannot specify both dbUser and secretArn. Choose exactly one.');
+        new RedshiftQueryScheduler(stack, 'InvalidScheduler2', props);
+      }).toThrow('Cannot specify both dbUser and secret. Choose exactly one.');
     });
 
     test('throws error when dbUser is provided with workgroupArn', () => {
@@ -244,6 +249,22 @@ describe('RedshiftQueryScheduler', () => {
       expect(() => {
         new RedshiftQueryScheduler(stack, 'InvalidScheduler', props);
       }).toThrow('Must specify exactly one of sql or sqls.');
+    });
+
+    test('throws error when neither dbUser nor secret are provided', () => {
+      // ARRANGE
+      const props = {
+        schedulerName: 'invalid-scheduler',
+        database: 'test-db',
+        clusterArn: 'arn:aws:redshift:us-east-1:123456789012:cluster:test-cluster',
+        sql: 'SELECT 1',
+        schedule: scheduler.ScheduleExpression.rate(Duration.minutes(5)),
+      };
+
+      // ACT & ASSERT
+      expect(() => {
+        new RedshiftQueryScheduler(stack, 'InvalidScheduler', props);
+      }).toThrow('Must specify exactly one of dbUser or secret.');
     });
 
     test('throws error when sqls array is empty', () => {
@@ -338,10 +359,12 @@ describe('RedshiftQueryScheduler', () => {
         assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
         description: 'Custom role for Redshift query execution',
       });
+
       customRole.addToPolicy(new iam.PolicyStatement({
         actions: ['redshift-data:ExecuteStatement'],
         resources: ['*'],
       }));
+
       const props = {
         schedulerName: 'role-scheduler',
         database: 'test-db',
@@ -357,6 +380,7 @@ describe('RedshiftQueryScheduler', () => {
 
       // ASSERT
       const template = Template.fromStack(stack);
+
       // Verify the custom role is used in the target
       template.hasResourceProperties('AWS::Events::Rule', {
         Name: 'QS2-role-scheduler',

@@ -6,7 +6,6 @@
     "attribute-tag:@aws-cdk/aws-redshift-alpha.DatabaseSecret.secretName",
     "attribute-tag:@aws-cdk/aws-redshift-alpha.DatabaseSecret.secretFullArn",
     "props-no-arn-refs:@aws-cdk/aws-redshift-alpha.RedshiftQuerySchedulerProps.clusterArn",
-    "props-no-arn-refs:@aws-cdk/aws-redshift-alpha.RedshiftQuerySchedulerProps.workgroupArn",
-    "props-no-arn-refs:@aws-cdk/aws-redshift-alpha.RedshiftQuerySchedulerProps.secretArn"
+    "props-no-arn-refs:@aws-cdk/aws-redshift-alpha.RedshiftQuerySchedulerProps.workgroupArn"
   ]
 }

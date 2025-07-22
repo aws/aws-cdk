@@ -758,12 +758,16 @@ new RedshiftQueryScheduler(this, 'DailyReport', {
   schedule: scheduler.ScheduleExpression.rate(Duration.days(1)),
 });
 
-// For a Redshift Serverless workgroup
+// For a Redshift Serverless workgroup with Secret object
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
+const secret = secretsmanager.Secret.fromSecretNameV2(this, 'RedshiftSecret', 'arn:aws:secretsmanager:us-east-1:804245508169:secret:my-redshift-secret');
+
 new RedshiftQueryScheduler(this, 'HourlyMetrics', {
   schedulerName: 'hourly-metrics',
   database: 'analytics',
   workgroupArn: 'arn:aws:redshift-serverless:us-east-1:123456789012:workgroup/my-workgroup',
-  secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret',
+  secret: secret,
   sql: 'CALL update_hourly_metrics()',
   schedule: scheduler.ScheduleExpression.rate(Duration.hours(1)),
 });

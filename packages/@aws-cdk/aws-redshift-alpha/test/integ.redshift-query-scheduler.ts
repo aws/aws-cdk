@@ -1,5 +1,6 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Duration, Stack, App, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
@@ -20,12 +21,14 @@ class RedshiftQuerySchedulerTestStack extends Stack {
       description: 'Daily order count report for cluster',
     });
 
-    // Test 2: Workgroup with secretArn and multiple SQLs
+    // Test 2: Workgroup with secret and multiple SQLs
+    const secret = secretsmanager.Secret.fromSecretNameV2(this, 'RedshiftSecret', 'arn:aws:secretsmanager:us-east-1:123456789012:secret:redshift-credentials-abc123');
+
     new redshift.RedshiftQueryScheduler(this, 'WorkgroupScheduler', {
       schedulerName: 'workgroup-hourly-cleanup',
       database: 'warehouse',
       workgroupArn: 'arn:aws:redshift-serverless:us-east-1:123456789012:workgroup/test-workgroup',
-      secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:redshift-credentials-abc123',
+      secret: secret,
       sqls: [
         'DELETE FROM temp_table WHERE created_at < CURRENT_TIMESTAMP - INTERVAL \'1 hour\'',
         'VACUUM temp_table',
