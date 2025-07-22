@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution, CfnMonitoringSubscription } from './cloudfront.generated';
+import { HttpVersion, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol, AllowedMethods, CachedMethods, ErrorResponse, EdgeLambda } from './distribution';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
@@ -13,15 +14,13 @@ import { IResponseHeadersPolicy } from './response-headers-policy';
 import * as acm from '../../aws-certificatemanager';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations, ValidationError } from '../../core';
+import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Names, FeatureFlags, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
-
 /**
- * Interface for CloudFront distributions
+ * Interface for CloudFront Multi-Tenant Distributions
  */
 export interface IMTDistribution extends IResource {
   /**
@@ -73,7 +72,7 @@ export interface IMTDistribution extends IResource {
 /**
  * Attributes used to import a Distribution.
  */
-export interface DistributionAttributes {
+export interface MTDistributionAttributes {
   /**
    * The generated domain name of the Distribution, such as d111111abcdef8.cloudfront.net.
    *
@@ -95,9 +94,9 @@ interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
 }
 
 /**
- * Properties for a Distribution
+ * Properties for a Multi-tenant Distribution
  */
-export interface DistributionProps {
+export interface MTDProps {
   /**
    * The default behavior for the distribution.
    */
@@ -134,35 +133,11 @@ export interface DistributionProps {
   readonly defaultRootObject?: string;
 
   /**
-   * Alternative domain names for this distribution.
-   *
-   * If you want to use your own domain name, such as www.example.com, instead of the cloudfront.net domain name,
-   * you can add an alternate domain name to your distribution. If you attach a certificate to the distribution,
-   * you should add (at least one of) the domain names of the certificate to this list.
-   *
-   * When you want to move a domain name between distributions, you can associate a certificate without specifying any domain names.
-   * For more information, see the _Moving an alternate domain name to a different distribution_ section in the README.
-   *
-   * @default - The distribution will only support the default generated name (e.g., d111111abcdef8.cloudfront.net)
-   */
-  readonly domainNames?: string[];
-
-  /**
    * Enable or disable the distribution.
    *
    * @default true
    */
   readonly enabled?: boolean;
-
-  /**
-   * Whether CloudFront will respond to IPv6 DNS requests with an IPv6 address.
-   *
-   * If you specify false, CloudFront responds to IPv6 DNS requests with the DNS response code NOERROR and with no IP addresses.
-   * This allows viewers to submit a second request, for an IPv4 address for your distribution.
-   *
-   * @default true
-   */
-  readonly enableIpv6?: boolean;
 
   /**
    * Enable access logging for the distribution.
@@ -208,16 +183,6 @@ export interface DistributionProps {
    * @default - no prefix
    */
   readonly logFilePrefix?: string;
-
-  /**
-   * The price class that corresponds with the maximum price that you want to pay for CloudFront service.
-   * If you specify PriceClass_All, CloudFront responds to requests for your objects from all CloudFront edge locations.
-   * If you specify a price class other than PriceClass_All, CloudFront serves your objects from the CloudFront edge location
-   * that has the lowest latency among the edge locations in your price class.
-   *
-   * @default PriceClass.PRICE_CLASS_ALL
-   */
-  readonly priceClass?: PriceClass;
 
   /**
    * Unique identifier that specifies the AWS WAF web ACL to associate with this CloudFront distribution.
@@ -283,7 +248,7 @@ export interface DistributionProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-cloudfront-distribution-tenantconfig.html
    *
-   * @default - No special configurations.
+   * @default - No special tenant configurations.
    */
   readonly tenantConfig?: CfnDistribution.TenantConfigProperty;
 }
@@ -292,16 +257,17 @@ export interface DistributionProps {
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
  */
 @propertyInjectable
-export class Distribution extends Resource implements IMTDistribution {
+export class MTDistribution extends Resource implements IMTDistribution {
   /**
    * Uniquely identifies this class.
+   * UPDATE WITH PROPER LINK
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.Distribution';
 
   /**
    * Creates a Distribution construct that represents an external (imported) distribution.
    */
-  public static fromDistributionAttributes(scope: Construct, id: string, attrs: DistributionAttributes): IMTDistribution {
+  public static fromDistributionAttributes(scope: Construct, id: string, attrs: MTDistributionAttributes): IMTDistribution {
     return new class extends Resource implements IMTDistribution {
       public readonly domainName: string;
       public readonly distributionDomainName: string;
@@ -341,7 +307,7 @@ export class Distribution extends Resource implements IMTDistribution {
   private readonly publishAdditionalMetrics?: boolean;
   private webAclId?: string;
 
-  constructor(scope: Construct, id: string, props: DistributionProps) {
+  constructor(scope: Construct, id: string, props: MTDProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
@@ -350,10 +316,6 @@ export class Distribution extends Resource implements IMTDistribution {
       const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
         throw new ValidationError(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`, this);
-      }
-
-      if ((props.domainNames ?? []).length === 0) {
-        Annotations.of(this).addWarningV2('@aws-cdk/aws-cloudfront:emptyDomainNames', 'No domain names are specified. You will need to specify it after running associate-alias CLI command manually. See the "Moving an alternate domain name to a different distribution" section of module\'s README for more info.');
       }
     }
 
@@ -383,25 +345,26 @@ export class Distribution extends Resource implements IMTDistribution {
         ? `${props.comment.slice(0, 128 - 3)}...`
         : props.comment;
 
+    this.validateSslMethod(props.sslSupportMethod);
+
     const distribution = new CfnDistribution(this, 'Resource', {
       distributionConfig: {
         enabled: props.enabled ?? true,
         origins: Lazy.any({ produce: () => this.renderOrigins() }),
         originGroups: Lazy.any({ produce: () => this.renderOriginGroups() }),
         defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
-        aliases: props.domainNames,
         cacheBehaviors: Lazy.any({ produce: () => this.renderCacheBehaviors() }),
         comment: trimmedComment,
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
         httpVersion: this.httpVersion,
-        ipv6Enabled: props.enableIpv6 ?? true,
         logging: this.renderLogging(props),
-        priceClass: props.priceClass ?? undefined,
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
         webAclId: Lazy.string({ produce: () => this.webAclId }),
+        connectionMode: 'tenant-only',
+        tenantConfig: props.tenantConfig ?? {},
       },
     });
 
@@ -631,7 +594,7 @@ export class Distribution extends Resource implements IMTDistribution {
    * @param behaviorOptions the options for the behavior at this path.
    */
   @MethodMetadata()
-  public addBehavior(pathPattern: string, origin: IOrigin, behaviorOptions: AddBehaviorOptions = {}) {
+  public addBehavior(pathPattern: string, origin: IOrigin, behaviorOptions: MultiTenantAddBehaviorOptions = {}) {
     if (pathPattern === '*') {
       throw new ValidationError('Only the default behavior can have a path pattern of \'*\'', this);
     }
@@ -688,6 +651,9 @@ export class Distribution extends Resource implements IMTDistribution {
       if (!Token.isUnresolved(webAclRegion) && webAclRegion !== 'us-east-1') {
         throw new ValidationError(`WebACL for CloudFront distributions must be created in the us-east-1 region; received ${webAclRegion}`, this);
       }
+    } else {
+      // WAF V2 Ids will always start with "arn:aws:wafv2:" unlike WAF Classic Ids
+      throw new ValidationError('Invalid ACL ID, please verify your web ACL is supported by multi-tenant distributions', this);
     }
   }
 
@@ -805,7 +771,7 @@ export class Distribution extends Resource implements IMTDistribution {
     });
   }
 
-  private renderLogging(props: DistributionProps): CfnDistribution.LoggingProperty | undefined {
+  private renderLogging(props: MTDProps): CfnDistribution.LoggingProperty | undefined {
     if (!props.enableLogging && !props.logBucket) { return undefined; }
     if (props.enableLogging === false && props.logBucket) {
       throw new ValidationError('Explicitly disabled logging but provided a logging bucket.', this);
@@ -846,7 +812,7 @@ export class Distribution extends Resource implements IMTDistribution {
     };
   }
 
-  private validateGrpc(behaviorOptions: AddBehaviorOptions) {
+  private validateGrpc(behaviorOptions: MultiTenantAddBehaviorOptions) {
     if (!behaviorOptions.enableGrpc) {
       return;
     }
@@ -855,212 +821,18 @@ export class Distribution extends Resource implements IMTDistribution {
       throw new ValidationError(`'httpVersion' must be ${validHttpVersions.join(' or ')} if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`, this);
     }
   }
-}
 
-/** Maximum HTTP version to support */
-export enum HttpVersion {
-  /** HTTP 1.1 */
-  HTTP1_1 = 'http1.1',
-  /** HTTP 2 */
-  HTTP2 = 'http2',
-  /** HTTP 2 and HTTP 3 */
-  HTTP2_AND_3 = 'http2and3',
-  /** HTTP 3 */
-  HTTP3 = 'http3',
-}
-
-/**
- * The price class determines how many edge locations CloudFront will use for your distribution.
- * See https://aws.amazon.com/cloudfront/pricing/ for full list of supported regions.
- */
-export enum PriceClass {
-  /** USA, Canada, Europe, & Israel */
-  PRICE_CLASS_100 = 'PriceClass_100',
-  /** PRICE_CLASS_100 + South Africa, Kenya, Middle East, Japan, Singapore, South Korea, Taiwan, Hong Kong, & Philippines */
-  PRICE_CLASS_200 = 'PriceClass_200',
-  /** All locations */
-  PRICE_CLASS_ALL = 'PriceClass_All',
-}
-
-/**
- * How HTTPs should be handled with your distribution.
- */
-export enum ViewerProtocolPolicy {
-  /** HTTPS only */
-  HTTPS_ONLY = 'https-only',
-  /** Will redirect HTTP requests to HTTPS */
-  REDIRECT_TO_HTTPS = 'redirect-to-https',
-  /** Both HTTP and HTTPS supported */
-  ALLOW_ALL = 'allow-all',
-}
-
-/**
- * Defines what protocols CloudFront will use to connect to an origin.
- */
-export enum OriginProtocolPolicy {
-  /** Connect on HTTP only */
-  HTTP_ONLY = 'http-only',
-  /** Connect with the same protocol as the viewer */
-  MATCH_VIEWER = 'match-viewer',
-  /** Connect on HTTPS only */
-  HTTPS_ONLY = 'https-only',
-}
-
-/**
- * The SSL method CloudFront will use for your distribution.
- *
- * Server Name Indication (SNI) - is an extension to the TLS computer networking protocol by which a client indicates
- *  which hostname it is attempting to connect to at the start of the handshaking process. This allows a server to present
- *  multiple certificates on the same IP address and TCP port number and hence allows multiple secure (HTTPS) websites
- * (or any other service over TLS) to be served by the same IP address without requiring all those sites to use the same certificate.
- *
- * CloudFront can use SNI to host multiple distributions on the same IP - which a large majority of clients will support.
- *
- * If your clients cannot support SNI however - CloudFront can use dedicated IPs for your distribution - but there is a prorated monthly charge for
- * using this feature. By default, we use SNI - but you can optionally enable dedicated IPs (VIP).
- *
- * See the CloudFront SSL for more details about pricing : https://aws.amazon.com/cloudfront/custom-ssl-domains/
- *
- */
-export enum SSLMethod {
-  SNI = 'sni-only',
-  VIP = 'vip',
-  STATIC_IP = 'static-ip',
-}
-
-/**
- * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
- * CloudFront serves your objects only to browsers or devices that support at least the SSL version that you specify.
- */
-export enum SecurityPolicyProtocol {
-  SSL_V3 = 'SSLv3',
-  TLS_V1 = 'TLSv1',
-  TLS_V1_2016 = 'TLSv1_2016',
-  TLS_V1_1_2016 = 'TLSv1.1_2016',
-  TLS_V1_2_2018 = 'TLSv1.2_2018',
-  TLS_V1_2_2019 = 'TLSv1.2_2019',
-  TLS_V1_2_2021 = 'TLSv1.2_2021',
-}
-
-/**
- * The HTTP methods that the Behavior will accept requests on.
- */
-export class AllowedMethods {
-  /** HEAD and GET */
-  public static readonly ALLOW_GET_HEAD = new AllowedMethods(['GET', 'HEAD']);
-  /** HEAD, GET, and OPTIONS */
-  public static readonly ALLOW_GET_HEAD_OPTIONS = new AllowedMethods(['GET', 'HEAD', 'OPTIONS']);
-  /** All supported HTTP methods */
-  public static readonly ALLOW_ALL = new AllowedMethods(['GET', 'HEAD', 'OPTIONS', 'PUT', 'PATCH', 'POST', 'DELETE']);
-
-  /** HTTP methods supported */
-  public readonly methods: string[];
-
-  private constructor(methods: string[]) { this.methods = methods; }
-}
-
-/**
- * The HTTP methods that the Behavior will cache requests on.
- */
-export class CachedMethods {
-  /** HEAD and GET */
-  public static readonly CACHE_GET_HEAD = new CachedMethods(['GET', 'HEAD']);
-  /** HEAD, GET, and OPTIONS */
-  public static readonly CACHE_GET_HEAD_OPTIONS = new CachedMethods(['GET', 'HEAD', 'OPTIONS']);
-
-  /** HTTP methods supported */
-  public readonly methods: string[];
-
-  private constructor(methods: string[]) { this.methods = methods; }
-}
-
-/**
- * Options for configuring custom error responses.
- */
-export interface ErrorResponse {
-  /**
-   * The minimum amount of time, in seconds, that you want CloudFront to cache the HTTP status code specified in ErrorCode.
-   *
-   * @default - the default caching TTL behavior applies
-   */
-  readonly ttl?: Duration;
-  /**
-   * The HTTP status code for which you want to specify a custom error page and/or a caching duration.
-   */
-  readonly httpStatus: number;
-  /**
-   * The HTTP status code that you want CloudFront to return to the viewer along with the custom error page.
-   *
-   * If you specify a value for `responseHttpStatus`, you must also specify a value for `responsePagePath`.
-   *
-   * @default - the error code will be returned as the response code.
-   */
-  readonly responseHttpStatus?: number;
-  /**
-   * The path to the custom error page that you want CloudFront to return to a viewer when your origin returns the
-   * `httpStatus`, for example, /4xx-errors/403-forbidden.html
-   *
-   * @default - the default CloudFront response is shown.
-   */
-  readonly responsePagePath?: string;
-}
-
-/**
- * The type of events that a Lambda@Edge function can be invoked in response to.
- */
-export enum LambdaEdgeEventType {
-  /**
-   * The origin-request specifies the request to the
-   * origin location (e.g. S3)
-   */
-  ORIGIN_REQUEST = 'origin-request',
-
-  /**
-   * The origin-response specifies the response from the
-   * origin location (e.g. S3)
-   */
-  ORIGIN_RESPONSE = 'origin-response',
-
-  /**
-   * The viewer-request specifies the incoming request
-   */
-  VIEWER_REQUEST = 'viewer-request',
-
-  /**
-   * The viewer-response specifies the outgoing response
-   */
-  VIEWER_RESPONSE = 'viewer-response',
-}
-
-/**
- * Represents a Lambda function version and event type when using Lambda@Edge.
- * The type of the `AddBehaviorOptions.edgeLambdas` property.
- */
-export interface EdgeLambda {
-  /**
-   * The version of the Lambda function that will be invoked.
-   *
-   * **Note**: it's not possible to use the '$LATEST' function version for Lambda@Edge!
-   */
-  readonly functionVersion: lambda.IVersion;
-
-  /** The type of event in response to which should the function be invoked. */
-  readonly eventType: LambdaEdgeEventType;
-
-  /**
-   * Allows a Lambda function to have read access to the body content.
-   * Only valid for "request" event types (`ORIGIN_REQUEST` or `VIEWER_REQUEST`).
-   * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-include-body-access.html
-   *
-   * @default false
-   */
-  readonly includeBody?: boolean;
+  private validateSslMethod(sslMethod: SSLMethod | undefined) {
+    if (sslMethod == SSLMethod.VIP) {
+      throw new ValidationError( 'invalid SSL Method', this);
+    }
+  }
 }
 
 /**
  * Options for adding a new behavior to a Distribution.
  */
-export interface AddBehaviorOptions {
+export interface MultiTenantAddBehaviorOptions {
   /**
    * HTTP methods to allow for this behavior.
    *
@@ -1116,13 +888,6 @@ export interface AddBehaviorOptions {
   readonly responseHeadersPolicy?: IResponseHeadersPolicy;
 
   /**
-   * Set this to true to indicate you want to distribute media files in the Microsoft Smooth Streaming format using this behavior.
-   *
-   * @default false
-   */
-  readonly smoothStreaming?: boolean;
-
-  /**
    * The protocol that viewers can use to access the files controlled by this behavior.
    *
    * @default ViewerProtocolPolicy.ALLOW_ALL
@@ -1169,7 +934,7 @@ export interface AddBehaviorOptions {
 /**
  * Options for creating a new behavior.
  */
-export interface BehaviorOptions extends AddBehaviorOptions {
+export interface BehaviorOptions extends MultiTenantAddBehaviorOptions {
   /**
    * The origin that you want CloudFront to route requests to when they match this behavior.
    */
