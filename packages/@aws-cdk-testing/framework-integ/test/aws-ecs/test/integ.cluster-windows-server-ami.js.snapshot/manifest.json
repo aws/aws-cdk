@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "artifacts": {
     "integ-ecs-windows-server-ami.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c69808bc662c913fab102baa09944418dd74ddae75e4c0b979f68cfdd5ae7aa1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2db1211944a23fa4b08af7edaa5c5a37fb194f550708804ecfa4069c05c67fe7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -845,10 +845,10 @@
             "data": "ASGLifecycleHookDrainHookFE4AFEBE"
           }
         ],
-        "/integ-ecs-windows-server-ami/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-English-Full-ECS_Optimized--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/integ-ecs-windows-server-ami/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2025-English-Full-ECS_Optimized--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceamiwindowslatestWindowsServer2022EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsserviceamiwindowslatestWindowsServer2025EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/integ-ecs-windows-server-ami/EC2CapacityProvider/EC2CapacityProvider": [
@@ -990,5 +990,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1019.2"
+  "minimumCliVersion": "2.1020.1"
 }

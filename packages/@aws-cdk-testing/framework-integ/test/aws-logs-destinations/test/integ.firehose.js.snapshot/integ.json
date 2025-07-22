@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "44.0.0",
   "testCases": {
     "FirehoseInteg/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "FirehoseInteg/DefaultTest/DeployAssert",
       "assertionStackName": "FirehoseIntegDefaultTestDeployAssert9D77F4C4"
     }
-  }
+  },
+  "minimumCliVersion": "2.1017.1"
 }
