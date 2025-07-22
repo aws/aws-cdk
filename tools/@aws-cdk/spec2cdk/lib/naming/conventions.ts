@@ -55,6 +55,10 @@ export function propStructNameFromResource(res: Resource, suffix?: string) {
   return `${classNameFromResource(res, suffix)}Props`;
 }
 
+export function interfaceNameFromResource(res: Resource, suffix?: string) {
+  return `I${classNameFromResource(res, suffix)}`;
+}
+
 export function cfnProducerNameFromType(struct: TypeDeclaration) {
   return `convert${qualifiedName(struct)}ToCloudFormation`;
 }

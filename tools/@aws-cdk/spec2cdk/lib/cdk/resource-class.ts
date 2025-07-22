@@ -20,6 +20,7 @@ import {
   Stability,
   ObjectLiteral,
   Module,
+  InterfaceType,
 } from '@cdklabs/typewriter';
 import { CDK_CORE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
@@ -33,6 +34,7 @@ import {
   cfnProducerNameFromType,
   propStructNameFromResource,
   staticRequiredTransform,
+  interfaceNameFromResource,
 } from '../naming';
 import { splitDocumentation } from '../util';
 
@@ -45,6 +47,7 @@ const $this = $E(expr.this_());
 
 export class ResourceClass extends ClassType {
   private readonly propsType: StructType;
+  private readonly resourceInterface: InterfaceType;
   private readonly decider: ResourceDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
@@ -55,6 +58,16 @@ export class ResourceClass extends ClassType {
     private readonly resource: Resource,
     private readonly suffix?: string,
   ) {
+    const resourceInterface = new InterfaceType(scope, {
+      export: true,
+      name: interfaceNameFromResource(resource, suffix),
+      docs: {
+        summary: `Attributes to reference a \`${classNameFromResource(resource)}\`.`,
+        stability: Stability.External,
+      },
+      extends: [CONSTRUCTS.IConstruct],
+    });
+
     super(scope, {
       export: true,
       name: classNameFromResource(resource, suffix),
@@ -67,9 +80,10 @@ export class ResourceClass extends ClassType {
         }),
       },
       extends: CDK_CORE.CfnResource,
-      implements: [CDK_CORE.IInspectable, ...ResourceDecider.taggabilityInterfaces(resource)],
+      implements: [CDK_CORE.IInspectable, resourceInterface.type, ...ResourceDecider.taggabilityInterfaces(resource)],
     });
 
+    this.resourceInterface = resourceInterface;
     this.module = Module.of(this);
 
     this.propsType = new StructType(this.scope, {
@@ -103,6 +117,14 @@ export class ResourceClass extends ClassType {
     for (const prop of this.decider.propsProperties) {
       this.propsType.addProperty(prop.propertySpec);
       cfnMapping.add(prop.cfnMapping);
+    }
+
+    // Build the shared interface
+    for (const identifier of this.decider.primaryIdentifier ?? []) {
+      this.resourceInterface.addProperty({
+        ...identifier,
+        immutable: true,
+      });
     }
 
     // Build the members of this class

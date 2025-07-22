@@ -10,6 +10,9 @@ import { splitDocumentation } from '../util';
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
 
+// This convenience typewriter builder is used for cloudformation intrinsics
+const $Fn = $E(expr.directCode('cdk.Fn'));
+
 /**
  * Decide how properties get mapped between model types, Typescript types, and CloudFormation
  */
@@ -25,6 +28,7 @@ export class ResourceDecider {
 
   private readonly taggability?: TaggabilityStyle;
 
+  public readonly primaryIdentifier = new Array<PropertySpec>();
   public readonly propsProperties = new Array<PropsProperty>();
   public readonly classProperties = new Array<ClassProperty>();
   public readonly classAttributeProperties = new Array<ClassAttributeProperty>();
@@ -34,6 +38,8 @@ export class ResourceDecider {
 
     this.convertProperties();
     this.convertAttributes();
+
+    this.convertPrimaryIdentifier();
 
     this.propsProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
     this.classProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
@@ -57,6 +63,73 @@ export class ResourceDecider {
 
       this.handlePropertyDefault(name, prop);
     }
+  }
+
+  private convertPrimaryIdentifier() {
+    if (this.resource.primaryIdentifier === undefined) { return; }
+    for (let i = 0; i < (this.resource.primaryIdentifier).length; i++) {
+      const cfnName = this.resource.primaryIdentifier[i];
+      const att = this.findAttributeByName(attributePropertyName(cfnName));
+      const prop = this.findPropertyByName(propertyNameFromCloudFormation(cfnName));
+      if (att) {
+        this.primaryIdentifier.push(att);
+      } else if (prop) {
+        const propSpec = prop.propertySpec;
+
+        // Build an attribute out of the property we're getting
+        // Create initializer for new attribute, if possible
+        let initializer: Expression | undefined = undefined;
+        if (propSpec.type === Type.STRING) { // handling only this case for now
+          if (this.resource.primaryIdentifier!.length === 1) {
+            initializer = CDK_CORE.tokenAsString($this.ref);
+          } else {
+            initializer = CDK_CORE.tokenAsString($Fn.select(expr.lit(i), $Fn.split(expr.lit('|'), $this.ref)));
+          }
+        }
+
+        // If we cannot come up with an initializer, we're dropping this property on the floor
+        if (!initializer) { continue; }
+
+        // Build an attribute spec out of the property spec
+        const attrPropertySpec = this.convertPropertySpecToRefAttribute(propSpec);
+
+        // Add the new attribute to the relevant places
+        this.classAttributeProperties.push({
+          propertySpec: attrPropertySpec,
+          initializer,
+        });
+
+        this.primaryIdentifier.push(attrPropertySpec);
+      }
+    }
+  }
+
+  private convertPropertySpecToRefAttribute(propSpec: PropertySpec): PropertySpec {
+    return {
+      ...propSpec,
+      name: attributePropertyName(propSpec.name[0].toUpperCase() + propSpec.name.slice(1)),
+      docs: {
+        ...propSpec.docs,
+        summary: (propSpec.docs?.summary ?? '').concat('\nThis property gets determined after the resource is created.'),
+        remarks: (propSpec.docs?.remarks ?? '').concat('@cloudformationAttribute Ref'),
+      },
+      immutable: true,
+      optional: false,
+    };
+  }
+
+  private findPropertyByName(name: string): ClassProperty | undefined {
+    const props = this.classProperties.filter((prop) => prop.propertySpec.name === name);
+    // there's no way we have multiple properties with the same name
+    if (props.length > 0) { return props[0]; }
+    return;
+  }
+
+  private findAttributeByName(name: string): PropertySpec | undefined {
+    const atts = this.classAttributeProperties.filter((att) => att.propertySpec.name === name);
+    // there's no way we have multiple attributes with the same name
+    if (atts.length > 0) { return atts[0].propertySpec; }
+    return;
   }
 
   /**

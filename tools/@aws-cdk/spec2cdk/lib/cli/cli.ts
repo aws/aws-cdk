@@ -143,3 +143,11 @@ function stringOr(pat: unknown, def: string) {
   }
   return pat;
 }
+
+async function run() {
+  await generateAll({
+    outputPath: '/Users/otaviom/construct-harmony',
+  });
+}
+// eslint-disable-next-line no-console
+run().catch(console.log);
