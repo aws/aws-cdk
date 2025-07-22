@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as signer from '../lib';
 
@@ -20,6 +20,13 @@ describe('signing profile', () => {
       SignatureValidityPeriod: {
         Type: 'MONTHS',
         Value: 135,
+      },
+    });
+    
+    // Verify that ProfileName is not included when signingProfileName is not provided
+    Template.fromStack(stack).hasResource('AWS::Signer::SigningProfile', {
+      Properties: {
+        ProfileName: Match.absent(),
       },
     });
   });
@@ -77,6 +84,23 @@ describe('signing profile', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Signer::SigningProfile', {
       PlatformId: platform.platformId,
+      SignatureValidityPeriod: {
+        Type: 'MONTHS',
+        Value: 135,
+      },
+    });
+  });
+
+  test('with signing profile name', () => {
+    const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
+    new signer.SigningProfile(stack, 'SigningProfile', {
+      platform,
+      signingProfileName: 'my-signing-profile',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Signer::SigningProfile', {
+      PlatformId: platform.platformId,
+      ProfileName: 'my-signing-profile',
       SignatureValidityPeriod: {
         Type: 'MONTHS',
         Value: 135,
