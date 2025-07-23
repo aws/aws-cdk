@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { DataProtectionPolicy } from './data-protection';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 import { IRole } from '../../aws-iam';
@@ -110,6 +111,22 @@ export interface TopicProps {
    * @default undefined - SNS default setting is FifoThroughputScope.TOPIC
    */
   readonly fifoThroughputScope?: FifoThroughputScope;
+
+  /**
+   * Data protection policy for the topic to detect, protect, and redact sensitive data.
+   *
+   * Message Data Protection enables you to define policies to audit, mask, redact,
+   * or block sensitive information in messages published to the SNS topic. This helps
+   * you comply with data privacy regulations and protect sensitive information.
+   *
+   * This feature is only available for standard SNS topics (not FIFO).
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/message-data-protection.html
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-data-protection-policies.html
+   *
+   * @default - no data protection policy
+   */
+  readonly dataProtectionPolicy?: DataProtectionPolicy;
 }
 
 /**
@@ -355,6 +372,15 @@ export class Topic extends TopicBase {
       throw new ValidationError(`displayName must be less than or equal to 100 characters, got ${props.displayName.length}`, this);
     }
 
+    // Validate that data protection policy is only used with standard topics
+    if (props.dataProtectionPolicy && props.fifo) {
+      throw new ValidationError('Data protection policy is only available for standard SNS topics, not FIFO topics', this);
+    }
+
+    // Use data protection policy object directly without JSON.stringify
+    const dataProtectionPolicyObj = props.dataProtectionPolicy ?
+      props.dataProtectionPolicy.toJSON() : undefined;
+
     const resource = new CfnTopic(this, 'Resource', {
       archivePolicy: props.messageRetentionPeriodInDays ? {
         MessageRetentionPeriod: props.messageRetentionPeriodInDays,
@@ -368,6 +394,7 @@ export class Topic extends TopicBase {
       deliveryStatusLogging: Lazy.any({ produce: () => this.renderLoggingConfigs() }, { omitEmptyArray: true }),
       tracingConfig: props.tracingConfig,
       fifoThroughputScope: props.fifoThroughputScope,
+      dataProtectionPolicy: dataProtectionPolicyObj,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {
