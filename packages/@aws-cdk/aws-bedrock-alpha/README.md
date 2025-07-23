@@ -986,14 +986,4 @@ const importedProfile = bedrock.ApplicationInferenceProfile.fromApplicationInfer
     inferenceProfileIdentifier: 'my-profile-id',
   }
 );
-
-// Import a Cfn L1 construct created application inference profile
-const cfnProfile = new bedrock.CfnApplicationInferenceProfile(this, 'CfnProfile', {
-  inferenceProfileName: 'mytest',
-  modelSource: {
-    copyFrom: 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0',
-  },
-});
-
-const importedFromCfn = bedrock.ApplicationInferenceProfile.fromCfnApplicationInferenceProfile(cfnProfile);
 ```
