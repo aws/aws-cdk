@@ -5,7 +5,7 @@ import { PropertyMapping } from './cloudformation-mapping';
 import { NON_RESOLVABLE_PROPERTY_NAMES, TaggabilityStyle, resourceTaggabilityStyle } from './tagging';
 import { TypeConverter } from './type-converter';
 import { attributePropertyName, cloudFormationDocLink, propertyNameFromCloudFormation } from '../naming';
-import { splitDocumentation } from '../util';
+import { log, splitDocumentation } from '../util';
 
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
@@ -28,6 +28,10 @@ export class ResourceDecider {
 
   private readonly taggability?: TaggabilityStyle;
 
+  /**
+   * The arn returned by the resource, if applicable.
+   */
+  public readonly arn?: PropertySpec;
   public readonly primaryIdentifier = new Array<PropertySpec>();
   public readonly propsProperties = new Array<PropsProperty>();
   public readonly classProperties = new Array<ClassProperty>();
@@ -40,6 +44,12 @@ export class ResourceDecider {
     this.convertAttributes();
 
     this.convertPrimaryIdentifier();
+    this.arn = this.findArn();
+
+    const arn = this.findArn();
+    if (arn && arn.name !== 'attrArn') {
+      log.info(`"${this.resource.cloudFormationType}.${this.resource.name}": "${arn.name}",`);
+    }
 
     this.propsProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
     this.classProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
@@ -63,6 +73,18 @@ export class ResourceDecider {
 
       this.handlePropertyDefault(name, prop);
     }
+  }
+
+  private findArn() {
+    // A list of possible names for the arn, in order of importance.
+    // This is relevant because some resources, like AWS::VpcLattice::AccessLogSubscription
+    // has both `Arn` and `ResourceArn`, and we want to select the `Arn` property.
+    const possibleArnNames = ['Arn', `${this.resource.name}Arn`];
+    for (const arn of possibleArnNames) {
+      const att = this.classAttributeProperties.find((a) => a.propertySpec.name === attributePropertyName(arn));
+      if (att) { return att.propertySpec; }
+    }
+    return;
   }
 
   private convertPrimaryIdentifier() {

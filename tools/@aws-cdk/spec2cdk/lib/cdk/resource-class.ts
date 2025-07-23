@@ -127,6 +127,14 @@ export class ResourceClass extends ClassType {
       });
     }
 
+    // Add the arn too, unless it is duplicated in the resourceIdentifier already
+    if (this.decider.arn && this.resourceInterface.properties.every((p) => p.name !== this.decider.arn!.name)) {
+      this.resourceInterface.addProperty({
+        ...this.decider.arn,
+        immutable: true,
+      });
+    }
+
     // Build the members of this class
     this.addProperty({
       name: staticResourceTypeName(),
