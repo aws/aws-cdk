@@ -2,6 +2,7 @@
 
 | Module | API Element | Message |
 |--------|-------------|---------|
+| aws-cdk-lib/aws-route53 | RecordSetOptions.​deleteExisting | This property is dangerous and can lead to accidental record deletion in case of deployment failure.|
 | @aws-cdk/core | AppProps.​runtimeInfo | use `versionReporting` instead |
 | @aws-cdk/core | Arn.​parse() | use split instead |
 | @aws-cdk/core | ArnComponents.​sep | use arnFormat instead |
