@@ -28,6 +28,11 @@ export * from './prompts/prompt-template-configuration';
 export * from './prompts/prompt-genai-resource';
 
 // ===================================
+// Inference Profiles
+// ===================================
+export * from './inference-profiles';
+
+// ===================================
 // Models
 // ===================================
 export * from './models';
