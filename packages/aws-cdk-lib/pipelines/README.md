@@ -556,7 +556,10 @@ To control the concurrency behavior when multiple executions of a pipeline are s
 The [execution mode](https://docs.aws.amazon.com/codepipeline/latest/userguide/execution-modes.html) can only be used with pipeline type V2.
 
 ```ts
+declare const synth: pipelines.ShellStep;
+
 new pipelines.CodePipeline(this, 'Pipeline', {
+  synth,
   pipelineType: codepipeline.PipelineType.V2,
   executionMode: codepipeline.ExecutionMode.QUEUED,
 });
