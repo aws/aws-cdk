@@ -24,12 +24,16 @@ const table = new Table(stack, TABLE, {
 });
 
 table.addGlobalSecondaryIndex({
-  contributorInsightsEnabled: true,
+  contributorInsightsSpecification: {
+    enabled: true,
+  },
   indexName: GSI_TEST_CASE_1,
   partitionKey: GSI_PARTITION_KEY,
 });
 table.addGlobalSecondaryIndex({
-  contributorInsightsEnabled: false,
+  contributorInsightsSpecification: {
+    enabled: false,
+  },
   indexName: GSI_TEST_CASE_2,
   partitionKey: GSI_PARTITION_KEY,
 });
