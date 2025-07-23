@@ -324,6 +324,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
 
+      // Using loggingFormat instead of deprecated logFormat which will be removed in the next major release
       loggingFormat: lambda.LoggingFormat.JSON,
       applicationLogLevelV2: loggingLevel,
       // props.logRetention is deprecated, make sure we only set it if it is actually provided
