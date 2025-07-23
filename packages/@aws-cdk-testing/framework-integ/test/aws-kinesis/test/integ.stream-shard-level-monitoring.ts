@@ -1,7 +1,6 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Stack, RemovalPolicies } from 'aws-cdk-lib';
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { RemovalPolicies } from '../../../../../aws-cdk-lib/core/lib/removal-policies';
 
 const app = new App();
 const stack = new Stack(app, 'kinesis-stream-shard-level-monitoring-stack');
