@@ -37,7 +37,7 @@ Follow these steps to analyze a resource and identify potential mixins:
 
 Create a markdown document named `resource-v2.md` (e.g., `bucket-v2.md`) with the following structure:
 
-```markdown
+~~~markdown
 # Resource Mixins Analysis
 
 ## What is a Mixin?
@@ -91,6 +91,12 @@ export interface SuggestedInterface {
 ## Cfn[ResourceName]Props Not Covered by Mixins
 
 - `property`: Type - Description
+~~~
+
+## Document location
+
+Unless told otherwise, write the Mixins Analysis document into the service folder, named as `resource-mixins.md`.
+E.g. for EC2 instance, the location would be `packages/aws-cdk-lib/aws-ec2/instance-mixins.md`.
 
 ## Example Mixins
 
