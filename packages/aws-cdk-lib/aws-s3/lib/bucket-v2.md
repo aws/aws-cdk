@@ -239,7 +239,87 @@ Based on analysis of the Bucket class in `bucket.ts`, the following mixins could
 
 **Relevant BucketProps:**
 
-- No direct equivalent in BucketProps (only available through L1 construct)
+- `analyticsConfigurations`: AnalyticsConfiguration[] - Analytics configurations for the bucket
+
+**Suggested Interface:**
+
+```typescript
+/**
+ * Configuration for S3 Analytics
+ */
+export interface AnalyticsConfiguration {
+  /**
+   * A unique identifier for the analytics configuration
+   */
+  readonly id: string;
+  
+  /**
+   * The prefix to filter objects for analysis
+   * @default - No prefix filter
+   */
+  readonly prefix?: string;
+  
+  /**
+   * Tag filters to identify a subset of objects for analysis
+   * @default - No tag filters
+   */
+  readonly tagFilters?: {[key: string]: string};
+  
+  /**
+   * Configuration for exporting analytics data
+   * @default - No data export
+   */
+  readonly dataExport?: AnalyticsDataExport;
+}
+
+/**
+ * Configuration for exporting analytics data
+ */
+export interface AnalyticsDataExport {
+  /**
+   * The bucket where analytics data will be exported
+   */
+  readonly bucket: IBucket;
+  
+  /**
+   * The prefix to use for exported analytics data
+   * @default - No prefix
+   */
+  readonly prefix?: string;
+  
+  /**
+   * The format for the exported data
+   * @default Format.CSV
+   */
+  readonly format?: Format;
+  
+  /**
+   * The account ID that owns the destination bucket
+   * @default - Current account
+   */
+  readonly bucketAccountId?: string;
+}
+
+/**
+ * Format for exported analytics data
+ */
+export enum Format {
+  /**
+   * CSV format
+   */
+  CSV = 'CSV',
+  
+  /**
+   * Apache ORC format
+   */
+  ORC = 'ORC',
+  
+  /**
+   * Apache Parquet format
+   */
+  PARQUET = 'Parquet'
+}
+```
 
 **Relevant CfnBucketProps:**
 
@@ -252,7 +332,38 @@ Based on analysis of the Bucket class in `bucket.ts`, the following mixins could
 
 **Relevant BucketProps:**
 
-- No direct equivalent in BucketProps (only available through L1 construct)
+- `metadataTableConfiguration`: MetadataTableConfiguration - Metadata table configuration for the bucket
+
+**Suggested Interface:**
+
+```typescript
+/**
+ * Configuration for S3 metadata tables
+ */
+export interface MetadataTableConfiguration {
+  /**
+   * The destination information for the metadata table
+   */
+  readonly destination: S3TablesDestination;
+}
+
+/**
+ * Destination for S3 metadata tables
+ */
+export interface S3TablesDestination {
+  /**
+   * The bucket where the metadata table will be stored
+   * Must be in the same region and AWS account as the source bucket
+   */
+  readonly tableBucket: IBucket;
+  
+  /**
+   * The name for the metadata table
+   * Must be unique within the aws_s3_metadata namespace in the destination bucket
+   */
+  readonly tableName: string;
+}
+```
 
 **Relevant CfnBucketProps:**
 
