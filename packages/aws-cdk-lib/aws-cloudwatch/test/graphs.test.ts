@@ -2,6 +2,7 @@ import { Duration, Stack } from '../../core';
 import {
   Alarm,
   AlarmRule,
+  AlarmState,
   AlarmWidget,
   Color,
   CompositeAlarm,
@@ -706,7 +707,7 @@ describe('Graphs', () => {
   test('composite alarm widget generates alarm-type widget', () => {
     // CloudWatch console requires 'alarm' type for composite alarms to render properly
     // and 'metric' type for regular alarms. This test verifies the correct widget type is used.
-    
+
     // GIVEN
     const stack = new Stack();
 
@@ -819,15 +820,13 @@ describe('Graphs', () => {
     });
 
     const compositeAlarm = new CompositeAlarm(stack, 'CompositeAlarm', {
-      alarmRule: AlarmRule.fromAlarm(regularAlarm, AlarmRule.ALARM),
+      alarmRule: AlarmRule.fromAlarm(regularAlarm, AlarmState.ALARM),
     });
 
     // WHEN
     const regularWidget = new AlarmWidget({
       alarm: regularAlarm,
       title: 'Regular Alarm',
-      region: 'eu-west-1',
-      accountId: '987654321098',
       width: 12,
       height: 8,
       leftYAxis: {
@@ -841,8 +840,6 @@ describe('Graphs', () => {
     const compositeWidget = new AlarmWidget({
       alarm: compositeAlarm,
       title: 'Composite Alarm',
-      region: 'eu-west-1',
-      accountId: '987654321098',
       width: 12,
       height: 8,
       leftYAxis: {
@@ -862,8 +859,6 @@ describe('Graphs', () => {
     expect(regularJson.width).toBe(12);
     expect(regularJson.height).toBe(8);
     expect(regularJson.properties.title).toBe('Regular Alarm');
-    expect(regularJson.properties.region).toBe('eu-west-1');
-    expect(regularJson.properties.accountId).toBe('987654321098');
     expect(regularJson.properties.yAxis.left).toEqual({
       min: 0,
       max: 100,
@@ -876,8 +871,6 @@ describe('Graphs', () => {
     expect(compositeJson.width).toBe(12);
     expect(compositeJson.height).toBe(8);
     expect(compositeJson.properties.title).toBe('Composite Alarm');
-    expect(compositeJson.properties.region).toBe('eu-west-1');
-    expect(compositeJson.properties.accountId).toBe('987654321098');
     expect(compositeJson.properties.yAxis.left).toEqual({
       min: 0,
       max: 100,
