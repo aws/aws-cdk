@@ -12,21 +12,62 @@ Based on analysis of the Bucket class in `bucket.ts`, the following mixins could
 - Manages KMS key integration
 - Controls server-side encryption settings
 
+**Relevant BucketProps:**
+
+- `encryption`: BucketEncryption - The kind of server-side encryption to apply to this bucket
+- `encryptionKey`: kms.IKey - External KMS key to use for bucket encryption
+- `bucketKeyEnabled`: boolean - Whether Amazon S3 should use its own intermediary key to generate data keys
+
+**Relevant CfnBucketProps:**
+
+- `bucketEncryption`: CfnBucket.BucketEncryptionProperty | cdk.IResolvable - Specifies default encryption for a bucket
+
 ## 2. Public Access Configuration Mixin
 
 - Manages block public access settings
 - Controls public read access
 - Handles public policy permissions
 
+**Relevant BucketProps:**
+
+- `blockPublicAccess`: BlockPublicAccess - The block public access configuration of this bucket
+- `publicReadAccess`: boolean - Grants public read access to all objects in the bucket
+
+**Relevant CfnBucketProps:**
+
+- `publicAccessBlockConfiguration`: CfnBucket.PublicAccessBlockConfigurationProperty | cdk.IResolvable - Configuration that defines how Amazon S3 handles public access
+- `accessControl`: string - A canned access control list (ACL) that grants predefined permissions to the bucket
+
 ## 3. Lifecycle Configuration Mixin
 
 - Manages lifecycle rules
 - Handles object transitions and expirations
 
+**Relevant BucketProps:**
+
+- `lifecycleRules`: LifecycleRule[] - Rules that define how Amazon S3 manages objects during their lifetime
+- `transitionDefaultMinimumObjectSize`: TransitionDefaultMinimumObjectSize - Indicates which default minimum object size behavior is applied to the lifecycle configuration
+
+**Relevant CfnBucketProps:**
+
+- `lifecycleConfiguration`: cdk.IResolvable | CfnBucket.LifecycleConfigurationProperty - Specifies the lifecycle configuration for objects in an Amazon S3 bucket
+
 ## 4. Versioning Mixin
 
 - Controls bucket versioning
 - Manages versioned objects behavior
+
+**Relevant BucketProps:**
+
+- `versioned`: boolean - Whether this bucket should have versioning turned on or not
+- `objectLockEnabled`: boolean - Enable object lock on the bucket
+- `objectLockDefaultRetention`: ObjectLockRetention - The default retention mode and rules for S3 Object Lock
+
+**Relevant CfnBucketProps:**
+
+- `versioningConfiguration`: cdk.IResolvable | CfnBucket.VersioningConfigurationProperty - Enables multiple versions of all objects in this bucket
+- `objectLockEnabled`: boolean | cdk.IResolvable - Indicates whether this bucket has an Object Lock configuration enabled
+- `objectLockConfiguration`: cdk.IResolvable | CfnBucket.ObjectLockConfigurationProperty - Places an Object Lock configuration on the specified bucket
 
 ## 5. Website Configuration Mixin
 
@@ -34,49 +75,194 @@ Based on analysis of the Bucket class in `bucket.ts`, the following mixins could
 - Manages index/error documents
 - Controls website routing rules
 
+**Relevant BucketProps:**
+
+- `websiteIndexDocument`: string - The name of the index document for the website
+- `websiteErrorDocument`: string - The name of the error document for the website
+- `websiteRedirect`: RedirectTarget - Specifies the redirect behavior of all requests to a website endpoint of a bucket
+- `websiteRoutingRules`: RoutingRule[] - Rules that define when a redirect is applied and the redirect behavior
+
+**Relevant CfnBucketProps:**
+
+- `websiteConfiguration`: cdk.IResolvable | CfnBucket.WebsiteConfigurationProperty - Information used to configure the bucket as a static website
+
 ## 6. Logging Configuration Mixin
 
 - Manages server access logs
 - Controls log delivery settings
 - Handles log file prefixes and formats
 
+**Relevant BucketProps:**
+
+- `serverAccessLogsBucket`: IBucket - Destination bucket for the server access logs
+- `serverAccessLogsPrefix`: string - Optional log file prefix to use for the bucket's access logs
+- `targetObjectKeyFormat`: TargetObjectKeyFormat - Optional key format for log objects
+
+**Relevant CfnBucketProps:**
+
+- `loggingConfiguration`: cdk.IResolvable | CfnBucket.LoggingConfigurationProperty - Settings that define where logs are stored
+
 ## 7. CORS Configuration Mixin
 
 - Manages cross-origin resource sharing rules
+
+**Relevant BucketProps:**
+
+- `cors`: CorsRule[] - The CORS configuration of this bucket
+
+**Relevant CfnBucketProps:**
+
+- `corsConfiguration`: CfnBucket.CorsConfigurationProperty | cdk.IResolvable - Describes the cross-origin access configuration for objects in an Amazon S3 bucket
 
 ## 8. Metrics Configuration Mixin
 
 - Handles bucket metrics settings
 
+**Relevant BucketProps:**
+
+- `metrics`: BucketMetrics[] - The metrics configuration of this bucket
+
+**Relevant CfnBucketProps:**
+
+- `metricsConfigurations`: Array<cdk.IResolvable | CfnBucket.MetricsConfigurationProperty> | cdk.IResolvable - Specifies a metrics configuration for the CloudWatch request metrics
+
 ## 9. Inventory Configuration Mixin
 
 - Manages inventory reports
+
+**Relevant BucketProps:**
+
+- `inventories`: Inventory[] - The inventory configuration of the bucket
+
+**Relevant CfnBucketProps:**
+
+- `inventoryConfigurations`: Array<CfnBucket.InventoryConfigurationProperty | cdk.IResolvable> | cdk.IResolvable - Specifies the inventory configuration for an Amazon S3 bucket
 
 ## 10. Replication Configuration Mixin
 
 - Handles cross-region replication
 - Manages replication rules and roles
 
+**Relevant BucketProps:**
+
+- `replicationRole`: iam.IRole - The role to be used by the replication
+- `replicationRules`: ReplicationRule[] - A container for one or more replication rules
+
+**Relevant CfnBucketProps:**
+
+- `replicationConfiguration`: cdk.IResolvable | CfnBucket.ReplicationConfigurationProperty - Configuration for replicating objects in an S3 bucket
+
 ## 11. Object Ownership Mixin
 
 - Controls object ownership settings
 
+**Relevant BucketProps:**
+
+- `objectOwnership`: ObjectOwnership - The objectOwnership of the bucket
+- `accessControl`: BucketAccessControl - Specifies a canned ACL that grants predefined permissions to the bucket
+
+**Relevant CfnBucketProps:**
+
+- `ownershipControls`: cdk.IResolvable | CfnBucket.OwnershipControlsProperty - Configuration that defines how Amazon S3 handles Object Ownership rules
+
 ## 12. Auto-Delete Objects Mixin
 
 - Handles automatic deletion of objects on bucket removal
+
+**Relevant BucketProps:**
+
+- `autoDeleteObjects`: boolean - Whether all objects should be automatically deleted when the bucket is removed
+- `removalPolicy`: RemovalPolicy - Policy to apply when the bucket is removed from this stack
+
+**Relevant CfnBucketProps:**
+
+- No direct equivalent in CfnBucketProps (handled through custom resources)
 
 ## 13. Notification Configuration Mixin
 
 - Manages event notifications
 - Handles different notification destinations
 
+**Relevant BucketProps:**
+
+- `eventBridgeEnabled`: boolean - Whether this bucket should send notifications to Amazon EventBridge
+- `notificationsHandlerRole`: iam.IRole - The role to be used by the notifications handler
+- `notificationsSkipDestinationValidation`: boolean - Skips notification validation of Amazon SQS, Amazon SNS, and Lambda destinations
+
+**Relevant CfnBucketProps:**
+
+- `notificationConfiguration`: cdk.IResolvable | CfnBucket.NotificationConfigurationProperty - Configuration that defines how Amazon S3 handles bucket notifications
+
 ## 14. Intelligent Tiering Mixin
 
 - Controls intelligent tiering configurations
+
+**Relevant BucketProps:**
+
+- `intelligentTieringConfigurations`: IntelligentTieringConfiguration[] - Intelligent Tiering Configurations
+
+**Relevant CfnBucketProps:**
+
+- `intelligentTieringConfigurations`: Array<CfnBucket.IntelligentTieringConfigurationProperty | cdk.IResolvable> | cdk.IResolvable - Defines how Amazon S3 handles Intelligent-Tiering storage
 
 ## 15. Security Configuration Mixin
 
 - Manages SSL enforcement
 - Controls minimum TLS version
 
-Each of these mixins would encapsulate a specific feature set of the S3 bucket, making the code more modular and easier to maintain. They could be applied to a base bucket resource as needed, allowing for more flexible composition of bucket capabilities.
+**Relevant BucketProps:**
+
+- `enforceSSL`: boolean - Enforces SSL for requests
+- `minimumTLSVersion`: number - Enforces minimum TLS version for requests
+
+**Relevant CfnBucketProps:**
+
+- No direct equivalent in CfnBucketProps (handled through bucket policy)
+
+## 16. Transfer Acceleration Mixin
+
+- Enables S3 Transfer Acceleration for faster file uploads and downloads
+- Controls acceleration state for the bucket
+
+**Relevant BucketProps:**
+
+- `transferAcceleration`: boolean - Whether this bucket should have transfer acceleration turned on or not
+
+**Relevant CfnBucketProps:**
+
+- `accelerateConfiguration`: CfnBucket.AccelerateConfigurationProperty | cdk.IResolvable - Configures the transfer acceleration state for an Amazon S3 bucket
+
+## 17. Analytics Configuration Mixin
+
+- Manages analytics configurations for the bucket
+- Provides storage class analysis capabilities
+
+**Relevant BucketProps:**
+
+- No direct equivalent in BucketProps (only available through L1 construct)
+
+**Relevant CfnBucketProps:**
+
+- `analyticsConfigurations`: Array<CfnBucket.AnalyticsConfigurationProperty | cdk.IResolvable> | cdk.IResolvable - Specifies the configuration and any analyses for the analytics filter of an Amazon S3 bucket
+
+## 18. Metadata Table Configuration Mixin
+
+- Configures metadata tables for accelerating data discovery
+- Manages metadata table settings for general purpose buckets
+
+**Relevant BucketProps:**
+
+- No direct equivalent in BucketProps (only available through L1 construct)
+
+**Relevant CfnBucketProps:**
+
+- `metadataTableConfiguration`: cdk.IResolvable | CfnBucket.MetadataTableConfigurationProperty - The metadata table configuration of an Amazon S3 general purpose bucket
+
+## BucketProps Not Covered by Mixins
+
+- `bucketName`: string - Physical name of this bucket
+
+## CfnBucketProps Not Covered by Mixins
+
+- `bucketName`: string - A name for the bucket
+- `tags`: Array<cdk.CfnTag> - An arbitrary set of tags (key-value pairs) for this S3 bucket
