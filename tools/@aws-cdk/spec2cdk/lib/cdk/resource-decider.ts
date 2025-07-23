@@ -5,7 +5,7 @@ import { PropertyMapping } from './cloudformation-mapping';
 import { NON_RESOLVABLE_PROPERTY_NAMES, TaggabilityStyle, resourceTaggabilityStyle } from './tagging';
 import { TypeConverter } from './type-converter';
 import { attributePropertyName, cloudFormationDocLink, propertyNameFromCloudFormation } from '../naming';
-import { log, splitDocumentation } from '../util';
+import { splitDocumentation } from '../util';
 
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
@@ -45,11 +45,6 @@ export class ResourceDecider {
 
     this.convertPrimaryIdentifier();
     this.arn = this.findArn();
-
-    const arn = this.findArn();
-    if (arn && arn.name !== 'attrArn') {
-      log.info(`"${this.resource.cloudFormationType}.${this.resource.name}": "${arn.name}",`);
-    }
 
     this.propsProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
     this.classProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
