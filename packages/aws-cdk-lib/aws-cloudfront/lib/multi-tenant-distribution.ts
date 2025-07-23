@@ -70,7 +70,7 @@ export interface IMTDistribution extends IResource {
 }
 
 /**
- * Attributes used to import a Distribution.
+ * Attributes used to import a Multi-Tenant Distribution.
  */
 export interface MTDistributionAttributes {
   /**
@@ -100,14 +100,14 @@ export interface MTDProps {
   /**
    * The default behavior for the distribution.
    */
-  readonly defaultBehavior: BehaviorOptions;
+  readonly defaultBehavior: MTDBehaviorOptions;
 
   /**
    * Additional behaviors for the distribution, mapped by the pathPattern that specifies which requests to apply the behavior to.
    *
    * @default - no additional behaviors are added.
    */
-  readonly additionalBehaviors?: Record<string, BehaviorOptions>;
+  readonly additionalBehaviors?: Record<string, MTDBehaviorOptions>;
 
   /**
    * A certificate to associate with the distribution. The certificate must be located in N. Virginia (us-east-1).
@@ -594,7 +594,7 @@ export class MTDistribution extends Resource implements IMTDistribution {
    * @param behaviorOptions the options for the behavior at this path.
    */
   @MethodMetadata()
-  public addBehavior(pathPattern: string, origin: IOrigin, behaviorOptions: MultiTenantAddBehaviorOptions = {}) {
+  public addBehavior(pathPattern: string, origin: IOrigin, behaviorOptions: MTDAddBehaviorOptions = {}) {
     if (pathPattern === '*') {
       throw new ValidationError('Only the default behavior can have a path pattern of \'*\'', this);
     }
@@ -812,7 +812,7 @@ export class MTDistribution extends Resource implements IMTDistribution {
     };
   }
 
-  private validateGrpc(behaviorOptions: MultiTenantAddBehaviorOptions) {
+  private validateGrpc(behaviorOptions: MTDAddBehaviorOptions) {
     if (!behaviorOptions.enableGrpc) {
       return;
     }
@@ -830,9 +830,9 @@ export class MTDistribution extends Resource implements IMTDistribution {
 }
 
 /**
- * Options for adding a new behavior to a Distribution.
+ * Options for adding a new behavior to a Multi-Tenant Distribution.
  */
-export interface MultiTenantAddBehaviorOptions {
+export interface MTDAddBehaviorOptions {
   /**
    * HTTP methods to allow for this behavior.
    *
@@ -934,7 +934,7 @@ export interface MultiTenantAddBehaviorOptions {
 /**
  * Options for creating a new behavior.
  */
-export interface BehaviorOptions extends MultiTenantAddBehaviorOptions {
+export interface MTDBehaviorOptions extends MTDAddBehaviorOptions {
   /**
    * The origin that you want CloudFront to route requests to when they match this behavior.
    */
