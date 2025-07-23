@@ -30,6 +30,13 @@ export interface IAlarm extends IAlarmRule, IResource {
    * @attribute
    */
   readonly alarmName: string;
+  
+  /**
+   * Indicates whether this alarm is a composite alarm
+   * 
+   * @default false
+   */
+  readonly isCompositeAlarm?: boolean;
 }
 
 /**

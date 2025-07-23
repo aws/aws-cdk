@@ -114,11 +114,22 @@ export class AlarmWidget extends ConcreteWidget {
     this.props = props;
   }
 
+  /**
+   * Converts the alarm widget to a CloudWatch dashboard JSON representation.
+   * 
+   * For composite alarms, this generates an 'alarm' type widget.
+   * For regular metric alarms, this generates a 'metric' type widget.
+   * 
+   * This distinction is necessary because CloudWatch console requires different
+   * widget types to properly render different alarm types.
+   * 
+   * @returns The JSON representation of the widget
+   */
   public toJson(): any[] {
     // Detect if the alarm is a CompositeAlarm to determine widget type
-    // Check both instanceof for created CompositeAlarms and marker for imported ones
-    const isCompositeAlarm = this.props.alarm instanceof CompositeAlarm ||
-      (this.props.alarm as any).isCompositeAlarm === true;
+    // Check both instanceof for created CompositeAlarms and the isCompositeAlarm property
+    const isCompositeAlarm = this.props.alarm instanceof CompositeAlarm || 
+      this.props.alarm.isCompositeAlarm === true;
     const widgetType = isCompositeAlarm ? 'alarm' : 'metric';
 
     return [{

@@ -67,6 +67,11 @@ export interface CompositeAlarmProps {
 export class CompositeAlarm extends AlarmBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudwatch.CompositeAlarm';
+  
+  /**
+   * Indicates that this is a composite alarm
+   */
+  public readonly isCompositeAlarm = true;
 
   /**
    * Import an existing CloudWatch composite alarm provided an Name.
