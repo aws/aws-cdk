@@ -912,7 +912,7 @@ class Foo {
 
 #### From-attributes
 
-> to determine the set of attributes needed to reference an unowned resource, refer to Cloudformation templtate reference for the return types
+> To determine the set of attributes needed to reference an unowned resource, refer to Cloudformation templtate reference for the return types
 
 > Example : [Batch::JobDefinition](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-batch-jobdefinition.html#aws-resource-batch-jobdefinition-return-values) can be identified using `jobDefinitionArn` and the same is used in [`fromEksJobDefinitionArn`](https://github.com/aws/aws-cdk/blob/89bd72464be33bf3247491fbabbc08b2a44dc5fa/packages/aws-cdk-lib/aws-batch/lib/eks-job-definition.ts#L135)
 
