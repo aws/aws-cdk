@@ -26,19 +26,34 @@ Each mixin has its own dedicated interface (e.g., `FeatureMixinProps`) that cont
 - Provides better IDE support through clear property documentation
 - Reduces the chance of using incorrect properties
 
+**JSDoc Documentation Required**: All interfaces must include comprehensive JSDoc documentation with:
+
+- Interface description explaining its purpose
+- Property descriptions with clear explanations
+- `@default` tags for optional properties where applicable
+
 ### 2. Props class property
 
 Each mixin assign its properties from the input as a private class property:
 
 ```typescript
+/**
+ * The feature properties for this mixin
+ */
 private readonly props: FeatureMixinProps;
 
+/**
+ * Creates a new FeatureMixin
+ * @param props - The feature properties
+ */
 constructor(props: FeatureMixinProps) {
   this.props = props;
 }
 ```
 
 This ensures that each mixin only has access to the properties it should be concerned with.
+
+**JSDoc Documentation Required**: All class properties and constructors must include JSDoc documentation.
 
 ### 3. Returns the input resource
 
@@ -47,11 +62,18 @@ The return type is the same as the input type.
 Note that `CfnResource` is the respective L1 resource, e.g. `CfnBucket` for an S3 Bucket or `CfnFunction` a Lambda Function.
 
 ```typescript
+/**
+ * Applies feature configuration to the resource
+ * @param resource - The CfnResource to configure
+ * @returns The configured CfnResource
+ */
 public apply(resource: CfnResource): CfnResource {
   // Implementation will go here
   return resource;
 }
 ```
+
+**JSDoc Documentation Required**: All apply methods must include JSDoc documentation with `@param` and `@returns` tags.
 
 ## Integration with Resource Class
 
@@ -71,6 +93,24 @@ This approach allows for:
 - Easy addition or removal of functionality
 - Clear separation of concerns
 - Better testability of individual features
+
+## JSDoc Documentation Requirements
+
+All generated mixin code must include comprehensive JSDoc documentation:
+
+### Interface Documentation
+
+- Interface description explaining its purpose
+- All properties with clear descriptions
+- `@default` tags for optional properties
+- Nested interface documentation where applicable
+
+### Class Documentation
+
+- Class description explaining the mixin's functionality
+- Private property documentation
+- Constructor documentation with `@param` tags
+- Apply method documentation with `@param` and `@returns` tags
 
 ## Full example
 
@@ -99,12 +139,24 @@ export interface EncryptionMixinProps {
  * Mixin for bucket encryption configuration
  */
 export class EncryptionMixin implements Mixin<CfnBucket, CfnBucket> {
+  /**
+   * The encryption properties for this mixin
+   */
   private readonly props: EncryptionMixinProps;
 
+  /**
+   * Creates a new EncryptionMixin
+   * @param props - The encryption properties
+   */
   constructor(props: EncryptionMixinProps) {
     this.props = props;
   }
 
+  /**
+   * Applies encryption configuration to the bucket
+   * @param resource - The CfnBucket resource to configure
+   * @returns The configured CfnBucket resource
+   */
   public apply(resource: CfnBucket): CfnBucket {
     // Implementation will go here
     return resource;
