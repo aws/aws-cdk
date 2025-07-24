@@ -1,7 +1,9 @@
 import { Template, Match } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
+import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import { App, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
@@ -398,7 +400,7 @@ test.each([
   new ecs.FargateService(stack, 'FargateService', {
     cluster,
     taskDefinition,
-    circuitBreaker: circuitBreaker ? { } : undefined,
+    circuitBreaker: circuitBreaker ? {} : undefined,
   });
 
   // THEN
@@ -442,5 +444,217 @@ test.each([
         Rollback: rollback ?? false,
       },
     },
+  });
+});
+
+describe('Blue/Green Deployment', () => {
+  let stack: cdk.Stack;
+  let vpc: ec2.Vpc;
+  let cluster: ecs.Cluster;
+  let taskDefinition: ecs.FargateTaskDefinition;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'Vpc');
+    cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      portMappings: [{ containerPort: 80 }],
+    });
+  });
+
+  test('isUsingECSDeploymentController returns true when no deployment controller is specified', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    expect(service.isUsingECSDeploymentController()).toBe(true);
+  });
+
+  test('isUsingECSDeploymentController returns true when ECS deployment controller is specified', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.ECS,
+      },
+    });
+
+    // THEN
+    expect(service.isUsingECSDeploymentController()).toBe(true);
+  });
+
+  test('isUsingECSDeploymentController returns false when CODE_DEPLOY deployment controller is specified', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.CODE_DEPLOY,
+      },
+    });
+
+    // THEN
+    expect(service.isUsingECSDeploymentController()).toBe(false);
+  });
+
+  test('isUsingECSDeploymentController returns false when EXTERNAL deployment controller is specified', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.EXTERNAL,
+      },
+    });
+
+    // THEN
+    expect(service.isUsingECSDeploymentController()).toBe(false);
+  });
+
+  test('enableBlueGreenDeployment throws when not using ECS deployment controller', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.CODE_DEPLOY,
+      },
+    });
+
+    const blueTargetGroup = new elbv2.ApplicationTargetGroup(stack, 'BlueTargetGroup', {
+      vpc,
+      port: 80,
+    });
+
+    const greenTargetGroup = new elbv2.ApplicationTargetGroup(stack, 'GreenTargetGroup', {
+      vpc,
+      port: 80,
+    });
+
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc });
+    const listener = alb.addListener('Listener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.fixedResponse(200),
+    });
+
+    const rule = new elbv2.ApplicationListenerRule(stack, 'Rule', {
+      listener,
+      priority: 1,
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/'])],
+      action: elbv2.ListenerAction.forward([blueTargetGroup]),
+    });
+
+    const alternateTarget = new ecs.AlternateTarget({
+      alternateTargetGroup: greenTargetGroup,
+      productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(rule),
+    });
+
+    // THEN
+    expect(() => {
+      service.enableBlueGreenDeployment(alternateTarget);
+    }).toThrow(/Blue-green deployment requires the ECS deployment controller/);
+  });
+
+  test('enableBlueGreenDeployment configures alternate target when provided', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    const blueTargetGroup = new elbv2.ApplicationTargetGroup(stack, 'BlueTargetGroup', {
+      vpc,
+      port: 80,
+    });
+
+    const greenTargetGroup = new elbv2.ApplicationTargetGroup(stack, 'GreenTargetGroup', {
+      vpc,
+      port: 80,
+    });
+
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc });
+    const listener = alb.addListener('Listener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.fixedResponse(200),
+    });
+
+    const rule = new elbv2.ApplicationListenerRule(stack, 'Rule', {
+      listener,
+      priority: 1,
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/'])],
+      action: elbv2.ListenerAction.forward([blueTargetGroup]),
+    });
+
+    const alternateTarget = new ecs.AlternateTarget({
+      alternateTargetGroup: greenTargetGroup,
+      productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(rule),
+    });
+
+    // Register the blue target group first
+    const target = service.loadBalancerTarget({
+      containerName: 'web',
+      containerPort: 80,
+    }, alternateTarget);
+    target.attachToApplicationTargetGroup(blueTargetGroup);
+
+    const lambdaFunction = new lambda.Function(stack, 'TestFunction', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => { return { hookStatus: "SUCCEEDED" }; }'),
+    });
+
+    const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, {
+      lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+    });
+
+    // WHEN
+    service.enableBlueGreenDeployment(alternateTarget, [hookTarget]);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        Strategy: 'BLUE_GREEN',
+        LifecycleHooks: [
+          {
+            LifecycleStages: ['PRE_SCALE_UP'],
+            HookTargetArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('TestFunction'),
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+      LoadBalancers: [
+        {
+          ContainerName: 'web',
+          ContainerPort: 80,
+          TargetGroupArn: {
+            Ref: Match.stringLikeRegexp('BlueTargetGroup'),
+          },
+          AdvancedConfiguration: {
+            AlternateTargetGroupArn: {
+              Ref: Match.stringLikeRegexp('GreenTargetGroup'),
+            },
+            ProductionListenerRule: {
+              Ref: Match.stringLikeRegexp('Rule'),
+            },
+            RoleArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('FargateServiceLBAlternateOptionsRole'),
+                'Arn',
+              ],
+            },
+          },
+        },
+      ],
+    });
   });
 });
