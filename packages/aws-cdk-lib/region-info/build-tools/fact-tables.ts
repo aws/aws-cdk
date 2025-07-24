@@ -1156,6 +1156,7 @@ export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS: { [key: string]: any } = {
 export const FIREHOSE_CIDR_BLOCKS: { [region: string]: string } = {
   'af-south-1': '13.244.121.224',
   'ap-east-1': '18.162.221.32',
+  'ap-east-2': '43.212.53.160',
   'ap-northeast-1': '13.113.196.224',
   'ap-northeast-2': '13.209.1.64',
   'ap-northeast-3': '13.208.177.192',

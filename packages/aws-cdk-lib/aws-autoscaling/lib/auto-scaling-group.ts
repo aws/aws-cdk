@@ -668,6 +668,13 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   readonly launchTemplate?: ec2.ILaunchTemplate;
 
   /**
+   * Whether safety guardrail should be enforced when migrating to the launch template.
+   *
+   * @default false
+   */
+  readonly migrateToLaunchTemplate?: boolean;
+
+  /**
    * Mixed Instances Policy to use.
    *
    * Launch configuration related settings and Launch Template  must not be specified when a
@@ -1854,6 +1861,17 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         ...this.autoScalingGroup.cfnOptions.updatePolicy,
         autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: true },
       };
+    }
+
+    if (props.migrateToLaunchTemplate === true) {
+      const updatePolicy = this.autoScalingGroup.cfnOptions.updatePolicy;
+      if (!updatePolicy || !updatePolicy!.autoScalingRollingUpdate) {
+        throw new ValidationError(
+          'When migrateToLaunchTemplate is true, you must use AutoScalingRollingUpdate ' +
+          'to ensure instances are properly replaced during migration. ' +
+          'This prevents instances from referencing a deleted IAM instance profile.',
+          this);
+      }
     }
 
     if (props.signals && !props.init) {

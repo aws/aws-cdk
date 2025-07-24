@@ -1,9 +1,14 @@
 import { Construct } from 'constructs';
-import { ClusterScailabilityType, DatabaseCluster, DatabaseClusterProps, DBClusterStorageType, DatabaseInsightsMode } from './cluster';
+import { ClusterScailabilityType, DatabaseCluster, DatabaseClusterProps, DBClusterStorageType } from './cluster';
+import { DatabaseInsightsMode } from './database-insights-mode';
+import { DatabaseInstance, DatabaseInstanceProps } from './instance';
 import { PerformanceInsightRetention } from './props';
 import { validateAllProps, ValidationRule } from '../../core/lib/helpers-internal';
 
-const standardDatabaseRules: ValidationRule<DatabaseClusterProps>[] = [
+/**
+ * Common validation rules for database insights
+ */
+const databaseInsightsRules: ValidationRule<any>[] = [
   {
     condition: (props) =>
       props.enablePerformanceInsights === false &&
@@ -17,16 +22,21 @@ const standardDatabaseRules: ValidationRule<DatabaseClusterProps>[] = [
       props.performanceInsightRetention !== PerformanceInsightRetention.MONTHS_15,
     message: () => '`performanceInsightRetention` must be set to \'${PerformanceInsightRetention.MONTHS_15}\' when `databaseInsightsMode` is set to \'${DatabaseInsightsMode.ADVANCED}\'',
   },
-  {
-    condition: (props) => props.databaseInsightsMode !== undefined && !props.engine.engineType.startsWith('aurora'),
-    message: () => '`performanceInsightEncryptionKey` must be set when `databaseInsightsMode` is set to \'${DatabaseInsightsMode.ADVANCED}\'',
-  },
+];
+
+/**
+ * Cluster-specific validation rules
+ */
+const clusterSpecificRules: ValidationRule<DatabaseClusterProps>[] = [
   {
     condition: (props) => props.replicationSourceIdentifier !== undefined && props.credentials !== undefined,
     message: () => 'Cannot specify both `replicationSourceIdentifier` and `credentials`. The value is inherited from the source DB cluster',
   },
 ];
 
+/**
+ * Rules for Aurora Limitless database
+ */
 const limitlessDatabaseRules: ValidationRule<DatabaseClusterProps>[] = [
   {
     condition: (props) => !props.enablePerformanceInsights,
@@ -59,11 +69,21 @@ const limitlessDatabaseRules: ValidationRule<DatabaseClusterProps>[] = [
   },
 ];
 
+/**
+ * Validates database instance properties
+ */
+export function validateDatabaseInstanceProps(scope: Construct, props: DatabaseInstanceProps): void {
+  validateAllProps(scope, DatabaseInstance.name, props, databaseInsightsRules as ValidationRule<DatabaseInstanceProps>[]);
+}
+
+/**
+ * Validates database cluster properties
+ */
 export function validateDatabaseClusterProps(scope: Construct, props: DatabaseClusterProps): void {
   const isLimitlessCluster = props.clusterScailabilityType === ClusterScailabilityType.LIMITLESS;
   const applicableRules = isLimitlessCluster
-    ? [...standardDatabaseRules, ...limitlessDatabaseRules]
-    : standardDatabaseRules;
+    ? [...databaseInsightsRules as ValidationRule<DatabaseClusterProps>[], ...clusterSpecificRules, ...limitlessDatabaseRules]
+    : [...databaseInsightsRules as ValidationRule<DatabaseClusterProps>[], ...clusterSpecificRules];
 
   validateAllProps(scope, DatabaseCluster.name, props, applicableRules);
 }
