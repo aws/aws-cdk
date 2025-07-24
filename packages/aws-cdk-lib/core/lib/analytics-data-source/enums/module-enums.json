@@ -97,6 +97,18 @@
       "BINARY"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/chat-prompt-variant.ts": {
+    "ChatMessageRole": [
+      "user",
+      "assistant"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/prompt-variant.ts": {
+    "PromptTemplateType": [
+      "TEXT",
+      "CHAT"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-cloud9-alpha/lib/environment.ts": {
     "ConnectionType": [
       "CONNECT_SSH",
@@ -3569,6 +3581,7 @@
       "Neuron"
     ],
     "WindowsOptimizedVersion": [
+      "2025",
       "2022",
       "2019",
       "2016"
@@ -4466,6 +4479,83 @@
       "Random"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts": {
+    "TypeConverterType": [
+      "boolean",
+      "integer",
+      "double",
+      "string"
+    ],
+    "DateTimeFormat": [
+      "yyyy-MM-dd'T'HH:mm:ss'Z'",
+      "epoch",
+      "custom"
+    ],
+    "DelimiterCharacter": [
+      ",",
+      "\t",
+      " ",
+      ";",
+      "|"
+    ],
+    "QuoteCharacter": [
+      "\"",
+      "'"
+    ],
+    "KeyValuePairDelimiter": [
+      "&",
+      ";",
+      " ",
+      "\n"
+    ],
+    "KeyValueDelimiter": [
+      "=",
+      ":"
+    ],
+    "OCSFSourceType": [
+      "CloudTrail",
+      "Route53Resolver",
+      "VPCFlow",
+      "EKSAudit",
+      "AWSWAF"
+    ],
+    "OCSFVersion": [
+      "V1.1"
+    ],
+    "ParserProcessorType": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "VendedLogType": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "StringMutatorType": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "JsonMutatorType": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "DataConverterType": [
+      0,
+      1
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.ts": {
     "TLSSecurityPolicy": [
       "Policy-Min-TLS-1-0-2019-07",
@@ -4502,7 +4592,9 @@
     "ClusterScailabilityType": [
       "standard",
       "limitless"
-    ],
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/database-insights-mode.ts": {
     "DatabaseInsightsMode": [
       "standard",
       "advanced"
