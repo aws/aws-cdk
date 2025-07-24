@@ -28,7 +28,7 @@
     "jsii-diff": "1.112.0",
     "jsii-pacmak": "1.112.0",
     "jsii-reflect": "1.112.0",
-    "lerna": "^8.2.2",
+    "lerna": "^8.2.3",
     "nx": "^20",
     "semver": "^7.7.2",
     "standard-version": "^9.5.0",
