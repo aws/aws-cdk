@@ -591,3 +591,18 @@ export enum PerformanceInsightRetention {
    */
   LONG_TERM = 731,
 }
+
+/**
+ * Engine lifecycle support for Amazon RDS and Amazon Aurora
+ */
+export enum EngineLifecycleSupport {
+  /**
+   * Using Amazon RDS extended support
+   */
+  OPEN_SOURCE_RDS_EXTENDED_SUPPORT = 'open-source-rds-extended-support',
+
+  /**
+   * Not using Amazon RDS extended support
+   */
+  OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED = 'open-source-rds-extended-support-disabled',
+}

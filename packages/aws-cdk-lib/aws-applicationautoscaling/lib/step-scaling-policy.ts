@@ -213,7 +213,7 @@ export interface ScalingInterval {
   /**
    * The lower bound of the interval.
    *
-   * The scaling adjustment will be applied if the metric is higher than this value.
+   * The scaling adjustment will be applied if the metric is higher than or equal this value.
    *
    * @default Threshold automatically derived from neighbouring intervals
    */

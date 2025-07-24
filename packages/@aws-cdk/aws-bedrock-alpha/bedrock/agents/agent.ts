@@ -6,6 +6,8 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct, IConstruct } from 'constructs';
 // Internal Libs
 import { AgentActionGroup } from './action-group';
@@ -333,7 +335,11 @@ export interface AgentAttributes {
  * Class to create (or import) an Agent with CDK.
  * @cloudformationResource AWS::Bedrock::Agent
  */
+@propertyInjectable
 export class Agent extends AgentBase implements IAgent {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-alpha.Agent';
+
   /**
    * Static Method for importing an existing Bedrock Agent.
    */
@@ -429,6 +435,8 @@ export class Agent extends AgentBase implements IAgent {
   // ------------------------------------------------------
   constructor(scope: Construct, id: string, props: AgentProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // ------------------------------------------------------
     // Validate props
@@ -580,6 +588,7 @@ export class Agent extends AgentBase implements IAgent {
    * - Lambda function invoke permissions if executor is present
    * - S3 GetObject permissions if apiSchema.s3File is present
    */
+  @MethodMetadata()
   public addActionGroup(actionGroup: AgentActionGroup) {
     validation.throwIfInvalid(this.validateActionGroup, actionGroup);
     this.actionGroups.push(actionGroup);
@@ -640,6 +649,7 @@ export class Agent extends AgentBase implements IAgent {
    *
    * @default - No collaboration configuration.
    */
+  @MethodMetadata()
   public addActionGroups(...actionGroups: AgentActionGroup[]) {
     actionGroups.forEach(ag => this.addActionGroup(ag));
   }

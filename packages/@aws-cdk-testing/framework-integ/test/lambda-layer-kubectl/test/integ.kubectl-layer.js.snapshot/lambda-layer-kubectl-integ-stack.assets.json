@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "files": {
     "77675805670406a68c1baf43392c7e699bee435fe9b667ef4f9f1134b8c41d0e": {
       "displayName": "KubectlLayer/Code",
@@ -43,7 +43,7 @@
         }
       }
     },
-    "61a1c1b787f811fc8e3e3b509583c63580e8aa5f29831880ca93aee56aee9e4c": {
+    "8b4c89db654b8abfa232eb5920358242b29eb46f668a52c17587abf4d04f5a62": {
       "displayName": "lambda-layer-kubectl-integ-stack Template",
       "source": {
         "path": "lambda-layer-kubectl-integ-stack.template.json",
@@ -52,7 +52,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "61a1c1b787f811fc8e3e3b509583c63580e8aa5f29831880ca93aee56aee9e4c.json",
+          "objectKey": "8b4c89db654b8abfa232eb5920358242b29eb46f668a52c17587abf4d04f5a62.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
