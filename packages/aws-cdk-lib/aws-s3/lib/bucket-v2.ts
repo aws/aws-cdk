@@ -6,6 +6,7 @@ import { CfnBucket } from './s3.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Resource } from '../../core';
+import { validateAllProps, ValidationRule } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -20,16 +21,23 @@ export interface ICfnBucket extends IConstruct {
 export interface EncryptionMixinProps {
   /**
    * The kind of server-side encryption to apply to this bucket
+   *
+   * @default - `KMS` if `encryptionKey` is specified, or `S3_MANAGED` otherwise.
    */
   readonly encryption?: BucketEncryption;
 
   /**
    * External KMS key to use for bucket encryption
+   *
+   * @default - If `encryption` is set to `KMS` and this property is undefined,
+   * a new KMS key will be created and associated with this bucket.
    */
   readonly encryptionKey?: kms.IKey;
 
   /**
    * Whether Amazon S3 should use its own intermediary key to generate data keys
+   *
+   * @default - false
    */
   readonly bucketKeyEnabled?: boolean;
 }
@@ -382,9 +390,25 @@ export interface MetadataMixinProps {
 }
 
 /**
- * Mixin for bucket encryption configuration
+ * Setup bucket encryption configuration according to the following table:
+ *
+ * | props.encryption | props.encryptionKey | props.bucketKeyEnabled | bucketEncryption (return value) | encryptionKey (return value) |
+ * |------------------|---------------------|------------------------|---------------------------------|------------------------------|
+ * | undefined        | undefined           | e                      | undefined                       | undefined                    |
+ * | UNENCRYPTED      | undefined           | false                  | undefined                       | undefined                    |
+ * | undefined        | k                   | e                      | SSE-KMS, bucketKeyEnabled = e   | k                            |
+ * | KMS              | k                   | e                      | SSE-KMS, bucketKeyEnabled = e   | k                            |
+ * | KMS              | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | new key                      |
+ * | KMS_MANAGED      | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | undefined                    |
+ * | S3_MANAGED       | undefined           | false                  | SSE-S3                          | undefined                    |
+ * | S3_MANAGED       | undefined           | e                      | SSE-S3, bucketKeyEnabled = e    | undefined                    |
+ * | UNENCRYPTED      | undefined           | true                   | ERROR!                          | ERROR!                       |
+ * | UNENCRYPTED      | k                   | e                      | ERROR!                          | ERROR!                       |
+ * | KMS_MANAGED      | k                   | e                      | ERROR!                          | ERROR!                       |
+ * | S3_MANAGED       | undefined           | true                   | ERROR!                          | ERROR!                       |
+ * | S3_MANAGED       | k                   | e                      | ERROR!                          | ERROR!                       |
  */
-export class EncryptionMixin implements Mixin<CfnBucket, CfnBucket> {
+export class EncryptionMixin implements Mixin<CfnBucket, CfnBucket, EncryptionMixinProps> {
   /**
    * The encryption properties for this mixin
    */
@@ -396,6 +420,23 @@ export class EncryptionMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: EncryptionMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the encryption properties for this mixin
+   * @param resource - The CfnBucket resource to validate
+   */
+  public get validations(): ValidationRule<EncryptionMixinProps>[] {
+    return [
+      {
+        condition: (props) => Boolean(props.encryptionKey && props.encryption !== BucketEncryption.KMS),
+        message: (props) => `encryptionKey is specified, but encryption is not set to KMS (value: ${props.encryption})`,
+      },
+      {
+        condition: (props) => Boolean(props.bucketKeyEnabled && props.encryption === BucketEncryption.UNENCRYPTED),
+        message: (props) => `bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: ${props.encryption})`,
+      },
+    ];
   }
 
   /**
@@ -411,11 +452,26 @@ export class EncryptionMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket public access configuration
  */
-export class PublicAccessMixin implements Mixin<CfnBucket, CfnBucket> {
+export class PublicAccessMixin implements Mixin<CfnBucket, CfnBucket, PublicAccessMixinProps> {
   /**
    * The public access properties for this mixin
    */
   private readonly props: PublicAccessMixinProps;
+
+  /**
+   * Validates the public access properties for this mixin
+   */
+  public get validations(): ValidationRule<PublicAccessMixinProps>[] {
+    return [
+      {
+        condition: (props) => {
+          if (!props.publicReadAccess) return false;
+          return props.blockPublicAccess === undefined;
+        },
+        message: () => 'Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAccess\' property.',
+      },
+    ];
+  }
 
   /**
    * Creates a new PublicAccessMixin
@@ -438,7 +494,7 @@ export class PublicAccessMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket website configuration
  */
-export class WebsiteMixin implements Mixin<CfnBucket, CfnBucket> {
+export class WebsiteMixin implements Mixin<CfnBucket, CfnBucket, WebsiteMixinProps> {
   /**
    * The website properties for this mixin
    */
@@ -450,6 +506,25 @@ export class WebsiteMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: WebsiteMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the website properties for this mixin
+   */
+  public get validations(): ValidationRule<WebsiteMixinProps>[] {
+    return [
+      {
+        condition: (props) => Boolean(props.websiteErrorDocument && !props.websiteIndexDocument),
+        message: () => '"websiteIndexDocument" is required if "websiteErrorDocument" is set',
+      },
+      {
+        condition: (props) => Boolean(
+          props.websiteRedirect
+          && (props.websiteErrorDocument || props.websiteIndexDocument || props.websiteRoutingRules),
+        ),
+        message: () => '"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used',
+      },
+    ];
   }
 
   /**
@@ -465,7 +540,7 @@ export class WebsiteMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket lifecycle configuration
  */
-export class LifecycleMixin implements Mixin<CfnBucket, CfnBucket> {
+export class LifecycleMixin implements Mixin<CfnBucket, CfnBucket, LifecycleMixinProps> {
   /**
    * The lifecycle properties for this mixin
    */
@@ -477,6 +552,54 @@ export class LifecycleMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: LifecycleMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the lifecycle properties for this mixin
+   */
+  public get validations(): ValidationRule<LifecycleMixinProps>[] {
+    return [
+      {
+        condition: (props) => {
+          if (!props.lifecycleRules) return false;
+          return props.lifecycleRules.some(rule => {
+            return rule.expiredObjectDeleteMarker &&
+              (rule.expiration || rule.expirationDate || rule.tagFilters);
+          });
+        },
+        message: () => 'ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.',
+      },
+      {
+        condition: (props) => {
+          if (!props.lifecycleRules) return false;
+          return props.lifecycleRules.some(rule => {
+            return rule.abortIncompleteMultipartUploadAfter === undefined &&
+              rule.expiration === undefined &&
+              rule.expirationDate === undefined &&
+              rule.expiredObjectDeleteMarker === undefined &&
+              rule.noncurrentVersionExpiration === undefined &&
+              rule.noncurrentVersionsToRetain === undefined &&
+              rule.noncurrentVersionTransitions === undefined &&
+              rule.transitions === undefined;
+          });
+        },
+        message: () => 'All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`',
+      },
+      {
+        condition: (props) => {
+          if (!props.lifecycleRules) return false;
+          return props.lifecycleRules.some(rule => {
+            if (!rule.transitions) return false;
+            return rule.transitions.some(transition => {
+              const hasTransitionDate = transition.transitionDate !== undefined;
+              const hasTransitionAfter = transition.transitionAfter !== undefined;
+              return (!hasTransitionDate && !hasTransitionAfter) || (hasTransitionDate && hasTransitionAfter);
+            });
+          });
+        },
+        message: () => 'Exactly one of transitionDate or transitionAfter must be specified in lifecycle rule transition',
+      },
+    ];
   }
 
   /**
@@ -492,7 +615,7 @@ export class LifecycleMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket versioning configuration
  */
-export class VersioningMixin implements Mixin<CfnBucket, CfnBucket> {
+export class VersioningMixin implements Mixin<CfnBucket, CfnBucket, VersioningMixinProps> {
   /**
    * The versioning properties for this mixin
    */
@@ -504,6 +627,18 @@ export class VersioningMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: VersioningMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the versioning properties for this mixin
+   */
+  public get validations(): ValidationRule<VersioningMixinProps>[] {
+    return [
+      {
+        condition: (props) => Boolean(props.objectLockEnabled === false && props.objectLockDefaultRetention),
+        message: () => 'Object Lock must be enabled to configure default retention settings',
+      },
+    ];
   }
 
   /**
@@ -519,7 +654,7 @@ export class VersioningMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket logging configuration
  */
-export class LoggingMixin implements Mixin<CfnBucket, CfnBucket> {
+export class LoggingMixin implements Mixin<CfnBucket, CfnBucket, LoggingMixinProps> {
   /**
    * The logging properties for this mixin
    */
@@ -531,6 +666,14 @@ export class LoggingMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: LoggingMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the logging properties for this mixin
+   * @returns An empty array since no validation is required
+   */
+  public get validations(): ValidationRule<LoggingMixinProps>[] {
+    return [];
   }
 
   /**
@@ -546,7 +689,7 @@ export class LoggingMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket notification configuration
  */
-export class NotificationMixin implements Mixin<CfnBucket, CfnBucket> {
+export class NotificationMixin implements Mixin<CfnBucket, CfnBucket, NotificationMixinProps> {
   /**
    * The notification properties for this mixin
    */
@@ -558,6 +701,14 @@ export class NotificationMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: NotificationMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the notification properties for this mixin
+   * @returns An empty array since no validation is required
+   */
+  public get validations(): ValidationRule<NotificationMixinProps>[] {
+    return [];
   }
 
   /**
@@ -573,7 +724,7 @@ export class NotificationMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket CORS configuration
  */
-export class CORSMixin implements Mixin<CfnBucket, CfnBucket> {
+export class CORSMixin implements Mixin<CfnBucket, CfnBucket, CORSMixinProps> {
   /**
    * The CORS properties for this mixin
    */
@@ -585,6 +736,14 @@ export class CORSMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: CORSMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the CORS properties for this mixin
+   * @returns An empty array since no validation is required
+   */
+  public get validations(): ValidationRule<CORSMixinProps>[] {
+    return [];
   }
 
   /**
@@ -600,7 +759,7 @@ export class CORSMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket inventory configuration
  */
-export class InventoryMixin implements Mixin<CfnBucket, CfnBucket> {
+export class InventoryMixin implements Mixin<CfnBucket, CfnBucket, InventoryMixinProps> {
   /**
    * The inventory properties for this mixin
    */
@@ -612,6 +771,14 @@ export class InventoryMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: InventoryMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the inventory properties for this mixin
+   * @returns An empty array since no validation is required
+   */
+  public get validations(): ValidationRule<InventoryMixinProps>[] {
+    return [];
   }
 
   /**
@@ -627,7 +794,7 @@ export class InventoryMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket metrics configuration
  */
-export class MetricsMixin implements Mixin<CfnBucket, CfnBucket> {
+export class MetricsMixin implements Mixin<CfnBucket, CfnBucket, MetricsMixinProps> {
   /**
    * The metrics properties for this mixin
    */
@@ -639,6 +806,14 @@ export class MetricsMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: MetricsMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the metrics properties for this mixin
+   * @returns An empty array since no validation is required
+   */
+  public get validations(): ValidationRule<MetricsMixinProps>[] {
+    return [];
   }
 
   /**
@@ -654,7 +829,7 @@ export class MetricsMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket replication configuration
  */
-export class ReplicationMixin implements Mixin<CfnBucket, CfnBucket> {
+export class ReplicationMixin implements Mixin<CfnBucket, CfnBucket, ReplicationMixinProps> {
   /**
    * The replication properties for this mixin
    */
@@ -666,6 +841,42 @@ export class ReplicationMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: ReplicationMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the replication properties for this mixin
+   */
+  public get validations(): ValidationRule<ReplicationMixinProps>[] {
+    return [
+      {
+        condition: (props) => {
+          const replicationRulesIsEmpty = !props.replicationRules || props.replicationRules.length === 0;
+          return Boolean(replicationRulesIsEmpty && props.replicationRole);
+        },
+        message: () => 'cannot specify replicationRole when replicationRules is empty',
+      },
+      {
+        condition: (props) => {
+          if (!props.replicationRules || props.replicationRules.length <= 1) return false;
+          return props.replicationRules.some(rule => rule.priority === undefined);
+        },
+        message: () => '\'priority\' must be specified for all replication rules when there are multiple rules',
+      },
+      {
+        condition: (props) => {
+          if (!props.replicationRules) return false;
+          return props.replicationRules.some(rule => rule.replicationTimeControl && !rule.metrics);
+        },
+        message: () => '\'replicationTimeControlMetrics\' must be enabled when \'replicationTimeControl\' is enabled.',
+      },
+      {
+        condition: (props) => {
+          if (!props.replicationRules) return false;
+          return props.replicationRules.some(rule => rule.deleteMarkerReplication && rule.filter?.tags);
+        },
+        message: () => 'tag filter cannot be specified when \'deleteMarkerReplication\' is enabled.',
+      },
+    ];
   }
 
   /**
@@ -681,7 +892,7 @@ export class ReplicationMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket intelligent tiering configuration
  */
-export class IntelligentTieringMixin implements Mixin<CfnBucket, CfnBucket> {
+export class IntelligentTieringMixin implements Mixin<CfnBucket, CfnBucket, IntelligentTieringMixinProps> {
   /**
    * The intelligent tiering properties for this mixin
    */
@@ -693,6 +904,14 @@ export class IntelligentTieringMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: IntelligentTieringMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the intelligent tiering properties for this mixin
+   * @returns An empty array since no validation is required
+   */
+  public get validations(): ValidationRule<IntelligentTieringMixinProps>[] {
+    return [];
   }
 
   /**
@@ -708,7 +927,7 @@ export class IntelligentTieringMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket ownership configuration
  */
-export class OwnershipMixin implements Mixin<CfnBucket, CfnBucket> {
+export class OwnershipMixin implements Mixin<CfnBucket, CfnBucket, OwnershipMixinProps> {
   /**
    * The ownership properties for this mixin
    */
@@ -720,6 +939,26 @@ export class OwnershipMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: OwnershipMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the ownership properties for this mixin
+   */
+  public get validations(): ValidationRule<OwnershipMixinProps>[] {
+    return [
+      {
+        condition: (props) => {
+          const aclsThatDoNotRequireObjectOwnership = [
+            BucketAccessControl.PRIVATE,
+            BucketAccessControl.BUCKET_OWNER_READ,
+            BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
+          ];
+          const accessControlRequiresObjectOwnership = props.accessControl && !aclsThatDoNotRequireObjectOwnership.includes(props.accessControl);
+          return Boolean(accessControlRequiresObjectOwnership && props.objectOwnership === ObjectOwnership.BUCKET_OWNER_ENFORCED);
+        },
+        message: (props) => `objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${props.accessControl}"`,
+      },
+    ];
   }
 
   /**
@@ -735,7 +974,7 @@ export class OwnershipMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket transfer acceleration configuration
  */
-export class TransferAccelerationMixin implements Mixin<CfnBucket, CfnBucket> {
+export class TransferAccelerationMixin implements Mixin<CfnBucket, CfnBucket, TransferAccelerationMixinProps> {
   /**
    * The transfer acceleration properties for this mixin
    */
@@ -747,6 +986,14 @@ export class TransferAccelerationMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: TransferAccelerationMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the transfer acceleration properties for this mixin
+   * @returns An empty array since no validation is required
+   */
+  public get validations(): ValidationRule<TransferAccelerationMixinProps>[] {
+    return [];
   }
 
   /**
@@ -762,7 +1009,7 @@ export class TransferAccelerationMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket secure access configuration
  */
-export class SecureAccessMixin implements Mixin<CfnBucket, CfnBucket> {
+export class SecureAccessMixin implements Mixin<CfnBucket, CfnBucket, SecureAccessMixinProps> {
   /**
    * The secure access properties for this mixin
    */
@@ -774,6 +1021,18 @@ export class SecureAccessMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: SecureAccessMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the secure access properties for this mixin
+   */
+  public get validations(): ValidationRule<SecureAccessMixinProps>[] {
+    return [
+      {
+        condition: (props) => Boolean(!props.enforceSSL && props.minimumTLSVersion),
+        message: () => '\'enforceSSL\' must be enabled for \'minimumTLSVersion\' to be applied',
+      },
+    ];
   }
 
   /**
@@ -789,7 +1048,7 @@ export class SecureAccessMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket analytics configuration
  */
-export class AnalyticsMixin implements Mixin<CfnBucket, CfnBucket> {
+export class AnalyticsMixin implements Mixin<CfnBucket, CfnBucket, AnalyticsMixinProps> {
   /**
    * The analytics properties for this mixin
    */
@@ -801,6 +1060,13 @@ export class AnalyticsMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: AnalyticsMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the analytics properties for this mixin
+   */
+  public get validations(): ValidationRule<AnalyticsMixinProps>[] {
+    return [];
   }
 
   /**
@@ -816,7 +1082,7 @@ export class AnalyticsMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket auto-delete objects configuration
  */
-export class AutoDeleteObjectsMixin implements Mixin<CfnBucket, CfnBucket> {
+export class AutoDeleteObjectsMixin implements Mixin<CfnBucket, CfnBucket, AutoDeleteObjectsMixinProps> {
   /**
    * The auto-delete objects properties for this mixin
    */
@@ -828,6 +1094,13 @@ export class AutoDeleteObjectsMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: AutoDeleteObjectsMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the auto-delete objects properties for this mixin
+   */
+  public get validations(): ValidationRule<AutoDeleteObjectsMixinProps>[] {
+    return [];
   }
 
   /**
@@ -843,7 +1116,7 @@ export class AutoDeleteObjectsMixin implements Mixin<CfnBucket, CfnBucket> {
 /**
  * Mixin for bucket metadata configuration
  */
-export class MetadataMixin implements Mixin<CfnBucket, CfnBucket> {
+export class MetadataMixin implements Mixin<CfnBucket, CfnBucket, MetadataMixinProps> {
   /**
    * The metadata properties for this mixin
    */
@@ -855,6 +1128,22 @@ export class MetadataMixin implements Mixin<CfnBucket, CfnBucket> {
    */
   constructor(props: MetadataMixinProps) {
     this.props = props;
+  }
+
+  /**
+   * Validates the metadata properties for this mixin
+   */
+  public get validations(): ValidationRule<MetadataMixinProps>[] {
+    return [
+      {
+        condition: (props) => {
+          if (!props.metadata?.journalTable.recordExpiration) return false;
+          const days = props.metadata.journalTable.recordExpiration.days;
+          return Boolean(days && (days < 1 || days > 36500));
+        },
+        message: () => 'Journal table record expiration days must be between 1 and 36500 days',
+      },
+    ];
   }
 
   /**
@@ -896,17 +1185,23 @@ export class Bucket extends Resource implements ICfnBucket {
   public readonly attrArn: string;
   public readonly attrBucketName: string;
 
+  private readonly props: BucketProps;
+
   public constructor(scope: IConstruct, id: string, props: BucketProps = {}) {
     super(scope, id);
     // @todo deal with physical name
+    this.props = props;
 
+    // Construct hooks
     addConstructMetadata(this, props);
 
+    // CFN Resource
     this.cfn = new CfnBucket(this, 'Resource');
     this.attrArn = this.cfn.attrArn;
     this.attrBucketName = this.cfn.ref;
 
-    const mixins: Mixin<CfnBucket, any>[] = [
+    // Features
+    this.with(
       new EncryptionMixin(props),
       new PublicAccessMixin(props),
       new WebsiteMixin(props),
@@ -923,16 +1218,14 @@ export class Bucket extends Resource implements ICfnBucket {
       new TransferAccelerationMixin(props),
       new SecureAccessMixin(props),
       new AutoDeleteObjectsMixin(props),
-      // new AnalyticsMixin(props),
+      // new AnalyticsMixin({}),
       // new MetadataMixin(props),
-    ];
-    this.with(...mixins);
+    );
   }
 
-  private with(...mixins: Mixin<CfnBucket, any>[]): this {
-    for (const mixin of mixins) {
-      mixin.apply(this.cfn);
-    }
+  private with(...mixins: Mixin<CfnBucket, any, BucketProps>[]): this {
+    validateAllProps(this, this.constructor.name, this.props, mixins.flatMap(m => m.validations));
+    mixins.forEach(mixin => mixin.apply(this.cfn));
     return this;
   }
 }
