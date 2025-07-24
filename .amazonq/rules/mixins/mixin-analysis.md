@@ -31,7 +31,13 @@ Follow these steps to analyze a resource and identify potential mixins:
 
 5. **Identify Missing High-Level Properties**: For each mixin, check if there are L1 properties without corresponding L2 properties
    - Design appropriate high-level interfaces for these properties
+   - **AVOID L1 Pass-Through**: Do not create interfaces that simply expose L1 CloudFormation properties directly
+   - Create meaningful abstractions that provide developer-friendly APIs with sensible defaults
    - Document suggested interfaces with TypeScript definitions
+
+6. **Ensure most L1 and L2 properties are used**: For any props not Covered by Mixins go back and check if there could be a mixin created for them
+   - Check if it makes sense to create a mixin for them
+   - Execute step 4: Define Mixins for the uncovered props
 
 ## Document Structure
 
@@ -84,6 +90,12 @@ export interface SuggestedInterface {
 }
 ```
 
+**Important**: Avoid creating interfaces that are simple pass-throughs of L1 CloudFormation properties. Instead, create meaningful abstractions that:
+- Use CDK constructs (e.g., `IBucket`, `IRole`) instead of raw CloudFormation references
+- Provide sensible defaults and simplified configuration options
+- Group related L1 properties into logical high-level concepts
+- Offer developer-friendly property names and documentation
+
 ## [ResourceName]Props Not Covered by Mixins
 
 - `property`: Type - Description
@@ -110,6 +122,17 @@ Common mixins found in many AWS resources include:
 6. **Permissions Mixin**: Controls IAM permissions and resource policies
 7. **Lifecycle Mixin**: Manages resource lifecycle (creation, updates, deletion)
 
+## Interface Design Guidelines
+
+When designing mixin interfaces, follow these principles:
+
+1. **Avoid L1 Pass-Through**: Never create interfaces that simply expose L1 CloudFormation properties without abstraction
+2. **Use CDK Constructs**: Prefer CDK interfaces (e.g., `IBucket`, `IRole`) over raw CloudFormation types
+3. **Provide Meaningful Defaults**: Include `@default` documentation for optional properties
+4. **Group Related Concepts**: Combine related L1 properties into logical high-level structures
+5. **Developer-Friendly Names**: Use intuitive property names that match AWS console terminology
+6. **Comprehensive Documentation**: Provide clear descriptions of what each property controls
+
 ## Benefits of Mixin Analysis
 
 1. **Improved Code Organization**: Grouping related properties makes the code more maintainable
@@ -117,10 +140,4 @@ Common mixins found in many AWS resources include:
 3. **Enhanced Extensibility**: New features can be added as mixins without disrupting existing code
 4. **Consistent Patterns**: Similar features across different resources can follow consistent patterns
 5. **Simplified Testing**: Mixins can be tested in isolation
-
-## Next Steps After Analysis
-
-1. **Implementation**: Create actual mixin classes based on the analysis
-2. **Integration**: Integrate mixins into the resource class
-3. **Documentation**: Update resource documentation to reflect the mixin-based approach
-4. **Testing**: Ensure all mixin functionality is properly tested
+6. **Meaningful Abstractions**: High-level interfaces hide CloudFormation complexity
