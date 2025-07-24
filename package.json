@@ -84,6 +84,7 @@
       "tools/@aws-cdk/prlint",
       "tools/@aws-cdk/spec2cdk",
       "tools/@aws-cdk/lazify",
+      "tools/@aws-cdk/project-sync",
       "tools/@aws-cdk/lambda-integration-test-updater",
       "tools/@aws-cdk/construct-metadata-updater",
       "scripts/@aws-cdk/script-tests"
