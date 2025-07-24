@@ -66,18 +66,18 @@
     "@aws-cdk/service-spec-types" "^0.0.150"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/aws-service-spec@^0.1.86":
-  version "0.1.86"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.86.tgz#ef9a74a3a9ff6a2901e5489bab465ed5ee6163ab"
-  integrity sha512-/el9RfmBfwVnz1D7/Y3pKImLUnEpm+qTwaLSbWEg0iS7owYOvU/Ab5WivLN3EOVCZpE9XHkMhbaHiJ9WUGXdcg==
+"@aws-cdk/aws-service-spec@^0.1.87":
+  version "0.1.87"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.87.tgz#be3571161347a18bd84368638fed2e5153885944"
+  integrity sha512-ygUSEZy2LZWfhOYNr0Hw3U26BKbITHN47b67FcL17oq2QF5/y4MdbGgycsoEz39vRJl6YWJ2gL8S5j13HBLDhA==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.152"
+    "@aws-cdk/service-spec-types" "^0.0.153"
     "@cdklabs/tskb" "^0.0.3"
 
 "@aws-cdk/cloud-assembly-schema@^45.0.0":
-  version "45.0.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-45.0.0.tgz#32fe09103cae5f964b313403505391c4b25272fc"
-  integrity sha512-tHUX60ZevKlxAfnhQgjt5CcDEswImYuf25Ewg/+0aB6UnbvECT3eSkrUfhEXJ2T5zYO/w1Dy8ockfBXjE+QUNQ==
+  version "45.2.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-45.2.0.tgz#bd4bf1e16189a2d424b9ab503db48ca9732325b1"
+  integrity sha512-5TTUkGHQ+nfuUGwKA8/Yraxb+JdNUh4np24qk/VHXmrCMq+M6HfmGWfhcg/QlHA2S5P3YIamfYHdQAB4uSNLAg==
   dependencies:
     jsonschema "~1.4.1"
     semver "^7.7.2"
@@ -152,10 +152,10 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/service-spec-types@^0.0.152":
-  version "0.0.152"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.152.tgz#09370362ef9fd26604f79075d9e7759cdfdd658c"
-  integrity sha512-zTEzp4EwUXrwqts48xV11GknGnQuEw3/l4tBZ1mePJXRZzBHcP5q4h/Q4AGJ9jrBtCqSks9EAoX2kTlgjkU4fg==
+"@aws-cdk/service-spec-types@^0.0.153":
+  version "0.0.153"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.153.tgz#fe23190d04f523b6f78d5e50873136b393265600"
+  integrity sha512-VQlCukkOMa+InEIkK25qjKGO5ugzFUHzwST8xe+tjQVqWdyGYpllzqj3Kdns7KBkEOht74wVxJwize2ZlGgXmg==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
