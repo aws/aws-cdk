@@ -9,6 +9,7 @@ export * from './policy';
 export * from './query-definition';
 export * from './data-protection-policy';
 export * from './field-index-policy';
+export * from './transformer';
 
 // AWS::Logs CloudFormation Resources:
 export * from './logs.generated';

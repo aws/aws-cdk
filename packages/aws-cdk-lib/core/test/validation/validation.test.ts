@@ -631,7 +631,9 @@ Policy Validation Report Summary
           }],
         }]),
       ],
-      context: { '@aws-cdk/core:validationReportJson': true },
+      context: {
+        '@aws-cdk/core:validationReportJson': true,
+      },
     });
     const stack = new core.Stack(app);
     new core.CfnResource(stack, 'Fake', {
@@ -642,8 +644,8 @@ Policy Validation Report Summary
     });
     app.synth();
     expect(process.exitCode).toEqual(1);
-
-    const report = fs.readFileSync(path.join(app.outdir, 'policy-validation-report.json')).toString('utf-8');
+    const file = path.join(app.outdir, 'policy-validation-report.json');
+    const report = fs.readFileSync(file).toString('utf-8');
     expect(JSON.parse(report)).toEqual(expect.objectContaining({
       title: 'Validation Report',
       pluginReports: [
@@ -691,6 +693,127 @@ Policy Validation Report Summary
         },
       ],
     }));
+    const consoleOut = consoleLogMock.mock.calls[1][0];
+    expect(consoleOut).toContain(`Validation failed. See the validation report in \'${file}\' for details`);
+  });
+
+  test('Pretty print as default', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          ruleMetadata: {
+            id: 'abcdefg',
+          },
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+      context: {
+      },
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'Fake', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+    app.synth();
+    expect(process.exitCode).toEqual(1);
+    const consoleOut = consoleLogMock.mock.calls[1][0];
+    expect(consoleOut).toContain('Validation failed. See the validation report above for details');
+    const consoleReport = consoleErrorMock.mock.calls[0][0];
+    expect(consoleReport).toContain('Validation Report');
+  });
+
+  test('Multi format', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          ruleMetadata: {
+            id: 'abcdefg',
+          },
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+      context: {
+        '@aws-cdk/core:validationReportJson': true,
+        '@aws-cdk/core:validationReportPrettyPrint': true,
+      },
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'Fake', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+    app.synth();
+    expect(process.exitCode).toEqual(1);
+    const file = path.join(app.outdir, 'policy-validation-report.json');
+    const report = fs.readFileSync(file).toString('utf-8');
+    expect(JSON.parse(report)).toEqual(expect.objectContaining({
+      title: 'Validation Report',
+      pluginReports: [
+        {
+          summary: {
+            pluginName: 'test-plugin',
+            status: 'failure',
+          },
+          violations: [
+            {
+              ruleName: 'test-rule',
+              description: 'test recommendation',
+              ruleMetadata: { id: 'abcdefg' },
+              violatingResources: [{
+                'locations': [
+                  'test-location',
+                ],
+                'resourceLogicalId': 'Fake',
+                'templatePath': '/path/to/Default.template.json',
+              }],
+              violatingConstructs: [
+                {
+                  constructStack: {
+                    'id': 'Default',
+                    'construct': expect.stringMatching(/(aws-cdk-lib.Stack|Construct)/),
+                    'libraryVersion': expect.any(String),
+                    'location': "Run with '--debug' to include location info",
+                    'path': 'Default',
+                    'child': {
+                      'id': 'Fake',
+                      'construct': expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
+                      'libraryVersion': expect.any(String),
+                      'location': "Run with '--debug' to include location info",
+                      'path': 'Default/Fake',
+                    },
+                  },
+                  constructPath: 'Default/Fake',
+                  locations: ['test-location'],
+                  resourceLogicalId: 'Fake',
+                  templatePath: '/path/to/Default.template.json',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    }));
+    const consoleOut = consoleLogMock.mock.calls[1][0];
+    expect(consoleOut).toContain(`Validation failed. See the validation report in \'${file}\' and above for details`);
+    const consoleReport = consoleErrorMock.mock.calls[0][0];
+    expect(consoleReport).toContain('Validation Report');
   });
 });
 
