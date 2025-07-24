@@ -5,7 +5,7 @@
   "version": "0.0.0",
   "scripts": {
     "build": "tsc -b && node scripts/generate.js && cdk-lint",
-    "integ": "integ-runner --language javascript",
+    "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",

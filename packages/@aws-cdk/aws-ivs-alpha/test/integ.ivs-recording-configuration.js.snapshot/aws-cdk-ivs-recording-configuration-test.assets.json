@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "displayName": "aws-cdk-ivs-recording-configuration-test/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "a19f7b10b4ba38768e3906836f9885d16e3a6efdb4894a641d040a1485cb309f": {
+    "3ae89582db2c3ceaab8923e1bce7f20976e5b602cd9dd515b85c307494e7d156": {
       "displayName": "aws-cdk-ivs-recording-configuration-test Template",
       "source": {
         "path": "aws-cdk-ivs-recording-configuration-test.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a19f7b10b4ba38768e3906836f9885d16e3a6efdb4894a641d040a1485cb309f.json",
+          "objectKey": "3ae89582db2c3ceaab8923e1bce7f20976e5b602cd9dd515b85c307494e7d156.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

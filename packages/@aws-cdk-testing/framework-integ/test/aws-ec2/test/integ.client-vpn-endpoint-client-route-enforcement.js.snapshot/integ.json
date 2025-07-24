@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "client-vpn-endpoint-integ/DefaultTest": {
       "stacks": [
@@ -10,5 +10,5 @@
       "assertionStackName": "clientvpnendpointintegDefaultTestDeployAssert7B9D072C"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1019.2"
 }

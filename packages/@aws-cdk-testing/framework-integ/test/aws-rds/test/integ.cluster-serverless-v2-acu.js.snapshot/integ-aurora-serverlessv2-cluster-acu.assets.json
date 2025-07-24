@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "integ-aurora-serverlessv2-cluster-acu/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "a322069a3ecae26f359bd6ac80e4b041a9d428d581871aa47a51f7ef703a5fb5": {
+    "2c8da648ceee4fce87d7c35ee200c7a42a2abb40b9c09cdbd1c0fb4de3bb0d2c": {
       "displayName": "integ-aurora-serverlessv2-cluster-acu Template",
       "source": {
         "path": "integ-aurora-serverlessv2-cluster-acu.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a322069a3ecae26f359bd6ac80e4b041a9d428d581871aa47a51f7ef703a5fb5.json",
+          "objectKey": "2c8da648ceee4fce87d7c35ee200c7a42a2abb40b9c09cdbd1c0fb4de3bb0d2c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "cdk-integ-math-alarm-and-dashboard/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "cdkintegmathalarmanddashboardDefaultTestDeployAssertE31ECF03"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1019.2"
 }
