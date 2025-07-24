@@ -3,6 +3,9 @@ import { backOff } from 'exponential-backoff';
 
 const issueQuery = `
   createdAt
+  author {
+    login
+  }
   timelineItems(last: 16) {
     nodes{
       ... on IssueComment {
@@ -60,7 +63,7 @@ const issueQuery = `
       createdAt
     }
   }
-  projectItems(first: 100) {
+  projectItems(first: 16) {
     nodes {
       id
       project {
@@ -72,6 +75,9 @@ const issueQuery = `
 
 const prQuery = `
   createdAt
+  author {
+    login
+  }
   timelineItems(last: 16) {
     nodes {
       ... on PullRequestCommit {
@@ -139,7 +145,7 @@ const prQuery = `
       createdAt
     }
   }
-  projectItems(first: 100) {
+  projectItems(first: 16) {
     nodes {
       id
       project {
@@ -147,17 +153,17 @@ const prQuery = `
       }
     }
   }
-`
+`;
 
 const backoffOptions = {
-  numOfAttempts: 5,
+  numOfAttempts: 10,
   startingDelay: 1000,
   timeMultiple: 2,
-  maxDelay: 30000,
+  maxDelay: 60000,
   retry: (error: Error) => {
     console.log(`GitHub API request failed, retrying: ${error.message}`);
     return true;
-  }
+  },
 };
 
 export class Github {
@@ -176,7 +182,7 @@ export class Github {
   }
 
   async authGraphQL(query: string) {
-    return await backOff(async () => {
+    return backOff(async () => {
       const response = await fetch('https://api.github.com/graphql', {
         method: 'POST',
         headers: {

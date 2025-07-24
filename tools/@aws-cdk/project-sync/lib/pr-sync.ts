@@ -36,7 +36,7 @@ export const syncPrData = async (prDetails: any) => {
     return;
   }
 
-  const {projectId, createFieldId, updateFieldId} = await projectIds(github);
+  const { projectId, createFieldId, updateFieldId, authorFieldId } = await projectIds(github);
 
   // Get timeline items to determine the last update date (excluding github-actions)
   const timelineItems = prDetails.timelineItems?.nodes ?? [];
@@ -63,6 +63,7 @@ export const syncPrData = async (prDetails: any) => {
   const result = await github.setProjectItem(projectId, projectItemId, {
     [createFieldId]: { date: creationDate },
     [updateFieldId]: { date: updateDate },
+    [authorFieldId]: { text: prDetails.author?.login || '' },
   });
   console.log('Result from mutation request: ');
   console.dir(JSON.stringify(result));

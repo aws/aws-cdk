@@ -28,7 +28,8 @@ describe('Issue Sync', () => {
     // and the expected creation and update dates
     expect(mockGithub.setProjectItem).toHaveBeenCalledWith('PVT_kwDOACIPmc4A7TlP', 'PVTI_lADOACIPmc4A7TlPzgbanR8', {
       PVTF_lADOACIPmc4A7TlPzgvqxXA: { date: new Date('2021-08-04T15:40:27Z') },
-      PVTF_lADOACIPmc4A7TlPzgv350s: { date: new Date('2025-05-02T15:55:16Z') },
+      PVTF_lADOACIPmc4A7TlPzgv350s: { date: new Date('2025-06-30T15:47:05Z') },
+      PVTF_lADOACIPmc4A7TlPzgyBz60: { text: 'naseemkullah' },
     });
   });
 
@@ -42,7 +43,8 @@ describe('Issue Sync', () => {
     // and the expected creation and update dates
     expect(mockGithub.setProjectItem).toHaveBeenCalledWith('PVT_kwDOACIPmc4A7TlP', 'PVTI_lADOACIPmc4A7TlPzgbamKo', {
       PVTF_lADOACIPmc4A7TlPzgvqxXA: { date: new Date('2024-07-09T08:10:25Z') },
-      PVTF_lADOACIPmc4A7TlPzgv350s: { date: new Date('2025-05-26T15:43:23Z') },
+      PVTF_lADOACIPmc4A7TlPzgv350s: { date: new Date('2025-07-08T15:43:28Z') },
+      PVTF_lADOACIPmc4A7TlPzgyBz60: { text: 'greg5123334' },
     });
   });
 
@@ -57,6 +59,7 @@ describe('Issue Sync', () => {
     expect(mockGithub.setProjectItem).toHaveBeenCalledWith('PVT_kwDOACIPmc4A7TlP', 'PVTI_lADOACIPmc4A7TlPzgbamBo', {
       PVTF_lADOACIPmc4A7TlPzgvqxXA: { date: new Date('2025-01-28T09:56:52Z') },
       PVTF_lADOACIPmc4A7TlPzgv350s: { date: new Date('2025-06-12T16:00:02Z') },
+      PVTF_lADOACIPmc4A7TlPzgyBz60: { text: 'aubsamai' },
     });
   });
 

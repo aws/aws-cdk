@@ -28,7 +28,8 @@ describe('PR Sync', () => {
     // and the expected creation and update dates
     expect(mockGithub.setProjectItem).toHaveBeenCalledWith('PVT_kwDOACIPmc4A7TlP', 'PVTI_lADOACIPmc4A7TlPzgceg5g', {
       PVTF_lADOACIPmc4A7TlPzgvqxXA: { date: new Date('2025-07-11T04:45:56Z') },
-      PVTF_lADOACIPmc4A7TlPzgv350s: { date: new Date('2025-07-16T00:27:27Z') },
+      PVTF_lADOACIPmc4A7TlPzgv350s: { date: new Date('2025-07-19T01:34:52Z') },
+      PVTF_lADOACIPmc4A7TlPzgyBz60: { text: 'badmintoncryer' },
     });
   });
 });
