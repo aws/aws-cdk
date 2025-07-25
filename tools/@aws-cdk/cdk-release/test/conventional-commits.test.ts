@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import * as stream from 'stream';
-import { ConventionalCommit, createScopeVariations, filterCommits, getConventionalCommitsFromGitHistory } from '../lib/conventional-commits';
+import { ConventionalCommit, filterCommits, getConventionalCommitsFromGitHistory } from '../lib/conventional-commits';
 import { ReleaseOptions } from '../lib/types';
 
 // mock out Git interactions
@@ -37,6 +37,30 @@ describe('getConventionalCommitsFromGitHistory', () => {
     const commits = await getConventionalCommitsFromGitHistory(args, '3.9.2');
 
     expect(commits).toHaveLength(1);
+  });
+
+  test('Changes to L1 are considered a note group', async () => {
+    const commitMessages = [
+      'fix(ec2): some fix',
+      (
+        'feat: update L1 CloudFormation resource definitions\n\n' +
+        'CHANGES TO L1 RESOURCES:\n' +
+        'L1 resources are automatically generated from...:\n' +
+        '- aws-cdk-lib.aws_kendra.CfnDataSource.TemplateConfigurationProperty: template property here has changed from string to json'
+      ),
+    ];
+    gitRawCommits.mockImplementation(() => mockGitCommits(commitMessages));
+
+    const commits = await getConventionalCommitsFromGitHistory(args, '3.9.2');
+
+    expect(commits[0].notes).toHaveLength(0);
+    expect(commits[1].notes).toEqual([{
+      title: 'CHANGES TO L1 RESOURCES',
+      text: (
+        'L1 resources are automatically generated from...:\n' +
+        '- aws-cdk-lib.aws_kendra.CfnDataSource.TemplateConfigurationProperty: template property here has changed from string to json'
+      ),
+    }]);
   });
 });
 
@@ -105,8 +129,19 @@ describe('filterCommits', () => {
     expect(filteredCommits[0].scope).toEqual('aws-stable');
   });
 
-  test('scope variants take alpha packages into account', () => {
-    expect(createScopeVariations(['@aws-cdk/aws-batch-alpha'])).toContain('batch');
+  test('alpha packages are not considered stable', () => {
+    const ec2Commits = [
+      commitWithScope('aws-ec2-alpha'),
+      commitWithScope('ec2'),
+      commitWithScope('aws-ec2'),
+    ];
+
+    const filteredCommits = filterCommits(ec2Commits, {
+      includePackages: ['@aws-cdk/aws-ec2-alpha'],
+    });
+
+    expect(filteredCommits.length).toEqual(1);
+    expect(filteredCommits[0].scope).toEqual('aws-ec2-alpha');
   });
 });
 
