@@ -1,0 +1,21 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "ea56341a7255336bb06c0d5f7a1610980c74cf1e0eaa7b0f9c8a66bc7e9e206e": {
+      "displayName": "aws-cdk-bedrock-inference-profiles-integ Template",
+      "source": {
+        "path": "aws-cdk-bedrock-inference-profiles-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-34bebf73": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "ea56341a7255336bb06c0d5f7a1610980c74cf1e0eaa7b0f9c8a66bc7e9e206e.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
