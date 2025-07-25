@@ -445,6 +445,45 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
 }));
 ```
 
+### Schema Registry integration
+
+Schema Registry is a centralized repository that stores and manages schemas for data streaming services. With Schema Registry integration, you can provide a schema registry of your choice and the Lambda service will deserialize the raw bytes according to the defined schema before passing the structured data to your Lambda function.
+
+This feature is particularly valuable because Kafka is schema-agnostic - it treats message data as raw byte arrays with no built-in enforcement of structure or data format. Without Schema Registry integration, Lambda functions typically need to include custom deserialization logic to convert these raw bytes into structured data, adding complexity and maintenance overhead to your code.
+
+When you configure Schema Registry integration, the Lambda service:
+
+1. Extracts the schema ID from incoming Kafka messages.
+2. Fetches the corresponding schema from the registry.
+3. Uses the schema to deserialize the data before passing it to your Lambda function.
+
+This feature supports three types of Schema Registries:
+
+* __Confluent Cloud Schema Registry__
+* __Confluent Self-Managed Schema Registry__
+* __AWS Glue Schema Registry__
+
+And it supports deserializing data in three formats:
+
+* __Apache Avro__
+* __ProtoBuf__
+* __JSON__
+
+> __Important__: Schema Registry integration requires you to configure the `provisionedPollerConfig` property.
+>
+> When configuring Schema Registry integration, the following fields are required:
+>
+> * `schemaRegistryUri`: The URI of your schema registry
+> * `eventRecordFormat`: The format for deserialized records (JSON or SOURCE)
+> * `schemaValidationConfigs`: At least one schema validation configuration
+>
+> For AWS Glue Schema Registry integration, the Lambda execution role will automatically be granted the necessary permissions to access the registry.
+
+You can configure how your data is formatted after deserialization:
+
+* Use `EventRecordFormat.JSON` (default) to convert data to JSON format for flexible processing.
+* Use `EventRecordFormat.SOURCE` to keep data in its original format with schema metadata removed, which is recommended when using Avro or ProtoBuf generated classes.
+
 Set a confluent or self-managed schema registry to de-serialize events from the event source. Note, this will similarly work for `SelfManagedKafkaEventSource` but the example only shows setup for `ManagedKafkaEventSource`.
 
 ```ts
@@ -511,6 +550,131 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
     schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.KEY }],
   }),
 }));
+```
+
+Here's how to use Schema Registry with a self-managed Kafka cluster:
+
+```ts
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { SelfManagedKafkaEventSource, ConfluentSchemaRegistry } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+// The list of Kafka brokers
+const bootstrapServers = ['kafka-broker:9092'];
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic';
+
+// The secret that allows access to your Confluent Schema Registry
+const secret = new Secret(this, 'Secret', { secretName: 'ConfluentSchemaRegistry' });
+
+declare const myFunction: lambda.Function;
+myFunction.addEventSource(new SelfManagedKafkaEventSource({
+  bootstrapServers: bootstrapServers,
+  topic: topic,
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  provisionedPollerConfig: {
+    minimumPollers: 1,
+    maximumPollers: 3,
+  },
+  schemaRegistryConfig: new ConfluentSchemaRegistry({
+    schemaRegistryUri: 'https://self-managed-registry.example.com',
+    eventRecordFormat: lambda.EventRecordFormat.JSON,
+    authenticationType: lambda.KafkaSchemaRegistryAccessConfigType.BASIC_AUTH,
+    secret: secret,
+    schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.KEY }],
+  }),
+}));
+```
+
+### Complete Example with IAM Permissions
+
+For a more comprehensive example that includes IAM policy configuration, here's a full CDK stack for MSK with AWS Glue Schema Registry:
+
+```ts
+import {
+  ManagedKafkaEventSource,
+  GlueSchemaRegistry,
+} from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { App, StackProps, Stack } from 'aws-cdk-lib';
+import { CfnRegistry } from 'aws-cdk-lib/aws-glue';
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+export class MskGlueSchemaRegistryStack extends Stack {
+  constructor(scope: App, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    // Create a Lambda execution role
+    const executionRole = new iam.Role(this, 'GlueFunctionExecutionRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // Add basic Lambda execution permissions
+    executionRole.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+    );
+
+    // Create a Lambda function with the custom role
+    const testLambdaFunction = new lambda.Function(this, 'GlueFunction', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline(`exports.handler = async (event) => {
+        console.log('event:', JSON.stringify(event, undefined, 2));
+        return { event };
+      }`),
+      role: executionRole,
+    });
+
+    // Define MSK cluster ARN (replace with your actual ARN)
+    // Note: This example uses IAM authentication which must be enabled on the MSK cluster
+    const clusterArn = 'arn:aws:kafka:us-west-2:xxxxxxxxxxxx:cluster/test/e7d32588-046c-4b6f-81c6-8857b8349430-10';
+
+    // Add managed policy for MSK execution
+    executionRole.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaMSKExecutionRole'),
+    );
+
+    // Create a Glue Schema Registry
+    const glueRegistry = new CfnRegistry(this, 'SchemaRegistry', {
+      name: 'msk-glue-test-schema-registry',
+      description: 'Schema registry for MSK integration tests',
+    });
+
+    // Add Glue Schema Registry permissions to the Lambda execution role
+    executionRole.addToPolicy(new iam.PolicyStatement({
+      actions: ['glue:GetRegistry'],
+      resources: [glueRegistry.attrArn],
+    }));
+
+    executionRole.addToPolicy(new iam.PolicyStatement({
+      actions: ['glue:GetSchemaVersion'],
+      resources: ['*'], // You may want to restrict this in production
+    }));
+
+    // MSK with Glue Schema Registry
+    testLambdaFunction.addEventSource(new ManagedKafkaEventSource({
+      clusterArn: clusterArn,
+      topic: 'test-topic-msk-glue',
+      consumerGroupId: 'test-consumer-group-msk-glue',
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      provisionedPollerConfig: {
+        minimumPollers: 1,
+        maximumPollers: 3,
+      },
+      schemaRegistryConfig: new GlueSchemaRegistry({
+        schemaRegistry: glueRegistry,
+        eventRecordFormat: lambda.EventRecordFormat.JSON,
+        schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.KEY }],
+      }),
+    }));
+  }
+}
+
+// Create the app and stacks
+const app = new App();
+const glueStack = new MskGlueSchemaRegistryStack(app, 'lambda-event-source-glue-schema-registry');
+
+app.synth();
 ```
 
 ## Roadmap
