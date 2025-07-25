@@ -350,17 +350,29 @@ def replace_markers(filename, markers, markers_config):
     else:
         replace_tokens = dict([(k.encode('utf-8'), v.encode('utf-8')) for k, v in markers.items()])
 
+    replacements_made = False
     # Handle content with line-by-line binary replacement
     with open(filename, 'rb') as fi, open(outfile, 'wb') as fo:
         # Process line by line to handle large files
         for line in fi:
+            original_line = line
             for token, replacement in replace_tokens.items():
                 line = line.replace(token, replacement)
+
+            if line != original_line:
+                replacements_made = True
+            
             fo.write(line)
 
-    # Delete the original file and rename the new one to the original
-    os.remove(filename)
-    os.rename(outfile, filename)
+    # Only replace the original file if we actually made changes
+    # This preserves original file formatting
+    if replacements_made:
+        # Delete the original file and rename the new one to the original
+        os.remove(filename)
+        os.rename(outfile, filename)
+    else:
+        # No changes made, remove the temporary file and keep original
+        os.remove(outfile)
 
 def replace_markers_in_json(json_object, replace_tokens):
     """Replace markers in JSON content with proper escaping."""
