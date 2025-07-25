@@ -1,8 +1,5 @@
 /**
  * The type of predefined worker that is allocated when a job runs.
- *
- * If you need to use a WorkerType that doesn't exist as a static member, you
- * can instantiate a `WorkerType` object, e.g: `WorkerType.of('other type')`
  */
 export enum WorkerType {
   /**
@@ -223,9 +220,6 @@ export enum Runtime {
 
 /**
  * The job type.
- *
- * If you need to use a JobType that doesn't exist as a static member, you
- * can instantiate a `JobType` object, e.g: `JobType.of('other name')`.
  */
 export enum JobType {
   /**
