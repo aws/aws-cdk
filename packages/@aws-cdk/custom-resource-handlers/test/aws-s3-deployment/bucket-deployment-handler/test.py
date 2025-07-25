@@ -1,7 +1,9 @@
 # unit tests for the s3 bucket deployment lambda handler
+import hashlib
 import json
 import logging
 import os
+import shutil
 import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
@@ -709,6 +711,97 @@ class TestHandler(unittest.TestCase):
         with open(os.path.join(workdir, "subfolder", "boom.txt"), "r") as file:
             self.assertEqual(file.read().rstrip(), "Another value1-source2 file with _marker2_ hey!\nLine 2 with value1-source2 again :-)")
 
+    def test_replace_markers_preserves_files_without_markers(self):
+        """Test that files without markers are not modified, preserving their MD5 hash"""
+        test_dir = tempfile.mkdtemp()
+        try:
+            # GIVEN: Two files - one with markers, one without markers
+            file_with_markers = os.path.join(test_dir, "with_markers.txt")
+            file_without_markers = os.path.join(test_dir, "without_markers.txt")
+            
+            with open(file_with_markers, "w") as f:
+                f.write("This file has _marker1_ in it\n")
+            
+            with open(file_without_markers, "w") as f:
+                f.write("This file has no markers at all\n")
+            
+            def get_file_md5(filepath):
+                with open(filepath, "rb") as f:
+                    return hashlib.md5(f.read()).hexdigest()
+            
+            original_with_markers_md5 = get_file_md5(file_with_markers)
+            original_without_markers_md5 = get_file_md5(file_without_markers)
+            
+            # WHEN: Marker replacement is applied to both files
+            markers = {"_marker1_": "REPLACED"}
+            markers_config = {}
+            
+            index.replace_markers(file_with_markers, markers, markers_config)
+            index.replace_markers(file_without_markers, markers, markers_config)
+            
+            # THEN: File with markers should be modified, file without markers should be preserved
+            new_with_markers_md5 = get_file_md5(file_with_markers)
+            self.assertNotEqual(original_with_markers_md5, new_with_markers_md5, 
+                              "File with markers should have been modified")
+            
+            with open(file_with_markers, "r") as f:
+                content = f.read()
+                self.assertIn("REPLACED", content, "Marker should have been replaced")
+                self.assertNotIn("_marker1_", content, "Original marker should be gone")
+            
+            new_without_markers_md5 = get_file_md5(file_without_markers)
+            self.assertEqual(original_without_markers_md5, new_without_markers_md5,
+                           "File without markers should preserve original MD5 hash")
+            
+            with open(file_without_markers, "r") as f:
+                content = f.read()
+                self.assertEqual(content, "This file has no markers at all\n",
+                               "File without markers should remain unchanged")
+                
+        finally:
+            shutil.rmtree(test_dir)
+
+    def test_replace_markers_json_files_without_markers_preserved(self):
+        """Test that JSON files without markers are preserved with original formatting"""
+        test_dir = tempfile.mkdtemp()
+        try:
+            # GIVEN: A JSON file without markers but with specific formatting
+            json_file = os.path.join(test_dir, "test.json")
+            original_json_content = """{
+    "key1": "value1",
+    "key2": {
+        "nested": "value2"
+    },
+    "array": [1, 2, 3]
+}"""
+            
+            with open(json_file, "w") as f:
+                f.write(original_json_content)
+            
+            def get_file_md5(filepath):
+                with open(filepath, "rb") as f:
+                    return hashlib.md5(f.read()).hexdigest()
+            
+            original_md5 = get_file_md5(json_file)
+            
+            # WHEN: Marker replacement with JSON escaping is applied
+            markers = {"_marker1_": "REPLACED"}
+            markers_config = {"jsonEscape": "true"}
+            
+            index.replace_markers(json_file, markers, markers_config)
+            
+            # THEN: JSON file should be preserved with original formatting and MD5 hash
+            new_md5 = get_file_md5(json_file)
+            self.assertEqual(original_md5, new_md5,
+                           "JSON file without markers should preserve original MD5 hash")
+            
+            with open(json_file, "r") as f:
+                content = f.read()
+                self.assertEqual(content, original_json_content,
+                               "JSON file without markers should maintain original formatting")
+                
+        finally:
+            shutil.rmtree(test_dir)
 
     # asserts that a given list of "aws xxx" commands have been invoked (in order)
     def assertAwsCommands(self, *expected):

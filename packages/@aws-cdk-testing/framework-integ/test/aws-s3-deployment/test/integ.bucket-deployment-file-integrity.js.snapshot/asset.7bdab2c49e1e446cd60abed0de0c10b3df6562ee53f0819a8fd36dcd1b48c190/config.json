@@ -1,0 +1,8 @@
+{
+  "name": "test-config",
+  "version": "1.0.0",
+  "settings": {
+    "debug": false,
+    "timeout": 30
+  }
+}
