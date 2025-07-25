@@ -27,7 +27,7 @@
      "MessageBody": "\"USA\""
     },
     "flattenResponse": "false",
-    "salt": "1751393893883"
+    "salt": "1753360354720"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -154,7 +154,7 @@
     "outputPaths": [
      "events.1.message"
     ],
-    "salt": "1751393893893"
+    "salt": "1753360354743"
    },
    "DependsOn": [
     "AwsApiCallSQSsendMessage232c0652b606256b4f7f926410a819e3"
@@ -448,6 +448,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {

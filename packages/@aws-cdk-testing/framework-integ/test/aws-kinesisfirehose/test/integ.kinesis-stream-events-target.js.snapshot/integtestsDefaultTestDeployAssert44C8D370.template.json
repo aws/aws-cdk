@@ -31,7 +31,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1751504354976"
+    "salt": "1753433060629"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -410,6 +410,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {

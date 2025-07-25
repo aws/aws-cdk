@@ -42,6 +42,9 @@ describe('export writer provider', () => {
         'ap-southeast-5': {
           value: 'nodejs22.x',
         },
+        'ap-southeast-6': {
+          value: 'nodejs22.x',
+        },
         'ap-southeast-7': {
           value: 'nodejs22.x',
         },

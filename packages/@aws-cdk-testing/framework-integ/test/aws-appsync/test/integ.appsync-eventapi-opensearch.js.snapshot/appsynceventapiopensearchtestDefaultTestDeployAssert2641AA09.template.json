@@ -28,7 +28,7 @@
      "Payload": "\"{\\\"channel\\\":\\\"search\\\",\\\"action\\\":\\\"pubSub\\\",\\\"authMode\\\":\\\"API_KEY\\\",\\\"eventPayload\\\":[{\\\"id\\\":\\\"2\\\"}]}\""
     },
     "flattenResponse": "false",
-    "salt": "1752248911862"
+    "salt": "1753349791739"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -198,6 +198,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {
