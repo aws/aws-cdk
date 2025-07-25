@@ -7,10 +7,7 @@ on:
     branches:
       - main
       - v2-release
-  pull_request:
-    branches:
-      - main
-      - v2-release
+  pull_request: {}
 
 # For every PR, cancel any previous builds in progress
 # ... but for all other builds we keep them running

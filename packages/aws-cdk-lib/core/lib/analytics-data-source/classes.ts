@@ -8968,6 +8968,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'migrateToLaunchTemplate': 'boolean',
       'mixedInstancesPolicy': {
         'instancesDistribution': {
           'onDemandAllocationStrategy': 'OnDemandAllocationStrategy',
@@ -19307,6 +19308,20 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'filterName': '*',
       'distribution': 'Distribution'
+    },
+    'Transformer': {
+      'transformerName': '*',
+      'logGroup': {
+        'logGroupArn': '*',
+        'logGroupName': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'transformerConfig': '*'
     }
   },
   'aws-cdk-lib.aws-opensearchservice': {
@@ -20537,6 +20552,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'databaseInsightsMode': 'DatabaseInsightsMode',
       'cloudwatchLogsExports': '*',
       'cloudwatchLogsRetention': 'RetentionDays',
       'cloudwatchLogsRetentionRole': {
@@ -20839,6 +20855,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'databaseInsightsMode': 'DatabaseInsightsMode',
       'cloudwatchLogsExports': '*',
       'cloudwatchLogsRetention': 'RetentionDays',
       'cloudwatchLogsRetentionRole': {
@@ -21159,6 +21176,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'databaseInsightsMode': 'DatabaseInsightsMode',
       'cloudwatchLogsExports': '*',
       'cloudwatchLogsRetention': 'RetentionDays',
       'cloudwatchLogsRetentionRole': {
@@ -24542,6 +24560,50 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ],
       'addActionGroups': [
         '*'
+      ]
+    },
+    'Prompt': {
+      'promptName': '*',
+      'description': '*',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'defaultVariant': {
+        'name': '*',
+        'templateType': 'PromptTemplateType',
+        'inferenceConfiguration': '*',
+        'modelId': '*',
+        'templateConfiguration': '*',
+        'genAiResource': '*'
+      },
+      'variants': {
+        'name': '*',
+        'templateType': 'PromptTemplateType',
+        'inferenceConfiguration': '*',
+        'modelId': '*',
+        'templateConfiguration': '*',
+        'genAiResource': '*'
+      },
+      'tags': '*',
+      'createVersion': [
+        '*'
+      ],
+      'addVariant': [
+        {
+          'name': '*',
+          'templateType': 'PromptTemplateType',
+          'inferenceConfiguration': '*',
+          'modelId': '*',
+          'templateConfiguration': '*',
+          'genAiResource': '*'
+        }
       ]
     }
   },
