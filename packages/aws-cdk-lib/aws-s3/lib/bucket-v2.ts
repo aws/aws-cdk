@@ -390,23 +390,9 @@ export interface MetadataMixinProps {
 }
 
 /**
- * Setup bucket encryption configuration according to the following table:
+ * Setup bucket encryption.
  *
- * | props.encryption | props.encryptionKey | props.bucketKeyEnabled | bucketEncryption (return value) | encryptionKey (return value) |
- * |------------------|---------------------|------------------------|---------------------------------|------------------------------|
- * | undefined        | undefined           | e                      | undefined                       | undefined                    |
- * | UNENCRYPTED      | undefined           | false                  | undefined                       | undefined                    |
- * | undefined        | k                   | e                      | SSE-KMS, bucketKeyEnabled = e   | k                            |
- * | KMS              | k                   | e                      | SSE-KMS, bucketKeyEnabled = e   | k                            |
- * | KMS              | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | new key                      |
- * | KMS_MANAGED      | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | undefined                    |
- * | S3_MANAGED       | undefined           | false                  | SSE-S3                          | undefined                    |
- * | S3_MANAGED       | undefined           | e                      | SSE-S3, bucketKeyEnabled = e    | undefined                    |
- * | UNENCRYPTED      | undefined           | true                   | ERROR!                          | ERROR!                       |
- * | UNENCRYPTED      | k                   | e                      | ERROR!                          | ERROR!                       |
- * | KMS_MANAGED      | k                   | e                      | ERROR!                          | ERROR!                       |
- * | S3_MANAGED       | undefined           | true                   | ERROR!                          | ERROR!                       |
- * | S3_MANAGED       | k                   | e                      | ERROR!                          | ERROR!                       |
+ * @todo how to expose encryptionKey?
  */
 export class EncryptionMixin implements Mixin<CfnBucket, CfnBucket, EncryptionMixinProps> {
   /**
@@ -424,7 +410,6 @@ export class EncryptionMixin implements Mixin<CfnBucket, CfnBucket, EncryptionMi
 
   /**
    * Validates the encryption properties for this mixin
-   * @param resource - The CfnBucket resource to validate
    */
   public get validations(): ValidationRule<EncryptionMixinProps>[] {
     return [
@@ -445,6 +430,83 @@ export class EncryptionMixin implements Mixin<CfnBucket, CfnBucket, EncryptionMi
    * @returns The configured CfnBucket resource
    */
   public apply(resource: CfnBucket): CfnBucket {
+    // default based on whether encryptionKey is specified
+    let encryptionType = this.props.encryption;
+    if (encryptionType == null) {
+      encryptionType = this.props.encryptionKey ? BucketEncryption.KMS : BucketEncryption.UNENCRYPTED;
+    }
+
+    if (encryptionType === BucketEncryption.UNENCRYPTED) {
+      resource.bucketEncryption = undefined;
+      return resource;
+    }
+
+    if (encryptionType === BucketEncryption.KMS) {
+      resource.bucketEncryption = {
+        serverSideEncryptionConfiguration: [
+          {
+            bucketKeyEnabled: this.props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: {
+              sseAlgorithm: 'aws:kms',
+              kmsMasterKeyId: this.props.encryptionKey?.keyArn,
+            },
+          },
+        ],
+      };
+      return resource;
+    }
+
+    if (encryptionType === BucketEncryption.S3_MANAGED) {
+      resource.bucketEncryption = {
+        serverSideEncryptionConfiguration: [
+          {
+            bucketKeyEnabled: this.props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' },
+          },
+        ],
+      };
+      return resource;
+    }
+
+    if (encryptionType === BucketEncryption.KMS_MANAGED) {
+      resource.bucketEncryption = {
+        serverSideEncryptionConfiguration: [
+          {
+            bucketKeyEnabled: this.props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' },
+          },
+        ],
+      };
+      return resource;
+    }
+
+    if (encryptionType === BucketEncryption.DSSE) {
+      resource.bucketEncryption = {
+        serverSideEncryptionConfiguration: [
+          {
+            bucketKeyEnabled: this.props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: {
+              sseAlgorithm: 'aws:kms:dsse',
+              kmsMasterKeyId: this.props.encryptionKey?.keyArn,
+            },
+          },
+        ],
+      };
+      return resource;
+    }
+
+    if (encryptionType === BucketEncryption.DSSE_MANAGED) {
+      resource.bucketEncryption = {
+        serverSideEncryptionConfiguration: [
+          {
+            bucketKeyEnabled: this.props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:dsse' },
+          },
+        ],
+      };
+      return resource;
+    }
+
     return resource;
   }
 }
