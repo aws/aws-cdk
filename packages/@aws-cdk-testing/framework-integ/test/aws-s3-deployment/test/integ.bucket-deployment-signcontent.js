@@ -40,7 +40,11 @@ class TestBucketDeployment extends cdk.Stack {
         deployment.node.addDependency(policyResult.policyDependable);
     }
 }
-const app = new cdk.App();
+const app = new cdk.App({
+    postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    },
+});
 const testCase = new TestBucketDeployment(app, 'test-bucket-deployment-signobject');
 new integ.IntegTest(app, 'integ-test-bucket-deployments', {
     testCases: [testCase],

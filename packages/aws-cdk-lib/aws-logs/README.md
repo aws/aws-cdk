@@ -403,10 +403,6 @@ new logs.QueryDefinition(this, 'QueryDefinition', {
       'loggingType = "ERROR"',
       'loggingMessage = "A very strange error occurred!"',
     ],
-    statsStatements: [
-      'count(loggingMessage) as loggingErrors',
-      'count(differentLoggingMessage) as differentLoggingErrors',
-    ],
     sort: '@timestamp desc',
     limit: 20,
   }),
