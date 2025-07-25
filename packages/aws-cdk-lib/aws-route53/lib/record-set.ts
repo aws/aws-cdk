@@ -219,6 +219,7 @@ export interface RecordSetOptions {
    * > an existing Record Set's `deleteExisting` property from `false -> true` after deployment
    * > will delete the record!
    *
+   * @deprecated This property is dangerous and can lead to accidental record deletion in case of deployment failure.
    * @default false
    */
   readonly deleteExisting?: boolean;
