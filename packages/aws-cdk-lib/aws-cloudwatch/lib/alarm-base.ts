@@ -30,6 +30,13 @@ export interface IAlarm extends IAlarmRule, IResource {
    * @attribute
    */
   readonly alarmName: string;
+  
+  /**
+   * Indicates whether this alarm is a composite alarm
+   * 
+   * @default false
+   */
+  readonly isCompositeAlarm?: boolean;
 }
 
 /**
@@ -41,6 +48,13 @@ export abstract class AlarmBase extends Resource implements IAlarm {
    */
   public abstract readonly alarmArn: string;
   public abstract readonly alarmName: string;
+  
+  /**
+   * Indicates whether this alarm is a composite alarm
+   * 
+   * @default false
+   */
+  public readonly isCompositeAlarm?: boolean = false;
 
   protected alarmActionArns?: string[];
   protected insufficientDataActionArns?: string[];
