@@ -645,6 +645,8 @@
         "c6gn",
         "compute7-graviton3-high-network-bandwidth",
         "c7gn",
+        "compute8-graviton4-high-network-bandwidth",
+        "c8gn",
         "compute7-intel",
         "c7i",
         "compute7-intel-flex",
@@ -5351,6 +5353,15 @@
         "pie"
       ]
     },
+    "LogQueryLanguage": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/log-query.ts",
+      "enumLike": false,
+      "values": [
+        "Logs",
+        "SQL",
+        "PPL"
+      ]
+    },
     "Statistic": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric-types.ts",
       "enumLike": false,
@@ -9083,7 +9094,8 @@
         "VER_16_8_LIMITLESS",
         "VER_17_1",
         "VER_17_2",
-        "VER_17_4"
+        "VER_17_4",
+        "VER_17_5"
       ]
     },
     "DatabaseClusterEngine": {
@@ -10876,6 +10888,13 @@
       "values": [
         "nothing",
         "lambda"
+      ]
+    },
+    "ResourceToReplicateTags": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
+      "enumLike": false,
+      "values": [
+        "lambda-function"
       ]
     },
     "ArtifactsEncryptionMode": {

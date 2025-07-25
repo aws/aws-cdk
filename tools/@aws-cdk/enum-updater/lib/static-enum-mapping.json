@@ -1409,6 +1409,12 @@
     }
   },
   "synthetics": {
+    "ResourceToReplicateTags": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
+      "sdk_service": "synthetics",
+      "sdk_enum_name": "ResourceToTag",
+      "match_percentage": 1
+    },
     "ArtifactsEncryptionMode": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
       "sdk_service": "synthetics",

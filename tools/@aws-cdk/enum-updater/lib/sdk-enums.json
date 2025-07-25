@@ -2001,6 +2001,10 @@
       "MISCONDUCT",
       "PROMPT_ATTACK"
     ],
+    "ContentFiltersTierName": [
+      "CLASSIC",
+      "STANDARD"
+    ],
     "ContextualGroundingAction": [
       "BLOCK",
       "NONE"
@@ -2074,6 +2078,10 @@
     ],
     "TopicType": [
       "DENY"
+    ],
+    "TopicsTierName": [
+      "CLASSIC",
+      "STANDARD"
     ],
     "WordAction": [
       "BLOCK",
@@ -4511,6 +4519,10 @@
   },
   "dsql": {},
   "dynamodb": {
+    "MultiRegionConsistency": [
+      "EVENTUAL",
+      "STRONG"
+    ],
     "AttributeType": [
       "B",
       "N",
@@ -7209,6 +7221,7 @@
   "iam": {
     "Status": [
       "Active",
+      "Expired",
       "Inactive"
     ],
     "AssertionEncryptionMode": [
@@ -9667,6 +9680,43 @@
       "AWS::ApplicationSignals::ServiceLevelObjective"
     ]
   },
+  "odb": {
+    "ComputeModel": [
+      "ECPU",
+      "OCPU"
+    ],
+    "LicenseModel": [
+      "BRING_YOUR_OWN_LICENSE",
+      "LICENSE_INCLUDED"
+    ],
+    "DaysOfWeek": [
+      "MONDAY",
+      "TUESDAY",
+      "WEDNESDAY",
+      "THURSDAY",
+      "FRIDAY",
+      "SATURDAY",
+      "SUNDAY"
+    ],
+    "Months": [
+      "JANUARY",
+      "FEBRUARY",
+      "MARCH",
+      "APRIL",
+      "MAY",
+      "JUNE",
+      "JULY",
+      "AUGUST",
+      "SEPTEMBER",
+      "OCTOBER",
+      "NOVEMBER",
+      "DECEMBER"
+    ],
+    "Preference": [
+      "NO_PREFERENCE",
+      "CUSTOM_PREFERENCE"
+    ]
+  },
   "omics": {
     "AnnotationType": [
       "GENERIC",
@@ -10343,6 +10393,10 @@
       "Q_LITE",
       "Q_BUSINESS"
     ],
+    "DataAccessorAuthenticationType": [
+      "AWS_IAM_IDC_TTI",
+      "AWS_IAM_IDC_AUTH_CODE"
+    ],
     "AttributeValueOperator": [
       "DELETE"
     ],
@@ -10402,6 +10456,9 @@
     "Status": [
       "ENABLED",
       "DISABLED"
+    ],
+    "ConditionOperator": [
+      "StringEquals"
     ],
     "APISchemaType": [
       "OPEN_API_V3"
@@ -11753,6 +11810,14 @@
       "MODIFYING",
       "DELETING"
     ],
+    "SnapshotStatus": [
+      "AVAILABLE",
+      "CREATING",
+      "DELETED",
+      "CANCELLED",
+      "FAILED",
+      "COPYING"
+    ],
     "PerformanceTargetStatus": [
       "ENABLED",
       "DISABLED"
@@ -11948,6 +12013,7 @@
       "cn-northwest-1",
       "eu-central-1",
       "eu-central-2",
+      "eu-isoe-west-1",
       "eu-north-1",
       "eu-south-1",
       "eu-south-2",
@@ -12275,13 +12341,19 @@
     ]
   },
   "s3tables": {
-    "SSEAlgorithm": [
-      "AES256",
-      "aws:kms"
-    ],
     "Status": [
       "Enabled",
       "Disabled"
+    ],
+    "OpenTableFormat": [
+      "ICEBERG"
+    ],
+    "WithoutMetadata": [
+      "Yes"
+    ],
+    "SSEAlgorithm": [
+      "AES256",
+      "aws:kms"
     ]
   },
   "sagemaker": {
@@ -13892,7 +13964,8 @@
       "db.influx.4xlarge",
       "db.influx.8xlarge",
       "db.influx.12xlarge",
-      "db.influx.16xlarge"
+      "db.influx.16xlarge",
+      "db.influx.24xlarge"
     ],
     "DbStorageType": [
       "InfluxIOIncludedT1",
