@@ -275,7 +275,6 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
     }
     this.policy.document.addStatements(statement.copy({
       principals: statement.principals.map(p => this.convertArnPrincipalToAccountId(p)),
-      skipValidation: true,
     }));
     return { statementAdded: true, policyDependable: this.policy };
   }

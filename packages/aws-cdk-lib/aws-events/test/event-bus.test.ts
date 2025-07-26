@@ -577,7 +577,7 @@ describe('event bus', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
-      StatementId: 'cdk-123',
+      StatementId: 'cdk123',
       EventBusName: {
         Ref: 'BusEA82B648',
       },
@@ -598,7 +598,7 @@ describe('event bus', () => {
             ],
           },
         },
-        Sid: 'cdk-123',
+        Sid: 'cdk123',
         Resource: {
           'Fn::GetAtt': [
             'BusEA82B648',

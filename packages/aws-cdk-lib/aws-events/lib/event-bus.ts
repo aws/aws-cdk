@@ -201,7 +201,6 @@ abstract class EventBusBase extends Resource implements IEventBus, iam.IResource
         resources: resourceArns,
         principals: [grantee!.grantPrincipal],
         sid: sid,
-        skipValidation: true,
       });
 
       return iam.Grant.addStatementToResourcePolicy({ ...options, statement, resource: this });
