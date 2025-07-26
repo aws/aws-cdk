@@ -1,0 +1,21 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "defd68cca50d06f5e4108d848be1f6f970a9c3d6f3fc29de03ddfc7ab8ddc805": {
+      "displayName": "aws-cdk-global-table-mrsc Template",
+      "source": {
+        "path": "aws-cdk-global-table-mrsc.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "defd68cca50d06f5e4108d848be1f6f970a9c3d6f3fc29de03ddfc7ab8ddc805.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
