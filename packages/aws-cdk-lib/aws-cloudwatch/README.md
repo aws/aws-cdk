@@ -53,6 +53,39 @@ const metric = new cloudwatch.Metric({
 });
 ```
 
+### Metric ID
+
+Metrics can be assigned a unique identifier using the `id` property. This is
+useful when referencing metrics in math expressions:
+
+```ts
+const metric = new cloudwatch.Metric({
+  namespace: 'AWS/Lambda',
+  metricName: 'Invocations',
+  dimensionsMap: {
+    FunctionName: 'MyFunction'
+  },
+  id: 'invocations'
+});
+```
+
+The `id` must start with a lowercase letter and can only contain letters, numbers, and underscores.
+
+### Metric Visible
+Metrics can be hidden from dashboard graphs using the `visible` property:
+
+```ts
+declare const fn: lambda.Function;
+
+const metric = fn.metricErrors({
+  visible: false
+});
+```
+
+By default, all metrics are visible (`visible: true`). Setting `visible: false`
+hides the metric from dashboard visualizations while still allowing it to be
+used in math expressions given that it has an `id` set to it.
+
 ### Metric Math
 
 Math expressions are supported by instantiating the `MathExpression` class.
@@ -86,27 +119,60 @@ const problemPercentage = new cloudwatch.MathExpression({
 });
 ```
 
-### Search Expressions
+### Metric ID Usage in Math Expressions
 
-Math expressions also support search expressions. For example, the following
-search expression returns all CPUUtilization metrics that it finds, with the
-graph showing the Average statistic with an aggregation period of 5 minutes:
+When metrics have custom IDs, you can reference them directly in math expressions.
 
 ```ts
-const cpuUtilization = new cloudwatch.MathExpression({
-  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)",
+declare const fn: lambda.Function;
 
-  // Specifying '' as the label suppresses the default behavior
-  // of using the expression as metric label. This is especially appropriate
-  // when using expressions that return multiple time series (like SEARCH()
-  // or METRICS()), to show the labels of the retrieved metrics only.
-  label: '',
+const invocations = fn.metricInvocations({
+  id: 'lambda_invocations',
+});
+
+const errors = fn.metricErrors({
+  id: 'lambda_errors',
+});
+```
+
+When metrics have predefined IDs, they can be referenced directly in math expressions by their ID without requiring the `usingMetrics` property.
+
+```ts
+const errorRate = new cloudwatch.MathExpression({
+  expression: 'lambda_errors / lambda_invocations * 100',
+  label: 'Error Rate (%)',
+});
+```
+
+### Search Expressions
+
+Search expressions allow you to dynamically discover and display metrics that match specific criteria, making them ideal for monitoring dynamic infrastructure where the exact metrics aren't known in advance. A single search expression can return up to 500 time series.
+
+
+#### Using SearchExpression Class
+
+Following is an example of a search expression that returns all CPUUtilization metrics with the graph showing the Average statistic with an aggregation period of 5 minutes:
+
+```ts
+const cpuUtilization = new cloudwatch.SearchExpression({
+  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 900)",
+  label: 'EC2 CPU Utilization',
+  color: '#ff7f0e',
 });
 ```
 
 Cross-account and cross-region search expressions are also supported. Use
 the `searchAccount` and `searchRegion` properties to specify the account
 and/or region to evaluate the search expression against.
+
+```ts
+const crossAccountSearch = new cloudwatch.SearchExpression({
+  expression: "SEARCH('{AWS/Lambda,FunctionName} MetricName=\"Invocations\"', 'Sum', 300)",
+  searchAccount: '123456789012',
+  searchRegion: 'us-west-2',
+  label: 'Production Lambda Invocations',
+});
+```
 
 ### Aggregation
 
@@ -790,6 +856,19 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
 }));
 ```
 
+Log Insights QL is the default query language. You may specify an [alternate query language: OpenSearch PPL or SQL](https://aws.amazon.com/blogs/aws/new-amazon-cloudwatch-and-amazon-opensearch-service-launch-an-integrated-analytics-experience/), if desired:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
+  logGroupNames: ['my-log-group'],
+  view: cloudwatch.LogQueryVisualizationType.TABLE,
+  queryString: "SELECT count(*) as count FROM 'my-log-group'",
+  queryLanguage: cloudwatch.LogQueryLanguage.SQL,
+}));
+```
+
 ### Custom widget
 
 A `CustomWidget` shows the result of an AWS Lambda function:
@@ -959,3 +1038,35 @@ const dashboard = new cw.Dashboard(this, 'Dash', {
 ```
 
 You can add a variable after object instantiation with the method `dashboard.addVariable()`.
+
+### Cross-Account Visibility
+
+Both Log and Metric Widget objects support cross-account visibility by allowing you to specify the AWS Account ID that the data (logs or metrics) originates from.
+
+**Prerequisites:**
+1. The monitoring account must be set up as a monitoring account
+2. The source account must grant permissions to the monitoring account
+3. Appropriate IAM roles and policies must be configured
+
+For detailed setup instructions, see [Cross-Account Cross-Region CloudWatch Console](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html).
+
+
+To use this feature, you can set the `accountId` property on `LogQueryWidget`, `GraphWidget`, `AlarmWidget`, `SingleValueWidget`, and `GaugeWidget` constructs:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
+  // ...
+  accountId: '123456789012',
+}));
+
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
+  logGroupNames: ['my-log-group'],
+  // ...
+  accountId: '123456789012',
+  queryLines: [
+    'fields @message',
+  ],
+}));
+```

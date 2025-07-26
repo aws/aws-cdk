@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "files": {
     "d6fa38886a871b64de769ec5016af90a071e6429aa8e7de84f595e4e2462e17d": {
       "displayName": "integ-https-redirect/Custom::CrossRegionExportReaderCustomResourceProvider Code",

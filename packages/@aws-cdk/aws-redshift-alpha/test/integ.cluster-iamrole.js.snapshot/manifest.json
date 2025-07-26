@@ -1,28 +1,28 @@
 {
-  "version": "43.0.0",
+  "version": "45.0.0",
   "artifacts": {
-    "single-provider-role-integ.assets": {
+    "awscdkredshiftclusterdatabasesingleproviderroleinteg4C71170D.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "single-provider-role-integ.assets.json",
+        "file": "awscdkredshiftclusterdatabasesingleproviderroleinteg4C71170D.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "single-provider-role-integ": {
+    "awscdkredshiftclusterdatabasesingleproviderroleinteg4C71170D": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "single-provider-role-integ.template.json",
+        "templateFile": "awscdkredshiftclusterdatabasesingleproviderroleinteg4C71170D.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/58456e6f2b6b6544cdabb7d8e056b6ac7fb61bbb2a0fcdc98efbacaec341570c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fccdbc2257df6d39c229df85c28a6315582e71e84875092aacbc9809ef923de3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "single-provider-role-integ.assets"
+          "awscdkredshiftclusterdatabasesingleproviderroleinteg4C71170D.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,10 +31,10 @@
         }
       },
       "dependencies": [
-        "single-provider-role-integ.assets"
+        "awscdkredshiftclusterdatabasesingleproviderroleinteg4C71170D.assets"
       ],
       "metadata": {
-        "/single-provider-role-integ/VPC": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -42,13 +42,13 @@
             }
           }
         ],
-        "/single-provider-role-integ/VPC/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
           }
         ],
-        "/single-provider-role-integ/VPC/PublicSubnet1": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -84,43 +84,43 @@
             }
           }
         ],
-        "/single-provider-role-integ/VPC/PublicSubnet1/Subnet": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/single-provider-role-integ/VPC/PublicSubnet1/RouteTable": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableFEE4B781"
           }
         ],
-        "/single-provider-role-integ/VPC/PublicSubnet1/RouteTableAssociation": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
           }
         ],
-        "/single-provider-role-integ/VPC/PublicSubnet1/DefaultRoute": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1DefaultRoute91CEF279"
           }
         ],
-        "/single-provider-role-integ/VPC/PublicSubnet1/EIP": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1EIP6AD938E8"
           }
         ],
-        "/single-provider-role-integ/VPC/PublicSubnet1/NATGateway": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
-        "/single-provider-role-integ/VPC/PublicSubnet2": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -156,43 +156,115 @@
             }
           }
         ],
-        "/single-provider-role-integ/VPC/PublicSubnet2/Subnet": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2Subnet74179F39"
           }
         ],
-        "/single-provider-role-integ/VPC/PublicSubnet2/RouteTable": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTable6F1A15F1"
           }
         ],
-        "/single-provider-role-integ/VPC/PublicSubnet2/RouteTableAssociation": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
           }
         ],
-        "/single-provider-role-integ/VPC/PublicSubnet2/DefaultRoute": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
-        "/single-provider-role-integ/VPC/PublicSubnet2/EIP": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2EIP4947BC00"
           }
         ],
-        "/single-provider-role-integ/VPC/PublicSubnet2/NATGateway": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
-        "/single-provider-role-integ/VPC/PrivateSubnet1": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3Subnet631C5E25"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3RouteTable98AE0E14"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3RouteTableAssociation427FE0C6"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3DefaultRouteA0D29D46"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet3/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3EIPAD4BC883"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PublicSubnet3/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3NATGatewayD3048F5C"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -220,31 +292,31 @@
             "data": {}
           }
         ],
-        "/single-provider-role-integ/VPC/PrivateSubnet1/Subnet": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1Subnet8BCA10E0"
           }
         ],
-        "/single-provider-role-integ/VPC/PrivateSubnet1/RouteTable": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableBE8A6027"
           }
         ],
-        "/single-provider-role-integ/VPC/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
           }
         ],
-        "/single-provider-role-integ/VPC/PrivateSubnet1/DefaultRoute": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
           }
         ],
-        "/single-provider-role-integ/VPC/PrivateSubnet2": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -272,61 +344,113 @@
             "data": {}
           }
         ],
-        "/single-provider-role-integ/VPC/PrivateSubnet2/Subnet": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
           }
         ],
-        "/single-provider-role-integ/VPC/PrivateSubnet2/RouteTable": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTable0A19E10E"
           }
         ],
-        "/single-provider-role-integ/VPC/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
           }
         ],
-        "/single-provider-role-integ/VPC/PrivateSubnet2/DefaultRoute": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
           }
         ],
-        "/single-provider-role-integ/VPC/IGW": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PrivateSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PrivateSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3Subnet3EDCD457"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PrivateSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3RouteTable192186F8"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PrivateSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3RouteTableAssociationC28D144E"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/PrivateSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3DefaultRoute27F311AE"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIGWB7E252D3"
           }
         ],
-        "/single-provider-role-integ/VPC/VPCGW": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/VPC/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/single-provider-role-integ/Cluster": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Cluster": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/single-provider-role-integ/Cluster/Subnets": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Cluster/Subnets": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/single-provider-role-integ/Cluster/Subnets/Default": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Cluster/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterSubnetsDCFA5CB7"
           }
         ],
-        "/single-provider-role-integ/Cluster/SecurityGroup": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Cluster/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -335,13 +459,13 @@
             }
           }
         ],
-        "/single-provider-role-integ/Cluster/SecurityGroup/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Cluster/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterSecurityGroup0921994B"
           }
         ],
-        "/single-provider-role-integ/Cluster/Secret": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Cluster/Secret": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -351,13 +475,13 @@
             "data": "*"
           }
         ],
-        "/single-provider-role-integ/Cluster/Secret/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Cluster/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterSecret6368BD0F"
           }
         ],
-        "/single-provider-role-integ/Cluster/Secret/Attachment": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Cluster/Secret/Attachment": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -366,19 +490,19 @@
             }
           }
         ],
-        "/single-provider-role-integ/Cluster/Secret/Attachment/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Cluster/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterSecretAttachment769E6258"
           }
         ],
-        "/single-provider-role-integ/Cluster/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterEB0386A7"
           }
         ],
-        "/single-provider-role-integ/Table0/Resource/Handler": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table0/Resource/Handler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -391,7 +515,7 @@
             }
           }
         ],
-        "/single-provider-role-integ/Table0/Resource/Handler/inlinePolicyAddedToExecutionRole-0": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table0/Resource/Handler/inlinePolicyAddedToExecutionRole-0": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -423,13 +547,13 @@
             }
           }
         ],
-        "/single-provider-role-integ/Table0/Resource/Handler/inlinePolicyAddedToExecutionRole-0/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table0/Resource/Handler/inlinePolicyAddedToExecutionRole-0/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Table0HandlerinlinePolicyAddedToExecutionRole08FC8B442"
           }
         ],
-        "/single-provider-role-integ/Table0/Resource/Provider/framework-onEvent": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table0/Resource/Provider/framework-onEvent": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -457,13 +581,13 @@
             }
           }
         ],
-        "/single-provider-role-integ/Table0/Resource/Provider/framework-onEvent/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table0/Resource/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Table0ProviderframeworkonEvent51303D7B"
           }
         ],
-        "/single-provider-role-integ/Table0/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table0/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -495,31 +619,31 @@
             }
           }
         ],
-        "/single-provider-role-integ/Table0/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table0/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Table0ProviderframeworkonEventinlinePolicyAddedToExecutionRole026013268"
           }
         ],
-        "/single-provider-role-integ/Table0/Resource/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table0/Resource/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/single-provider-role-integ/Table0/Resource/Resource/Default": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table0/Resource/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Table008D2B29D"
           }
         ],
-        "/single-provider-role-integ/LatestNodeRuntimeMap": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/LatestNodeRuntimeMap": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5f": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5f": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -530,7 +654,7 @@
             }
           }
         ],
-        "/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -634,19 +758,19 @@
             }
           }
         ],
-        "/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/ImportServiceRole": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRole0A90D717"
           }
         ],
-        "/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/DefaultPolicy": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -692,19 +816,19 @@
             }
           }
         ],
-        "/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRoleDefaultPolicyDDD1388D"
           }
         ],
-        "/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5f/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5f/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997"
           }
         ],
-        "/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -808,19 +932,19 @@
             }
           }
         ],
-        "/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/ImportQuery Redshift Database3de5bea727da479686625efb56431b5fInvokerRole": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/ImportQuery Redshift Database3de5bea727da479686625efb56431b5fInvokerRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRole900F47C9"
           }
         ],
-        "/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/DefaultPolicy": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -866,13 +990,13 @@
             }
           }
         ],
-        "/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/DefaultPolicy/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRoleDefaultPolicy2BD7CC05"
           }
         ],
-        "/single-provider-role-integ/Table1/Resource/Handler": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table1/Resource/Handler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -885,7 +1009,7 @@
             }
           }
         ],
-        "/single-provider-role-integ/Table1/Resource/Handler/inlinePolicyAddedToExecutionRole-0": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table1/Resource/Handler/inlinePolicyAddedToExecutionRole-0": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -917,13 +1041,13 @@
             }
           }
         ],
-        "/single-provider-role-integ/Table1/Resource/Handler/inlinePolicyAddedToExecutionRole-0/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table1/Resource/Handler/inlinePolicyAddedToExecutionRole-0/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Table1HandlerinlinePolicyAddedToExecutionRole0197820AE"
           }
         ],
-        "/single-provider-role-integ/Table1/Resource/Provider/framework-onEvent": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table1/Resource/Provider/framework-onEvent": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -951,13 +1075,13 @@
             }
           }
         ],
-        "/single-provider-role-integ/Table1/Resource/Provider/framework-onEvent/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table1/Resource/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Table1ProviderframeworkonEvent98C8C64A"
           }
         ],
-        "/single-provider-role-integ/Table1/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table1/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -989,25 +1113,25 @@
             }
           }
         ],
-        "/single-provider-role-integ/Table1/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table1/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Table1ProviderframeworkonEventinlinePolicyAddedToExecutionRole0147692A2"
           }
         ],
-        "/single-provider-role-integ/Table1/Resource/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table1/Resource/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/single-provider-role-integ/Table1/Resource/Resource/Default": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table1/Resource/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Table1737A9D79"
           }
         ],
-        "/single-provider-role-integ/Table2/Resource/Handler": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table2/Resource/Handler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1020,7 +1144,7 @@
             }
           }
         ],
-        "/single-provider-role-integ/Table2/Resource/Handler/inlinePolicyAddedToExecutionRole-0": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table2/Resource/Handler/inlinePolicyAddedToExecutionRole-0": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1052,13 +1176,13 @@
             }
           }
         ],
-        "/single-provider-role-integ/Table2/Resource/Handler/inlinePolicyAddedToExecutionRole-0/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table2/Resource/Handler/inlinePolicyAddedToExecutionRole-0/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Table2HandlerinlinePolicyAddedToExecutionRole0B2E1D0D0"
           }
         ],
-        "/single-provider-role-integ/Table2/Resource/Provider/framework-onEvent": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table2/Resource/Provider/framework-onEvent": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1086,13 +1210,13 @@
             }
           }
         ],
-        "/single-provider-role-integ/Table2/Resource/Provider/framework-onEvent/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table2/Resource/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Table2ProviderframeworkonEvent3247C6D6"
           }
         ],
-        "/single-provider-role-integ/Table2/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table2/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1124,61 +1248,61 @@
             }
           }
         ],
-        "/single-provider-role-integ/Table2/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table2/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Table2ProviderframeworkonEventinlinePolicyAddedToExecutionRole0C131448C"
           }
         ],
-        "/single-provider-role-integ/Table2/Resource/Resource": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table2/Resource/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/single-provider-role-integ/Table2/Resource/Resource/Default": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/Table2/Resource/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Table21EC9C6AD"
           }
         ],
-        "/single-provider-role-integ/BootstrapVersion": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/single-provider-role-integ/CheckBootstrapVersion": [
+        "/aws-cdk-redshift-cluster-database/single-provider-role-integ/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "single-provider-role-integ"
+      "displayName": "aws-cdk-redshift-cluster-database/single-provider-role-integ"
     },
-    "redshift-iamrole-integ.assets": {
+    "awscdkredshiftclusterdatabaseredshiftiamroleintegB117A427.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "redshift-iamrole-integ.assets.json",
+        "file": "awscdkredshiftclusterdatabaseredshiftiamroleintegB117A427.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "redshift-iamrole-integ": {
+    "awscdkredshiftclusterdatabaseredshiftiamroleintegB117A427": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "redshift-iamrole-integ.template.json",
+        "templateFile": "awscdkredshiftclusterdatabaseredshiftiamroleintegB117A427.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2d114cb5253dc3c555e256a54323fd599d9d19d006284e186d1904272ea9531a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/536d9403b691fc6196dc6776a75d035b98759b031d357a6449ac1640b272b109.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "redshift-iamrole-integ.assets"
+          "awscdkredshiftclusterdatabaseredshiftiamroleintegB117A427.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -1187,10 +1311,10 @@
         }
       },
       "dependencies": [
-        "redshift-iamrole-integ.assets"
+        "awscdkredshiftclusterdatabaseredshiftiamroleintegB117A427.assets"
       ],
       "metadata": {
-        "/redshift-iamrole-integ/VPC": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1198,13 +1322,13 @@
             }
           }
         ],
-        "/redshift-iamrole-integ/VPC/Resource": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PublicSubnet1": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1240,43 +1364,43 @@
             }
           }
         ],
-        "/redshift-iamrole-integ/VPC/PublicSubnet1/Subnet": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PublicSubnet1/RouteTable": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableFEE4B781"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PublicSubnet1/RouteTableAssociation": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PublicSubnet1/DefaultRoute": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1DefaultRoute91CEF279"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PublicSubnet1/EIP": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1EIP6AD938E8"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PublicSubnet1/NATGateway": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PublicSubnet2": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1312,43 +1436,115 @@
             }
           }
         ],
-        "/redshift-iamrole-integ/VPC/PublicSubnet2/Subnet": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2Subnet74179F39"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PublicSubnet2/RouteTable": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTable6F1A15F1"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PublicSubnet2/RouteTableAssociation": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PublicSubnet2/DefaultRoute": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PublicSubnet2/EIP": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2EIP4947BC00"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PublicSubnet2/NATGateway": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PrivateSubnet1": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3Subnet631C5E25"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3RouteTable98AE0E14"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3RouteTableAssociation427FE0C6"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3DefaultRouteA0D29D46"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet3/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3EIPAD4BC883"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PublicSubnet3/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3NATGatewayD3048F5C"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1376,31 +1572,31 @@
             "data": {}
           }
         ],
-        "/redshift-iamrole-integ/VPC/PrivateSubnet1/Subnet": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1Subnet8BCA10E0"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PrivateSubnet1/RouteTable": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableBE8A6027"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PrivateSubnet1/DefaultRoute": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PrivateSubnet2": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1428,43 +1624,95 @@
             "data": {}
           }
         ],
-        "/redshift-iamrole-integ/VPC/PrivateSubnet2/Subnet": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PrivateSubnet2/RouteTable": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTable0A19E10E"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
           }
         ],
-        "/redshift-iamrole-integ/VPC/PrivateSubnet2/DefaultRoute": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
           }
         ],
-        "/redshift-iamrole-integ/VPC/IGW": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PrivateSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PrivateSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3Subnet3EDCD457"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PrivateSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3RouteTable192186F8"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PrivateSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3RouteTableAssociationC28D144E"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/PrivateSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3DefaultRoute27F311AE"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIGWB7E252D3"
           }
         ],
-        "/redshift-iamrole-integ/VPC/VPCGW": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/VPC/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/redshift-iamrole-integ/RoleA": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/RoleA": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1475,19 +1723,19 @@
             }
           }
         ],
-        "/redshift-iamrole-integ/RoleA/ImportRoleA": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/RoleA/ImportRoleA": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/redshift-iamrole-integ/RoleA/Resource": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/RoleA/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RoleA3119C8FE"
           }
         ],
-        "/redshift-iamrole-integ/RoleB": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/RoleB": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1498,19 +1746,19 @@
             }
           }
         ],
-        "/redshift-iamrole-integ/RoleB/ImportRoleB": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/RoleB/ImportRoleB": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/redshift-iamrole-integ/RoleB/Resource": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/RoleB/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RoleB318292C8"
           }
         ],
-        "/redshift-iamrole-integ/Cluster": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/Cluster": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1520,19 +1768,19 @@
             "data": "*"
           }
         ],
-        "/redshift-iamrole-integ/Cluster/Subnets": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/Cluster/Subnets": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/redshift-iamrole-integ/Cluster/Subnets/Default": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/Cluster/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterSubnetsDCFA5CB7"
           }
         ],
-        "/redshift-iamrole-integ/Cluster/SecurityGroup": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/Cluster/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1541,13 +1789,13 @@
             }
           }
         ],
-        "/redshift-iamrole-integ/Cluster/SecurityGroup/Resource": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/Cluster/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterSecurityGroup0921994B"
           }
         ],
-        "/redshift-iamrole-integ/Cluster/Secret": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/Cluster/Secret": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1557,13 +1805,13 @@
             "data": "*"
           }
         ],
-        "/redshift-iamrole-integ/Cluster/Secret/Resource": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/Cluster/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterSecret6368BD0F"
           }
         ],
-        "/redshift-iamrole-integ/Cluster/Secret/Attachment": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/Cluster/Secret/Attachment": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1572,32 +1820,80 @@
             }
           }
         ],
-        "/redshift-iamrole-integ/Cluster/Secret/Attachment/Resource": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/Cluster/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterSecretAttachment769E6258"
           }
         ],
-        "/redshift-iamrole-integ/Cluster/Resource": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterEB0386A7"
           }
         ],
-        "/redshift-iamrole-integ/BootstrapVersion": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/redshift-iamrole-integ/CheckBootstrapVersion": [
+        "/aws-cdk-redshift-cluster-database/redshift-iamrole-integ/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "redshift-iamrole-integ"
+      "displayName": "aws-cdk-redshift-cluster-database/redshift-iamrole-integ"
+    },
+    "aws-cdk-redshift-cluster-database.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-redshift-cluster-database.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-redshift-cluster-database": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://123456789012/us-east-1",
+      "properties": {
+        "templateFile": "aws-cdk-redshift-cluster-database.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-redshift-cluster-database.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-redshift-cluster-database.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-redshift-cluster-database/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-redshift-cluster-database"
     },
     "IamRoleIntegDefaultTestDeployAssertBEF20992.assets": {
       "type": "cdk:asset-manifest",
@@ -1654,5 +1950,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1015.0"
+  "minimumCliVersion": "2.1020.1"
 }

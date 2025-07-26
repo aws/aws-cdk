@@ -13,7 +13,7 @@ describe('Addon', () => {
     stack = new Stack(app, 'Stack');
     cluster = new Cluster(stack, 'Cluster', {
       kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
-      version: KubernetesVersion.V1_32,
+      version: KubernetesVersion.V1_33,
     });
   });
 
