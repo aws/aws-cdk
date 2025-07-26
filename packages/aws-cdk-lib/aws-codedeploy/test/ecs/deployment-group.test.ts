@@ -60,6 +60,11 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
         greenTargetGroup: mockTargetGroup(stack, 'green'),
         listener: mockListener(stack, 'prod'),
       },
+      triggerConfigurations: [{
+        events: [codedeploy.TriggerEvent.DEPLOYMENT_SUCCESS],
+        name: 'testName',
+        targetArn: 'testArn',
+      }],
     });
 
     Template.fromStack(stack).hasResource('AWS::CodeDeploy::DeploymentGroup', {
@@ -124,6 +129,11 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
             },
           ],
         },
+        TriggerConfigurations: [{
+          TriggerEvents: ['DeploymentSuccess'],
+          TriggerName: 'testName',
+          TriggerTargetArn: 'testArn',
+        }],
       },
     });
 

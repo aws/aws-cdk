@@ -10,8 +10,9 @@ import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
-import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
+import { renderAlarmConfiguration, renderAutoRollbackConfiguration, renderTriggerConfiguration } from '../private/utils';
 import { AutoRollbackConfig } from '../rollback-config';
+import { TriggerConfiguration } from '../trigger-configuration';
 
 /**
  * Interface for a Lambda deployment groups.
@@ -126,6 +127,13 @@ export interface LambdaDeploymentGroupProps {
    * @default - false
    */
   readonly ignoreAlarmConfiguration?: boolean;
+
+  /**
+   * Information about triggers associated with the deployment group.
+   *
+   * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-sns-event-notifications.html
+   */
+  readonly triggerConfigurations?: TriggerConfiguration[];
 }
 
 /**
@@ -200,6 +208,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
         }),
       }),
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this, this.alarms, props.autoRollback) }),
+      triggerConfigurations: cdk.Lazy.any({ produce: () => renderTriggerConfiguration(props.triggerConfigurations) }),
     });
 
     this._setNameAndArn(resource, this.application);
