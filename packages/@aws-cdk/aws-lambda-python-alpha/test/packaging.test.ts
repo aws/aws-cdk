@@ -32,3 +32,10 @@ test('Packaging with poetry', () => {
   // pip packaging identified.
   expect(packaging).toEqual(Packaging.withPoetry());
 });
+
+test('Packaging with uv', () => {
+  const entry = path.join(__dirname, 'lambda-handler-uv');
+  const packaging = Packaging.fromEntry(entry);
+
+  expect(packaging).toEqual(Packaging.withUv());
+});

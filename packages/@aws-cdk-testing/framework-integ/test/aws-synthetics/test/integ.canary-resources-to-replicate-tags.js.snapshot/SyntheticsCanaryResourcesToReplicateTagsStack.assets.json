@@ -1,0 +1,34 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "5178413cfe8db00b2d5dcfa9be417e934c64601d0da3031d88c145c8293bc27f": {
+      "displayName": "TagReplicationCanary/Code",
+      "source": {
+        "path": "asset.5178413cfe8db00b2d5dcfa9be417e934c64601d0da3031d88c145c8293bc27f",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5178413cfe8db00b2d5dcfa9be417e934c64601d0da3031d88c145c8293bc27f.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "05afbffbd3fd4bafcca6e1f1f35525efe38124e6892f294ec7421e1d97072304": {
+      "displayName": "SyntheticsCanaryResourcesToReplicateTagsStack Template",
+      "source": {
+        "path": "SyntheticsCanaryResourcesToReplicateTagsStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "05afbffbd3fd4bafcca6e1f1f35525efe38124e6892f294ec7421e1d97072304.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

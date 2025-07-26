@@ -8,6 +8,7 @@ import {
   GraphWidget,
   GraphWidgetView,
   LegendPosition,
+  LogQueryLanguage,
   LogQueryVisualizationType,
   LogQueryWidget,
   Metric,
@@ -27,6 +28,7 @@ describe('Graphs', () => {
     const widget = new GraphWidget({
       title: 'Test widget',
       stacked: true,
+      accountId: '123456789012',
     });
 
     // THEN
@@ -40,6 +42,7 @@ describe('Graphs', () => {
         region: { Ref: 'AWS::Region' },
         stacked: true,
         yAxis: {},
+        accountId: '123456789012',
       },
     }]);
   });
@@ -102,11 +105,11 @@ describe('Graphs', () => {
     }]);
   });
 
-  test('label and color are respected in constructor', () => {
+  test('label, color, id and visible are respected in constructor', () => {
     // WHEN
     const stack = new Stack();
     const widget = new GraphWidget({
-      left: [new Metric({ namespace: 'CDK', metricName: 'Test', label: 'MyMetric', color: '000000' })],
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test', label: 'MyMetric', color: '000000', id: 'custom_id', visible: false })],
     });
 
     // THEN
@@ -118,7 +121,7 @@ describe('Graphs', () => {
         view: 'timeSeries',
         region: { Ref: 'AWS::Region' },
         metrics: [
-          ['CDK', 'Test', { label: 'MyMetric', color: '000000' }],
+          ['CDK', 'Test', { label: 'MyMetric', color: '000000', id: 'custom_id', visible: false }],
         ],
         yAxis: {},
       },
@@ -155,6 +158,7 @@ describe('Graphs', () => {
     // WHEN
     const widget = new SingleValueWidget({
       metrics: [metric],
+      accountId: '123456789012',
     });
 
     // THEN
@@ -168,6 +172,7 @@ describe('Graphs', () => {
         metrics: [
           ['CDK', 'Test'],
         ],
+        accountId: '123456789012',
       },
     }]);
   });
@@ -212,6 +217,7 @@ describe('Graphs', () => {
         'fields @message',
         'filter @message like /Error/',
       ],
+      accountId: '123456789012',
     });
 
     // THEN
@@ -223,6 +229,7 @@ describe('Graphs', () => {
         view: 'bar',
         region: { Ref: 'AWS::Region' },
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+        accountId: '123456789012',
       },
     }]);
   });
@@ -313,6 +320,62 @@ describe('Graphs', () => {
     }]);
   });
 
+  test('query result widget - sql', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = { logGroupName: 'my-log-group' };
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      view: LogQueryVisualizationType.STACKEDAREA,
+      queryString: "SELECT count(*) as count FROM 'my-log-group'",
+      queryLanguage: LogQueryLanguage.SQL,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        stacked: true,
+        region: { Ref: 'AWS::Region' },
+        query: "SOURCE 'my-log-group' | SELECT count(*) as count FROM 'my-log-group'",
+        queryLanguage: 'SQL',
+      },
+    }]);
+  });
+
+  test('query result widget - ppl', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = { logGroupName: 'my-log-group' };
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      view: LogQueryVisualizationType.STACKEDAREA,
+      queryString: 'fields `@message`\ | sort - `@timestamp`',
+      queryLanguage: LogQueryLanguage.PPL,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        stacked: true,
+        region: { Ref: 'AWS::Region' },
+        query: "SOURCE 'my-log-group' | fields `@message`\ | sort - `@timestamp`",
+        queryLanguage: 'PPL',
+      },
+    }]);
+  });
+
   test('alarm widget', () => {
     // GIVEN
     const stack = new Stack();
@@ -325,6 +388,7 @@ describe('Graphs', () => {
     // WHEN
     const widget = new AlarmWidget({
       alarm,
+      accountId: '123456789012',
     });
 
     // THEN
@@ -339,6 +403,7 @@ describe('Graphs', () => {
           alarms: [{ 'Fn::GetAtt': ['Alarm7103F465', 'Arn'] }],
         },
         yAxis: {},
+        accountId: '123456789012',
       },
     }]);
   });
@@ -860,6 +925,7 @@ describe('Graphs', () => {
     const stack = new Stack();
     const widget = new GaugeWidget({
       metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      accountId: '123456789012',
     });
 
     // THEN
@@ -879,6 +945,7 @@ describe('Graphs', () => {
             max: 100,
           },
         },
+        accountId: '123456789012',
       },
     }]);
   });

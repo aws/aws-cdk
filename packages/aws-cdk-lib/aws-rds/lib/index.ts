@@ -1,6 +1,7 @@
 export * from './engine';
 export * from './engine-version';
 export * from './ca-certificate';
+export * from './database-insights-mode';
 export * from './cluster';
 export * from './cluster-ref';
 export * from './cluster-engine';

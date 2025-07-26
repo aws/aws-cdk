@@ -25,6 +25,7 @@ export class MetricFilter extends Resource {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.MetricFilter';
   private readonly metricName: string;
   private readonly metricNamespace: string;
+  private readonly metricDimensions?: Record<string, string>;
 
   constructor(scope: Construct, id: string, props: MetricFilterProps) {
     super(scope, id, {
@@ -35,6 +36,7 @@ export class MetricFilter extends Resource {
 
     this.metricName = props.metricName;
     this.metricNamespace = props.metricNamespace;
+    this.metricDimensions = props.dimensions;
 
     const numberOfDimensions = Object.keys(props.dimensions ?? {}).length;
     if (numberOfDimensions > 3) {
@@ -74,6 +76,7 @@ export class MetricFilter extends Resource {
     return new Metric({
       metricName: this.metricName,
       namespace: this.metricNamespace,
+      dimensionsMap: this.metricDimensions,
       statistic: 'avg',
       ...props,
     }).attachTo(this);

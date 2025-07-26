@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "testCases": {
     "OpenSearchNodeOptionsInteg/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "OpenSearchNodeOptionsInteg/DefaultTest/DeployAssert",
       "assertionStackName": "OpenSearchNodeOptionsIntegDefaultTestDeployAssert9170FAD5"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

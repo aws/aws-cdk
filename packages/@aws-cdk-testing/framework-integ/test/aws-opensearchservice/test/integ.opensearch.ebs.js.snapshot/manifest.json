@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "44.0.0",
   "artifacts": {
     "cdk-integ-opensearch-instance-store.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/beaba38779e7193b6d3c7408d8074a8cd0116f3852856626918653267cd4a392.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7d33352f78462dd72c51edb98b20b84b6e9f155f9f96873ac615fc32758db5a0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,67 @@
         "cdk-integ-opensearch-instance-store.assets"
       ],
       "metadata": {
+        "/cdk-integ-opensearch-instance-store/Domain1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "version": "*",
+              "capacity": {
+                "multiAzWithStandbyEnabled": false,
+                "dataNodeInstanceType": "*",
+                "dataNodes": "*"
+              },
+              "ebs": {
+                "enabled": false
+              }
+            }
+          }
+        ],
         "/cdk-integ-opensearch-instance-store/Domain1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain19FCBCB91"
           }
         ],
+        "/cdk-integ-opensearch-instance-store/Domain2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "version": "*",
+              "capacity": {
+                "multiAzWithStandbyEnabled": false,
+                "dataNodeInstanceType": "*",
+                "dataNodes": "*"
+              },
+              "ebs": {
+                "enabled": false
+              }
+            }
+          }
+        ],
         "/cdk-integ-opensearch-instance-store/Domain2/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain2644FE48C"
+          }
+        ],
+        "/cdk-integ-opensearch-instance-store/Domain3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "version": "*",
+              "capacity": {
+                "multiAzWithStandbyEnabled": false,
+                "dataNodeInstanceType": "*",
+                "dataNodes": "*"
+              },
+              "ebs": {
+                "enabled": false
+              }
+            }
           }
         ],
         "/cdk-integ-opensearch-instance-store/Domain3/Resource": [
@@ -121,5 +172,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

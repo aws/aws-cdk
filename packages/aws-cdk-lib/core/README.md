@@ -1545,7 +1545,7 @@ validation.
 > etc. It's your responsibility as the consumer of a plugin to verify that it is
 > secure to use.
 
-By default, the report will be printed in a human readable format. If you want a
+By default, the report will be printed in a human-readable format. If you want a
 report in JSON format, enable it using the `@aws-cdk/core:validationReportJson`
 context passing it directly to the application:
 
@@ -1558,6 +1558,18 @@ const app = new App({
 Alternatively, you can set this context key-value pair using the `cdk.json` or
 `cdk.context.json` files in your project directory (see
 [Runtime context](https://docs.aws.amazon.com/cdk/v2/guide/context.html)).
+
+It is also possible to enable both JSON and human-readable formats by setting
+`@aws-cdk/core:validationReportPrettyPrint` context key explicitly:
+
+```ts
+const app = new App({
+  context: {
+    '@aws-cdk/core:validationReportJson': true,
+    '@aws-cdk/core:validationReportPrettyPrint': true,
+  },
+});
+```
 
 If you choose the JSON format, the CDK will print the policy validation report
 to a file called `policy-validation-report.json` in the cloud assembly
@@ -1798,6 +1810,17 @@ warning by the `id`.
 
 ```ts
 Annotations.of(this).acknowledgeWarning('IAM:Group:MaxPoliciesExceeded', 'Account has quota increased to 20');
+```
+
+### Acknowledging Infos
+
+Informational messages can also be emitted and acknowledged. Use `addInfoV2()`
+to add an info message that can later be suppressed with `acknowledgeInfo()`.
+Unlike warnings, info messages are not affected by the `--strict` mode and will never cause synthesis to fail.
+
+```ts
+Annotations.of(this).addInfoV2('my-lib:Construct.someInfo', 'Some message explaining the info');
+Annotations.of(this).acknowledgeInfo('my-lib:Construct.someInfo', 'This info can be ignored');
 ```
 
 ## RemovalPolicies

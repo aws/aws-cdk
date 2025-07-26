@@ -87,6 +87,9 @@
     "FunctionName": {
      "Ref": "MyTriggerFunction056842F6"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "AWSCDKTriggerCustomResourceProviderCustomResourceProviderRoleE18FAF0A": {
@@ -328,6 +331,9 @@
     "FunctionName": {
      "Ref": "MyLambdaFunction67CCA873"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "MyTrigger": {
@@ -451,6 +457,9 @@
     "FunctionName": {
      "Ref": "MyAssertionLambdaFunction7E77172F"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "MyAssertionTrigger": {
@@ -550,6 +559,9 @@
     "FunctionName": {
      "Ref": "MySecondFunction0F0B51EB"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "MyDefaultPropTrigger": {
@@ -653,6 +665,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

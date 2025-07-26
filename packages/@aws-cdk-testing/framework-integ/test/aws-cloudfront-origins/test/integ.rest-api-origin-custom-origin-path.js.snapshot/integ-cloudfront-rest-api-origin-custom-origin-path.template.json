@@ -63,23 +63,26 @@
   "RestApiDeployment180EC50368af6d4b358eff290c08cb2de07c4042": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "RestApi0C43BF4B"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "RestApiGET0F59260B"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "RestApiDeploymentStageprod3855DE66": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "RestApi0C43BF4B"
-    },
     "DeploymentId": {
      "Ref": "RestApiDeployment180EC50368af6d4b358eff290c08cb2de07c4042"
+    },
+    "RestApiId": {
+     "Ref": "RestApi0C43BF4B"
     },
     "StageName": "prod"
    },
@@ -90,7 +93,11 @@
   "RestApiGET0F59260B": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
+    "AuthorizationType": "NONE",
     "HttpMethod": "GET",
+    "Integration": {
+     "Type": "MOCK"
+    },
     "ResourceId": {
      "Fn::GetAtt": [
       "RestApi0C43BF4B",
@@ -99,10 +106,6 @@
     },
     "RestApiId": {
      "Ref": "RestApi0C43BF4B"
-    },
-    "AuthorizationType": "NONE",
-    "Integration": {
-     "Type": "MOCK"
     }
    }
   },

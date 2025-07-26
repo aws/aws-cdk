@@ -6,16 +6,19 @@
     "RestApiId": {
      "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "Stage0E8C2AF5": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
-    },
     "DeploymentId": {
      "Ref": "Deployment37BBD5E4"
+    },
+    "RestApiId": {
+     "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
     },
     "StageName": "prod"
    }

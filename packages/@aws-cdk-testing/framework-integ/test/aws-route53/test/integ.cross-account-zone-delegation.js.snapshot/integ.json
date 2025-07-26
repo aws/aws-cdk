@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "Route53CrossAccountInteg/DefaultTest": {
       "stacks": [
@@ -12,5 +12,5 @@
       "assertionStackName": "Route53CrossAccountIntegDefaultTestDeployAssertF1D808C9"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1019.2"
 }

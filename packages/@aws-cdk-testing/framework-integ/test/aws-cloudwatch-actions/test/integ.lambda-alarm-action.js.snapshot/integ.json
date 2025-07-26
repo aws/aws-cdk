@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "testCases": {
     "LambdaAlarmActionIntegrationTestWithFeatureFlag/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "LambdaAlarmActionIntegrationTestWithFeatureFlag/DefaultTest/DeployAssert",
       "assertionStackName": "LambdaAlarmActionIntegrationTestWithFeatureFlagDefaultTestDeployAssertB72D1A4A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

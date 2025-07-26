@@ -92,6 +92,19 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   logGroupNames: ['my-log-group'],
   queryString: `fields @message
                 | filter @message like /Error/`,
+  accountId: '123456789012',
+}));
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
+  title: 'Errors in my log group - SQL',
+  logGroupNames: ['my-log-group'],
+  queryString: "SELECT count(*) as count FROM 'my-log-group'",
+  queryLanguage: cloudwatch.LogQueryLanguage.SQL,
+}));
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
+  title: 'Errors in my log group - PPL',
+  logGroupNames: ['my-log-group'],
+  queryString: 'fields `@message`\ | sort - `@timestamp`',
+  queryLanguage: cloudwatch.LogQueryLanguage.PPL,
 }));
 dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   title: 'Sent message size',

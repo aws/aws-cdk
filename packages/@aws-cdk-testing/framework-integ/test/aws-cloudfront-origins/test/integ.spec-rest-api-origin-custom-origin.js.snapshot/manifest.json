@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "integ-spec-rest-api-origin-custom-origin.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aaeb60e3ccc35e5d7d500c55948cc2eb600ffd3a692d7e77f0be3e7cb2939ea9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0a8dbfbe40b36826896f6fc3c8c82fc68273eba040a9e0092a0309aebb49da75.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,48 @@
         "integ-spec-rest-api-origin-custom-origin.assets"
       ],
       "metadata": {
+        "/integ-spec-rest-api-origin-custom-origin/RestApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "apiDefinition": "*"
+            }
+          }
+        ],
         "/integ-spec-rest-api-origin-custom-origin/RestApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RestApi0C43BF4B"
           }
         ],
+        "/integ-spec-rest-api-origin-custom-origin/RestApi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-spec-rest-api-origin-custom-origin/RestApi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          }
+        ],
         "/integ-spec-rest-api-origin-custom-origin/RestApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RestApiDeployment180EC503edd77c5c8fffabb2e523387cd087d12f"
+          }
+        ],
+        "/integ-spec-rest-api-origin-custom-origin/RestApi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/integ-spec-rest-api-origin-custom-origin/RestApi/DeploymentStage.prod/Resource": [
@@ -56,6 +88,16 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "RestApiEndpoint0551178A"
+          }
+        ],
+        "/integ-spec-rest-api-origin-custom-origin/Distribution": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "defaultBehavior": {
+                "origin": "*"
+              }
+            }
           }
         ],
         "/integ-spec-rest-api-origin-custom-origin/Distribution/Resource": [
@@ -133,5 +175,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

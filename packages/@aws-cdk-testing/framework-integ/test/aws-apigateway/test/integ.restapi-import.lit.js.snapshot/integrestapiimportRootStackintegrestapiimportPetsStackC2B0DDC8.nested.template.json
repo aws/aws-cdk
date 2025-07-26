@@ -15,14 +15,8 @@
   "RestApipetsGET4375532C": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "GET",
-    "ResourceId": {
-     "Ref": "RestApipetsC5A41236"
-    },
-    "RestApiId": {
-     "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
     "Integration": {
      "IntegrationResponses": [
       {
@@ -39,7 +33,13 @@
      {
       "StatusCode": "200"
      }
-    ]
+    ],
+    "ResourceId": {
+     "Ref": "RestApipetsC5A41236"
+    },
+    "RestApiId": {
+     "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+    }
    }
   }
  },

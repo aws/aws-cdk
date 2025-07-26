@@ -42,7 +42,10 @@
    },
    "DependsOn": [
     "RestApiGET0F59260B"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "RestApiDeploymentStageprod3855DE66": {
    "Type": "AWS::ApiGateway::Stage",

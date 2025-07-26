@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "44.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "cdk-integ-opensearch-ultrawarm.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-opensearch-ultrawarm.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/52b3f6375a0cb8b67a031bc1cda43cbe472c139b9ffc94df45a234902beb3d39.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dc17b40301760992f1f8524b782b4e18de734b7231980a93c4e83c0a43594554.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,6 +34,20 @@
         "cdk-integ-opensearch-ultrawarm.assets"
       ],
       "metadata": {
+        "/cdk-integ-opensearch-ultrawarm/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "version": "*",
+              "capacity": {
+                "masterNodes": "*",
+                "warmNodes": "*",
+                "multiAzWithStandbyEnabled": false
+              }
+            }
+          }
+        ],
         "/cdk-integ-opensearch-ultrawarm/Domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -59,6 +68,13 @@
         ]
       },
       "displayName": "cdk-integ-opensearch-ultrawarm"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

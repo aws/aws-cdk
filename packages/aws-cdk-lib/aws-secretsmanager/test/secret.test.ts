@@ -553,6 +553,7 @@ test('grantWrite', () => {
         Action: [
           'secretsmanager:PutSecretValue',
           'secretsmanager:UpdateSecret',
+          'secretsmanager:UpdateSecretVersionStage',
         ],
         Effect: 'Allow',
         Resource: { Ref: 'SecretA720EF05' },
@@ -578,6 +579,7 @@ test('grantWrite with kms', () => {
         Action: [
           'secretsmanager:PutSecretValue',
           'secretsmanager:UpdateSecret',
+          'secretsmanager:UpdateSecretVersionStage',
         ],
         Effect: 'Allow',
         Resource: { Ref: 'SecretA720EF05' },
@@ -860,6 +862,7 @@ test('fromSecretCompleteArn - grants', () => {
         Action: [
           'secretsmanager:PutSecretValue',
           'secretsmanager:UpdateSecret',
+          'secretsmanager:UpdateSecretVersionStage',
         ],
         Effect: 'Allow',
         Resource: secretArn,
@@ -929,6 +932,7 @@ test('fromSecretPartialArn - grants', () => {
         Action: [
           'secretsmanager:PutSecretValue',
           'secretsmanager:UpdateSecret',
+          'secretsmanager:UpdateSecretVersionStage',
         ],
         Effect: 'Allow',
         Resource: `${secretArn}-??????`,
@@ -1054,6 +1058,7 @@ testDeprecated('import by secret name with grants', () => {
         Action: [
           'secretsmanager:PutSecretValue',
           'secretsmanager:UpdateSecret',
+          'secretsmanager:UpdateSecretVersionStage',
         ],
         Effect: 'Allow',
         Resource: expectedSecretReference,
@@ -1122,6 +1127,7 @@ test('import by secret name v2 with grants', () => {
         Action: [
           'secretsmanager:PutSecretValue',
           'secretsmanager:UpdateSecret',
+          'secretsmanager:UpdateSecretVersionStage',
         ],
         Effect: 'Allow',
         Resource: expectedSecretReference,

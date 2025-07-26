@@ -238,6 +238,68 @@ const amplifyApp = new amplify.App(this, 'App', {
 });
 ```
 
+If the app uses a monorepo structure, define which appRoot from the build spec the custom response headers should apply to by using the `appRoot` property:
+
+```ts
+import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+
+const amplifyApp = new amplify.App(this, 'App', {
+  sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+    owner: '<user>',
+    repository: '<repo>',
+    oauthToken: SecretValue.secretsManager('my-github-token'),
+  }),
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+    version: '1.0',
+    applications: [
+      {
+        appRoot: 'frontend',
+        frontend: {
+          phases: {
+            preBuild: {
+              commands: ['npm install'],
+            },
+            build: {
+              commands: ['npm run build'],
+            },
+          },
+        },
+      },
+      {
+        appRoot: 'backend',
+        backend: {
+          phases: {
+            preBuild: {
+              commands: ['npm install'],
+            },
+            build: {
+              commands: ['npm run build'],
+            },
+          },
+        },
+      },
+    ],
+  }),
+  customResponseHeaders: [
+    {
+      appRoot: 'frontend',
+      pattern: '*.json',
+      headers: {
+        'custom-header-name-1': 'custom-header-value-1',
+        'custom-header-name-2': 'custom-header-value-2',
+      },
+    },
+    {
+      appRoot: 'backend',
+      pattern: '/path/*',
+      headers: {
+        'custom-header-name-1': 'custom-header-value-2',
+      },
+    },
+  ],
+});
+```
+
 ## Configure server side rendering when hosting app
 
 Setting the `platform` field on the Amplify `App` construct can be used to control whether the app will host only static assets or server side rendered assets in addition to static. By default, the value is set to `WEB` (static only), however, server side rendering can be turned on by setting to `WEB_COMPUTE` as follows:
@@ -268,6 +330,15 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
 });
 ```
 
+It is also possible to override the compute role for a specific branch by setting `computeRole` in `Branch`:
+
+```ts
+declare const computeRole: iam.Role;
+declare const amplifyApp: amplify.App
+
+const branch = amplifyApp.addBranch("dev", { computeRole });
+```
+
 ## Cache Config
 
 Amplify uses Amazon CloudFront to manage the caching configuration for your hosted applications. A cache configuration is applied to each app to optimize for the best performance.
@@ -292,4 +363,18 @@ import * as assets from 'aws-cdk-lib/aws-s3-assets';
 declare const asset: assets.Asset;
 declare const amplifyApp: amplify.App;
 const branch = amplifyApp.addBranch("dev", { asset: asset });
+```
+
+## Skew protection for Amplify Deployments
+
+Deployment skew protection is available to Amplify applications to eliminate version skew issues between client and servers in web applications.
+When you apply skew protection to an Amplify application, you can ensure that your clients always interact with the correct version of server-side assets, regardless of when a deployment occurs.
+
+For more information, see [Skew protection for Amplify deployments](https://docs.aws.amazon.com/amplify/latest/userguide/skew-protection.html).
+
+To enable skew protection, set the `skewProtection` property to `true`:
+
+```ts
+declare const amplifyApp: amplify.App;
+const branch = amplifyApp.addBranch("dev", { skewProtection: true });
 ```
