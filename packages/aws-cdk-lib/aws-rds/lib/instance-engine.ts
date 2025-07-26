@@ -775,6 +775,11 @@ export class MysqlEngineVersion {
   /** Version "5.7" (only a major version, without a specific minor version). */
   public static readonly VER_5_7 = MysqlEngineVersion.of('5.7', '5.7');
   /**
+   * Version "5.7.12"
+   * @deprecated MySQL 5.7.12 is no longer supported by Amazon RDS.
+   */
+  public static readonly VER_5_7_12 = MysqlEngineVersion.of('5.7.12', '5.7');
+  /**
    * Version "5.7.16"
    * @deprecated MySQL 5.7.16 is no longer supported by Amazon RDS.
    */
