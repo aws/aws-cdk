@@ -1,0 +1,793 @@
+{
+    "typeName": "AWS::ECS::Service",
+    "description": "Resource Type definition for AWS::ECS::Service",
+    "definitions": {
+        "AwsVpcConfiguration": {
+            "type": "object",
+            "properties": {
+                "AssignPublicIp": {
+                    "type": "string",
+                    "enum": [
+                        "DISABLED",
+                        "ENABLED"
+                    ]
+                },
+                "SecurityGroups": {
+                    "type": "array",
+                    "insertionOrder": false,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "Subnets": {
+                    "type": "array",
+                    "insertionOrder": false,
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "CapacityProviderStrategyItem": {
+            "type": "object",
+            "properties": {
+                "Base": {
+                    "type": "integer"
+                },
+                "CapacityProvider": {
+                    "type": "string"
+                },
+                "Weight": {
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": false
+        },
+        "DeploymentAlarms": {
+            "type": "object",
+            "properties": {
+                "AlarmNames": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "Rollback": {
+                    "type": "boolean"
+                },
+                "Enable": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "AlarmNames",
+                "Rollback",
+                "Enable"
+            ],
+            "additionalProperties": false
+        },
+        "DeploymentCircuitBreaker": {
+            "type": "object",
+            "properties": {
+                "Enable": {
+                    "type": "boolean"
+                },
+                "Rollback": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "Enable",
+                "Rollback"
+            ],
+            "additionalProperties": false
+        },
+        "DeploymentConfiguration": {
+            "type": "object",
+            "properties": {
+                "DeploymentCircuitBreaker": {
+                    "$ref": "#/definitions/DeploymentCircuitBreaker"
+                },
+                "MaximumPercent": {
+                    "type": "integer"
+                },
+                "MinimumHealthyPercent": {
+                    "type": "integer"
+                },
+                "Alarms": {
+                    "$ref": "#/definitions/DeploymentAlarms"
+                },
+                "Strategy": {
+                    "type": "string",
+                    "enum": [
+                        "ROLLING",
+                        "BLUE_GREEN"
+                    ]
+                },
+                "BakeTimeInMinutes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1440
+                },
+                "LifecycleHooks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/DeploymentLifecycleHook"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "DeploymentLifecycleHook": {
+            "type": "object",
+            "properties": {
+                "HookTargetArn": {
+                    "type": "string"
+                },
+                "RoleArn": {
+                    "type": "string"
+                },
+                "LifecycleStages": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "RECONCILE_SERVICE",
+                            "PRE_SCALE_UP",
+                            "POST_SCALE_UP",
+                            "TEST_TRAFFIC_SHIFT",
+                            "POST_TEST_TRAFFIC_SHIFT",
+                            "PRODUCTION_TRAFFIC_SHIFT",
+                            "POST_PRODUCTION_TRAFFIC_SHIFT"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "HookTargetArn",
+                "RoleArn",
+                "LifecycleStages"
+            ],
+            "additionalProperties": false
+        },
+        "DeploymentController": {
+            "type": "object",
+            "properties": {
+                "Type": {
+                    "type": "string",
+                    "enum": [
+                        "CODE_DEPLOY",
+                        "ECS",
+                        "EXTERNAL"
+                    ]
+                }
+            },
+            "additionalProperties": false
+        },
+        "EBSTagSpecification": {
+            "type": "object",
+            "required": [
+                "ResourceType"
+            ],
+            "properties": {
+                "ResourceType": {
+                    "type": "string"
+                },
+                "Tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Tag"
+                    }
+                },
+                "PropagateTags": {
+                    "type": "string",
+                    "enum": [
+                        "SERVICE",
+                        "TASK_DEFINITION"
+                    ]
+                }
+            },
+            "additionalProperties": false
+        },
+        "LoadBalancer": {
+            "type": "object",
+            "properties": {
+                "ContainerName": {
+                    "type": "string"
+                },
+                "ContainerPort": {
+                    "type": "integer"
+                },
+                "LoadBalancerName": {
+                    "type": "string"
+                },
+                "TargetGroupArn": {
+                    "type": "string"
+                },
+                "AdvancedConfiguration": {
+                    "$ref": "#/definitions/AdvancedConfiguration"
+                }
+            },
+            "additionalProperties": false
+        },
+        "AdvancedConfiguration": {
+            "type": "object",
+            "properties": {
+                "AlternateTargetGroupArn": {
+                    "type": "string"
+                },
+                "RoleArn": {
+                    "type": "string"
+                },
+                "ProductionListenerRule": {
+                    "type": "string"
+                },
+                "TestListenerRule": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "AlternateTargetGroupArn"
+            ],
+            "additionalProperties": false
+        },
+        "LogConfiguration": {
+            "type": "object",
+            "properties": {
+                "LogDriver": {
+                    "type": "string"
+                },
+                "Options": {
+                    "type": "object",
+                    "patternProperties": {
+                        ".{1,}": {
+                            "type": "string"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "SecretOptions": {
+                    "type": "array",
+                    "insertionOrder": false,
+                    "items": {
+                        "$ref": "#/definitions/Secret"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "NetworkConfiguration": {
+            "type": "object",
+            "properties": {
+                "AwsvpcConfiguration": {
+                    "$ref": "#/definitions/AwsVpcConfiguration"
+                }
+            },
+            "additionalProperties": false
+        },
+        "PlacementConstraint": {
+            "type": "object",
+            "properties": {
+                "Expression": {
+                    "type": "string"
+                },
+                "Type": {
+                    "type": "string",
+                    "enum": [
+                        "distinctInstance",
+                        "memberOf"
+                    ]
+                }
+            },
+            "required": [
+                "Type"
+            ],
+            "additionalProperties": false
+        },
+        "PlacementStrategy": {
+            "type": "object",
+            "properties": {
+                "Field": {
+                    "type": "string"
+                },
+                "Type": {
+                    "type": "string",
+                    "enum": [
+                        "binpack",
+                        "random",
+                        "spread"
+                    ]
+                }
+            },
+            "required": [
+                "Type"
+            ],
+            "additionalProperties": false
+        },
+        "Secret": {
+            "type": "object",
+            "required": [
+                "Name",
+                "ValueFrom"
+            ],
+            "properties": {
+                "Name": {
+                    "type": "string"
+                },
+                "ValueFrom": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "ServiceConnectTestTrafficRules": {
+            "type": "object",
+            "properties": {
+                "Header": {
+                    "$ref": "#/definitions/ServiceConnectTestTrafficRulesHeader"
+                }
+            },
+            "required": [
+                "Header"
+            ],
+            "additionalProperties": false
+        },
+        "ServiceConnectTestTrafficRulesHeader": {
+            "type": "object",
+            "properties": {
+                "Name": {
+                    "type": "string"
+                },
+                "Value": {
+                    "$ref": "#/definitions/ServiceConnectTestTrafficRulesHeaderValue"
+                }
+            },
+            "required": [
+                "Name"
+            ],
+            "additionalProperties": false
+        },
+        "ServiceConnectTestTrafficRulesHeaderValue": {
+            "type": "object",
+            "properties": {
+                "Exact": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "Exact"
+            ],
+            "additionalProperties": false
+        },
+        "ServiceConnectClientAlias": {
+            "type": "object",
+            "properties": {
+                "Port": {
+                    "type": "integer"
+                },
+                "DnsName": {
+                    "type": "string"
+                },
+                "TestTrafficRules": {
+                    "$ref": "#/definitions/ServiceConnectTestTrafficRules"
+                }
+            },
+            "required": [
+                "Port"
+            ],
+            "additionalProperties": false
+        },
+        "ServiceConnectConfiguration": {
+            "type": "object",
+            "properties": {
+                "Enabled": {
+                    "type": "boolean"
+                },
+                "Namespace": {
+                    "type": "string"
+                },
+                "Services": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ServiceConnectService"
+                    }
+                },
+                "LogConfiguration": {
+                    "$ref": "#/definitions/LogConfiguration"
+                }
+            },
+            "required": [
+                "Enabled"
+            ],
+            "additionalProperties": false
+        },
+        "ServiceConnectService": {
+            "type": "object",
+            "properties": {
+                "PortName": {
+                    "type": "string"
+                },
+                "DiscoveryName": {
+                    "type": "string"
+                },
+                "ClientAliases": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ServiceConnectClientAlias"
+                    }
+                },
+                "IngressPortOverride": {
+                    "type": "integer"
+                },
+                "Tls": {
+                    "$ref": "#/definitions/ServiceConnectTlsConfiguration"
+                },
+                "Timeout": {
+                    "$ref": "#/definitions/TimeoutConfiguration"
+                }
+            },
+            "required": [
+                "PortName"
+            ],
+            "additionalProperties": false
+        },
+        "ServiceConnectTlsConfiguration": {
+            "type": "object",
+            "properties": {
+                "IssuerCertificateAuthority": {
+                    "$ref": "#/definitions/ServiceConnectTlsCertificateAuthority"
+                },
+                "KmsKey": {
+                    "type": "string"
+                },
+                "RoleArn": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "IssuerCertificateAuthority"
+            ],
+            "additionalProperties": false
+        },
+        "ServiceConnectTlsCertificateAuthority": {
+            "type": "object",
+            "properties": {
+                "AwsPcaAuthorityArn": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "ServiceManagedEBSVolumeConfiguration": {
+            "type": "object",
+            "required": [
+                "RoleArn"
+            ],
+            "properties": {
+                "Encrypted": {
+                    "type": "boolean"
+                },
+                "KmsKeyId": {
+                    "type": "string"
+                },
+                "VolumeType": {
+                    "type": "string"
+                },
+                "SizeInGiB": {
+                    "type": "integer"
+                },
+                "SnapshotId": {
+                    "type": "string"
+                },
+                "VolumeInitializationRate": {
+                    "type": "integer"
+                },
+                "Iops": {
+                    "type": "integer"
+                },
+                "Throughput": {
+                    "type": "integer"
+                },
+                "TagSpecifications": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/EBSTagSpecification"
+                    }
+                },
+                "RoleArn": {
+                    "type": "string"
+                },
+                "FilesystemType": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "TimeoutConfiguration": {
+            "type": "object",
+            "properties": {
+                "IdleTimeoutSeconds": {
+                    "type": "integer"
+                },
+                "PerRequestTimeoutSeconds": {
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": false
+        },
+        "ServiceRegistry": {
+            "type": "object",
+            "properties": {
+                "ContainerName": {
+                    "type": "string"
+                },
+                "ContainerPort": {
+                    "type": "integer"
+                },
+                "Port": {
+                    "type": "integer"
+                },
+                "RegistryArn": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "Tag": {
+            "type": "object",
+            "properties": {
+                "Key": {
+                    "type": "string"
+                },
+                "Value": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "ServiceVolumeConfiguration": {
+            "type": "object",
+            "required": [
+                "Name"
+            ],
+            "properties": {
+                "Name": {
+                    "type": "string"
+                },
+                "ManagedEBSVolume": {
+                    "$ref": "#/definitions/ServiceManagedEBSVolumeConfiguration"
+                }
+            },
+            "additionalProperties": false
+        },
+        "VpcLatticeConfiguration": {
+            "type": "object",
+            "properties": {
+                "RoleArn": {
+                    "type": "string"
+                },
+                "TargetGroupArn": {
+                    "type": "string"
+                },
+                "PortName": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "RoleArn",
+                "TargetGroupArn",
+                "PortName"
+            ],
+            "additionalProperties": false
+        }
+    },
+    "properties": {
+        "ServiceArn": {
+            "type": "string"
+        },
+        "AvailabilityZoneRebalancing": {
+            "default": "DISABLED",
+            "type": "string",
+            "enum": [
+                "ENABLED",
+                "DISABLED"
+            ]
+        },
+        "CapacityProviderStrategy": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/CapacityProviderStrategyItem"
+            }
+        },
+        "Cluster": {
+            "type": "string"
+        },
+        "DeploymentConfiguration": {
+            "$ref": "#/definitions/DeploymentConfiguration"
+        },
+        "DeploymentController": {
+            "$ref": "#/definitions/DeploymentController"
+        },
+        "DesiredCount": {
+            "type": "integer"
+        },
+        "EnableECSManagedTags": {
+            "type": "boolean"
+        },
+        "EnableExecuteCommand": {
+            "type": "boolean"
+        },
+        "HealthCheckGracePeriodSeconds": {
+            "type": "integer"
+        },
+        "LaunchType": {
+            "type": "string",
+            "enum": [
+                "EC2",
+                "FARGATE",
+                "EXTERNAL"
+            ]
+        },
+        "LoadBalancers": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/LoadBalancer"
+            }
+        },
+        "Name": {
+            "type": "string"
+        },
+        "NetworkConfiguration": {
+            "$ref": "#/definitions/NetworkConfiguration"
+        },
+        "PlacementConstraints": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/PlacementConstraint"
+            }
+        },
+        "PlacementStrategies": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/PlacementStrategy"
+            }
+        },
+        "PlatformVersion": {
+            "type": "string",
+            "default": "LATEST"
+        },
+        "PropagateTags": {
+            "type": "string",
+            "enum": [
+                "SERVICE",
+                "TASK_DEFINITION"
+            ]
+        },
+        "Role": {
+            "type": "string"
+        },
+        "SchedulingStrategy": {
+            "type": "string",
+            "enum": [
+                "DAEMON",
+                "REPLICA"
+            ]
+        },
+        "ServiceConnectConfiguration": {
+            "$ref": "#/definitions/ServiceConnectConfiguration"
+        },
+        "ServiceName": {
+            "type": "string"
+        },
+        "ServiceRegistries": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/ServiceRegistry"
+            }
+        },
+        "Tags": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/Tag"
+            }
+        },
+        "TaskDefinition": {
+            "type": "string"
+        },
+        "VolumeConfigurations": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/ServiceVolumeConfiguration"
+            }
+        },
+        "VpcLatticeConfigurations": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/VpcLatticeConfiguration"
+            }
+        }
+    },
+    "primaryIdentifier": [
+        "/properties/ServiceArn",
+        "/properties/Cluster"
+    ],
+    "propertyTransform": {
+        "/properties/Role": "Role $OR $join([\"arn:(aws)[-]{0,1}[a-z]{0,3}[-]{0,1}[a-z]{0,3}:iam::[0-9]{12}[:]role\/{1}\", Role])",
+        "/properties/TaskDefinition": "TaskDefinition $OR $join([\"arn:(aws)[-]{0,1}[a-z]{0,3}[-]{0,1}[a-z]{0,3}:ecs:[a-z0-9-]+:[0-9]{12}:task-definition\/\", $contains(TaskDefinition,\":\")?TaskDefinition:$join([TaskDefinition, \":[0-9]+\"])])"
+    },
+    "handlers": {
+        "create": {
+            "permissions": [
+                "ecs:CreateService",
+                "ecs:DescribeServiceDeployments",
+                "ecs:DescribeServices",
+                "ecs:ListServiceDeployments",
+                "iam:PassRole",
+                "ecs:TagResource"
+            ],
+            "timeoutInMinutes": 2160
+        },
+        "read": {
+            "permissions": [
+                "ecs:DescribeServices"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "ecs:DescribeServiceDeployments",
+                "ecs:DescribeServices",
+                "ecs:ListServiceDeployments",
+                "ecs:ListTagsForResource",
+                "ecs:StopServiceDeployment",
+                "ecs:TagResource",
+                "ecs:UntagResource",
+                "ecs:UpdateService"
+            ],
+            "timeoutInMinutes": 2160
+        },
+        "delete": {
+            "permissions": [
+                "ecs:DeleteService",
+                "ecs:DescribeServices"
+            ],
+            "timeoutInMinutes": 30
+        },
+        "list": {
+            "permissions": [
+                "ecs:DescribeServices",
+                "ecs:ListClusters",
+                "ecs:ListServices"
+            ]
+        }
+    },
+    "tagging": {
+        "taggable": true,
+        "tagOnCreate": true,
+        "tagUpdatable": true,
+        "cloudFormationSystemTags": false,
+        "tagProperty": "/properties/Tags",
+        "permissions": [
+            "ecs:TagResource",
+            "ecs:UntagResource",
+            "ecs:ListTagsForResource"
+        ]
+    },
+    "readOnlyProperties": [
+        "/properties/ServiceArn",
+        "/properties/Name"
+    ],
+    "createOnlyProperties": [
+        "/properties/Cluster",
+        "/properties/LaunchType",
+        "/properties/Role",
+        "/properties/SchedulingStrategy",
+        "/properties/ServiceName"
+    ],
+    "writeOnlyProperties": [
+        "/properties/ServiceConnectConfiguration",
+        "/properties/VolumeConfigurations"
+    ],
+    "additionalProperties": false
+}

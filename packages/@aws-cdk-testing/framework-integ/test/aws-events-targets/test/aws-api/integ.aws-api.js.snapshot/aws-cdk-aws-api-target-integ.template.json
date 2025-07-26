@@ -131,7 +131,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2f3794bf7e997526696f86b4e11ce079ba182e161bb246ba08c71cf7295ac014.zip"
+     "S3Key": "8a798cc95867ad259286c528a45f9b778548179dee9cf4ba1337e0e3424f76ea.zip"
     },
     "Handler": "index.handler",
     "MemorySize": 256,
@@ -404,6 +404,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

@@ -1,5 +1,5 @@
 {
-  "version": "43.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "synthesize-default-resources.assets": {
       "type": "cdk:asset-manifest",
@@ -21,7 +21,7 @@
         "additionalDependencies": [
           "synthesize-default-resources.assets"
         ],
-        "stackTemplateAssetObjectUrl": "s3://cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}/deploy-time/60f7c2dac879a9de34a1b00340c5ad12c3ffd444e6c91049832d893f3631b8c4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}/deploy-time/acfe7519eb1a112b48493b56fa6bdce07f09ca5160db91d9cf0fe4b48cda6b3c.json",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}"
@@ -76,6 +76,20 @@
             "data": "lambdas342CE2BBD"
           }
         ],
+        "/synthesize-default-resources/lambda-s3/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/synthesize-default-resources/lambda-s3/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdas3LogGroupF90857DC"
+          }
+        ],
         "/synthesize-default-resources/lambda-ecr-1-copy": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -120,6 +134,20 @@
             "data": "lambdaecr1copyD39CDE9B"
           }
         ],
+        "/synthesize-default-resources/lambda-ecr-1-copy/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/synthesize-default-resources/lambda-ecr-1-copy/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaecr1copyLogGroupA19D4CF6"
+          }
+        ],
         "/synthesize-default-resources/lambda-ecr-two": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -162,6 +190,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "lambdaecrtwo03D31DB7"
+          }
+        ],
+        "/synthesize-default-resources/lambda-ecr-two/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/synthesize-default-resources/lambda-ecr-two/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaecrtwoLogGroup9DB77814"
           }
         ]
       },
@@ -709,5 +751,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1015.0"
+  "minimumCliVersion": "2.1019.2"
 }

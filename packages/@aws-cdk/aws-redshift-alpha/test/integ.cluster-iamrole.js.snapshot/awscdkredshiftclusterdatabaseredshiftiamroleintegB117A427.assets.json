@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "536d9403b691fc6196dc6776a75d035b98759b031d357a6449ac1640b272b109": {
+      "displayName": "awscdkredshiftclusterdatabaseredshiftiamroleintegB117A427 Template",
+      "source": {
+        "path": "awscdkredshiftclusterdatabaseredshiftiamroleintegB117A427.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "536d9403b691fc6196dc6776a75d035b98759b031d357a6449ac1640b272b109.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

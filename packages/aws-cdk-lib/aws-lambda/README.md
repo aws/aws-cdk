@@ -281,6 +281,21 @@ const fn = new lambda.Function(this, 'MyFunctionWithFFTrue', {
 cdk.Tags.of(fn).add('env', 'dev'); // the tag is also added to the log group
 ```
 
+### Log removal policy
+
+When using the deprecated `logRetention` property for creating a LogGroup, you can configure log removal policy:
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+const fn = new lambda.Function(this, 'MyFunctionWithFFTrue', {
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  handler: 'handler.main',
+  code: lambda.Code.fromAsset('lambda'),
+  logRetention: logs.RetentionDays.INFINITE,
+  logRemovalPolicy: RemovalPolicy.RETAIN,
+});
+```
+
 ## Resource-based Policies
 
 AWS Lambda supports resource-based policies for controlling access to Lambda

@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
 import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
-import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern, FieldIndexPolicy } from '../lib';
+import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern, FieldIndexPolicy, ParserProcessor, ParserProcessorType, JsonMutatorType, JsonMutatorProcessor } from '../lib';
 
 describe('log group', () => {
   test('set kms key when provided', () => {
@@ -162,24 +162,6 @@ describe('log group', () => {
     Template.fromStack(stack).resourcePropertiesCountIs('AWS::Logs::LogGroup', {
       LogGroupClass: LogGroupClass.INFREQUENT_ACCESS,
     }, 0);
-  });
-
-  test('with log group class in a non-supported region', () => {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'TestStack', {
-      env: {
-        region: 'us-isob-east-1',
-      },
-    });
-
-    // WHEN
-    new LogGroup(stack, 'LogGroup', {
-      logGroupClass: LogGroupClass.STANDARD,
-    });
-
-    // THEN
-    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp(/The LogGroupClass property is not supported in the following regions.+us-isob-east-1/));
   });
 
   test('will delete log group if asked to', () => {
@@ -1001,6 +983,56 @@ describe('subscription filter', () => {
       LogGroupName: { Ref: 'LogGroupF5B46931' },
       FilterName: 'CustomSubscriptionFilterName',
     });
+  });
+});
+
+test('create a Add Key transformer against a log group', () => {
+  // GIVEN
+  const stack = new Stack();
+  const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
+
+  const jsonParser = new ParserProcessor({
+    type: ParserProcessorType.JSON,
+  });
+
+  const addKeysProcesor = new JsonMutatorProcessor({
+    type: JsonMutatorType.ADD_KEYS,
+    addKeysOptions: {
+      entries: [
+        { key: 'test_key1', value: 'test_value1', overwriteIfExists: true },
+        { key: 'test_key2', value: 'test_value2' },
+        { key: 'test_key3', value: 'test_value3', overwriteIfExists: false },
+      ],
+    },
+  });
+
+  // WHEN
+
+  logGroup.addTransformer(
+    'Transformer',
+    {
+      transformerName: 'MyTransformer',
+      transformerConfig: [jsonParser, addKeysProcesor],
+    },
+  );
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::Transformer', {
+    LogGroupIdentifier: { Ref: 'awscdktestloggroup30AE39AB' },
+    TransformerConfig: [
+      {
+        ParseJSON: { Source: '@message' },
+      },
+      {
+        AddKeys: {
+          Entries: [
+            { Key: 'test_key1', Value: 'test_value1', OverwriteIfExists: true },
+            { Key: 'test_key2', Value: 'test_value2', OverwriteIfExists: false },
+            { Key: 'test_key3', Value: 'test_value3', OverwriteIfExists: false },
+          ],
+        },
+      },
+    ],
   });
 });
 

@@ -1,6 +1,8 @@
 import { ArnFormat, aws_bedrock as bedrock, IResource, Resource, Stack } from 'aws-cdk-lib';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IAgent } from './agent';
 
@@ -186,7 +188,10 @@ export interface AgentAliasAttributes {
  * Class to create an Agent Alias with CDK.
  * @cloudformationResource AWS::Bedrock::AgentAlias
  */
+@propertyInjectable
 export class AgentAlias extends AgentAliasBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-alpha.AgentAlias';
   // ------------------------------------------------------
   // Imports
   // ------------------------------------------------------
@@ -229,6 +234,8 @@ export class AgentAlias extends AgentAliasBase {
   // ------------------------------------------------------
   constructor(scope: Construct, id: string, props: AgentAliasProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // ------------------------------------------------------
     // Set properties or defaults

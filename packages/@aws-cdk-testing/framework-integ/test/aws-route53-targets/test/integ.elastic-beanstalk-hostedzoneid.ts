@@ -6,7 +6,7 @@ import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk';
 import * as custom from 'aws-cdk-lib/custom-resources';
-import { RegionInfo } from 'aws-cdk-lib/region-info';
+import { RegionInfo } from '@aws-cdk/region-info';
 
 const app = new App({
   postCliContext: {

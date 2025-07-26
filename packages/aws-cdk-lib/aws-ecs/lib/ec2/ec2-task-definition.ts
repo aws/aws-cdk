@@ -143,14 +143,26 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
    * Constructs a new instance of the Ec2TaskDefinition class.
    */
   constructor(scope: Construct, id: string, props: Ec2TaskDefinitionProps = {}) {
-    super(scope, id, {
-      ...props,
-      compatibility: Compatibility.EC2,
-      placementConstraints: props.placementConstraints,
-      ipcMode: props.ipcMode,
-      pidMode: props.pidMode,
-      inferenceAccelerators: props.inferenceAccelerators,
-    });
+    // don't pass @deprecated inferenceAccelerators if not needed as this renders console warnings
+    if (props.inferenceAccelerators) {
+      super(scope, id, {
+        ...props,
+        compatibility: Compatibility.EC2,
+        placementConstraints: props.placementConstraints,
+        ipcMode: props.ipcMode,
+        pidMode: props.pidMode,
+        inferenceAccelerators: props.inferenceAccelerators,
+      });
+    } else {
+      super(scope, id, {
+        ...props,
+        compatibility: Compatibility.EC2,
+        placementConstraints: props.placementConstraints,
+        ipcMode: props.ipcMode,
+        pidMode: props.pidMode,
+      });
+    }
+
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
