@@ -13,9 +13,6 @@
       "Value": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/Resource"
    }
   },
   "VpcPublicSubnet1Subnet5C2D37C4": {
@@ -48,9 +45,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PublicSubnet1/Subnet"
    }
   },
   "VpcPublicSubnet1RouteTable6C95E38E": {
@@ -65,9 +59,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PublicSubnet1/RouteTable"
    }
   },
   "VpcPublicSubnet1RouteTableAssociation97140677": {
@@ -79,9 +70,6 @@
     "SubnetId": {
      "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PublicSubnet1/RouteTableAssociation"
    }
   },
   "VpcPublicSubnet1DefaultRoute3DA9E72A": {
@@ -97,10 +85,7 @@
    },
    "DependsOn": [
     "VpcVPCGWBF912B6E"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PublicSubnet1/DefaultRoute"
-   }
+   ]
   },
   "VpcPublicSubnet1EIPD7E02669": {
    "Type": "AWS::EC2::EIP",
@@ -112,9 +97,6 @@
       "Value": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PublicSubnet1"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PublicSubnet1/EIP"
    }
   },
   "VpcPublicSubnet1NATGateway4D7517AA": {
@@ -139,10 +121,7 @@
    "DependsOn": [
     "VpcPublicSubnet1DefaultRoute3DA9E72A",
     "VpcPublicSubnet1RouteTableAssociation97140677"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PublicSubnet1/NATGateway"
-   }
+   ]
   },
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
@@ -174,9 +153,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PublicSubnet2/Subnet"
    }
   },
   "VpcPublicSubnet2RouteTable94F7E489": {
@@ -191,9 +167,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PublicSubnet2/RouteTable"
    }
   },
   "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
@@ -205,9 +178,6 @@
     "SubnetId": {
      "Ref": "VpcPublicSubnet2Subnet691E08A3"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PublicSubnet2/RouteTableAssociation"
    }
   },
   "VpcPublicSubnet2DefaultRoute97F91067": {
@@ -223,10 +193,7 @@
    },
    "DependsOn": [
     "VpcVPCGWBF912B6E"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PublicSubnet2/DefaultRoute"
-   }
+   ]
   },
   "VpcPublicSubnet2EIP3C605A87": {
    "Type": "AWS::EC2::EIP",
@@ -238,9 +205,6 @@
       "Value": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PublicSubnet2"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PublicSubnet2/EIP"
    }
   },
   "VpcPublicSubnet2NATGateway9182C01D": {
@@ -265,10 +229,7 @@
    "DependsOn": [
     "VpcPublicSubnet2DefaultRoute97F91067",
     "VpcPublicSubnet2RouteTableAssociationDD5762D8"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PublicSubnet2/NATGateway"
-   }
+   ]
   },
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
@@ -300,9 +261,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PrivateSubnet1/Subnet"
    }
   },
   "VpcPrivateSubnet1RouteTableB2C5B500": {
@@ -317,9 +275,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PrivateSubnet1/RouteTable"
    }
   },
   "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
@@ -331,9 +286,6 @@
     "SubnetId": {
      "Ref": "VpcPrivateSubnet1Subnet536B997A"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PrivateSubnet1/RouteTableAssociation"
    }
   },
   "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
@@ -346,9 +298,6 @@
     "RouteTableId": {
      "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PrivateSubnet1/DefaultRoute"
    }
   },
   "VpcPrivateSubnet2Subnet3788AAA1": {
@@ -381,9 +330,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PrivateSubnet2/Subnet"
    }
   },
   "VpcPrivateSubnet2RouteTableA678073B": {
@@ -398,9 +344,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PrivateSubnet2/RouteTable"
    }
   },
   "VpcPrivateSubnet2RouteTableAssociationA89CAD56": {
@@ -412,9 +355,6 @@
     "SubnetId": {
      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PrivateSubnet2/RouteTableAssociation"
    }
   },
   "VpcPrivateSubnet2DefaultRoute060D2087": {
@@ -427,9 +367,6 @@
     "RouteTableId": {
      "Ref": "VpcPrivateSubnet2RouteTableA678073B"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/PrivateSubnet2/DefaultRoute"
    }
   },
   "VpcIGWD7BA715C": {
@@ -441,9 +378,6 @@
       "Value": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/IGW"
    }
   },
   "VpcVPCGWBF912B6E": {
@@ -455,16 +389,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/Vpc/VPCGW"
    }
   },
   "EcsCluster97242B84": {
-   "Type": "AWS::ECS::Cluster",
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/Resource"
-   }
+   "Type": "AWS::ECS::Cluster"
   },
   "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -486,9 +414,6 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup/Resource"
    }
   },
   "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863": {
@@ -512,9 +437,6 @@
       "Value": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/InstanceRole/Resource"
    }
   },
   "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80": {
@@ -556,8 +478,8 @@
       },
       {
        "Action": [
-        "ecs:DiscoverPollEndpoint",
         "ecr:GetAuthorizationToken",
+        "ecs:DiscoverPollEndpoint",
         "logs:CreateLogStream",
         "logs:PutLogEvents"
        ],
@@ -573,9 +495,6 @@
       "Ref": "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/InstanceRole/DefaultPolicy/Resource"
    }
   },
   "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3": {
@@ -586,57 +505,100 @@
       "Ref": "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/InstanceProfile"
    }
   },
-  "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "EcsClusterDefaultAutoScalingGroupLaunchTemplate3719972A": {
+   "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
-    "IamInstanceProfile": {
-     "Ref": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
-    },
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "t2.micro",
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231",
-       "GroupId"
-      ]
-     }
-    ],
-    "UserData": {
-     "Fn::Base64": {
-      "Fn::Join": [
-       "",
-       [
-        "#!/bin/bash\necho ECS_CLUSTER=",
-        {
-         "Ref": "EcsCluster97242B84"
-        },
-        " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3",
+        "Arn"
        ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t2.micro",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "#!/bin/bash\necho ECS_CLUSTER=",
+         {
+          "Ref": "EcsCluster97242B84"
+         },
+         " >> /etc/ecs/ecs.config"
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate"
+       }
       ]
      }
-    }
+    ]
    },
    "DependsOn": [
     "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80",
     "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/LaunchConfig"
-   }
+   ]
   },
   "EcsClusterDefaultAutoScalingGroupASGC1A785DB": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
    "Properties": {
-    "LaunchConfigurationName": {
-     "Ref": "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "EcsClusterDefaultAutoScalingGroupLaunchTemplate3719972A"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "EcsClusterDefaultAutoScalingGroupLaunchTemplate3719972A",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "MaxSize": "1",
     "MinSize": "1",
@@ -663,9 +625,6 @@
     "AutoScalingScheduledAction": {
      "IgnoreUnmodifiedGroupSizeProperties": true
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/ASG"
    }
   },
   "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA": {
@@ -703,9 +662,6 @@
       "Value": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/Resource"
    }
   },
   "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyA45BF396": {
@@ -715,10 +671,10 @@
      "Statement": [
       {
        "Action": [
-        "ec2:DescribeInstances",
+        "ec2:DescribeHosts",
         "ec2:DescribeInstanceAttribute",
         "ec2:DescribeInstanceStatus",
-        "ec2:DescribeHosts"
+        "ec2:DescribeInstances"
        ],
        "Effect": "Allow",
        "Resource": "*"
@@ -753,7 +709,9 @@
       {
        "Action": [
         "ecs:DescribeContainerInstances",
-        "ecs:DescribeTasks"
+        "ecs:DescribeTasks",
+        "ecs:ListTasks",
+        "ecs:UpdateContainerInstancesState"
        ],
        "Condition": {
         "ArnEquals": {
@@ -781,24 +739,6 @@
          "Arn"
         ]
        }
-      },
-      {
-       "Action": [
-        "ecs:UpdateContainerInstancesState",
-        "ecs:ListTasks"
-       ],
-       "Condition": {
-        "ArnEquals": {
-         "ecs:cluster": {
-          "Fn::GetAtt": [
-           "EcsCluster97242B84",
-           "Arn"
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -809,9 +749,6 @@
       "Ref": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource"
    }
   },
   "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E": {
@@ -846,10 +783,7 @@
    "DependsOn": [
     "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyA45BF396",
     "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource"
-   }
+   ]
   },
   "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegavailabilityzonerebalancingdisabledEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicD9B8A34A2A94D3C7": {
    "Type": "AWS::Lambda::Permission",
@@ -865,9 +799,6 @@
     "SourceArn": {
      "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/AllowInvoke:awsecsintegavailabilityzonerebalancingdisabledEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicD9B8A34A"
    }
   },
   "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic8F34E394": {
@@ -883,9 +814,6 @@
     "TopicArn": {
      "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource"
    }
   },
   "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4": {
@@ -897,9 +825,6 @@
       "Value": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource"
    }
   },
   "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B": {
@@ -923,9 +848,6 @@
       "Value": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/Resource"
    }
   },
   "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy75002F88": {
@@ -949,9 +871,6 @@
       "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/DefaultPolicy/Resource"
    }
   },
   "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookFFA63029": {
@@ -976,10 +895,7 @@
    "DependsOn": [
     "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy75002F88",
     "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Resource"
-   }
+   ]
   },
   "TaskDefTaskRole1EDB4A67": {
    "Type": "AWS::IAM::Role",
@@ -996,9 +912,6 @@
      ],
      "Version": "2012-10-17"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/TaskDef/TaskRole/Resource"
    }
   },
   "TaskDef54694570": {
@@ -1023,9 +936,6 @@
       "Arn"
      ]
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/TaskDef/Resource"
    }
   },
   "FrontendServiceBC94BA93": {
@@ -1036,11 +946,6 @@
      "Ref": "EcsCluster97242B84"
     },
     "DeploymentConfiguration": {
-     "Alarms": {
-      "AlarmNames": [],
-      "Enable": false,
-      "Rollback": false
-     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -1053,20 +958,7 @@
    },
    "DependsOn": [
     "TaskDefTaskRole1EDB4A67"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/FrontendService/Service"
-   }
-  },
-  "CDKMetadata": {
-   "Type": "AWS::CDK::Metadata",
-   "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/2VSwW7bMAz9lt5l1ctl1wZe1gUoCiMOeh1ohU7YyJIhUgkCwf8+2G7sbDvx8elJenpirnOdPyW4cmYO58xSrVMlYM4Krvw7oVnp9NEZVTTuoyxUGWtLpoq1Qxm4Be18FNxDbXHhF27N7A2BkHezeACbbTmUd5BXELzCTZWBLiC4HLx1gsHhLJicfHVrETCnFp2oCk0MJLfX4GM3engkeoWGdSpsZMEwLN/hxqz2wOcf2JCju8F/Ge8EyGF44DZmVWG4kJkePMFeQRTPBiy5o07rKL6amtnWG0RnToV3DR1jmCP5T/pGDZqbsfjL+/O48ZHoFUGr085PeY+19JbMGNCCto4FnMEy+IYs9spCWx9Ap5/Rmfvdj7jE0BIzedcrdqxTFWs2gbq74K9+7zsah2MEfa92yD6GKZMSArQoGHr18jVgz+QEj5kgC2dguxPoNHzwcY8sakYFMPa9cv6A+pOfL6tcf/uu86dPJspCdEIt6t1U/wCWzBp7wgIAAA=="
-   },
-   "Metadata": {
-    "aws:cdk:path": "aws-ecs-integ-availability-zone-rebalancing-disabled/CDKMetadata/Default"
-   },
-   "Condition": "CDKMetadataAvailable"
+   ]
   }
  },
  "Parameters": {
@@ -1078,272 +970,6 @@
    "Type": "AWS::SSM::Parameter::Value<String>",
    "Default": "/cdk-bootstrap/hnb659fds/version",
    "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
-  }
- },
- "Conditions": {
-  "CDKMetadataAvailable": {
-   "Fn::Or": [
-    {
-     "Fn::Or": [
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "af-south-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-east-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-northeast-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-northeast-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-northeast-3"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-south-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-south-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-southeast-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-southeast-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-southeast-3"
-       ]
-      }
-     ]
-    },
-    {
-     "Fn::Or": [
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ap-southeast-4"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ca-central-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "ca-west-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "cn-north-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "cn-northwest-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-central-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-central-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-north-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-south-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-south-2"
-       ]
-      }
-     ]
-    },
-    {
-     "Fn::Or": [
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-west-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-west-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "eu-west-3"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "il-central-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "me-central-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "me-south-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "sa-east-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "us-east-1"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "us-east-2"
-       ]
-      },
-      {
-       "Fn::Equals": [
-        {
-         "Ref": "AWS::Region"
-        },
-        "us-west-1"
-       ]
-      }
-     ]
-    },
-    {
-     "Fn::Equals": [
-      {
-       "Ref": "AWS::Region"
-      },
-      "us-west-2"
-     ]
-    }
-   ]
   }
  },
  "Rules": {
