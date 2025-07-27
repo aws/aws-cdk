@@ -81,6 +81,15 @@ export interface CertificateProps {
   readonly validation?: CertificateValidation;
 
   /**
+   * Enable or disable export of this certificate.
+   *
+   * If you issue an exportable public certificate, there is a charge at certificate issuance and again when the certificate renews.
+   * 
+   * @default false
+   */
+  readonly certificateExportEnabled?: boolean;
+
+  /**
    * Enable or disable transparency logging for this certificate
    *
    * Once a certificate has been logged, it cannot be removed from the log.
@@ -319,6 +328,11 @@ export class Certificate extends CertificateBase implements ICertificate {
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 
+    let certificateExport: string | undefined;
+    if (props.certificateExportEnabled !== undefined) {
+      certificateExport = props.certificateExportEnabled ? 'ENABLED' : 'DISABLED';
+    }
+
     let certificateTransparencyLoggingPreference: string | undefined;
     if (props.transparencyLoggingEnabled !== undefined) {
       certificateTransparencyLoggingPreference = props.transparencyLoggingEnabled ? 'ENABLED' : 'DISABLED';
@@ -329,6 +343,7 @@ export class Certificate extends CertificateBase implements ICertificate {
       subjectAlternativeNames: props.subjectAlternativeNames,
       domainValidationOptions: renderDomainValidation(this, validation, allDomainNames),
       validationMethod: validation.method,
+      certificateExport,
       certificateTransparencyLoggingPreference,
       keyAlgorithm: props.keyAlgorithm?.name,
     });
