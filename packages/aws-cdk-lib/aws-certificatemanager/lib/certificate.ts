@@ -84,7 +84,7 @@ export interface CertificateProps {
    * Enable or disable export of this certificate.
    *
    * If you issue an exportable public certificate, there is a charge at certificate issuance and again when the certificate renews.
-   * 
+   *
    * @default false
    */
   readonly certificateExportEnabled?: boolean;
