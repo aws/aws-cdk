@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "8c86bf84e306722e49b6c1015636e3ecab8d2b3ce6e77b73b41e4c43578f679d": {
+      "displayName": "awsecsintegavailabilityzonerebalancingdisabledAvailabilityZoneRebalancingDisabledDefaultTestDeployAssertCF5EF850 Template",
+      "source": {
+        "path": "awsecsintegavailabilityzonerebalancingdisabledAvailabilityZoneRebalancingDisabledDefaultTestDeployAssertCF5EF850.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-3c160847": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8c86bf84e306722e49b6c1015636e3ecab8d2b3ce6e77b73b41e4c43578f679d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

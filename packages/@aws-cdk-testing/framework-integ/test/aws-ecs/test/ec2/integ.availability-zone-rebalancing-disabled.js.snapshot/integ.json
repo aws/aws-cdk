@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "aws-ecs-integ-availability-zone-rebalancing-disabled/AvailabilityZoneRebalancingDisabled/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-availability-zone-rebalancing-disabled"
+      ],
+      "assertionStack": "aws-ecs-integ-availability-zone-rebalancing-disabled/AvailabilityZoneRebalancingDisabled/DefaultTest/DeployAssert",
+      "assertionStackName": "awsecsintegavailabilityzonerebalancingdisabledAvailabilityZoneRebalancingDisabledDefaultTestDeployAssertCF5EF850"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}
