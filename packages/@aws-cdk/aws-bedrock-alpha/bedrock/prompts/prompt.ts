@@ -4,6 +4,9 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { Construct } from 'constructs';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+
 // Internal Libs
 import { IPromptVariant } from './prompt-variant';
 import { PromptVersion } from './prompt-version';
@@ -173,7 +176,11 @@ export interface PromptAttributes {
  * @cloudformationResource AWS::Bedrock::Prompt
  * @see https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-management.html
  */
+@propertyInjectable
 export class Prompt extends PromptBase implements IPrompt {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-alpha.Prompt';
+
   /******************************************************************************
    *                            IMPORT METHODS
    *****************************************************************************/
@@ -266,6 +273,8 @@ export class Prompt extends PromptBase implements IPrompt {
    *****************************************************************************/
   constructor(scope: Construct, id: string, props: PromptProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // ------------------------------------------------------
     // Set properties and defaults
@@ -415,6 +424,7 @@ export class Prompt extends PromptBase implements IPrompt {
    * @default - No description provided
    * @returns A PromptVersion object containing the version details including ARN and version string
    */
+  @MethodMetadata()
   public createVersion(description?: string): PromptVersion {
     return new PromptVersion(this, `PromptVersion-${this._hash}`, {
       prompt: this,
@@ -428,6 +438,7 @@ export class Prompt extends PromptBase implements IPrompt {
    * @param variant - The prompt variant to add
    * @throws ValidationError if adding the variant would exceed the maximum allowed variants
    */
+  @MethodMetadata()
   public addVariant(variant: IPromptVariant): void {
     validation.throwIfInvalid(this.validateVariantAddition, variant);
     this.variants.push(variant);

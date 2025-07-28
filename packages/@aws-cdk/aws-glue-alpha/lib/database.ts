@@ -1,4 +1,4 @@
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib/core';
+import { ArnFormat, IResource, Lazy, Names, Resource, Stack, UnscopedValidationError } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnDatabase } from 'aws-cdk-lib/aws-glue';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -152,12 +152,12 @@ export class Database extends Resource implements IDatabase {
 
 function validateLocationUri(locationUri: string): void {
   if (locationUri.length < 1 || locationUri.length > 1024) {
-    throw new Error(`locationUri length must be (inclusively) between 1 and 1024, got ${locationUri.length}`);
+    throw new UnscopedValidationError(`locationUri length must be (inclusively) between 1 and 1024, got ${locationUri.length}`);
   }
 }
 
 function validateDescription(description: string): void {
   if (description.length > 2048) {
-    throw new Error(`description length must be less than or equal to 2048, got ${description.length}`);
+    throw new UnscopedValidationError(`description length must be less than or equal to 2048, got ${description.length}`);
   }
 }

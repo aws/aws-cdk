@@ -42,7 +42,7 @@
     "outputPaths": [
      "Reservations.0.Instances.0.IamInstanceProfile.Arn"
     ],
-    "salt": "1751542086993"
+    "salt": "1753282853674"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -166,6 +166,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {

@@ -23,7 +23,7 @@
     "outputPaths": [
      "PipelineExecutionSummaries.0.PipelineExecutionArn"
     ],
-    "salt": "1751313499749"
+    "salt": "1753351146820"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -392,6 +392,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {

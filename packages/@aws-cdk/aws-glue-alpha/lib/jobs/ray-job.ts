@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import { JobType, GlueVersion, WorkerType, Runtime } from '../constants';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { ValidationError } from 'aws-cdk-lib/core';
 
 /**
  * Properties for creating a Ray Glue job
@@ -77,7 +78,7 @@ export class RayJob extends Job {
     };
 
     if (props.workerType && props.workerType !== WorkerType.Z_2X) {
-      throw new Error('Ray jobs only support Z.2X worker type');
+      throw new ValidationError('Ray jobs only support Z.2X worker type', this);
     }
 
     const jobResource = new CfnJob(this, 'Resource', {

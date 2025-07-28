@@ -33,7 +33,7 @@
     "outputPaths": [
      "events.0.message"
     ],
-    "salt": "1752245334681"
+    "salt": "1753447208614"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -157,6 +157,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {
