@@ -248,7 +248,7 @@ export interface MTDProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-cloudfront-distribution-tenantconfig.html
    *
-   * @default - No special tenant configurations.
+   * @default - No special tenant configurations (undefined).
    */
   readonly tenantConfig?: CfnDistribution.TenantConfigProperty;
 }
@@ -364,7 +364,7 @@ export class MTDistribution extends Resource implements IMTDistribution {
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
         webAclId: Lazy.string({ produce: () => this.webAclId }),
         connectionMode: 'tenant-only',
-        tenantConfig: props.tenantConfig ?? {},
+        tenantConfig: props.tenantConfig ?? undefined,
       },
     });
 

@@ -277,6 +277,24 @@ export interface DistributionProps {
    * @default false
    */
   readonly publishAdditionalMetrics?: boolean;
+
+  /**
+   * Is the distribution being created a regular distribution or a multi-tenant distribution.
+   *
+   * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront-readme.html#cloudfront-saas-manager-resources
+   *
+   * @default false
+   */
+  readonly multiTenant?: boolean;
+
+  /**
+   * Configuration for a distribution tenant.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-cloudfront-distribution-tenantconfig.html
+   *
+   * @default - No special tenant configurations (undefined).
+   */
+  readonly tenantConfig?: CfnDistribution.TenantConfigProperty;
 }
 
 /**
@@ -337,6 +355,8 @@ export class Distribution extends Resource implements IDistribution {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    this.validateMultiTenantConfig(props);
+
     if (props.certificate) {
       const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
@@ -393,6 +413,8 @@ export class Distribution extends Resource implements IDistribution {
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
         webAclId: Lazy.string({ produce: () => this.webAclId }),
+        connectionMode: props.multiTenant ? 'tenant-only' : 'direct',
+        tenantConfig: props.tenantConfig ?? undefined,
       },
     });
 
@@ -844,6 +866,26 @@ export class Distribution extends Resource implements IDistribution {
     const validHttpVersions = [HttpVersion.HTTP2, HttpVersion.HTTP2_AND_3];
     if (!validHttpVersions.includes(this.httpVersion)) {
       throw new ValidationError(`'httpVersion' must be ${validHttpVersions.join(' or ')} if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`, this);
+    }
+  }
+
+  private validateMultiTenantConfig(props: DistributionProps) {
+    if (!props.multiTenant) {
+      if (props.tenantConfig) {
+        throw new ValidationError('tenantConfig is not supported for direct distributions', this);
+      }
+    } else {
+      if (props.domainNames) {
+        throw new ValidationError('domainNames may not be configured for multi-tenant distributions', this);
+      } if (props.enableIpv6) {
+        throw new ValidationError('enableIpv6 field is not supported for multi-tenant distributions, please use a connection group to configure IPV6 options', this);
+      } if (props.priceClass) {
+        throw new ValidationError('priceClass may not be configured for multi-tenant distributions', this);
+      } if (props.sslSupportMethod && props.sslSupportMethod == SSLMethod.VIP) {
+        throw new ValidationError( 'invalid SSL Method', this);
+      } if (props.defaultBehavior.smoothStreaming) {
+        throw new ValidationError( 'smoothStreaming not supported by multi-tenant distributions', this);
+      }
     }
   }
 }
