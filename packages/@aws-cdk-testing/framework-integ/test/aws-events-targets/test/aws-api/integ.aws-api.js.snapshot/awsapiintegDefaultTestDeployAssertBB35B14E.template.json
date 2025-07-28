@@ -30,7 +30,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1751560146069"
+    "salt": "1753430970410"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -166,7 +166,7 @@
      "Parameter.Value",
      "Parameter.Value"
     ],
-    "salt": "1751560146070"
+    "salt": "1753430970411"
    },
    "DependsOn": [
     "AwsApiCallEventBridgeputEvents13ba168ed67d6e97ff2c94cc14e4d276"
@@ -460,6 +460,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {
