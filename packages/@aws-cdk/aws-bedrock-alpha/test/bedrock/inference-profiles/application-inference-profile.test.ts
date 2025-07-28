@@ -6,14 +6,21 @@ import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as bedrockAlpha from '../../../bedrock';
 
 describe('ApplicationInferenceProfile', () => {
+  let app: App;
   let stack: core.Stack;
   let foundationModel: bedrockAlpha.IBedrockInvokable;
 
   beforeEach(() => {
-    const app = new App();
+    app = new App();
     stack = new core.Stack(app, 'test-stack');
     foundationModel = bedrockAlpha.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0;
   });
+
+  // Helper function to create a fresh stack for tests that need isolation
+  const createFreshStack = () => {
+    const freshApp = new App();
+    return new core.Stack(freshApp, `teststack${Date.now()}${Math.floor(Math.random() * 1000)}`);
+  };
 
   test('creates application inference profile with foundation model', () => {
     new bedrockAlpha.ApplicationInferenceProfile(stack, 'TestProfile', {
@@ -114,6 +121,218 @@ describe('ApplicationInferenceProfile', () => {
           modelSource: foundationModel,
         });
       }).not.toThrow();
+    });
+
+    describe('name pattern validation', () => {
+      test('accepts valid names with alphanumeric characters', () => {
+        const validNames = [
+          'test123',
+          'MyProfile',
+          'profile1',
+          'A1B2C3',
+        ];
+
+        validNames.forEach((name, index) => {
+          expect(() => {
+            new bedrockAlpha.ApplicationInferenceProfile(stack, `TestProfile${index}`, {
+              applicationInferenceProfileName: name,
+              modelSource: foundationModel,
+            });
+          }).not.toThrow();
+        });
+      });
+
+      test('accepts valid names with spaces', () => {
+        const validNames = [
+          'test profile',
+          'My Profile 123',
+          'profile 1',
+          'A B C',
+        ];
+
+        validNames.forEach((name, index) => {
+          expect(() => {
+            new bedrockAlpha.ApplicationInferenceProfile(stack, `TestProfile${index}`, {
+              applicationInferenceProfileName: name,
+              modelSource: foundationModel,
+            });
+          }).not.toThrow();
+        });
+      });
+
+      test('accepts valid names with underscores', () => {
+        const validNames = [
+          'test_profile',
+          'My_Profile_123',
+          'profile_1',
+          'A_B_C',
+        ];
+
+        validNames.forEach((name, index) => {
+          expect(() => {
+            new bedrockAlpha.ApplicationInferenceProfile(stack, `TestProfile${index}`, {
+              applicationInferenceProfileName: name,
+              modelSource: foundationModel,
+            });
+          }).not.toThrow();
+        });
+      });
+
+      test('accepts valid names with hyphens', () => {
+        const validNames = [
+          'test-profile',
+          'My-Profile-123',
+          'profile-1',
+          'A-B-C',
+        ];
+
+        validNames.forEach((name, index) => {
+          expect(() => {
+            new bedrockAlpha.ApplicationInferenceProfile(stack, `TestProfile${index}`, {
+              applicationInferenceProfileName: name,
+              modelSource: foundationModel,
+            });
+          }).not.toThrow();
+        });
+      });
+
+      test('accepts valid names with mixed separators', () => {
+        const validNames = [
+          'test_profile-123',
+          'My Profile_123',
+          'profile-1 test',
+          'A_B-C 123',
+        ];
+
+        validNames.forEach((name, index) => {
+          expect(() => {
+            new bedrockAlpha.ApplicationInferenceProfile(stack, `TestProfile${index}`, {
+              applicationInferenceProfileName: name,
+              modelSource: foundationModel,
+            });
+          }).not.toThrow();
+        });
+      });
+
+      test('throws error for names starting with space', () => {
+        expect(() => {
+          new bedrockAlpha.ApplicationInferenceProfile(stack, 'TestProfile', {
+            applicationInferenceProfileName: ' test',
+            modelSource: foundationModel,
+          });
+        }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$');
+      });
+
+      test('throws error for names starting with underscore', () => {
+        expect(() => {
+          new bedrockAlpha.ApplicationInferenceProfile(stack, 'TestProfile', {
+            applicationInferenceProfileName: '_test',
+            modelSource: foundationModel,
+          });
+        }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$');
+      });
+
+      test('throws error for names starting with hyphen', () => {
+        expect(() => {
+          new bedrockAlpha.ApplicationInferenceProfile(stack, 'TestProfile', {
+            applicationInferenceProfileName: '-test',
+            modelSource: foundationModel,
+          });
+        }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$');
+      });
+
+      test('throws error for names with invalid characters', () => {
+        const invalidNames = [
+          'test@profile',
+          'test#profile',
+          'test$profile',
+          'test%profile',
+          'test&profile',
+          'test*profile',
+          'test+profile',
+          'test=profile',
+          'test!profile',
+          'test?profile',
+          'test.profile',
+          'test,profile',
+          'test;profile',
+          'test:profile',
+          'test|profile',
+          'test\\profile',
+          'test/profile',
+          'test<profile',
+          'test>profile',
+          'test[profile',
+          'test]profile',
+          'test{profile',
+          'test}profile',
+          'test(profile',
+          'test)profile',
+          'test"profile',
+          "test'profile",
+          'test`profile',
+          'test~profile',
+        ];
+
+        invalidNames.forEach((name, index) => {
+          const freshStack = createFreshStack();
+          expect(() => {
+            new bedrockAlpha.ApplicationInferenceProfile(freshStack, `TestProfile${index}`, {
+              applicationInferenceProfileName: name,
+              modelSource: foundationModel,
+            });
+          }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$');
+        });
+      });
+
+      test('throws error for names ending with space', () => {
+        expect(() => {
+          new bedrockAlpha.ApplicationInferenceProfile(stack, 'TestProfileEndingSpace', {
+            applicationInferenceProfileName: 'test ',
+            modelSource: foundationModel,
+          });
+        }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$');
+      });
+
+      test('throws error for names ending with underscore', () => {
+        expect(() => {
+          new bedrockAlpha.ApplicationInferenceProfile(stack, 'TestProfileEndingUnderscore', {
+            applicationInferenceProfileName: 'test_',
+            modelSource: foundationModel,
+          });
+        }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$');
+      });
+
+      test('throws error for names ending with hyphen', () => {
+        expect(() => {
+          new bedrockAlpha.ApplicationInferenceProfile(stack, 'TestProfileEndingHyphen', {
+            applicationInferenceProfileName: 'test-',
+            modelSource: foundationModel,
+          });
+        }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$');
+      });
+
+      test('throws error for names with consecutive separators', () => {
+        const invalidNames = [
+          'test  profile',
+          'test__profile',
+          'test--profile',
+          'test_ profile',
+          'test- profile',
+          'test _profile',
+          'test -profile',
+        ];
+
+        invalidNames.forEach((name, index) => {
+          const freshStack = createFreshStack();
+          expect(() => {
+            new bedrockAlpha.ApplicationInferenceProfile(freshStack, `TestProfile${index}`, {
+              applicationInferenceProfileName: name,
+              modelSource: foundationModel,
+            });
+          }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$');
+        });
+      });
     });
 
     test('throws error when model source is not provided', () => {

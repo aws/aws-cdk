@@ -107,6 +107,15 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
       public readonly inferenceProfileId = Arn.split(attrs.inferenceProfileArn, ArnFormat.SLASH_RESOURCE_NAME)
         .resourceName!;
       public readonly type = InferenceProfileType.APPLICATION;
+
+      public grantProfileUsage(grantee: IGrantable): Grant {
+        return Grant.addToPrincipal({
+          grantee: grantee,
+          actions: ['bedrock:GetInferenceProfile', 'bedrock:InvokeModel'],
+          resourceArns: [this.inferenceProfileArn],
+          scope: this,
+        });
+      }
     }
 
     return new Import(scope, id);
@@ -125,6 +134,15 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
       public readonly inferenceProfileArn = cfnApplicationInferenceProfile.attrInferenceProfileArn;
       public readonly inferenceProfileId = cfnApplicationInferenceProfile.attrInferenceProfileId;
       public readonly type = InferenceProfileType.APPLICATION;
+
+      public grantProfileUsage(grantee: IGrantable): Grant {
+        return Grant.addToPrincipal({
+          grantee: grantee,
+          actions: ['bedrock:GetInferenceProfile', 'bedrock:InvokeModel'],
+          resourceArns: [this.inferenceProfileArn],
+          scope: this,
+        });
+      }
     })(cfnApplicationInferenceProfile, '@FromCfnApplicationInferenceProfile');
   }
 
@@ -200,21 +218,7 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
     // ------------------------------------------------------
     // Validate props
     // ------------------------------------------------------
-    if (!props.applicationInferenceProfileName || props.applicationInferenceProfileName.trim() === '') {
-      throw new ValidationError('applicationInferenceProfileName is required and cannot be empty', this);
-    }
-
-    if (props.applicationInferenceProfileName.length > 64) {
-      throw new ValidationError('applicationInferenceProfileName cannot exceed 64 characters', this);
-    }
-
-    if (!props.modelSource) {
-      throw new ValidationError('modelSource is required', this);
-    }
-
-    if (props.description !== undefined && props.description.length > 200) {
-      throw new ValidationError('description cannot exceed 200 characters', this);
-    }
+    this.validateProps(props);
 
     // ------------------------------------------------------
     // Set properties
@@ -249,6 +253,43 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
   // ------------------------------------------------------
   // METHODS
   // ------------------------------------------------------
+
+  /**
+   * Validates the properties for creating an Application Inference Profile.
+   *
+   * @param props - The properties to validate
+   * @throws ValidationError if any validation fails
+   */
+  private validateProps(props: ApplicationInferenceProfileProps): void {
+    // Validate applicationInferenceProfileName is provided and not empty
+    if (!props.applicationInferenceProfileName || props.applicationInferenceProfileName.trim() === '') {
+      throw new ValidationError('applicationInferenceProfileName is required and cannot be empty', this);
+    }
+
+    // Validate applicationInferenceProfileName length
+    if (props.applicationInferenceProfileName.length > 64) {
+      throw new ValidationError('applicationInferenceProfileName cannot exceed 64 characters', this);
+    }
+
+    // Validate applicationInferenceProfileName pattern
+    const namePattern = /^[0-9a-zA-Z]([0-9a-zA-Z]|[ _-][0-9a-zA-Z])*$/;
+    if (!namePattern.test(props.applicationInferenceProfileName)) {
+      throw new ValidationError(
+        'applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$',
+        this,
+      );
+    }
+
+    // Validate modelSource is provided
+    if (!props.modelSource) {
+      throw new ValidationError('modelSource is required', this);
+    }
+
+    // Validate description length if provided
+    if (props.description !== undefined && props.description.length > 200) {
+      throw new ValidationError('description cannot exceed 200 characters', this);
+    }
+  }
 
   /**
    * Gives the appropriate policies to invoke and use the application inference profile.

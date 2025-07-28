@@ -41,7 +41,7 @@ export interface IInferenceProfile {
 
   /**
    * Grants appropriate permissions to use the inference profile.
-   * This includes permissions to call bedrock:GetInferenceProfile and bedrock:ListInferenceProfiles.
+   * Each profile type requires different permissions based on its usage pattern.
    *
    * @param grantee - The IAM principal to grant permissions to
    * @returns An IAM Grant object representing the granted permissions
@@ -71,22 +71,15 @@ export abstract class InferenceProfileBase extends Resource implements IInferenc
 
   /**
    * Grants appropriate permissions to use the inference profile.
-   * This method adds the necessary IAM permissions to allow the grantee to:
-   * - Get inference profile details (bedrock:GetInferenceProfile)
-   * - List available inference profiles (bedrock:ListInferenceProfiles)
+   * Each profile type requires different permissions based on its usage pattern:
+   * - Application profiles need bedrock:InvokeModel for direct invocation
+   * - Cross-region profiles need bedrock:InvokeModel* for routing capabilities
    *
    * Note: This does not grant permissions to use the underlying model in the profile.
-   * For model invocation permissions, use the model's grantInvoke method separately.
+   * For comprehensive model invocation permissions, use the grantInvoke method instead.
    *
    * @param grantee - The IAM principal to grant permissions to
    * @returns An IAM Grant object representing the granted permissions
    */
-  public grantProfileUsage(grantee: IGrantable): Grant {
-    return Grant.addToPrincipal({
-      grantee: grantee,
-      actions: ['bedrock:GetInferenceProfile', 'bedrock:ListInferenceProfiles'],
-      resourceArns: [this.inferenceProfileArn],
-      scope: this,
-    });
-  }
+  public abstract grantProfileUsage(grantee: IGrantable): Grant;
 }
