@@ -815,18 +815,34 @@ export class FileSystem extends FileSystemBase {
           const denyAnonymousAccessByDefault = denyAnonymousAccessFlag || this._grantedClient;
           const allowAnonymousAccess = props.allowAnonymousAccess ?? !denyAnonymousAccessByDefault;
           if (!allowAnonymousAccess) {
-            this.addToResourcePolicy(new iam.PolicyStatement({
-              principals: [new iam.AnyPrincipal()],
-              actions: [
-                ClientAction.WRITE,
-                ClientAction.ROOT_ACCESS,
-              ],
-              conditions: {
-                Bool: {
-                  'elasticfilesystem:AccessedViaMountTarget': 'true',
+            if (FeatureFlags.of(this).isEnabled(cxapi.EFS_DEFAULT_ALLOW_CLIENT_MOUNT)) {
+              this.addToResourcePolicy(new iam.PolicyStatement({
+                principals: [new iam.AnyPrincipal()],
+                actions: [
+                  ClientAction.MOUNT,
+                  ClientAction.WRITE,
+                  ClientAction.ROOT_ACCESS,
+                ],
+                conditions: {
+                  Bool: {
+                    'elasticfilesystem:AccessedViaMountTarget': 'true',
+                  },
                 },
-              },
-            }));
+              }));
+            } else {
+              this.addToResourcePolicy(new iam.PolicyStatement({
+                principals: [new iam.AnyPrincipal()],
+                actions: [
+                  ClientAction.WRITE,
+                  ClientAction.ROOT_ACCESS,
+                ],
+                conditions: {
+                  Bool: {
+                    'elasticfilesystem:AccessedViaMountTarget': 'true',
+                  },
+                },
+              }));
+            }
           }
           return this._fileSystemPolicy;
         },

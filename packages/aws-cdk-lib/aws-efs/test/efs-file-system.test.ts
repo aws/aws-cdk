@@ -1148,3 +1148,82 @@ describe('replication configuration', () => {
     }).toThrow('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
   });
 });
+
+describe('test EFS_DEFAULT_ALLOW_CLIENT_MOUNT feature flag', () => {
+  test.each([false, undefined])('FileSystem Policy should not include ClientMount action when flag is %s', (value) => {
+    // WHEN
+    const app = new App({
+      context: {
+        [cxapi.EFS_DEFAULT_ALLOW_CLIENT_MOUNT]: value,
+      },
+    });
+    const customStack = new Stack(app);
+    const customVpc = new ec2.Vpc(customStack, 'VPC');
+    new FileSystem(customStack, 'EfsFileSystem', {
+      vpc: customVpc,
+      allowAnonymousAccess: false,
+    });
+
+    // THEN
+    Template.fromStack(customStack).hasResourceProperties('AWS::EFS::FileSystem', {
+      FileSystemPolicy: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: {
+              AWS: '*',
+            },
+            Action: [
+              'elasticfilesystem:ClientWrite',
+              'elasticfilesystem:ClientRootAccess',
+            ],
+            Condition: {
+              Bool: {
+                'elasticfilesystem:AccessedViaMountTarget': 'true',
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('FileSystem Policy should include ClientMount action when flag is true', () => {
+    // WHEN
+    const app = new App({
+      context: {
+        [cxapi.EFS_DEFAULT_ALLOW_CLIENT_MOUNT]: true,
+      },
+    });
+    const customStack = new Stack(app);
+    const customVpc = new ec2.Vpc(customStack, 'VPC');
+    new FileSystem(customStack, 'EfsFileSystem', {
+      vpc: customVpc,
+      allowAnonymousAccess: false,
+    });
+
+    // THEN
+    Template.fromStack(customStack).hasResourceProperties('AWS::EFS::FileSystem', {
+      FileSystemPolicy: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: {
+              AWS: '*',
+            },
+            Action: [
+              'elasticfilesystem:ClientMount',
+              'elasticfilesystem:ClientWrite',
+              'elasticfilesystem:ClientRootAccess',
+            ],
+            Condition: {
+              Bool: {
+                'elasticfilesystem:AccessedViaMountTarget': 'true',
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+});
