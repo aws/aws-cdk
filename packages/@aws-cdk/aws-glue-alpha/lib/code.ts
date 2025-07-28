@@ -66,7 +66,7 @@ export class AssetCode extends Code {
     super();
 
     if (fs.lstatSync(this.path).isDirectory()) {
-      throw new Error(`Code path ${this.path} is a directory. Only files are supported`);
+      throw new cdk.UnscopedValidationError(`Code path ${this.path} is a directory. Only files are supported`);
     }
   }
 
@@ -78,7 +78,7 @@ export class AssetCode extends Code {
         ...this.options,
       });
     } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
-      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+      throw new cdk.UnscopedValidationError(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
         'Create a new Code instance for every stack.');
     }
     this.asset.grantRead(grantable);

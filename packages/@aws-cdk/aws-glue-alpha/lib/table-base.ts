@@ -1,6 +1,6 @@
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, Fn, IResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib/core';
+import { ArnFormat, Fn, IResource, Lazy, Names, Resource, Stack, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
@@ -270,7 +270,7 @@ export abstract class TableBase extends Resource implements ITable {
   public addPartitionIndex(index: PartitionIndex) {
     const numPartitions = this.partitionIndexCustomResources.length;
     if (numPartitions >= 3) {
-      throw new Error('Maximum number of partition indexes allowed is 3');
+      throw new ValidationError('Maximum number of partition indexes allowed is 3', this);
     }
     this.validatePartitionIndex(index);
 
@@ -316,14 +316,14 @@ export abstract class TableBase extends Resource implements ITable {
 
   private validatePartitionIndex(index: PartitionIndex) {
     if (index.indexName !== undefined && (index.indexName.length < 1 || index.indexName.length > 255)) {
-      throw new Error(`Index name must be between 1 and 255 characters, but got ${index.indexName.length}`);
+      throw new ValidationError(`Index name must be between 1 and 255 characters, but got ${index.indexName.length}`, this);
     }
     if (!this.partitionKeys || this.partitionKeys.length === 0) {
-      throw new Error('The table must have partition keys to create a partition index');
+      throw new ValidationError('The table must have partition keys to create a partition index', this);
     }
     const keyNames = this.partitionKeys.map(pk => pk.name);
     if (!index.keyNames.every(k => keyNames.includes(k))) {
-      throw new Error(`All index keys must also be partition keys. Got ${index.keyNames} but partition key names are ${keyNames}`);
+      throw new ValidationError(`All index keys must also be partition keys. Got ${index.keyNames} but partition key names are ${keyNames}`, this);
     }
   }
 
@@ -357,13 +357,13 @@ export abstract class TableBase extends Resource implements ITable {
 
 function validateSchema(columns: Column[], partitionKeys?: Column[]): void {
   if (columns.length === 0) {
-    throw new Error('you must specify at least one column for the table');
+    throw new UnscopedValidationError('you must specify at least one column for the table');
   }
   // Check there is at least one column and no duplicated column names or partition keys.
   const names = new Set<string>();
   (columns.concat(partitionKeys || [])).forEach(column => {
     if (names.has(column.name)) {
-      throw new Error(`column names and partition keys must be unique, but \'${column.name}\' is duplicated`);
+      throw new UnscopedValidationError(`column names and partition keys must be unique, but \'${column.name}\' is duplicated`);
     }
     names.add(column.name);
   });
