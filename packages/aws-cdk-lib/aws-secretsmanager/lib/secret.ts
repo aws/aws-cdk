@@ -4,7 +4,7 @@ import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import * as secretsmanager from './secretsmanager.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Fn, IResolveContext, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token, TokenComparison, UnscopedValidationError, ValidationError } from '../../core';
+import { ArnFormat, FeatureFlags, Fn, IResolveContext, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretsManagerSecretOptions, SecretValue, Stack, Token, TokenComparison, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -96,6 +96,16 @@ export interface ISecret extends IResource {
    * @returns An attached secret
    */
   attach(target: ISecretAttachmentTarget): ISecret;
+
+  /**
+   * Returns a key which can be used within an AWS CloudFormation dynamic reference to dynamically load this
+   * secret from AWS Secrets Manager
+   *
+   * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/cfn-example_reference-secret.html
+   *
+   * @param options Options
+   */
+  cfnDynamicReferenceKey(options?: SecretsManagerSecretOptions): string;
 }
 
 /**
@@ -359,6 +369,18 @@ abstract class SecretBase extends Resource implements ISecret {
     });
 
     this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
+  }
+
+  /**
+   * Returns a key which can be used within an AWS CloudFormation dynamic reference to dynamically load this
+   * secret from AWS Secrets Manager
+   *
+   * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/cfn-example_reference-secret.html
+   *
+   * @param options Options
+   */
+  cfnDynamicReferenceKey(options: SecretsManagerSecretOptions = {}): string {
+    return SecretValue.cfnDynamicReferenceKey(this.secretArn, options);
   }
 
   public get secretFullArn(): string | undefined { return this.secretArn; }
