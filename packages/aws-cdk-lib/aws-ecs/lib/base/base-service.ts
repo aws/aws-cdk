@@ -761,15 +761,11 @@ export abstract class BaseService extends Resource
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:externalDeploymentController', 'taskDefinition and launchType are blanked out when using external deployment controller.');
     }
 
-    if (props.circuitBreaker
-        && deploymentController
-        && deploymentController.type !== DeploymentControllerType.ECS) {
+    if (props.circuitBreaker && !this.isEcsDeploymentController) {
       Annotations.of(this).addError('Deployment circuit breaker requires the ECS deployment controller.');
     }
 
-    if (props.deploymentAlarms
-      && deploymentController
-      && deploymentController.type !== DeploymentControllerType.ECS) {
+    if (props.deploymentAlarms && !this.isEcsDeploymentController) {
       throw new ValidationError('Deployment alarms requires the ECS deployment controller.', this);
     }
 
@@ -843,8 +839,7 @@ export abstract class BaseService extends Resource
         rollback: props.deploymentAlarms.behavior !== AlarmBehavior.FAIL_ON_ALARM,
       };
     // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
-    } else if ((!props.deploymentController ||
-      props.deploymentController?.type === DeploymentControllerType.ECS) && this.deploymentAlarmsAvailableInRegion()) {
+    } else if (this.isEcsDeploymentController && this.deploymentAlarmsAvailableInRegion()) {
       // Only set default deployment alarms settings when feature flag is not enabled.
       if (!FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM)) {
         this.deploymentAlarms = {
@@ -878,8 +873,8 @@ export abstract class BaseService extends Resource
   }
 
   private renderLifecycleHooks(): CfnService.DeploymentLifecycleHookProperty[] {
-    return this.lifecycleHooks.map((target, index) => {
-      const config = target.bind(this, `Hook${index}`);
+    return this.lifecycleHooks.map((target) => {
+      const config = target.bind(this);
       return {
         hookTargetArn: config.targetArn,
         roleArn: config.role!.roleArn,
@@ -1568,7 +1563,7 @@ export abstract class BaseService extends Resource
       throw new ValidationError('Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.', this);
     }
 
-    const advancedConfiguration = alternateTarget?.bind(this) || undefined;
+    const advancedConfiguration = alternateTarget?.bind(this);
     this.loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
       containerName,

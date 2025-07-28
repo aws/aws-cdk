@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/be28df9e09f080f9ea9aa5e16d969648154dd356a673e352c382094ea3f269a2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3f2de3687de753e01df8af1f3f5db3418f528a660a93dfdd7cb90e7ed75c213f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -630,9 +630,6 @@
               "managedPolicies": [
                 {
                   "managedPolicyArn": "*"
-                },
-                {
-                  "managedPolicyArn": "*"
                 }
               ]
             }
@@ -650,7 +647,7 @@
             "data": "ServiceLBAlternateOptionsRole06C91D94"
           }
         ],
-        "/aws-ecs-blue-green-deployment/Service/Hook0Role": [
+        "/aws-ecs-blue-green-deployment/Service/PreScaleUpRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -685,19 +682,19 @@
             }
           }
         ],
-        "/aws-ecs-blue-green-deployment/Service/Hook0Role/ImportHook0Role": [
+        "/aws-ecs-blue-green-deployment/Service/PreScaleUpRole/ImportPreScaleUpRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-ecs-blue-green-deployment/Service/Hook0Role/Resource": [
+        "/aws-ecs-blue-green-deployment/Service/PreScaleUpRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceHook0RoleACE68A7A"
+            "data": "ServicePreScaleUpRoleD002A553"
           }
         ],
-        "/aws-ecs-blue-green-deployment/Service/Hook0Role/DefaultPolicy": [
+        "/aws-ecs-blue-green-deployment/Service/PreScaleUpRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -727,10 +724,10 @@
             }
           }
         ],
-        "/aws-ecs-blue-green-deployment/Service/Hook0Role/DefaultPolicy/Resource": [
+        "/aws-ecs-blue-green-deployment/Service/PreScaleUpRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceHook0RoleDefaultPolicyD7C31604"
+            "data": "ServicePreScaleUpRoleDefaultPolicyF1032E86"
           }
         ],
         "/aws-ecs-blue-green-deployment/BootstrapVersion": [

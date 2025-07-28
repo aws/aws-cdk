@@ -67,7 +67,7 @@ export interface IDeploymentLifecycleHookTarget {
    * @param scope The construct scope
    * @param id A unique identifier for this binding
    */
-  bind(scope: IConstruct, id?: string): DeploymentLifecycleHookTargetConfig;
+  bind(scope: IConstruct): DeploymentLifecycleHookTargetConfig;
 }
 
 /**
@@ -90,27 +90,37 @@ export interface DeploymentLifecycleLambdaTargetProps {
  * Use an AWS Lambda function as a deployment lifecycle hook target
  */
 export class DeploymentLifecycleLambdaTarget implements IDeploymentLifecycleHookTarget {
+  private _role?: iam.IRole;
+
   constructor(
     private readonly handler: lambda.IFunction,
+    private readonly id: string,
     private readonly props: DeploymentLifecycleLambdaTargetProps,
   ) { }
 
   /**
+   * The IAM role for the deployment lifecycle hook target
+   */
+  public get role(): iam.IRole {
+    return this._role!;
+  }
+
+  /**
    * Bind this target to a deployment lifecycle hook
    */
-  public bind(scope: IConstruct, id?: string): DeploymentLifecycleHookTargetConfig {
+  public bind(scope: IConstruct): DeploymentLifecycleHookTargetConfig {
     // Create role if not provided
-    let role = this.props.role;
-    if (!role) {
-      role = new iam.Role(scope, `${id}Role`, {
+    this._role = this.props.role;
+    if (!this._role) {
+      this._role = new iam.Role(scope, `${this.id}Role`, {
         assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
       });
-      this.handler.grantInvoke(role);
+      this.handler.grantInvoke(this._role);
     }
 
     return {
       targetArn: this.handler.functionArn,
-      role: role,
+      role: this._role,
       lifecycleStages: this.props.lifecycleStages,
     };
   }

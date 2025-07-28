@@ -38,7 +38,7 @@ describe('DeploymentLifecycleHookTarget', () => {
     });
 
     // WHEN
-    const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, {
+    const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
       lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
     });
     service.addLifecycleHook(hookTarget);
@@ -127,7 +127,7 @@ describe('DeploymentLifecycleHookTarget', () => {
     lambdaFunction.grantInvoke(customRole);
 
     // WHEN
-    const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, {
+    const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
       lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
       role: customRole,
     });
@@ -165,7 +165,7 @@ describe('DeploymentLifecycleHookTarget', () => {
     });
 
     // WHEN
-    const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, {
+    const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
       lifecycleStages: [
         ecs.DeploymentLifecycleStage.PRE_SCALE_UP,
         ecs.DeploymentLifecycleStage.POST_SCALE_UP,
@@ -202,7 +202,7 @@ describe('DeploymentLifecycleHookTarget', () => {
       },
     });
 
-    const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, {
+    const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
       lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
     });
 
@@ -226,11 +226,11 @@ describe('DeploymentLifecycleHookTarget', () => {
     });
 
     // WHEN
-    const firstHook = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, {
+    const firstHook = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
       lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
     });
 
-    const secondHook = new ecs.DeploymentLifecycleLambdaTarget(secondLambda, {
+    const secondHook = new ecs.DeploymentLifecycleLambdaTarget(secondLambda, 'PostScaleUpHook', {
       lifecycleStages: [ecs.DeploymentLifecycleStage.POST_SCALE_UP],
     });
 
@@ -266,7 +266,7 @@ describe('DeploymentLifecycleHookTarget', () => {
 
   test('lifecycle hooks can be added during service creation', () => {
     // GIVEN
-    const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, {
+    const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
       lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
     });
 
@@ -297,7 +297,7 @@ describe('DeploymentLifecycleHookTarget', () => {
 
   test('lifecycle hooks cannot be added during service creation with non-ECS deployment controller', () => {
     // GIVEN
-    const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, {
+    const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
       lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
     });
 

@@ -75,7 +75,7 @@ export interface AlternateTargetConfig {
 }
 
 /**
- * Interface for advanced configuration
+ * Interface for configuring alternate target groups for blue/green deployments
  */
 export interface IAlternateTarget {
   /**
@@ -88,7 +88,7 @@ export interface IAlternateTarget {
 }
 
 /**
- * Options for AdvancedConfiguration
+ * Options for AlternateTarget configuration
  */
 export interface AlternateTargetOptions {
   /**
@@ -105,7 +105,7 @@ export interface AlternateTargetOptions {
 }
 
 /**
- * Properties for AdvancedConfiguration
+ * Properties for AlternateTarget configuration
  */
 export interface AlternateTargetProps extends AlternateTargetOptions {
   /**
@@ -126,7 +126,7 @@ export interface AlternateTargetProps extends AlternateTargetOptions {
 }
 
 /**
- * Advanced configuration for load balancer settings
+ * Configuration for alternate target groups used in blue/green deployments with load balancers
  */
 export class AlternateTarget implements IAlternateTarget {
   constructor(private readonly props: AlternateTargetProps) {}
@@ -149,7 +149,6 @@ export class AlternateTarget implements IAlternateTarget {
       assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonECSInfrastructureRolePolicyForLoadBalancers'),
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceRole'),
       ],
     });
 
@@ -157,7 +156,7 @@ export class AlternateTarget implements IAlternateTarget {
       alternateTargetGroupArn: this.props.alternateTargetGroup.targetGroupArn,
       roleArn: role.roleArn,
       productionListenerRule: this.props.productionListener._listenerArn,
-      testListenerRule: this.props.testListener?._listenerArn || undefined,
+      testListenerRule: this.props.testListener?._listenerArn,
     };
 
     return config;

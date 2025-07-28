@@ -609,7 +609,7 @@ describe('Blue/Green Deployment', () => {
       code: lambda.Code.fromInline('exports.handler = async () => { return { hookStatus: "SUCCEEDED" }; }'),
     });
 
-    const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, {
+    const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUp', {
       lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
     });
 
