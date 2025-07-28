@@ -872,7 +872,19 @@ export class Distribution extends Resource implements IDistribution {
   private validateMultiTenantConfig(props: DistributionProps) {
     if (!props.multiTenant) {
       if (props.tenantConfig) {
-        throw new ValidationError('tenantConfig is not supported for regular distributions', this);
+        throw new ValidationError('tenantConfig is not supported for direct distributions', this);
+      }
+    } else {
+      if (props.domainNames) {
+        throw new ValidationError('domainNames may not be configured for multi-tenant distributions', this);
+      } if (props.enableIpv6) {
+        throw new ValidationError('enableIpv6 field is not supported for multi-tenant distributions, please use a connection group to configure IPV6 options', this);
+      } if (props.priceClass) {
+        throw new ValidationError('priceClass may not be configured for multi-tenant distributions', this);
+      } if (props.sslSupportMethod && props.sslSupportMethod == SSLMethod.VIP) {
+        throw new ValidationError( 'invalid SSL Method', this);
+      } if (props.defaultBehavior.smoothStreaming) {
+        throw new ValidationError( 'smoothStreaming not supported by multi-tenant distributions', this);
       }
     }
   }
