@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "aws-ecs-container-port-range/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -8,23 +8,23 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-4416417b": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "022ee54b64ef25824b128371794a289ad766cde609d1afa56db6db8e5e28f77c": {
+    "e29f945222529dd7f3aecda2f2ca8b76e1dc89ddf40d0132ebd88129f6b35f48": {
       "displayName": "aws-ecs-container-port-range Template",
       "source": {
         "path": "aws-ecs-container-port-range.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-dff2c13d": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "022ee54b64ef25824b128371794a289ad766cde609d1afa56db6db8e5e28f77c.json",
+          "objectKey": "e29f945222529dd7f3aecda2f2ca8b76e1dc89ddf40d0132ebd88129f6b35f48.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
