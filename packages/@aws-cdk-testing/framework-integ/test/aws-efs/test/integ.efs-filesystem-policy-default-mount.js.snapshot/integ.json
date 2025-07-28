@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "EfsSimpleMountTest/DefaultTest": {
+      "stacks": [
+        "integ-efs-simple-mount-test"
+      ],
+      "assertionStack": "EfsSimpleMountTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EfsSimpleMountTestDefaultTestDeployAssert0D426C08"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}
