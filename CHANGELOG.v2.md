@@ -14,7 +14,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **custom-resources:** use loggingFormat instead of deprecated logFormat ([#35015](https://github.com/aws/aws-cdk/issues/35015)) ([81fe660](https://github.com/aws/aws-cdk/commit/81fe66029bba42135143874072f16387f7edc741)), closes [#35002](https://github.com/aws/aws-cdk/issues/35002)
 * **logs:** query strings can have multiple stats commands ([#34590](https://github.com/aws/aws-cdk/issues/34590)) ([57ae6f9](https://github.com/aws/aws-cdk/commit/57ae6f92949623d93c73ff23057291ba0f5eb95b)), closes [#34578](https://github.com/aws/aws-cdk/issues/34578) [#34578](https://github.com/aws/aws-cdk/issues/34578)
-* **s3-deployment:** remove .js,.d.ts file from git ([#35069](https://github.com/aws/aws-cdk/issues/35069)) ([6743acb](https://github.com/aws/aws-cdk/commit/6743acb3a1d3304c102d1253c457bfe5e830eccc)), closes [#35066](https://github.com/aws/aws-cdk/issues/35066)
 
 ## [2.207.0](https://github.com/aws/aws-cdk/compare/v2.206.0...v2.207.0) (2025-07-24)
 
