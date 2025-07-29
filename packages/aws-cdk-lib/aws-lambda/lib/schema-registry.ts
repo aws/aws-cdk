@@ -8,7 +8,7 @@ import { IFunction } from './function-base';
  * is formatted before being passed to your Lambda function.
  *
  * @example
- * schemaRegistryConfig: new ConfluentSchemaRegistry({
+ * const schemaRegistryConfig = new ConfluentSchemaRegistry({
  *   // ...
  *   eventRecordFormat: lambda.EventRecordFormat.JSON,
  * }),
