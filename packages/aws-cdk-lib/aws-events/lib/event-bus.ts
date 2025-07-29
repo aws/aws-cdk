@@ -201,7 +201,6 @@ abstract class EventBusBase extends Resource implements IEventBus, iam.IResource
         resources: resourceArns,
         principals: [grantee!.grantPrincipal],
         sid: sid,
-        skipValidation: true,
       });
 
       return iam.Grant.addStatementToResourcePolicy({ ...options, statement, resource: this });
@@ -458,8 +457,7 @@ export class EventBus extends EventBusBase {
     }
 
     // In order to generate new statementIDs for the change in https://github.com/aws/aws-cdk/pull/27340
-    // Name adjusted to follow alphanumeric Statement Id requirements in https://github.com/aws/aws-cdk/pull/34828
-    const statementId = `cdk${statement.sid}`.slice(0, 64);
+    const statementId = `cdk-${statement.sid}`.slice(0, 64);
     statement.sid = statementId;
     const policy = new EventBusPolicy(this, statementId, {
       eventBus: this,

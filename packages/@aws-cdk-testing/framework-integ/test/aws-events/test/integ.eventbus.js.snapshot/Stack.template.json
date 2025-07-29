@@ -53,9 +53,9 @@
        "Arn"
       ]
      },
-     "Sid": "cdk-Statement1"
+     "Sid": "cdkStatement1"
     },
-    "StatementId": "cdk-Statement1"
+    "StatementId": "cdkStatement1"
    }
   },
   "BuscdkStatement2D6A35B77": {
