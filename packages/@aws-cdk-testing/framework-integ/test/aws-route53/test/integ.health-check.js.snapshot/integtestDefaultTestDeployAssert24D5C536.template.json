@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720680926516"
+    "salt": "1745736988489"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -102,6 +102,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "route53:GetHealthCheck"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -125,7 +134,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "eafc02f6925151c95ac6a6ae81a3e36d4cf4e77db52eec8e467ce2a69454a41a.zip"
+     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -164,7 +173,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720680926517"
+    "salt": "1745736988490"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -196,7 +205,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720680926517"
+    "salt": "1745736988491"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -243,7 +252,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720680926517"
+    "salt": "1745736988491"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -294,7 +303,50 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720680926517"
+    "salt": "1745736988491"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallRoute53GetHealthCheck9c4268d031c39633336a64d4d0b4067c": {
+   "Type": "Custom::DeployAssert@SdkCallRoute53GetHealthCheck",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Route53",
+    "api": "GetHealthCheck",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"HealthCheck\":{\"HealthCheckConfig\":{\"Type\":\"RECOVERY_CONTROL\",\"RoutingControlArn\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputFnGetAttRoutingControlRoutingControlArnDB738AE3"
+       },
+       "\",\"Inverted\":false,\"Disabled\":false}}}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "HealthCheckId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckRecoveryControl984D4A84E3A8C585"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1745736988491"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -337,6 +389,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallRoute53GetHealthCheck975176a65fd10720efee025ea51c61a1",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallRoute53GetHealthCheck9c4268d031c39633336a64d4d0b4067c": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRoute53GetHealthCheck9c4268d031c39633336a64d4d0b4067c",
      "assertion"
     ]
    }
@@ -456,6 +516,9 @@
     "value": "nodejs18.x"
    },
    "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
     "value": "nodejs18.x"
    },
    "us-west-1": {

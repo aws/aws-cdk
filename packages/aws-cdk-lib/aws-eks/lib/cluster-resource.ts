@@ -28,6 +28,7 @@ export interface ClusterResourceProps {
   readonly logging?: { [key: string]: [ { [key: string]: any } ] };
   readonly accessconfig?: CfnCluster.AccessConfigProperty;
   readonly remoteNetworkConfig?: CfnCluster.RemoteNetworkConfigProperty;
+  readonly bootstrapSelfManagedAddons?: boolean;
 }
 
 /**
@@ -92,6 +93,7 @@ export class ClusterResource extends Construct {
           logging: props.logging,
           accessConfig: props.accessconfig,
           remoteNetworkConfig: props.remoteNetworkConfig,
+          bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
         },
         AssumeRoleArn: this.adminRole.roleArn,
 
@@ -100,7 +102,7 @@ export class ClusterResource extends Construct {
         // doesn't contain XXX key in object" (see #8276) by incrementing this
         // number, you will effectively cause a "no-op update" to the cluster
         // which will return the new set of attribute.
-        AttributesRevision: 4,
+        AttributesRevision: 5,
       },
     });
 

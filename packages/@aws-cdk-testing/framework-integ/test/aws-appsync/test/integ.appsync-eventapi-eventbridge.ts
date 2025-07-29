@@ -61,7 +61,11 @@ class EventApiEventBridgeStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new EventApiEventBridgeStack(app, 'EventApiEventBridgeStack');
 
 const integTest = new IntegTest(app, 'appsync-eventapi-eventbridge-test', {

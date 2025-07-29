@@ -1,0 +1,13 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "sns-event-rule-target-custom-role/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sns-event-target"
+      ],
+      "assertionStack": "sns-event-rule-target-custom-role/DefaultTest/DeployAssert",
+      "assertionStackName": "snseventruletargetcustomroleDefaultTestDeployAssert83424588"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}

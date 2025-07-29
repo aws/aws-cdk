@@ -1,16 +1,16 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "files": {
-    "41e155db6bb9d5d32db145c10866dda87d86aa93801915fbbe053bd89d2a6e56": {
+    "4a3b84d5e52adc5deb9cc55707ddd3e6d3338d74834a81b3fb1a1b7b669a5dfa": {
       "displayName": "aws-deep-learning-container-build-image Template",
       "source": {
         "path": "aws-deep-learning-container-build-image.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-d2efcbb2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "41e155db6bb9d5d32db145c10866dda87d86aa93801915fbbe053bd89d2a6e56.json",
+          "objectKey": "4a3b84d5e52adc5deb9cc55707ddd3e6d3338d74834a81b3fb1a1b7b669a5dfa.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

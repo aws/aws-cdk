@@ -3,6 +3,7 @@ import * as crypto from 'crypto';
 import * as os from 'os';
 import { AssetStaging } from '../asset-staging';
 import { BundlingOptions } from '../bundling';
+import { ExecutionError } from '../errors';
 
 /**
  * Options for Docker based bundling of assets
@@ -71,6 +72,7 @@ export class AssetBundlingBindMount extends AssetBundlingBase {
         ...(this.options.volumes ?? []),
       ],
       network: this.options.network,
+      platform: this.options.platform,
     });
   }
 }
@@ -189,6 +191,7 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
         this.copyContainerName,
         ...(this.options.volumesFrom ?? []),
       ],
+      platform: this.options.platform,
     });
 
     this.copyOutputTo(this.options.bundleDir);
@@ -226,7 +229,7 @@ export function dockerExec(args: string[], options?: SpawnSyncOptions) {
       return text.toString('utf-8').split('\n').map((line, idx) => `${idx === 0 ? firstLine : padding}${line}`);
     }
 
-    throw new Error([
+    throw new ExecutionError([
       `${prog} exited with ${reason}`,
       ...prependLines('--> STDOUT:  ', proc.stdout ) ?? [],
       ...prependLines('--> STDERR:  ', proc.stderr ) ?? [],

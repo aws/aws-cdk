@@ -1,0 +1,14 @@
+{
+  "enableLookups": true,
+  "version": "41.0.0",
+  "testCases": {
+    "amplify-app-compute-role-integ/DefaultTest": {
+      "stacks": [
+        "cdk-amplify-app-compute-role"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "amplify-app-compute-role-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "amplifyappcomputeroleintegDefaultTestDeployAssert140F931C"
+    }
+  }
+}

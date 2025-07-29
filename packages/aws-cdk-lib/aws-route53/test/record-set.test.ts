@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Template } from '../../assertions';
+import { Annotations, Template } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as origins from '../../aws-cloudfront-origins';
 import * as iam from '../../aws-iam';
@@ -226,6 +226,36 @@ describe('record set', () => {
         EvaluateTargetHealth: true,
       },
     });
+  });
+
+  test('A record with warning ignoring ttl property', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    const target: route53.IAliasRecordTarget = {
+      bind: () => {
+        return {
+          hostedZoneId: 'Z2P70J7EXAMPLE',
+          dnsName: 'foo.example.com',
+          evaluateTargetHealth: true,
+        };
+      },
+    };
+
+    // WHEN
+    new route53.ARecord(zone, 'Alias', {
+      zone,
+      recordName: '_foo',
+      target: route53.RecordTarget.fromAlias(target),
+      ttl: Duration.seconds(15),
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/HostedZone/Alias', 'Ignoring ttl since \'target\' uses an alias target [ack: aws-cdk-lib/aws-route53:ttlIgnored]');
   });
 
   test('A record with health check', () => {

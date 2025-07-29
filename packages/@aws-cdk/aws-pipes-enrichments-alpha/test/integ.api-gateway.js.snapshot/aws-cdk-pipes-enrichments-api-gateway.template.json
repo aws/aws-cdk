@@ -77,7 +77,10 @@
    "DependsOn": [
     "RestApitestGET8B10FED0",
     "RestApitest9059D171"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "RestApiDeploymentStageprod3855DE66": {
    "Type": "AWS::ApiGateway::Stage",

@@ -102,6 +102,12 @@
   "VPCintegtestgatewayEgressOnlyGWEIGW686FDB04": {
    "Type": "AWS::EC2::EgressOnlyInternetGateway",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "CDKIntegTestTagEIGW"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtestgateway2BE01D01",

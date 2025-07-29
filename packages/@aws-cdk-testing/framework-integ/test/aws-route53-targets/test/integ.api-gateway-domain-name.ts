@@ -62,7 +62,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new TestStack(app, 'aws-cdk-apigw-alias-integ');
 new IntegTest(app, 'apigateway-domain-name', {
   testCases: [testCase],

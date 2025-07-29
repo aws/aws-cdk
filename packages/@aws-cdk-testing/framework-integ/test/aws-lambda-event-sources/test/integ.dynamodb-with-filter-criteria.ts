@@ -6,7 +6,11 @@ import { TestFunction } from './test-function';
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { Key } from 'aws-cdk-lib/aws-kms';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'lambda-event-source-filter-criteria-dynamodb');
 

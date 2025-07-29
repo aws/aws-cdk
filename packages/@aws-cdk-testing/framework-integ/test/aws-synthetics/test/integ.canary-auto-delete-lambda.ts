@@ -52,7 +52,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 new IntegTest(app, 'cdk-integ-synthetics-canary-auto-delete', {
   testCases: [new TestStack(app, 'cdk-synthetics-canary-auto-delete')],

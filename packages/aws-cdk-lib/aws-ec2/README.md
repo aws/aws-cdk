@@ -608,6 +608,14 @@ instance around:
 
 [sharing VPCs between stacks](test/integ.share-vpcs.lit.ts)
 
+> Note: If you encounter an error like "Delete canceled. Cannot delete export ..."
+> when using a cross-stack reference to a VPC, it's likely due to CloudFormation
+> export/import constraints. In such cases, it's safer to use Vpc.fromLookup()
+> in the consuming stack instead of directly referencing the VPC object, more details
+> is provided in [Importing an existing VPC](#importing-an-existing-vpc). This
+> avoids creating CloudFormation exports and gives more flexibility, especially
+> when stacks need to be deleted or updated independently.
+
 ### Importing an existing VPC
 
 If your VPC is created outside your CDK app, you can use `Vpc.fromLookup()`.
@@ -763,7 +771,6 @@ let peer = ec2.Peer.ipv4('10.0.0.0/16');
 peer = ec2.Peer.anyIpv4();
 peer = ec2.Peer.ipv6('::0/0');
 peer = ec2.Peer.anyIpv6();
-peer = ec2.Peer.prefixList('pl-12345');
 appFleet.connections.allowTo(peer, ec2.Port.HTTPS, 'Allow outbound HTTPS');
 ```
 
@@ -778,6 +785,15 @@ declare const appFleet: autoscaling.AutoScalingGroup;
 fleet1.connections.allowTo(fleet2, ec2.Port.HTTP, 'Allow between fleets');
 
 appFleet.connections.allowFromAnyIpv4(ec2.Port.HTTP, 'Allow from load balancer');
+```
+
+A managed prefix list is also a connection peer:
+
+``` ts
+declare const appFleet: autoscaling.AutoScalingGroup;
+
+const prefixList = new ec2.PrefixList(this, 'PrefixList', { maxEntries: 10 });
+appFleet.connections.allowFrom(prefixList, ec2.Port.HTTPS);
 ```
 
 ### Port Ranges
@@ -866,7 +882,10 @@ If the security group ID is known and configuration details are unknown, use met
 const sg = ec2.SecurityGroup.fromLookupById(this, 'SecurityGroupLookup', 'sg-1234');
 ```
 
-The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be written to a file called `cdk.context.json`. You must commit this file to source control so that the lookup values are available in non-privileged environments such as CI build steps, and to ensure your template builds are repeatable.
+The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be
+written to a file called `cdk.context.json`. 
+You must commit this file to source control so that the lookup values are available in non-privileged
+environments such as CI build steps, and to ensure your template builds are repeatable.
 
 ### Cross Stack Connections
 
@@ -953,6 +972,13 @@ examples of images you might want to use:
 > `cdk.context.json`, or use the `cdk context` command. For more information, see
 > [Runtime Context](https://docs.aws.amazon.com/cdk/latest/guide/context.html) in the CDK
 > developer guide.
+> 
+> To customize the cache key, use the `additionalCacheKey` parameter.
+> This allows you to have multiple lookups with the same parameters
+> cache their values separately. This can be useful if you want to
+> scope the context variable to a construct (ie, using `additionalCacheKey: this.node.path`),
+> so that if the value in the cache needs to be updated, it does not need to be updated
+> for all constructs at the same time.
 >
 > `MachineImage.genericLinux()`, `MachineImage.genericWindows()` will use `CfnMapping` in
 > an agnostic stack.
@@ -1255,6 +1281,19 @@ endpoint.addRoute('Route', {
 
 Use the `connections` object of the endpoint to allow traffic to other security groups.
 
+To enable [client route enforcement](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-cre.html), configure the `clientRouteEnforcementOptions.enforced` prop to `true`:
+
+```ts fixture=client-vpn
+const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
+  cidr: '10.100.0.0/16',
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
+  clientCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/client-certificate-id',
+  clientRouteEnforcementOptions: {
+    enforced: true,
+  },
+});
+```
+
 ## Instances
 
 You can use the `Instance` class to start up a single EC2 instance. For production setups, we recommend
@@ -1345,6 +1384,31 @@ new ec2.Instance(this, 'LatestAl2023', {
   // context cache is turned on by default
   machineImage: new ec2.AmazonLinux2023ImageSsmParameter(),
 });
+
+// or
+new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023({
+    cachedInContext: true,
+    // creates a distinct context variable for this image, instead of resolving to the same
+    // value anywhere this lookup is done in your app
+    additionalCacheKey: this.node.path,
+  }),
+});
+
+// or
+new ec2.Instance(this, 'LatestAl2023', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C7G, ec2.InstanceSize.LARGE),
+  // context cache is turned on by default
+  machineImage: new ec2.AmazonLinux2023ImageSsmParameter({
+    // creates a distinct context variable for this image, instead of resolving to the same
+    // value anywhere this lookup is done in your app
+    additionalCacheKey: this.node.path,
+  }),
+});
+
 ```
 
 #### Kernel Versions
@@ -1826,6 +1890,25 @@ new ec2.Volume(this, 'Volume', {
   throughput: 125,
 });
 ```
+
+#### Volume initialization rate
+
+When creating an EBS volume from a snapshot, you can specify the [volume initialization rate](https://docs.aws.amazon.com/ebs/latest/userguide/initalize-volume.html#volume-initialization-rate) at which the snapshot blocks are downloaded from Amazon S3 to the volume.
+Specifying a volume initialization rate ensures that the volume is initialized at a predictable and consistent rate after creation.
+
+```ts
+new ec2.Volume(this, 'Volume', {
+  availabilityZone: 'us-east-1a',
+  size: Size.gibibytes(500),
+  snapshotId: 'snap-1234567890abcdef0',
+  volumeInitializationRate: Size.mebibytes(250),
+});
+```
+
+The `volumeInitializationRate` must be:
+
+* Between 100 and 300 MiB/s
+* Only specified when creating a volume from a snapshot
 
 ### Configuring Instance Metadata Service (IMDS)
 

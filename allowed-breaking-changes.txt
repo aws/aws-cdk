@@ -3,6 +3,11 @@
 # and that won't typecheck if Manifest.load() adds a union arm and now returns A | B | C.
 change-return-type:@aws-cdk/cloud-assembly-schema.Manifest.load
 
+# To deal with the same as the above: adding artifact properties weakens the ArtifactManifest type.
+# This is done on purpose though, and doesn't break a real type contract in practice because the type
+# of the `properties` field is already unreliable for exhaustive checking.
+weakened:aws-cdk-lib.cloud_assembly_schema.ArtifactManifest
+
 # Adding any new context queries will add to the ContextQueryProperties type,
 # which changes the signature of MissingContext.
 weakened:@aws-cdk/cloud-assembly-schema.MissingContext
@@ -190,7 +195,7 @@ removed:aws-cdk-lib.aws_ec2.CfnNetworkInterface.enablePrimaryIpv6
 removed:aws-cdk-lib.aws_ec2.CfnNetworkInterfaceAttachment.attrId
 removed:aws-cdk-lib.aws_ec2.CfnNetworkInterfaceProps.enablePrimaryIpv6
 
-# Changed type from GraphqlApi to IGraphqlApi to support import from a different stack, should not matter. 
+# Changed type from GraphqlApi to IGraphqlApi to support import from a different stack, should not matter.
 weakened:aws-cdk-lib.aws_appsync.SourceApi
 
 # Due to https://github.com/aws/aws-cdk/issues/27259, none of these could have worked
@@ -957,3 +962,7 @@ weakened:aws-cdk-lib.cx_api.MetadataEntryResult
 strengthened:aws-cdk-lib.aws_eks.ClusterProps
 strengthened:aws-cdk-lib.aws_eks.FargateClusterProps
 removed:aws-cdk-lib.lambda_layer_kubectl.KubectlLayer
+
+# Fixing the JsonSchema interface to be consistent with JSON Schema spec
+changed-type:aws-cdk-lib.aws_apigateway.JsonSchema.additionalItems
+strengthened:aws-cdk-lib.aws_apigateway.JsonSchema

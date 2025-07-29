@@ -16,6 +16,7 @@ new assets.Asset(stack, 'BundledAsset', {
       `,
     ],
     network: 'host',
+    platform: 'linux/amd64',
   },
 });
 /// !hide

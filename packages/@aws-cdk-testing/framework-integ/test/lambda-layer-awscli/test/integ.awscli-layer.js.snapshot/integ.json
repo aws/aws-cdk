@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "testCases": {
     "lambda-layer-awscli-integ-test/DefaultTest": {
       "stacks": [
@@ -17,5 +17,5 @@
       "assertionStackName": "lambdalayerawscliintegtestDefaultTestDeployAssert8E1153D3"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1020.2"
 }

@@ -8,7 +8,10 @@ import { Metric } from 'aws-cdk-lib/aws-cloudwatch';
 import { LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION } from 'aws-cdk-lib/cx-api';
 
 const app = new App({
-  context: { [LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION]: true },
+  context: {
+    [LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION]: true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
 });
 const stack = new Stack(app, 'lambda-alarm-multiple-stepscalingpolicy');
 

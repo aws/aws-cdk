@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
 import { CfnStage } from '.././index';
 import { Grant, IGrantable } from '../../../aws-iam';
-import { Stack } from '../../../core';
+import { Lazy, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -92,6 +92,12 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    if (props.stageVariables) {
+      Object.entries(props.stageVariables).forEach(([key, value]) => {
+        this.addStageVariable(key, value);
+      });
+    }
+
     this.baseApi = props.webSocketApi;
     this.api = props.webSocketApi;
     this.stageName = this.physicalName;
@@ -106,6 +112,7 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
         detailedMetricsEnabled: props.detailedMetricsEnabled,
       } : undefined,
       description: props.description,
+      stageVariables: Lazy.any({ produce: () => this._stageVariables }),
     });
 
     if (props.domainMapping) {

@@ -4,7 +4,11 @@ import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'integ-lambda-add-subroute-integration');
 
 const httpApi = new HttpApi(stack, 'test-apigwv2-add-subroute-integration');

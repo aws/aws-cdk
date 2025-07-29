@@ -445,6 +445,74 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
 }));
 ```
 
+Set a confluent or self-managed schema registry to de-serialize events from the event source. Note, this will similarly work for `SelfManagedKafkaEventSource` but the example only shows setup for `ManagedKafkaEventSource`.
+
+```ts
+import { ManagedKafkaEventSource, ConfluentSchemaRegistry } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+
+// Your MSK cluster arn
+declare const clusterArn: string;
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic';
+
+const secret = new Secret(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+
+declare const myFunction: lambda.Function;
+myFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn,
+  topic,
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  provisionedPollerConfig: {
+    minimumPollers: 1,
+    maximumPollers: 3,
+  },
+  schemaRegistryConfig: new ConfluentSchemaRegistry({
+    schemaRegistryUri: 'https://example.com',
+    eventRecordFormat: lambda.EventRecordFormat.JSON,
+    authenticationType: lambda.KafkaSchemaRegistryAccessConfigType.BASIC_AUTH,
+    secret: secret,
+    schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.KEY }],
+  }),
+}));
+```
+
+Set Glue schema registry to de-serialize events from the event source. Note, this will similarly work for `SelfManagedKafkaEventSource` but the example only shows setup for `ManagedKafkaEventSource`.
+
+```ts
+import { CfnRegistry } from 'aws-cdk-lib/aws-glue';
+import { ManagedKafkaEventSource, GlueSchemaRegistry } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+// Your MSK cluster arn
+declare const clusterArn: string;
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic';
+
+// Your Glue Schema Registry
+const glueRegistry = new CfnRegistry(this, 'Registry', {
+  name: 'schema-registry',
+  description: 'Schema registry for event source',
+});
+
+declare const myFunction: lambda.Function;
+myFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn,
+  topic,
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  provisionedPollerConfig: {
+    minimumPollers: 1,
+    maximumPollers: 3,
+  },
+  schemaRegistryConfig: new GlueSchemaRegistry({
+    schemaRegistry: glueRegistry,
+    eventRecordFormat: lambda.EventRecordFormat.JSON,
+    schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.KEY }],
+  }),
+}));
+```
+
 ## Roadmap
 
 Eventually, this module will support all the event sources described under

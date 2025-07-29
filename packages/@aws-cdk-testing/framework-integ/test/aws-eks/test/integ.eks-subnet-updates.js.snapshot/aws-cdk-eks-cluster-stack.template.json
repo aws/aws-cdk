@@ -827,7 +827,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 4
+    "AttributesRevision": 5
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
@@ -867,7 +867,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/26b27a60af83d8304488ce00be5c23b3e0d3e7cb996b8366e647749907d7368f.json"
+       "/18b736d47aba82e5d154f6040915f83afe912b5e838de16c03f91449fc4e116b.json"
       ]
      ]
     }
@@ -905,7 +905,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/3351b088fc0ac36ec214f056ef38d204a1c6799d97d683ea0912abf2eec0a142.json"
+       "/2e6f05469f53db8f302efb72af088e0b884d1a1b6e19d2a073b1a03cd4a92c21.json"
       ]
      ]
     }
@@ -959,6 +959,9 @@
    "ap-southeast-5": {
     "value": "nodejs22.x"
    },
+   "ap-southeast-6": {
+    "value": "nodejs22.x"
+   },
    "ap-southeast-7": {
     "value": "nodejs22.x"
    },
@@ -999,6 +1002,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

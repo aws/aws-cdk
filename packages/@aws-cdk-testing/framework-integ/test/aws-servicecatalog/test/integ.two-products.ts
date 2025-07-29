@@ -83,7 +83,11 @@ class TestAssetProductStack2 extends servicecatalog.ProductStack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new PortfolioStack(app, 'integ-servicecatalog-two-products', {
   env: {
     account: process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT,

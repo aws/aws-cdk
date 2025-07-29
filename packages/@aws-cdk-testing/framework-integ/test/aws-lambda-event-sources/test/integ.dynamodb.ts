@@ -29,6 +29,10 @@ class DynamoEventSourceTest extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 new DynamoEventSourceTest(app, 'lambda-event-source-dynamodb');
 app.synth();

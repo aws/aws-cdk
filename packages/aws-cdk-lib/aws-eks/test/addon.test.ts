@@ -13,7 +13,7 @@ describe('Addon', () => {
     stack = new Stack(app, 'Stack');
     cluster = new Cluster(stack, 'Cluster', {
       kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
-      version: KubernetesVersion.V1_32,
+      version: KubernetesVersion.V1_33,
     });
   });
 
@@ -72,6 +72,26 @@ describe('Addon', () => {
         Ref: 'Cluster9EE0221C',
       },
       PreserveOnDelete: false,
+    });
+  });
+
+  test('create a new Addon with configurationValues', () => {
+    // WHEN
+    new Addon(stack, 'TestAddonWithPreserveOnDelete', {
+      addonName: 'test-addon',
+      cluster,
+      configurationValues: {
+        replicaCount: 2,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Addon', {
+      AddonName: 'test-addon',
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      ConfigurationValues: '{\"replicaCount\":2}',
     });
   });
 

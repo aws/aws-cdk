@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "ec2-deploy-action-ssm-managed-node-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node"
+      ],
+      "assertionStack": "ec2-deploy-action-ssm-managed-node-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "ec2deployactionssmmanagednodeintegDefaultTestDeployAssert57618968"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

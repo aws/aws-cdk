@@ -402,6 +402,15 @@ describe('delivery stream', () => {
     expect(deliveryStream.grantPrincipal).toBeInstanceOf(iam.Role);
   });
 
+  test('multiple calls to grantPrincipal should return the same instance of IAM role', () => {
+    const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream Multiple', {
+      destination: mockS3Destination,
+    });
+    const principal = deliveryStream.grantPrincipal;
+    expect(() => deliveryStream.grantPrincipal).not.toThrow();
+    expect(deliveryStream.grantPrincipal).toBe(principal);
+  });
+
   describe('metric methods provide a Metric with configured and attached properties', () => {
     let deliveryStream: firehose.DeliveryStream;
 
