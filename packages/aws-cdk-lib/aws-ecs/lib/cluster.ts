@@ -365,7 +365,6 @@ export class Cluster extends Resource implements ICluster {
       resources: ['*'],
       actions: ['kms:GenerateDataKeyWithoutPlaintext'],
       conditions: clusterConditions,
-      skipValidation: true,
     }));
     key.addToResourcePolicy(new PolicyStatement({
       sid: 'Allow grant creation permission for Fargate tasks.',
@@ -378,7 +377,6 @@ export class Cluster extends Resource implements ICluster {
           'kms:GrantOperations': ['Decrypt'],
         },
       },
-      skipValidation: true,
     }));
   }
 
