@@ -10,5 +10,5 @@
       "assertionStackName": "cdkintegs3bucketautodeleteobjectsDefaultTestDeployAssert7EEB3F44"
     }
   },
-  "minimumCliVersion": "2.1020.1"
+  "minimumCliVersion": "2.1020.2"
 }
