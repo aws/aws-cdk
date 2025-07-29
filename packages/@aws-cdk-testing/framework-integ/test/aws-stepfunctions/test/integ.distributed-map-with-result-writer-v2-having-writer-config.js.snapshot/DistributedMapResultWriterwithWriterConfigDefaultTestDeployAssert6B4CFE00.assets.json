@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96": {
       "source": {
@@ -7,23 +7,23 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-ad46d999": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "ce055cdcc8692d84eae9fd401df2ddf0f4c76bf8159407d2edc18a15162b38a6": {
+    "b262e83b2ba7b4b62bb06a4f70270fc15970a718d6cda2ce6b6daa02738b5267": {
       "displayName": "DistributedMapResultWriterwithWriterConfigDefaultTestDeployAssert6B4CFE00 Template",
       "source": {
         "path": "DistributedMapResultWriterwithWriterConfigDefaultTestDeployAssert6B4CFE00.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-ae80295a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ce055cdcc8692d84eae9fd401df2ddf0f4c76bf8159407d2edc18a15162b38a6.json",
+          "objectKey": "b262e83b2ba7b4b62bb06a4f70270fc15970a718d6cda2ce6b6daa02738b5267.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

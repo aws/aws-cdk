@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/38e73d818b4f783475734168835e72ae4d627c8535086eae3478da7ac41555f3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b170897f360de14993652a51265552d114ef708b71c933e204b9fdaef4ae4b12.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -897,10 +897,7 @@
         "/integ-ecs-windows-server-ami/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "TaskDef54694570"
           }
         ],
         "/integ-ecs-windows-server-ami/EC2Service": [
@@ -1462,5 +1459,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1022.0"
+  "minimumCliVersion": "2.1023.0"
 }

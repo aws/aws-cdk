@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/01d86c9ca82600b6c8dea22a3e4da5964ab34bf9f30b06ca5f7deea404ea4146.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fc53434c18eb0bd4e3db2eb65dadbf41a6b9183c3837a7daf82ef9325f5d5bd7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -316,9 +316,9 @@
               "runtime": "*",
               "handler": "*",
               "timeout": "*",
-              "logGroup": "*",
               "logFormat": "*",
               "applicationLogLevelV2": "FATAL",
+              "logGroup": "*",
               "vpc": "*",
               "vpcSubnets": "*",
               "securityGroups": "*",
@@ -598,9 +598,9 @@
               "runtime": "*",
               "handler": "*",
               "timeout": "*",
-              "logGroup": "*",
               "logFormat": "*",
               "applicationLogLevelV2": "FATAL",
+              "logGroup": "*",
               "vpc": "*",
               "vpcSubnets": "*",
               "securityGroups": "*",
@@ -855,9 +855,9 @@
               "runtime": "*",
               "handler": "*",
               "timeout": "*",
-              "logGroup": "*",
               "logFormat": "*",
               "applicationLogLevelV2": "FATAL",
+              "logGroup": "*",
               "vpc": "*",
               "vpcSubnets": "*",
               "securityGroups": "*",
@@ -1604,6 +1604,10 @@
           "@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask": {
             "recommendedValue": true,
             "explanation": "When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model."
+          },
+          "@aws-cdk/core:explicitStackTags": {
+            "recommendedValue": true,
+            "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
           },
           "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
             "userValue": false,
