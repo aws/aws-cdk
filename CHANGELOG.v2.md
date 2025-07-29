@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Features
 
 * update L1 CloudFormation resource definitions ([#35054](https://github.com/aws/aws-cdk/issues/35054)) ([a2b3e78](https://github.com/aws/aws-cdk/commit/a2b3e788fdedff02ce2abd8998c37d4da5a5dc2d))
+* **region-info:** add support for region ap-southeast-6 ([#35036](https://github.com/aws/aws-cdk/pull/35036))
 
 
 ### Bug Fixes
