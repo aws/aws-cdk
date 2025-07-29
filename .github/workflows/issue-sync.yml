@@ -1,0 +1,64 @@
+name: Issue Sync
+
+on: [issues, issue_comment]
+
+jobs:
+  sync-issue:
+    name: Sync Issue with Project Board
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+          cache-dependency-path: 'yarn.lock'
+
+      # Cache node_modules
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        id: cache-modules
+        with:
+          path: |
+            tools/@aws-cdk/project-sync/node_modules
+            node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Install dependencies
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: |
+          cd tools/@aws-cdk/project-sync
+          yarn install --frozen-lockfile
+
+      # Cache build output
+      - name: Cache build output
+        uses: actions/cache@v4
+        id: cache-build
+        with:
+          path: |
+            tools/@aws-cdk/project-sync/lib/*.js
+            tools/@aws-cdk/project-sync/bin/*.js
+          key: ${{ runner.os }}-build-${{ hashFiles('tools/@aws-cdk/project-sync/lib', 'tools/@aws-cdk/project-sync/bin') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+
+      - name: Build project-sync
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: |
+          cd tools/@aws-cdk/project-sync
+          yarn build
+
+      - name: Run issue-sync
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_SYNC_GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPOSITORY: ${{ github.repository }}
+          PROJECT_NUMBER: ${{ vars.PROJECT_NUMBER || 302 }}
+        run: |
+          cd tools/@aws-cdk/project-sync
+          node bin/issue-sync.js
