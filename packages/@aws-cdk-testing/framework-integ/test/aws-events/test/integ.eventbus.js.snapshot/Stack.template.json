@@ -20,7 +20,7 @@
     "Name": "StackBusAA0A1E4B"
    }
   },
-  "BuscdkStatement1D7D87B9D": {
+  "BuscdkStatement17E48E06E": {
    "Type": "AWS::Events::EventBusPolicy",
    "Properties": {
     "EventBusName": {
@@ -58,7 +58,7 @@
     "StatementId": "cdk-Statement1"
    }
   },
-  "BuscdkStatement2341A5B58": {
+  "BuscdkStatement2D6A35B77": {
    "Type": "AWS::Events::EventBusPolicy",
    "Properties": {
     "EventBusName": {
