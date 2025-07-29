@@ -586,95 +586,76 @@ myFunction.addEventSource(new SelfManagedKafkaEventSource({
 }));
 ```
 
-### Complete Example with IAM Permissions
+### Example with IAM Permissions for Schema Registry
 
-For a more comprehensive example that includes IAM policy configuration, here's a full CDK stack for MSK with AWS Glue Schema Registry:
+For MSK with AWS Glue Schema Registry, you'll need proper IAM permissions:
 
 ```ts
-import {
-  ManagedKafkaEventSource,
-  GlueSchemaRegistry,
-} from 'aws-cdk-lib/aws-lambda-event-sources';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { App, StackProps, Stack } from 'aws-cdk-lib';
+import { ManagedKafkaEventSource, GlueSchemaRegistry } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { CfnRegistry } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
-export class MskGlueSchemaRegistryStack extends Stack {
-  constructor(scope: App, id: string, props?: StackProps) {
-    super(scope, id, props);
+// Create a Lambda execution role
+const executionRole = new iam.Role(this, 'GlueFunctionExecutionRole', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
 
-    // Create a Lambda execution role
-    const executionRole = new iam.Role(this, 'GlueFunctionExecutionRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
+// Add basic Lambda execution permissions
+executionRole.addManagedPolicy(
+  iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')
+);
 
-    // Add basic Lambda execution permissions
-    executionRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
-    );
+// Create a Lambda function with the custom role
+const lambdaFunction = new lambda.Function(this, 'GlueFunction', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline(`exports.handler = async (event) => {
+    console.log('event:', JSON.stringify(event, undefined, 2));
+    return { event };
+  }`),
+  role: executionRole,
+});
 
-    // Create a Lambda function with the custom role
-    const testLambdaFunction = new lambda.Function(this, 'GlueFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromInline(`exports.handler = async (event) => {
-        console.log('event:', JSON.stringify(event, undefined, 2));
-        return { event };
-      }`),
-      role: executionRole,
-    });
+// Define MSK cluster ARN
+const clusterArn = 'arn:aws:kafka:us-west-2:xxxxxxxxxxxx:cluster/test-cluster-id';
 
-    // Define MSK cluster ARN (replace with your actual ARN)
-    // Note: This example uses IAM authentication which must be enabled on the MSK cluster
-    const clusterArn = 'arn:aws:kafka:us-west-2:xxxxxxxxxxxx:cluster/test/e7d32588-046c-4b6f-81c6-8857b8349430-10';
+// Add MSK execution permissions
+executionRole.addManagedPolicy(
+  iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaMSKExecutionRole')
+);
 
-    // Add managed policy for MSK execution
-    executionRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaMSKExecutionRole'),
-    );
+// Create a Glue Schema Registry
+const glueRegistry = new CfnRegistry(this, 'SchemaRegistry', {
+  name: 'my-schema-registry',
+  description: 'Schema registry for MSK integration',
+});
 
-    // Create a Glue Schema Registry
-    const glueRegistry = new CfnRegistry(this, 'SchemaRegistry', {
-      name: 'msk-glue-test-schema-registry',
-      description: 'Schema registry for MSK integration tests',
-    });
+// Add Schema Registry permissions
+executionRole.addToPolicy(new iam.PolicyStatement({
+  actions: ['glue:GetRegistry'],
+  resources: [glueRegistry.attrArn],
+}));
 
-    // Add Glue Schema Registry permissions to the Lambda execution role
-    executionRole.addToPolicy(new iam.PolicyStatement({
-      actions: ['glue:GetRegistry'],
-      resources: [glueRegistry.attrArn],
-    }));
+executionRole.addToPolicy(new iam.PolicyStatement({
+  actions: ['glue:GetSchemaVersion'],
+  resources: ['*'],
+}));
 
-    executionRole.addToPolicy(new iam.PolicyStatement({
-      actions: ['glue:GetSchemaVersion'],
-      resources: ['*'], // You may want to restrict this in production
-    }));
-
-    // MSK with Glue Schema Registry
-    testLambdaFunction.addEventSource(new ManagedKafkaEventSource({
-      clusterArn: clusterArn,
-      topic: 'test-topic-msk-glue',
-      consumerGroupId: 'test-consumer-group-msk-glue',
-      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-      provisionedPollerConfig: {
-        minimumPollers: 1,
-        maximumPollers: 3,
-      },
-      schemaRegistryConfig: new GlueSchemaRegistry({
-        schemaRegistry: glueRegistry,
-        eventRecordFormat: lambda.EventRecordFormat.JSON,
-        schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.KEY }],
-      }),
-    }));
-  }
-}
-
-// Create the app and stacks
-const app = new App();
-const glueStack = new MskGlueSchemaRegistryStack(app, 'lambda-event-source-glue-schema-registry');
-
-app.synth();
+// Add the event source with Schema Registry
+lambdaFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn,
+  topic: 'my-topic',
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  provisionedPollerConfig: {
+    minimumPollers: 1,
+    maximumPollers: 3,
+  },
+  schemaRegistryConfig: new GlueSchemaRegistry({
+    schemaRegistry: glueRegistry,
+    eventRecordFormat: lambda.EventRecordFormat.JSON,
+    schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.KEY }],
+  }),
+}));
 ```
 
 ## Roadmap
