@@ -1003,12 +1003,6 @@ const cfnProfile = new aws_bedrock_cfn.CfnApplicationInferenceProfile(this, 'Cfn
 // Import the L1 construct as an L2 ApplicationInferenceProfile
 const importedFromCfn = bedrock.ApplicationInferenceProfile.fromCfnApplicationInferenceProfile(cfnProfile);
 
-// The imported profile can now be used like any other ApplicationInferenceProfile
-const agent = new bedrock.Agent(this, 'Agent', {
-  foundationModel: importedFromCfn,
-  instruction: 'You are a helpful assistant using an imported inference profile.',
-});
-
 // Grant permissions to use the imported profile
 const lambdaFunction = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.PYTHON_3_11,
