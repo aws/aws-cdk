@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "cdk-integ-lambda-nodejs-modules-mts.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8a7efd02ae584d1ff2ec735bd5b2ee78a7813ea685699f99278b1c59656eb6d9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/09738f51746dbb04972639415f30126e2485a8a4f41ff5c8ce2b0554ee997c37.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,45 @@
         "cdk-integ-lambda-nodejs-modules-mts.assets"
       ],
       "metadata": {
+        "/cdk-integ-lambda-nodejs-modules-mts/mts-entry": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "entry": "*",
+              "runtime": "*",
+              "code": "*",
+              "handler": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "entry": "*"
+            }
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-modules-mts/mts-entry/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-modules-mts/mts-entry/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-integ-lambda-nodejs-modules-mts/mts-entry/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -44,6 +83,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "mtsentry7ED0C613"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-modules-mts/mts-entry/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-modules-mts/mts-entry/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mtsentryLogGroup624C43DA"
           }
         ],
         "/cdk-integ-lambda-nodejs-modules-mts/Exports/Output{\"Ref\":\"mtsentry7ED0C613\"}": [
@@ -84,7 +137,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b77a7d3890c132d6d53be73b6b06c140f4e3918ff724d203137115a4e5f49986.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/23cac2a8eea3eb54538d98aa85536f47b4d5a5de15feb7ac70b25ba66743afa1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -100,6 +153,45 @@
         "cdk-integ-lambda-nodejs-modules-cts.assets"
       ],
       "metadata": {
+        "/cdk-integ-lambda-nodejs-modules-cts/cts-entry": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "entry": "*",
+              "runtime": "*",
+              "code": "*",
+              "handler": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "entry": "*"
+            }
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-modules-cts/cts-entry/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-modules-cts/cts-entry/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-integ-lambda-nodejs-modules-cts/cts-entry/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -110,6 +202,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ctsentryFE3E09C5"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-modules-cts/cts-entry/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-modules-cts/cts-entry/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ctsentryLogGroupAA8AFE78"
           }
         ],
         "/cdk-integ-lambda-nodejs-modules-cts/Exports/Output{\"Ref\":\"ctsentryFE3E09C5\"}": [
@@ -150,7 +256,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b90318730c706534e1d60414f2f1d7d92fd841c270a54f56adf156a6fa65f712.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/135b1f8395416c368c24ce82fb7290c60f3b76bf16c879bf0b2e422c346be263.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -166,6 +272,45 @@
         "cdk-integ-lambda-nodejs-modules-cjs.assets"
       ],
       "metadata": {
+        "/cdk-integ-lambda-nodejs-modules-cjs/cjs-entry": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "entry": "*",
+              "runtime": "*",
+              "code": "*",
+              "handler": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "entry": "*"
+            }
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-modules-cjs/cjs-entry/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-modules-cjs/cjs-entry/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-integ-lambda-nodejs-modules-cjs/cjs-entry/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -176,6 +321,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "cjsentry87844059"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-modules-cjs/cjs-entry/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-modules-cjs/cjs-entry/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cjsentryLogGroupEFB1A826"
           }
         ],
         "/cdk-integ-lambda-nodejs-modules-cjs/Exports/Output{\"Ref\":\"cjsentry87844059\"}": [
@@ -216,7 +375,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ff0d17a0fe6307540a8a7ad5c6e1630f73894df4f934335762e68e086e9c16a4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6989ac1d05d0ef07f3c6f5c2269df6a6d13016bd1a8ae00eb68f296fb0891016.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -235,6 +394,20 @@
         "LambdaModulesDefaultTestDeployAssert7E536B97.assets"
       ],
       "metadata": {
+        "/LambdaModules/DefaultTest/DeployAssert/LambdaInvokeab00724fde60c789ed33b78cb44044f9/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/LambdaModules/DefaultTest/DeployAssert/LambdaInvokeab00724fde60c789ed33b78cb44044f9/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -271,6 +444,20 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/LambdaModules/DefaultTest/DeployAssert/LambdaInvoke3d6d691a590234a399aac26bf978ebd1/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/LambdaModules/DefaultTest/DeployAssert/LambdaInvoke3d6d691a590234a399aac26bf978ebd1/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -287,6 +474,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsLambdaInvoke3d6d691a590234a399aac26bf978ebd1"
+          }
+        ],
+        "/LambdaModules/DefaultTest/DeployAssert/LambdaInvoke1f8a896da0f461988a245593326b79ed/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/LambdaModules/DefaultTest/DeployAssert/LambdaInvoke1f8a896da0f461988a245593326b79ed/Default/Default": [
@@ -328,5 +529,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

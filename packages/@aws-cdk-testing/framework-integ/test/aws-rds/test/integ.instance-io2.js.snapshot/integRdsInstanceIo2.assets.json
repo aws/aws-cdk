@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "integRdsInstanceIo2/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "502ed6cd29a595d61c68e00db5b82343c8f42b269e795f4eefe1cafd7f5a6bda": {
+    "4b1440676fde7479c2c6688d15833aab169b22cc9cbd21769f5c5d833b11dee9": {
       "displayName": "integRdsInstanceIo2 Template",
       "source": {
         "path": "integRdsInstanceIo2.template.json",
@@ -24,7 +24,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "502ed6cd29a595d61c68e00db5b82343c8f42b269e795f4eefe1cafd7f5a6bda.json",
+          "objectKey": "4b1440676fde7479c2c6688d15833aab169b22cc9cbd21769f5c5d833b11dee9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

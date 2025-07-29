@@ -50,6 +50,25 @@
     "AssetActionGroupFunctionServiceRoleC53BA920"
    ]
   },
+  "AssetActionGroupFunctionLogGroup3638096F": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "AssetActionGroupFunction98EC70AB"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "AssetActionGroupFunctionLambdaInvocationPolicyc8dfda1d62217f4203A2E0A7": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
@@ -116,6 +135,25 @@
     "InlineActionGroupFunctionServiceRole5543D9A3"
    ]
   },
+  "InlineActionGroupFunctionLogGroup58BAB9BB": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "InlineActionGroupFunction566CD00A"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "InlineActionGroupFunctionLambdaInvocationPolicyc8dfda1d62217f42CE4591EF": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
@@ -181,6 +219,25 @@
    "DependsOn": [
     "S3ActionGroupFunctionServiceRole7E4C5A58"
    ]
+  },
+  "S3ActionGroupFunctionLogGroup79BCEE92": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "S3ActionGroupFunctionA4648C25"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "S3ActionGroupFunctionLambdaInvocationPolicyc8dfda1d62217f4210E2D0E3": {
    "Type": "AWS::Lambda::Permission",
@@ -359,7 +416,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b8ab94266984268614c3fb2824a1c3a55395746c48b28c003b08bc1d08688f3e.zip"
+     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -551,6 +608,25 @@
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
    ]
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CLogGroup817B64E9": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "ApiSchemaAgentRole636AC572": {
    "Type": "AWS::IAM::Role",
@@ -979,6 +1055,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

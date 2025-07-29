@@ -793,6 +793,10 @@
      }
     },
     "Handler": "framework.onEvent",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
     "Role": {
      "Fn::GetAtt": [
       "MyProviderframeworkonEventServiceRole8761E48D",
@@ -1045,6 +1049,10 @@
      }
     },
     "Handler": "framework.isComplete",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
     "Role": {
      "Fn::GetAtt": [
       "MyProviderframeworkisCompleteServiceRoleD0A6BA11",
@@ -1297,6 +1305,10 @@
      }
     },
     "Handler": "framework.onTimeout",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
     "Role": {
      "Fn::GetAtt": [
       "MyProviderframeworkonTimeoutServiceRole1A667BCA",
@@ -1472,22 +1484,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": [
-        "logs:CreateLogDelivery",
-        "logs:CreateLogStream",
-        "logs:DeleteLogDelivery",
-        "logs:DescribeLogGroups",
-        "logs:DescribeResourcePolicies",
-        "logs:GetLogDelivery",
-        "logs:ListLogDeliveries",
-        "logs:PutLogEvents",
-        "logs:PutResourcePolicy",
-        "logs:UpdateLogDelivery"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -1524,22 +1520,6 @@
        "\"}}}"
       ]
      ]
-    },
-    "LoggingConfiguration": {
-     "Destinations": [
-      {
-       "CloudWatchLogsLogGroup": {
-        "LogGroupArn": {
-         "Fn::GetAtt": [
-          "LogGroupF5B46931",
-          "Arn"
-         ]
-        }
-       }
-      }
-     ],
-     "IncludeExecutionData": true,
-     "Level": "ALL"
     },
     "RoleArn": {
      "Fn::GetAtt": [
@@ -1707,6 +1687,10 @@
      }
     },
     "Handler": "framework.onEvent",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
     "Role": {
      "Fn::GetAtt": [
       "MyProviderWithoutLogOptionsframeworkonEventServiceRole42DA2E00",
@@ -1959,6 +1943,10 @@
      }
     },
     "Handler": "framework.isComplete",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
     "Role": {
      "Fn::GetAtt": [
       "MyProviderWithoutLogOptionsframeworkisCompleteServiceRole731825B1",
@@ -2211,6 +2199,10 @@
      }
     },
     "Handler": "framework.onTimeout",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
     "Role": {
      "Fn::GetAtt": [
       "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleC30A6329",
@@ -2386,22 +2378,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": [
-        "logs:CreateLogDelivery",
-        "logs:CreateLogStream",
-        "logs:DeleteLogDelivery",
-        "logs:DescribeLogGroups",
-        "logs:DescribeResourcePolicies",
-        "logs:GetLogDelivery",
-        "logs:ListLogDeliveries",
-        "logs:PutLogEvents",
-        "logs:PutResourcePolicy",
-        "logs:UpdateLogDelivery"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -2413,26 +2389,6 @@
      }
     ]
    }
-  },
-  "MyProviderWithoutLogOptionswaiterstatemachineLogGroupEDE99092": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/vendedlogs/states/waiter-state-machine-",
-       {
-        "Ref": "MyProviderWithoutLogOptionsframeworkisComplete81812F27"
-       },
-       "-c8a3b241fa9e878008e2b0db7c52069f261a806506"
-      ]
-     ]
-    },
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
   },
   "MyProviderWithoutLogOptionswaiterstatemachine72EFA8B2": {
    "Type": "AWS::StepFunctions::StateMachine",
@@ -2458,22 +2414,6 @@
        "\"}}}"
       ]
      ]
-    },
-    "LoggingConfiguration": {
-     "Destinations": [
-      {
-       "CloudWatchLogsLogGroup": {
-        "LogGroupArn": {
-         "Fn::GetAtt": [
-          "MyProviderWithoutLogOptionswaiterstatemachineLogGroupEDE99092",
-          "Arn"
-         ]
-        }
-       }
-      }
-     ],
-     "IncludeExecutionData": false,
-     "Level": "ERROR"
     },
     "RoleArn": {
      "Fn::GetAtt": [
@@ -2569,6 +2509,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {
