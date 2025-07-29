@@ -987,3 +987,34 @@ const importedProfile = bedrock.ApplicationInferenceProfile.fromApplicationInfer
   }
 );
 ```
+
+You can also import an application inference profile from an existing L1 CloudFormation construct:
+
+```ts fixture=default
+// Create or reference an existing L1 CfnApplicationInferenceProfile
+const cfnProfile = new aws_bedrock_cfn.CfnApplicationInferenceProfile(this, 'CfnProfile', {
+  inferenceProfileName: 'my-cfn-profile',
+  modelSource: {
+    copyFrom: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0.invokableArn,
+  },
+  description: 'Profile created via L1 construct',
+});
+
+// Import the L1 construct as an L2 ApplicationInferenceProfile
+const importedFromCfn = bedrock.ApplicationInferenceProfile.fromCfnApplicationInferenceProfile(cfnProfile);
+
+// The imported profile can now be used like any other ApplicationInferenceProfile
+const agent = new bedrock.Agent(this, 'Agent', {
+  foundationModel: importedFromCfn,
+  instruction: 'You are a helpful assistant using an imported inference profile.',
+});
+
+// Grant permissions to use the imported profile
+const lambdaFunction = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.PYTHON_3_11,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('def handler(event, context): return "Hello"'),
+});
+
+importedFromCfn.grantProfileUsage(lambdaFunction);
+```

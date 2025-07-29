@@ -214,13 +214,73 @@ describe('ApplicationInferenceProfile', () => {
         });
       });
 
+      test('accepts valid names with colons', () => {
+        const validNames = [
+          'test:profile',
+          'My:Profile:123',
+          'profile:1',
+          'A:B:C',
+          'test: profile',
+          'profile :test',
+        ];
+
+        validNames.forEach((name, index) => {
+          expect(() => {
+            new bedrockAlpha.ApplicationInferenceProfile(stack, `TestProfileColon${index}`, {
+              applicationInferenceProfileName: name,
+              modelSource: foundationModel,
+            });
+          }).not.toThrow();
+        });
+      });
+
+      test('accepts valid names with periods', () => {
+        const validNames = [
+          'test.profile',
+          'My.Profile.123',
+          'profile.1',
+          'A.B.C',
+          'test. profile',
+          'profile .test',
+        ];
+
+        validNames.forEach((name, index) => {
+          expect(() => {
+            new bedrockAlpha.ApplicationInferenceProfile(stack, `TestProfilePeriod${index}`, {
+              applicationInferenceProfileName: name,
+              modelSource: foundationModel,
+            });
+          }).not.toThrow();
+        });
+      });
+
+      test('accepts valid names with colons and periods mixed', () => {
+        const validNames = [
+          'test:profile.123',
+          'My.Profile:123',
+          'profile.1:test',
+          'A:B.C',
+          'test: profile.name',
+          'profile .test:name',
+        ];
+
+        validNames.forEach((name, index) => {
+          expect(() => {
+            new bedrockAlpha.ApplicationInferenceProfile(stack, `TestProfileMixed${index}`, {
+              applicationInferenceProfileName: name,
+              modelSource: foundationModel,
+            });
+          }).not.toThrow();
+        });
+      });
+
       test('throws error for names starting with space', () => {
         expect(() => {
           new bedrockAlpha.ApplicationInferenceProfile(stack, 'TestProfile', {
             applicationInferenceProfileName: ' test',
             modelSource: foundationModel,
           });
-        }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$');
+        }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z:.][ _-]?)+$');
       });
 
       test('throws error for names starting with underscore', () => {
@@ -229,7 +289,7 @@ describe('ApplicationInferenceProfile', () => {
             applicationInferenceProfileName: '_test',
             modelSource: foundationModel,
           });
-        }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$');
+        }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z:.][ _-]?)+$');
       });
 
       test('throws error for names starting with hyphen', () => {
@@ -238,7 +298,7 @@ describe('ApplicationInferenceProfile', () => {
             applicationInferenceProfileName: '-test',
             modelSource: foundationModel,
           });
-        }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$');
+        }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z:.][ _-]?)+$');
       });
 
       test('throws error for names with invalid characters', () => {
@@ -253,10 +313,8 @@ describe('ApplicationInferenceProfile', () => {
           'test=profile',
           'test!profile',
           'test?profile',
-          'test.profile',
           'test,profile',
           'test;profile',
-          'test:profile',
           'test|profile',
           'test\\profile',
           'test/profile',
@@ -281,35 +339,35 @@ describe('ApplicationInferenceProfile', () => {
               applicationInferenceProfileName: name,
               modelSource: foundationModel,
             });
-          }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$');
+          }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z:.][ _-]?)+$');
         });
       });
 
-      test('throws error for names ending with space', () => {
+      test('accepts names ending with space', () => {
         expect(() => {
           new bedrockAlpha.ApplicationInferenceProfile(stack, 'TestProfileEndingSpace', {
             applicationInferenceProfileName: 'test ',
             modelSource: foundationModel,
           });
-        }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$');
+        }).not.toThrow();
       });
 
-      test('throws error for names ending with underscore', () => {
+      test('accepts names ending with underscore', () => {
         expect(() => {
           new bedrockAlpha.ApplicationInferenceProfile(stack, 'TestProfileEndingUnderscore', {
             applicationInferenceProfileName: 'test_',
             modelSource: foundationModel,
           });
-        }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$');
+        }).not.toThrow();
       });
 
-      test('throws error for names ending with hyphen', () => {
+      test('accepts names ending with hyphen', () => {
         expect(() => {
           new bedrockAlpha.ApplicationInferenceProfile(stack, 'TestProfileEndingHyphen', {
             applicationInferenceProfileName: 'test-',
             modelSource: foundationModel,
           });
-        }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$');
+        }).not.toThrow();
       });
 
       test('throws error for names with consecutive separators', () => {
@@ -330,7 +388,7 @@ describe('ApplicationInferenceProfile', () => {
               applicationInferenceProfileName: name,
               modelSource: foundationModel,
             });
-          }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z][ _-]?)+$');
+          }).toThrow('applicationInferenceProfileName must match pattern ^([0-9a-zA-Z:.][ _-]?)+$');
         });
       });
     });
@@ -493,6 +551,30 @@ describe('ApplicationInferenceProfile', () => {
       expect(importedProfile.inferenceProfileArn).toBe(cfnProfile.attrInferenceProfileArn);
       expect(importedProfile.inferenceProfileId).toBe(cfnProfile.attrInferenceProfileId);
       expect(importedProfile.type).toBe(bedrockAlpha.InferenceProfileType.APPLICATION);
+    });
+
+    test('fromCfnApplicationInferenceProfile returns same instance when called multiple times (singleton pattern)', () => {
+      const cfnProfile = new bedrock.CfnApplicationInferenceProfile(stack, 'CfnProfile', {
+        inferenceProfileName: 'test-profile',
+        modelSource: {
+          copyFrom: foundationModel.invokableArn,
+        },
+      });
+
+      // Call the method multiple times
+      const importedProfile1 = bedrockAlpha.ApplicationInferenceProfile.fromCfnApplicationInferenceProfile(cfnProfile);
+      const importedProfile2 = bedrockAlpha.ApplicationInferenceProfile.fromCfnApplicationInferenceProfile(cfnProfile);
+      const importedProfile3 = bedrockAlpha.ApplicationInferenceProfile.fromCfnApplicationInferenceProfile(cfnProfile);
+
+      // All calls should return the exact same instance (reference equality)
+      expect(importedProfile1).toBe(importedProfile2);
+      expect(importedProfile2).toBe(importedProfile3);
+      expect(importedProfile1).toBe(importedProfile3);
+
+      // Verify the properties are still correct
+      expect(importedProfile1.inferenceProfileArn).toBe(cfnProfile.attrInferenceProfileArn);
+      expect(importedProfile1.inferenceProfileId).toBe(cfnProfile.attrInferenceProfileId);
+      expect(importedProfile1.type).toBe(bedrockAlpha.InferenceProfileType.APPLICATION);
     });
   });
 
