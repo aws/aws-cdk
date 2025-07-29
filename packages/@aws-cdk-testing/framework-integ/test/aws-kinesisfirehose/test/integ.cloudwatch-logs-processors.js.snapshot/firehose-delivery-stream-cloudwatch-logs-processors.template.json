@@ -204,6 +204,25 @@
     "DataProcessorFunctionServiceRole12E05500"
    ]
   },
+  "DataProcessorFunctionLogGroup81545B5B": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "DataProcessorFunctionAD472B9A"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "DecompressCloudWatchLogsEntryS3DestinationRoleD9A9D5C0": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -651,6 +670,9 @@
    "ap-southeast-5": {
     "value": "nodejs22.x"
    },
+   "ap-southeast-6": {
+    "value": "nodejs22.x"
+   },
    "ap-southeast-7": {
     "value": "nodejs22.x"
    },
@@ -691,6 +713,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {
@@ -745,6 +770,9 @@
    },
    "ap-east-1": {
     "FirehoseCidrBlock": "18.162.221.32/27"
+   },
+   "ap-east-2": {
+    "FirehoseCidrBlock": "43.212.53.160/27"
    },
    "ap-northeast-1": {
     "FirehoseCidrBlock": "13.113.196.224/27"
