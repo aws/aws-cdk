@@ -21,7 +21,7 @@
      "pipeline.name",
      "pipeline.pipelineType"
     ],
-    "salt": "1751299333595"
+    "salt": "1753448849540"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -145,6 +145,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {
