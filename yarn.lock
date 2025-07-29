@@ -74,7 +74,7 @@
     "@aws-cdk/service-spec-types" "^0.0.153"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/cloud-assembly-schema@^45.0.0":
+"@aws-cdk/cloud-assembly-schema@^45.2.0":
   version "45.2.0"
   resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-45.2.0.tgz#bd4bf1e16189a2d424b9ab503db48ca9732325b1"
   integrity sha512-5TTUkGHQ+nfuUGwKA8/Yraxb+JdNUh4np24qk/VHXmrCMq+M6HfmGWfhcg/QlHA2S5P3YIamfYHdQAB4uSNLAg==
