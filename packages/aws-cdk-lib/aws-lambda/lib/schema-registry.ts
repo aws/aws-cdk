@@ -57,7 +57,7 @@ export class EventRecordFormat {
  * This enum specifies the supported authentication types for Schema Registry integration.
  *
  * @example
- * schemaRegistryConfig: new ConfluentSchemaRegistry({
+ * const schemaRegistryConfig = new ConfluentSchemaRegistry({
  *   // ...
  *   authenticationType: lambda.KafkaSchemaRegistryAccessConfigType.BASIC_AUTH,
  *   secret: secret,
