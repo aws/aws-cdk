@@ -2231,14 +2231,15 @@ and Stack tags must be configured explicitly on the Stack object.
 
 *When enabled, EFS will allow clients to mount and access the filesystem by default*
 
-Flag type: New default behavior
+Flag type: Backwards incompatible bugfix
 
 When this feature flag is enabled, EFS will add read-only, write, and root access permissions to clients
 accessing the filesystem via mount target by default. Without this flag, only WRITE and ROOT_ACCESS
 permissions are granted.
 This resolves an issue where clients could have permission to write to the filesystem but were unable to
-properly mount it, leading to access problems. By automatically including the mount permission alongside
+properly mount it, leading to access problems. By automatically including the read-only permission alongside
 the existing write and root access permissions, clients can fully interact with the EFS resources as expected.
+
 
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
