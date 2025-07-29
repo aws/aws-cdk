@@ -199,7 +199,6 @@ the name `Namespace/MetricName`.
 
 You can expose a metric on a metric filter by calling the `MetricFilter.metric()` API.
 This has a default of `statistic = 'avg'` if the statistic is not set in the `props`.
-Additionally, if the metric filter was created with a dimension map, those dimensions will be included in the metric.
 
 ```ts
 declare const logGroup: logs.LogGroup;

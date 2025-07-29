@@ -27,7 +27,7 @@
      "Message": "\"Hello, world!\""
     },
     "flattenResponse": "false",
-    "salt": "1751313180324"
+    "salt": "1753450055515"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -150,7 +150,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1751313180324"
+    "salt": "1753450055516"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -441,6 +441,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {

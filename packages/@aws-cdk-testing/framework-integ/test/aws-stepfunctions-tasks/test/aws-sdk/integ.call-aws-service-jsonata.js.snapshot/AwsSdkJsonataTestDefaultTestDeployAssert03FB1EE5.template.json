@@ -30,7 +30,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1751311746650"
+    "salt": "1753366470253"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -143,7 +143,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1751311746651"
+    "salt": "1753366470254"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -188,6 +188,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {

@@ -32,7 +32,7 @@
      "ContentType": "\"text/plain\""
     },
     "flattenResponse": "false",
-    "salt": "1751315268478"
+    "salt": "1753356664035"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -274,7 +274,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
+     "S3Key": "1bf478116a59c3d8e069e12fe42948c11b5d5233fca90d2f2b3ec9fcd695025b.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -388,7 +388,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
+     "S3Key": "1bf478116a59c3d8e069e12fe42948c11b5d5233fca90d2f2b3ec9fcd695025b.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -438,7 +438,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
+     "S3Key": "1bf478116a59c3d8e069e12fe42948c11b5d5233fca90d2f2b3ec9fcd695025b.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -482,7 +482,7 @@
      "ContentType": "\"text/plain\""
     },
     "flattenResponse": "false",
-    "salt": "1751315268479"
+    "salt": "1753356664039"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectf67b079a7e3170ad24db70d762cb2a33",
@@ -667,7 +667,7 @@
      "Key": "\"test-object-1\""
     },
     "flattenResponse": "false",
-    "salt": "1751315268479"
+    "salt": "1753356664040"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectfd7386581587666c486938de1b2cb61b",
@@ -852,7 +852,7 @@
      "Key": "\"test-object-2\""
     },
     "flattenResponse": "false",
-    "salt": "1751315268480"
+    "salt": "1753356664042"
    },
    "DependsOn": [
     "AwsApiCallS3getObject5b57bd574e4391fa52ae5f2280e0f6e4",
@@ -1047,6 +1047,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {

@@ -35,7 +35,7 @@
      "DomainConfig.AccessPolicies.Options.Statement.0.Action",
      "DomainConfig.AccessPolicies.Options.Statement.0.Resource"
     ],
-    "salt": "1751560139768"
+    "salt": "1753364985634"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -159,6 +159,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {

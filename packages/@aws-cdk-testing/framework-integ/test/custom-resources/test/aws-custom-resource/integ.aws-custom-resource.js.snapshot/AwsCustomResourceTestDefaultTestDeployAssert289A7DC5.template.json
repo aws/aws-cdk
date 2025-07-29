@@ -24,7 +24,7 @@
      ]
     },
     "flattenResponse": "false",
-    "salt": "1751560131656"
+    "salt": "1753357825748"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -148,6 +148,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {

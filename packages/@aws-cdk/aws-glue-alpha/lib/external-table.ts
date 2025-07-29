@@ -6,6 +6,7 @@ import { Column } from './schema';
 import { PartitionIndex, TableBase, TableBaseProps } from './table-base';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { ValidationError } from 'aws-cdk-lib';
 
 export interface ExternalTableProps extends TableBaseProps {
   /**
@@ -90,7 +91,7 @@ export class ExternalTable extends TableBase {
           },
           parameters: props.storageParameters ? props.storageParameters.reduce((acc, param) => {
             if (param.key in acc) {
-              throw new Error(`Duplicate storage parameter key: ${param.key}`);
+              throw new ValidationError(`Duplicate storage parameter key: ${param.key}`, this);
             }
             const key = param.key;
             acc[key] = param.value;
