@@ -66,7 +66,7 @@
     "@aws-cdk/service-spec-types" "^0.0.150"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/aws-service-spec@^0.1.87":
+"@aws-cdk/aws-service-spec@^0.1.89":
   version "0.1.89"
   resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.89.tgz#71de593ceaef2f5a875139cfcf7c24ae09f86cb3"
   integrity sha512-024+ai+S7ySY/ipn/JBI6DZwmRPxWP7tITs2eF1rhTTODi+Lp/XeZ0iZvycLCxXICZn+krvBVo1+Jt+uSPWCaw==
@@ -74,7 +74,7 @@
     "@aws-cdk/service-spec-types" "^0.0.155"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/cloud-assembly-schema@^45.0.0":
+"@aws-cdk/cloud-assembly-schema@^45.2.0":
   version "45.2.0"
   resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-45.2.0.tgz#bd4bf1e16189a2d424b9ab503db48ca9732325b1"
   integrity sha512-5TTUkGHQ+nfuUGwKA8/Yraxb+JdNUh4np24qk/VHXmrCMq+M6HfmGWfhcg/QlHA2S5P3YIamfYHdQAB4uSNLAg==
@@ -149,13 +149,6 @@
   version "0.0.150"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.150.tgz#3a42559d9f81663f089b7ac518116c33a726c5ff"
   integrity sha512-s/hDl+Q+ste5xtriLBxKFreH3GfG9YFBsxpvz+oYEjMtc9ILrtVPcUqcU3SonprRdgDNkuB8Kghecp5iRBTgpA==
-  dependencies:
-    "@cdklabs/tskb" "^0.0.3"
-
-"@aws-cdk/service-spec-types@^0.0.153":
-  version "0.0.153"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.153.tgz#fe23190d04f523b6f78d5e50873136b393265600"
-  integrity sha512-VQlCukkOMa+InEIkK25qjKGO5ugzFUHzwST8xe+tjQVqWdyGYpllzqj3Kdns7KBkEOht74wVxJwize2ZlGgXmg==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
@@ -4548,7 +4541,7 @@
   resolved "https://registry.npmjs.org/@types/katex/-/katex-0.16.7.tgz#03ab680ab4fa4fbc6cb46ecf987ecad5d8019868"
   integrity sha512-HMwFiRujE5PjrgwHQ25+bsLJgowjGjm5Z8FVSf0N6PwgJrwxH0QxzHYDcKsTfV3wva0vzrpqMTJS2jXPr5BMEQ==
 
-"@types/lodash@^4.17.18":
+"@types/lodash@^4.17.20":
   version "4.17.20"
   resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.17.20.tgz#1ca77361d7363432d29f5e55950d9ec1e1c6ea93"
   integrity sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==
@@ -4558,15 +4551,10 @@
   resolved "https://registry.npmjs.org/@types/mime-types/-/mime-types-2.1.4.tgz#93a1933e24fed4fb9e4adc5963a63efcbb3317a2"
   integrity sha512-lfU4b34HOri+kAY5UheuFMWPDOI+OPceBSHZKp69gEyTL/mmJ4cnU6Y/rlme3UL3GyOn6Y42hyIEw0/q8sWx5w==
 
-"@types/minimatch@*":
+"@types/minimatch@*", "@types/minimatch@^3.0.3", "@types/minimatch@^5.1.2":
   version "5.1.2"
   resolved "https://registry.npmjs.org/@types/minimatch/-/minimatch-5.1.2.tgz#07508b45797cb81ec3f273011b054cd0755eddca"
   integrity sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==
-
-"@types/minimatch@^3.0.3":
-  version "3.0.5"
-  resolved "https://registry.npmjs.org/@types/minimatch/-/minimatch-3.0.5.tgz#1001cc5e6a3704b83c236027e77f2f58ea010f40"
-  integrity sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==
 
 "@types/minimist@^1.2.0":
   version "1.2.5"
@@ -5626,10 +5614,10 @@ cdk8s-plus-27@2.9.5:
   optionalDependencies:
     backport "8.5.0"
 
-cdk8s@2.69.74:
-  version "2.69.74"
-  resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-2.69.74.tgz#1532071f43d041d0677aa247d961733774acb351"
-  integrity sha512-cG305HuBOGkTaN7nSqcgj7473IL6A9XpNO+uYbkA+nO/5kkhYDPVki5jBfrIhJf1njk+7IGKJUiDGvSQh3w0fg==
+cdk8s@2.69.76:
+  version "2.69.76"
+  resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-2.69.76.tgz#e63b9dc6a584b0ee2eeb7f4bda8934cf0f25d7e0"
+  integrity sha512-vDI/WpgYELMcfaPHds4J7ibKxySgtzSUe2qxtvMd0JEazpJb2XsDp558y9At8QqXPtHkU1bB1k1E0Fe3fPP/gQ==
   dependencies:
     fast-json-patch "^3.1.1"
     follow-redirects "^1.15.9"
@@ -9295,7 +9283,7 @@ jsii-reflect@1.112.0, jsii-reflect@^1.112.0:
     oo-ascii-tree "^1.112.0"
     yargs "^16.2.0"
 
-jsii-rosetta@~5.7.18:
+jsii-rosetta@~5.7.20:
   version "5.7.21"
   resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.7.21.tgz#8678e7941b14b88c7cd52cdce5e9a1ce7d3898ca"
   integrity sha512-82aphmOJvM7nrcxdIaLfaEBFRHmmdm5HFyrc4wUFTcefEE8RUqBBVdTbJmwTiN0fMXDI3fMs0ijOE17zvHfjUA==
@@ -9314,7 +9302,7 @@ jsii-rosetta@~5.7.18:
     workerpool "^6.5.1"
     yargs "^17.7.2"
 
-jsii@~5.7.0, jsii@~5.7.18:
+jsii@~5.7.0, jsii@~5.7.20:
   version "5.7.20"
   resolved "https://registry.npmjs.org/jsii/-/jsii-5.7.20.tgz#07fd014b81b97ab0a6dc55966cea7eb25417d613"
   integrity sha512-ENBzEazKe4Mc++1hXHF6Auf0cSXffGPZjKgAANo8aBUN3UBkyZ2qfw3Kt4CzqE4RnLmxglMDZOBhauG/4AAlvg==
@@ -9513,7 +9501,7 @@ lambda-tester@^4.0.1:
     uuid "^3.3.3"
     vandium-utils "^2.0.0"
 
-lerna@^8.2.2:
+lerna@^8.2.3:
   version "8.2.3"
   resolved "https://registry.npmjs.org/lerna/-/lerna-8.2.3.tgz#0a9c07eda4cfac84a480b3e66915189ccfb5bd2c"
   integrity sha512-rmuDU+92eWUnnyaPg3Ise339pTxF+r2hu8ky/soCfbGpUoW4kCwsDza3P/LtQJWrKwZWHcosEitfYvxGUWZ16A==
