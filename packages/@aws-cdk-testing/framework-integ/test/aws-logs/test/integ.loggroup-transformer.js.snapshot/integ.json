@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "transformer-create/DefaultTest": {
+      "stacks": [
+        "aws-cdk-transformer-integ"
+      ],
+      "assertionStack": "transformer-create/DefaultTest/DeployAssert",
+      "assertionStackName": "transformercreateDefaultTestDeployAssertB915E804"
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

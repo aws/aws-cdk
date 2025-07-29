@@ -171,6 +171,7 @@ export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
   'ap-southeast-2': '763104351884',
   'ap-southeast-3': '907027046896',
   'ap-southeast-4': '457447274322',
+  'ap-southeast-6': '633930458069',
   'ca-central-1': '763104351884',
   'cn-north-1': '727897471807',
   'cn-northwest-1': '727897471807',
@@ -205,6 +206,7 @@ export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
   'ap-southeast-1': '840364872350',
   'ap-southeast-2': '840364872350',
   'ap-southeast-3': '909464085924',
+  'ap-southeast-6': '637423513210',
   'ca-central-1': '840364872350',
   'cn-north-1': '919366029133',
   'cn-northwest-1': '919830735681',
@@ -1156,6 +1158,7 @@ export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS: { [key: string]: any } = {
 export const FIREHOSE_CIDR_BLOCKS: { [region: string]: string } = {
   'af-south-1': '13.244.121.224',
   'ap-east-1': '18.162.221.32',
+  'ap-east-2': '43.212.53.160',
   'ap-northeast-1': '13.113.196.224',
   'ap-northeast-2': '13.209.1.64',
   'ap-northeast-3': '13.208.177.192',
