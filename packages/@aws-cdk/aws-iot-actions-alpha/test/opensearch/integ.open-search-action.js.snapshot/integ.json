@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "testCases": {
     "iot-opensearch-action-integ-test/DefaultTest": {
       "stacks": [
@@ -16,5 +16,5 @@
       "assertionStackName": "iotopensearchactionintegtestDefaultTestDeployAssertD02B4332"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1020.2"
 }

@@ -310,6 +310,20 @@ _cdk.json_
 }
 ```
 
+* `@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal`
+
+Enable grant methods on imported KMS Aliases to apply permissions scoped by the alias using the `kms:ResourceAliases` condition key. When this flag is disabled, grant* methods on `Alias.fromAliasName` remain no-ops to preserve existing behavior.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal": true
+  }
+}
+```
+
 * `@aws-cdk/aws-eks:nodegroupNameAttribute`
 
 When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix.

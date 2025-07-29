@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "ec2-deploy-action-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codepipeline-ec2-deploy"
+      ],
+      "assertionStack": "ec2-deploy-action-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "ec2deployactionintegDefaultTestDeployAssert9BE1FE4E"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

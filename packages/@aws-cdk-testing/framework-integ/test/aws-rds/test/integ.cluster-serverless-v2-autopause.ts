@@ -1,0 +1,27 @@
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { App, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import * as rds from 'aws-cdk-lib/aws-rds';
+import { ClusterInstance } from 'aws-cdk-lib/aws-rds';
+import { Construct } from 'constructs';
+
+export class TestStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+    const vpc = new Vpc(this, 'Integ-VPC');
+    new rds.DatabaseCluster(this, 'Integ-Cluster', {
+      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_08_0 }),
+      serverlessV2MaxCapacity: 1,
+      serverlessV2MinCapacity: 0,
+      serverlessV2AutoPauseDuration: Duration.hours(1),
+      writer: ClusterInstance.serverlessV2('writer'),
+      removalPolicy: RemovalPolicy.DESTROY,
+      vpc: vpc,
+    });
+  }
+}
+
+const app = new App();
+new IntegTest(app, 'integ-test-autopause', {
+  testCases: [new TestStack(app, 'integ-aurora-serverlessv2-cluster-autopause')],
+});

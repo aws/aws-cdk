@@ -7,6 +7,7 @@ import { CfnCondition } from '../cfn-condition';
 import { Fn } from '../cfn-fn';
 import { Aws } from '../cfn-pseudo';
 import { CfnResource } from '../cfn-resource';
+import { AssumptionError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import { Lazy } from '../lazy';
 import { Stack } from '../stack';
@@ -200,7 +201,7 @@ function prefixEncodeTrie(trie: Trie) {
 function setGzipOperatingSystemToUnknown(gzipBuffer: Buffer) {
   // check that this is indeed a gzip buffer (https://datatracker.ietf.org/doc/html/rfc1952#page-6)
   if (gzipBuffer[0] !== 0x1f || gzipBuffer[1] !== 0x8b) {
-    throw new Error('Expecting a gzip buffer (must start with 0x1f8b)');
+    throw new AssumptionError('Expecting a gzip buffer (must start with 0x1f8b)');
   }
 
   gzipBuffer[9] = 255;

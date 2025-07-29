@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { Annotations } from './annotations';
 import { CfnRefElement } from './cfn-element';
 import { Fn } from './cfn-fn';
+import { UnscopedValidationError, ValidationError } from './errors';
 import { IResolvable, IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { Token } from './token';
@@ -54,7 +55,7 @@ export class CfnMapping extends CfnRefElement {
    */
   public setValue(key1: string, key2: string, value: any) {
     if ([key1, key2].some(k => ['__proto__', 'constructor'].includes(k))) {
-      throw new Error('Cannot use \'__proto__\' or \'constructor\' as keys');
+      throw new ValidationError('Cannot use \'__proto__\' or \'constructor\' as keys', this);
     }
 
     this.validateAlphanumeric(key2);
@@ -76,14 +77,14 @@ export class CfnMapping extends CfnRefElement {
     if (!Token.isUnresolved(key1)) {
       if (!(key1 in this.mapping)) {
         if (defaultValue === undefined) {
-          throw new Error(`Mapping doesn't contain top-level key '${key1}'`);
+          throw new ValidationError(`Mapping doesn't contain top-level key '${key1}'`, this);
         } else {
           notInMap = true;
         }
       } else if (!Token.isUnresolved(key2)) {
         if (!(key2 in this.mapping[key1])) {
           if (defaultValue === undefined) {
-            throw new Error(`Mapping doesn't contain second-level key '${key2}'`);
+            throw new ValidationError(`Mapping doesn't contain second-level key '${key2}'`, this);
           } else {
             notInMap = true;
           }
@@ -138,7 +139,7 @@ export class CfnMapping extends CfnRefElement {
   private validateAlphanumeric(this: void, value: any) {
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
     if (value.match(/[^a-zA-Z0-9]/g)) {
-      throw new Error(`Attribute name '${value}' must contain only alphanumeric characters.`);
+      throw new UnscopedValidationError(`Attribute name '${value}' must contain only alphanumeric characters.`);
     }
   }
 }

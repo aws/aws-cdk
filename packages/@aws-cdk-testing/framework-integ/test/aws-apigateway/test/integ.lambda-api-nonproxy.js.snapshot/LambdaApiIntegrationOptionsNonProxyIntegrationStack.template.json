@@ -117,7 +117,10 @@
     "lambdarestapiproxyANYC900233F",
     "lambdarestapiproxyB0E963B7",
     "lambdarestapiANYB9BB3FB2"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "lambdarestapiDeploymentStageprodA05F84EA": {
    "Type": "AWS::ApiGateway::Stage",

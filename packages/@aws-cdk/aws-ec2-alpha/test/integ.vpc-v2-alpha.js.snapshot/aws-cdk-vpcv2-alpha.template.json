@@ -192,6 +192,12 @@
   "VPCintegtest1EgressOnlyGWEIGW440911B4": {
    "Type": "AWS::EC2::EgressOnlyInternetGateway",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",

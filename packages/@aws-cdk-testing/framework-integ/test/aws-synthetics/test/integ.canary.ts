@@ -113,6 +113,7 @@ const selenium40 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_4_0
 const selenium41 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_4_1);
 const selenium50 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_5_0);
 const selenium51 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1);
+const selenium60 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_6_0);
 
 const test = new IntegTest(app, 'IntegCanaryTest', {
   testCases: [stack],
@@ -140,6 +141,7 @@ const test = new IntegTest(app, 'IntegCanaryTest', {
   selenium41,
   selenium50,
   selenium51,
+  selenium60,
 ].forEach((canary) => test.assertions
   .awsApiCall('Synthetics', 'getCanaryRuns', {
     Name: canary.canaryName,

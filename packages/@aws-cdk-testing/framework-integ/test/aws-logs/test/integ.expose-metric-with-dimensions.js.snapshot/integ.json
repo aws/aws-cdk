@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "aws-cdk-expose-metric-with-dimensions-integ/ExposeMetricWithDimensionsTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-expose-metric-with-dimensions-integ"
+      ],
+      "assertionStack": "aws-cdk-expose-metric-with-dimensions-integ/ExposeMetricWithDimensionsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkexposemetricwithdimensionsintegExposeMetricWithDimensionsTestDefaultTestDeployAssert42449B59"
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}

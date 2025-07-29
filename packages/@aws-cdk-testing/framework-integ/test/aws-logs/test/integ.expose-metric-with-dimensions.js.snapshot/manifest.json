@@ -1,0 +1,182 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "awscdkexposemetricwithdimensionsintegExposeMetricWithDimensionsTestDefaultTestDeployAssert42449B59.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awscdkexposemetricwithdimensionsintegExposeMetricWithDimensionsTestDefaultTestDeployAssert42449B59.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awscdkexposemetricwithdimensionsintegExposeMetricWithDimensionsTestDefaultTestDeployAssert42449B59": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awscdkexposemetricwithdimensionsintegExposeMetricWithDimensionsTestDefaultTestDeployAssert42449B59.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "awscdkexposemetricwithdimensionsintegExposeMetricWithDimensionsTestDefaultTestDeployAssert42449B59.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "awscdkexposemetricwithdimensionsintegExposeMetricWithDimensionsTestDefaultTestDeployAssert42449B59.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-expose-metric-with-dimensions-integ/ExposeMetricWithDimensionsTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-expose-metric-with-dimensions-integ/ExposeMetricWithDimensionsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-expose-metric-with-dimensions-integ/ExposeMetricWithDimensionsTest/DefaultTest/DeployAssert"
+    },
+    "aws-cdk-expose-metric-with-dimensions-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-expose-metric-with-dimensions-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-expose-metric-with-dimensions-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-expose-metric-with-dimensions-integ.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/29580ff3632143bf0335562f6d1b427bc4d07338f2e0a2286abeaa96de2fc932.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-expose-metric-with-dimensions-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-expose-metric-with-dimensions-integ.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-expose-metric-with-dimensions-integ/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-expose-metric-with-dimensions-integ/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogGroupF5B46931"
+          }
+        ],
+        "/aws-cdk-expose-metric-with-dimensions-integ/MetricFilter": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroup": "*",
+              "metricName": "*",
+              "metricNamespace": "*",
+              "filterPattern": {},
+              "metricValue": "*",
+              "dimensions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "metric": []
+            }
+          }
+        ],
+        "/aws-cdk-expose-metric-with-dimensions-integ/MetricFilter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MetricFilter1B93B6E5"
+          }
+        ],
+        "/aws-cdk-expose-metric-with-dimensions-integ/Dashboard": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "dashboardName": "*",
+              "widgets": [
+                [
+                  {
+                    "warnings": "*",
+                    "warningsV2": "*",
+                    "width": "*",
+                    "height": "*"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addWidgets": [
+                {
+                  "warnings": "*",
+                  "warningsV2": "*",
+                  "width": "*",
+                  "height": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-expose-metric-with-dimensions-integ/Dashboard/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Dashboard9E4231ED"
+          }
+        ],
+        "/aws-cdk-expose-metric-with-dimensions-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-expose-metric-with-dimensions-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-expose-metric-with-dimensions-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}

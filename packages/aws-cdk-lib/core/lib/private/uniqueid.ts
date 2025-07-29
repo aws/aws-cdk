@@ -1,3 +1,4 @@
+import { UnscopedValidationError } from '../errors';
 import { unresolved } from './encoding';
 import { md5hash } from './md5';
 
@@ -33,13 +34,13 @@ export function makeUniqueId(components: string[]) {
   components = components.filter(x => x !== HIDDEN_ID);
 
   if (components.length === 0) {
-    throw new Error('Unable to calculate a unique id for an empty set of components');
+    throw new UnscopedValidationError('Unable to calculate a unique id for an empty set of components');
   }
 
   // Lazy require in order to break a module dependency cycle
   const unresolvedTokens = components.filter(c => unresolved(c));
   if (unresolvedTokens.length > 0) {
-    throw new Error(`ID components may not include unresolved tokens: ${unresolvedTokens.join(',')}`);
+    throw new UnscopedValidationError(`ID components may not include unresolved tokens: ${unresolvedTokens.join(',')}`);
   }
 
   // top-level resources will simply use the `name` as-is in order to support

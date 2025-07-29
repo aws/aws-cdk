@@ -4,6 +4,7 @@ import { ISecurityGroup, IVpc, SubnetSelection } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
+import { ISchemaRegistry } from '../../aws-lambda/lib/schema-registry';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Stack, Names, Annotations, UnscopedValidationError, ValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
@@ -62,6 +63,13 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    * @default - no timestamp
    */
   readonly startingPositionTimestamp?: number;
+
+  /**
+   * Specific configuration settings for a Kafka schema registry.
+   *
+   * @default - none
+   */
+  readonly schemaRegistryConfig?: ISchemaRegistry;
 }
 
 /**
@@ -181,6 +189,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         onFailure: this.innerProps.onFailure,
         supportS3OnFailureDestination: true,
         provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
+        schemaRegistryConfig: this.innerProps.schemaRegistryConfig,
       }),
     );
 
@@ -284,6 +293,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         onFailure: this.innerProps.onFailure,
         supportS3OnFailureDestination: true,
         provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
+        schemaRegistryConfig: this.innerProps.schemaRegistryConfig,
       }),
     );
 

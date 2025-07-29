@@ -1,5 +1,6 @@
 import { IConstruct, MetadataEntry } from 'constructs';
 import { App } from './app';
+import { UnscopedValidationError } from './errors';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 
@@ -89,6 +90,51 @@ export class Annotations {
   }
 
   /**
+   * Acknowledge a info. When a info is acknowledged for a scope
+   * all infos that match the id will be ignored.
+   *
+   * The acknowledgement will apply to all child scopes
+   *
+   * @example
+   * declare const myConstruct: Construct;
+   * Annotations.of(myConstruct).acknowledgeInfo('SomeInfoId', 'This info can be ignored because...');
+   *
+   * @param id - the id of the info message to acknowledge
+   * @param message optional message to explain the reason for acknowledgement
+   */
+  public acknowledgeInfo(id: string, message?: string): void {
+    Acknowledgements.of(this.scope).add(this.scope, id);
+
+    // We don't use message currently, but encouraging people to supply it is good for documentation
+    // purposes, and we can always add a report on it in the future.
+    void(message);
+
+    // Iterate over the construct and remove any existing instances of this info
+    // (addInfoV2 will prevent future instances of it)
+    removeInfoDeep(this.scope, id);
+  }
+
+  /**
+   * Adds an acknowledgeable info metadata entry to this construct.
+   *
+   * The CLI will display the info when an app is synthesized.
+   *
+   * If the info is acknowledged using `acknowledgeInfo()`, it will not be shown by the CLI.
+   *
+   * @example
+   * declare const myConstruct: Construct;
+   * Annotations.of(myConstruct).addInfoV2('my-library:Construct.someInfo', 'Some message explaining the info');
+   *
+   * @param id the unique identifier for the info. This can be used to acknowledge the info
+   * @param message The info message.
+   */
+  public addInfoV2(id: string, message: string) {
+    if (!Acknowledgements.of(this.scope).has(this.scope, id)) {
+      this.addMessage(cxschema.ArtifactMetadataEntryType.INFO, `${message} ${ackTag(id)}`);
+    }
+  }
+
+  /**
    * Adds an info metadata entry to this construct.
    *
    * The CLI will display the info message when apps are synthesized.
@@ -127,7 +173,7 @@ export class Annotations {
 
     // throw if CDK_BLOCK_DEPRECATIONS is set
     if (process.env.CDK_BLOCK_DEPRECATIONS) {
-      throw new Error(`${this.scope.node.path}: ${text}`);
+      throw new UnscopedValidationError(`${this.scope.node.path}: ${text}`);
     }
 
     this.addWarningV2(`Deprecated:${api}`, text);
@@ -251,6 +297,42 @@ function removeWarning(construct: IConstruct, id: string) {
   while (i < meta.length) {
     const m = meta[i];
     if (m.type === cxschema.ArtifactMetadataEntryType.WARN && (m.data as string).includes(ackTag(id))) {
+      meta.splice(i, 1);
+    } else {
+      i += 1;
+    }
+  }
+}
+
+/**
+ * Remove info metadata from all constructs in a given scope
+ *
+ * No recursion to avoid blowing out the stack.
+ */
+function removeInfoDeep(construct: IConstruct, id: string) {
+  const stack = [construct];
+
+  while (stack.length > 0) {
+    const next = stack.pop()!;
+    removeInfo(next, id);
+    stack.push(...next.node.children);
+  }
+}
+
+/**
+ * Remove metadata from a construct node.
+ *
+ * This uses private APIs for now; we could consider adding this functionality
+ * to the constructs library itself.
+ */
+function removeInfo(construct: IConstruct, id: string) {
+  const meta: MetadataEntry[] | undefined = (construct.node as any)._metadata;
+  if (!meta) { return; }
+
+  let i = 0;
+  while (i < meta.length) {
+    const m = meta[i];
+    if (m.type === cxschema.ArtifactMetadataEntryType.INFO && (m.data as string).includes(ackTag(id))) {
       meta.splice(i, 1);
     } else {
       i += 1;

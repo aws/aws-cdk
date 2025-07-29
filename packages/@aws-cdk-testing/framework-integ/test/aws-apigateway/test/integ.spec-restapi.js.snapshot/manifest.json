@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "test-apigateway-spec-restapi.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5ad2f9597f2cb5f0fea7242dcb36cf87a6314bc8c3d860324b4d428bf428f286.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e91a55b212d6c61a7de6cee809a2dc05eefd57c6a49e4314283cd42db2a26b90.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -50,7 +50,8 @@
                 "loggingLevel": "INFO",
                 "dataTraceEnabled": true,
                 "methodOptions": "*"
-              }
+              },
+              "mode": "merge"
             }
           }
         ],
@@ -548,15 +549,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "myapiDeployment92F2CB492c49d8fa05ada8b5cddee1ce76138bd0": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myapiDeployment92F2CB492c49d8fa05ada8b5cddee1ce76138bd0",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "test-apigateway-spec-restapi"
@@ -616,5 +608,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1018.0"
 }
