@@ -1,6 +1,5 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import * as path from 'path';
-import { Bundle } from '@aws-cdk/node-bundle';
-import * as yarnCling from '@aws-cdk/yarn-cling';
 import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
 import { shell } from '../lib/os';
@@ -58,14 +57,6 @@ async function main() {
     return;
   }
 
-  // If we need to shrinkwrap this, do so now.
-  if (options.shrinkWrap) {
-    await yarnCling.generateShrinkwrap({
-      packageJsonFile: 'package.json',
-      outputFile: 'npm-shrinkwrap.json',
-    });
-  }
-
   // if this is a jsii package, use jsii-packmak
   if (isJsii()) {
     const command = [args['jsii-pacmak'],
@@ -77,15 +68,9 @@ async function main() {
     const target = path.join(outdir, 'js');
     await fs.remove(target);
     await fs.mkdirp(target);
-    if (options.bundle) {
-      // bundled packages have their own bundler.
-      const bundle = new Bundle({ packageDir: process.cwd(), ...options.bundle });
-      bundle.pack({ target });
-    } else {
-      // just "npm pack" and deploy to "outdir"
-      const tarball = (await shell(['npm', 'pack'], { timers })).trim();
-      await fs.move(tarball, path.join(target, path.basename(tarball)));
-    }
+    // just "npm pack" and deploy to "outdir"
+    const tarball = (await shell(['npm', 'pack'], { timers })).trim();
+    await fs.move(tarball, path.join(target, path.basename(tarball)));
   }
 
   if (options.post) {

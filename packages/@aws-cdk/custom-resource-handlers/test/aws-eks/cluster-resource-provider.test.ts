@@ -557,7 +557,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
         });
 
         test('both version and authModeUpdate defined and modify both of them', async () => {
@@ -574,7 +574,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
         });
 
         test('update both version and logging with logging undefined', async () => {
@@ -598,7 +598,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
         });
 
         test('both version and logging defined and modify both of them', async () => {
@@ -629,7 +629,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
         });
       });
       describe('assessConfig change', () => {
@@ -761,7 +761,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
         });
         test('from undefined to both access and authenticationMode enabled', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -781,7 +781,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
         });
         test('update both EndpointAccessUpdate and AuthModeUpdate with accessConfig undefined', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -805,7 +805,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
         });
         test('update both EndpointAccessUpdate and AuthModeUpdate with accessConfig defined', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -829,7 +829,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
         });
       });
 
@@ -913,7 +913,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
         });
         test('both logging and access defined and modify both of them', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -951,7 +951,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
         });
         test('Given logging enabled and unchanged, updating the only publicAccessCidrs is allowed ', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -1114,6 +1114,26 @@ describe('cluster resource provider', () => {
             },
           });
           expect(mocks.actualRequest.untagResourceRequest).toEqual(undefined);
+        });
+        test('updates to bootstrapSelfManagedAddons requires a replacement', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+            bootstrapSelfManagedAddons: false,
+          }, {
+            ...mocks.MOCK_PROPS,
+            bootstrapSelfManagedAddons: true,
+          }));
+          const resp = await handler.onEvent();
+          expect(mocks.actualRequest.createClusterRequest!).toEqual({
+            bootstrapSelfManagedAddons: false,
+            name: 'MyResourceId-fakerequestid',
+            roleArn: 'arn:of:role',
+            resourcesVpcConfig:
+            {
+              subnetIds: ['subnet1', 'subnet2'],
+              securityGroupIds: ['sg1', 'sg2', 'sg3'],
+            },
+          });
         });
       });
     });

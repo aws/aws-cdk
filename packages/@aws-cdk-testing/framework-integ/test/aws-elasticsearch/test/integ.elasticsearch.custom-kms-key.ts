@@ -43,7 +43,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new TestStack(app, 'cdk-integ-elasticsearch-custom-kms-key');
 
 new IntegTest(app, 'ElasticsearchCustomKmsInteg', {

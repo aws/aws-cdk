@@ -675,6 +675,18 @@ export enum InstanceClass {
   C7GN = 'c7gn',
 
   /**
+   * Compute optimized instances for high performance computing, 8th generation with Graviton4 processors
+   * and high network bandwidth capabilities
+   */
+  COMPUTE8_GRAVITON4_HIGH_NETWORK_BANDWIDTH = 'compute8-graviton4-high-network-bandwidth',
+
+  /**
+   * Compute optimized instances for high performance computing, 8th generation with Graviton4 processors
+   * and high network bandwidth capabilities
+   */
+  C8GN = 'c8gn',
+
+  /**
    * Compute optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
    */
   COMPUTE7_INTEL = 'compute7-intel',
@@ -857,6 +869,16 @@ export enum InstanceClass {
    * Storage optimized instances powered by 5th generation Intel Xeon Scalable processors, 7th generation
    */
   I7IE = 'i7ie',
+
+  /**
+   * I/O-optimized instances with local NVME drive powered by 5th generation Intel Xeon Scalable processors, 7th generation
+   */
+  IO7_INTEL = 'io7_intel',
+
+  /**
+   * I/O-optimized instances with local NVME drive powered by 5th generation Intel Xeon Scalable processors, 7th generation
+   */
+  I7I = 'i7i',
 
   /**
    * Storage optimized instances powered by Graviton4 processor, 8th generation
@@ -1817,6 +1839,8 @@ export class InstanceType {
       [InstanceClass.C8G]: 'c8g',
       [InstanceClass.COMPUTE8_GRAVITON4_NVME_DRIVE]: 'c8gd',
       [InstanceClass.C8GD]: 'c8gd',
+      [InstanceClass.COMPUTE8_GRAVITON4_HIGH_NETWORK_BANDWIDTH]: 'c8gn',
+      [InstanceClass.C8GN]: 'c8gn',
       [InstanceClass.STORAGE2]: 'd2',
       [InstanceClass.D2]: 'd2',
       [InstanceClass.STORAGE3]: 'd3',
@@ -1845,6 +1869,8 @@ export class InstanceType {
       [InstanceClass.IS4GEN]: 'is4gen',
       [InstanceClass.STORAGE7_INTEL_STORAGE_OPTIMIZED]: 'i7ie',
       [InstanceClass.I7IE]: 'i7ie',
+      [InstanceClass.IO7_INTEL]: 'i7i',
+      [InstanceClass.I7I]: 'i7i',
       [InstanceClass.STORAGE8_GRAVITON]: 'i8g',
       [InstanceClass.I8G]: 'i8g',
       [InstanceClass.BURSTABLE2]: 't2',

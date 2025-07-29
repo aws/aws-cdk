@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "44.0.0",
   "artifacts": {
     "lambda-version-arn.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c09389fa23f01aa8f418dd4c26cef64307286765224e5d0a6956cdcd68a1ba1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c5a332937fd470df748437283a52eb1dcff18200bb292f8ec0d36df170adeb0f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,38 @@
         "lambda-version-arn.assets"
       ],
       "metadata": {
+        "/lambda-version-arn/Fn": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/lambda-version-arn/Fn/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/lambda-version-arn/Fn/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/lambda-version-arn/Fn/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -46,10 +78,33 @@
             "data": "Fn9270CBC0"
           }
         ],
+        "/lambda-version-arn/Version": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "lambda": "*",
+              "maxEventAge": "*",
+              "retryAttempts": "*"
+            }
+          }
+        ],
         "/lambda-version-arn/Version/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Version6A868472"
+          }
+        ],
+        "/lambda-version-arn/Version/EventInvokeConfig": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "function": "*",
+              "qualifier": "*",
+              "onFailure": "*",
+              "onSuccess": "*",
+              "maxEventAge": "*",
+              "retryAttempts": "*"
+            }
           }
         ],
         "/lambda-version-arn/Version/EventInvokeConfig/Resource": [
@@ -108,7 +163,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c7757406c5b4821a3b30a1e41b48b39c5e9875e99ec971e3b884ab5cad85f6e9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6897d2e28ce87acc67828af28a8e2f78d5a9230b24132819844306bee15873db.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -124,6 +179,20 @@
         "lambdaversionDefaultTestDeployAssert7B4F8B2D.assets"
       ],
       "metadata": {
+        "/lambda-version/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks70f404cc05194071461ef6a10695c296/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/lambda-version/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks70f404cc05194071461ef6a10695c296/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -175,5 +244,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

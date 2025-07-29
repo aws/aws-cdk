@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "testCases": {
     "specrestapi-import-deployment-stage/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "specrestapi-import-deployment-stage/DefaultTest/DeployAssert",
       "assertionStackName": "specrestapiimportdeploymentstageDefaultTestDeployAssert410B3AFA"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

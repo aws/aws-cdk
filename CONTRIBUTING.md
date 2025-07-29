@@ -198,9 +198,7 @@ If you would like to test your code changes against a CDK App, create the App an
 $ mkdir cdkApp # in parent dir of aws-cdk
 $ cd cdkApp
 $ npx cdk init app --language typescript
-$ npx cdk --version # shows the latest CDK version e.g. 2.155.0 (build 34dcc5a)
 $ ../aws-cdk/link-all.sh # link the aws-cdk repo with your cdkApp
-$ npx cdk --version # verify linked cdk version 0.0.0
 # Define the resource that uses your aws-cdk changes in cdkApp lib folder
 $ npx cdk deploy # deploy successfully
 ```
@@ -220,7 +218,7 @@ The following tools need to be installed on your system prior to installing the 
 - [Node.js >= 20.x](https://nodejs.org/en/download)
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
-- [.NET SDK >= 6.0.x](https://www.microsoft.com/net/download)
+- [.NET SDK >= 8.0.x](https://www.microsoft.com/net/download)
 - [Python >= 3.8.0, < 4.0](https://www.python.org/downloads/release/python-380/)
 - Either [Docker >= 19.03](https://docs.docker.com/get-docker/), [Finch >= 0.3.0](https://runfinch.com/), or another Docker replacement
   - If using a Docker replacement, the `CDK_DOCKER` environment variable must be set to the replacement command's name (e.g. `export CDK_DOCKER=finch`)
@@ -1341,6 +1339,28 @@ Adding a new flag looks as follows:
     - Double negatives should be avoided. If you want to add a flag that disables something that was previously
       enabled, set `default.v2` to `true` and the `recommendedValue` to `false`. You will need to update
       a test in `features.test.ts` -- this is okay if you have a good reason.
+    - A note on the fields
+      - default.v2: This is the boolean value used by the cdk commands at runtime unless its specified in `cdk.json`.
+      - recommendedValue: This is the boolean value will be set in `cdk.json` on `cdk init` when you init a new application.
+    - As a contributor, if you are advised to introduce a feature flag, consider the following scenarios when determining how your feature should behave for
+      - Customers who are creating new app (`cdk init`). `cdk.json` will now contain the new feature flag set to the `recommendedValue`.
+      - Customers who have an existing app. `cdk.json` doesnt contain the `new` feature flag. The value of the new feature flag set to the `default.v2` value in context of cdk commands.
+      - E.g. in the following case, unless overridden in `cdk.json`
+        - New apps will get [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: true
+        - Existing apps on cdk v2 will get [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: false
+        ```typescript
+        [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: {
+            type: FlagType.ApiDefault,
+            summary: 'When enabled, CDK creates and manages loggroup for the lambda function',
+            detailsMd: `
+                ...
+              `,
+            introducedIn: { v2: 'V2_NEXT' },
+            defaults: { v2: false },
+            recommendedValue: true,
+            compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
+        },
+        ```
 2. Use `FeatureFlags.of(construct).isEnabled(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
 3. Add your feature flag to the `FLAGS` map in
@@ -1369,18 +1389,27 @@ Adding a new flag looks as follows:
 See [release.md](./docs/release.md) for details on how CDK versions are maintained and how
 to trigger a new release
 
-## Troubleshooting
+## Common Issues
 
-Most build issues can be solved by doing a full clean rebuild:
+### Import errors
 
-```shell
-$ git clean -fqdx .
-$ yarn install
-$ yarn build
+An error similar to the below can happen while trying to consume the changed library in the example (or production) CDK app:
+
+```ts
+node_modules/ts-node/src/index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+
+aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/aws-api.ts:7:27 - error TS2732: Cannot find module '../../custom-resources/lib/helpers-internal/sdk-v3-metadata.json'. Consider using '--resolveJsonModule' to import module with '.json' extension.
+
+7 import * as metadata from '../../custom-resources/lib/helpers-internal/sdk-v3-metadata.json';
 ```
 
-However, this will be time consuming. In this section we'll describe some common issues you may encounter and some more
-targeted commands you can run to resolve your issue.
+This is most probably caused by the fact that your CDK app is using `--prefer-ts-exts` option (which is the [default in new CDK TS-based apps]([url](https://github.com/aws/aws-cdk/issues/7475))). To fix this, try one of the following:
+- Don't compile aws-cdk-lib. You can do this by removing `--prefer-ts-exts` from your app command in `cdk.json` - this means you will have to run a build in the lib repo every time you make a change (or use `npm run watch / yarn watch`).
+- Update your `tsconfig.json`. In this case it's going to be adding `"resolveJsonModule": true` as suggested by the error to the `"compilerOptions"` section. If you change the test app, different or more errors might come up that will have a similar resolution.
+
 
 #### The compiler is throwing errors on files that I renamed/it's running old tests that I meant to remove/code coverage is low and I didn't change anything.
 
@@ -1435,6 +1464,17 @@ have to disable the built-in rebuild functionality of `lerna run test`:
 ```shell
 $ CDK_TEST_BUILD=false lr test
 ```
+
+#### The check-lfs Github action fails on my PR
+
+This happens if your PR has files that should have been a Git LFS pointer but were not. You should verify
+that you have Git LFS installed with `git lfs`, if not you can install it with `git lfs install`.
+Once Git LFS is installed, use the following command:
+
+```shell
+$ git lfs migrate import --no-rewrite <path to files that make the gh action fail>
+```
+This will create a new commit that you can push to your branch to make the Github action pass.
 
 ## Debugging
 

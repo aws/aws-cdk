@@ -16,6 +16,7 @@ import * as sm from '../../aws-secretsmanager';
 import * as ssm from '../../aws-ssm';
 import { PhysicalName, Stack, ArnFormat, Names, RemovalPolicy } from '../../core';
 import * as mimeTypes from 'mime-types';
+import { DeletionProtectionCheck } from './util';
 
 /**
  * Options for the Configuration construct
@@ -76,6 +77,17 @@ export interface ConfigurationOptions {
    * @default - None.
    */
   readonly deploymentKey?: kms.IKey;
+
+  /**
+   * A parameter to configure deletion protection.
+   * Deletion protection prevents a user from deleting a configuration profile if your application has called
+   * either `GetLatestConfiguration` or `GetConfiguration` for the configuration profile during the specified interval.
+   *
+   * @see https://docs.aws.amazon.com/appconfig/latest/userguide/deletion-protection.html
+   *
+   * @default DeletionProtectionCheck.ACCOUNT_DEFAULT
+   */
+  readonly deletionProtectionCheck?: DeletionProtectionCheck;
 }
 
 /**
@@ -186,6 +198,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
 
   protected applicationId: string;
   protected extensible!: ExtensibleBase;
+  protected deletionProtectionCheck?: DeletionProtectionCheck;
 
   constructor(scope: Construct, id: string, props: ConfigurationProps) {
     super(scope, id);
@@ -201,6 +214,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
     this.description = props.description;
     this.deployTo = props.deployTo;
     this.deploymentKey = props.deploymentKey;
+    this.deletionProtectionCheck = props.deletionProtectionCheck;
     this.deploymentStrategy = props.deploymentStrategy || new DeploymentStrategy(this, 'DeploymentStrategy', {
       rolloutStrategy: RolloutStrategy.CANARY_10_PERCENT_20_MINUTES,
     });
@@ -383,6 +397,13 @@ export interface HostedConfigurationProps extends ConfigurationProps {
    * @default - None.
    */
   readonly versionLabel?: string;
+
+  /**
+   * The customer managed key to encrypt hosted configuration.
+   *
+   * @default None
+   */
+  readonly kmsKey?: kms.IKey;
 }
 
 /**
@@ -442,6 +463,8 @@ export class HostedConfiguration extends ConfigurationBase {
       description: this.description,
       type: this.type,
       validators: this.validators,
+      deletionProtectionCheck: this.deletionProtectionCheck,
+      kmsKeyIdentifier: props.kmsKey?.keyArn,
     });
     this.configurationProfileId = this._cfnConfigurationProfile.ref;
     this.configurationProfileArn = Stack.of(this).formatArn({
@@ -584,6 +607,7 @@ export class SourcedConfiguration extends ConfigurationBase {
       retrievalRoleArn: this.retrievalRole?.roleArn,
       type: this.type,
       validators: this.validators,
+      deletionProtectionCheck: this.deletionProtectionCheck,
     });
 
     this.configurationProfileId = this._cfnConfigurationProfile.ref;

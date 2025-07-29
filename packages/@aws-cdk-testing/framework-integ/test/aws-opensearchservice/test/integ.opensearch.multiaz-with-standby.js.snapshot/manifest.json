@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "cdk-integ-opensearch-multiaz-with-standby.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-opensearch-multiaz-with-standby.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/722892555255764f20f275e929016594c8562b137bbdfb5df2a004c9565301df.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/af8ff58486e8ffa2e6a9560cc3b415a0fa93f87d5614848b3816f6373578566b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,28 @@
         "cdk-integ-opensearch-multiaz-with-standby.assets"
       ],
       "metadata": {
+        "/cdk-integ-opensearch-multiaz-with-standby/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "version": "*",
+              "ebs": {
+                "volumeSize": "*",
+                "volumeType": "gp3"
+              },
+              "zoneAwareness": {
+                "enabled": true,
+                "availabilityZoneCount": "*"
+              },
+              "capacity": {
+                "multiAzWithStandbyEnabled": true,
+                "masterNodes": "*",
+                "dataNodes": "*"
+              }
+            }
+          }
+        ],
         "/cdk-integ-opensearch-multiaz-with-standby/Domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -67,6 +90,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "IntegOpenSearchMultiAzWithStandbyDefaultTestDeployAssertFD2E7982.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -107,5 +131,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

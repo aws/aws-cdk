@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "cdk-instance-from-cluster-snapshot-test/DefaultTest": {
+      "stacks": [
+        "cdk-instance-from-cluster-snapshot"
+      ],
+      "assertionStack": "cdk-instance-from-cluster-snapshot-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkinstancefromclustersnapshottestDefaultTestDeployAssertB916CEB9"
+    }
+  }
+}

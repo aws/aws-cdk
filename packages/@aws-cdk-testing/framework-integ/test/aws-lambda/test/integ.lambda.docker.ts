@@ -14,7 +14,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testStack = new TestStack(app, 'lambda-ecr-docker');
 const integ = new IntegTest(app, 'integ', {
   testCases: [testStack],

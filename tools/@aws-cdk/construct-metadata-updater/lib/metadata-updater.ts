@@ -24,6 +24,12 @@ const NOT_INJECTABLE_CLASSES = [
     "filePath": "packages/aws-cdk-lib/aws-lambda/lib/function-base.ts",
     "className": "LatestVersion"
   },
+  // because this construct reflects on its own callstack, which gets changed
+  // once the decorator is added. TODO - fix to consider the call layer added by the decorator. 
+  {
+    "filePath": "packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.ts",
+    "className": "NodejsFunction"
+  },
 ]
 
 interface ResourceClass {
@@ -718,7 +724,8 @@ export class EnumsUpdater extends MetadataUpdater {
    * Generate the file content for the enum metadats.
    */
   private generateFileContent(enums: Record<string, (string | number)[]> = {}): string {
-    const template = `/* eslint-disable quote-props */
+    const template = `/* eslint-disable quotes */
+/* eslint-disable quote-props */
 /* eslint-disable @stylistic/comma-dangle */
 /* eslint-disable @cdklabs/no-literal-partition */
 /*
@@ -736,7 +743,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = $ENUMS;
       acc[key] = enums[key];
       return acc;
     }, {});
-    const jsonContent = JSON.stringify(sortedEnums, null, 2).replace(/"/g, "'");
+    const jsonContent = JSON.stringify(sortedEnums, null, 2);
 
     // Replace the placeholder with the JSON object
     return template.replace("$ENUMS", jsonContent);

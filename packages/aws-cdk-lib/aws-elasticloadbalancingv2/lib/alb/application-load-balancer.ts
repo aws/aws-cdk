@@ -199,9 +199,9 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     if (
       minimumCapacityUnit &&
       !Token.isUnresolved(minimumCapacityUnit) &&
-      (!Number.isInteger(minimumCapacityUnit) || minimumCapacityUnit < 100 || minimumCapacityUnit > 1500)
+      (!Number.isInteger(minimumCapacityUnit) || minimumCapacityUnit < 100)
     ) {
-      throw new ValidationError(`'minimumCapacityUnit' must be a positive integer between 100 and 1500 for Application Load Balancer, got: ${minimumCapacityUnit}.`, this);
+      throw new ValidationError(`'minimumCapacityUnit' must be a positive integer greater than or equal to 100 for Application Load Balancer, got: ${minimumCapacityUnit}.`, this);
     }
 
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;

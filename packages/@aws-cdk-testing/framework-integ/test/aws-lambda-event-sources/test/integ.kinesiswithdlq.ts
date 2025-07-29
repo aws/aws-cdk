@@ -43,6 +43,10 @@ class KinesisWithDLQTest extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 new KinesisWithDLQTest(app, 'lambda-event-source-kinesis-with-dlq');
 app.synth();

@@ -75,7 +75,10 @@
     "ActionsApiGatewayGET12E87C75",
     "ActionsApiGatewayOPTIONS8EA1F997",
     "AuthorizerBD825682"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "ActionsApiGatewayDeploymentStageprod812022BF": {
    "Type": "AWS::ApiGateway::Stage",

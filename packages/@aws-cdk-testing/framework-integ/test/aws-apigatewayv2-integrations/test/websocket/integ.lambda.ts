@@ -11,7 +11,11 @@ import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integra
  * 4. Disconnect: disconnect from the wscat. Should print event data containing connectionId in cloudwatch
  */
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'WebSocketApiInteg');
 
 const connectHandler = new lambda.Function(stack, 'ConnectHandler', {

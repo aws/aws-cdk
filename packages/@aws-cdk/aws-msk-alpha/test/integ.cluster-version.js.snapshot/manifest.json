@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "KafkaVersionTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2360a1155ce69e5f176f7112ea62157b87c2bfed7510a6a90fc723a91e57d088.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/304b1bdab8a361040f10eed2fe447f51257459ba220086f69e8bd2e5f4bc87a9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -930,6 +930,33 @@
             "data": "ClusterVersion39xkraft96CD852C"
           }
         ],
+        "/KafkaVersionTestStack/ClusterVersion4-0-x-kraft": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion4-0-x-kraft/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion4-0-x-kraft/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion40xkraftSecurityGroup81D50A3C"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion4-0-x-kraft/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion40xkraft5E11CA80"
+          }
+        ],
         "/KafkaVersionTestStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -1000,5 +1027,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1015.0"
 }

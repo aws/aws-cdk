@@ -64,6 +64,10 @@ class MyTestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 new MyTestStack(app, 'nested-stacks-test');
 app.synth();

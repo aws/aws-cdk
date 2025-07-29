@@ -47,23 +47,12 @@ class TestStack extends Stack {
       ],
     });
 
-    this.replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
-      resources: [this.sourceBucket.bucketArn],
-      effect: iam.Effect.ALLOW,
-    }));
-    this.replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
-      resources: [this.sourceBucket.arnForObjects('*')],
-      effect: iam.Effect.ALLOW,
-    }));
-    this.replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
-      resources: [this.destinationBucket.arnForObjects('*')],
-      effect: iam.Effect.ALLOW,
-    }));
-    sourceKmsKey.grantDecrypt(this.replicationRole);
-    destinationKmsKey.grantEncrypt(this.replicationRole);
+    this.sourceBucket.grantReplicationPermission(this.replicationRole, {
+      sourceDecryptionKey: sourceKmsKey,
+      destinations: [
+        { encryptionKey: destinationKmsKey, bucket: this.destinationBucket },
+      ],
+    });
   }
 }
 

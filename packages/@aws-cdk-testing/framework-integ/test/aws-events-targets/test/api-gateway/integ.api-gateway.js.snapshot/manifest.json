@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-events-targets-api-gateway-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eb6e93c17ce84da302f80abe024243e559721864a62a25a653dfbe134c6e1686.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d37eae9b51dadb242e45d63755eb120db18d4104a66f4243bedf7482953f92a7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,48 @@
         "aws-events-targets-api-gateway-integ.assets"
       ],
       "metadata": {
+        "/aws-events-targets-api-gateway-integ/MySpecRestApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "apiDefinition": "*"
+            }
+          }
+        ],
         "/aws-events-targets-api-gateway-integ/MySpecRestApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MySpecRestApiFB7DB2AB"
           }
         ],
+        "/aws-events-targets-api-gateway-integ/MySpecRestApi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-events-targets-api-gateway-integ/MySpecRestApi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          }
+        ],
         "/aws-events-targets-api-gateway-integ/MySpecRestApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MySpecRestApiDeployment5D02B5D9a8c154dd64ed0abf0243000795ad6206"
+          }
+        ],
+        "/aws-events-targets-api-gateway-integ/MySpecRestApi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/aws-events-targets-api-gateway-integ/MySpecRestApi/DeploymentStage.prod/Resource": [
@@ -58,16 +90,112 @@
             "data": "MySpecRestApiEndpoint564A2275"
           }
         ],
+        "/aws-events-targets-api-gateway-integ/MySpecRestApi/EventsRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-events-targets-api-gateway-integ/MySpecRestApi/EventsRole/ImportEventsRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-events-targets-api-gateway-integ/MySpecRestApi/EventsRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MySpecRestApiEventsRole25C1D10F"
           }
         ],
+        "/aws-events-targets-api-gateway-integ/MySpecRestApi/EventsRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
         "/aws-events-targets-api-gateway-integ/MySpecRestApi/EventsRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MySpecRestApiEventsRoleDefaultPolicy6616420B"
+          }
+        ],
+        "/aws-events-targets-api-gateway-integ/Rule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "schedule": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addTarget": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-events-targets-api-gateway-integ/Rule/Resource": [
@@ -114,7 +242,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5115baeccbd781da4e2dcde7c52ced2e6a354abe88161247f753819d6c8aefe2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f8276f56b35d9edf6971dfd8d689a7f84e0c514926cf01451ed503a927a57a65.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -131,6 +259,20 @@
         "ApiGatewayTargetDefaultTestDeployAssert33F7AF34.assets"
       ],
       "metadata": {
+        "/ApiGatewayTarget/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRuleecb9be56e222a60a5e5c4b7af30a595b/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/ApiGatewayTarget/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRuleecb9be56e222a60a5e5c4b7af30a595b/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -155,6 +297,12 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
+        "/ApiGatewayTarget/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/ApiGatewayTarget/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -176,5 +324,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

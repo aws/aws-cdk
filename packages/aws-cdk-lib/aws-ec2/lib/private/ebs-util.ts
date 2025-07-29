@@ -4,6 +4,14 @@ import { CfnInstance, CfnLaunchTemplate } from '../ec2.generated';
 import { BlockDevice, EbsDeviceVolumeType } from '../volume';
 
 export function instanceBlockDeviceMappings(construct: Construct, blockDevices: BlockDevice[]): CfnInstance.BlockDeviceMappingProperty[] {
+  for (const blockDevice of blockDevices) {
+    if (blockDevice.volume.ebsDevice?.throughput !== undefined) {
+      Annotations.of(construct).addWarningV2('@aws-cdk/aws-ec2:throughputNotSupported',
+        'The throughput property is not supported on EC2 instances. Use a Launch Template instead. ' +
+          'See https://github.com/aws/aws-cdk/issues/34033 for more information.',
+      );
+    }
+  }
   return synthesizeBlockDeviceMappings<CfnInstance.BlockDeviceMappingProperty, object>(construct, blockDevices, {});
 }
 

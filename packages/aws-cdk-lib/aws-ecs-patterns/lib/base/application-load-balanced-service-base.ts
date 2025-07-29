@@ -219,8 +219,8 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly cloudMapOptions?: CloudMapOptions;
 
   /**
-   * Specifies whether the load balancer should redirect traffic on port 80 to port 443 to support HTTP->HTTPS redirects
-   * This is only valid if the protocol of the ALB is HTTPS
+   * Specifies whether the load balancer should redirect traffic on port 80 to the {@link listenerPort} to support HTTP->HTTPS redirects.
+   * This is only valid if the protocol of the ALB is HTTPS.
    *
    * @default false
    */
@@ -541,6 +541,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
           permanent: true,
         }),
       });
+      // Ensure the redirect listener is created after the main listener,
+      // otherwise we run into a race condition that adds 2 listeners on port 80.
+      this.redirectListener.node.addDependency(this.listener);
     }
 
     let domainName = loadBalancer.loadBalancerDnsName;

@@ -3,7 +3,7 @@ import { ISecret } from './secret';
 import * as ec2 from '../../aws-ec2';
 import * as lambda from '../../aws-lambda';
 import * as serverless from '../../aws-sam';
-import { Duration, Names, Stack, Token, CfnMapping, Aws, RemovalPolicy } from '../../core';
+import { Duration, Names, Stack, Token, CfnMapping, Aws, RemovalPolicy, ValidationError, UnscopedValidationError } from '../../core';
 
 /**
  * Options for a SecretRotationApplication
@@ -150,7 +150,7 @@ export class SecretRotationApplication {
     } else if (partition === 'aws-us-gov') {
       return `arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/${this.applicationName}`;
     } else {
-      throw new Error(`unsupported partition: ${partition}`);
+      throw new UnscopedValidationError(`unsupported partition: ${partition}`);
     }
   }
 
@@ -166,7 +166,7 @@ export class SecretRotationApplication {
     } else if (partition === 'aws-us-gov') {
       return '1.1.213';
     } else {
-      throw new Error(`unsupported partition: ${partition}`);
+      throw new UnscopedValidationError(`unsupported partition: ${partition}`);
     }
   }
 }
@@ -277,11 +277,11 @@ export class SecretRotation extends Construct {
     super(scope, id);
 
     if (!props.target.connections.defaultPort) {
-      throw new Error('The `target` connections must have a default port range.');
+      throw new ValidationError('The `target` connections must have a default port range.', this);
     }
 
     if (props.application.isMultiUser && !props.masterSecret) {
-      throw new Error('The `masterSecret` must be specified for application using the multi user scheme.');
+      throw new ValidationError('The `masterSecret` must be specified for application using the multi user scheme.', this);
     }
 
     // Max length of 64 chars, get the last 64 chars

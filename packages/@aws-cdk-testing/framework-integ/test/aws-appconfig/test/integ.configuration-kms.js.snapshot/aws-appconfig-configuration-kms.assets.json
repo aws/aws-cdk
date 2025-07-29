@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "576959e6fcdfa5040b2b11959fc18318bfdaa7e4a215655138108db3423077ae": {
+      "displayName": "aws-appconfig-configuration-kms Template",
+      "source": {
+        "path": "aws-appconfig-configuration-kms.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "576959e6fcdfa5040b2b11959fc18318bfdaa7e4a215655138108db3423077ae.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

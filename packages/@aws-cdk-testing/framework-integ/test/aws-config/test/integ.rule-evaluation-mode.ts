@@ -4,7 +4,11 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as config from 'aws-cdk-lib/aws-config';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'ConfigRuleEvaluationMode');
 
