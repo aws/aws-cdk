@@ -365,6 +365,37 @@ test('Log level are set to FATAL by default', () => {
   });
 });
 
+test('uses loggingFormat instead of deprecated logFormat', () => {
+  // GIVEN
+  // Spy on console.warn to check for deprecation warnings
+  // eslint-disable-next-line no-console
+  const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+
+  const stack = new Stack();
+  const handler = new lambda.Function(stack, 'MyHandler', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'index.onEvent',
+    runtime: lambda.Runtime.NODEJS_LATEST,
+  });
+
+  try {
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: handler,
+    });
+
+    // THEN
+    // Check that no deprecation warnings related to logFormat were emitted
+    const deprecationWarnings = warnSpy.mock.calls
+      .filter(args => typeof args[0] === 'string' && args[0].includes('logFormat is deprecated'));
+
+    expect(deprecationWarnings.length).toBe(0);
+  } finally {
+    // Clean up
+    warnSpy.mockRestore();
+  }
+});
+
 describe('retry policy', () => {
   const stack = new Stack();
 
