@@ -122,6 +122,12 @@
       "MISTRAL_PIXTRAL_LARGE_2502_V1"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/tool-choice.ts": {
+    "ToolChoice": [
+      "ANY",
+      "AUTO"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/access-entry.ts": {
     "AccessPolicyArn": [
       "AMAZON_EKS_ADMIN_POLICY",
@@ -1975,7 +1981,9 @@
       "WINDOWS_SERVER_2019_FULL",
       "WINDOWS_SERVER_2022_CORE",
       "WINDOWS_SERVER_2022_FULL",
-      "WINDOWS_SERVER_20H2_CORE"
+      "WINDOWS_SERVER_20H2_CORE",
+      "WINDOWS_SERVER_2025_FULL",
+      "WINDOWS_SERVER_2025_CORE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/access-entry.ts": {
@@ -2621,7 +2629,8 @@
       "VER_16_8_LIMITLESS",
       "VER_17_1",
       "VER_17_2",
-      "VER_17_4"
+      "VER_17_4",
+      "VER_17_5"
     ],
     "DatabaseClusterEngine": [
       "AURORA",

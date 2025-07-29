@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96": {
       "source": {
@@ -7,23 +7,23 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-ad46d999": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "73830c9d393822a8ea73aa17357a056bf785421b3a88b4d6b147233c3b05050a": {
+    "2236def564d6ecf9ae3e3bac613a82caf1c8300efade1879aef504e68b8f2b43": {
       "displayName": "AthenaResultReuseConfigurationDefaultTestDeployAssert59574A02 Template",
       "source": {
         "path": "AthenaResultReuseConfigurationDefaultTestDeployAssert59574A02.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-e8f349cf": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "73830c9d393822a8ea73aa17357a056bf785421b3a88b4d6b147233c3b05050a.json",
+          "objectKey": "2236def564d6ecf9ae3e3bac613a82caf1c8300efade1879aef504e68b8f2b43.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
