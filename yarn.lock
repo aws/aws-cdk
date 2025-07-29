@@ -4593,6 +4593,13 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-18.11.19.tgz#35e26df9ec441ab99d73e99e9aca82935eea216d"
   integrity sha512-YUgMWAQBWLObABqrvx8qKO1enAvBUdjZOAWQ5grBAkp5LQv45jBvYKZ3oFS9iKRCQyFjqw6iuEa1vmFqtxYLZw==
 
+"@types/node@22.7.9":
+  version "22.7.9"
+  resolved "https://registry.npmjs.org/@types/node/-/node-22.7.9.tgz#2bf2797b5e84702d8262ea2cf843c3c3c880d0e9"
+  integrity sha512-jrTfRC7FM6nChvU7X2KqcrgquofrWLFDeYC1hKfwNWomVvrn7JIksqf344WN2X/y8xrgqBd2dJATZV4GbatBfg==
+  dependencies:
+    undici-types "~6.19.2"
+
 "@types/node@^16":
   version "16.18.126"
   resolved "https://registry.npmjs.org/@types/node/-/node-16.18.126.tgz#27875faa2926c0f475b39a8bb1e546c0176f8d4b"
@@ -5604,6 +5611,11 @@ cdk-generate-synthetic-examples@^0.2.26:
     "@jsii/spec" "^1.112.0"
     jsii-reflect "^1.112.0"
     yargs "^17.7.2"
+
+cdk-nag@2.28.13:
+  version "2.28.13"
+  resolved "https://registry.npmjs.org/cdk-nag/-/cdk-nag-2.28.13.tgz#bef1b6c65496d99ef2e110f1a28f5260f9efef80"
+  integrity sha512-f+fteEq09+N7H2heqls0NcTC+MFcXl6fztEjjpKK0qTo5eFAKmDekEHLRGY5LX8v/JlueoVyhttsjaULNwnoSg==
 
 cdk8s-plus-27@2.9.5:
   version "2.9.5"
@@ -12989,6 +13001,11 @@ typescript@~5.5.0, typescript@~5.5.4:
   version "5.5.4"
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.5.4.tgz#d9852d6c82bad2d2eda4fd74a5762a8f5909e9ba"
   integrity sha512-Mtq29sKDAEYP7aljRgtPOpTvOfbwRWlS6dPRzwjdE+C0R4brX/GUyhHSecbHMFLNBLcJIPt9nl9yG5TZ1weH+Q==
+
+typescript@~5.6.3:
+  version "5.6.3"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-5.6.3.tgz#5f3449e31c9d94febb17de03cc081dd56d81db5b"
+  integrity sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==
 
 typescript@~5.7:
   version "5.7.3"
