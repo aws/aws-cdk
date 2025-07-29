@@ -13,6 +13,7 @@ import {
   ITaggable,
   ITaggableV2,
   AspectPriority,
+  UnscopedValidationError,
 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 
@@ -330,5 +331,15 @@ describe('tag aspect', () => {
         });
       }).toThrow();
     });
+  });
+
+  test('if tag value is undefined, it raises with appropriate content', () => {
+    expect(() => {
+      new Tag('test-key', undefined as any);
+    }).toThrow(UnscopedValidationError);
+
+    expect(() => {
+      new Tag('test-key', undefined as any);
+    }).toThrow("Tag 'test-key' must have a value");
   });
 });
