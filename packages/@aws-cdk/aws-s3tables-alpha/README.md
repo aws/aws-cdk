@@ -163,5 +163,5 @@ const encryptedBucketAuto = new TableBucket(scope, 'EncryptedTableBucketAuto', {
 
 L2 Construct support for:
 
-- Namespaces
-- Tables
+- Table Policy
+- KMS encryption support for Tables

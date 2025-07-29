@@ -178,6 +178,19 @@ describe('Table', () => {
     test('has the same ARN as it was imported with', () => {
       expect(table.tableArn).toEqual(TABLE_ATTRS.tableArn);
     });
+
+    test('validates table name during import', () => {
+      expect(() => {
+        s3tables.Table.fromTableAttributes(stack, 'InvalidImport', {
+          tableName: 'Invalid-Table',
+          tableArn: 'arn:aws:s3tables:us-west-2:123456789012:table/Invalid-Table',
+        });
+      }).toThrow('Table name must only contain lowercase characters, numbers, and underscores (_)');
+    });
+
+    test('creates resource with correct physical name', () => {
+      expect(table.node.id).toBe('ImportedTable');
+    });
   });
 
   describe('validateTableName', () => {
@@ -259,6 +272,38 @@ describe('Table', () => {
       expect(() => s3tables.Table.validateTableName(invalidName)).toThrow(
         /Invalid-Table!/,
       );
+    });
+  });
+
+  describe('table name validation through Table creation', () => {
+    test('rejects table creation with invalid table name', () => {
+      expect(() => {
+        new s3tables.Table(stack, 'TestTable', {
+          tableName: 'Invalid-Table',
+          namespace,
+          openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        });
+      }).toThrow('Table name must only contain lowercase characters, numbers, and underscores (_)');
+    });
+
+    test('rejects table creation with empty table name', () => {
+      expect(() => {
+        new s3tables.Table(stack, 'TestTable', {
+          tableName: '',
+          namespace,
+          openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        });
+      }).toThrow('Table name must be at least 1 and no more than 255 characters');
+    });
+
+    test('rejects table creation with table name starting with underscore', () => {
+      expect(() => {
+        new s3tables.Table(stack, 'TestTable', {
+          tableName: '_invalid',
+          namespace,
+          openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        });
+      }).toThrow('Table name must start with a lowercase letter or number');
     });
   });
 });

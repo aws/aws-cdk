@@ -138,9 +138,6 @@ export enum Status {
 
 /**
  * Contains details about the metadata for an Iceberg table.
- *
- * @struct
- * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html
  */
 export interface IcebergMetadataProperty {
@@ -232,7 +229,6 @@ export interface TableAttributes {
 
   /**
    * The table's ARN.
-   * @default tableArn constructed from region, account and tableName are provided
    */
   readonly tableArn: string;
 }

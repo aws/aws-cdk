@@ -133,7 +133,7 @@ export class Namespace extends Resource implements INamespace {
   }
 
   /**
-   * @internal The underlying policy resource.
+   * @internal The underlying namespace resource.
    */
   private readonly _resource: CfnNamespace;
 
