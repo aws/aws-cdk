@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.208.0](https://github.com/aws/aws-cdk/compare/v2.207.0...v2.208.0) (2025-07-29)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#35054](https://github.com/aws/aws-cdk/issues/35054)) ([a2b3e78](https://github.com/aws/aws-cdk/commit/a2b3e788fdedff02ce2abd8998c37d4da5a5dc2d))
+* **region-info:** add support for region ap-southeast-6 ([#35036](https://github.com/aws/aws-cdk/pull/35036))
+
+
+### Bug Fixes
+
+* **core:** `Tag must have a value` error is impossible to attribute to a specific tag ([#35091](https://github.com/aws/aws-cdk/issues/35091)) ([6c4181b](https://github.com/aws/aws-cdk/commit/6c4181bbe1c28b8080ba5f12716ad91475b2b3f5))
+* **custom-resources:** use loggingFormat instead of deprecated logFormat ([#35015](https://github.com/aws/aws-cdk/issues/35015)) ([81fe660](https://github.com/aws/aws-cdk/commit/81fe66029bba42135143874072f16387f7edc741)), closes [#35002](https://github.com/aws/aws-cdk/issues/35002)
+* **logs:** query strings can have multiple stats commands ([#34590](https://github.com/aws/aws-cdk/issues/34590)) ([57ae6f9](https://github.com/aws/aws-cdk/commit/57ae6f92949623d93c73ff23057291ba0f5eb95b)), closes [#34578](https://github.com/aws/aws-cdk/issues/34578) [#34578](https://github.com/aws/aws-cdk/issues/34578)
+* **logs:** revert "exposed metric from the metric filter will now include the dimension map ([#34648](https://github.com/aws/aws-cdk/issues/34648))" ([#35102](https://github.com/aws/aws-cdk/issues/35102)) ([24bbced](https://github.com/aws/aws-cdk/commit/24bbced7e67ec6265713cf46c51b110f38b6cf7d)), closes [#35097](https://github.com/aws/aws-cdk/issues/35097)
+
+## [2.207.0](https://github.com/aws/aws-cdk/compare/v2.206.0...v2.207.0) (2025-07-24)
+
+
+### Features
+
+* **core:** allow validation report multi-write based on context keys ([#34927](https://github.com/aws/aws-cdk/issues/34927)) ([9571599](https://github.com/aws/aws-cdk/commit/9571599b58e0a84d2e162fac4e61546aefda90c6))
+* update L1 CloudFormation resource definitions ([#35020](https://github.com/aws/aws-cdk/issues/35020)) ([3f695b3](https://github.com/aws/aws-cdk/commit/3f695b38a97d1a74cb3c1c62c0b54d4c5a67dd67))
+* **bedrockprompt:** add prompt management to bedrock agents ([#34754](https://github.com/aws/aws-cdk/issues/34754)) ([c0d27ee](https://github.com/aws/aws-cdk/commit/c0d27ee3bd4f6c31e1116f6bfc5551f25932aad9))
+* **cloudwatch:** add search expression to graph widget in cloudwatch dashboard ([#34933](https://github.com/aws/aws-cdk/issues/34933)) ([e3f505e](https://github.com/aws/aws-cdk/commit/e3f505eeb5ac1e3222a7e0d11c29b66fc2fe0dbd)), closes [#7237](https://github.com/aws/aws-cdk/issues/7237)
+* **core:** addInfoV2 method for suppressible info Annotations ([#34872](https://github.com/aws/aws-cdk/issues/34872)) ([fb1792c](https://github.com/aws/aws-cdk/commit/fb1792c8cfde9a5af95a9fa10d1fd6f8a30a7e78)), closes [#34871](https://github.com/aws/aws-cdk/issues/34871)
+* **logs:** support ADC regions for infrequent access log class ([#34999](https://github.com/aws/aws-cdk/issues/34999)) ([1c57d69](https://github.com/aws/aws-cdk/commit/1c57d69656f6cfbf204f2861f328002167760f13))
+* **rds:** support Database Insights for RDS instances ([#34854](https://github.com/aws/aws-cdk/issues/34854)) ([304e2db](https://github.com/aws/aws-cdk/commit/304e2db2638a830757f9ca0012b1f84230f3e0aa)), closes [#34743](https://github.com/aws/aws-cdk/issues/34743) [#32851](https://github.com/aws/aws-cdk/issues/32851)
+* cloudwatch logs transformer support ([#34996](https://github.com/aws/aws-cdk/issues/34996)) ([ba61463](https://github.com/aws/aws-cdk/commit/ba6146391e0237af2063a11e34569bf61c4a132e)), closes [#34861](https://github.com/aws/aws-cdk/issues/34861)
+
+
+### Bug Fixes
+
+* **autoscaling:** add an option to run validation when migrating to launch template ([#34832](https://github.com/aws/aws-cdk/issues/34832)) ([c8d62f3](https://github.com/aws/aws-cdk/commit/c8d62f316799b07d8b927ad7ccd41bad49944178)), closes [#34283](https://github.com/aws/aws-cdk/issues/34283)
+* **core:** fix asset bundling for nested stack with exclusive flag ([#30983](https://github.com/aws/aws-cdk/issues/30983)) ([992b0a5](https://github.com/aws/aws-cdk/commit/992b0a5c3b8716bea56ad934c79506d329f4c19b)), closes [#30967](https://github.com/aws/aws-cdk/issues/30967) [#30967](https://github.com/aws/aws-cdk/issues/30967)
+* **kinesisfirehose:** can't call grantPrincipal multiple times ([#34682](https://github.com/aws/aws-cdk/issues/34682)) ([ea226b5](https://github.com/aws/aws-cdk/commit/ea226b5e57b198add48aa07add748749171f9535))
+* **s3-deployment:** broken cross stack reference when using Source.data ([#34916](https://github.com/aws/aws-cdk/issues/34916)) ([0591c44](https://github.com/aws/aws-cdk/commit/0591c44d78ba3a98d6d37224f4451707ec2c1da8)), closes [#22843](https://github.com/aws/aws-cdk/issues/22843) [#22843](https://github.com/aws/aws-cdk/issues/22843)
+
 ## [2.206.0](https://github.com/aws/aws-cdk/compare/v2.205.0...v2.206.0) (2025-07-16)
 
 

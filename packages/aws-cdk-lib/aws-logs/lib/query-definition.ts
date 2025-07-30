@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnQueryDefinition } from '.';
 import { ILogGroup } from './log-group';
-import { Resource } from '../../core';
+import { Annotations, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -55,11 +55,23 @@ export interface QueryStringProps {
   readonly filterStatements?: string[];
 
   /**
-   * Uses log field values to calculate aggregate statistics.
+   * A single statement for using log field values to calculate aggregate statistics.
    *
+   * @deprecated Use `statsStatements` instead
    * @default - no stats in QueryString
    */
   readonly stats?: string;
+
+  /**
+   * An array of one or more statements for calculating aggregate statistics.
+   * CloudWatch Logs Insights supports up to two stats commands in a single query.
+   * Each provided statement generates a separate stats line in the query string.
+   *
+   * Note: If provided, this property overrides any value provided for the `stats` property.
+   *
+   * @default - no stats in QueryString
+   */
+  readonly statsStatements?: string[];
 
   /**
    * Sorts the retrieved log events.
@@ -90,17 +102,27 @@ export class QueryString {
   private readonly fields?: string[];
   private readonly parse: string[];
   private readonly filter: string[];
-  private readonly stats?: string;
+  private readonly stats: string[];
   private readonly sort?: string;
   private readonly limit?: Number;
   private readonly display?: string;
 
+  /**
+   * Length of statsStatements
+   */
+  public readonly statsStatementsLength?: number;
+  /**
+   * If the props for the query string have both stats and statsStatements
+   */
+  public readonly hasStatsAndStatsStatements: boolean;
+
   constructor(props: QueryStringProps = {}) {
     this.fields = props.fields;
-    this.stats = props.stats;
     this.sort = props.sort;
     this.limit = props.limit;
     this.display = props.display;
+    this.statsStatementsLength = props.statsStatements?.length;
+    this.hasStatsAndStatsStatements = !!(props.statsStatements && props.stats);
 
     // Determine parsing by either the parseStatements or parse properties, or default to empty array
     if (props.parseStatements) {
@@ -119,6 +141,14 @@ export class QueryString {
     } else {
       this.filter = [];
     }
+
+    if (props.statsStatements) {
+      this.stats = props.statsStatements;
+    } else if (props.stats) {
+      this.stats = [props.stats];
+    } else {
+      this.stats = [];
+    }
   }
 
   /**
@@ -129,7 +159,7 @@ export class QueryString {
       this.buildQueryLine('fields', this.fields?.join(', ')),
       ...this.buildQueryLines('parse', this.parse),
       ...this.buildQueryLines('filter', this.filter),
-      this.buildQueryLine('stats', this.stats),
+      ...this.buildQueryLines('stats', this.stats),
       this.buildQueryLine('sort', this.sort),
       this.buildQueryLine('limit', this.limit?.toString()),
       this.buildQueryLine('display', this.display),
@@ -209,6 +239,15 @@ export class QueryDefinition extends Resource {
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    if (props.queryString.statsStatementsLength && props.queryString.statsStatementsLength > 2) {
+      throw new ValidationError(`CloudWatch Logs Insights only supports up to two stats commands in a single query, received ${props.queryString.statsStatementsLength}.`, this);
+    }
+
+    if (props.queryString.hasStatsAndStatsStatements) {
+      Annotations.of(this).addWarningV2('QueryDefinitionStatsWarning',
+        'Both stats and statsStatements properties are provided. The stats property is deprecated and will be ignored in favor of statsStatements.');
+    }
 
     const queryDefinition = new CfnQueryDefinition(this, 'Resource', {
       name: props.queryDefinitionName,
