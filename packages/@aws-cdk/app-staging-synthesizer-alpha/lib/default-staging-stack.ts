@@ -155,7 +155,7 @@ export interface DefaultStagingStackProps extends DefaultStagingStackOptions, St
   /**
    * The qualifier used to specialize strings
    *
-   * Shouldn't be necessary but who knows what people might do.
+   * Can be used to specify custom bootstrapped role names
    */
   readonly qualifier: string;
 }
@@ -257,12 +257,17 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
   private readonly deployRoleArn?: string;
 
   constructor(scope: App, id: string, private readonly props: DefaultStagingStackProps) {
+    // eslint-disable-next-line no-console
+    console.log('hello');
     super(scope, id, {
       ...props,
-      synthesizer: new BootstraplessSynthesizer(),
+      synthesizer: new BootstraplessSynthesizer({
+        qualifier: props.qualifier,
+      }),
       description: `This stack includes resources needed to deploy the AWS CDK app ${props.appId} into this environment`,
       analyticsReporting: false, // removing AWS::CDK::Metadata construct saves ~3KB
     });
+
     // removing path metadata saves ~2KB
     this.node.setContext(cxapi.PATH_METADATA_ENABLE_CONTEXT, false);
 
@@ -283,7 +288,6 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     this.stagingBucketEncryption = props.stagingBucketEncryption;
 
     const specializer = new StringSpecializer(this, props.qualifier);
-
     this.providedFileRole = props.fileAssetPublishingRole?._specialize(specializer);
     this.providedImageRole = props.imageAssetPublishingRole?._specialize(specializer);
     this.stagingRepos = {};
