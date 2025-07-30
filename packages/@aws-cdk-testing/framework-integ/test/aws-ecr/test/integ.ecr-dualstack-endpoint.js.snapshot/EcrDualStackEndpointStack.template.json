@@ -32,7 +32,7 @@
         }
        ]
       },
-      ".dkr.ecr.",
+      ".dkr-ecr.",
       {
        "Fn::Select": [
         3,
@@ -49,11 +49,7 @@
         }
        ]
       },
-      ".",
-      {
-       "Ref": "AWS::URLSuffix"
-      },
-      "/",
+      ".on.aws/",
       {
        "Ref": "DualStackRepository07B0D778"
       }
@@ -83,7 +79,7 @@
         }
        ]
       },
-      ".dkr.ecr.",
+      ".dkr-ecr.",
       {
        "Fn::Select": [
         3,
@@ -100,10 +96,7 @@
         }
        ]
       },
-      ".",
-      {
-       "Ref": "AWS::URLSuffix"
-      }
+      ".on.aws"
      ]
     ]
    }
