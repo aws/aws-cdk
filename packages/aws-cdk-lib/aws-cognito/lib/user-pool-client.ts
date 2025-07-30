@@ -323,7 +323,6 @@ export interface UserPoolClientOptions {
 
   /**
    * Grace period for the original refresh token (0-60 seconds).
-   * Values between 0 and 60 seconds are valid. 
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-refresh-token.html#using-the-refresh-token-rotation
    * @default - undefined (refresh token rotation is disabled)
    */
