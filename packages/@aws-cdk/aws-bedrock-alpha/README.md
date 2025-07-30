@@ -661,6 +661,7 @@ const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
 | blockedInputMessaging | string | No | The message to return when the guardrail blocks a prompt. Default: "Sorry, your query violates our usage policy." |
 | blockedOutputsMessaging | string | No | The message to return when the guardrail blocks a model response. Default: "Sorry, I am unable to answer your question because of our usage policy." |
 | kmsKey | IKey | No | A custom KMS key to use for encrypting data. Default: Your data is encrypted by default with a key that AWS owns and manages for you. |
+| crossRegionConfig | GuardrailCrossRegionConfigProperty | No | The cross-region configuration for the guardrail. This enables cross-region inference for enhanced language support and filtering capabilities. Default: No cross-region configuration |
 | contentFilters | ContentFilter[] | No | The content filters to apply to the guardrail |
 | contentFiltersTierConfig | TierConfig | No | The tier configuration to apply to content filters. Default: TierConfig.CLASSIC |
 | deniedTopics | Topic[] | No | Up to 30 denied topics to block user inputs or model responses associated with the topic |
@@ -752,6 +753,33 @@ Available tier configurations:
 - `STANDARD`: Provides a more robust solution than the CLASSIC tier and has more comprehensive language support. This tier requires that your guardrail use cross-Region inference
 
 > Note: The STANDARD tier provides enhanced language support and more comprehensive filtering capabilities, but requires cross-Region inference to be enabled for your guardrail.
+
+#### Cross-Region Configuration
+
+You can configure a system-defined guardrail profile to use with your guardrail. Guardrail profiles define the destination AWS Regions where guardrail inference requests can be automatically routed. Using guardrail profiles helps maintain guardrail performance and reliability when demand increases.
+
+##### Cross-Region Configuration Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| guardrailProfileArn | string | Yes | The ARN of the system-defined guardrail profile that defines the destination AWS Regions where guardrail inference requests can be automatically routed |
+
+##### Cross-Region Configuration Example
+
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+  description: 'Guardrail with cross-region configuration for enhanced language support',
+  crossRegionConfig: {
+    guardrailProfileArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail-profile/my-profile',
+  },
+  // Use STANDARD tier for enhanced capabilities
+  contentFiltersTierConfig: bedrock.TierConfig.STANDARD,
+  topicsTierConfig: bedrock.TierConfig.STANDARD,
+});
+```
+
+> Note: Cross-region configuration is required when using the STANDARD tier for content and topic filters. It helps maintain guardrail performance and reliability when demand increases by automatically routing inference requests to appropriate regions.
 
 #### Denied Topics
 

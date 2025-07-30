@@ -14,6 +14,19 @@ import { GuardrailVersion } from './guardrail-version';
  *                              COMMON
  *****************************************************************************/
 /**
+ * GuardrailCrossRegionConfigProperty
+ */
+export interface GuardrailCrossRegionConfigProperty {
+  /**
+   * The arn of thesystem-defined guardrail profile that you're using with your guardrail.
+   * Guardrail profiles define the destination AWS Regions where guardrail inference requests can be automatically routed.
+   * Using guardrail profiles helps maintain guardrail performance and reliability when demand increases.
+   * @default - No cross-region configuration
+   */
+  readonly guardrailProfileArn: string;
+}
+
+/**
  * Represents a Guardrail, either created with CDK or imported.
  */
 export interface IGuardrail extends IResource {
@@ -357,6 +370,12 @@ export interface GuardrailProps {
    * @default []
    */
   readonly contextualGroundingFilters?: filters.ContextualGroundingFilter[];
+  /**
+   * The cross-region configuration for the guardrail.
+   * This is optional and when provided, it should be of type GuardrailCrossRegionConfigProperty.
+   * @default - No cross-region configuration
+   */
+  readonly crossRegionConfig?: GuardrailCrossRegionConfigProperty;
 }
 
 /******************************************************************************
@@ -501,6 +520,10 @@ export class Guardrail extends GuardrailBase {
    * @default filters.TierConfig.CLASSIC
    */
   public readonly contentFiltersTierConfig: filters.TierConfig;
+  /**
+   * The cross-region configuration for the guardrail.
+   */
+  public readonly crossRegionConfig?: GuardrailCrossRegionConfigProperty;
 
   constructor(scope: Construct, id: string, props: GuardrailProps) {
     super(scope, id, {
@@ -520,6 +543,7 @@ export class Guardrail extends GuardrailBase {
     this.managedWordListFilters = props.managedWordListFilters ?? [];
     this.topicsTierConfig = props.topicsTierConfig ?? filters.TierConfig.CLASSIC;
     this.contentFiltersTierConfig = props.contentFiltersTierConfig ?? filters.TierConfig.CLASSIC;
+    this.crossRegionConfig = props.crossRegionConfig;
 
     // ------------------------------------------------------
     // Validate regex filters
@@ -536,6 +560,11 @@ export class Guardrail extends GuardrailBase {
     this.validateMessagingProperty(props.blockedInputMessaging, 'blockedInputMessaging');
     this.validateMessagingProperty(props.blockedOutputsMessaging, 'blockedOutputsMessaging');
 
+    // ------------------------------------------------------
+    // Validate tier configuration requirements
+    // ------------------------------------------------------
+    this.validateTierConfiguration(props);
+
     const defaultBlockedInputMessaging = 'Sorry, your query violates our usage policy.';
     const defaultBlockedOutputsMessaging = 'Sorry, I am unable to answer your question because of our usage policy.';
 
@@ -549,6 +578,7 @@ export class Guardrail extends GuardrailBase {
       blockedInputMessaging: props.blockedInputMessaging ?? defaultBlockedInputMessaging,
       blockedOutputsMessaging: props.blockedOutputsMessaging ?? defaultBlockedOutputsMessaging,
       // Lazy props
+      crossRegionConfig: this.generateCfnCrossRegionConfig(),
       contentPolicyConfig: this.generateCfnContentPolicyConfig(),
       contextualGroundingPolicyConfig: this.generateCfnContextualPolicyConfig(),
       topicPolicyConfig: this.generateCfnTopicPolicy(),
@@ -872,6 +902,24 @@ export class Guardrail extends GuardrailBase {
   }
 
   /**
+   * Returns the cross-region configuration for the guardrail. This method defers the computation
+   * to synth time.
+   */
+  private generateCfnCrossRegionConfig(): IResolvable {
+    return Lazy.any({
+      produce: () => {
+        if (this.crossRegionConfig) {
+          return {
+            guardrailProfileArn: this.crossRegionConfig.guardrailProfileArn,
+          } as bedrock.CfnGuardrail.GuardrailCrossRegionConfigProperty;
+        } else {
+          return undefined;
+        }
+      },
+    });
+  }
+
+  /**
    * Validates a RegexFilter object.
    * @param filter The regex filter to validate.
    * @param index Optional index for error messages when validating arrays.
@@ -920,6 +968,34 @@ export class Guardrail extends GuardrailBase {
       if (value.length > 500) {
         throw new ValidationError(`Invalid ${propertyName}: The field ${propertyName} is ${value.length} characters long but must be less than or equal to 500 characters`, this);
       }
+    }
+  }
+
+  /**
+   * Validates that cross-region configuration is provided when STANDARD tier is used.
+   * @param props The guardrail properties to validate.
+   */
+  private validateTierConfiguration(props: GuardrailProps): void {
+    const contentTierConfig = props.contentFiltersTierConfig ?? filters.TierConfig.CLASSIC;
+    const topicsTierConfig = props.topicsTierConfig ?? filters.TierConfig.CLASSIC;
+    const hasCrossRegionConfig = props.crossRegionConfig !== undefined;
+
+    // Check if STANDARD tier is used for content filters
+    if (contentTierConfig === filters.TierConfig.STANDARD && !hasCrossRegionConfig) {
+      throw new ValidationError(
+        'Cross-region configuration is required when using STANDARD tier for content filters. ' +
+        'Please provide a crossRegionConfig property with a valid guardrailProfileArn.',
+        this,
+      );
+    }
+
+    // Check if STANDARD tier is used for topic filters
+    if (topicsTierConfig === filters.TierConfig.STANDARD && !hasCrossRegionConfig) {
+      throw new ValidationError(
+        'Cross-region configuration is required when using STANDARD tier for topic filters. ' +
+        'Please provide a crossRegionConfig property with a valid guardrailProfileArn.',
+        this,
+      );
     }
   }
 }

@@ -859,11 +859,17 @@ describe('CDK-Created-Guardrail', () => {
         },
       ],
       contentFiltersTierConfig: bedrock.TierConfig.STANDARD,
+      crossRegionConfig: {
+        guardrailProfileArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail-profile/test-profile',
+      },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
       Name: 'TestGuardrail',
       Description: 'This is a test guardrail',
+      CrossRegionConfig: {
+        GuardrailProfileArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail-profile/test-profile',
+      },
       ContentPolicyConfig: {
         FiltersConfig: [
           {
@@ -919,11 +925,17 @@ describe('CDK-Created-Guardrail', () => {
       description: 'This is a test guardrail',
       deniedTopics: [bedrock.Topic.FINANCIAL_ADVICE],
       topicsTierConfig: bedrock.TierConfig.STANDARD,
+      crossRegionConfig: {
+        guardrailProfileArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail-profile/test-profile',
+      },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
       Name: 'TestGuardrail',
       Description: 'This is a test guardrail',
+      CrossRegionConfig: {
+        GuardrailProfileArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail-profile/test-profile',
+      },
       TopicPolicyConfig: {
         TopicsConfig: [
           {
@@ -961,11 +973,17 @@ describe('CDK-Created-Guardrail', () => {
       contentFiltersTierConfig: bedrock.TierConfig.STANDARD,
       deniedTopics: [bedrock.Topic.FINANCIAL_ADVICE],
       topicsTierConfig: bedrock.TierConfig.CLASSIC,
+      crossRegionConfig: {
+        guardrailProfileArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail-profile/test-profile',
+      },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
       Name: 'TestGuardrail',
       Description: 'This is a test guardrail',
+      CrossRegionConfig: {
+        GuardrailProfileArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail-profile/test-profile',
+      },
       ContentPolicyConfig: {
         FiltersConfig: [
           {
@@ -1176,6 +1194,199 @@ describe('CDK-Created-Guardrail', () => {
         examples: exactly100Examples,
       });
     }).not.toThrow();
+  });
+
+  test('Cross Region Config - With Configuration', () => {
+    new bedrock.Guardrail(stack, 'TestGuardrail', {
+      guardrailName: 'TestGuardrail',
+      description: 'This is a test guardrail with cross-region config',
+      crossRegionConfig: {
+        guardrailProfileArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail-profile/my-profile',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+      Name: 'TestGuardrail',
+      Description: 'This is a test guardrail with cross-region config',
+      CrossRegionConfig: {
+        GuardrailProfileArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail-profile/my-profile',
+      },
+      // ensure others are undefined
+      TopicPolicyConfig: Match.absent(),
+      ContextualGroundingPolicyConfig: Match.absent(),
+      ContentPolicyConfig: Match.absent(),
+      WordPolicyConfig: Match.absent(),
+      SensitiveInformationPolicyConfig: Match.absent(),
+    });
+  });
+
+  test('Cross Region Config - Without Configuration', () => {
+    new bedrock.Guardrail(stack, 'TestGuardrail', {
+      guardrailName: 'TestGuardrail',
+      description: 'This is a test guardrail without cross-region config',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+      Name: 'TestGuardrail',
+      Description: 'This is a test guardrail without cross-region config',
+      // ensure CrossRegionConfig is absent when not provided
+      CrossRegionConfig: Match.absent(),
+      // ensure others are undefined
+      TopicPolicyConfig: Match.absent(),
+      ContextualGroundingPolicyConfig: Match.absent(),
+      ContentPolicyConfig: Match.absent(),
+      WordPolicyConfig: Match.absent(),
+      SensitiveInformationPolicyConfig: Match.absent(),
+    });
+  });
+
+  test('Cross Region Config - With Other Filters', () => {
+    new bedrock.Guardrail(stack, 'TestGuardrail', {
+      guardrailName: 'TestGuardrail',
+      description: 'This is a test guardrail with cross-region config and other filters',
+      crossRegionConfig: {
+        guardrailProfileArn: 'arn:aws:bedrock:us-west-2:123456789012:guardrail-profile/another-profile',
+      },
+      contentFilters: [
+        {
+          type: bedrock.ContentFilterType.MISCONDUCT,
+          inputStrength: bedrock.ContentFilterStrength.LOW,
+          outputStrength: bedrock.ContentFilterStrength.LOW,
+        },
+      ],
+      deniedTopics: [bedrock.Topic.FINANCIAL_ADVICE],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+      Name: 'TestGuardrail',
+      Description: 'This is a test guardrail with cross-region config and other filters',
+      CrossRegionConfig: {
+        GuardrailProfileArn: 'arn:aws:bedrock:us-west-2:123456789012:guardrail-profile/another-profile',
+      },
+      ContentPolicyConfig: {
+        FiltersConfig: [
+          {
+            InputStrength: 'LOW',
+            OutputStrength: 'LOW',
+            Type: 'MISCONDUCT',
+          },
+        ],
+      },
+      TopicPolicyConfig: {
+        TopicsConfig: [
+          {
+            Definition:
+                "'Discussions that involve providing guidance, recommendations, or suggestions related to managing, investing, or handling finances, investments, or assets.",
+            Examples: [
+              'Can you suggest some good stocks to invest in right now?',
+              "What's the best way to save for retirement?",
+              'Should I put my money in a high-risk investment?',
+              'How can I maximize my returns on investments?',
+              'Is it a good time to buy real estate?',
+            ],
+            Name: 'Financial_Advice',
+            Type: 'DENY',
+          },
+        ],
+      },
+    });
+  });
+
+  test('Cross Region Config - Property Access', () => {
+    const guardrail = new bedrock.Guardrail(stack, 'TestGuardrail', {
+      guardrailName: 'TestGuardrail',
+      description: 'This is a test guardrail with cross-region config',
+      crossRegionConfig: {
+        guardrailProfileArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail-profile/my-profile',
+      },
+    });
+
+    // Test that the crossRegionConfig property is accessible
+    expect(guardrail.crossRegionConfig).toBeDefined();
+    expect(guardrail.crossRegionConfig!.guardrailProfileArn).toBe('arn:aws:bedrock:us-east-1:123456789012:guardrail-profile/my-profile');
+  });
+
+  test('Cross Region Config - Property Access Without Config', () => {
+    const guardrail = new bedrock.Guardrail(stack, 'TestGuardrail', {
+      guardrailName: 'TestGuardrail',
+      description: 'This is a test guardrail without cross-region config',
+    });
+
+    // Test that the crossRegionConfig property is undefined when not provided
+    expect(guardrail.crossRegionConfig).toBeUndefined();
+  });
+
+  describe('Tier Configuration Validation', () => {
+    test('throws error when STANDARD content tier is used without cross-region config', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          contentFiltersTierConfig: bedrock.TierConfig.STANDARD,
+        });
+      }).toThrow(/Cross-region configuration is required when using STANDARD tier for content filters/);
+    });
+
+    test('throws error when STANDARD topic tier is used without cross-region config', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          topicsTierConfig: bedrock.TierConfig.STANDARD,
+        });
+      }).toThrow(/Cross-region configuration is required when using STANDARD tier for topic filters/);
+    });
+
+    test('throws error when both STANDARD tiers are used without cross-region config', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          contentFiltersTierConfig: bedrock.TierConfig.STANDARD,
+          topicsTierConfig: bedrock.TierConfig.STANDARD,
+        });
+      }).toThrow(/Cross-region configuration is required when using STANDARD tier for content filters/);
+    });
+
+    test('allows STANDARD content tier with cross-region config', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          contentFiltersTierConfig: bedrock.TierConfig.STANDARD,
+          crossRegionConfig: {
+            guardrailProfileArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail-profile/my-profile',
+          },
+        });
+      }).not.toThrow();
+    });
+
+    test('allows STANDARD topic tier with cross-region config', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          topicsTierConfig: bedrock.TierConfig.STANDARD,
+          crossRegionConfig: {
+            guardrailProfileArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail-profile/my-profile',
+          },
+        });
+      }).not.toThrow();
+    });
+
+    test('allows CLASSIC tiers without cross-region config', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          contentFiltersTierConfig: bedrock.TierConfig.CLASSIC,
+          topicsTierConfig: bedrock.TierConfig.CLASSIC,
+        });
+      }).not.toThrow();
+    });
+
+    test('allows default tiers without cross-region config', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          // No tier config specified - defaults to CLASSIC
+        });
+      }).not.toThrow();
+    });
   });
 });
 
