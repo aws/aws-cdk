@@ -1055,15 +1055,13 @@ You can import existing guardrails using the `fromGuardrailAttributes` or `fromC
 #### Import Configuration
 
 ```ts fixture=default
-import * as kms from 'aws-cdk-lib/aws-kms';
-
-declare const kmsKey: kms.IKey;
 declare const stack: Stack;
+const cmk = new kms.Key(this, 'cmk', {});
 // Import an existing guardrail by ARN
 const importedGuardrail = bedrock.Guardrail.fromGuardrailAttributes(stack, 'TestGuardrail', {
   guardrailArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail/oygh3o8g7rtl',
   guardrailVersion: '1', //optional
-  kmsKey: kmsKey, //optional
+  kmsKey: cmk, //optional
 });
 ```
 
@@ -1098,6 +1096,7 @@ const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
 });
 // Create a new version of the guardrail
 guardrail.createVersion('testversion');
+```
 
 ## Prompts
 
