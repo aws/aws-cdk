@@ -921,6 +921,46 @@ describe('CDK-Created-Guardrail', () => {
       },
     });
   });
+
+  test('Custom Topic Validation - Examples Field Constraints', () => {
+    // Test that creating a custom topic with no examples throws an error
+    expect(() => {
+      bedrock.Topic.custom({
+        name: 'TestTopic',
+        definition: 'A test topic definition',
+        examples: [],
+      });
+    }).toThrow('examples field must contain at least 1 example');
+
+    // Test that creating a custom topic with more than 100 examples throws an error
+    expect(() => {
+      const tooManyExamples = Array.from({ length: 101 }, (_, i) => `Example ${i + 1}`);
+      bedrock.Topic.custom({
+        name: 'TestTopic',
+        definition: 'A test topic definition',
+        examples: tooManyExamples,
+      });
+    }).toThrow('examples field cannot contain more than 100 examples');
+
+    // Test that creating a custom topic with valid examples (1-100) works
+    expect(() => {
+      bedrock.Topic.custom({
+        name: 'TestTopic',
+        definition: 'A test topic definition',
+        examples: ['Valid example'],
+      });
+    }).not.toThrow();
+
+    // Test that creating a custom topic with exactly 100 examples works
+    expect(() => {
+      const exactly100Examples = Array.from({ length: 100 }, (_, i) => `Example ${i + 1}`);
+      bedrock.Topic.custom({
+        name: 'TestTopic',
+        definition: 'A test topic definition',
+        examples: exactly100Examples,
+      });
+    }).not.toThrow();
+  });
 });
 
 describe('Imported-Guardrail', () => {

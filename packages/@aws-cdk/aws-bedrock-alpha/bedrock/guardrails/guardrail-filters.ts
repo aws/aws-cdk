@@ -1,3 +1,5 @@
+import { ValidationRule } from 'aws-cdk-lib/core/lib/helpers-internal';
+
 /******************************************************************************
  *                             TIER CONFIG
 *****************************************************************************/
@@ -162,7 +164,7 @@ export interface CustomTopicProps {
   readonly definition: string;
   /**
    * Representative phrases that refer to the topic. These phrases can represent
-   * a user input or a model response. Add up to 5 phrases, up to 100 characters
+   * a user input or a model response. Add between 1 and 100 phrases, up to 100 characters
    * each.
    * @example "Where should I invest my money?"
    */
@@ -295,6 +297,26 @@ export class Topic {
   readonly examples?: string[];
 
   protected constructor(props: CustomTopicProps) {
+    // Validate examples field constraints
+    const examplesValidationRules: ValidationRule<CustomTopicProps>[] = [
+      {
+        condition: (p) => !p.examples || p.examples.length < 1,
+        message: () => 'examples field must contain at least 1 example',
+      },
+      {
+        condition: (p) => p.examples && p.examples.length > 100,
+        message: () => 'examples field cannot contain more than 100 examples',
+      },
+    ];
+
+    // Note: We can't use validateAllProps here since we don't have a Construct scope
+    // Instead, we'll validate directly
+    for (const rule of examplesValidationRules) {
+      if (rule.condition(props)) {
+        throw new Error(rule.message(props));
+      }
+    }
+
     this.name = props.name;
     this.definition = props.definition;
     this.examples = props.examples;
