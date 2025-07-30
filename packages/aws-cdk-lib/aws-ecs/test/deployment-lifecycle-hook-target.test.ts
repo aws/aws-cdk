@@ -264,37 +264,6 @@ describe('DeploymentLifecycleHookTarget', () => {
     });
   });
 
-  test('lifecycle hooks can be added during service creation', () => {
-    // GIVEN
-    const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
-      lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
-    });
-
-    // WHEN
-    const service = new ecs.FargateService(stack, 'FargateService', {
-      cluster,
-      taskDefinition,
-      lifecycleHooks: [hookTarget],
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-      DeploymentConfiguration: {
-        LifecycleHooks: [
-          {
-            LifecycleStages: ['PRE_SCALE_UP'],
-            HookTargetArn: {
-              'Fn::GetAtt': [
-                Match.stringLikeRegexp('TestFunction'),
-                'Arn',
-              ],
-            },
-          },
-        ],
-      },
-    });
-  });
-
   test('lifecycle hooks cannot be added during service creation with non-ECS deployment controller', () => {
     // GIVEN
     const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
@@ -303,14 +272,14 @@ describe('DeploymentLifecycleHookTarget', () => {
 
     // THEN
     expect(() => {
-      new ecs.FargateService(stack, 'FargateService', {
+      const service = new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
         deploymentController: {
           type: ecs.DeploymentControllerType.CODE_DEPLOY,
         },
-        lifecycleHooks: [hookTarget],
       });
+      service.addLifecycleHook(hookTarget);
     }).toThrow(/Deployment lifecycle hooks requires the ECS deployment controller/);
   });
 });

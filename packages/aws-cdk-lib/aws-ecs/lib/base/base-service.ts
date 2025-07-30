@@ -738,7 +738,7 @@ export abstract class BaseService extends Resource
         alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
         strategy: props.deploymentStrategy,
         bakeTimeInMinutes: props.bakeTime?.toMinutes(),
-        lifecycleHooks: Lazy.any({ produce: () => this.renderLifecycleHooks() }),
+        lifecycleHooks: Lazy.any({ produce: () => this.renderLifecycleHooks() }, { omitEmptyArray: true }),
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
@@ -1285,14 +1285,14 @@ export abstract class BaseService extends Resource
     const self = this;
     const target = this.taskDefinition._validateTarget(options);
     const connections = self.connections;
-    const advancedConfiguration = alternateOptions;
+    const alternateOption = alternateOptions;
     return {
       attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
         targetGroup.registerConnectable(self, self.taskDefinition._portRangeFromPortMapping(target.portMapping));
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, advancedConfiguration);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, alternateOption);
       },
       attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, advancedConfiguration);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, alternateOption);
       },
       connections,
       attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
@@ -1661,37 +1661,6 @@ export abstract class BaseService extends Resource
    */
   public isUsingECSDeploymentController(): boolean {
     return this.isEcsDeploymentController;
-  }
-
-  /**
-   * Enables blue-green deployment strategy for the service with optional lifecycle hooks.
-   * @param alternateConfig alternate configuration for the deployment
-   * @param lifecycleHooks Optional lifecycle hooks to execute during deployment
-   */
-  public enableBlueGreenDeployment(alternateConfig: IAlternateTarget, lifecycleHooks?: IDeploymentLifecycleHookTarget[]) {
-    if (!this.isEcsDeploymentController) {
-      throw new ValidationError('Blue-green deployment requires the ECS deployment controller.', this);
-    }
-
-    // Set deployment strategy to BLUE_GREEN
-    this.resource.deploymentConfiguration = {
-      ...this.resource.deploymentConfiguration,
-      strategy: DeploymentStrategy.BLUE_GREEN,
-    };
-
-    // Add lifecycle hooks if provided
-    if (lifecycleHooks && lifecycleHooks.length > 0) {
-      lifecycleHooks.forEach(hook => this.addLifecycleHook(hook));
-    }
-
-    // Use the default container with the alternate configuration if provided
-    if (this.taskDefinition.defaultContainer) {
-      this.loadBalancerTarget({
-        containerName: this.taskDefinition.defaultContainer.containerName,
-      }, alternateConfig);
-    }
-
-    return this;
   }
 }
 
