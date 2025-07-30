@@ -2079,10 +2079,15 @@ Amazon ECS supports native blue/green deployments that allow you to deploy new v
 ### Using Fargate L2 constructs for Blue/Green Feature
 
 ```ts
-const service = new ecs.FargateService(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const lambdaHook: lambda.Function;
+declare const greenTargetGroup: elbv2.ApplicationTargetGroup;
+declare const prodListenerRule: elbv2.ApplicationListenerRule;
+
+const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
-  securityGroups: [ecsSecurityGroup],
   deploymentStrategy: ecs.DeploymentStrategy.BLUE_GREEN,
 });
 
