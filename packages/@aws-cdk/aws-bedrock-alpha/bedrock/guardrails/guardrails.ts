@@ -322,7 +322,7 @@ export interface GuardrailProps {
    */
   readonly contentFiltersTierConfig?: filters.TierConfig;
   /**
-   * Up to 30 denied topics to block user inputs or model responses associated with the topic.
+   * A list of policies related to topics that the guardrail should deny.
    * @default []
    */
   readonly deniedTopics?: filters.Topic[];
