@@ -235,16 +235,6 @@ export class UserPoolClientIdentityProvider {
 }
 
 /**
- * The configuration of your app client for refresh token rotation.
- */
-export interface RefreshTokenRotation {
-  /**
-   * Grace period for the original refresh token (0-60 seconds).
-   */
-  readonly retryGracePeriod: Duration;
-}
-
-/**
  * Options to create a UserPoolClient
  */
 export interface UserPoolClientOptions {
@@ -332,11 +322,12 @@ export interface UserPoolClientOptions {
   readonly accessTokenValidity?: Duration;
 
   /**
-   * Configuration for refresh token rotation
+   * Grace period for the original refresh token (0-60 seconds).
+   * Values between 0 and 60 seconds are valid. 
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-refresh-token.html#using-the-refresh-token-rotation
    * @default - undefined (refresh token rotation is disabled)
    */
-  readonly refreshTokenRotation?: RefreshTokenRotation;
+  readonly refreshTokenGracePeriod?: Duration;
 
   /**
    * The set of attributes this client will be able to read.
@@ -614,7 +605,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (props.authFlows.user) { authFlows.push('ALLOW_USER_AUTH'); }
 
     // refreshToken should only be allowed if authFlows are present and refreshTokenRotation is disabled
-    if (!props.refreshTokenRotation) {
+    if (!props.refreshTokenGracePeriod || props.refreshTokenGracePeriod.toSeconds() === 0) {
       authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
     }
 
@@ -695,11 +686,11 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   private configureRefreshTokenRotation(resource: CfnUserPoolClient, props: UserPoolClientProps) {
-    if (props.refreshTokenRotation) {
-      this.validateDuration('retryGracePeriod', Duration.seconds(0), Duration.minutes(1), props.refreshTokenRotation.retryGracePeriod);
+    if (props.refreshTokenGracePeriod) {
+      this.validateDuration('retryGracePeriod', Duration.seconds(0), Duration.minutes(1), props.refreshTokenGracePeriod);
       resource.refreshTokenRotation = {
         feature: 'ENABLED',
-        retryGracePeriodSeconds: props.refreshTokenRotation.retryGracePeriod.toSeconds(),
+        retryGracePeriodSeconds: props.refreshTokenGracePeriod.toSeconds(),
       };
     }
   }

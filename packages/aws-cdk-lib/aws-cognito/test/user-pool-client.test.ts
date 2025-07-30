@@ -1616,21 +1616,15 @@ describe('User Pool Client', () => {
       // WHEN
       pool.addClient('Client1', {
         userPoolClientName: 'Client1',
-        refreshTokenRotation: {
-          retryGracePeriod: Duration.seconds(5),
-        },
+        refreshTokenGracePeriod: Duration.seconds(5),
       });
       pool.addClient('Client2', {
         userPoolClientName: 'Client2',
-        refreshTokenRotation: {
-          retryGracePeriod: Duration.seconds(25),
-        },
+        refreshTokenGracePeriod: Duration.seconds(25),
       });
       pool.addClient('Client3', {
         userPoolClientName: 'Client3',
-        refreshTokenRotation: {
-          retryGracePeriod: Duration.seconds(50),
-        },
+        refreshTokenGracePeriod: Duration.seconds(50),
       });
 
       // THEN
@@ -1657,15 +1651,13 @@ describe('User Pool Client', () => {
       });
     });
 
-    test('error when exceeding max retryGracePeriod', () => {
+    test('error when exceeding max refreshTokenGracePeriod', () => {
       const stack = new Stack();
       const pool = new UserPool(stack, 'Pool');
 
       expect(() =>pool.addClient('Client1', {
-        refreshTokenRotation: {
-          retryGracePeriod: Duration.seconds(80),
-        },
-      })).toThrow('retryGracePeriod: Must be a duration between 0 seconds and 1 minute (inclusive); received 1 minute 20 seconds.');
+        refreshTokenGracePeriod: Duration.seconds(80),
+      })).toThrow('refreshTokenGracePeriod: Must be a duration between 0 seconds and 1 minute (inclusive); received 1 minute 20 seconds.');
     });
 
     test('explicitAuthFlows refresh token excluded if refresh token rotation is enabled', () => {
@@ -1682,9 +1674,7 @@ describe('User Pool Client', () => {
           userSrp: true,
           user: true,
         },
-        refreshTokenRotation: {
-          retryGracePeriod: Duration.seconds(40),
-        },
+        refreshTokenGracePeriod: Duration.seconds(40),
       });
 
       // THEN
