@@ -331,6 +331,115 @@ describe('CDK-Created-Guardrail', () => {
     });
   });
 
+  describe('RegexFilter validation', () => {
+    test('validates name length - too short', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          regexFilters: [
+            {
+              name: '', // Empty name
+              pattern: '/^[A-Z]{2}d{6}$/',
+              action: bedrock.GuardrailAction.ANONYMIZE,
+            },
+          ],
+        });
+      }).toThrow(/Invalid RegexFilter at index 0: The field name is 0 characters long but must be at least 1 characters/);
+    });
+
+    test('validates name length - too long', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          regexFilters: [
+            {
+              name: 'a'.repeat(101), // 101 characters
+              pattern: '/^[A-Z]{2}d{6}$/',
+              action: bedrock.GuardrailAction.ANONYMIZE,
+            },
+          ],
+        });
+      }).toThrow(/Invalid RegexFilter at index 0: The field name is 101 characters long but must be less than or equal to 100 characters/);
+    });
+
+    test('validates description length - too short', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          regexFilters: [
+            {
+              name: 'TestRegexFilter',
+              description: '', // Empty description
+              pattern: '/^[A-Z]{2}d{6}$/',
+              action: bedrock.GuardrailAction.ANONYMIZE,
+            },
+          ],
+        });
+      }).toThrow(/Invalid RegexFilter at index 0: The field description is 0 characters long but must be at least 1 characters/);
+    });
+
+    test('validates description length - too long', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          regexFilters: [
+            {
+              name: 'TestRegexFilter',
+              description: 'a'.repeat(1001), // 1001 characters
+              pattern: '/^[A-Z]{2}d{6}$/',
+              action: bedrock.GuardrailAction.ANONYMIZE,
+            },
+          ],
+        });
+      }).toThrow(/Invalid RegexFilter at index 0: The field description is 1001 characters long but must be less than or equal to 1000 characters/);
+    });
+
+    test('validates pattern length - too short', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          regexFilters: [
+            {
+              name: 'TestRegexFilter',
+              pattern: '', // Empty pattern
+              action: bedrock.GuardrailAction.ANONYMIZE,
+            },
+          ],
+        });
+      }).toThrow(/Invalid RegexFilter at index 0: The field pattern is 0 characters long but must be at least 1 characters/);
+    });
+
+    test('validates addRegexFilter method', () => {
+      const guardrail = new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+      });
+
+      expect(() => {
+        guardrail.addRegexFilter({
+          name: '', // Empty name
+          pattern: '/^[A-Z]{2}d{6}$/',
+          action: bedrock.GuardrailAction.ANONYMIZE,
+        });
+      }).toThrow(/Invalid RegexFilter: The field name is 0 characters long but must be at least 1 characters/);
+    });
+
+    test('accepts valid RegexFilter', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          regexFilters: [
+            {
+              name: 'TestRegexFilter',
+              description: 'A valid description',
+              pattern: '/^[A-Z]{2}d{6}$/',
+              action: bedrock.GuardrailAction.ANONYMIZE,
+            },
+          ],
+        });
+      }).not.toThrow();
+    });
+  });
+
   test('Word Filter - Props', () => {
     new bedrock.Guardrail(stack, 'TestGuardrail', {
       guardrailName: 'TestGuardrail',

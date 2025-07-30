@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Arn, ArnFormat, IResolvable, IResource, Lazy, Resource } from 'aws-cdk-lib';
+import { Arn, ArnFormat, IResolvable, IResource, Lazy, Resource, Token, ValidationError } from 'aws-cdk-lib';
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import { Metric, MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -518,6 +518,15 @@ export class Guardrail extends GuardrailBase {
     this.topicsTierConfig = props.topicsTierConfig ?? filters.TierConfig.CLASSIC;
     this.contentFiltersTierConfig = props.contentFiltersTierConfig ?? filters.TierConfig.CLASSIC;
 
+    // ------------------------------------------------------
+    // Validate regex filters
+    // ------------------------------------------------------
+    if (props.regexFilters) {
+      props.regexFilters.forEach((filter, index) => {
+        this.validateRegexFilter(filter, index);
+      });
+    }
+
     const defaultBlockedInputMessaging = 'Sorry, your query violates our usage policy.';
     const defaultBlockedOutputsMessaging = 'Sorry, I am unable to answer your question because of our usage policy.';
 
@@ -576,6 +585,7 @@ export class Guardrail extends GuardrailBase {
    * @param filter The regex filter to add.
    */
   public addRegexFilter(filter: filters.RegexFilter): void {
+    this.validateRegexFilter(filter);
     this.regexFilters.push(filter);
   }
 
@@ -851,4 +861,41 @@ export class Guardrail extends GuardrailBase {
       { omitEmptyArray: true },
     );
   }
+
+  /**
+   * Validates a RegexFilter object.
+   * @param filter The regex filter to validate.
+   * @param index Optional index for error messages when validating arrays.
+   */
+  private validateRegexFilter(filter: filters.RegexFilter, index?: number): void {
+    const prefix = index !== undefined ? `Invalid RegexFilter at index ${index}` : 'Invalid RegexFilter';
+
+    // Validate name: between 1 and 100 characters
+    if (filter.name !== undefined && !Token.isUnresolved(filter.name)) {
+      if (filter.name.length < 1) {
+        throw new ValidationError(`${prefix}: The field name is ${filter.name.length} characters long but must be at least 1 characters`, this);
+      }
+      if (filter.name.length > 100) {
+        throw new ValidationError(`${prefix}: The field name is ${filter.name.length} characters long but must be less than or equal to 100 characters`, this);
+      }
+    }
+
+    // Validate description: between 1 and 1000 characters (if provided)
+    if (filter.description !== undefined && !Token.isUnresolved(filter.description)) {
+      if (filter.description.length < 1) {
+        throw new ValidationError(`${prefix}: The field description is ${filter.description.length} characters long but must be at least 1 characters`, this);
+      }
+      if (filter.description.length > 1000) {
+        throw new ValidationError(`${prefix}: The field description is ${filter.description.length} characters long but must be less than or equal to 1000 characters`, this);
+      }
+    }
+
+    // Validate pattern: at least one character
+    if (filter.pattern !== undefined && !Token.isUnresolved(filter.pattern)) {
+      if (filter.pattern.length < 1) {
+        throw new ValidationError(`${prefix}: The field pattern is ${filter.pattern.length} characters long but must be at least 1 characters`, this);
+      }
+    }
+  }
 }
+
