@@ -372,8 +372,9 @@ export enum ManagedWordFilterType {
 export interface ManagedWordFilter {
   /**
    * The type of managed word filter.
+   * @default ManagedWordFilterType.PROFANITY
    */
-  readonly type: ManagedWordFilterType;
+  readonly type?: ManagedWordFilterType;
   /**
    * The action to take when a managed word is detected in the input.
    * @default GuardrailAction.BLOCK
