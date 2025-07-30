@@ -1569,5 +1569,80 @@ describe('repository', () => {
         },
       });
     });
+
+    test('repository-level useDualStackEndpoint=true overrides environment variable', () => {
+      // GIVEN
+      process.env.AWS_USE_DUALSTACK_ENDPOINT = 'false';
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo', {
+        useDualStackEndpoint: true,
+      });
+
+      // THEN
+      expect(repo.registryUri).toMatch(/\.dkr-ecr\./);
+      expect(repo.registryUri).toMatch(/\.on\.aws$/);
+      expect(repo.repositoryUriForTag('latest')).toMatch(/\.dkr-ecr\./);
+      expect(repo.repositoryUriForTag('latest')).toMatch(/\.on\.aws\//);
+    });
+
+    test('repository-level useDualStackEndpoint=false overrides environment variable', () => {
+      // GIVEN
+      process.env.AWS_USE_DUALSTACK_ENDPOINT = 'true';
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo', {
+        useDualStackEndpoint: false,
+      });
+
+      // THEN
+      expect(repo.registryUri).toMatch(/\.dkr\.ecr\./);
+      expect(repo.registryUri).toMatch(/\.amazonaws\.com$/);
+      expect(repo.repositoryUriForTag('latest')).toMatch(/\.dkr\.ecr\./);
+      expect(repo.repositoryUriForTag('latest')).toMatch(/\.amazonaws\.com\//);
+    });
+
+    test('repository-level useDualStackEndpoint=true works without environment variable', () => {
+      // GIVEN
+      delete process.env.AWS_USE_DUALSTACK_ENDPOINT;
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo', {
+        useDualStackEndpoint: true,
+      });
+
+      // THEN
+      expect(repo.registryUri).toMatch(/\.dkr-ecr\./);
+      expect(repo.registryUri).toMatch(/\.on\.aws$/);
+      expect(repo.repositoryUriForTag('latest')).toMatch(/\.dkr-ecr\./);
+      expect(repo.repositoryUriForTag('latest')).toMatch(/\.on\.aws\//);
+    });
+
+    test('repository-level useDualStackEndpoint=false works without environment variable', () => {
+      // GIVEN
+      delete process.env.AWS_USE_DUALSTACK_ENDPOINT;
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo', {
+        useDualStackEndpoint: false,
+      });
+
+      // THEN
+      expect(repo.registryUri).toMatch(/\.dkr\.ecr\./);
+      expect(repo.registryUri).toMatch(/\.amazonaws\.com$/);
+      expect(repo.repositoryUriForTag('latest')).toMatch(/\.dkr\.ecr\./);
+      expect(repo.repositoryUriForTag('latest')).toMatch(/\.amazonaws\.com\//);
+    });
+
+    test('repository-level useDualStackEndpoint undefined falls back to environment variable', () => {
+      // GIVEN
+      process.env.AWS_USE_DUALSTACK_ENDPOINT = 'true';
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo', {
+        // useDualStackEndpoint not specified
+      });
+
+      // THEN
+      expect(repo.registryUri).toMatch(/\.dkr-ecr\./);
+      expect(repo.registryUri).toMatch(/\.on\.aws$/);
+      expect(repo.repositoryUriForTag('latest')).toMatch(/\.dkr-ecr\./);
+      expect(repo.repositoryUriForTag('latest')).toMatch(/\.on\.aws\//);
+    });
   });
 });

@@ -13,16 +13,30 @@ const repository = new ecr.Repository(this, 'Repository');
 
 ## IPv6 Dual-Stack Endpoint Support
 
-Amazon ECR supports IPv6 dual-stack endpoints that enable IPv6-only infrastructure to access ECR repositories without requiring VPC endpoints. By default, CDK generates IPv4-only ECR endpoints, but you can enable dual-stack endpoints by setting the `AWS_USE_DUALSTACK_ENDPOINT` environment variable.
+Amazon ECR supports IPv6 dual-stack endpoints that enable IPv6-only infrastructure to access ECR repositories without requiring VPC endpoints. By default, CDK generates IPv4-only ECR endpoints, but you can enable dual-stack endpoints either globally via environment variable or per-repository via the `useDualStackEndpoint` property.
 
 ### Enabling IPv6 Dual-Stack Endpoints
 
-To use IPv6 dual-stack endpoints, set the environment variable before deploying your CDK application:
+#### Repository-Level Configuration (Recommended)
+
+You can enable dual-stack endpoints for specific repositories:
+
+```ts
+const repository = new ecr.Repository(this, 'MyRepo', {
+  useDualStackEndpoint: true,
+});
+```
+
+#### Global Configuration via Environment Variable
+
+Alternatively, set the environment variable to enable dual-stack endpoints for all ECR repositories:
 
 ```bash
 export AWS_USE_DUALSTACK_ENDPOINT=true
 cdk deploy
 ```
+
+**Priority**: Repository-level `useDualStackEndpoint` property takes precedence over the environment variable.
 
 When enabled, ECR repository URIs will use the dual-stack format:
 - **IPv4-only (default)**: `123456789012.dkr.ecr.us-east-1.amazonaws.com`
@@ -35,7 +49,9 @@ The dual-stack endpoint support works seamlessly with all AWS container services
 ```ts
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 
-const repository = new ecr.Repository(this, 'MyRepo');
+const repository = new ecr.Repository(this, 'MyRepo', {
+  useDualStackEndpoint: true, // Enable IPv6 dual-stack for this repository
+});
 
 // ECS task definition automatically uses the correct endpoint format
 const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');

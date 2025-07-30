@@ -99,4 +99,43 @@ describe('ECR Endpoint Utils', () => {
       expect(result).toBe('123456789012.dkr-ecr.us-east-1.on.aws');
     });
   });
+
+  describe('repository-level configuration', () => {
+    beforeEach(() => {
+      delete process.env.AWS_USE_DUALSTACK_ENDPOINT;
+    });
+
+    test('useDualStackEndpoint=true overrides environment variable', () => {
+      process.env.AWS_USE_DUALSTACK_ENDPOINT = 'false';
+      const result = determineEcrEndpointType(true);
+      expect(result).toBe(EcrEndpointType.DUAL_STACK);
+    });
+
+    test('useDualStackEndpoint=false overrides environment variable', () => {
+      process.env.AWS_USE_DUALSTACK_ENDPOINT = 'true';
+      const result = determineEcrEndpointType(false);
+      expect(result).toBe(EcrEndpointType.IPV4_ONLY);
+    });
+
+    test('useDualStackEndpoint=true works without environment variable', () => {
+      const result = determineEcrEndpointType(true);
+      expect(result).toBe(EcrEndpointType.DUAL_STACK);
+    });
+
+    test('useDualStackEndpoint=false works without environment variable', () => {
+      const result = determineEcrEndpointType(false);
+      expect(result).toBe(EcrEndpointType.IPV4_ONLY);
+    });
+
+    test('useDualStackEndpoint=undefined falls back to environment variable', () => {
+      process.env.AWS_USE_DUALSTACK_ENDPOINT = 'true';
+      const result = determineEcrEndpointType(undefined);
+      expect(result).toBe(EcrEndpointType.DUAL_STACK);
+    });
+
+    test('useDualStackEndpoint=undefined with no environment variable defaults to IPv4', () => {
+      const result = determineEcrEndpointType(undefined);
+      expect(result).toBe(EcrEndpointType.IPV4_ONLY);
+    });
+  });
 });

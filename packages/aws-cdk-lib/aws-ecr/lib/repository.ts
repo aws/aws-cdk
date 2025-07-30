@@ -189,6 +189,16 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   public abstract readonly repositoryName: string;
 
   /**
+   * Determines whether to use dual-stack endpoints for this repository.
+   * Can be overridden by subclasses to provide repository-specific configuration.
+   * 
+   * @returns The dual-stack endpoint setting for this repository
+   */
+  protected dualStackEndpointSetting(): boolean | undefined {
+    return undefined; // Default implementation returns undefined (use environment variable)
+  }
+
+  /**
    * The ARN of the repository
    */
   public abstract readonly repositoryArn: string;
@@ -216,7 +226,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    */
   public get registryUri(): string {
     const parts = this.stack.splitArn(this.repositoryArn, ArnFormat.SLASH_RESOURCE_NAME);
-    return formatEcrEndpoint(parts.account!, parts.region!, this.stack.urlSuffix!, determineEcrEndpointType());
+    return formatEcrEndpoint(parts.account!, parts.region!, this.stack.urlSuffix!, determineEcrEndpointType(this.dualStackEndpointSetting()));
   }
 
   /**
@@ -266,7 +276,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    */
   private repositoryUriWithSuffix(suffix?: string): string {
     const parts = this.stack.splitArn(this.repositoryArn, ArnFormat.SLASH_RESOURCE_NAME);
-    const registryUri = formatEcrEndpoint(parts.account!, parts.region!, this.stack.urlSuffix!, determineEcrEndpointType());
+    const registryUri = formatEcrEndpoint(parts.account!, parts.region!, this.stack.urlSuffix!, determineEcrEndpointType(this.dualStackEndpointSetting()));
     return `${registryUri}/${this.repositoryName}${suffix}`;
   }
 
@@ -606,6 +616,19 @@ export interface RepositoryProps {
    * @default false
    */
   readonly emptyOnDelete?: boolean;
+
+  /**
+   * Whether to use IPv6 dual-stack endpoints for this repository.
+   *
+   * When enabled, repository URIs will use the dual-stack format:
+   * `account.dkr-ecr.region.on.aws` instead of the IPv4-only format:
+   * `account.dkr.ecr.region.amazonaws.com`
+   *
+   * This enables IPv6-only infrastructure to access ECR without requiring VPC endpoints.
+   *
+   * @default false - Uses IPv4-only endpoints for backward compatibility
+   */
+  readonly useDualStackEndpoint?: boolean;
 }
 
 /**
@@ -798,6 +821,7 @@ export class Repository extends RepositoryBase {
   private readonly registryId?: string;
   private policyDocument?: iam.PolicyDocument;
   private readonly _resource: CfnRepository;
+  private readonly useDualStackEndpoint?: boolean;
 
   constructor(scope: Construct, id: string, props: RepositoryProps = {}) {
     super(scope, id, {
@@ -823,6 +847,7 @@ export class Repository extends RepositoryBase {
     resource.applyRemovalPolicy(props.removalPolicy);
 
     this.registryId = props.lifecycleRegistryId;
+    this.useDualStackEndpoint = props.useDualStackEndpoint;
     if (props.lifecycleRules) {
       props.lifecycleRules.forEach(this.addLifecycleRule.bind(this));
     }
@@ -844,6 +869,13 @@ export class Repository extends RepositoryBase {
     }
 
     this.node.addValidation({ validate: () => this.policyDocument?.validateForResourcePolicy() ?? [] });
+  }
+
+  /**
+   * Override to provide repository-level dual-stack endpoint configuration.
+   */
+  protected dualStackEndpointSetting(): boolean | undefined {
+    return this.useDualStackEndpoint;
   }
 
   /**
