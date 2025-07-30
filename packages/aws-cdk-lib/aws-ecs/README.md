@@ -2079,9 +2079,12 @@ Amazon ECS supports native blue/green deployments that allow you to deploy new v
 ### Using Fargate L2 constructs for Blue/Green Feature
 
 ```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
 declare const lambdaHook: lambda.Function;
+declare const blueTargetGroup: elbv2.ApplicationTargetGroup;
 declare const greenTargetGroup: elbv2.ApplicationTargetGroup;
 declare const prodListenerRule: elbv2.ApplicationListenerRule;
 
