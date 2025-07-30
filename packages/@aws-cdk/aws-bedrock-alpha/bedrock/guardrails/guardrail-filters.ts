@@ -1,4 +1,18 @@
 /******************************************************************************
+ *                             TIER CONFIG
+*****************************************************************************/
+export enum TierConfig {
+  /**
+   * Provides established guardrails functionality supporting English, French, and Spanish languages.
+   */
+  CLASSIC = 'CLASSIC',
+  /**
+   * Provides a more robust solution than the CLASSIC tier and has more comprehensive language support. This tier requires that your guardrail use cross-Region inference.
+   */
+  STANDARD = 'STANDARD',
+}
+
+/******************************************************************************
  *                             CONTENT FILTERS
  *****************************************************************************/
 /**
@@ -281,7 +295,9 @@ export class Topic {
   readonly examples?: string[];
 
   protected constructor(props: CustomTopicProps) {
-    (this.name = props.name), (this.definition = props.definition), (this.examples = props.examples);
+    this.name = props.name;
+    this.definition = props.definition;
+    this.examples = props.examples;
   }
 }
 

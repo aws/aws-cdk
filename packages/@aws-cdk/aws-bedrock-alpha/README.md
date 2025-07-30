@@ -662,7 +662,9 @@ const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
 | blockedOutputsMessaging | string | No | The message to return when the guardrail blocks a model response. Default: "Sorry, I am unable to answer your question because of our usage policy." |
 | kmsKey | IKey | No | A custom KMS key to use for encrypting data. Default: Your data is encrypted by default with a key that AWS owns and manages for you. |
 | contentFilters | ContentFilter[] | No | The content filters to apply to the guardrail |
+| contentFiltersTierConfig | TierConfig | No | The tier configuration to apply to content filters. Default: TierConfig.CLASSIC |
 | deniedTopics | Topic[] | No | Up to 30 denied topics to block user inputs or model responses associated with the topic |
+| topicsTierConfig | TierConfig | No | The tier configuration to apply to topic filters. Default: TierConfig.CLASSIC |
 | wordFilters | string[] | No | The word filters to apply to the guardrail |
 | managedWordListFilters | ManagedWordFilterType[] | No | The managed word filters to apply to the guardrail |
 | piiFilters | PIIFilter[] | No | The PII filters to apply to the guardrail |
@@ -680,6 +682,8 @@ Content filters allow you to block input prompts or model responses containing h
 ```ts fixture=default
 const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
   guardrailName: 'my-BedrockGuardrails',
+  // Configure tier for content filters (optional)
+  contentFiltersTierConfig: bedrock.TierConfig.STANDARD,
 });
 
 guardrail.addContentFilter({
@@ -726,6 +730,29 @@ Available modality types:
 - `TEXT`: Text modality for content filters
 - `IMAGE`: Image modality for content filters
 
+#### Tier Configuration
+
+Guardrails support tier configurations that determine the level of language support and robustness for content and topic filters. You can configure separate tier settings for content filters and topic filters.
+
+##### Tier Configuration Options
+
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+  // Configure tier for content filters
+  contentFiltersTierConfig: bedrock.TierConfig.STANDARD,
+  // Configure tier for topic filters
+  topicsTierConfig: bedrock.TierConfig.CLASSIC,
+});
+```
+
+Available tier configurations:
+
+- `CLASSIC`: Provides established guardrails functionality supporting English, French, and Spanish languages
+- `STANDARD`: Provides a more robust solution than the CLASSIC tier and has more comprehensive language support. This tier requires that your guardrail use cross-Region inference
+
+> Note: The STANDARD tier provides enhanced language support and more comprehensive filtering capabilities, but requires cross-Region inference to be enabled for your guardrail.
+
 #### Denied Topics
 
 Denied topics allow you to define a set of topics that are undesirable in the context of your application. These topics will be blocked if detected in user queries or model responses. You can configure separate actions for input and output.
@@ -735,6 +762,8 @@ Denied topics allow you to define a set of topics that are undesirable in the co
 ```ts fixture=default
 const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
   guardrailName: 'my-BedrockGuardrails',
+  // Configure tier for topic filters (optional)
+  topicsTierConfig: bedrock.TierConfig.STANDARD,
 });
 
 // Use a predefined topic

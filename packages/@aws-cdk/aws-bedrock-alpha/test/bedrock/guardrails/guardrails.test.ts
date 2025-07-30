@@ -683,6 +683,244 @@ describe('CDK-Created-Guardrail', () => {
       },
     });
   });
+
+  test('Content Filter with Tier Configuration - CLASSIC', () => {
+    new bedrock.Guardrail(stack, 'TestGuardrail', {
+      guardrailName: 'TestGuardrail',
+      description: 'This is a test guardrail',
+      contentFilters: [
+        {
+          type: bedrock.ContentFilterType.MISCONDUCT,
+          inputStrength: bedrock.ContentFilterStrength.LOW,
+          outputStrength: bedrock.ContentFilterStrength.LOW,
+        },
+      ],
+      contentFiltersTierConfig: bedrock.TierConfig.CLASSIC,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+      Name: 'TestGuardrail',
+      Description: 'This is a test guardrail',
+      ContentPolicyConfig: {
+        FiltersConfig: [
+          {
+            InputStrength: 'LOW',
+            OutputStrength: 'LOW',
+            Type: 'MISCONDUCT',
+          },
+        ],
+        ContentFiltersTierConfig: {
+          TierName: 'CLASSIC',
+        },
+      },
+    });
+  });
+
+  test('Content Filter with Tier Configuration - STANDARD', () => {
+    new bedrock.Guardrail(stack, 'TestGuardrail', {
+      guardrailName: 'TestGuardrail',
+      description: 'This is a test guardrail',
+      contentFilters: [
+        {
+          type: bedrock.ContentFilterType.MISCONDUCT,
+          inputStrength: bedrock.ContentFilterStrength.LOW,
+          outputStrength: bedrock.ContentFilterStrength.LOW,
+        },
+      ],
+      contentFiltersTierConfig: bedrock.TierConfig.STANDARD,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+      Name: 'TestGuardrail',
+      Description: 'This is a test guardrail',
+      ContentPolicyConfig: {
+        FiltersConfig: [
+          {
+            InputStrength: 'LOW',
+            OutputStrength: 'LOW',
+            Type: 'MISCONDUCT',
+          },
+        ],
+        ContentFiltersTierConfig: {
+          TierName: 'STANDARD',
+        },
+      },
+    });
+  });
+
+  test('Topic Filter with Tier Configuration - CLASSIC', () => {
+    new bedrock.Guardrail(stack, 'TestGuardrail', {
+      guardrailName: 'TestGuardrail',
+      description: 'This is a test guardrail',
+      deniedTopics: [bedrock.Topic.FINANCIAL_ADVICE],
+      topicsTierConfig: bedrock.TierConfig.CLASSIC,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+      Name: 'TestGuardrail',
+      Description: 'This is a test guardrail',
+      TopicPolicyConfig: {
+        TopicsConfig: [
+          {
+            Definition:
+                "'Discussions that involve providing guidance, recommendations, or suggestions related to managing, investing, or handling finances, investments, or assets.",
+            Examples: [
+              'Can you suggest some good stocks to invest in right now?',
+              "What's the best way to save for retirement?",
+              'Should I put my money in a high-risk investment?',
+              'How can I maximize my returns on investments?',
+              'Is it a good time to buy real estate?',
+            ],
+            Name: 'Financial_Advice',
+            Type: 'DENY',
+          },
+        ],
+        TopicsTierConfig: {
+          TierName: 'CLASSIC',
+        },
+      },
+    });
+  });
+
+  test('Topic Filter with Tier Configuration - STANDARD', () => {
+    new bedrock.Guardrail(stack, 'TestGuardrail', {
+      guardrailName: 'TestGuardrail',
+      description: 'This is a test guardrail',
+      deniedTopics: [bedrock.Topic.FINANCIAL_ADVICE],
+      topicsTierConfig: bedrock.TierConfig.STANDARD,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+      Name: 'TestGuardrail',
+      Description: 'This is a test guardrail',
+      TopicPolicyConfig: {
+        TopicsConfig: [
+          {
+            Definition:
+                "'Discussions that involve providing guidance, recommendations, or suggestions related to managing, investing, or handling finances, investments, or assets.",
+            Examples: [
+              'Can you suggest some good stocks to invest in right now?',
+              "What's the best way to save for retirement?",
+              'Should I put my money in a high-risk investment?',
+              'How can I maximize my returns on investments?',
+              'Is it a good time to buy real estate?',
+            ],
+            Name: 'Financial_Advice',
+            Type: 'DENY',
+          },
+        ],
+        TopicsTierConfig: {
+          TierName: 'STANDARD',
+        },
+      },
+    });
+  });
+
+  test('Both Content and Topic Filters with Tier Configuration', () => {
+    new bedrock.Guardrail(stack, 'TestGuardrail', {
+      guardrailName: 'TestGuardrail',
+      description: 'This is a test guardrail',
+      contentFilters: [
+        {
+          type: bedrock.ContentFilterType.MISCONDUCT,
+          inputStrength: bedrock.ContentFilterStrength.LOW,
+          outputStrength: bedrock.ContentFilterStrength.LOW,
+        },
+      ],
+      contentFiltersTierConfig: bedrock.TierConfig.STANDARD,
+      deniedTopics: [bedrock.Topic.FINANCIAL_ADVICE],
+      topicsTierConfig: bedrock.TierConfig.CLASSIC,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+      Name: 'TestGuardrail',
+      Description: 'This is a test guardrail',
+      ContentPolicyConfig: {
+        FiltersConfig: [
+          {
+            InputStrength: 'LOW',
+            OutputStrength: 'LOW',
+            Type: 'MISCONDUCT',
+          },
+        ],
+        ContentFiltersTierConfig: {
+          TierName: 'STANDARD',
+        },
+      },
+      TopicPolicyConfig: {
+        TopicsConfig: [
+          {
+            Definition:
+                "'Discussions that involve providing guidance, recommendations, or suggestions related to managing, investing, or handling finances, investments, or assets.",
+            Examples: [
+              'Can you suggest some good stocks to invest in right now?',
+              "What's the best way to save for retirement?",
+              'Should I put my money in a high-risk investment?',
+              'How can I maximize my returns on investments?',
+              'Is it a good time to buy real estate?',
+            ],
+            Name: 'Financial_Advice',
+            Type: 'DENY',
+          },
+        ],
+        TopicsTierConfig: {
+          TierName: 'CLASSIC',
+        },
+      },
+    });
+  });
+
+  test('Default Tier Configuration - CLASSIC', () => {
+    new bedrock.Guardrail(stack, 'TestGuardrail', {
+      guardrailName: 'TestGuardrail',
+      description: 'This is a test guardrail',
+      contentFilters: [
+        {
+          type: bedrock.ContentFilterType.MISCONDUCT,
+          inputStrength: bedrock.ContentFilterStrength.LOW,
+          outputStrength: bedrock.ContentFilterStrength.LOW,
+        },
+      ],
+      deniedTopics: [bedrock.Topic.FINANCIAL_ADVICE],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+      Name: 'TestGuardrail',
+      Description: 'This is a test guardrail',
+      ContentPolicyConfig: {
+        FiltersConfig: [
+          {
+            InputStrength: 'LOW',
+            OutputStrength: 'LOW',
+            Type: 'MISCONDUCT',
+          },
+        ],
+        ContentFiltersTierConfig: {
+          TierName: 'CLASSIC',
+        },
+      },
+      TopicPolicyConfig: {
+        TopicsConfig: [
+          {
+            Definition:
+                "'Discussions that involve providing guidance, recommendations, or suggestions related to managing, investing, or handling finances, investments, or assets.",
+            Examples: [
+              'Can you suggest some good stocks to invest in right now?',
+              "What's the best way to save for retirement?",
+              'Should I put my money in a high-risk investment?',
+              'How can I maximize my returns on investments?',
+              'Is it a good time to buy real estate?',
+            ],
+            Name: 'Financial_Advice',
+            Type: 'DENY',
+          },
+        ],
+        TopicsTierConfig: {
+          TierName: 'CLASSIC',
+        },
+      },
+    });
+  });
 });
 
 describe('Imported-Guardrail', () => {

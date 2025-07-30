@@ -315,10 +315,20 @@ export interface GuardrailProps {
    */
   readonly contentFilters?: filters.ContentFilter[];
   /**
+   * The tier configuration to apply to the guardrail.
+   * @default filters.TierConfig.CLASSIC
+   */
+  readonly contentFiltersTierConfig?: filters.TierConfig;
+  /**
    * Up to 30 denied topics to block user inputs or model responses associated with the topic.
    * @default []
    */
   readonly deniedTopics?: filters.Topic[];
+  /**
+   * The tier configuration to apply to the guardrail.
+   * @default filters.TierConfig.CLASSIC
+   */
+  readonly topicsTierConfig?: filters.TierConfig;
   /**
    * The word filters to apply to the guardrail.
    * @default []
@@ -476,6 +486,19 @@ export class Guardrail extends GuardrailBase {
    */
   private readonly __resource: bedrock.CfnGuardrail;
 
+  /**
+   * The tier that your guardrail uses for denied topic filters.
+   * @default filters.TierConfig.CLASSIC
+   */
+  public readonly topicsTierConfig: filters.TierConfig;
+
+  /**
+   * The tier that your guardrail uses for content filters.
+   * Consider using a tier that balances performance, accuracy, and compatibility with your existing generative AI workflows.
+   * @default filters.TierConfig.CLASSIC
+   */
+  public readonly contentFiltersTierConfig: filters.TierConfig;
+
   constructor(scope: Construct, id: string, props: GuardrailProps) {
     super(scope, id, {
       physicalName: props.guardrailName,
@@ -492,6 +515,8 @@ export class Guardrail extends GuardrailBase {
     this.contextualGroundingFilters = props.contextualGroundingFilters ?? [];
     this.wordFilters = props.wordFilters ?? [];
     this.managedWordListFilters = props.managedWordListFilters ?? [];
+    this.topicsTierConfig = props.topicsTierConfig ?? filters.TierConfig.CLASSIC;
+    this.contentFiltersTierConfig = props.contentFiltersTierConfig ?? filters.TierConfig.CLASSIC;
 
     const defaultBlockedInputMessaging = 'Sorry, your query violates our usage policy.';
     const defaultBlockedOutputsMessaging = 'Sorry, I am unable to answer your question because of our usage policy.';
@@ -626,7 +651,16 @@ export class Guardrail extends GuardrailBase {
     return Lazy.any({
       produce: () => {
         if (this.contentFilters.length > 0) {
-          return { filtersConfig: this.contentFilters } as bedrock.CfnGuardrail.ContentPolicyConfigProperty;
+          const contentPolicyConfig: bedrock.CfnGuardrail.ContentPolicyConfigProperty = {
+            filtersConfig: this.contentFilters,
+            ...(this.contentFiltersTierConfig && {
+              contentFiltersTierConfig: {
+                tierName: this.contentFiltersTierConfig,
+              } as bedrock.CfnGuardrail.ContentFiltersTierConfigProperty,
+            }),
+          };
+
+          return contentPolicyConfig;
         } else {
           return undefined;
         }
@@ -642,7 +676,7 @@ export class Guardrail extends GuardrailBase {
     return Lazy.any({
       produce: () => {
         if (this.deniedTopics.length > 0) {
-          return {
+          const topicPolicyConfig: bedrock.CfnGuardrail.TopicPolicyConfigProperty = {
             topicsConfig: this.deniedTopics.flatMap((topic: filters.Topic) => {
               return {
                 definition: topic.definition,
@@ -651,7 +685,14 @@ export class Guardrail extends GuardrailBase {
                 type: 'DENY',
               } as bedrock.CfnGuardrail.TopicConfigProperty;
             }),
+            ...(this.topicsTierConfig && {
+              topicsTierConfig: {
+                tierName: this.topicsTierConfig,
+              } as bedrock.CfnGuardrail.TopicsTierConfigProperty,
+            }),
           };
+
+          return topicPolicyConfig;
         } else {
           return undefined;
         }

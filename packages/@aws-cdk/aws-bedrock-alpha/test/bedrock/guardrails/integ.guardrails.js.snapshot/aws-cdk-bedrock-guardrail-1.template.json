@@ -6,6 +6,9 @@
     "BlockedInputMessaging": "Sorry, your query violates our usage policy.",
     "BlockedOutputsMessaging": "Sorry, I am unable to answer your question because of our usage policy.",
     "ContentPolicyConfig": {
+     "ContentFiltersTierConfig": {
+      "TierName": "CLASSIC"
+     },
      "FiltersConfig": [
       {
        "InputStrength": "LOW",
@@ -54,7 +57,10 @@
        "Name": "Financial_Advice",
        "Type": "DENY"
       }
-     ]
+     ],
+     "TopicsTierConfig": {
+      "TierName": "CLASSIC"
+     }
     },
     "WordPolicyConfig": {
      "ManagedWordListsConfig": [
