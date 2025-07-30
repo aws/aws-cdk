@@ -41,7 +41,7 @@ describe('ECR Endpoint Support in Stack Synthesizers', () => {
     const template = Template.fromStack(stack);
     const outputs = template.findOutputs('ImageUri');
     const imageUri = outputs.ImageUri.Value;
-    
+
     // Check that it uses IPv4 format and contains expected components
     if (typeof imageUri === 'string') {
       expect(imageUri).toMatch(/\.dkr\.ecr\./);
@@ -81,7 +81,7 @@ describe('ECR Endpoint Support in Stack Synthesizers', () => {
     const template = Template.fromStack(stack);
     const outputs = template.findOutputs('ImageUri');
     const imageUri = outputs.ImageUri.Value;
-    
+
     // Check that it uses dual-stack format
     expect(imageUri).toMatch(/\.dkr-ecr\./);
     expect(imageUri).toMatch(/\.on\.aws\//);
@@ -112,7 +112,7 @@ describe('ECR Endpoint Support in Stack Synthesizers', () => {
     const template = Template.fromStack(stack);
     const outputs = template.findOutputs('ImageUri');
     const imageUri = outputs.ImageUri.Value;
-    
+
     // Should use CloudFormation Fn::Sub with dual-stack format
     expect(imageUri).toHaveProperty('Fn::Sub');
     expect(imageUri['Fn::Sub']).toMatch(/\.dkr-ecr\./);

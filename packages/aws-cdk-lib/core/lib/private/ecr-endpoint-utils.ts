@@ -10,19 +10,26 @@ export enum EcrEndpointType {
   /**
    * IPv6 dual-stack endpoint format: account.dkr-ecr.region.on.aws
    */
-  DUAL_STACK = 'dualstack'
+  DUAL_STACK = 'dualstack',
 }
 
 /**
- * Determines the ECR endpoint type based on environment variables
- * 
- * Checks the AWS_USE_DUALSTACK_ENDPOINT environment variable following
- * AWS SDK standards for consistency.
- * 
- * @returns EcrEndpointType.DUAL_STACK if AWS_USE_DUALSTACK_ENDPOINT is 'true' or '1',
- *          EcrEndpointType.IPV4_ONLY otherwise (default for backward compatibility)
+ * Determines the ECR endpoint type based on repository configuration and environment variables
+ *
+ * Priority order:
+ * 1. Repository-level useDualStackEndpoint property (if provided)
+ * 2. AWS_USE_DUALSTACK_ENDPOINT environment variable
+ * 3. Default to IPv4-only for backward compatibility
+ *
+ * @param useDualStackEndpoint Optional repository-level setting to override environment variable
+ * @returns EcrEndpointType.DUAL_STACK if dual-stack is enabled, EcrEndpointType.IPV4_ONLY otherwise
  */
-export function determineEcrEndpointType(): EcrEndpointType {
+export function determineEcrEndpointType(useDualStackEndpoint?: boolean): EcrEndpointType {
+  // Repository-level setting takes precedence
+  if (useDualStackEndpoint !== undefined) {
+    return useDualStackEndpoint ? EcrEndpointType.DUAL_STACK : EcrEndpointType.IPV4_ONLY;
+  }
+
   // Check AWS_USE_DUALSTACK_ENDPOINT environment variable
   const envDualStack = process.env.AWS_USE_DUALSTACK_ENDPOINT;
   if (envDualStack === 'true' || envDualStack === '1') {
@@ -35,7 +42,7 @@ export function determineEcrEndpointType(): EcrEndpointType {
 
 /**
  * Formats an ECR endpoint URL based on the specified endpoint type
- * 
+ *
  * @param account AWS account ID
  * @param region AWS region
  * @param urlSuffix URL suffix (e.g., 'amazonaws.com')

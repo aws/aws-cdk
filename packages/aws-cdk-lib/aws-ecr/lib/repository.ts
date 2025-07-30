@@ -28,7 +28,6 @@ import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-re
 import { determineEcrEndpointType, formatEcrEndpoint } from '../../core/lib/private/ecr-endpoint-utils';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
-import { determineEcrEndpointType, formatEcrEndpoint } from '../../core/lib/private/ecr-endpoint-utils';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
@@ -189,19 +188,19 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   public abstract readonly repositoryName: string;
 
   /**
+   * The ARN of the repository
+   */
+  public abstract readonly repositoryArn: string;
+
+  /**
    * Determines whether to use dual-stack endpoints for this repository.
    * Can be overridden by subclasses to provide repository-specific configuration.
-   * 
+   *
    * @returns The dual-stack endpoint setting for this repository
    */
   protected dualStackEndpointSetting(): boolean | undefined {
     return undefined; // Default implementation returns undefined (use environment variable)
   }
-
-  /**
-   * The ARN of the repository
-   */
-  public abstract readonly repositoryArn: string;
 
   /**
    * Add a policy statement to the repository's resource policy
@@ -276,7 +275,8 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    */
   private repositoryUriWithSuffix(suffix?: string): string {
     const parts = this.stack.splitArn(this.repositoryArn, ArnFormat.SLASH_RESOURCE_NAME);
-    const registryUri = formatEcrEndpoint(parts.account!, parts.region!, this.stack.urlSuffix!, determineEcrEndpointType(this.dualStackEndpointSetting()));
+    const endpointType = determineEcrEndpointType(this.dualStackEndpointSetting());
+    const registryUri = formatEcrEndpoint(parts.account!, parts.region!, this.stack.urlSuffix!, endpointType);
     return `${registryUri}/${this.repositoryName}${suffix}`;
   }
 
