@@ -488,7 +488,7 @@ describe('Agent', () => {
   });
 
   describe('agent collaborators', () => {
-    test('addAgentCollaborator method adds collaborator and grants permissions', () => {
+    test('grantPermissionToAgent method grants permissions for collaborators', () => {
       const agent = new bedrock.Agent(stack, 'TestAgent', {
         instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
         foundationModel,
@@ -515,73 +515,45 @@ describe('Agent', () => {
         relayConversationHistory: true,
       });
 
-      // Add collaborator using the public method
-      agent.addAgentCollaborator(collaborator);
+      // Grant permissions using the public method (this only grants IAM permissions)
+      agent.grantPermissionToAgent(collaborator);
 
+      // Since grantPermissionToAgent only grants permissions and doesn't add to collaboration,
+      // the agent should have no collaborators in the CloudFormation template
       Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
         AgentCollaboration: 'SUPERVISOR',
-        AgentCollaborators: [
-          {
-            AgentDescriptor: {
-              AliasArn: Match.objectLike({
-                'Fn::Join': Match.anyValue(),
-              }),
-            },
-            CollaborationInstruction: 'Help with data analysis tasks',
-            CollaboratorName: 'DataAnalyst',
-            RelayConversationHistory: 'TO_COLLABORATOR',
-          },
-        ],
+        AgentCollaborators: Match.absent(),
       });
     });
 
-    test('addAgentCollaborator method adds multiple collaborators', () => {
-      const agent = new bedrock.Agent(stack, 'TestAgent', {
-        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
-        foundationModel,
-        agentCollaboration: new bedrock.AgentCollaboration({
-          type: bedrock.AgentCollaboratorType.SUPERVISOR,
-          collaborators: [],
-        }),
-      });
-
-      const collaboratorAlias1 = bedrock.AgentAlias.fromAttributes(stack, 'CollaboratorAlias1', {
-        aliasId: 'test-alias-id-1',
-        aliasName: 'TestAlias1',
+    test('collaborators from AgentCollaboration props are rendered correctly', () => {
+      const collaboratorAlias = bedrock.AgentAlias.fromAttributes(stack, 'CollaboratorAlias', {
+        aliasId: 'test-alias-id',
+        aliasName: 'TestAlias',
         agentVersion: '1',
-        agent: bedrock.Agent.fromAgentAttributes(stack, 'CollaboratorAgent1', {
-          agentArn: 'arn:aws:bedrock:us-east-1:123456789012:agent/collaborator-agent-id-1',
-          roleArn: 'arn:aws:iam::123456789012:role/collaborator-role-1',
+        agent: bedrock.Agent.fromAgentAttributes(stack, 'CollaboratorAgent', {
+          agentArn: 'arn:aws:bedrock:us-east-1:123456789012:agent/collaborator-agent-id',
+          roleArn: 'arn:aws:iam::123456789012:role/collaborator-role',
         }),
       });
 
-      const collaboratorAlias2 = bedrock.AgentAlias.fromAttributes(stack, 'CollaboratorAlias2', {
-        aliasId: 'test-alias-id-2',
-        aliasName: 'TestAlias2',
-        agentVersion: '1',
-        agent: bedrock.Agent.fromAgentAttributes(stack, 'CollaboratorAgent2', {
-          agentArn: 'arn:aws:bedrock:us-east-1:123456789012:agent/collaborator-agent-id-2',
-          roleArn: 'arn:aws:iam::123456789012:role/collaborator-role-2',
-        }),
-      });
-
-      const collaborator1 = new bedrock.AgentCollaborator({
-        agentAlias: collaboratorAlias1,
+      const collaborator = new bedrock.AgentCollaborator({
+        agentAlias: collaboratorAlias,
         collaborationInstruction: 'Help with data analysis tasks',
         collaboratorName: 'DataAnalyst',
         relayConversationHistory: true,
       });
 
-      const collaborator2 = new bedrock.AgentCollaborator({
-        agentAlias: collaboratorAlias2,
-        collaborationInstruction: 'Help with research tasks',
-        collaboratorName: 'Researcher',
-        relayConversationHistory: false,
+      const agentCollaboration = new bedrock.AgentCollaboration({
+        type: bedrock.AgentCollaboratorType.SUPERVISOR,
+        collaborators: [collaborator],
       });
 
-      // Add multiple collaborators using the public method
-      agent.addAgentCollaborator(collaborator1);
-      agent.addAgentCollaborator(collaborator2);
+      new bedrock.Agent(stack, 'TestAgent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel,
+        agentCollaboration,
+      });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
         AgentCollaboration: 'SUPERVISOR',
@@ -595,92 +567,6 @@ describe('Agent', () => {
             CollaborationInstruction: 'Help with data analysis tasks',
             CollaboratorName: 'DataAnalyst',
             RelayConversationHistory: 'TO_COLLABORATOR',
-          },
-          {
-            AgentDescriptor: {
-              AliasArn: Match.objectLike({
-                'Fn::Join': Match.anyValue(),
-              }),
-            },
-            CollaborationInstruction: 'Help with research tasks',
-            CollaboratorName: 'Researcher',
-            RelayConversationHistory: 'DISABLED',
-          },
-        ],
-      });
-    });
-
-    test('addAgentCollaborator works with initial collaborators from props', () => {
-      const collaboratorAlias1 = bedrock.AgentAlias.fromAttributes(stack, 'CollaboratorAlias1', {
-        aliasId: 'test-alias-id-1',
-        aliasName: 'TestAlias1',
-        agentVersion: '1',
-        agent: bedrock.Agent.fromAgentAttributes(stack, 'CollaboratorAgent1', {
-          agentArn: 'arn:aws:bedrock:us-east-1:123456789012:agent/collaborator-agent-id-1',
-          roleArn: 'arn:aws:iam::123456789012:role/collaborator-role-1',
-        }),
-      });
-
-      const collaboratorAlias2 = bedrock.AgentAlias.fromAttributes(stack, 'CollaboratorAlias2', {
-        aliasId: 'test-alias-id-2',
-        aliasName: 'TestAlias2',
-        agentVersion: '1',
-        agent: bedrock.Agent.fromAgentAttributes(stack, 'CollaboratorAgent2', {
-          agentArn: 'arn:aws:bedrock:us-east-1:123456789012:agent/collaborator-agent-id-2',
-          roleArn: 'arn:aws:iam::123456789012:role/collaborator-role-2',
-        }),
-      });
-
-      const initialCollaborator = new bedrock.AgentCollaborator({
-        agentAlias: collaboratorAlias1,
-        collaborationInstruction: 'Initial collaborator from props',
-        collaboratorName: 'InitialCollaborator',
-        relayConversationHistory: true,
-      });
-
-      const agentCollaboration = new bedrock.AgentCollaboration({
-        type: bedrock.AgentCollaboratorType.SUPERVISOR,
-        collaborators: [initialCollaborator],
-      });
-
-      const agent = new bedrock.Agent(stack, 'TestAgent', {
-        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
-        foundationModel,
-        agentCollaboration,
-      });
-
-      const dynamicCollaborator = new bedrock.AgentCollaborator({
-        agentAlias: collaboratorAlias2,
-        collaborationInstruction: 'Dynamic collaborator added later',
-        collaboratorName: 'DynamicCollaborator',
-        relayConversationHistory: false,
-      });
-
-      // Add collaborator dynamically using the public method
-      agent.addAgentCollaborator(dynamicCollaborator);
-
-      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
-        AgentCollaboration: 'SUPERVISOR',
-        AgentCollaborators: [
-          {
-            AgentDescriptor: {
-              AliasArn: Match.objectLike({
-                'Fn::Join': Match.anyValue(),
-              }),
-            },
-            CollaborationInstruction: 'Initial collaborator from props',
-            CollaboratorName: 'InitialCollaborator',
-            RelayConversationHistory: 'TO_COLLABORATOR',
-          },
-          {
-            AgentDescriptor: {
-              AliasArn: Match.objectLike({
-                'Fn::Join': Match.anyValue(),
-              }),
-            },
-            CollaborationInstruction: 'Dynamic collaborator added later',
-            CollaboratorName: 'DynamicCollaborator',
-            RelayConversationHistory: 'DISABLED',
           },
         ],
       });
