@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "1593c6e6c570a630b83e377ddf335e32da133ab5f3950439c9cc47903bc02553": {
+      "displayName": "EcrDualStackEndpointStack Template",
+      "source": {
+        "path": "EcrDualStackEndpointStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c56ceff2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1593c6e6c570a630b83e377ddf335e32da133ab5f3950439c9cc47903bc02553.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

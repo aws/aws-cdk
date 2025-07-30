@@ -1372,4 +1372,202 @@ describe('repository', () => {
       },
     });
   });
+
+  describe('ECR endpoint support', () => {
+    const originalEnv = process.env;
+
+    beforeEach(() => {
+      // Clean environment before each test
+      delete process.env.AWS_USE_DUALSTACK_ENDPOINT;
+    });
+
+    afterEach(() => {
+      // Restore original environment
+      process.env = originalEnv;
+    });
+
+    test('registryUri uses IPv4-only endpoint by default', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // WHEN
+      const registryUri = repo.registryUri;
+
+      // THEN
+      expect(registryUri).toMatch(/\.dkr\.ecr\./);
+      expect(registryUri).not.toMatch(/\.dkr-ecr\./);
+    });
+
+    test('registryUri uses dual-stack endpoint when AWS_USE_DUALSTACK_ENDPOINT=true', () => {
+      // GIVEN
+      process.env.AWS_USE_DUALSTACK_ENDPOINT = 'true';
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // WHEN
+      const registryUri = repo.registryUri;
+
+      // THEN
+      expect(registryUri).toMatch(/\.dkr-ecr\./);
+      expect(registryUri).toMatch(/\.on\.aws$/);
+    });
+
+    test('registryUri uses dual-stack endpoint when AWS_USE_DUALSTACK_ENDPOINT=1', () => {
+      // GIVEN
+      process.env.AWS_USE_DUALSTACK_ENDPOINT = '1';
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // WHEN
+      const registryUri = repo.registryUri;
+
+      // THEN
+      expect(registryUri).toMatch(/\.dkr-ecr\./);
+      expect(registryUri).toMatch(/\.on\.aws$/);
+    });
+
+    test('registryUri uses IPv4-only endpoint when AWS_USE_DUALSTACK_ENDPOINT=false', () => {
+      // GIVEN
+      process.env.AWS_USE_DUALSTACK_ENDPOINT = 'false';
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // WHEN
+      const registryUri = repo.registryUri;
+
+      // THEN
+      expect(registryUri).toMatch(/\.dkr\.ecr\./);
+      expect(registryUri).not.toMatch(/\.dkr-ecr\./);
+    });
+
+    test('repositoryUriForTag uses IPv4-only endpoint by default', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // WHEN
+      const repoUri = repo.repositoryUriForTag('latest');
+
+      // THEN
+      expect(repoUri).toMatch(/\.dkr\.ecr\./);
+      expect(repoUri).toMatch(/:latest$/);
+    });
+
+    test('repositoryUriForTag uses dual-stack endpoint when AWS_USE_DUALSTACK_ENDPOINT=true', () => {
+      // GIVEN
+      process.env.AWS_USE_DUALSTACK_ENDPOINT = 'true';
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // WHEN
+      const repoUri = repo.repositoryUriForTag('latest');
+
+      // THEN
+      expect(repoUri).toMatch(/\.dkr-ecr\./);
+      expect(repoUri).toMatch(/\.on\.aws\//);
+      expect(repoUri).toMatch(/:latest$/);
+    });
+
+    test('repositoryUriForDigest uses IPv4-only endpoint by default', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // WHEN
+      const repoUri = repo.repositoryUriForDigest('sha256:abcd1234');
+
+      // THEN
+      expect(repoUri).toMatch(/\.dkr\.ecr\./);
+      expect(repoUri).toMatch(/@sha256:abcd1234$/);
+    });
+
+    test('repositoryUriForDigest uses dual-stack endpoint when AWS_USE_DUALSTACK_ENDPOINT=true', () => {
+      // GIVEN
+      process.env.AWS_USE_DUALSTACK_ENDPOINT = 'true';
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // WHEN
+      const repoUri = repo.repositoryUriForDigest('sha256:abcd1234');
+
+      // THEN
+      expect(repoUri).toMatch(/\.dkr-ecr\./);
+      expect(repoUri).toMatch(/\.on\.aws\//);
+      expect(repoUri).toMatch(/@sha256:abcd1234$/);
+    });
+
+    test('repositoryUriForTagOrDigest uses IPv4-only endpoint by default', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // WHEN
+      const repoUriTag = repo.repositoryUriForTagOrDigest('latest');
+      const repoUriDigest = repo.repositoryUriForTagOrDigest('sha256:abcd1234');
+
+      // THEN
+      expect(repoUriTag).toMatch(/\.dkr\.ecr\./);
+      expect(repoUriTag).toMatch(/:latest$/);
+      expect(repoUriDigest).toMatch(/\.dkr\.ecr\./);
+      expect(repoUriDigest).toMatch(/@sha256:abcd1234$/);
+    });
+
+    test('repositoryUriForTagOrDigest uses dual-stack endpoint when AWS_USE_DUALSTACK_ENDPOINT=true', () => {
+      // GIVEN
+      process.env.AWS_USE_DUALSTACK_ENDPOINT = 'true';
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // WHEN
+      const repoUriTag = repo.repositoryUriForTagOrDigest('latest');
+      const repoUriDigest = repo.repositoryUriForTagOrDigest('sha256:abcd1234');
+
+      // THEN
+      expect(repoUriTag).toMatch(/\.dkr-ecr\./);
+      expect(repoUriTag).toMatch(/\.on\.aws\//);
+      expect(repoUriTag).toMatch(/:latest$/);
+      expect(repoUriDigest).toMatch(/\.dkr-ecr\./);
+      expect(repoUriDigest).toMatch(/\.on\.aws\//);
+      expect(repoUriDigest).toMatch(/@sha256:abcd1234$/);
+    });
+
+    test('imported repository uses correct endpoint type', () => {
+      // GIVEN
+      process.env.AWS_USE_DUALSTACK_ENDPOINT = 'true';
+      const stack = new cdk.Stack();
+      const repo = ecr.Repository.fromRepositoryName(stack, 'ImportedRepo', 'my-repo');
+
+      // WHEN
+      const registryUri = repo.registryUri;
+
+      // THEN
+      expect(registryUri).toMatch(/\.dkr-ecr\./);
+      expect(registryUri).toMatch(/\.on\.aws$/);
+    });
+
+    test('CloudFormation output uses correct endpoint format', () => {
+      // GIVEN
+      process.env.AWS_USE_DUALSTACK_ENDPOINT = 'true';
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      new cdk.CfnOutput(stack, 'RegistryUri', {
+        value: repo.registryUri,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasOutput('RegistryUri', {
+        Value: {
+          'Fn::Join': ['', [
+            { 'Fn::Select': [4, { 'Fn::Split': [':', { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] }] }] },
+            '.dkr-ecr.',
+            { 'Fn::Select': [3, { 'Fn::Split': [':', { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] }] }] },
+            '.on.aws',
+          ]],
+        },
+      });
+    });
+  });
 });

@@ -27,6 +27,7 @@ import {
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
+import { determineEcrEndpointType, formatEcrEndpoint } from '../../core/lib/private/ecr-endpoint-utils';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
@@ -214,7 +215,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    */
   public get registryUri(): string {
     const parts = this.stack.splitArn(this.repositoryArn, ArnFormat.SLASH_RESOURCE_NAME);
-    return `${parts.account}.dkr.ecr.${parts.region}.${this.stack.urlSuffix}`;
+    return formatEcrEndpoint(parts.account!, parts.region!, this.stack.urlSuffix!, determineEcrEndpointType());
   }
 
   /**
@@ -264,7 +265,8 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    */
   private repositoryUriWithSuffix(suffix?: string): string {
     const parts = this.stack.splitArn(this.repositoryArn, ArnFormat.SLASH_RESOURCE_NAME);
-    return `${parts.account}.dkr.ecr.${parts.region}.${this.stack.urlSuffix}/${this.repositoryName}${suffix}`;
+    const registryUri = formatEcrEndpoint(parts.account!, parts.region!, this.stack.urlSuffix!, determineEcrEndpointType());
+    return `${registryUri}/${this.repositoryName}${suffix}`;
   }
 
   /**

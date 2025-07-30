@@ -1,0 +1,59 @@
+{
+ "Outputs": {
+  "DualStackAssetImageUri": {
+   "Description": "Dual-stack Docker image asset URI",
+   "Value": {
+    "Fn::Sub": "12345678.dkr.ecr.test-region.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-12345678-test-region:6217777da242aec71cf3c0e7e1d79b98ca911c04b5b29f94fffce04b5e9680d5"
+   }
+  },
+  "DualStackAssetRepository": {
+   "Description": "Dual-stack Docker image asset repository URI",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "12345678.dkr.ecr.test-region.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/cdk-hnb659fds-container-assets-12345678-test-region"
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

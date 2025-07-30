@@ -1,0 +1,36 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "a3f70b6beee74a96cea33f682a2b67943087cf5ba4e2614c990243cd28c210e1": {
+      "displayName": "EcrSynthesizerIpv4Stack Template",
+      "source": {
+        "path": "EcrSynthesizerIpv4Stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-test-region-513fab7c": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
+          "objectKey": "a3f70b6beee74a96cea33f682a2b67943087cf5ba4e2614c990243cd28c210e1.json",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
+        }
+      }
+    }
+  },
+  "dockerImages": {
+    "6217777da242aec71cf3c0e7e1d79b98ca911c04b5b29f94fffce04b5e9680d5": {
+      "displayName": "Ipv4DockerAsset",
+      "source": {
+        "directory": "asset.6217777da242aec71cf3c0e7e1d79b98ca911c04b5b29f94fffce04b5e9680d5"
+      },
+      "destinations": {
+        "12345678-test-region-5ccc0694": {
+          "repositoryName": "cdk-hnb659fds-container-assets-12345678-test-region",
+          "imageTag": "6217777da242aec71cf3c0e7e1d79b98ca911c04b5b29f94fffce04b5e9680d5",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-image-publishing-role-12345678-test-region"
+        }
+      }
+    }
+  }
+}
