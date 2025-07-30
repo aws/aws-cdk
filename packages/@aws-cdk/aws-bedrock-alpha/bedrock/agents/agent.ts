@@ -408,6 +408,7 @@ export class Agent extends AgentBase implements IAgent {
    * action groups associated with the ageny
    */
   public readonly actionGroups: AgentActionGroup[] = [];
+
   // ------------------------------------------------------
   // CDK-only attributes
   // ------------------------------------------------------
@@ -428,6 +429,7 @@ export class Agent extends AgentBase implements IAgent {
   private readonly agentCollaboration?: AgentCollaboration;
   private readonly customOrchestrationExecutor?: CustomOrchestrationExecutor;
   private readonly promptOverrideConfiguration?: PromptOverrideConfiguration;
+  private readonly agentCollaborators: AgentCollaborator[] = [];
   private readonly __resource: bedrock.CfnAgent;
 
   // ------------------------------------------------------
@@ -638,9 +640,9 @@ export class Agent extends AgentBase implements IAgent {
   /**
    * Adds a collaborator to the agent and grants necessary permissions.
    * @param agentCollaborator - The collaborator to add
-   * @internal This method is used internally by the constructor and should not be called directly.
    */
-  private addAgentCollaborator(agentCollaborator: AgentCollaborator) {
+  public addAgentCollaborator(agentCollaborator: AgentCollaborator) {
+    this.agentCollaborators.push(agentCollaborator);
     agentCollaborator.grant(this.role);
   }
 
@@ -682,11 +684,11 @@ export class Agent extends AgentBase implements IAgent {
    * @internal This is an internal core function and should not be called directly.
    */
   private renderAgentCollaborators(): bedrock.CfnAgent.AgentCollaboratorProperty[] | undefined {
-    if (!this.agentCollaboration) {
+    if (!this.agentCollaboration || this.agentCollaborators.length === 0) {
       return undefined;
     }
 
-    return this.agentCollaboration.collaborators.map(ac => ac._render());
+    return this.agentCollaborators.map(ac => ac._render());
   }
 
   /**
