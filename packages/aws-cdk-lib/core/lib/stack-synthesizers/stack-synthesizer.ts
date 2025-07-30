@@ -12,7 +12,6 @@ import { UnscopedValidationError, ValidationError } from '../errors';
 import { resolvedOr } from '../helpers-internal/string-specializer';
 import { determineEcrEndpointType, formatEcrEndpoint } from '../private/ecr-endpoint-utils';
 import { Stack } from '../stack';
-import { determineEcrEndpointType, formatEcrEndpoint } from '../private/ecr-endpoint-utils';
 
 /**
  * Base class for implementing an IStackSynthesizer
