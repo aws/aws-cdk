@@ -25,6 +25,7 @@ import {
   UnscopedValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { determineEcrEndpointType, formatEcrEndpoint } from '../../core/lib/private/ecr-endpoint-utils';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
 import { determineEcrEndpointType, formatEcrEndpoint } from '../../core/lib/private/ecr-endpoint-utils';

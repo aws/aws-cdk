@@ -10,15 +10,26 @@ export enum EcrEndpointType {
   /**
    * IPv6 dual-stack endpoint format: account.dkr-ecr.region.on.aws
    */
+<<<<<<< HEAD
   DUAL_STACK = 'dualstack'
+=======
+  DUAL_STACK = 'dualstack',
+>>>>>>> 7c9416ce42 (feat(ecr): add IPv6 dual-stack endpoint support via AWS_USE_DUALSTACK_ENDPOINT)
 }
 
 /**
  * Determines the ECR endpoint type based on environment variables
+<<<<<<< HEAD
  * 
  * Checks the AWS_USE_DUALSTACK_ENDPOINT environment variable following
  * AWS SDK standards for consistency.
  * 
+=======
+ *
+ * Checks the AWS_USE_DUALSTACK_ENDPOINT environment variable following
+ * AWS SDK standards for consistency.
+ *
+>>>>>>> 7c9416ce42 (feat(ecr): add IPv6 dual-stack endpoint support via AWS_USE_DUALSTACK_ENDPOINT)
  * @returns EcrEndpointType.DUAL_STACK if AWS_USE_DUALSTACK_ENDPOINT is 'true' or '1',
  *          EcrEndpointType.IPV4_ONLY otherwise (default for backward compatibility)
  */
@@ -35,7 +46,11 @@ export function determineEcrEndpointType(): EcrEndpointType {
 
 /**
  * Formats an ECR endpoint URL based on the specified endpoint type
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> 7c9416ce42 (feat(ecr): add IPv6 dual-stack endpoint support via AWS_USE_DUALSTACK_ENDPOINT)
  * @param account AWS account ID
  * @param region AWS region
  * @param urlSuffix URL suffix (e.g., 'amazonaws.com')
@@ -50,4 +65,8 @@ export function formatEcrEndpoint(account: string, region: string, urlSuffix: st
 
   // IPv4-only format: account.dkr.ecr.region.amazonaws.com
   return `${account}.dkr.ecr.${region}.${urlSuffix}`;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 7c9416ce42 (feat(ecr): add IPv6 dual-stack endpoint support via AWS_USE_DUALSTACK_ENDPOINT)

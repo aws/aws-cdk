@@ -10,6 +10,7 @@ import { CfnParameter } from '../cfn-parameter';
 import { CfnRule } from '../cfn-rule';
 import { UnscopedValidationError, ValidationError } from '../errors';
 import { resolvedOr } from '../helpers-internal/string-specializer';
+import { determineEcrEndpointType, formatEcrEndpoint } from '../private/ecr-endpoint-utils';
 import { Stack } from '../stack';
 import { determineEcrEndpointType, formatEcrEndpoint } from '../private/ecr-endpoint-utils';
 
