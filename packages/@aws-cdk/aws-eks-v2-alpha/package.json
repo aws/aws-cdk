@@ -97,7 +97,7 @@
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
     "sinon": "^9.2.4",
-    "cdk8s": "2.69.74",
+    "cdk8s": "2.69.76",
     "cdk8s-plus-27": "2.9.5"
   },
   "dependencies": {
