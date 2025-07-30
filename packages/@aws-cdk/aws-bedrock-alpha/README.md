@@ -74,6 +74,29 @@ const agent = new bedrock.Agent(this, 'Agent', {
 });
 ```
 
+You can also create an agent with a guardrail:
+
+```ts fixture=default
+// Create a guardrail to filter inappropriate content
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+  description: 'Legal ethical guardrails.',
+});
+
+guardrail.addContentFilter({
+  type: bedrock.ContentFilterType.SEXUAL,
+  inputStrength: bedrock.ContentFilterStrength.HIGH,
+  outputStrength: bedrock.ContentFilterStrength.MEDIUM,
+});
+
+// Create an agent with the guardrail
+const agentWithGuardrail = new bedrock.Agent(this, 'AgentWithGuardrail', {
+  foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_HAIKU_V1_0,
+  instruction: 'You are a helpful and friendly agent that answers questions about literature.',
+  guardrail: guardrail,
+});
+```
+
 ### Agent Properties
 
 The Bedrock Agent class supports the following properties.
@@ -89,6 +112,8 @@ The Bedrock Agent class supports the following properties.
 | kmsKey | kms.IKey | No | The KMS key of the agent if custom encryption is configured. Defaults to AWS managed key |
 | description | string | No | A description of the agent. Defaults to no description |
 | actionGroups | AgentActionGroup[] | No | The Action Groups associated with the agent |
+| guardrail | IGuardrail | No | The guardrail that will be associated with the agent. Defaults to no guardrail |
+| memory | Memory | No | The type and configuration of the memory to maintain context across multiple sessions and recall past interactions. Defaults to no memory |
 | promptOverrideConfiguration | PromptOverrideConfiguration | No | Overrides some prompt templates in different parts of an agent sequence configuration |
 | userInputEnabled | boolean | No | Select whether the agent can prompt additional information from the user when it lacks enough information. Defaults to false |
 | codeInterpreterEnabled | boolean | No | Select whether the agent can generate, run, and troubleshoot code when trying to complete a task. Defaults to false |

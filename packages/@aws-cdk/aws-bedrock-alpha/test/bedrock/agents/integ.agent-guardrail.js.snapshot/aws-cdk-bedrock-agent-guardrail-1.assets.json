@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "a8e00fc15de9e7a9466954a820e137374cbfd8ccd7117268815cf7776c109e92": {
+      "displayName": "aws-cdk-bedrock-agent-guardrail-1 Template",
+      "source": {
+        "path": "aws-cdk-bedrock-agent-guardrail-1.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-e7326290": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a8e00fc15de9e7a9466954a820e137374cbfd8ccd7117268815cf7776c109e92.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
