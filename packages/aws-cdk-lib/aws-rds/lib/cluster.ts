@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IAuroraClusterInstance, IClusterInstance, InstanceType } from './aurora-cluster-instance';
 import { ClusterEngineConfig, IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
+import { DatabaseInsightsMode } from './database-insights-mode';
 import { Endpoint } from './endpoint';
 import { NetworkType } from './instance';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
@@ -11,7 +12,7 @@ import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, R
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
-import { validateDatabaseClusterProps } from './validate-database-cluster-props';
+import { validateDatabaseClusterProps } from './validate-database-insights';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -20,8 +21,9 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { Annotations, ArnFormat, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '../../core';
-import { ValidationError } from '../../core/lib/errors';
+import * as cxschema from '../../cloud-assembly-schema';
+import { Annotations, ArnFormat, ContextProvider, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '../../core';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -572,18 +574,13 @@ export enum ClusterScailabilityType {
 }
 
 /**
- * The database insights mode of the Aurora DB cluster.
+ * Properties for looking up an existing DatabaseCluster.
  */
-export enum DatabaseInsightsMode {
+export interface DatabaseClusterLookupOptions {
   /**
-   * Standard mode.
+   * The cluster identifier of the DatabaseCluster
    */
-  STANDARD = 'standard',
-
-  /**
-   * Advanced mode.
-   */
-  ADVANCED = 'advanced',
+  readonly clusterIdentifier: string;
 }
 
 /**
@@ -1334,6 +1331,69 @@ export class DatabaseCluster extends DatabaseClusterNew {
    * Uniquely identifies this class.
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseCluster';
+
+  /**
+   * Lookup an existing DatabaseCluster using clusterIdentifier.
+   */
+  public static fromLookup(scope: Construct, id: string, options: DatabaseClusterLookupOptions): IDatabaseCluster {
+    if (Token.isUnresolved(options.clusterIdentifier)) {
+      throw new UnscopedValidationError('Cannot look up a cluster with a tokenized cluster identifier.');
+    }
+    const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.CC_API_PROVIDER,
+      props: {
+        typeName: 'AWS::RDS::DBCluster',
+        exactIdentifier: options.clusterIdentifier,
+        propertiesToReturn: [
+          'DBClusterArn',
+          'Endpoint.Address',
+          'Endpoint.Port',
+          'ReadEndpoint.Address',
+          'DBClusterResourceId',
+          'VpcSecurityGroupIds',
+          'EnableHttpEndpoint',
+        ],
+      } as cxschema.CcApiContextQuery,
+      dummyValue: [
+        {
+          'Identifier': 'TEST',
+          'DBClusterArn': 'TESTARN',
+          'Endpoint.Address': 'TESTADDRESS',
+          'Endpoint.Port': '5432',
+          'ReadEndpoint.Address': 'TESTREADERADDRESS',
+          'DBClusterResourceId': 'TESTID',
+          'VpcSecurityGroupIds': [],
+          'EnableHttpEndpoint': true,
+        },
+      ],
+    }).value;
+
+    // getValue returns a list of result objects. We are expecting 1 result or Error.
+    const cluster = response[0];
+
+    // Get ISecurityGroup from securityGroupId
+    let securityGroups: ec2.ISecurityGroup[] = [];
+    const dbsg: string[] = cluster.VpcSecurityGroupIds;
+    if (dbsg) {
+      securityGroups = dbsg.map((securityGroupId) => {
+        return ec2.SecurityGroup.fromSecurityGroupId(
+          scope,
+          `LSG-${securityGroupId}`,
+          securityGroupId,
+        );
+      });
+    }
+
+    return this.fromDatabaseClusterAttributes(scope, id, {
+      clusterIdentifier: options.clusterIdentifier,
+      clusterEndpointAddress: cluster['Endpoint.Address'],
+      readerEndpointAddress: cluster['ReadEndpoint.Address'],
+      port: Number(cluster['Endpoint.Port']),
+      clusterResourceIdentifier: cluster.DBClusterResourceId,
+      securityGroups: securityGroups,
+      dataApiEnabled: cluster.EnableHttpEndpoint,
+    });
+  }
 
   /**
    * Import an existing DatabaseCluster from properties

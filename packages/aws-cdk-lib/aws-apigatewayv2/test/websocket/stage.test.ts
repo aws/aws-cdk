@@ -179,4 +179,27 @@ describe('WebSocketStage', () => {
       Description: 'My Stage',
     });
   });
+
+  test('can add stage variables after creation', () => {
+    // WHEN
+    const stage = new WebSocketStage(stack, 'DefaultStage', {
+      webSocketApi: api,
+      stageName: 'dev',
+      stageVariables: {
+        env: 'dev',
+      },
+    });
+
+    stage.addStageVariable('timeout', '600');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: 'dev',
+      StageVariables: {
+        env: 'dev',
+        timeout: '600',
+      },
+    });
+  });
 });

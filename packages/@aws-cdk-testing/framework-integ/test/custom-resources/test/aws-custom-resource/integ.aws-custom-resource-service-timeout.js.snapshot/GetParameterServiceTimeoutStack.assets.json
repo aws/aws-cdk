@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "files": {
     "2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a": {
       "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
@@ -8,23 +8,23 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-5b9f8ae5": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "86821ee74ce21b9698ad1a77fb2774dcae85fc132a364753edcbe7dbdd4b91fb": {
+    "2281143d4df2a2f99108df7027fc17e79b643999a48d27f6fd684b266725e442": {
       "displayName": "GetParameterServiceTimeoutStack Template",
       "source": {
         "path": "GetParameterServiceTimeoutStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-2519f15b": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "86821ee74ce21b9698ad1a77fb2774dcae85fc132a364753edcbe7dbdd4b91fb.json",
+          "objectKey": "2281143d4df2a2f99108df7027fc17e79b643999a48d27f6fd684b266725e442.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

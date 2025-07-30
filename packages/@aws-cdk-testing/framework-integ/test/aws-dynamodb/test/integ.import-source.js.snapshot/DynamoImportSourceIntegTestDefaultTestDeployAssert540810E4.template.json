@@ -28,7 +28,7 @@
      "Key": "{\"id\":{\"S\":\"1\"}}"
     },
     "flattenResponse": "false",
-    "salt": "1750855704474"
+    "salt": "1753438379661"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -148,7 +148,7 @@
      "Key": "{\"id\":{\"S\":\"1\"}}"
     },
     "flattenResponse": "false",
-    "salt": "1750855704475"
+    "salt": "1753438379662"
    },
    "DependsOn": [
     "AwsApiCallDynamoDBgetItema11c39c31c1a4ed94eac5ae4525a751c"
@@ -184,7 +184,7 @@
      "Key": "{\"id\":{\"S\":\"1\"}}"
     },
     "flattenResponse": "false",
-    "salt": "1750855704475"
+    "salt": "1753438379663"
    },
    "DependsOn": [
     "AwsApiCallDynamoDBgetItem07e988d6f5c0d6f38baf1b39c2dcd982"
@@ -260,6 +260,9 @@
    "ap-southeast-5": {
     "value": "nodejs22.x"
    },
+   "ap-southeast-6": {
+    "value": "nodejs22.x"
+   },
    "ap-southeast-7": {
     "value": "nodejs22.x"
    },
@@ -300,6 +303,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

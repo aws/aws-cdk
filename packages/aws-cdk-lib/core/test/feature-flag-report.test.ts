@@ -48,4 +48,3 @@ describe('generate feature flag report', () => {
     }));
   });
 });
-

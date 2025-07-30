@@ -10,14 +10,21 @@ import * as redshift from '../lib';
 
 const useColumnIds = { [REDSHIFT_COLUMN_ID]: false };
 const app = new cdk.App({
-  context: useColumnIds,
   postCliContext: {
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
+  context: {
+    ...useColumnIds,
+  },
 });
 
-const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database');
+const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database', {
+  env: {
+    region: 'us-east-1',
+  },
+});
+
 cdk.Aspects.of(stack).add({
   visit(node: constructs.IConstruct) {
     if (cdk.CfnResource.isCfnResource(node)) {
@@ -31,6 +38,7 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { restrictDefaultSecurityGroup: false });
 const databaseName = 'my_db';
 const cluster = new redshift.Cluster(stack, 'Cluster', {
   vpc: vpc,
+  nodeType: redshift.NodeType.RA3_LARGE,
   vpcSubnets: {
     subnetType: ec2.SubnetType.PUBLIC,
   },

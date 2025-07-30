@@ -20,6 +20,7 @@ concurrency:
 
 jobs:
   build:
+    if: github.repository != 'aws/aws-cdk'
     runs-on: aws-cdk_ubuntu-latest_32-core
 
     env:
