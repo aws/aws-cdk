@@ -296,11 +296,13 @@ export interface GuardrailProps {
   readonly description?: string;
   /**
    * The message to return when the guardrail blocks a prompt.
+   * Must be between 1 and 500 characters.
    * @default "Sorry, your query violates our usage policy."
    */
   readonly blockedInputMessaging?: string;
   /**
    * The message to return when the guardrail blocks a model response.
+   * Must be between 1 and 500 characters.
    * @default "Sorry, I am unable to answer your question because of our usage policy."
    */
   readonly blockedOutputsMessaging?: string;
@@ -526,6 +528,12 @@ export class Guardrail extends GuardrailBase {
         this.validateRegexFilter(filter, index);
       });
     }
+
+    // ------------------------------------------------------
+    // Validate messaging properties
+    // ------------------------------------------------------
+    this.validateMessagingProperty(props.blockedInputMessaging, 'blockedInputMessaging');
+    this.validateMessagingProperty(props.blockedOutputsMessaging, 'blockedOutputsMessaging');
 
     const defaultBlockedInputMessaging = 'Sorry, your query violates our usage policy.';
     const defaultBlockedOutputsMessaging = 'Sorry, I am unable to answer your question because of our usage policy.';
@@ -894,6 +902,22 @@ export class Guardrail extends GuardrailBase {
     if (filter.pattern !== undefined && !Token.isUnresolved(filter.pattern)) {
       if (filter.pattern.length < 1) {
         throw new ValidationError(`${prefix}: The field pattern is ${filter.pattern.length} characters long but must be at least 1 characters`, this);
+      }
+    }
+  }
+
+  /**
+   * Validates a messaging property (blockedInputMessaging or blockedOutputsMessaging).
+   * @param value The messaging value to validate.
+   * @param propertyName The name of the property being validated.
+   */
+  private validateMessagingProperty(value: string | undefined, propertyName: string): void {
+    if (value !== undefined && !Token.isUnresolved(value)) {
+      if (value.length < 1) {
+        throw new ValidationError(`Invalid ${propertyName}: The field ${propertyName} is ${value.length} characters long but must be at least 1 characters`, this);
+      }
+      if (value.length > 500) {
+        throw new ValidationError(`Invalid ${propertyName}: The field ${propertyName} is ${value.length} characters long but must be less than or equal to 500 characters`, this);
       }
     }
   }

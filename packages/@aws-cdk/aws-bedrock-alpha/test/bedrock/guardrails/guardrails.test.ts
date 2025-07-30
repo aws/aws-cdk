@@ -35,6 +35,28 @@ describe('CDK-Created-Guardrail', () => {
     guardrail.name;
   });
 
+  test('Custom Messaging Creation', () => {
+    new bedrock.Guardrail(stack, 'TestGuardrail', {
+      guardrailName: 'TestGuardrail',
+      description: 'This is a test guardrail with custom messaging',
+      blockedInputMessaging: 'Custom input blocked message',
+      blockedOutputsMessaging: 'Custom output blocked message',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+      Name: 'TestGuardrail',
+      Description: 'This is a test guardrail with custom messaging',
+      BlockedInputMessaging: 'Custom input blocked message',
+      BlockedOutputsMessaging: 'Custom output blocked message',
+      // ensure others are undefined
+      TopicPolicyConfig: Match.absent(),
+      ContextualGroundingPolicyConfig: Match.absent(),
+      ContentPolicyConfig: Match.absent(),
+      WordPolicyConfig: Match.absent(),
+      SensitiveInformationPolicyConfig: Match.absent(),
+    });
+  });
+
   test('Basic Creation + KMS Key', () => {
     new bedrock.Guardrail(stack, 'TestGuardrail', {
       guardrailName: 'TestGuardrail',
@@ -1028,6 +1050,91 @@ describe('CDK-Created-Guardrail', () => {
           TierName: 'CLASSIC',
         },
       },
+    });
+  });
+
+  describe('Messaging validation', () => {
+    test('validates blockedInputMessaging length - too short', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          blockedInputMessaging: '', // Empty message
+        });
+      }).toThrow(/Invalid blockedInputMessaging: The field blockedInputMessaging is 0 characters long but must be at least 1 characters/);
+    });
+
+    test('validates blockedInputMessaging length - too long', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          blockedInputMessaging: 'a'.repeat(501), // 501 characters
+        });
+      }).toThrow(/Invalid blockedInputMessaging: The field blockedInputMessaging is 501 characters long but must be less than or equal to 500 characters/);
+    });
+
+    test('validates blockedOutputsMessaging length - too short', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          blockedOutputsMessaging: '', // Empty message
+        });
+      }).toThrow(/Invalid blockedOutputsMessaging: The field blockedOutputsMessaging is 0 characters long but must be at least 1 characters/);
+    });
+
+    test('validates blockedOutputsMessaging length - too long', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          blockedOutputsMessaging: 'a'.repeat(501), // 501 characters
+        });
+      }).toThrow(/Invalid blockedOutputsMessaging: The field blockedOutputsMessaging is 501 characters long but must be less than or equal to 500 characters/);
+    });
+
+    test('accepts valid blockedInputMessaging', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          blockedInputMessaging: 'This is a valid custom message for blocked input.',
+        });
+      }).not.toThrow();
+    });
+
+    test('accepts valid blockedOutputsMessaging', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          blockedOutputsMessaging: 'This is a valid custom message for blocked output.',
+        });
+      }).not.toThrow();
+    });
+
+    test('accepts minimum length messaging', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          blockedInputMessaging: 'A', // 1 character
+          blockedOutputsMessaging: 'B', // 1 character
+        });
+      }).not.toThrow();
+    });
+
+    test('accepts maximum length messaging', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          blockedInputMessaging: 'a'.repeat(500), // Exactly 500 characters
+          blockedOutputsMessaging: 'b'.repeat(500), // Exactly 500 characters
+        });
+      }).not.toThrow();
+    });
+
+    test('accepts undefined messaging (uses defaults)', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          // No messaging properties - should use defaults
+        });
+      }).not.toThrow();
     });
   });
 
