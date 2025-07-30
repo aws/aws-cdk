@@ -2086,7 +2086,7 @@ const service = new ecs.FargateService(stack, 'Service', {
   deploymentStrategy: ecs.DeploymentStrategy.BLUE_GREEN,
 });
 
-service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaHook, {
+service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaHook, 'PreScaleHook', {
   lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
 }));
 
