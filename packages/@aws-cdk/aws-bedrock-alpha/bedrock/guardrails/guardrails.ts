@@ -8,6 +8,7 @@ import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 // Internal Libs
 import * as filters from './guardrail-filters';
+import { GuardrailVersion } from './guardrail-version';
 
 /******************************************************************************
  *                              COMMON
@@ -649,12 +650,12 @@ export class Guardrail extends GuardrailBase {
    * @returns The guardrail version.
    */
   public createVersion(description?: string): string {
-    const cfnVersion = new bedrock.CfnGuardrailVersion(this, `GuardrailVersion-${this.hash.slice(0, 16)}`, {
+    const cfnVersion = new GuardrailVersion(this, `GuardrailVersion-${this.hash.slice(0, 16)}`, {
       description: description,
-      guardrailIdentifier: this.guardrailId,
+      guardrail: this,
     });
 
-    this.updateVersion(cfnVersion.attrVersion);
+    this.updateVersion(cfnVersion.guardrailVersion);
     return this.guardrailVersion;
   }
 
@@ -860,7 +861,7 @@ export class Guardrail extends GuardrailBase {
         produce: () => {
           return this.piiFilters.flatMap((filter: filters.PIIFilter) => {
             return {
-              type: filter.type,
+              type: filter.type.value,
               action: filter.action,
             } as bedrock.CfnGuardrail.PiiEntityConfigProperty;
           });

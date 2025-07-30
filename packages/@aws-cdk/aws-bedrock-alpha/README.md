@@ -822,15 +822,25 @@ guardrail.addWordFilterFromFile('./scripts/wordsPolicy.csv');
 
 PII filters allow you to detect and handle personally identifiable information in user inputs and model responses. You can configure separate actions for input and output.
 
+The PII types are organized into enum-like classes for better type safety and transpilation compatibility:
+
+- **GeneralPIIType**: General PII types like addresses, emails, names, phone numbers
+- **FinancePIIType**: Financial information like credit card numbers, PINs, SWIFT codes
+- **InformationTechnologyPIIType**: IT-related data like URLs, IP addresses, AWS keys
+- **USASpecificPIIType**: US-specific identifiers like SSNs, passport numbers
+- **CanadaSpecificPIIType**: Canada-specific identifiers like health numbers, SINs
+- **UKSpecificPIIType**: UK-specific identifiers like NHS numbers, NI numbers
+
 ##### PII Filter Configuration
 
 ```ts fixture=default
 const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
   guardrailName: 'my-BedrockGuardrails',
 });
+
 // Add PII filter for addresses with input/output actions
 guardrail.addPIIFilter({
-  type: bedrock.PIIType.General.ADDRESS,
+  type: bedrock.GeneralPIIType.ADDRESS,
   action: bedrock.GuardrailAction.BLOCK,
   // below props are optional
   inputAction: bedrock.GuardrailAction.BLOCK,
@@ -841,7 +851,7 @@ guardrail.addPIIFilter({
 
 // Add PII filter for credit card numbers with input/output actions
 guardrail.addPIIFilter({
-  type: bedrock.PIIType.General.LICENSE_PLATE,
+  type: bedrock.FinancePIIType.CREDIT_DEBIT_CARD_NUMBER,
   action: bedrock.GuardrailAction.BLOCK,
   // below props are optional
   inputAction: bedrock.GuardrailAction.BLOCK,
@@ -849,7 +859,76 @@ guardrail.addPIIFilter({
   outputAction: bedrock.GuardrailAction.ANONYMIZE,
   outputEnabled: true,
 });
+
+// Add PII filter for email addresses
+guardrail.addPIIFilter({
+  type: bedrock.GeneralPIIType.EMAIL,
+  action: bedrock.GuardrailAction.ANONYMIZE,
+});
+
+// Add PII filter for US Social Security Numbers
+guardrail.addPIIFilter({
+  type: bedrock.USASpecificPIIType.US_SOCIAL_SECURITY_NUMBER,
+  action: bedrock.GuardrailAction.BLOCK,
+});
+
+// Add PII filter for IP addresses
+guardrail.addPIIFilter({
+  type: bedrock.InformationTechnologyPIIType.IP_ADDRESS,
+  action: bedrock.GuardrailAction.ANONYMIZE,
+});
 ```
+
+##### Available PII Types
+
+**GeneralPIIType:**
+
+- `ADDRESS`: Physical addresses
+- `AGE`: Individual's age
+- `DRIVER_ID`: Driver's license numbers
+- `EMAIL`: Email addresses
+- `LICENSE_PLATE`: Vehicle license plates
+- `NAME`: Individual names
+- `PASSWORD`: Passwords
+- `PHONE`: Phone numbers
+- `USERNAME`: User account names
+- `VEHICLE_IDENTIFICATION_NUMBER`: Vehicle VINs
+
+**FinancePIIType:**
+
+- `CREDIT_DEBIT_CARD_CVV`: Card verification codes
+- `CREDIT_DEBIT_CARD_EXPIRY`: Card expiration dates
+- `CREDIT_DEBIT_CARD_NUMBER`: Credit/debit card numbers
+- `PIN`: Personal identification numbers
+- `SWIFT_CODE`: Bank SWIFT codes
+- `INTERNATIONAL_BANK_ACCOUNT_NUMBER`: IBAN numbers
+
+**InformationTechnologyPIIType:**
+
+- `URL`: Web addresses
+- `IP_ADDRESS`: IPv4 addresses
+- `MAC_ADDRESS`: Network interface MAC addresses
+- `AWS_ACCESS_KEY`: AWS access key IDs
+- `AWS_SECRET_KEY`: AWS secret access keys
+
+**USASpecificPIIType:**
+
+- `US_BANK_ACCOUNT_NUMBER`: US bank account numbers
+- `US_BANK_ROUTING_NUMBER`: US bank routing numbers
+- `US_INDIVIDUAL_TAX_IDENTIFICATION_NUMBER`: US ITINs
+- `US_PASSPORT_NUMBER`: US passport numbers
+- `US_SOCIAL_SECURITY_NUMBER`: US Social Security Numbers
+
+**CanadaSpecificPIIType:**
+
+- `CA_HEALTH_NUMBER`: Canadian Health Service Numbers
+- `CA_SOCIAL_INSURANCE_NUMBER`: Canadian Social Insurance Numbers
+
+**UKSpecificPIIType:**
+
+- `UK_NATIONAL_HEALTH_SERVICE_NUMBER`: UK NHS numbers
+- `UK_NATIONAL_INSURANCE_NUMBER`: UK National Insurance numbers
+- `UK_UNIQUE_TAXPAYER_REFERENCE_NUMBER`: UK UTR numbers
 
 #### Regex Filters
 

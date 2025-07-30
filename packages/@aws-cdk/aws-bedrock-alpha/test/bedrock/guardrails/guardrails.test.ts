@@ -249,7 +249,7 @@ describe('CDK-Created-Guardrail', () => {
       description: 'This is a test guardrail',
       piiFilters: [
         {
-          type: bedrock.PIIType.General.ADDRESS,
+          type: bedrock.GeneralPIIType.ADDRESS,
           action: bedrock.GuardrailAction.ANONYMIZE,
         },
       ],
@@ -276,7 +276,7 @@ describe('CDK-Created-Guardrail', () => {
     });
 
     guardrail.addPIIFilter({
-      type: bedrock.PIIType.General.ADDRESS,
+      type: bedrock.GeneralPIIType.ADDRESS,
       action: bedrock.GuardrailAction.ANONYMIZE,
     });
 
@@ -588,7 +588,7 @@ describe('CDK-Created-Guardrail', () => {
       ],
       piiFilters: [
         {
-          type: bedrock.PIIType.General.ADDRESS,
+          type: bedrock.GeneralPIIType.ADDRESS,
           action: bedrock.GuardrailAction.ANONYMIZE,
         },
       ],
@@ -717,7 +717,7 @@ describe('CDK-Created-Guardrail', () => {
     });
 
     guardrail.addPIIFilter({
-      type: bedrock.PIIType.General.ADDRESS,
+      type: bedrock.GeneralPIIType.ADDRESS,
       action: bedrock.GuardrailAction.ANONYMIZE,
     });
     guardrail.addRegexFilter({

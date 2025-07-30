@@ -32,7 +32,7 @@ new bedrock.Guardrail(stack, 'TestGuardrail', {
   ],
   piiFilters: [
     {
-      type: bedrock.PIIType.General.ADDRESS,
+      type: bedrock.GeneralPIIType.ADDRESS,
       action: bedrock.GuardrailAction.ANONYMIZE,
     },
   ],
