@@ -604,8 +604,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (props.authFlows.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
     if (props.authFlows.user) { authFlows.push('ALLOW_USER_AUTH'); }
 
-    // refreshToken should only be allowed if authFlows are present and refreshTokenRotation is disabled
-    if (!props.refreshTokenGracePeriod || props.refreshTokenGracePeriod.toSeconds() === 0) {
+    // refreshToken should only be allowed if authFlows are present and refresh token rotation is disabled
+    if (!props.refreshTokenGracePeriod) {
       authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
     }
 
