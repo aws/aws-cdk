@@ -108,7 +108,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/490d27ef21bb3ac87467fee9ab15bcd01f8e502d63cb57a37ef3946cd106f90a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2e962c86518e471a3e0ead9b031d9349d6e75afaed126f92f4235b79c53db4a7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -158,6 +158,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SchemaTableA786F6CA"
+          }
+        ],
+        "/SchemaTableStack/Exports/Output{\"Fn::GetAtt\":[\"SchemaBucketC512BB1A\",\"TableBucketARN\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttSchemaBucketC512BB1ATableBucketARN7B7B66CF"
           }
         ],
         "/SchemaTableStack/BootstrapVersion": [
@@ -276,7 +282,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f9c8e2d03fe504ce65b6cc5c87fd151b948203454731154fc71077f6ad55729.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/69408aace00d6ef8e0c75ae93def77568a2c4d23fda06887c47f68d36e8e306f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -289,8 +295,8 @@
         }
       },
       "dependencies": [
-        "SchemaTableStack",
         "DefaultTableStack",
+        "SchemaTableStack",
         "TableIntegTestDefaultTestDeployAssert9A8EE252.assets"
       ],
       "metadata": {
@@ -336,6 +342,32 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/TableIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableMaintenanceConfigurationCommanda78b4e69bf4597e1fb5f3524f9a10d69/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/TableIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableMaintenanceConfigurationCommanda78b4e69bf4597e1fb5f3524f9a10d69/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallawssdkclients3tablesGetTableMaintenanceConfigurationCommanda78b4e69bf4597e1fb5f3524f9a10d69"
+          }
+        ],
+        "/TableIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableMaintenanceConfigurationCommanda78b4e69bf4597e1fb5f3524f9a10d69/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTableMaintenanceConfigurationCommanda78b4e69bf4597e1fb5f3524f9a10d69"
           }
         ],
         "/TableIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [

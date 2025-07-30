@@ -28,7 +28,7 @@
      "namespace": "\"table_test_namespace\""
     },
     "flattenResponse": "false",
-    "salt": "1753116644726"
+    "salt": "1753860830234"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -62,6 +62,15 @@
         {
          "Action": [
           "s3tables:ListTables"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3tables:GetTableMaintenanceConfiguration"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -101,6 +110,40 @@
      ]
     }
    }
+  },
+  "AwsApiCallawssdkclients3tablesGetTableMaintenanceConfigurationCommanda78b4e69bf4597e1fb5f3524f9a10d69": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3tablesGetTable",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "@aws-sdk/client-s3tables",
+    "api": "GetTableMaintenanceConfigurationCommand",
+    "expected": "{\"$ObjectLike\":{\"configuration\":{\"icebergCompaction\":{\"status\":\"enabled\",\"settings\":{\"icebergCompaction\":{\"targetFileSizeMB\":128}}},\"icebergSnapshotManagement\":{\"status\":\"enabled\",\"settings\":{\"icebergSnapshotManagement\":{\"maxSnapshotAgeHours\":48,\"minSnapshotsToKeep\":5}}}}}}",
+    "parameters": {
+     "name": "\"schema_test_table\"",
+     "namespace": "\"schema_table_namespace\"",
+     "tableBucketARN": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "SchemaTableStack:ExportsOutputFnGetAttSchemaBucketC512BB1ATableBucketARN7B7B66CF"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1753860830235"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
@@ -108,6 +151,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallawssdkclients3tablesListTablesCommand77c70519e42bc75a4776273a03b34c6f",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallawssdkclients3tablesGetTableMaintenanceConfigurationCommanda78b4e69bf4597e1fb5f3524f9a10d69": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallawssdkclients3tablesGetTableMaintenanceConfigurationCommanda78b4e69bf4597e1fb5f3524f9a10d69",
      "assertion"
     ]
    }

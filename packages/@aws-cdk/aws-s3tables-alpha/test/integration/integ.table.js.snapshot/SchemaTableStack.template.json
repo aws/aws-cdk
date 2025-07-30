@@ -71,6 +71,19 @@
    "DeletionPolicy": "Delete"
   }
  },
+ "Outputs": {
+  "ExportsOutputFnGetAttSchemaBucketC512BB1ATableBucketARN7B7B66CF": {
+   "Value": {
+    "Fn::GetAtt": [
+     "SchemaBucketC512BB1A",
+     "TableBucketARN"
+    ]
+   },
+   "Export": {
+    "Name": "SchemaTableStack:ExportsOutputFnGetAttSchemaBucketC512BB1ATableBucketARN7B7B66CF"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

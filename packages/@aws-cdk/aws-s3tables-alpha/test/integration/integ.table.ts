@@ -144,8 +144,6 @@ const integ = new IntegTest(app, 'TableIntegTest', {
   testCases: [defaultTableTest, schemaTableTest, importedTableTest],
 });
 
-integ.node.addDependency(schemaTableTest);
-
 // Add assertions for table existence
 const listTables = integ.assertions.awsApiCall('@aws-sdk/client-s3tables', 'ListTablesCommand', {
   tableBucketARN: defaultTableTest.tableBucket.tableBucketArn,
@@ -158,6 +156,34 @@ listTables.expect(ExpectedResult.objectLike({
       name: 'default_test_table',
     },
   ],
+}));
+
+const getTableMaintenanceConfig = integ.assertions.awsApiCall('@aws-sdk/client-s3tables', 'GetTableMaintenanceConfigurationCommand', {
+  name: schemaTableTest.table.tableName,
+  namespace: schemaTableTest.namespace.namespaceName,
+  tableBucketARN: schemaTableTest.tableBucket.tableBucketArn,
+});
+
+getTableMaintenanceConfig.expect(ExpectedResult.objectLike({
+  configuration: {
+    icebergCompaction: {
+      status: 'enabled',
+      settings: {
+        icebergCompaction: {
+          targetFileSizeMB: 128,
+        },
+      },
+    },
+    icebergSnapshotManagement: {
+      status: 'enabled',
+      settings: {
+        icebergSnapshotManagement: {
+          maxSnapshotAgeHours: 48,
+          minSnapshotsToKeep: 5,
+        },
+      },
+    },
+  },
 }));
 
 app.synth();
