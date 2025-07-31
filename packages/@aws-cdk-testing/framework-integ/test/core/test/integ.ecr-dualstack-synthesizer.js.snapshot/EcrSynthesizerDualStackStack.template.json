@@ -3,7 +3,7 @@
   "DualStackAssetImageUri": {
    "Description": "Dual-stack Docker image asset URI",
    "Value": {
-    "Fn::Sub": "12345678.dkr.ecr.test-region.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-12345678-test-region:6217777da242aec71cf3c0e7e1d79b98ca911c04b5b29f94fffce04b5e9680d5"
+    "Fn::Sub": "${AWS::AccountId}.dkr-ecr.${AWS::Region}.on.aws/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:6217777da242aec71cf3c0e7e1d79b98ca911c04b5b29f94fffce04b5e9680d5"
    }
   },
   "DualStackAssetRepository": {
@@ -12,11 +12,17 @@
     "Fn::Join": [
      "",
      [
-      "12345678.dkr.ecr.test-region.",
       {
-       "Ref": "AWS::URLSuffix"
+       "Ref": "AWS::AccountId"
       },
-      "/cdk-hnb659fds-container-assets-12345678-test-region"
+      ".dkr-ecr.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".on.aws/",
+      {
+       "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+      }
      ]
     ]
    }
