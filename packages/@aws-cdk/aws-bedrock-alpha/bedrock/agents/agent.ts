@@ -408,6 +408,7 @@ export class Agent extends AgentBase implements IAgent {
    * action groups associated with the ageny
    */
   public readonly actionGroups: AgentActionGroup[] = [];
+
   // ------------------------------------------------------
   // CDK-only attributes
   // ------------------------------------------------------
@@ -514,7 +515,7 @@ export class Agent extends AgentBase implements IAgent {
     this.agentCollaboration = props.agentCollaboration;
     if (props.agentCollaboration) {
       props.agentCollaboration.collaborators.forEach(ac => {
-        this.addAgentCollaborator(ac);
+        this.grantPermissionToAgent(ac);
       });
     }
 
@@ -636,11 +637,14 @@ export class Agent extends AgentBase implements IAgent {
   }
 
   /**
-   * Adds a collaborator to the agent and grants necessary permissions.
-   * @param agentCollaborator - The collaborator to add
-   * @internal This method is used internally by the constructor and should not be called directly.
+   * Grants permissions for an agent collaborator to this agent's role.
+   * This method only grants IAM permissions and does not add the collaborator
+   * to the agent's collaboration configuration. To add collaborators to the
+   * agent configuration, include them in the AgentCollaboration when creating the agent.
+   *
+   * @param agentCollaborator - The collaborator to grant permissions for
    */
-  private addAgentCollaborator(agentCollaborator: AgentCollaborator) {
+  private grantPermissionToAgent(agentCollaborator: AgentCollaborator) {
     agentCollaborator.grant(this.role);
   }
 
@@ -682,7 +686,7 @@ export class Agent extends AgentBase implements IAgent {
    * @internal This is an internal core function and should not be called directly.
    */
   private renderAgentCollaborators(): bedrock.CfnAgent.AgentCollaboratorProperty[] | undefined {
-    if (!this.agentCollaboration) {
+    if (!this.agentCollaboration || !this.agentCollaboration.collaborators || this.agentCollaboration.collaborators.length === 0) {
       return undefined;
     }
 
