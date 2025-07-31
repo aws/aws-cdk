@@ -1,6 +1,7 @@
+/* eslint-disable no-console */
 /**
  * Simple Node.js application for ECR dual-stack endpoint integration testing
- * 
+ *
  * This is a minimal container application used to test Docker image asset
  * synthesis with both IPv4-only and dual-stack ECR endpoints.
  */
@@ -11,5 +12,5 @@ console.log('Timestamp:', new Date().toISOString());
 
 // Keep the process running
 setInterval(() => {
-    console.log('ECR dual-stack integration test - heartbeat:', new Date().toISOString());
+  console.log('ECR dual-stack integration test - heartbeat:', new Date().toISOString());
 }, 30000);
