@@ -147,6 +147,19 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
 });
 ```
 
+By default, automated backups are retained after a database cluster is deleted. You can configure whether to immediately remove the automated backups when the DB cluster is deleted by setting the `deleteAutomatedBackups` property:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
+  vpc,
+  deleteAutomatedBackups: true, // Immediately remove automated backups when the cluster is deleted
+});
+```
+
 ### Updating the database instances in a cluster
 
 Database cluster instances may be updated in bulk or on a rolling basis.

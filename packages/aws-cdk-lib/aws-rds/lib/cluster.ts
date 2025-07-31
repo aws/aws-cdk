@@ -503,8 +503,8 @@ interface DatabaseClusterBaseProps {
 
   /**
    * Specifies whether to remove automated backups immediately after the DB cluster is deleted.
-   * This parameter isn't case-sensitive. The default is to remove automated backups immediately
-   * after the DB cluster is deleted, unless the AWS Backup policy specifies a point-in-time restore rule.
+   *
+   * @default undefined - remove automated backups immediately after the DB cluster is deleted, unless the AWS Backup policy specifies a point-in-time restore rule.
    */
   readonly deleteAutomatedBackups?: boolean;
 }

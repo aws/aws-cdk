@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "test-cluster-delete-automated-backups/DefaultTest": {
+      "stacks": [
+        "cluster-delete-automated-backups"
+      ],
+      "assertionStack": "test-cluster-delete-automated-backups/DefaultTest/DeployAssert",
+      "assertionStackName": "testclusterdeleteautomatedbackupsDefaultTestDeployAssert55F7DAE6"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

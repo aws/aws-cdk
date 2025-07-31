@@ -5753,6 +5753,29 @@ test.each([
   });
 });
 
+test.each([
+  [true],
+  [false],
+])('cluster with deleteAutomatedBackups set to %s', (deleteAutomatedBackups) => {
+  // GIVEN
+  const stack = testStack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+
+  // WHEN
+  new DatabaseCluster(stack, 'Database', {
+    engine: DatabaseClusterEngine.AURORA_MYSQL,
+    deleteAutomatedBackups,
+    instanceProps: {
+      vpc,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+    DeleteAutomatedBackups: deleteAutomatedBackups,
+  });
+});
+
 function testStack(app?: cdk.App, stackId?: string) {
   const stack = new cdk.Stack(app, stackId, { env: { account: '12345', region: 'us-test-1' } });
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
