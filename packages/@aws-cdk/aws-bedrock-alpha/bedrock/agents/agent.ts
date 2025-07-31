@@ -644,7 +644,7 @@ export class Agent extends AgentBase implements IAgent {
    *
    * @param agentCollaborator - The collaborator to grant permissions for
    */
-  public grantPermissionToAgent(agentCollaborator: AgentCollaborator) {
+  private grantPermissionToAgent(agentCollaborator: AgentCollaborator) {
     agentCollaborator.grant(this.role);
   }
 

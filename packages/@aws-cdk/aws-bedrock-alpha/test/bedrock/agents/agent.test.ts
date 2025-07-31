@@ -488,16 +488,7 @@ describe('Agent', () => {
   });
 
   describe('agent collaborators', () => {
-    test('grantPermissionToAgent method grants permissions for collaborators', () => {
-      const agent = new bedrock.Agent(stack, 'TestAgent', {
-        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
-        foundationModel,
-        agentCollaboration: new bedrock.AgentCollaboration({
-          type: bedrock.AgentCollaboratorType.SUPERVISOR,
-          collaborators: [],
-        }),
-      });
-
+    test('agent with collaborators via AgentCollaboration constructor renders correctly in CFN template', () => {
       const collaboratorAlias = bedrock.AgentAlias.fromAttributes(stack, 'CollaboratorAlias', {
         aliasId: 'test-alias-id',
         aliasName: 'TestAlias',
@@ -515,14 +506,106 @@ describe('Agent', () => {
         relayConversationHistory: true,
       });
 
-      // Grant permissions using the public method (this only grants IAM permissions)
-      agent.grantPermissionToAgent(collaborator);
+      const agentCollaboration = new bedrock.AgentCollaboration({
+        type: bedrock.AgentCollaboratorType.SUPERVISOR,
+        collaborators: [collaborator],
+      });
 
-      // Since grantPermissionToAgent only grants permissions and doesn't add to collaboration,
-      // the agent should have no collaborators in the CloudFormation template
+      new bedrock.Agent(stack, 'TestAgent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel,
+        agentCollaboration,
+      });
+
+      // Verify that the agent has the correct collaboration configuration in the CFN template
       Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
         AgentCollaboration: 'SUPERVISOR',
-        AgentCollaborators: Match.absent(),
+        AgentCollaborators: [
+          {
+            AgentDescriptor: {
+              AliasArn: Match.objectLike({
+                'Fn::Join': Match.anyValue(),
+              }),
+            },
+            CollaborationInstruction: 'Help with data analysis tasks',
+            CollaboratorName: 'DataAnalyst',
+            RelayConversationHistory: 'TO_COLLABORATOR',
+          },
+        ],
+      });
+    });
+
+    test('agent with multiple collaborators via AgentCollaboration constructor', () => {
+      const collaboratorAlias1 = bedrock.AgentAlias.fromAttributes(stack, 'CollaboratorAlias1', {
+        aliasId: 'test-alias-id-1',
+        aliasName: 'TestAlias1',
+        agentVersion: '1',
+        agent: bedrock.Agent.fromAgentAttributes(stack, 'CollaboratorAgent1', {
+          agentArn: 'arn:aws:bedrock:us-east-1:123456789012:agent/collaborator-agent-id-1',
+          roleArn: 'arn:aws:iam::123456789012:role/collaborator-role-1',
+        }),
+      });
+
+      const collaboratorAlias2 = bedrock.AgentAlias.fromAttributes(stack, 'CollaboratorAlias2', {
+        aliasId: 'test-alias-id-2',
+        aliasName: 'TestAlias2',
+        agentVersion: '2',
+        agent: bedrock.Agent.fromAgentAttributes(stack, 'CollaboratorAgent2', {
+          agentArn: 'arn:aws:bedrock:us-east-1:123456789012:agent/collaborator-agent-id-2',
+          roleArn: 'arn:aws:iam::123456789012:role/collaborator-role-2',
+        }),
+      });
+
+      const collaborator1 = new bedrock.AgentCollaborator({
+        agentAlias: collaboratorAlias1,
+        collaborationInstruction: 'Help with data analysis tasks',
+        collaboratorName: 'DataAnalyst',
+        relayConversationHistory: true,
+      });
+
+      const collaborator2 = new bedrock.AgentCollaborator({
+        agentAlias: collaboratorAlias2,
+        collaborationInstruction: 'Help with code generation tasks',
+        collaboratorName: 'CodeGenerator',
+        relayConversationHistory: false,
+      });
+
+      const agentCollaboration = new bedrock.AgentCollaboration({
+        type: bedrock.AgentCollaboratorType.SUPERVISOR,
+        collaborators: [collaborator1, collaborator2],
+      });
+
+      new bedrock.Agent(stack, 'TestAgent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel,
+        agentCollaboration,
+      });
+
+      // Verify that the agent has multiple collaborators in the CFN template
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
+        AgentCollaboration: 'SUPERVISOR',
+        AgentCollaborators: [
+          {
+            AgentDescriptor: {
+              AliasArn: Match.objectLike({
+                'Fn::Join': Match.anyValue(),
+              }),
+            },
+            CollaborationInstruction: 'Help with data analysis tasks',
+            CollaboratorName: 'DataAnalyst',
+            RelayConversationHistory: 'TO_COLLABORATOR',
+          },
+          {
+            AgentDescriptor: {
+              AliasArn: Match.objectLike({
+                'Fn::Join': Match.anyValue(),
+              }),
+            },
+            CollaborationInstruction: 'Help with code generation tasks',
+            CollaboratorName: 'CodeGenerator',
+            RelayConversationHistory: 'DISABLED',
+          },
+        ],
       });
     });
 
