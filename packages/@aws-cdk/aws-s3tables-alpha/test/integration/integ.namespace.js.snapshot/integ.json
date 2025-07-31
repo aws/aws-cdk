@@ -1,0 +1,14 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "NamespaceIntegTest/DefaultTest": {
+      "stacks": [
+        "DefaultNamespaceStack",
+        "ImportedNamespaceStack"
+      ],
+      "assertionStack": "NamespaceIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "NamespaceIntegTestDefaultTestDeployAssertA183EF69"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}

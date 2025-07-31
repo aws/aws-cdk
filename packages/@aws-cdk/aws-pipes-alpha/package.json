@@ -113,6 +113,7 @@
     ]
   },
   "jsiiRosetta": {
-    "exampleDependencies": {}
+    "exampleDependencies": {
+      "@aws-cdk/aws-pipes-sources-alpha":  "^0.0.0"}
   }
 }

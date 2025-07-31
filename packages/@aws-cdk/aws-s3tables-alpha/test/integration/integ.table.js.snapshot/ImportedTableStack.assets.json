@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "2e9a6265b6d0ef1f82ca0537d23996b3ec74adc29d64831d421fa453cdb0ce29": {
+      "displayName": "ImportedTableStack Template",
+      "source": {
+        "path": "ImportedTableStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-7bc990e5": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2e9a6265b6d0ef1f82ca0537d23996b3ec74adc29d64831d421fa453cdb0ce29.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
