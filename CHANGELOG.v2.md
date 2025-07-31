@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.208.0](https://github.com/aws/aws-cdk/compare/v2.207.0...v2.208.0) (2025-07-29)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#35054](https://github.com/aws/aws-cdk/issues/35054)) ([a2b3e78](https://github.com/aws/aws-cdk/commit/a2b3e788fdedff02ce2abd8998c37d4da5a5dc2d))
+* **region-info:** add support for region ap-southeast-6 ([#35036](https://github.com/aws/aws-cdk/pull/35036))
+
+
+### Bug Fixes
+
+* **core:** `Tag must have a value` error is impossible to attribute to a specific tag ([#35091](https://github.com/aws/aws-cdk/issues/35091)) ([6c4181b](https://github.com/aws/aws-cdk/commit/6c4181bbe1c28b8080ba5f12716ad91475b2b3f5))
+* **custom-resources:** use loggingFormat instead of deprecated logFormat ([#35015](https://github.com/aws/aws-cdk/issues/35015)) ([81fe660](https://github.com/aws/aws-cdk/commit/81fe66029bba42135143874072f16387f7edc741)), closes [#35002](https://github.com/aws/aws-cdk/issues/35002)
+* **logs:** query strings can have multiple stats commands ([#34590](https://github.com/aws/aws-cdk/issues/34590)) ([57ae6f9](https://github.com/aws/aws-cdk/commit/57ae6f92949623d93c73ff23057291ba0f5eb95b)), closes [#34578](https://github.com/aws/aws-cdk/issues/34578) [#34578](https://github.com/aws/aws-cdk/issues/34578)
+* **logs:** revert "exposed metric from the metric filter will now include the dimension map ([#34648](https://github.com/aws/aws-cdk/issues/34648))" ([#35102](https://github.com/aws/aws-cdk/issues/35102)) ([24bbced](https://github.com/aws/aws-cdk/commit/24bbced7e67ec6265713cf46c51b110f38b6cf7d)), closes [#35097](https://github.com/aws/aws-cdk/issues/35097)
+
 ## [2.207.0](https://github.com/aws/aws-cdk/compare/v2.206.0...v2.207.0) (2025-07-24)
 
 
