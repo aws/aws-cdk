@@ -1,16 +1,16 @@
 {
   "version": "45.0.0",
   "files": {
-    "52b40d6a3d6b82a37d58d8b18bb6fc18fe031218c11499ab7cf370fe65a093d1": {
+    "9fe501da06003d63f9c8894bfbce8c5e7f3e4bd369032423cfb29f438b4376f4": {
       "displayName": "EcrSynthesizerIpv4Stack Template",
       "source": {
         "path": "EcrSynthesizerIpv4Stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-b27e97ac": {
+        "current_account-current_region-23d73a93": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "52b40d6a3d6b82a37d58d8b18bb6fc18fe031218c11499ab7cf370fe65a093d1.json",
+          "objectKey": "9fe501da06003d63f9c8894bfbce8c5e7f3e4bd369032423cfb29f438b4376f4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

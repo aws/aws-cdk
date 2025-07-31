@@ -1,16 +1,16 @@
 {
   "version": "45.0.0",
   "files": {
-    "e8eeef364adfc8fb46cb30ffef15cf79b80d962f93c11d8fe5c6c61a3b17822e": {
+    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
       "displayName": "EcrSynthesizerDualStackIntegTestDefaultTestDeployAssert22320F07 Template",
       "source": {
         "path": "EcrSynthesizerDualStackIntegTestDefaultTestDeployAssert22320F07.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-a78753d7": {
+        "current_account-current_region-d8d86b35": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e8eeef364adfc8fb46cb30ffef15cf79b80d962f93c11d8fe5c6c61a3b17822e.json",
+          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

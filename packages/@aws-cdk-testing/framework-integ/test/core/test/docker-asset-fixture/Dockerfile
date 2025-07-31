@@ -1,19 +1,13 @@
 FROM public.ecr.aws/docker/library/node:20-alpine
 
-# Install TypeScript globally
-RUN npm install -g typescript
-
-# Create app directory
-WORKDIR /app
-
-# Copy function code
-COPY index.ts .
-
-# Compile TypeScript to JavaScript
-RUN tsc index.ts
+# Create a simple test application inline
+RUN echo 'console.log("ECR Dual-Stack Integration Test Application");' > /app.js && \
+    echo 'console.log("Application started successfully");' >> /app.js && \
+    echo 'console.log("Timestamp:", new Date().toISOString());' >> /app.js && \
+    echo 'setInterval(() => console.log("Heartbeat:", new Date().toISOString()), 30000);' >> /app.js
 
 # Expose port (for testing purposes)
 EXPOSE 3000
 
 # Run the application
-CMD [ "node", "index.js" ]
+CMD [ "node", "/app.js" ]

@@ -1,16 +1,16 @@
 {
   "version": "45.0.0",
   "files": {
-    "0913f9de41dd1548aad6e9c03857a6e3733847a427753828527a4b7060e8ce50": {
+    "af5268d96b4964e4a214d6575784a33941399903e880913ebedfc4d446d36e1c": {
       "displayName": "EcrSynthesizerDualStackStack Template",
       "source": {
         "path": "EcrSynthesizerDualStackStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-547cb723": {
+        "current_account-current_region-8e50955c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0913f9de41dd1548aad6e9c03857a6e3733847a427753828527a4b7060e8ce50.json",
+          "objectKey": "af5268d96b4964e4a214d6575784a33941399903e880913ebedfc4d446d36e1c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
