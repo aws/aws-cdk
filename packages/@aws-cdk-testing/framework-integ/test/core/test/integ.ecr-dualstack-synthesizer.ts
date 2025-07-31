@@ -14,12 +14,7 @@ import * as path from 'path';
 const app = new cdk.App();
 
 // Test stack for IPv4-only Docker image asset synthesis (default behavior)
-const ipv4Stack = new cdk.Stack(app, 'EcrSynthesizerIpv4Stack', {
-  env: {
-    account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
-  },
-});
+const ipv4Stack = new cdk.Stack(app, 'EcrSynthesizerIpv4Stack');
 
 const ipv4Asset = new DockerImageAsset(ipv4Stack, 'Ipv4DockerAsset', {
   directory: path.join(__dirname, 'docker-asset-fixture'),
@@ -35,16 +30,11 @@ new cdk.CfnOutput(ipv4Stack, 'Ipv4AssetRepository', {
   description: 'IPv4-only Docker image asset repository URI',
 });
 
-// Test stack for IPv6 dual-stack Docker image asset synthesis
-const dualStackStack = new cdk.Stack(app, 'EcrSynthesizerDualStackStack', {
-  env: {
-    account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
-  },
-});
-
 // Set the dual-stack environment variable for this stack's synthesis
 process.env.AWS_USE_DUALSTACK_ENDPOINT = 'true';
+
+// Test stack for IPv6 dual-stack Docker image asset synthesis
+const dualStackStack = new cdk.Stack(app, 'EcrSynthesizerDualStackStack');
 
 const dualStackAsset = new DockerImageAsset(dualStackStack, 'DualStackDockerAsset', {
   directory: path.join(__dirname, 'docker-asset-fixture'),
@@ -60,7 +50,7 @@ new cdk.CfnOutput(dualStackStack, 'DualStackAssetRepository', {
   description: 'Dual-stack Docker image asset repository URI',
 });
 
-// Clean up environment variable
+// Clean up environment variable after synthesis
 delete process.env.AWS_USE_DUALSTACK_ENDPOINT;
 
 // Integration test configuration
