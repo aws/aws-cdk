@@ -123,7 +123,7 @@ export interface ProviderProps {
    * service principal.
    *
    * @default - A default role will be created.
-   * @deprecated - Use frameworkOnEventLambdaRole, frameworkIsCompleteLambdaRole, frameworkOnTimeoutLambdaRole
+   * @deprecated - Use frameworkOnEventRole, frameworkCompleteAndTimeoutRole
    */
   readonly role?: iam.IRole;
 
