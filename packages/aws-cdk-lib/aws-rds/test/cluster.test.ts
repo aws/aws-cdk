@@ -5753,10 +5753,7 @@ test.each([
   });
 });
 
-test.each([
-  [true],
-  [false],
-])('cluster with deleteAutomatedBackups set to %s', (deleteAutomatedBackups) => {
+test.each([true, false])('cluster with deleteAutomatedBackups set to %s', (deleteAutomatedBackups) => {
   // GIVEN
   const stack = testStack();
   const vpc = new ec2.Vpc(stack, 'VPC');
