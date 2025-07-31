@@ -1595,9 +1595,9 @@ describe('repository', () => {
 
       // THEN
       expect(repo.registryUri).toMatch(/\.dkr\.ecr\./);
-      expect(repo.registryUri).toMatch(/\.amazonaws\.com$/);
+      expect(repo.registryUri).toMatch(/AWS\.URLSuffix/);
       expect(repo.repositoryUriForTag('latest')).toMatch(/\.dkr\.ecr\./);
-      expect(repo.repositoryUriForTag('latest')).toMatch(/\.amazonaws\.com\//);
+      expect(repo.repositoryUriForTag('latest')).toMatch(/AWS\.URLSuffix/);
     });
 
     test('repository-level useDualStackEndpoint=true works without environment variable', () => {
@@ -1625,9 +1625,9 @@ describe('repository', () => {
 
       // THEN
       expect(repo.registryUri).toMatch(/\.dkr\.ecr\./);
-      expect(repo.registryUri).toMatch(/\.amazonaws\.com$/);
+      expect(repo.registryUri).toMatch(/AWS\.URLSuffix/);
       expect(repo.repositoryUriForTag('latest')).toMatch(/\.dkr\.ecr\./);
-      expect(repo.repositoryUriForTag('latest')).toMatch(/\.amazonaws\.com\//);
+      expect(repo.repositoryUriForTag('latest')).toMatch(/AWS\.URLSuffix/);
     });
 
     test('repository-level useDualStackEndpoint undefined falls back to environment variable', () => {
