@@ -257,8 +257,6 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
   private readonly deployRoleArn?: string;
 
   constructor(scope: App, id: string, private readonly props: DefaultStagingStackProps) {
-    // eslint-disable-next-line no-console
-    console.log('hello');
     super(scope, id, {
       ...props,
       synthesizer: new BootstraplessSynthesizer({

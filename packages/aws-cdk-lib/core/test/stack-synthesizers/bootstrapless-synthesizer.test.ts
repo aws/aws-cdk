@@ -2,8 +2,6 @@ import { FileAssetPackaging } from '@aws-cdk/cloud-assembly-schema';
 import { App } from '../../lib/app';
 import { Stack } from '../../lib/stack';
 import { BootstraplessSynthesizer } from '../../lib/stack-synthesizers/bootstrapless-synthesizer';
-import { DefaultStackSynthesizer } from '../../lib/stack-synthesizers/default-synthesizer';
-import { getAssetManifest, readAssetManifest } from './_helpers';
 
 describe('BootstraplessSynthesizer', () => {
   test('differs from DefaultStackSynthesizer in bootstrap requirements', () => {
