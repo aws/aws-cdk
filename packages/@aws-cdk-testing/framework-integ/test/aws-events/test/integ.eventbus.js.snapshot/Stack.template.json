@@ -91,9 +91,9 @@
        "Arn"
       ]
      },
-     "Sid": "cdk-Statement2"
+     "Sid": "cdkStatement2"
     },
-    "StatementId": "cdk-Statement2"
+    "StatementId": "cdkStatement2"
    }
   }
  },
