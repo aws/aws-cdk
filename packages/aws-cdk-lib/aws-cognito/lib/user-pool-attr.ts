@@ -58,6 +58,8 @@ export interface StandardAttributes {
 
   /**
    * The user's full name in displayable form, including all name parts, titles and suffixes.
+   * 
+   * Note: Cognito does not define a `fullname` attribute. This property maps to Cognito's standard `name` attribute.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly fullname?: StandardAttribute;
@@ -76,6 +78,8 @@ export interface StandardAttributes {
 
   /**
    * The URL to the user's profile picture.
+   * 
+   * Note: Cognito does not define a `profilePicture` attribute. This property maps to Cognito's standard `picture` attribute.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly profilePicture?: StandardAttribute;
