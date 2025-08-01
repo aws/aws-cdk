@@ -356,6 +356,7 @@ export class DockerImage extends BundlingDockerImage {
       'build', '-t', tag,
       ...(options.file ? ['-f', join(path, options.file)] : []),
       ...(options.platform ? ['--platform', options.platform] : []),
+      ...(options.network ? ['--network', options.network] : []),
       ...(options.targetStage ? ['--target', options.targetStage] : []),
       ...(options.cacheFrom ? [...options.cacheFrom.map(cacheFrom => ['--cache-from', this.cacheOptionToFlag(cacheFrom)]).flat()] : []),
       ...(options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : []),
@@ -597,6 +598,13 @@ export interface DockerBuildOptions {
    * @default `Dockerfile`
    */
   readonly file?: string;
+
+  /**
+   * Docker [Networking options](https://docs.docker.com/reference/cli/docker/buildx/build/#network)
+   *
+   * @default - no networking options
+   */
+  readonly network?: string;
 
   /**
    * Set platform if server is multi-platform capable. _Requires Docker Engine API v1.38+_.
