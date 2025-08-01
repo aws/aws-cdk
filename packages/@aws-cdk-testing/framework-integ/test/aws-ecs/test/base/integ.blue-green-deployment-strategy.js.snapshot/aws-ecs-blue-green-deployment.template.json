@@ -614,143 +614,6 @@
     "Priority": 1
    }
   },
-  "EcsTaskExecutionRoleC0B6A84D": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "ecs-tasks.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "ServiceRole4288B192": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "ecs.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
-       ]
-      ]
-     }
-    ],
-    "Policies": [
-     {
-      "PolicyDocument": {
-       "Statement": [
-        {
-         "Action": "lambda:InvokeFunction",
-         "Effect": "Allow",
-         "Resource": "*"
-        }
-       ],
-       "Version": "2012-10-17"
-      },
-      "PolicyName": "LambdaInvokePolicy"
-     },
-     {
-      "PolicyDocument": {
-       "Statement": [
-        {
-         "Action": [
-          "elasticloadbalancing:ModifyListener",
-          "elasticloadbalancing:ModifyRule"
-         ],
-         "Effect": "Allow",
-         "Resource": {
-          "Ref": "ALBProductionListenerRule243D0687"
-         }
-        }
-       ],
-       "Version": "2012-10-17"
-      },
-      "PolicyName": "ELBPolicy"
-     }
-    ]
-   }
-  },
-  "ServiceRoleDefaultPolicy94CF55F6": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "LambdaHookBF1BC8B4",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "LambdaHookBF1BC8B4",
-             "Arn"
-            ]
-           },
-           ":*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "ServiceRoleDefaultPolicy94CF55F6",
-    "Roles": [
-     {
-      "Ref": "ServiceRole4288B192"
-     }
-    ]
-   }
-  },
   "LambdaHookServiceRole9AAAD33B": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -856,12 +719,6 @@
      }
     ],
     "Cpu": "256",
-    "ExecutionRoleArn": {
-     "Fn::GetAtt": [
-      "EcsTaskExecutionRoleC0B6A84D",
-      "Arn"
-     ]
-    },
     "Family": "awsecsbluegreendeploymentTaskDef51D80572",
     "Memory": "512",
     "NetworkMode": "awsvpc",
@@ -883,11 +740,6 @@
      "Ref": "FargateCluster7CCD5F93"
     },
     "DeploymentConfiguration": {
-     "BakeTimeInMinutes": 0,
-     "DeploymentCircuitBreaker": {
-      "Enable": false,
-      "Rollback": false
-     },
      "LifecycleHooks": [
       {
        "HookTargetArn": {
@@ -896,23 +748,20 @@
          "Arn"
         ]
        },
+       "LifecycleStages": [
+        "PRE_SCALE_UP"
+       ],
        "RoleArn": {
         "Fn::GetAtt": [
-         "ServiceRole4288B192",
+         "ServicePreScaleUpRoleD002A553",
          "Arn"
         ]
-       },
-       "LifecycleStages": [
-        "POST_TEST_TRAFFIC_SHIFT"
-       ]
+       }
       }
      ],
      "MaximumPercent": 200,
-     "MinimumHealthyPercent": 100,
+     "MinimumHealthyPercent": 50,
      "Strategy": "BLUE_GREEN"
-    },
-    "DeploymentController": {
-     "Type": "ECS"
     },
     "EnableECSManagedTags": false,
     "HealthCheckGracePeriodSeconds": 60,
@@ -923,14 +772,14 @@
        "AlternateTargetGroupArn": {
         "Ref": "GreenTG71A27F2F"
        },
-       "RoleArn": {
-        "Fn::GetAtt": [
-         "ServiceRole4288B192",
-         "Arn"
-        ]
-       },
        "ProductionListenerRule": {
         "Ref": "ALBProductionListenerRule243D0687"
+       },
+       "RoleArn": {
+        "Fn::GetAtt": [
+         "ServiceLBAlternateOptionsRole06C91D94",
+         "Arn"
+        ]
        }
       },
       "ContainerName": "nginx",
@@ -969,6 +818,99 @@
     "ALBProductionListenerRule243D0687",
     "TaskDefTaskRole1EDB4A67"
    ]
+  },
+  "ServiceLBAlternateOptionsRole06C91D94": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonECSInfrastructureRolePolicyForLoadBalancers"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
+  },
+  "ServicePreScaleUpRoleD002A553": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ServicePreScaleUpRoleDefaultPolicyF1032E86": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "LambdaHookBF1BC8B4",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "LambdaHookBF1BC8B4",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ServicePreScaleUpRoleDefaultPolicyF1032E86",
+    "Roles": [
+     {
+      "Ref": "ServicePreScaleUpRoleD002A553"
+     }
+    ]
+   }
   }
  },
  "Parameters": {
