@@ -1,0 +1,14 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "integ-test-bucket-deployment-empty-security-groups/DefaultTest": {
+      "stacks": [
+        "test-bucket-deployment-empty-security-groups"
+      ],
+      "diffAssets": false,
+      "assertionStack": "integ-test-bucket-deployment-empty-security-groups/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentemptysecuritygroupsDefaultTestDeployAssert1E41BCEC"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}
