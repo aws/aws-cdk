@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnDistributionTenant } from './cloudfront.generated';
-import { CfnTag, IResource, Resource } from '../../core';
+import { CfnTag, IResource, Names, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface IDistributionTenant extends IResource {
@@ -31,13 +31,15 @@ export interface DistributionTenantAttributes {
 
   /**
    * The domains associated with this tenant.
+   *  @default []
    */
-  readonly domains: string[];
+  readonly domains?: string[];
 
   /**
    * The connection group ID associated with this tenant.
+   * @default undefined
    */
-  readonly connectionGroupId: string;
+  readonly connectionGroupId?: string;
 }
 
 export interface CustomizationProps extends CfnDistributionTenant.CustomizationsProperty {
@@ -56,7 +58,7 @@ export interface DistributionTenantProps {
 
   readonly distributionId: string;
 
-  readonly name: string;
+  readonly name?: string;
 
   readonly domains: string[];
 
@@ -82,13 +84,13 @@ export class DistributionTenant extends Resource implements IDistributionTenant 
       public readonly distributionId: string;
       public readonly name: string;
       public readonly domains: string[];
-      public readonly connectionGroupId: string;
+      public readonly connectionGroupId: string | undefined;
 
       constructor() {
         super(scope, id);
         this.distributionId = attrs.distributionId;
         this.name = attrs.name;
-        this.domains = attrs.domains;
+        this.domains = attrs.domains ?? [];
         this.connectionGroupId = attrs.connectionGroupId;
       }
     }();
@@ -104,14 +106,14 @@ export class DistributionTenant extends Resource implements IDistributionTenant 
 
     addConstructMetadata(this, props);
 
-    this.name = props.name;
+    this.name = props.name ?? Names.uniqueId(this) ;
     this.domains = props.domains;
     this.distributionId = props.distributionId;
 
     const distributionTenant = new CfnDistributionTenant(this, 'Resource', {
       distributionId: props.distributionId,
       domains: props.domains,
-      name: props.name,
+      name: this.name,
       connectionGroupId: props.connectionGroupId,
       customizations: props.customizations,
       enabled: props.enabled ?? true,
