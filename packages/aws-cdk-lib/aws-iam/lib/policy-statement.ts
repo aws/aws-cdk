@@ -63,7 +63,7 @@ export class PolicyStatement {
       notResources: ensureArrayOrUndefined(obj.NotResource),
       principals: obj.Principal ? [new JsonPrincipal(obj.Principal)] : undefined,
       notPrincipals: obj.NotPrincipal ? [new JsonPrincipal(obj.NotPrincipal)] : undefined,
-      skipValidation: obj.SkipValidation,
+      skipSidValidation: obj.SkipSidValidation,
     });
 
     // validate that the PolicyStatement has the correct shape
@@ -90,10 +90,10 @@ export class PolicyStatement {
   private readonly _principals = new OrderedSet<IPrincipal>();
   private readonly _notPrincipals = new OrderedSet<IPrincipal>();
   private _frozen = false;
-  private readonly _skipValidation: boolean;
+  private readonly _skipSidValidation: boolean;
 
   constructor(props: PolicyStatementProps = {}) {
-    this._skipValidation = props.skipValidation ?? false;
+    this._skipSidValidation = props.skipSidValidation ?? false;
     this._sid = props.sid;
     this.validateStatementId(this._sid);
     this._effect = props.effect || Effect.ALLOW;
@@ -238,7 +238,7 @@ export class PolicyStatement {
   }
 
   private validateStatementId(sid?: string) {
-    if (this._skipValidation) return;
+    if (this._skipSidValidation) return;
 
     if (sid !== undefined && !cdk.Token.isUnresolved(sid) && !/^[0-9A-Za-z]*$/.test(sid)) {
       throw new UnscopedValidationError(`Statement ID (sid) must be alphanumeric. Got '${sid}'. The Sid element supports ASCII uppercase letters (A-Z), lowercase letters (a-z), and numbers (0-9).`);
@@ -246,7 +246,7 @@ export class PolicyStatement {
   }
 
   private validatePolicyActions(actions: string[]) {
-    if (this._skipValidation) return;
+    if (this._skipSidValidation) return;
 
     // In case of an unresolved list of actions return early
     if (cdk.Token.isUnresolved(actions)) return;
@@ -258,7 +258,7 @@ export class PolicyStatement {
   }
 
   private validatePolicyPrincipal(principal: IPrincipal) {
-    if (this._skipValidation) return;
+    if (this._skipSidValidation) return;
 
     if (principal instanceof Group) {
       throw new UnscopedValidationError('Cannot use an IAM Group as the \'Principal\' or \'NotPrincipal\' in an IAM Policy');
@@ -474,7 +474,7 @@ export class PolicyStatement {
       notResources: overrides.notResources ?? this.notResources,
 
       conditions: overrides.conditions ?? this.conditions,
-      skipValidation: overrides.skipValidation ?? this._skipValidation,
+      skipSidValidation: overrides.skipSidValidation ?? this._skipSidValidation,
     });
   }
 
@@ -548,7 +548,7 @@ export class PolicyStatement {
    * @returns An array of validation error messages, or an empty array if the statement is valid.
    */
   public validateForAnyPolicy(): string[] {
-    if (this._skipValidation) return [];
+    if (this._skipSidValidation) return [];
 
     const errors = new Array<string>();
     if (this._action.length === 0 && this._notAction.length === 0) {
@@ -563,7 +563,7 @@ export class PolicyStatement {
    * @returns An array of validation error messages, or an empty array if the statement is valid.
    */
   public validateForResourcePolicy(): string[] {
-    if (this._skipValidation) return [];
+    if (this._skipSidValidation) return [];
 
     const errors = this.validateForAnyPolicy();
     if (this._principals.length === 0 && this._notPrincipals.length === 0) {
@@ -578,7 +578,7 @@ export class PolicyStatement {
    * @returns An array of validation error messages, or an empty array if the statement is valid.
    */
   public validateForIdentityPolicy(): string[] {
-    if (this._skipValidation) return [];
+    if (this._skipSidValidation) return [];
 
     const errors = this.validateForAnyPolicy();
     if (this._principals.length > 0 || this._notPrincipals.length > 0) {
@@ -827,7 +827,7 @@ export interface PolicyStatementProps {
    *
    * @default false
    */
-  readonly skipValidation?: boolean;
+  readonly skipSidValidation?: boolean;
 }
 
 class JsonPrincipal extends PrincipalBase {

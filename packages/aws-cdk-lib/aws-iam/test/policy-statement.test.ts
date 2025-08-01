@@ -269,12 +269,16 @@ describe('IAM policy statement', () => {
     }
   });
 
-  test('throws error when sid contains non-alphanumeric characters', () => {
+  test('validates sid format based on skipSidValidation flag', () => {
     const invalidSids = ['invalid-sid', 'with space', 'with_underscore', 'with.dot', 'with!special@chars'];
 
     for (const sid of invalidSids) {
+      // Should throw when skipSidValidation is false (default)
       expect(() => new PolicyStatement({ sid }))
         .toThrow(`Statement ID (sid) must be alphanumeric. Got '${sid}'. The Sid element supports ASCII uppercase letters (A-Z), lowercase letters (a-z), and numbers (0-9).`);
+
+      // Should not throw when skipSidValidation is true
+      expect(() => new PolicyStatement({ sid, skipSidValidation: true })).not.toThrow();
     }
   });
 
