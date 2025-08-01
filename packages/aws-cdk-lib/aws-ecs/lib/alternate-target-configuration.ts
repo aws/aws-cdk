@@ -109,12 +109,6 @@ export interface AlternateTargetOptions {
  */
 export interface AlternateTargetProps extends AlternateTargetOptions {
   /**
-   * Id for alternate target options
-   * @default - none
-   */
-  readonly id?: string;
-
-  /**
    * The alternate target group
    */
   readonly alternateTargetGroup: elbv2.ITargetGroup;
@@ -129,7 +123,7 @@ export interface AlternateTargetProps extends AlternateTargetOptions {
  * Configuration for alternate target groups used in blue/green deployments with load balancers
  */
 export class AlternateTarget implements IAlternateTarget {
-  constructor(private readonly props: AlternateTargetProps) {}
+  constructor(private readonly id: string, private readonly props: AlternateTargetProps) { }
 
   /**
    * Bind this configuration to a service
@@ -144,7 +138,7 @@ export class AlternateTarget implements IAlternateTarget {
       resources.push(this.props.testListener._listenerArn);
     }
 
-    const roleId = this.props.id? `${this.props.id}Role`: 'LBAlternateOptionsRole';
+    const roleId = `${this.id}Role`;
     const role = this.props.role ?? new iam.Role(scope, roleId, {
       assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
       managedPolicies: [

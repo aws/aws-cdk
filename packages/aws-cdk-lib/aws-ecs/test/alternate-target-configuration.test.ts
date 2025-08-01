@@ -69,7 +69,7 @@ describe('AlternateTarget', () => {
     });
 
     // WHEN
-    const alternateTarget = new ecs.AlternateTarget({
+    const alternateTarget = new ecs.AlternateTarget('GreenTG', {
       alternateTargetGroup: greenTargetGroup,
       productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(prodRule),
     });
@@ -111,7 +111,7 @@ describe('AlternateTarget', () => {
     });
 
     // WHEN
-    const alternateTarget = new ecs.AlternateTarget({
+    const alternateTarget = new ecs.AlternateTarget('GreenTG', {
       alternateTargetGroup: greenTargetGroup,
       productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(prodRule),
       testListener: ecs.ListenerRuleConfiguration.applicationListenerRule(testRule),
@@ -163,7 +163,7 @@ describe('AlternateTarget', () => {
     });
 
     // WHEN
-    const alternateTarget = new ecs.AlternateTarget({
+    const alternateTarget = new ecs.AlternateTarget('GreenTG', {
       alternateTargetGroup: greenTargetGroup,
       productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(prodRule),
       role: customRole,
@@ -230,7 +230,7 @@ describe('AlternateTarget', () => {
     });
 
     // WHEN
-    const alternateTarget = new ecs.AlternateTarget({
+    const alternateTarget = new ecs.AlternateTarget('GreenTG', {
       alternateTargetGroup: nlbGreenTargetGroup,
       productionListener: ecs.ListenerRuleConfiguration.networkListener(nlbListener),
     });

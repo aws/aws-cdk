@@ -1285,14 +1285,13 @@ export abstract class BaseService extends Resource
     const self = this;
     const target = this.taskDefinition._validateTarget(options);
     const connections = self.connections;
-    const alternateOption = alternateOptions;
     return {
       attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
         targetGroup.registerConnectable(self, self.taskDefinition._portRangeFromPortMapping(target.portMapping));
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, alternateOption);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, alternateOptions);
       },
       attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, alternateOption);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, alternateOptions);
       },
       connections,
       attachToClassicLB(loadBalancer: elb.LoadBalancer): void {

@@ -131,7 +131,7 @@ const target = service.loadBalancerTarget({
   containerName: 'nginx',
   containerPort: 80,
   protocol: ecs.Protocol.TCP,
-}, new ecs.AlternateTarget({
+}, new ecs.AlternateTarget('LBAlternateOptions', {
   alternateTargetGroup: greenTargetGroup,
   productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(prodListenerRule),
 }));
