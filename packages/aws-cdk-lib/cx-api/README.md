@@ -761,3 +761,19 @@ _cdk.json_
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true
   }
 }
+```
+
+* `@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint`
+
+When this feature flag is enabled, the JSONPath apiEndpoint value will be resolved dynamically at runtime, while slightly increasing the size of the state machine definition.
+When disabled, the JSONPath apiEndpoint property will only support a static string value.
+
+_cdk.json
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": true
+  }
+}
+```
