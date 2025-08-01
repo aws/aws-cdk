@@ -563,11 +563,8 @@ export class Agent extends AgentBase implements IAgent {
 
     // Add explicit dependency between the agent resource and the agent's role default policy
     // See https://github.com/awslabs/generative-ai-cdk-constructs/issues/899
-    if (!props.existingRole) {
-      // add the appropriate permissions to use the FM
-      const grant = this.foundationModel.grantInvoke(this.role);
-      grant.applyBefore(this.__resource);
-    }
+    const grant = this.foundationModel.grantInvoke(this.role);
+    grant.applyBefore(this.__resource);
 
     this.testAlias = AgentAlias.fromAttributes(this, 'DefaultAlias', {
       aliasId: 'TSTALIASID',
