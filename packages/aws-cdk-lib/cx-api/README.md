@@ -761,3 +761,21 @@ _cdk.json_
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true
   }
 }
+
+* `@aws-cdk/aws-efs:defaultAllowClientMount`
+
+When this feature flag is enabled, EFS will add read-only, write, and root access permissions to clients
+accessing the filesystem via mount target by default. Without this flag, only write and root access permissions are granted.
+
+This resolves an issue where clients could have permission to write to the filesystem but were unable to properly mount it, leading to access problems.
+By automatically including the read-only permission alongside the existing write and root access permissions, clients can fully interact with the EFS resources as expected.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-efs:defaultAllowClientMount": true
+  }
+}
+```
