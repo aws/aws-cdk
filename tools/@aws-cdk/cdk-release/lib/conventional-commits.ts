@@ -73,7 +73,11 @@ export async function getConventionalCommitsFromGitHistory(args: ReleaseOptions,
       format: '%B%n-hash-%n%H',
       // our tags have the 'v' prefix
       from: gitTag,
-    }).pipe(conventionalCommitsParser());
+    }).pipe(conventionalCommitsParser(
+      {
+        noteKeywords: ['BREAKING CHANGE', 'BREAKING-CHANGES', 'CHANGES TO L1 RESOURCES'],
+      },
+    ));
 
     conventionalCommitsStream.on('data', function (data: any) {
       // filter out all commits that don't conform to the Conventional Commits standard
@@ -134,7 +138,6 @@ export function createScopeVariations(names: string[]) {
   const transforms: Array<(x: string) => string> = [
     (name) => name.replace(/^aws-/, ''),
     (name) => name.replace(/^aws-/, 'aws'),
-    (name) => name.replace(/-alpha$/, ''),
   ];
 
   for (const transform of transforms) {
