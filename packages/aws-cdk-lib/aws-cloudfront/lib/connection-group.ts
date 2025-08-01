@@ -22,7 +22,7 @@ export interface IConnectionGroup extends IResource {
   /**
    * The unique identifier for the connection group.
    */
-  readonly groupId: string;
+  readonly id: string;
 
 }
 
@@ -48,7 +48,7 @@ export interface ConnectionGroupAttributes {
   /**
    * The unique identifier for the connection group.
    */
-  readonly groupId: string;
+  readonly id: string;
 }
 
 export interface ConnectionGroupProps {
@@ -65,7 +65,7 @@ export interface ConnectionGroupProps {
 
   /**
    * Whether IPv6 is enabled for the connection group
-   * @default false
+   * @default true
    */
   readonly ipv6Enabled?: boolean;
 
@@ -73,7 +73,7 @@ export interface ConnectionGroupProps {
    * The ID of the Anycast static IP list.
    * @default - none
    */
-  readonly anycastIpListID?: string;
+  readonly anycastIpListId?: string;
 
   /**
    * The ID of the Anycast static IP list.
@@ -91,14 +91,14 @@ export class ConnectionGroup extends Resource implements IConnectionGroup {
       public readonly name: string;
       public readonly routingEndpoint: string;
       public readonly arn: string;
-      public readonly groupId: string;
+      public readonly id: string;
 
       constructor() {
         super(scope, id);
         this.name = attrs.name;
         this.routingEndpoint = attrs.routingEndpoint;
         this.arn = attrs.arn;
-        this.groupId = attrs.groupId;
+        this.id = attrs.id;
       }
     }();
   }
@@ -106,7 +106,7 @@ export class ConnectionGroup extends Resource implements IConnectionGroup {
   public readonly name: string;
   public readonly routingEndpoint: string;
   public readonly arn: string;
-  public readonly groupId: string;
+  public readonly id: string;
 
   constructor(scope: Construct, id: string, props: ConnectionGroupProps) {
     super(scope, id);
@@ -117,14 +117,14 @@ export class ConnectionGroup extends Resource implements IConnectionGroup {
 
     const connectionGroup = new CfnConnectionGroup(this, 'Resource', {
       name: this.name,
-      anycastIpListId: props.anycastIpListID,
+      anycastIpListId: props.anycastIpListId,
       enabled: props.enabled ?? true,
-      ipv6Enabled: props.ipv6Enabled ?? false,
+      ipv6Enabled: props.ipv6Enabled ?? true,
       tags: props.tags,
     });
 
     this.routingEndpoint = connectionGroup.attrRoutingEndpoint;
     this.arn = connectionGroup.attrArn;
-    this.groupId = connectionGroup.ref;
+    this.id = connectionGroup.ref;
   }
 }
