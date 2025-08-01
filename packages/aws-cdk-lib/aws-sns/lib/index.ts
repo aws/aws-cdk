@@ -5,6 +5,7 @@ export * from './subscription';
 export * from './subscriber';
 export * from './subscription-filter';
 export * from './delivery-policy';
+export * from './data-protection';
 
 // AWS::SNS CloudFormation Resources:
 export * from './sns.generated';

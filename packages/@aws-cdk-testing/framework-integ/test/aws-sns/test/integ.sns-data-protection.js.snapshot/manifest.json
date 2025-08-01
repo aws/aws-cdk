@@ -1,0 +1,137 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "SNSDataProtectionInteg.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SNSDataProtectionInteg.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SNSDataProtectionInteg": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SNSDataProtectionInteg.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/15f4987ccbbd41912a8433ab226ffb9f8549c327152df7850757644d59c86a2b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SNSDataProtectionInteg.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SNSDataProtectionInteg.assets"
+      ],
+      "metadata": {
+        "/SNSDataProtectionInteg/DataProtectionLogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*",
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/SNSDataProtectionInteg/DataProtectionLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataProtectionLogGroup833D047D"
+          }
+        ],
+        "/SNSDataProtectionInteg/ProtectedTopic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "topicName": "*"
+            }
+          }
+        ],
+        "/SNSDataProtectionInteg/ProtectedTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProtectedTopic275DD48D"
+          }
+        ],
+        "/SNSDataProtectionInteg/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SNSDataProtectionInteg/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SNSDataProtectionInteg"
+    },
+    "SNSDataProtectionTestDefaultTestDeployAssertFE9E7674.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SNSDataProtectionTestDefaultTestDeployAssertFE9E7674.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SNSDataProtectionTestDefaultTestDeployAssertFE9E7674": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SNSDataProtectionTestDefaultTestDeployAssertFE9E7674.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SNSDataProtectionTestDefaultTestDeployAssertFE9E7674.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SNSDataProtectionTestDefaultTestDeployAssertFE9E7674.assets"
+      ],
+      "metadata": {
+        "/SNSDataProtectionTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SNSDataProtectionTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SNSDataProtectionTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}
