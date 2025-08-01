@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "testCases": {
     "aws-ecs-integ-availability-zone-rebalancing/AvailabilityZoneRebalancing/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "aws-ecs-integ-availability-zone-rebalancing/AvailabilityZoneRebalancing/DefaultTest/DeployAssert",
       "assertionStackName": "awsecsintegavailabilityzonerebalancingAvailabilityZoneRebalancingDefaultTestDeployAssert8F80E41A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }

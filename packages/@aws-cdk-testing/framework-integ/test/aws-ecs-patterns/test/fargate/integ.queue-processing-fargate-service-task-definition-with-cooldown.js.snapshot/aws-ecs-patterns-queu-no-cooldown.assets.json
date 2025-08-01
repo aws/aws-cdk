@@ -1,13 +1,14 @@
 {
-  "version": "36.0.0",
+  "version": "45.0.0",
   "files": {
     "779cdfc2bc9052367bc182ec3202dbdcbcedebf5ac94a6296e121c057ec98cb5": {
+      "displayName": "aws-ecs-patterns-queu-no-cooldown Template",
       "source": {
         "path": "aws-ecs-patterns-queu-no-cooldown.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-b9c3e7b2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "779cdfc2bc9052367bc182ec3202dbdcbcedebf5ac94a6296e121c057ec98cb5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
@@ -17,11 +18,12 @@
   },
   "dockerImages": {
     "205c5d917605ee59cc93dc29526bc4f73b315ae613cdfbc52b8179f388041a03": {
+      "displayName": "QueueProcessingService/QueueProcessingTaskDef/QueueProcessingContainer/AssetImage",
       "source": {
         "directory": "asset.205c5d917605ee59cc93dc29526bc4f73b315ae613cdfbc52b8179f388041a03"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-b26f3a33": {
           "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
           "imageTag": "205c5d917605ee59cc93dc29526bc4f73b315ae613cdfbc52b8179f388041a03",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
