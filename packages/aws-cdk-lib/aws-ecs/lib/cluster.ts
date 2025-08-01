@@ -367,7 +367,7 @@ export class Cluster extends Resource implements ICluster {
       conditions: clusterConditions,
     }));
     key.addToResourcePolicy(new PolicyStatement({
-      sid: 'Allow grant creation permission for Fargate tasks.',
+      sid: 'AllowGrantCreationPermissionForFargateTasks',
       principals: [new ServicePrincipal('fargate.amazonaws.com')],
       resources: ['*'],
       actions: ['kms:CreateGrant'],
