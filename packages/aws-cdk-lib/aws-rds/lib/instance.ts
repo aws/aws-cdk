@@ -152,7 +152,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
           'Endpoint.Address',
           'Endpoint.Port',
           'DbiResourceId',
-          'DBSecurityGroups',
+          'VPCSecurityGroups',
         ],
       } as cxschema.CcApiContextQuery,
       dummyValue: [
@@ -162,7 +162,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
           'Endpoint.Address': 'TESTADDRESS',
           'Endpoint.Port': '5432',
           'DbiResourceId': 'TESTID',
-          'DBSecurityGroups': [],
+          'VPCSecurityGroups': [],
         },
       ],
     }).value;
@@ -172,7 +172,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
 
     // Get ISecurityGroup from securityGroupId
     let securityGroups: ec2.ISecurityGroup[] = [];
-    const dbsg: string[] = instance.DBSecurityGroups;
+    const dbsg: string[] = instance.VPCSecurityGroups;
     if (dbsg) {
       securityGroups = dbsg.map(securityGroupId => {
         return ec2.SecurityGroup.fromSecurityGroupId(
