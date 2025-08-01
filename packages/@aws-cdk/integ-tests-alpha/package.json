@@ -83,7 +83,7 @@
     "sinon": "^9.2.4",
     "aws-cdk-lib": "0.0.0",
     "node-fetch": "^2.7.0",
-    "@types/node-fetch": "^2.6.12",
+    "@types/node-fetch": "^2.6.13",
     "constructs": "^10.0.0"
   },
   "dependencies": {},
