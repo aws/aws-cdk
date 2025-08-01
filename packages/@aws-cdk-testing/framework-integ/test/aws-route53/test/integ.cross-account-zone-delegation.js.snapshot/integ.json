@@ -5,7 +5,8 @@
       "stacks": [
         "child-stack",
         "child-opt-in-stack",
-        "child-opt-in-stack-with-assume-role-region"
+        "child-opt-in-stack-with-assume-role-region",
+        "parent-stack"
       ],
       "diffAssets": true,
       "assertionStack": "Route53CrossAccountInteg/DefaultTest/DeployAssert",
