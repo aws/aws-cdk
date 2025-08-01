@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution, CfnMonitoringSubscription } from './cloudfront.generated';
-import { HttpVersion, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol, AllowedMethods, CachedMethods, ErrorResponse, EdgeLambda } from './distribution';
+import { HttpVersion, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol, AllowedMethods, CachedMethods, ErrorResponse, EdgeLambda, TenantConfigProps } from './distribution';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
@@ -250,7 +250,7 @@ export interface MTDProps {
    *
    * @default - No special tenant configurations (undefined).
    */
-  readonly tenantConfig?: CfnDistribution.TenantConfigProperty;
+  readonly tenantConfig?: TenantConfigProps;
 }
 
 /**

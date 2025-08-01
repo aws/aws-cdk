@@ -1,5 +1,7 @@
 export * from './cache-policy';
+export * from './connection-group';
 export * from './distribution';
+export * from './distribution-tenant';
 export * from './endpoint';
 export * from './function';
 export * from './geo-restriction';

@@ -283,9 +283,9 @@ export interface DistributionProps {
    *
    * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront-readme.html#cloudfront-saas-manager-resources
    *
-   * @default false
+   * @default DIRECT
    */
-  readonly multiTenant?: boolean;
+  readonly connectionMode?: ConnectionMode;
 
   /**
    * Configuration for a distribution tenant.
@@ -294,7 +294,11 @@ export interface DistributionProps {
    *
    * @default - No special tenant configurations (undefined).
    */
-  readonly tenantConfig?: CfnDistribution.TenantConfigProperty;
+  readonly tenantConfig?: TenantConfigProps;
+}
+
+export interface TenantConfigProps extends CfnDistribution.TenantConfigProperty {
+
 }
 
 /**
@@ -413,7 +417,7 @@ export class Distribution extends Resource implements IDistribution {
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
         webAclId: Lazy.string({ produce: () => this.webAclId }),
-        connectionMode: props.multiTenant ? 'tenant-only' : 'direct',
+        connectionMode: props.connectionMode ?? 'direct',
         tenantConfig: props.tenantConfig ?? undefined,
       },
     });
@@ -870,22 +874,24 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private validateMultiTenantConfig(props: DistributionProps) {
-    if (!props.multiTenant) {
+    if (props.connectionMode == ConnectionMode.DIRECT) {
       if (props.tenantConfig) {
         throw new ValidationError('tenantConfig is not supported for direct distributions', this);
       }
     } else {
-      if (props.domainNames) {
-        throw new ValidationError('domainNames may not be configured for multi-tenant distributions', this);
-      } if (props.enableIpv6) {
-        throw new ValidationError('enableIpv6 field is not supported for multi-tenant distributions, please use a connection group to configure IPV6 options', this);
-      } if (props.priceClass) {
-        throw new ValidationError('priceClass may not be configured for multi-tenant distributions', this);
-      } if (props.sslSupportMethod && props.sslSupportMethod == SSLMethod.VIP) {
-        throw new ValidationError( 'invalid SSL Method', this);
-      } if (props.defaultBehavior.smoothStreaming) {
-        throw new ValidationError( 'smoothStreaming not supported by multi-tenant distributions', this);
-      }
+      const validations = [
+        { condition: props.domainNames, message: 'domainNames may not be configured for multi-tenant distributions' },
+        { condition: props.enableIpv6, message: 'enableIpv6 field is not supported for multi-tenant distributions, please use a connection group to configure IPV6 options' },
+        { condition: props.priceClass, message: 'priceClass may not be configured for multi-tenant distributions' },
+        { condition: props.sslSupportMethod && props.sslSupportMethod == SSLMethod.VIP, message: 'invalid SSL Method' },
+        { condition: props.defaultBehavior.smoothStreaming, message: 'smoothStreaming not supported by multi-tenant distributions' },
+      ];
+
+      validations.forEach(({ condition, message }) => {
+        if (condition) {
+          throw new ValidationError(message, this);
+        }
+      });
     }
   }
 }
@@ -913,6 +919,11 @@ export enum PriceClass {
   PRICE_CLASS_200 = 'PriceClass_200',
   /** All locations */
   PRICE_CLASS_ALL = 'PriceClass_All',
+}
+
+export enum ConnectionMode {
+  TENANT_ONLY = 'tenant-only',
+  DIRECT = 'direct',
 }
 
 /**
