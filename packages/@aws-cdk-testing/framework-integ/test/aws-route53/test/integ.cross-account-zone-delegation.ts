@@ -58,7 +58,13 @@ class ParentStack extends cdk.Stack {
       roleName: delegationRoleName,
       assumedBy: new iam.AccountPrincipal(crossAccount),
     });
-    parentZone.grantDelegation(crossAccountRole);
+    parentZone.grantDelegation(crossAccountRole, {
+      nameEquals: [
+        'sub.uniqueexample.com',
+        'sub2.uniqueexample.com',
+        'sub3.uniqueexample.com',
+      ],
+    });
   }
 }
 
@@ -130,6 +136,6 @@ childOptInStack.addDependency(parentStack);
 childOptInStackWithAssumeRoleRegion.addDependency(parentStack);
 
 new IntegTest(app, 'Route53CrossAccountInteg', {
-  testCases: [childStack, childOptInStack, childOptInStackWithAssumeRoleRegion],
+  testCases: [childStack, childOptInStack, childOptInStackWithAssumeRoleRegion, parentStack],
   diffAssets: true,
 });
