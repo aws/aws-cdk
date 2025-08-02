@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/75236c9da6dfb969bbce7e9142ccca8ef5dd7299707687d5f155a69b6fa97317.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/af1e494d6ce62851b064758f0e92d62319ab0b5c1d9d7250887203c7cecdc30f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -67,7 +67,7 @@
         "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myrestapiDeployment010A9D4F284640fa221c0b7931c23aed241b95fc"
+            "data": "myrestapiDeployment010A9D4F12568fb696a861db4a2dc4685be33f8d"
           }
         ],
         "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/DeploymentStage.prod": [
@@ -262,6 +262,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "myrestapiDeployment010A9D4F284640fa221c0b7931c23aed241b95fc": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapiDeployment010A9D4F284640fa221c0b7931c23aed241b95fc",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
