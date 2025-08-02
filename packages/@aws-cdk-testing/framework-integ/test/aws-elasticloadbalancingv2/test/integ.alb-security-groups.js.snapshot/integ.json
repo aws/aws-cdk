@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "AlbSecurityGroupTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-alb-security-group-integ"
+      ],
+      "diffAssets": true,
+      "assertionStack": "AlbSecurityGroupTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AlbSecurityGroupTestDefaultTestDeployAssertA4B138E2"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}
