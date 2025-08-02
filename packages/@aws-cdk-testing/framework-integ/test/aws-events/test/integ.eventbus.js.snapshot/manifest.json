@@ -46,16 +46,16 @@
             "data": "BusEA82B648"
           }
         ],
-        "/Stack/Bus/cdk-Statement1/Resource": [
+        "/Stack/Bus/cdkStatement1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BuscdkStatement1D7D87B9D"
+            "data": "BuscdkStatement17E48E06E"
           }
         ],
-        "/Stack/Bus/cdk-Statement2/Resource": [
+        "/Stack/Bus/cdkStatement2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BuscdkStatement2341A5B58"
+            "data": "BuscdkStatement2D6A35B77"
           }
         ],
         "/Stack/BootstrapVersion": [
