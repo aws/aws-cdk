@@ -1255,6 +1255,101 @@ describe('tests', () => {
     });
   });
 
+  test('respects user security group when internetFacing is true', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const userSG = new ec2.SecurityGroup(stack, 'UserSG', { vpc });
+
+    new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
+      vpc,
+      internetFacing: true,
+      securityGroup: userSG,
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Type: 'application',
+    });
+
+    // Verify the security group is the user-provided one, not auto-generated
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      SecurityGroups: [{ 'Fn::GetAtt': [Match.stringLikeRegexp('UserSG.*'), 'GroupId'] }],
+    });
+  });
+
+  test('respects user security group when internetFacing is false', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const userSG = new ec2.SecurityGroup(stack, 'UserSG', { vpc });
+
+    new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
+      vpc,
+      internetFacing: false,
+      securityGroup: userSG,
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internal',
+      Type: 'application',
+    });
+
+    // Verify the security group is the user-provided one, not auto-generated
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      SecurityGroups: [{ 'Fn::GetAtt': [Match.stringLikeRegexp('UserSG.*'), 'GroupId'] }],
+    });
+  });
+
+  test('creates default security group when none provided', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
+      vpc,
+      internetFacing: true,
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Type: 'application',
+    });
+
+    // Verify a security group is created (should be auto-generated)
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      SecurityGroups: [{ 'Fn::GetAtt': [Match.stringLikeRegexp('ALB.*SecurityGroup.*'), 'GroupId'] }],
+    });
+  });
+
+  test('works with addSecurityGroup method after construction', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const userSG = new ec2.SecurityGroup(stack, 'UserSG', { vpc });
+    const additionalSG = new ec2.SecurityGroup(stack, 'AdditionalSG', { vpc });
+
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
+      vpc,
+      internetFacing: true,
+      securityGroup: userSG,
+    });
+    alb.addSecurityGroup(additionalSG);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Type: 'application',
+    });
+
+    // Verify both security groups are present
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      SecurityGroups: [
+        { 'Fn::GetAtt': [Match.stringLikeRegexp('UserSG.*'), 'GroupId'] },
+        { 'Fn::GetAtt': [Match.stringLikeRegexp('AdditionalSG.*'), 'GroupId'] },
+      ],
+    });
+  });
+
   // test cases for crossZoneEnabled
   describe('crossZoneEnabled', () => {
     test('crossZoneEnabled can be true', () => {
