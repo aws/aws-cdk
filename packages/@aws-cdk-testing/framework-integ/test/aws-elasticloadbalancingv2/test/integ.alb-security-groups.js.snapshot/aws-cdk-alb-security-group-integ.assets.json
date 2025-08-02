@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "45e96807e2aece053996766f4d7a9c1f761ea3262026a3536afa4af6f80d76bf": {
+      "displayName": "aws-cdk-alb-security-group-integ Template",
+      "source": {
+        "path": "aws-cdk-alb-security-group-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-b05d1baf": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "45e96807e2aece053996766f4d7a9c1f761ea3262026a3536afa4af6f80d76bf.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -210,11 +210,13 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       throw new ValidationError('dual-stack without public IPv4 address can only be used with internet-facing scheme.', this);
     }
 
-    const securityGroups = [props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
-      vpc: props.vpc,
-      description: `Automatically created Security Group for ELB ${Names.uniqueId(this)}`,
-      allowAllOutbound: false,
-    })];
+    const securityGroups = props.securityGroup
+      ? [props.securityGroup]
+      : [new ec2.SecurityGroup(this, 'SecurityGroup', {
+        vpc: props.vpc,
+        description: `Automatically created Security Group for ELB ${Names.uniqueId(this)}`,
+        allowAllOutbound: false,
+      })];
     this.connections = new ec2.Connections({ securityGroups });
     this.listeners = [];
     this.metrics = new ApplicationLoadBalancerMetrics(this, this.loadBalancerFullName);
