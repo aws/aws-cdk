@@ -1240,6 +1240,33 @@ describe('Environment', () => {
       });
     }).toThrow('Windows Server 2022 images must be used with a fleet');
   });
+
+  test('can enable docker server by setting docker server compute type', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      environment: {
+        dockerServer: {
+          computeType: codebuild.DockerServerComputeType.SMALL,
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        DockerServer: {
+          ComputeType: 'BUILD_GENERAL1_SMALL',
+        },
+      }),
+    });
+  });
 });
 
 describe('EnvironmentVariables', () => {

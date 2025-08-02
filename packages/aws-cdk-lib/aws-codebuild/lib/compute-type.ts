@@ -16,3 +16,34 @@ export enum ComputeType {
   LAMBDA_10GB = 'BUILD_LAMBDA_10GB',
   ATTRIBUTE_BASED = 'ATTRIBUTE_BASED_COMPUTE',
 }
+
+/**
+ * Docker server compute type.
+ */
+export enum DockerServerComputeType {
+  /**
+   * BUILD_GENERAL1_SMALL
+   */
+  SMALL = 'BUILD_GENERAL1_SMALL',
+
+  /**
+   * BUILD_GENERAL1_MEDIUM
+   */
+  MEDIUM = 'BUILD_GENERAL1_MEDIUM',
+
+  /**
+   * BUILD_GENERAL1_LARGE
+   */
+  LARGE = 'BUILD_GENERAL1_LARGE',
+
+  /**
+   * BUILD_GENERAL1_XLARGE
+   */
+  X_LARGE = 'BUILD_GENERAL1_XLARGE',
+
+  /**
+   * BUILD_GENERAL1_2XLARGE
+   */
+  X2_LARGE = 'BUILD_GENERAL1_2XLARGE',
+}
+
