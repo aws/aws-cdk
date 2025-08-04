@@ -1,14 +1,14 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "testCases": {
     "IamRoleInteg/DefaultTest": {
       "stacks": [
-        "redshift-iamrole-integ",
-        "single-provider-role-integ"
+        "aws-cdk-redshift-cluster-database",
+        "aws-cdk-redshift-cluster-database/single-provider-role-integ"
       ],
       "assertionStack": "IamRoleInteg/DefaultTest/DeployAssert",
       "assertionStackName": "IamRoleIntegDefaultTestDeployAssertBEF20992"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1020.1"
 }

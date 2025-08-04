@@ -113,7 +113,9 @@ class FakePipeline extends cdk.Resource implements sagemaker.IPipeline {
 
     const pipeline = new sagemaker.CfnPipeline(this, 'Resource', {
       pipelineName: this.pipelineName,
-      pipelineDefinition: pipelineDefinition,
+      pipelineDefinition: {
+        PipelineDefinitionBody: JSON.stringify(pipelineDefinition),
+      },
       roleArn: pipelineRole.roleArn,
     });
 
@@ -156,11 +158,13 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
   MessageBody: 'Nebraska',
 });
 
+// Wait longer before checking for pipeline executions to allow processing time
 const message = putMessageOnQueue.next(test.assertions.awsApiCall('SageMaker', 'ListPipelineExecutions', {
   PipelineName: targetPipeline.pipelineName,
 }));
 
 // The pipeline won't succeed, but we want to test that it was started.
+// Check that at least one execution exists and has the correct pipeline ARN pattern
 message.assertAtPath('PipelineExecutionSummaries.0.PipelineExecutionArn', ExpectedResult.stringLikeRegexp(targetPipeline.pipelineArn))
   .waitForAssertions({
     totalTimeout: cdk.Duration.minutes(2),

@@ -210,6 +210,32 @@ test.each([
   });
 });
 
+test.each([
+  [undefined, 'latest'],
+  ['9.9.9', '9.9.9'],
+])('When I request cdk-assets version %p I get %p', (requested, expected) => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipe = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    cdkAssetsCliVersion: requested,
+  });
+
+  pipe.addStage(new FileAssetApp(pipelineStack, 'App', {}));
+
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Source: {
+      BuildSpec: Match.serializedJson(Match.objectLike({
+        phases: {
+          install: {
+            commands: [
+              `npm install -g cdk-assets@${expected}`,
+            ],
+          },
+        },
+      })),
+    },
+  });
+});
+
 test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
@@ -249,6 +275,32 @@ test('CodeBuild asset role has the right Principal with the feature enabled', ()
       },
     ],
   );
+});
+
+test.each([
+  [undefined, '2'],
+  ['9.9.9', '9.9.9'],
+])('When I request CLI version version %p I get %p', (requested, expected) => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipe = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    cliVersion: requested,
+  });
+
+  pipe.addStage(new FileAssetApp(pipelineStack, 'App', {}));
+
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Source: {
+      BuildSpec: Match.serializedJson(Match.objectLike({
+        phases: {
+          install: {
+            commands: [
+              `npm install -g aws-cdk@${expected}`,
+            ],
+          },
+        },
+      })),
+    },
+  });
 });
 
 test('CodeBuild asset role has the right Principal with the feature disabled', () => {

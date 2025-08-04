@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "files": {
     "5730bea116ff2f9738600530cfdc36b878c3210ca7c1cdeed1fff92b436b1b6f": {
       "displayName": "ApplicationSignalsCloudWatchAgent-Replica Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-5ce9396a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "5730bea116ff2f9738600530cfdc36b878c3210ca7c1cdeed1fff92b436b1b6f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
