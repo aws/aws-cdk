@@ -172,27 +172,17 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
 
     // Get ISecurityGroup from securityGroupId
     let securityGroups: ec2.ISecurityGroup[] = [];
-    const dbsg: string[] = instance.DBSecurityGroups;
-    if (dbsg && dbsg.length > 0) {
-      securityGroups = dbsg.map(securityGroupId => {
-        return ec2.SecurityGroup.fromSecurityGroupId(
-          scope,
-          `LSG-${securityGroupId}`,
-          securityGroupId,
-        );
-      });
-    } else {
-      const vpcsg: string[] = instance.VPCSecurityGroups;
-      if (vpcsg && vpcsg.length > 0) {
-        securityGroups = vpcsg.map(securityGroupId => {
-          return ec2.SecurityGroup.fromSecurityGroupId(
-            scope,
-            `LSG-${securityGroupId}`,
-            securityGroupId,
-          );
-        });
-      }
-    }
+    const sg: string[] =
+      (instance.DBSecurityGroups && instance.DBSecurityGroups.length > 0) ? instance.DBSecurityGroups :
+        (instance.VPCSecurityGroups && instance.VPCSecurityGroups.length > 0) ? instance.VPCSecurityGroups :
+          [];
+    securityGroups = sg.map(securityGroupId => {
+      return ec2.SecurityGroup.fromSecurityGroupId(
+        scope,
+        `LSG-${securityGroupId}`,
+        securityGroupId,
+      );
+    });
 
     return this.fromDatabaseInstanceAttributes(scope, id, {
       instanceEndpointAddress: instance['Endpoint.Address'],
