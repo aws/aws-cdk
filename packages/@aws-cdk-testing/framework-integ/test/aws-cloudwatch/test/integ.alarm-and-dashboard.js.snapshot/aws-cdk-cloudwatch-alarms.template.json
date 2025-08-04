@@ -7,7 +7,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 3,
     "DatapointsToAlarm": 2,
     "Dimensions": [
      {
@@ -20,6 +19,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 3,
     "MetricName": "ApproximateNumberOfMessagesVisible",
     "Namespace": "AWS/SQS",
     "Period": 300,
@@ -94,7 +94,15 @@
        {
         "Ref": "AWS::Region"
        },
-       "\",\"query\":\"SOURCE 'my-log-group' | fields @message\\n                | filter @message like /Error/\"}},{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":50,\"properties\":{\"view\":\"singleValue\",\"title\":\"Sent message size\",\"region\":\"",
+       "\",\"accountId\":\"123456789012\",\"query\":\"SOURCE 'my-log-group' | fields @message\\n                | filter @message like /Error/\"}},{\"type\":\"log\",\"width\":6,\"height\":6,\"x\":0,\"y\":50,\"properties\":{\"view\":\"table\",\"title\":\"Errors in my log group - SQL\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"query\":\"SOURCE 'my-log-group' | SELECT count(*) as count FROM 'my-log-group'\",\"queryLanguage\":\"SQL\"}},{\"type\":\"log\",\"width\":6,\"height\":6,\"x\":0,\"y\":56,\"properties\":{\"view\":\"table\",\"title\":\"Errors in my log group - PPL\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"query\":\"SOURCE 'my-log-group' | fields `@message` | sort - `@timestamp`\",\"queryLanguage\":\"PPL\"}},{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":62,\"properties\":{\"view\":\"singleValue\",\"title\":\"Sent message size\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
@@ -105,7 +113,7 @@
          "QueueName"
         ]
        },
-       "\"]],\"singleValueFullPrecision\":false}},{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":53,\"properties\":{\"view\":\"singleValue\",\"title\":\"Sent message size with full precision\",\"region\":\"",
+       "\"]],\"singleValueFullPrecision\":false}},{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":65,\"properties\":{\"view\":\"singleValue\",\"title\":\"Sent message size with full precision\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
@@ -116,7 +124,7 @@
          "QueueName"
         ]
        },
-       "\"]],\"singleValueFullPrecision\":true}},{\"type\":\"custom\",\"width\":6,\"height\":6,\"x\":0,\"y\":56,\"properties\":{\"endpoint\":\"arn:aws:lambda:us-west-2:123456789012:function:my-function\",\"title\":\"My custom alarm\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}}]}"
+       "\"]],\"singleValueFullPrecision\":true}},{\"type\":\"custom\",\"width\":6,\"height\":6,\"x\":0,\"y\":68,\"properties\":{\"endpoint\":\"arn:aws:lambda:us-west-2:123456789012:function:my-function\",\"title\":\"My custom alarm\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}}]}"
       ]
      ]
     },

@@ -1,0 +1,99 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "pipelineassetstackStagingdevlambdastackEC748226.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "pipelineassetstackStagingdevlambdastackEC748226.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/dev/version"
+      }
+    },
+    "pipelineassetstackStagingdevlambdastackEC748226": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "pipelineassetstackStagingdevlambdastackEC748226.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": true,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-dev-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-dev-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-dev-assets-${AWS::AccountId}-us-east-1/f87183bd8d7344e30c0b6220b9124aa12ca1a31e6660c3ec7fb303650913f59c.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/dev/version",
+        "additionalDependencies": [
+          "pipelineassetstackStagingdevlambdastackEC748226.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-dev-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/dev/version"
+        },
+        "stackName": "Staging-dev-lambda-stack"
+      },
+      "dependencies": [
+        "pipelineassetstackStagingdevlambdastackEC748226.assets"
+      ],
+      "metadata": {
+        "/pipeline-asset-stack/Staging/dev-lambda-stack/LambdaFN": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/pipeline-asset-stack/Staging/dev-lambda-stack/LambdaFN/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/pipeline-asset-stack/Staging/dev-lambda-stack/LambdaFN/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/pipeline-asset-stack/Staging/dev-lambda-stack/LambdaFN/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaFNServiceRole1CCEDDD9"
+          }
+        ],
+        "/pipeline-asset-stack/Staging/dev-lambda-stack/LambdaFN/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaFNC3761C8C"
+          }
+        ],
+        "/pipeline-asset-stack/Staging/dev-lambda-stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/pipeline-asset-stack/Staging/dev-lambda-stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "pipeline-asset-stack/Staging/dev-lambda-stack"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

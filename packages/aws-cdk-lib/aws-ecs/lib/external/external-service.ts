@@ -6,6 +6,7 @@ import * as cloudmap from '../../../aws-servicediscovery';
 import { ArnFormat, Resource, Stack, Annotations, ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { IAlternateTarget } from '../alternate-target-configuration';
 import { AssociateCloudMapServiceOptions, BaseService, BaseServiceOptions, CloudMapOptions, DeploymentControllerType, EcsTarget, IBaseService, IEcsLoadBalancerTarget, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { fromServiceAttributes } from '../base/from-service-attributes';
 import { ScalableTaskCount } from '../base/scalable-task-count';
@@ -183,7 +184,7 @@ export class ExternalService extends BaseService implements IExternalService {
    * Overridden method to throw error as `loadBalancerTarget` is not supported for external service
    */
   @MethodMetadata()
-  public loadBalancerTarget(_options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
+  public loadBalancerTarget(_options: LoadBalancerTargetOptions, _alternateOptions?: IAlternateTarget): IEcsLoadBalancerTarget {
     throw new ValidationError('External service cannot be attached as load balancer targets', this);
   }
 
