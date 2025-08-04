@@ -8,6 +8,16 @@ import { UnscopedValidationError } from '../errors';
  */
 export interface BootstraplessSynthesizerProps {
   /**
+   * The qualifier used to specialize strings
+   *
+   * Can be used to specify custom bootstrapped role names
+   *
+   * @default 'hnb659fds'
+   *
+   */
+  readonly qualifier?: string;
+
+  /**
    * The deploy Role ARN to use.
    *
    * @default - No deploy role (use CLI credentials)
@@ -47,6 +57,7 @@ export class BootstraplessSynthesizer extends DefaultStackSynthesizer {
       deployRoleArn: props.deployRoleArn,
       cloudFormationExecutionRole: props.cloudFormationExecutionRoleArn,
       generateBootstrapVersionRule: false,
+      qualifier: props.qualifier,
     });
   }
 
