@@ -926,7 +926,7 @@ describe('table', () => {
           Region: 'us-west-2',
           SSESpecification: {
             KMSMasterKeyId: {
-              'Ref': 'Key961B73FD',
+              Ref: 'Key961B73FD',
             },
           },
           TableClass: 'STANDARD_INFREQUENT_ACCESS',
