@@ -83,8 +83,7 @@ export abstract class TableEncryptionV2 {
           kmsMasterKeyId: replicaKeyArns[replicaRegion],
         } satisfies CfnGlobalTable.ReplicaSSESpecificationProperty;
       }
-    })(TableEncryption.CUSTOMER_MANAGED, tableKey,
-      replicaKeyArns);
+    }) (TableEncryption.CUSTOMER_MANAGED, tableKey, replicaKeyArns);
   }
 
   private constructor (
