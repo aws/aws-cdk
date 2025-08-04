@@ -22,7 +22,7 @@ export abstract class TableEncryptionV2 {
       public _renderReplicaSseSpecification(_scope: Construct, _region: string) {
         return undefined;
       }
-    })(TableEncryption.DEFAULT);
+    }) (TableEncryption.DEFAULT);
   }
 
   /**
@@ -40,7 +40,7 @@ export abstract class TableEncryptionV2 {
       public _renderReplicaSseSpecification(_scope: Construct, _region: string) {
         return undefined;
       }
-    })(TableEncryption.AWS_MANAGED);
+    }) (TableEncryption.AWS_MANAGED);
   }
 
   /**
@@ -83,14 +83,14 @@ export abstract class TableEncryptionV2 {
           kmsMasterKeyId: replicaKeyArns[replicaRegion],
         } satisfies CfnGlobalTable.ReplicaSSESpecificationProperty;
       }
-    })(TableEncryption.CUSTOMER_MANAGED, tableKey,
+    }) (TableEncryption.CUSTOMER_MANAGED, tableKey,
       replicaKeyArns);
   }
 
-  private constructor(
+  private constructor (
     public readonly type: TableEncryption,
     public readonly tableKey?: IKey,
-    public readonly replicaKeyArns?: { [region: string]: string }) { }
+    public readonly replicaKeyArns?: { [region: string]: string }) {}
 
   /**
    * @internal
