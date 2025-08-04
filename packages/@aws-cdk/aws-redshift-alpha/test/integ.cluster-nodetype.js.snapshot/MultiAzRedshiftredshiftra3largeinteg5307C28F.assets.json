@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "ad867d65db3661ed3d8d3fd451aa8ff23fb0726ff102d1369744f6747ce05867": {
+      "displayName": "MultiAzRedshiftredshiftra3largeinteg5307C28F Template",
+      "source": {
+        "path": "MultiAzRedshiftredshiftra3largeinteg5307C28F.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ad867d65db3661ed3d8d3fd451aa8ff23fb0726ff102d1369744f6747ce05867.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

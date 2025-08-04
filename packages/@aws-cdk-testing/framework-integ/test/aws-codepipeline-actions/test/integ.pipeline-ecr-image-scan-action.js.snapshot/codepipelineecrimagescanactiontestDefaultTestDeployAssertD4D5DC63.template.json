@@ -26,7 +26,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1751020093158"
+    "salt": "1753437747395"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -148,7 +148,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1751020093159"
+    "salt": "1753437747396"
    },
    "DependsOn": [
     "AwsApiCallCodePipelinestartPipelineExecution57ac6eaf015feec14cf48d22e7e8225e"
@@ -444,6 +444,9 @@
    "ap-southeast-5": {
     "value": "nodejs22.x"
    },
+   "ap-southeast-6": {
+    "value": "nodejs22.x"
+   },
    "ap-southeast-7": {
     "value": "nodejs22.x"
    },
@@ -484,6 +487,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {

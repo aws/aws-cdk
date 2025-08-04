@@ -1,13 +1,13 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "testCases": {
     "ExcludeCharactersInteg/DefaultTest": {
       "stacks": [
-        "redshift-exclude-characters-integ"
+        "aws-cdk-redshift-cluster-database"
       ],
       "assertionStack": "ExcludeCharactersInteg/DefaultTest/DeployAssert",
       "assertionStackName": "ExcludeCharactersIntegDefaultTestDeployAssertF357433F"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1020.1"
 }

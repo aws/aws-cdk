@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "cdk-instance-engine-lifecycle-support-test/DefaultTest": {
+      "stacks": [
+        "cdk-instance-engine-lifecycle-support"
+      ],
+      "assertionStack": "cdk-instance-engine-lifecycle-support-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkinstanceenginelifecyclesupporttestDefaultTestDeployAssert3026BBCC"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}
