@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1751570146415"
+    "salt": "1753431340429"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -184,7 +184,7 @@
      "Username": "\"test-user@example.com\""
     },
     "flattenResponse": "false",
-    "salt": "1751570146416"
+    "salt": "1753431340431"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -247,6 +247,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {

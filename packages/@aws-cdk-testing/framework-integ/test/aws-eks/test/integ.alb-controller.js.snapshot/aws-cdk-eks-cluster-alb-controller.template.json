@@ -1057,7 +1057,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/f35ac439cc58dcf23012fb036da09eb7802e1096868b030abfe64f314cdfb4f3.json"
+       "/91a041c8855aff141ecad0ac93c1873d5d084721f8e0fdfacb464d865c61c8a3.json"
       ]
      ]
     }
@@ -1107,7 +1107,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/79eea88c968b6c1449fdf954d6586a2e12b00c187f453783dcdbb341e0555ea9.json"
+       "/29eb97ca2032318fe0b8221f6043627d97e84b7b4b8d6231a9a40f594546a919.json"
       ]
      ]
     }
@@ -2022,6 +2022,10 @@
      }
     },
     "Handler": "framework.onEvent",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
     "Role": {
      "Fn::GetAtt": [
       "IngressPingerProviderframeworkonEventServiceRole89300FAD",
@@ -2125,6 +2129,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {

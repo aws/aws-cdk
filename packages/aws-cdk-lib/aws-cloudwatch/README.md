@@ -146,25 +146,33 @@ const errorRate = new cloudwatch.MathExpression({
 
 ### Search Expressions
 
-Math expressions also support search expressions. For example, the following
-search expression returns all CPUUtilization metrics that it finds, with the
-graph showing the Average statistic with an aggregation period of 5 minutes:
+Search expressions allow you to dynamically discover and display metrics that match specific criteria, making them ideal for monitoring dynamic infrastructure where the exact metrics aren't known in advance. A single search expression can return up to 500 time series.
+
+
+#### Using SearchExpression Class
+
+Following is an example of a search expression that returns all CPUUtilization metrics with the graph showing the Average statistic with an aggregation period of 5 minutes:
 
 ```ts
-const cpuUtilization = new cloudwatch.MathExpression({
-  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)",
-
-  // Specifying '' as the label suppresses the default behavior
-  // of using the expression as metric label. This is especially appropriate
-  // when using expressions that return multiple time series (like SEARCH()
-  // or METRICS()), to show the labels of the retrieved metrics only.
-  label: '',
+const cpuUtilization = new cloudwatch.SearchExpression({
+  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 900)",
+  label: 'EC2 CPU Utilization',
+  color: '#ff7f0e',
 });
 ```
 
 Cross-account and cross-region search expressions are also supported. Use
 the `searchAccount` and `searchRegion` properties to specify the account
 and/or region to evaluate the search expression against.
+
+```ts
+const crossAccountSearch = new cloudwatch.SearchExpression({
+  expression: "SEARCH('{AWS/Lambda,FunctionName} MetricName=\"Invocations\"', 'Sum', 300)",
+  searchAccount: '123456789012',
+  searchRegion: 'us-west-2',
+  label: 'Production Lambda Invocations',
+});
+```
 
 ### Aggregation
 
@@ -845,6 +853,19 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
     'fields @message',
     'filter @message like /Error/',
   ]
+}));
+```
+
+Log Insights QL is the default query language. You may specify an [alternate query language: OpenSearch PPL or SQL](https://aws.amazon.com/blogs/aws/new-amazon-cloudwatch-and-amazon-opensearch-service-launch-an-integrated-analytics-experience/), if desired:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
+  logGroupNames: ['my-log-group'],
+  view: cloudwatch.LogQueryVisualizationType.TABLE,
+  queryString: "SELECT count(*) as count FROM 'my-log-group'",
+  queryLanguage: cloudwatch.LogQueryLanguage.SQL,
 }));
 ```
 

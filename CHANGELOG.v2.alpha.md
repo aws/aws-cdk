@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.208.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.207.0-alpha.0...v2.208.0-alpha.0) (2025-07-29)
+
+
+### Features
+
+* **glue:** throw ValidationError instead of untyped errors ([#35084](https://github.com/aws/aws-cdk/issues/35084)) ([1e20df6](https://github.com/aws/aws-cdk/commit/1e20df640dfe1ddfd082d459fc9ff5e063b1a95c))
+
+## [2.207.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.206.0-alpha.0...v2.207.0-alpha.0) (2025-07-24)
+
+## [2.206.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.205.0-alpha.0...v2.206.0-alpha.0) (2025-07-16)
+
+## [2.205.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.204.0-alpha.0...v2.205.0-alpha.0) (2025-07-15)
+
+## [2.204.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.203.1-alpha.0...v2.204.0-alpha.0) (2025-07-04)
+
+
+### Features
+
+* **lambda-python-alpha:** support uv ([#33880](https://github.com/aws/aws-cdk/issues/33880)) ([ac6f136](https://github.com/aws/aws-cdk/commit/ac6f13695ba84d5358b69c0763c2f611af54e826)), closes [#31238](https://github.com/aws/aws-cdk/issues/31238) [#32413](https://github.com/aws/aws-cdk/issues/32413)
+
 ## [2.203.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.203.0-alpha.0...v2.203.1-alpha.0) (2025-07-02)
 
 ## [2.203.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.202.0-alpha.0...v2.203.0-alpha.0) (2025-07-01)
