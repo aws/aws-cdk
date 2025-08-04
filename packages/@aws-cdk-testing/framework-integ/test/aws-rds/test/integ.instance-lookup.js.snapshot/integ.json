@@ -1,0 +1,24 @@
+{
+  "enableLookups": true,
+  "version": "45.0.0",
+  "testCases": {
+    "integ-rds-instance-from-lookup/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-instance-lookup"
+      ],
+      "hooks": {
+        "preDeploy": [
+          "aws rds create-db-instance --db-instance-identifier test-instance-lookup --engine mysql --engine-version 8.0.42 --master-username admin --master-user-password Admin1234 --allocated-storage 20 --db-instance-class db.t3.micro --enable-iam-database-authentication",
+          "aws rds wait db-instance-available --db-instance-identifier test-instance-lookup"
+        ],
+        "postDeploy": [
+          "aws rds delete-db-instance --db-instance-identifier test-instance-lookup --skip-final-snapshot"
+        ]
+      },
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integ-rds-instance-from-lookup/DefaultTest/DeployAssert",
+      "assertionStackName": "integrdsinstancefromlookupDefaultTestDeployAssert675A9017"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}
