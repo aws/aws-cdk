@@ -1350,6 +1350,93 @@ describe('tests', () => {
     });
   });
 
+  test('handles undefined security group correctly', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN - explicitly pass undefined (should behave same as not providing securityGroup)
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
+      vpc,
+      internetFacing: true,
+      securityGroup: undefined,
+    });
+
+    const template = Template.fromStack(stack);
+
+    // THEN
+    // Should create auto-generated security group
+    template.resourceCountIs('AWS::EC2::SecurityGroup', 1);
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      SecurityGroups: [{ 'Fn::GetAtt': [Match.stringLikeRegexp('ALB.*SecurityGroup.*'), 'GroupId'] }],
+    });
+  });
+
+  test('accepts security group from different VPC at construct time (validation happens at deploy time)', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc1 = new ec2.Vpc(stack, 'VPC1');
+    const vpc2 = new ec2.Vpc(stack, 'VPC2');
+    const sgFromDifferentVpc = new ec2.SecurityGroup(stack, 'SGFromDifferentVPC', { vpc: vpc2 });
+
+    // WHEN - CDK allows this at construct time, CloudFormation will validate at deploy time
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
+      vpc: vpc1,
+      internetFacing: true,
+      securityGroup: sgFromDifferentVpc,
+    });
+
+    // THEN - Should construct successfully (CloudFormation will catch VPC mismatch at deploy time)
+    expect(alb.connections.securityGroups).toHaveLength(1);
+    expect(alb.connections.securityGroups[0]).toBe(sgFromDifferentVpc);
+  });
+
+  test('maintains backward compatibility - no breaking changes for existing users', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN - Create ALB without securityGroup (existing behavior)
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
+      vpc,
+      internetFacing: true,
+      // No securityGroup provided - should auto-generate like before
+    });
+
+    const template = Template.fromStack(stack);
+
+    // THEN
+    // Should still auto-generate security group (backward compatibility)
+    template.resourceCountIs('AWS::EC2::SecurityGroup', 1);
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      SecurityGroups: [{ 'Fn::GetAtt': [Match.stringLikeRegexp('ALB.*SecurityGroup.*'), 'GroupId'] }],
+    });
+
+    // Verify the auto-generated security group has expected properties
+    template.hasResourceProperties('AWS::EC2::SecurityGroup', {
+      GroupDescription: Match.stringLikeRegexp('Automatically created Security Group for ELB.*'),
+      VpcId: { Ref: Match.stringLikeRegexp('VPC.*') },
+    });
+  });
+
+  test('validates security group belongs to same VPC as ALB', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const userSG = new ec2.SecurityGroup(stack, 'UserSG', { vpc });
+
+    // WHEN
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
+      vpc,
+      internetFacing: true,
+      securityGroup: userSG,
+    });
+
+    // THEN - Should succeed without errors
+    expect(alb.connections.securityGroups).toHaveLength(1);
+    expect(alb.connections.securityGroups[0]).toBe(userSG);
+  });
+
   // test cases for crossZoneEnabled
   describe('crossZoneEnabled', () => {
     test('crossZoneEnabled can be true', () => {
