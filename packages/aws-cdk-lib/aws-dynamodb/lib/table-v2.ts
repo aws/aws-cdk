@@ -300,6 +300,10 @@ export interface TablePropsV2 extends TableOptionsV2 {
   /**
    * The witness Region for the MRSC global table.
    * A MRSC global table can be configured with either three replicas, or with two replicas and one witness.
+   *
+   * Note: Witness region cannot be specified for a Multi-Region Eventual Consistency (MREC) Global Table.
+   * Witness regions are only supported for Multi-Region Strong Consistency (MRSC) Global Tables.
+   *
    * @default - no witness region
    */
   readonly witnessRegion?: string;
