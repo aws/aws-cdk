@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "cdk-backup.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-backup.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0c52c355c71ac95690274d7987110017ff9cd1a1bc79fa4206fda2f55d6b62d5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e5093a148eae7216e7c8376bd6409082f0cd7da436f1d245614ed68875eb20d5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,10 +34,22 @@
         "cdk-backup.assets"
       ],
       "metadata": {
+        "/cdk-backup/Table": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-backup/Table/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TableCD117FA1"
+          }
+        ],
+        "/cdk-backup/Table/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cdk-backup/FileSystem": [
@@ -45,10 +58,22 @@
             "data": "FileSystem"
           }
         ],
+        "/cdk-backup/Vault": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-backup/Vault/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vault23237E5B"
+          }
+        ],
+        "/cdk-backup/SecondaryVault": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cdk-backup/SecondaryVault/Resource": [
@@ -63,16 +88,74 @@
             "data": "Env"
           }
         ],
+        "/cdk-backup/ThirdVault": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/cdk-backup/ThirdVault/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ThirdVault3441C01E"
           }
         ],
+        "/cdk-backup/Plan": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/cdk-backup/Plan/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PlanDAF4E53A"
+          }
+        ],
+        "/cdk-backup/Plan/Selection": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/cdk-backup/Plan/Selection/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/cdk-backup/Plan/Selection/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cdk-backup/Plan/Selection/Role/Resource": [
@@ -108,5 +191,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1017.1"
 }

@@ -219,6 +219,7 @@ export interface RecordSetOptions {
    * > an existing Record Set's `deleteExisting` property from `false -> true` after deployment
    * > will delete the record!
    *
+   * @deprecated This property is dangerous and can lead to unintended record deletion in case of deployment failure.
    * @default false
    */
   readonly deleteExisting?: boolean;
@@ -419,6 +420,7 @@ export class RecordSet extends Resource implements IRecordSet {
     this.domainName = recordSet.ref;
 
     if (props.deleteExisting) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-route53:deleteExisting', 'deleteExisting field is deprecated do not use it');
       // Delete existing record before creating the new one
       const provider = DeleteExistingRecordSetProvider.getOrCreateProvider(this, DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE, {
         policyStatements: [{ // IAM permissions for all providers

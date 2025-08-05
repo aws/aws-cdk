@@ -4,7 +4,7 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import * as constructs from 'constructs';
 import { Code } from '../code';
 import { Job, JobProps } from './job';
-import { Token } from 'aws-cdk-lib';
+import { Token, UnscopedValidationError } from 'aws-cdk-lib';
 import { EOL } from 'os';
 
 /**
@@ -198,7 +198,7 @@ function validateSparkUiPrefix(prefix?: string): void {
   }
 
   if (errors.length > 0) {
-    throw new Error(`Invalid prefix format (value: ${prefix})${EOL}${errors.join(EOL)}`);
+    throw new UnscopedValidationError(`Invalid prefix format (value: ${prefix})${EOL}${errors.join(EOL)}`);
   }
 }
 
