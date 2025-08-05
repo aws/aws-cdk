@@ -4,9 +4,19 @@ import { DataProcessorBindOptions, DataProcessorProps, ExtendedDataProcessorConf
 /**
  * Compression format for DecompressionProcessor.
  */
-export enum DecompressionProcessorCompressionFormat {
-  /** GZIP compression */
-  GZIP = 'GZIP',
+export class DecompressionProcessorCompressionFormat {
+  /**
+   * GZIP compression
+   */
+  static readonly GZIP = new DecompressionProcessorCompressionFormat('GZIP');
+  /**
+   * Custom compression format
+   */
+  public static of(value: string) {
+    return new DecompressionProcessorCompressionFormat(value);
+  }
+
+  private constructor(readonly value: string) {}
 }
 
 /**
@@ -35,7 +45,7 @@ export class DecompressionProcessor implements IDataProcessor {
       processorType: 'Decompression',
       processorIdentifier: { parameterName: '', parameterValue: '' },
       parameters: [
-        { parameterName: 'CompressionFormat', parameterValue: this.options.compressionFormat ?? 'GZIP' },
+        { parameterName: 'CompressionFormat', parameterValue: this.options.compressionFormat?.value ?? 'GZIP' },
       ],
     };
   }
