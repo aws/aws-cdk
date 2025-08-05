@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ArnFormat, IResource, Resource, Stack, Arn } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { CfnApplication } from '../codedeploy.generated';
+import { CfnApplication, ICfnApplication } from '../codedeploy.generated';
 import { arnForApplication, validateName } from '../private/utils';
 
 /**
@@ -15,7 +15,7 @@ import { arnForApplication, validateName } from '../private/utils';
  * or one defined in a different CDK Stack,
  * use the `#fromServerApplicationName` method.
  */
-export interface IServerApplication extends IResource {
+export interface IServerApplication extends IResource, ICfnApplication {
   /** @attribute */
   readonly applicationArn: string;
 
@@ -60,6 +60,7 @@ export class ServerApplication extends Resource implements IServerApplication {
     class Import extends Resource implements IServerApplication {
       public readonly applicationArn = arnForApplication(Stack.of(scope), serverApplicationName);
       public readonly applicationName = serverApplicationName;
+      public readonly attrApplicationName = serverApplicationName;
     }
 
     return new Import(scope, id);
@@ -77,11 +78,13 @@ export class ServerApplication extends Resource implements IServerApplication {
     return new class extends Resource implements IServerApplication {
       public applicationArn = serverApplicationArn;
       public applicationName = Arn.split(serverApplicationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName ?? '<invalid arn>';
+      public attrApplicationName = this.applicationName;
     }(scope, id, { environmentFromArn: serverApplicationArn });
   }
 
   public readonly applicationArn: string;
   public readonly applicationName: string;
+  public readonly attrApplicationName: string;
 
   constructor(scope: Construct, id: string, props: ServerApplicationProps = {}) {
     super(scope, id, {
@@ -102,6 +105,7 @@ export class ServerApplication extends Resource implements IServerApplication {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+    this.attrApplicationName = this.applicationName;
 
     this.node.addValidation({ validate: () => validateName('Application', this.physicalName) });
   }
