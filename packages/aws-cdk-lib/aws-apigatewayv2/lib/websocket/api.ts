@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { WebSocketRoute, WebSocketRouteOptions } from './route';
-import { CfnApi } from '.././index';
+import { CfnApi, ICfnApi } from '.././index';
 import { Grant, IGrantable } from '../../../aws-iam';
 import { ArnFormat, Stack, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
@@ -12,7 +12,7 @@ import { ApiBase } from '../common/base';
 /**
  * Represents a WebSocket API
  */
-export interface IWebSocketApi extends IApi {
+export interface IWebSocketApi extends IApi, ICfnApi {
 }
 
 /**
@@ -127,6 +127,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
   public static fromWebSocketApiAttributes(scope: Construct, id: string, attrs: WebSocketApiAttributes): IWebSocketApi {
     class Import extends ApiBase {
       public readonly apiId = attrs.webSocketId;
+      public readonly attrApiId = attrs.webSocketId;
       public readonly websocketApiId = attrs.webSocketId;
       private readonly _apiEndpoint = attrs.apiEndpoint;
 
@@ -142,6 +143,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
 
   public readonly apiId: string;
   public readonly apiEndpoint: string;
+  public readonly attrApiId: string;
 
   /**
    * A human friendly name for this WebSocket API. Note that this is different from `webSocketApiId`.
@@ -164,6 +166,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
       ipAddressType: props?.ipAddressType,
     });
     this.apiId = resource.ref;
+    this.attrApiId = resource.attrApiId;
     this.apiEndpoint = resource.attrApiEndpoint;
 
     if (props?.connectRouteOptions) {
