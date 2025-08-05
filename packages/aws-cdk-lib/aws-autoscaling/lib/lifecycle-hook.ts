@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
-import { CfnLifecycleHook } from './autoscaling.generated';
+import { CfnLifecycleHook, ICfnLifecycleHook } from './autoscaling.generated';
 import { ILifecycleHookTarget } from './lifecycle-hook-target';
 import * as iam from '../../aws-iam';
 import { Duration, IResource, Resource, ValidationError } from '../../core';
@@ -74,7 +74,7 @@ export interface LifecycleHookProps extends BasicLifecycleHookProps {
 /**
  * A basic lifecycle hook object
  */
-export interface ILifecycleHook extends IResource {
+export interface ILifecycleHook extends IResource, ICfnLifecycleHook {
   /**
    * The role for the lifecycle hook to execute
    *
@@ -113,6 +113,19 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
    */
   public readonly lifecycleHookName: string;
 
+  /**
+   * The name of this lifecycle hook
+   * @attribute
+   */
+  public readonly attrLifecycleHookName: string;
+
+  /**
+   * The name of the Auto Scaling group.
+   * This property gets determined after the resource is created.
+   *
+   */
+  public readonly attrAutoScalingGroupName: string;
+
   constructor(scope: Construct, id: string, props: LifecycleHookProps) {
     super(scope, id, {
       physicalName: props.lifecycleHookName,
@@ -145,6 +158,9 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       notificationTargetArn: l1NotificationTargetArn,
       roleArn: l1RoleArn,
     });
+
+    this.attrLifecycleHookName = resource.attrLifecycleHookName;
+    this.attrAutoScalingGroupName = resource.attrAutoScalingGroupName;
 
     // A LifecycleHook resource is going to do a permissions test upon creation,
     // so we have to make sure the role has full permissions before creating the
