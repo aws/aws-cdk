@@ -96,7 +96,7 @@ interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
 /**
  * Properties for a Multi-tenant Distribution
  */
-export interface MTDProps {
+export interface MTDistributionProps {
   /**
    * The default behavior for the distribution.
    */
@@ -255,6 +255,7 @@ export interface MTDProps {
 
 /**
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
+ * @resource AWS::CloudFront::Distribution
  */
 @propertyInjectable
 export class MTDistribution extends Resource implements IMTDistribution {
@@ -267,7 +268,7 @@ export class MTDistribution extends Resource implements IMTDistribution {
   /**
    * Creates a Distribution construct that represents an external (imported) distribution.
    */
-  public static fromDistributionAttributes(scope: Construct, id: string, attrs: MTDistributionAttributes): IMTDistribution {
+  public static fromMTDistributionAttributes(scope: Construct, id: string, attrs: MTDistributionAttributes): IMTDistribution {
     return new class extends Resource implements IMTDistribution {
       public readonly domainName: string;
       public readonly distributionDomainName: string;
@@ -307,7 +308,7 @@ export class MTDistribution extends Resource implements IMTDistribution {
   private readonly publishAdditionalMetrics?: boolean;
   private webAclId?: string;
 
-  constructor(scope: Construct, id: string, props: MTDProps) {
+  constructor(scope: Construct, id: string, props: MTDistributionProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
@@ -358,6 +359,7 @@ export class MTDistribution extends Resource implements IMTDistribution {
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
         httpVersion: this.httpVersion,
+        ipv6Enabled: false,
         logging: this.renderLogging(props),
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
@@ -771,7 +773,7 @@ export class MTDistribution extends Resource implements IMTDistribution {
     });
   }
 
-  private renderLogging(props: MTDProps): CfnDistribution.LoggingProperty | undefined {
+  private renderLogging(props: MTDistributionProps): CfnDistribution.LoggingProperty | undefined {
     if (!props.enableLogging && !props.logBucket) { return undefined; }
     if (props.enableLogging === false && props.logBucket) {
       throw new ValidationError('Explicitly disabled logging but provided a logging bucket.', this);

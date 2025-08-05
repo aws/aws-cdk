@@ -297,6 +297,9 @@ export interface DistributionProps {
   readonly tenantConfig?: TenantConfigProps;
 }
 
+/**
+ * Config properties for tenants associated with the distribution
+ */
 export interface TenantConfigProps extends CfnDistribution.TenantConfigProperty {
 
 }
@@ -410,14 +413,14 @@ export class Distribution extends Resource implements IDistribution {
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
         httpVersion: this.httpVersion,
-        ipv6Enabled: props.enableIpv6 ?? true,
+        ipv6Enabled: props.enableIpv6 ?? (props.connectionMode != ConnectionMode.TENANT_ONLY ? true : undefined),
         logging: this.renderLogging(props),
         priceClass: props.priceClass ?? undefined,
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
         webAclId: Lazy.string({ produce: () => this.webAclId }),
-        connectionMode: props.connectionMode ?? 'direct',
+        connectionMode: props.connectionMode,
         tenantConfig: props.tenantConfig ?? undefined,
       },
     });
@@ -874,7 +877,7 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private validateMultiTenantConfig(props: DistributionProps) {
-    if (props.connectionMode == ConnectionMode.DIRECT) {
+    if (props.connectionMode != ConnectionMode.TENANT_ONLY) {
       if (props.tenantConfig) {
         throw new ValidationError('tenantConfig is not supported for direct distributions', this);
       }
@@ -921,8 +924,13 @@ export enum PriceClass {
   PRICE_CLASS_ALL = 'PriceClass_All',
 }
 
+/**
+ * The distribution type being created
+ */
 export enum ConnectionMode {
+  /** For creating a multi-tenant distribution */
   TENANT_ONLY = 'tenant-only',
+  /** For creating a regular direct distribution */
   DIRECT = 'direct',
 }
 
