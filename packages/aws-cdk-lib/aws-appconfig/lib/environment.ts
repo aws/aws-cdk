@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnDeployment, CfnEnvironment } from './appconfig.generated';
+import { CfnDeployment, CfnEnvironment, ICfnEnvironment } from './appconfig.generated';
 import { IApplication } from './application';
 import { IConfiguration } from './configuration';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
@@ -50,6 +50,8 @@ export interface EnvironmentAttributes {
 abstract class EnvironmentBase extends Resource implements IEnvironment, IExtensible {
   public abstract applicationId: string;
   public abstract environmentId: string;
+  public abstract attrApplicationId: string;
+  public abstract attrEnvironmentId: string;
   public abstract environmentArn: string;
   public abstract name?: string;
   protected extensible!: ExtensibleBase;
@@ -222,6 +224,8 @@ export class Environment extends EnvironmentBase {
     class Import extends EnvironmentBase {
       public readonly applicationId = applicationId;
       public readonly environmentId = environmentId;
+      public readonly attrApplicationId = applicationId;
+      public readonly attrEnvironmentId = environmentId;
       public readonly environmentArn = environmentArn;
       public readonly name?: string;
     }
@@ -252,6 +256,8 @@ export class Environment extends EnvironmentBase {
     class Import extends EnvironmentBase {
       public readonly application = attrs.application;
       public readonly applicationId = attrs.application.applicationId;
+      public readonly attrApplicationId = attrs.application.applicationId;
+      public readonly attrEnvironmentId = environmentId;
       public readonly name = attrs.name;
       public readonly environmentId = environmentId;
       public readonly environmentArn = environmentArn;
@@ -292,6 +298,13 @@ export class Environment extends EnvironmentBase {
   public readonly environmentId: string;
 
   /**
+   * The ID of the environment.
+   *
+   * @attribute
+   */
+  public readonly attrEnvironmentId: string;
+
+  /**
    * The Amazon Resource Name (ARN) of the environment.
    *
    * @attribute
@@ -302,6 +315,11 @@ export class Environment extends EnvironmentBase {
    * The ID of the environment.
    */
   public readonly applicationId: string;
+
+  /**
+   * The ID of the environment.
+   */
+  public readonly attrApplicationId: string;
 
   private readonly _cfnEnvironment: CfnEnvironment;
 
@@ -336,6 +354,8 @@ export class Environment extends EnvironmentBase {
       }),
     });
     this._cfnEnvironment = resource;
+    this.attrEnvironmentId = resource.attrEnvironmentId;
+    this.attrApplicationId = resource.attrApplicationId;
 
     this.environmentId = this._cfnEnvironment.ref;
     this.environmentArn = this.stack.formatArn({
@@ -448,7 +468,7 @@ export abstract class Monitor {
   public abstract readonly isCompositeAlarm?: boolean;
 }
 
-export interface IEnvironment extends IResource {
+export interface IEnvironment extends IResource, ICfnEnvironment {
   /**
    * The application associated with the environment.
    */
