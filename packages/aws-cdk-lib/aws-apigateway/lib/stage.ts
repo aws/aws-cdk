@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { AccessLogFormat, IAccessLogDestination } from './access-log';
 import { IApiKey, ApiKeyOptions, ApiKey } from './api-key';
 import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
-import { CfnStage } from './apigateway.generated';
+import { CfnStage, ICfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi, RestApiBase } from './restapi';
 import { parseMethodOptionsPath } from './util';
@@ -15,7 +15,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents an APIGateway Stage.
  */
-export interface IStage extends IResource {
+export interface IStage extends IResource, ICfnStage {
   /**
    * Name of this stage.
    * @attribute
@@ -227,6 +227,8 @@ export interface StageAttributes {
 export abstract class StageBase extends Resource implements IStage {
   public abstract readonly stageName: string;
   public abstract readonly restApi: IRestApi;
+  public abstract readonly attrRestApiId: string;
+  public abstract readonly attrStageName: string
 
   /**
    * Add an ApiKey to this stage
@@ -373,12 +375,16 @@ export class Stage extends StageBase {
     class Import extends StageBase {
       public readonly stageName = attrs.stageName;
       public readonly restApi = attrs.restApi;
+      public readonly attrRestApiId = attrs.restApi.restApiId;
+      public readonly attrStageName = attrs.stageName;
     }
     return new Import(scope, id);
   }
 
   public readonly stageName: string;
   public readonly restApi: IRestApi;
+  public readonly attrRestApiId: string;
+  public readonly attrStageName: string;
 
   private enableCacheCluster?: boolean;
 
@@ -440,6 +446,8 @@ export class Stage extends StageBase {
 
     this.stageName = resource.ref;
     this.restApi = props.deployment.api;
+    this.attrStageName = this.stageName;
+    this.attrRestApiId = this.restApi.restApiId;
 
     if (RestApiBase._isRestApiBase(this.restApi)) {
       this.restApi._attachStage(this);
