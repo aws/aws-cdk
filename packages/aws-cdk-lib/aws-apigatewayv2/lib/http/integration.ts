@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
-import { CfnIntegration } from '.././index';
+import { CfnIntegration, ICfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
 import { Aws, Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
@@ -13,7 +13,7 @@ import { ParameterMapping } from '../parameter-mapping';
 /**
  * Represents an Integration for an HTTP API.
  */
-export interface IHttpIntegration extends IIntegration {
+export interface IHttpIntegration extends IIntegration, ICfnIntegration {
   /** The HTTP API associated with this integration */
   readonly httpApi: IHttpApi;
 }
@@ -255,6 +255,8 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
   public readonly integrationId: string;
 
   public readonly httpApi: IHttpApi;
+  public readonly attrApiId: string;
+  public readonly attrIntegrationId: string;
 
   constructor(scope: Construct, id: string, props: HttpIntegrationProps) {
     super(scope, id);
@@ -291,6 +293,8 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
 
     this.integrationId = integ.ref;
     this.httpApi = props.httpApi;
+    this.attrApiId = this.httpApi.apiId;
+    this.attrIntegrationId = this.integrationId;
   }
 }
 
