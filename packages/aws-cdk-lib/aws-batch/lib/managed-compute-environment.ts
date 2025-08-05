@@ -627,6 +627,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       public readonly connections = { } as any;
       public readonly securityGroups = [];
       public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
+      public readonly attrComputeEnvironmentArn = this.computeEnvironmentArn;
 
       public addInstanceClass(_instanceClass: ec2.InstanceClass): void {
         throw new ValidationError(`cannot add instance class to imported ComputeEnvironment '${id}'`, this);
@@ -640,6 +641,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   }
   public readonly computeEnvironmentArn: string;
   public readonly computeEnvironmentName: string;
+  public readonly attrComputeEnvironmentArn: string;
 
   public readonly images?: EcsMachineImage[];
   public readonly allocationStrategy?: AllocationStrategy;
@@ -718,6 +720,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       },
     });
 
+    this.attrComputeEnvironmentArn = resource.attrComputeEnvironmentArn;
     this.computeEnvironmentName = this.getResourceNameAttribute(resource.ref);
     this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {
       service: 'batch',
@@ -1001,6 +1004,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
 
   public readonly computeEnvironmentName: string;
   public readonly computeEnvironmentArn: string;
+  public readonly attrComputeEnvironmentArn: string;
 
   public readonly images?: EksMachineImage[];
   public readonly allocationStrategy?: AllocationStrategy;
@@ -1072,6 +1076,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
       },
     });
 
+    this.attrComputeEnvironmentArn = resource.attrComputeEnvironmentArn;
     this.computeEnvironmentName = this.getResourceNameAttribute(resource.ref);
     this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {
       service: 'batch',
