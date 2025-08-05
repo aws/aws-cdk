@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
 import { IWebSocketRoute } from './route';
-import { CfnIntegration } from '.././index';
+import { CfnIntegration, ICfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
 import { Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
@@ -12,7 +12,7 @@ import { IIntegration } from '../common';
 /**
  * Represents an Integration for an WebSocket API.
  */
-export interface IWebSocketIntegration extends IIntegration {
+export interface IWebSocketIntegration extends IIntegration, ICfnIntegration {
   /** The WebSocket API associated with this integration */
   readonly webSocketApi: IWebSocketApi;
 }
@@ -173,6 +173,8 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.WebSocketIntegration';
   public readonly integrationId: string;
   public readonly webSocketApi: IWebSocketApi;
+  public readonly attrApiId: string;
+  public readonly attrIntegrationId: string;
 
   constructor(scope: Construct, id: string, props: WebSocketIntegrationProps) {
     super(scope, id);
@@ -198,6 +200,8 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
     });
     this.integrationId = integ.ref;
     this.webSocketApi = props.webSocketApi;
+    this.attrApiId = integ.attrApiId;
+    this.attrIntegrationId = integ.attrIntegrationId;
   }
 }
 
