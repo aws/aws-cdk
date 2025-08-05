@@ -29,6 +29,24 @@ export interface RayJobProps extends JobProps {
    * @default - no job run queuing
    */
   readonly jobRunQueuingEnabled?: boolean;
+
+  /**
+   * Enable profiling metrics for the Glue job.
+   *
+   * When enabled, adds '--enable-metrics' to job arguments.
+   *
+   * @default true
+   */
+  readonly enableMetrics?: boolean;
+
+  /**
+   * Enable observability metrics for the Glue job.
+   *
+   * When enabled, adds '--enable-observability-metrics': 'true' to job arguments.
+   *
+   * @default true
+   */
+  readonly enableObservabilityMetrics?: boolean;
 }
 
 /**
@@ -66,8 +84,10 @@ export class RayJob extends Job {
 
     // Enable CloudWatch metrics and continuous logging by default as a best practice
     const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
-    const profilingMetricsArgs = { '--enable-metrics': '' };
-    const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
+
+    // Conditionally include metrics arguments (default to enabled for backward compatibility)
+    const profilingMetricsArgs = (props.enableMetrics ?? true) ? { '--enable-metrics': '' } : {};
+    const observabilityMetricsArgs = (props.enableObservabilityMetrics ?? true) ? { '--enable-observability-metrics': 'true' } : {};
 
     // Combine command line arguments into a single line item
     const defaultArguments = {

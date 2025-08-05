@@ -1,8 +1,6 @@
 import { Arn, ArnFormat, ValidationError } from 'aws-cdk-lib';
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IInferenceProfile, InferenceProfileBase, InferenceProfileType } from './inference-profile';
 import { IBedrockInvokable } from '../models';
@@ -94,11 +92,7 @@ export interface ApplicationInferenceProfileAttributes {
  * @cloudformationResource AWS::Bedrock::ApplicationInferenceProfile
  * @see https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-create.html
  */
-@propertyInjectable
 export class ApplicationInferenceProfile extends InferenceProfileBase implements IBedrockInvokable {
-  /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-alpha.ApplicationInferenceProfile';
-
   /**
    * Import an Application Inference Profile given its attributes.
    *
@@ -231,8 +225,6 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
   // ------------------------------------------------------
   constructor(scope: Construct, id: string, props: ApplicationInferenceProfileProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     // ------------------------------------------------------
     // Validate props
@@ -329,7 +321,6 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
    * @param grantee - The IAM principal to grant permissions to
    * @returns An IAM Grant object representing the granted permissions
    */
-  @MethodMetadata()
   public grantInvoke(grantee: IGrantable): Grant {
     // This method ensures the appropriate permissions are given
     // to use either the inference profile or the vanilla foundation model
@@ -351,7 +342,6 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
    * @param grantee - The IAM principal to grant permissions to
    * @returns An IAM Grant object representing the granted permissions
    */
-  @MethodMetadata()
   public grantProfileUsage(grantee: IGrantable): Grant {
     return Grant.addToPrincipal({
       grantee: grantee,
