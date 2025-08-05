@@ -1,14 +1,16 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "testCases": {
     "integ-project-windows-images/DefaultTest": {
       "stacks": [
         "WinCore2019-1",
         "WinCore2019-2",
-        "WinCore2019-3"
+        "WinCore2019-3",
+        "WinCore2022-3"
       ],
       "assertionStack": "integ-project-windows-images/DefaultTest/DeployAssert",
       "assertionStackName": "integprojectwindowsimagesDefaultTestDeployAssert5D19E22D"
     }
-  }
+  },
+  "minimumCliVersion": "2.1023.0"
 }
