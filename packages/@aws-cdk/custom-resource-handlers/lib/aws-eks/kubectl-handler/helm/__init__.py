@@ -176,6 +176,7 @@ def get_chart_from_oci(tmpdir, repository=None, version=None):
 
                 # Handle p2 failure
                 if p2.returncode != 0:
+                    p1.kill()
                     logger.error(
                         "Helm registry authentication failed for repository %s. Error: %s",
                         repository,
