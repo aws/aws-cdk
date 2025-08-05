@@ -187,6 +187,8 @@ export class Alarm extends AlarmBase {
     class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = alarmArn;
       public readonly alarmName = Stack.of(scope).splitArn(alarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
+      public readonly attrArn = alarmArn;
+      public readonly attrAlarmName = this.alarmName;
     }
     return new Import(scope, id);
   }
@@ -204,6 +206,19 @@ export class Alarm extends AlarmBase {
    * @attribute
    */
   public readonly alarmName: string;
+  /**
+   * ARN of this alarm
+   *
+   * @attribute
+   */
+  public readonly attrArn: string;
+
+  /**
+   * Name of this alarm.
+   *
+   * @attribute
+   */
+  public readonly attrAlarmName: string;
 
   /**
    * The metric object this alarm was based on
@@ -313,6 +328,8 @@ export class Alarm extends AlarmBase {
     });
 
     this.alarmName = this.getResourceNameAttribute(alarm.ref);
+    this.attrArn = this.alarmArn;
+    this.attrAlarmName = this.alarmName;
 
     this.metric = props.metric;
 

@@ -97,6 +97,8 @@ export class CompositeAlarm extends AlarmBase {
     class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = compositeAlarmArn;
       public readonly alarmName = Stack.of(scope).splitArn(compositeAlarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
+      public readonly attrArn = compositeAlarmArn;
+      public readonly attrAlarmName = this.alarmName;
     }
     return new Import(scope, id);
   }
@@ -114,6 +116,19 @@ export class CompositeAlarm extends AlarmBase {
    * @attribute
    */
   public readonly alarmName: string;
+  /**
+   * ARN of this alarm
+   *
+   * @attribute
+   */
+  public readonly attrArn: string;
+
+  /**
+   * Name of this alarm.
+   *
+   * @attribute
+   */
+  public readonly attrAlarmName: string;
 
   private readonly alarmRule: string;
 
@@ -161,6 +176,8 @@ export class CompositeAlarm extends AlarmBase {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+    this.attrAlarmName = this.alarmName;
+    this.attrArn = this.alarmArn;
   }
 
   private generateUniqueId(): string {
