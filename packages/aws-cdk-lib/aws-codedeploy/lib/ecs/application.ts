@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ArnFormat, IResource, Resource, Stack, Arn } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { CfnApplication } from '../codedeploy.generated';
+import { CfnApplication, ICfnApplication } from '../codedeploy.generated';
 import { arnForApplication, validateName } from '../private/utils';
 
 /**
@@ -15,7 +15,7 @@ import { arnForApplication, validateName } from '../private/utils';
  * or one defined in a different CDK Stack,
  * use the `EcsApplication#fromEcsApplicationName` method.
  */
-export interface IEcsApplication extends IResource {
+export interface IEcsApplication extends IResource, ICfnApplication {
   /** @attribute */
   readonly applicationArn: string;
 
@@ -60,6 +60,7 @@ export class EcsApplication extends Resource implements IEcsApplication {
     class Import extends Resource implements IEcsApplication {
       public applicationArn = arnForApplication(Stack.of(scope), ecsApplicationName);
       public applicationName = ecsApplicationName;
+      public attrApplicationName = ecsApplicationName;
     }
 
     return new Import(scope, id);
@@ -77,11 +78,13 @@ export class EcsApplication extends Resource implements IEcsApplication {
     return new class extends Resource implements IEcsApplication {
       public applicationArn = ecsApplicationArn;
       public applicationName = Arn.split(ecsApplicationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName ?? '<invalid arn>';
+      public attrApplicationName = this.applicationName;
     } (scope, id, { environmentFromArn: ecsApplicationArn });
   }
 
   public readonly applicationArn: string;
   public readonly applicationName: string;
+  public readonly attrApplicationName: string;
 
   constructor(scope: Construct, id: string, props: EcsApplicationProps = {}) {
     super(scope, id, {
@@ -96,6 +99,7 @@ export class EcsApplication extends Resource implements IEcsApplication {
     });
 
     this.applicationName = this.getResourceNameAttribute(resource.ref);
+    this.attrApplicationName = this.applicationName;
     this.applicationArn = this.getResourceArnAttribute(arnForApplication(Stack.of(scope), resource.ref), {
       service: 'codedeploy',
       resource: 'application',
