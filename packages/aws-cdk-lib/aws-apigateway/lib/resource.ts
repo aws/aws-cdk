@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnResource, CfnResourceProps } from './apigateway.generated';
+import { CfnResource, CfnResourceProps, ICfnResource } from './apigateway.generated';
 import { Cors, CorsOptions } from './cors';
 import { Integration } from './integration';
 import { MockIntegration } from './integrations';
@@ -10,7 +10,7 @@ import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface IResource extends IResourceBase {
+export interface IResource extends IResourceBase, ICfnResource {
   /**
    * The parent of this resource or undefined for the root resource.
    */
@@ -175,6 +175,8 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
   public abstract readonly defaultIntegration?: Integration;
   public abstract readonly defaultMethodOptions?: MethodOptions;
   public abstract readonly defaultCorsPreflightOptions?: CorsOptions;
+  public abstract readonly attrRestApiId: string;
+  public abstract readonly attrResourceId: string;
 
   private readonly children: { [pathPart: string]: Resource } = { };
 
@@ -421,6 +423,8 @@ export class Resource extends ResourceBase {
       public readonly defaultIntegration?: Integration = undefined;
       public readonly defaultMethodOptions?: MethodOptions = undefined;
       public readonly defaultCorsPreflightOptions?: CorsOptions = undefined;
+      public readonly attrRestApiId = attrs.restApi.restApiId;
+      public readonly attrResourceId = attrs.resourceId;
 
       public get parentResource(): IResource {
         throw new ValidationError('parentResource is not configured for imported resource.', scope);
@@ -438,6 +442,8 @@ export class Resource extends ResourceBase {
   public readonly api: IRestApi;
   public readonly resourceId: string;
   public readonly path: string;
+  public readonly attrRestApiId: string;
+  public readonly attrResourceId: string;
 
   public readonly defaultIntegration?: Integration;
   public readonly defaultMethodOptions?: MethodOptions;
@@ -462,6 +468,8 @@ export class Resource extends ResourceBase {
       pathPart: props.pathPart,
     };
     const resource = new CfnResource(this, 'Resource', resourceProps);
+    this.attrRestApiId = resource.attrRestApiId;
+    this.attrResourceId = resource.attrResourceId;
 
     this.resourceId = resource.ref;
     this.api = props.parent.api;

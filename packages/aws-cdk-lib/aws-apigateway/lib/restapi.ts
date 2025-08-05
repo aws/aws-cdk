@@ -1149,6 +1149,8 @@ class RootResource extends ResourceBase {
   public readonly defaultIntegration?: Integration | undefined;
   public readonly defaultMethodOptions?: MethodOptions | undefined;
   public readonly defaultCorsPreflightOptions?: CorsOptions | undefined;
+  public readonly attrRestApiId: string;
+  public readonly attrResourceId: string;
 
   private readonly _restApi?: RestApi;
 
@@ -1168,6 +1170,8 @@ class RootResource extends ResourceBase {
     this.api = api;
     this.resourceId = resourceId;
     this.path = '/';
+    this.attrResourceId = resourceId;
+    this.attrRestApiId = api.restApiId;
 
     if (api instanceof RestApi) {
       this._restApi = api;
