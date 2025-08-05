@@ -367,7 +367,7 @@ new glue.PySparkEtlJob(stack, 'SelectiveJob', {
   role,
   script,
   enableMetrics: false,
-  enableObservabilityMetrics: true,
+  // enableObservabilityMetrics defaults to true
 });
 ```
 
