@@ -665,4 +665,97 @@ describe('Job', () => {
       });
     });
   });
+
+  describe('Create new PySpark ETL Job with metrics control', () => {
+    test('Default behavior should include metrics (backward compatibility)', () => {
+      new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({
+          '--enable-metrics': '',
+          '--enable-observability-metrics': 'true',
+        }),
+      });
+    });
+
+    test('Should exclude metrics when enableMetrics is false', () => {
+      new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+        enableMetrics: false,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({
+          '--enable-observability-metrics': 'true',
+        }),
+      });
+
+      // Verify that --enable-metrics is NOT present
+      const template = Template.fromStack(stack);
+      const jobs = template.findResources('AWS::Glue::Job');
+      const jobResource = Object.values(jobs)[0] as any;
+      expect(jobResource.Properties.DefaultArguments).not.toHaveProperty('--enable-metrics');
+    });
+
+    test('Should exclude observability metrics when enableObservabilityMetrics is false', () => {
+      new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+        enableObservabilityMetrics: false,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({
+          '--enable-metrics': '',
+        }),
+      });
+
+      // Verify that --enable-observability-metrics is NOT present
+      const template = Template.fromStack(stack);
+      const jobs = template.findResources('AWS::Glue::Job');
+      const jobResource = Object.values(jobs)[0] as any;
+      expect(jobResource.Properties.DefaultArguments).not.toHaveProperty('--enable-observability-metrics');
+    });
+
+    test('Should exclude both metrics when both are disabled', () => {
+      new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+        enableMetrics: false,
+        enableObservabilityMetrics: false,
+      });
+
+      // Verify that neither metrics argument is present
+      const template = Template.fromStack(stack);
+      const jobs = template.findResources('AWS::Glue::Job');
+      const jobResource = Object.values(jobs)[0] as any;
+      expect(jobResource.Properties.DefaultArguments).not.toHaveProperty('--enable-metrics');
+      expect(jobResource.Properties.DefaultArguments).not.toHaveProperty('--enable-observability-metrics');
+    });
+
+    test('Should include metrics when explicitly enabled', () => {
+      new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+        enableMetrics: true,
+        enableObservabilityMetrics: true,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({
+          '--enable-metrics': '',
+          '--enable-observability-metrics': 'true',
+        }),
+      });
+    });
+  });
 });
