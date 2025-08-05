@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "48.0.0",
   "testCases": {
     "LambdaNodeJsLatestInteg/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "LambdaNodeJsLatestInteg/DefaultTest/DeployAssert",
       "assertionStackName": "LambdaNodeJsLatestIntegDefaultTestDeployAssertD40B5C28"
     }
-  }
+  },
+  "minimumCliVersion": "2.1023.0"
 }

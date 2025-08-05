@@ -78,6 +78,12 @@
       "SESSION_SUMMARY"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/prompt-router.ts": {
+    "DefaultPromptRouterIdentifier": [
+      "ANTHROPIC_CLAUDE_V1",
+      "META_LLAMA_3_1"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts": {
     "BedrockFoundationModel": [
       "AI21_JAMBA_1_5_LARGE_V1",
@@ -2185,7 +2191,9 @@
       "VERSION_1_0_275_0",
       "VERSION_1_0_295_0",
       "VERSION_1_0_317_0",
-      "VERSION_1_0_333_0"
+      "VERSION_1_0_333_0",
+      "VERSION_1_0_391_0",
+      "VERSION_1_0_404_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/runtime-management.ts": {
@@ -2517,7 +2525,8 @@
       "VER_3_08_0",
       "VER_3_08_1",
       "VER_3_08_2",
-      "VER_3_09_0"
+      "VER_3_09_0",
+      "VER_3_10_0"
     ],
     "AuroraPostgresEngineVersion": [
       "VER_9_6_8",

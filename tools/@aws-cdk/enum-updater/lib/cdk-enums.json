@@ -202,6 +202,22 @@
         "BINARY"
       ]
     },
+    "ChatMessageRole": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/chat-prompt-variant.ts",
+      "enumLike": false,
+      "values": [
+        "user",
+        "assistant"
+      ]
+    },
+    "PromptTemplateType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/prompt-variant.ts",
+      "enumLike": false,
+      "values": [
+        "TEXT",
+        "CHAT"
+      ]
+    },
     "ParentActionGroupSignature": {
       "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/action-group.ts",
       "enumLike": true,
@@ -268,6 +284,14 @@
         "MISTRAL_LARGE_2402_V1",
         "MISTRAL_LARGE_2407_V1",
         "MISTRAL_PIXTRAL_LARGE_2502_V1"
+      ]
+    },
+    "ToolChoice": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/tool-choice.ts",
+      "enumLike": true,
+      "values": [
+        "ANY",
+        "AUTO"
       ]
     },
     "FoundationModelIdentifier": {
@@ -396,7 +420,9 @@
         "STABILITY_STABLE_IMAGE_CORE_V1_0",
         "STABILITY_STABLE_IMAGE_CORE_V1_1",
         "WRITER_PALMYRA_X4_V1_0",
-        "WRITER_PALMYRA_X5_V1_0"
+        "WRITER_PALMYRA_X5_V1_0",
+        "TWELVELABS_MARENGO_EMBED_2_7_V1_0",
+        "TWELVELABS_PEGASUS_1_2_V1_0"
       ]
     }
   },
@@ -645,6 +671,8 @@
         "c6gn",
         "compute7-graviton3-high-network-bandwidth",
         "c7gn",
+        "compute8-graviton4-high-network-bandwidth",
+        "c8gn",
         "compute7-intel",
         "c7i",
         "compute7-intel-flex",
@@ -5351,6 +5379,15 @@
         "pie"
       ]
     },
+    "LogQueryLanguage": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/log-query.ts",
+      "enumLike": false,
+      "values": [
+        "Logs",
+        "SQL",
+        "PPL"
+      ]
+    },
     "Statistic": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric-types.ts",
       "enumLike": false,
@@ -6858,6 +6895,7 @@
       "path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/amis.ts",
       "enumLike": false,
       "values": [
+        "2025",
         "2022",
         "2019",
         "2016"
@@ -7246,7 +7284,9 @@
         "WINDOWS_SERVER_2019_FULL",
         "WINDOWS_SERVER_2022_CORE",
         "WINDOWS_SERVER_2022_FULL",
-        "WINDOWS_SERVER_20H2_CORE"
+        "WINDOWS_SERVER_20H2_CORE",
+        "WINDOWS_SERVER_2025_FULL",
+        "WINDOWS_SERVER_2025_CORE"
       ]
     }
   },
@@ -8520,6 +8560,133 @@
         "Random"
       ]
     },
+    "TypeConverterType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        "boolean",
+        "integer",
+        "double",
+        "string"
+      ]
+    },
+    "DateTimeFormat": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        "yyyy-MM-dd'T'HH:mm:ss'Z'",
+        "epoch",
+        "custom"
+      ]
+    },
+    "DelimiterCharacter": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        ",",
+        "\t",
+        " ",
+        ";",
+        "|"
+      ]
+    },
+    "QuoteCharacter": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        "\"",
+        "'"
+      ]
+    },
+    "KeyValuePairDelimiter": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        "&",
+        ";",
+        " ",
+        "\n"
+      ]
+    },
+    "KeyValueDelimiter": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        "=",
+        ":"
+      ]
+    },
+    "OCSFSourceType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        "CloudTrail",
+        "Route53Resolver",
+        "VPCFlow",
+        "EKSAudit",
+        "AWSWAF"
+      ]
+    },
+    "OCSFVersion": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        "V1.1"
+      ]
+    },
+    "ParserProcessorType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "VendedLogType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "StringMutatorType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "JsonMutatorType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "DataConverterType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        0,
+        1
+      ]
+    },
     "DataIdentifier": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/data-protection-policy.ts",
       "enumLike": true,
@@ -8732,7 +8899,7 @@
       ]
     },
     "DatabaseInsightsMode": {
-      "path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts",
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/database-insights-mode.ts",
       "enumLike": false,
       "values": [
         "standard",
@@ -9083,7 +9250,8 @@
         "VER_16_8_LIMITLESS",
         "VER_17_1",
         "VER_17_2",
-        "VER_17_4"
+        "VER_17_4",
+        "VER_17_5"
       ]
     },
     "DatabaseClusterEngine": {
@@ -10876,6 +11044,13 @@
       "values": [
         "nothing",
         "lambda"
+      ]
+    },
+    "ResourceToReplicateTags": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
+      "enumLike": false,
+      "values": [
+        "lambda-function"
       ]
     },
     "ArtifactsEncryptionMode": {

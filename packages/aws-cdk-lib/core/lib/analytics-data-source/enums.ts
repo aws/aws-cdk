@@ -864,6 +864,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "FAILED",
     "ERROR"
   ],
+  "CrossRegionInferenceProfileRegion": [
+    "eu",
+    "us",
+    "apac"
+  ],
   "CsvDelimiter": [
     "COMMA",
     "PIPE",
@@ -988,6 +993,19 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ECS",
     "CODE_DEPLOY",
     "EXTERNAL"
+  ],
+  "DeploymentLifecycleStage": [
+    "RECONCILE_SERVICE",
+    "PRE_SCALE_UP",
+    "POST_SCALE_UP",
+    "TEST_TRAFFIC_SHIFT",
+    "POST_TEST_TRAFFIC_SHIFT",
+    "PRODUCTION_TRAFFIC_SHIFT",
+    "POST_PRODUCTION_TRAFFIC_SHIFT"
+  ],
+  "DeploymentStrategy": [
+    "ROLLING",
+    "BLUE_GREEN"
   ],
   "DesiredState": [
     "RUNNING",
@@ -1570,6 +1588,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "IncludeExecutionData": [
     "ALL"
+  ],
+  "InferenceProfileType": [
+    "SYSTEM_DEFINED",
+    "APPLICATION"
   ],
   "InitElementType": [
     "PACKAGE",
@@ -2498,6 +2520,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "OnPartialBatchItemFailure": [
     "AUTOMATIC_BISECT"
+  ],
+  "OpenTableFormat": [
+    "ICEBERG"
   ],
   "OperatingSystem": [
     "AMAZON_LINUX",

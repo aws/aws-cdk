@@ -1,0 +1,154 @@
+{
+ "Outputs": {
+  "LookedUpInstanceEndpoint": {
+   "Value": "TESTADDRESS:5432"
+  },
+  "LookedUpInstanceIdentifier": {
+   "Value": "test-instance-lookup"
+  },
+  "LookedUpInstanceResourceIdentifier": {
+   "Value": "TESTID"
+  },
+  "LookedUpInstanceArn": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arn:",
+      {
+       "Ref": "AWS::Partition"
+      },
+      ":rds:test-region:12345678:db:test-instance-lookup"
+     ]
+    ]
+   }
+  },
+  "SecurityGroupIds": {
+   "Value": ""
+  }
+ },
+ "Resources": {
+  "DbAccessRole408BD73D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role for accessing the RDS instance via IAM authentication"
+   }
+  },
+  "DbAccessRoleDefaultPolicy8020DC70": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "rds-db:connect",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":rds-db:test-region:12345678:dbuser:TESTID/admin"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DbAccessRoleDefaultPolicy8020DC70",
+    "Roles": [
+     {
+      "Ref": "DbAccessRole408BD73D"
+     }
+    ]
+   }
+  },
+  "HighCPUAlarm56BE6E7D": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "Database CPU utilization is high",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "test-instance-lookup"
+     }
+    ],
+    "EvaluationPeriods": 3,
+    "MetricName": "CPUUtilization",
+    "Namespace": "AWS/RDS",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 90
+   }
+  },
+  "LowMemoryAlarmD9E02E14": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "Database is running low on memory",
+    "ComparisonOperator": "LessThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "test-instance-lookup"
+     }
+    ],
+    "EvaluationPeriods": 3,
+    "MetricName": "FreeableMemory",
+    "Namespace": "AWS/RDS",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 104857600
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
