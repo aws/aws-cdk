@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnBackupVault } from './backup.generated';
+import { CfnBackupVault, ICfnBackupVault } from './backup.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sns from '../../aws-sns';
@@ -10,7 +10,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A backup vault
  */
-export interface IBackupVault extends IResource {
+export interface IBackupVault extends IResource, ICfnBackupVault {
   /**
    * The name of a logical container where backups are stored.
    *
@@ -199,6 +199,8 @@ export interface LockConfiguration {
 abstract class BackupVaultBase extends Resource implements IBackupVault {
   public abstract readonly backupVaultName: string;
   public abstract readonly backupVaultArn: string;
+  public abstract readonly attrBackupVaultName: string;
+  public abstract readonly attrBackupVaultArn: string;
 
   /**
    * Grant the actions defined in actions to the given grantee
@@ -262,6 +264,8 @@ export class BackupVault extends BackupVaultBase {
     class Import extends BackupVaultBase {
       public readonly backupVaultName = parsedArn.resourceName!;
       public readonly backupVaultArn = backupVaultArn;
+      public readonly attrBackupVaultName = parsedArn.resourceName!;
+      public readonly attrBackupVaultArn = backupVaultArn;
     }
 
     return new Import(scope, id, {
@@ -272,6 +276,8 @@ export class BackupVault extends BackupVaultBase {
 
   public readonly backupVaultName: string;
   public readonly backupVaultArn: string;
+  public readonly attrBackupVaultName: string;
+  public readonly attrBackupVaultArn: string;
 
   private readonly accessPolicy: iam.PolicyDocument;
 
@@ -309,6 +315,8 @@ export class BackupVault extends BackupVaultBase {
 
     this.backupVaultName = vault.attrBackupVaultName;
     this.backupVaultArn = vault.attrBackupVaultArn;
+    this.attrBackupVaultName = vault.attrBackupVaultName;
+    this.attrBackupVaultArn = vault.attrBackupVaultArn;
   }
 
   /**
