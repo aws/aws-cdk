@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
 import { HttpRouteIntegration } from './integration';
-import { CfnRoute, CfnRouteProps } from '.././index';
+import { CfnRoute, CfnRouteProps, ICfnRoute } from '.././index';
 import * as iam from '../../../aws-iam';
 import { Aws, Resource } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
@@ -13,7 +13,7 @@ import { IRoute } from '../common';
 /**
  * Represents a Route for an HTTP API.
  */
-export interface IHttpRoute extends IRoute {
+export interface IHttpRoute extends IRoute, ICfnRoute {
   /**
    * The HTTP API associated with this route.
    */
@@ -185,6 +185,8 @@ export class HttpRoute extends Resource implements IHttpRoute {
   public readonly httpApi: IHttpApi;
   public readonly path?: string;
   public readonly routeArn: string;
+  public readonly attrApiId: string;
+  public readonly attrRouteId: string;
 
   private readonly method: HttpMethod;
   private readonly authBindResult?: HttpRouteAuthorizerConfig;
@@ -238,6 +240,8 @@ export class HttpRoute extends Resource implements IHttpRoute {
 
     const route = new CfnRoute(this, 'Resource', routeProps);
     this.routeId = route.ref;
+    this.attrRouteId = route.attrRouteId;
+    this.attrApiId = route.attrApiId;
   }
 
   private produceRouteArn(httpMethod: HttpMethod): string {
