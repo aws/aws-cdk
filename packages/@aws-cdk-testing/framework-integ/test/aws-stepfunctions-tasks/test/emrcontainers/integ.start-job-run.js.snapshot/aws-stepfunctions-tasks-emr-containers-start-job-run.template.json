@@ -1066,7 +1066,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/13e8f814aceb50464337f28c8935642b564271e840abd6825ee2a3e1d276e921.json"
+       "/f4e4bd61e43ca6841b256ab72be55dde447b439fba4658b7af948da35be86cd5.json"
       ]
      ]
     }
@@ -1116,7 +1116,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/e88cb005dab1a5b5da2af87de20bb0f83bd0490189926d675dd93520aa11ed02.json"
+       "/79f705b4d2d508ff4f0990115c315848938bfce446ffb8e3176bc949b075ba3d.json"
       ]
      ]
     }
@@ -1382,6 +1382,10 @@
      }
     },
     "Handler": "framework.onEvent",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
     "Role": {
      "Fn::GetAtt": [
       "StartaJobRunCustomResourceProviderframeworkonEventServiceRole1D6E2464",
@@ -1814,6 +1818,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {
