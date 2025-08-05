@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnSourceApiAssociation } from './appsync.generated';
+import { CfnSourceApiAssociation, ICfnSourceApiAssociation } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { Effect, IRole, PolicyStatement } from '../../aws-iam';
 import { Fn, IResource, Lazy, Resource } from '../../core';
@@ -24,7 +24,7 @@ export enum MergeType {
 /**
  * Interface for AppSync Source Api Association
  */
-export interface ISourceApiAssociation extends IResource {
+export interface ISourceApiAssociation extends IResource, ICfnSourceApiAssociation {
 
   /**
    * The association id.
@@ -123,6 +123,7 @@ export class SourceApiAssociation extends Resource implements ISourceApiAssociat
       public readonly associationArn = attrs.associationArn;
       public readonly sourceApi = attrs.sourceApi;
       public readonly mergedApi = attrs.mergedApi;
+      public readonly attrAssociationArn = attrs.associationArn;
       constructor(s: Construct, i: string) {
         super(s, i);
       }
@@ -139,6 +140,11 @@ export class SourceApiAssociation extends Resource implements ISourceApiAssociat
    * The association arn.
    */
   readonly associationArn: string;
+
+  /**
+   * The association arn.
+   */
+  readonly attrAssociationArn: string;
 
   /**
    * The underlying CFN source api association resource.
@@ -184,6 +190,8 @@ export class SourceApiAssociation extends Resource implements ISourceApiAssociat
       },
       description: props.description,
     });
+
+    this.attrAssociationArn = this.association.attrAssociationArn;
 
     // Add dependency because the schema must be created first to create the source api association.
     this.sourceApi.addSchemaDependency(this.association);
