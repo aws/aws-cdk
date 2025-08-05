@@ -533,6 +533,9 @@ export class GraphqlApi extends GraphqlApiBase {
       public readonly apiId = attrs.graphqlApiId;
       public readonly arn = arn;
 
+      public readonly attrApiId = attrs.graphqlApiId;
+      public readonly attrArn = arn;
+
       // the GraphQL endpoint ARN is not required to identify an AppSync GraphQL API
       // this value is only needed to construct event rules.
       public readonly graphQLEndpointArn = attrs.graphQLEndpointArn ?? '';
@@ -556,6 +559,17 @@ export class GraphqlApi extends GraphqlApiBase {
    * the ARN of the API
    */
   public readonly arn: string;
+
+  /**
+   * an unique AWS AppSync GraphQL API identifier
+   * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
+   */
+  public readonly attrApiId: string;
+
+  /**
+   * the ARN of the API
+   */
+  public readonly attrArn: string;
 
   /**
    * The GraphQL endpoint ARN
@@ -683,6 +697,8 @@ export class GraphqlApi extends GraphqlApiBase {
     this.graphqlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
     this.graphQLEndpointArn = this.api.attrGraphQlEndpointArn;
+    this.attrApiId = this.api.attrApiId;
+    this.attrArn = this.api.attrArn;
 
     if (this.definition.schema) {
       this.schemaResource = new CfnGraphQLSchema(this, 'Schema', this.definition.schema.bind(this));
