@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "artifacts": {
     "aws-cdk-eks-nodegroup-repair-config-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/90cc66d67f6ac692ff1eeb07f27ace691f28512ff99ffb3dec6bd93147c1f7ac.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/faf7a8b6e78d8ce360bd62234cf4b1df9562697ccb94822b589558e16d2e7af1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1069,7 +1069,7 @@
               "runtime": "*",
               "handler": "*",
               "timeout": "*",
-              "logFormat": "*",
+              "loggingFormat": "JSON",
               "applicationLogLevelV2": "FATAL",
               "logGroup": "*",
               "vpc": "*",
@@ -1275,7 +1275,7 @@
               "runtime": "*",
               "handler": "*",
               "timeout": "*",
-              "logFormat": "*",
+              "loggingFormat": "JSON",
               "applicationLogLevelV2": "FATAL",
               "logGroup": "*",
               "vpc": "*",
@@ -1456,7 +1456,7 @@
               "runtime": "*",
               "handler": "*",
               "timeout": "*",
-              "logFormat": "*",
+              "loggingFormat": "JSON",
               "applicationLogLevelV2": "FATAL",
               "logGroup": "*",
               "vpc": "*",
@@ -1838,7 +1838,7 @@
               "runtime": "*",
               "handler": "*",
               "timeout": "*",
-              "logFormat": "*",
+              "loggingFormat": "JSON",
               "applicationLogLevelV2": "FATAL",
               "logGroup": "*",
               "vpc": "*",
@@ -2071,7 +2071,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/77cb7d1b20bf1a2b7e7aa52aafe1e7bfa7d9589c0c7091f85baec904eccf72b0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/64c986610bd7d043ac1f2b62f4394d45f2170e113ed249e6eb31b60e0d74f856.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -2470,6 +2470,7 @@
             "explanation": "When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model."
           },
           "@aws-cdk/core:explicitStackTags": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
           },
@@ -2622,5 +2623,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1020.2"
+  "minimumCliVersion": "2.1023.0"
 }
