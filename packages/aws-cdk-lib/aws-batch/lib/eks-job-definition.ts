@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnJobDefinition } from './batch.generated';
+import { CfnJobDefinition, ICfnJobDefinition } from './batch.generated';
 import { EksContainerDefinition, EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
@@ -9,7 +9,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A JobDefinition that uses Eks orchestration
  */
-export interface IEksJobDefinition extends IJobDefinition {
+export interface IEksJobDefinition extends IJobDefinition, ICfnJobDefinition {
   /**
    * The container this Job Definition will run
    */
@@ -139,6 +139,8 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
     class Import extends JobDefinitionBase implements IJobDefinition {
       public readonly jobDefinitionArn = eksJobDefinitionArn;
       public readonly jobDefinitionName = jobDefinitionName;
+      public readonly attrJobDefinitionArn = eksJobDefinitionArn;
+      public readonly attrJobDefinitionName = jobDefinitionName;
       public readonly enabled = true;
       public readonly container = {} as any;
     }
@@ -153,6 +155,8 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
 
   public readonly jobDefinitionArn: string;
   public readonly jobDefinitionName: string;
+  public readonly attrJobDefinitionArn: string;
+  public readonly attrJobDefinitionName: string;
 
   constructor(scope: Construct, id: string, props: EksJobDefinitionProps) {
     super(scope, id, props);
@@ -216,6 +220,8 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
         },
       },
     });
+    this.attrJobDefinitionName = resource.attrJobDefinitionName;
+    this.attrJobDefinitionArn = resource.attrJobDefinitionArn;
     this.jobDefinitionArn = this.getResourceArnAttribute(resource.ref, {
       service: 'batch',
       resource: 'job-definition',
