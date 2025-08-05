@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
 import { IWebSocketRouteAuthorizer, WebSocketNoneAuthorizer } from './authorizer';
 import { WebSocketRouteIntegration } from './integration';
-import { CfnRoute, CfnRouteResponse } from '.././index';
+import { CfnRoute, CfnRouteResponse, ICfnRoute } from '.././index';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
@@ -12,7 +12,7 @@ import { IRoute } from '../common';
 /**
  * Represents a Route for an WebSocket API.
  */
-export interface IWebSocketRoute extends IRoute {
+export interface IWebSocketRoute extends IRoute, ICfnRoute {
   /**
    * The WebSocket API associated with this route.
    */
@@ -84,6 +84,8 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
   public readonly routeId: string;
   public readonly webSocketApi: IWebSocketApi;
   public readonly routeKey: string;
+  public readonly attrApiId: string;
+  public readonly attrRouteId: string;
 
   /**
    * Integration response ID
@@ -123,6 +125,8 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
       routeResponseSelectionExpression: props.returnResponse ? '$default' : undefined,
     });
     this.routeId = route.ref;
+    this.attrRouteId = route.attrRouteId;
+    this.attrApiId = route.attrApiId;
     if (props.returnResponse) {
       new CfnRouteResponse(this, 'Response', {
         apiId: props.webSocketApi.apiId,
