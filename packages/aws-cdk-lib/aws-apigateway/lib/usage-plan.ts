@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IApiKey } from './api-key';
-import { CfnUsagePlan, CfnUsagePlanKey } from './apigateway.generated';
+import { CfnUsagePlan, CfnUsagePlanKey, ICfnUsagePlan } from './apigateway.generated';
 import { Method } from './method';
 import { IRestApi } from './restapi';
 import { Stage } from './stage';
@@ -161,7 +161,7 @@ export interface AddApiKeyOptions {
 /**
  * A UsagePlan, either managed by this CDK app, or imported.
  */
-export interface IUsagePlan extends IResource {
+export interface IUsagePlan extends IResource, ICfnUsagePlan {
   /**
    * Id of the usage plan
    * @attribute
@@ -184,6 +184,12 @@ abstract class UsagePlanBase extends Resource implements IUsagePlan {
    * @attribute
    */
   public abstract readonly usagePlanId: string;
+
+  /**
+   * Id of the usage plan
+   * @attribute
+   */
+  public abstract readonly attrId: string;
 
   /**
    * Adds an ApiKey.
@@ -228,6 +234,8 @@ export class UsagePlan extends UsagePlanBase {
   public static fromUsagePlanId(scope: Construct, id: string, usagePlanId: string): IUsagePlan {
     class Import extends UsagePlanBase {
       public readonly usagePlanId = usagePlanId;
+      public readonly attrId = usagePlanId;
+      public readonly attrUsagePlanId = usagePlanId;
 
       constructor() {
         super(scope, id);
@@ -240,6 +248,11 @@ export class UsagePlan extends UsagePlanBase {
    * @attribute
    */
   public readonly usagePlanId: string;
+
+  /**
+   * @attribute
+   */
+  public readonly attrId: string;
 
   private readonly apiStages = new Array<UsagePlanPerApiStage>();
 
@@ -260,6 +273,7 @@ export class UsagePlan extends UsagePlanBase {
     this.apiStages.push(...(props.apiStages || []));
 
     this.usagePlanId = resource.ref;
+    this.attrId = this.usagePlanId;
 
     // Add ApiKey when
     if (props.apiKey) {
