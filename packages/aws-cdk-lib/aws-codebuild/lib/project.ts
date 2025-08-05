@@ -2240,7 +2240,6 @@ export class WindowsBuildImage implements IBuildImage {
       errors.push(`Windows images do not support the '${buildEnvironment.computeType}' compute type`);
     }
 
-
     return errors;
   }
 
