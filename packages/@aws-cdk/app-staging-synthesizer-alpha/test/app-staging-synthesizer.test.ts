@@ -26,6 +26,35 @@ describe(AppStagingSynthesizer, () => {
     });
   });
 
+  test('uses qualifier in deployment roles and staging context', () => {
+    // GIVEN
+    const qualifier = 'custom-qualifier';
+    const customApp = new App({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+        appId: APP_ID,
+        bootstrapQualifier: qualifier,
+        stagingBucketEncryption: BucketEncryption.S3_MANAGED,
+      }),
+    });
+    new Stack(customApp, 'CustomStack', {
+      env: {
+        account: '111111111111',
+        region: 'us-east-1',
+      },
+    });
+
+    // WHEN
+    const assembly = customApp.synth();
+    const artifact = assembly.getStackArtifact('CustomStack');
+
+    // THEN
+    // The deployment role should contain the custom qualifier
+    expect(artifact.assumeRoleArn).toBe(`arn:\${AWS::Partition}:iam::111111111111:role/cdk-${qualifier}-deploy-role-111111111111-us-east-1`);
+
+    // The CloudFormation execution role should contain the custom qualifier
+    expect(artifact.cloudFormationExecutionRoleArn).toBe(`arn:\${AWS::Partition}:iam::111111111111:role/cdk-${qualifier}-cfn-exec-role-111111111111-us-east-1`);
+  });
+
   test('stack template is in asset manifest', () => {
     // GIVEN
     new CfnResource(stack, 'Resource', {
