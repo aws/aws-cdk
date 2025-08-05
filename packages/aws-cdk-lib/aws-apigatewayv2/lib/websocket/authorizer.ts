@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
 import { IWebSocketRoute } from './route';
-import { CfnAuthorizer } from '.././index';
+import { CfnAuthorizer, ICfnAuthorizer } from '.././index';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
@@ -58,7 +58,7 @@ export interface WebSocketAuthorizerProps {
 /**
  * An authorizer for WebSocket APIs
  */
-export interface IWebSocketAuthorizer extends IAuthorizer {}
+export interface IWebSocketAuthorizer extends IAuthorizer, ICfnAuthorizer {}
 
 /**
  * Reference to an WebSocket authorizer
@@ -109,6 +109,8 @@ export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorize
   }
 
   public readonly authorizerId: string;
+  public readonly attrApiId: string;
+  public readonly attrAuthorizerId: string;
 
   constructor(scope: Construct, id: string, props: WebSocketAuthorizerProps) {
     super(scope, id);
@@ -128,6 +130,8 @@ export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorize
     });
 
     this.authorizerId = resource.ref;
+    this.attrApiId = resource.attrApiId;
+    this.attrAuthorizerId = resource.attrAuthorizerId;
   }
 }
 
