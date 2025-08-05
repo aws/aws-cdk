@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnSchedulingPolicy } from './batch.generated';
+import { CfnSchedulingPolicy, ICfnSchedulingPolicy } from './batch.generated';
 import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -91,7 +91,7 @@ export interface Share {
  * each share determine the ratio of vCPUs allocated; see the readme for a more in-depth discussion of
  * fairshare policies.
  */
-export interface IFairshareSchedulingPolicy extends ISchedulingPolicy {
+export interface IFairshareSchedulingPolicy extends ISchedulingPolicy, ICfnSchedulingPolicy {
   /**
    * Used to calculate the percentage of the maximum available vCPU to reserve for share identifiers not present in the Queue.
    *
@@ -202,6 +202,7 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
     const stack = Stack.of(scope);
     class Import extends SchedulingPolicyBase implements IFairshareSchedulingPolicy {
       public readonly schedulingPolicyArn = fairshareSchedulingPolicyArn;
+      public readonly attrArn = fairshareSchedulingPolicyArn;
       public readonly schedulingPolicyName = stack.splitArn(fairshareSchedulingPolicyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
       public readonly shares = [];
     }
@@ -213,6 +214,7 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
   public readonly shareDecay?: Duration;
   public readonly shares: Share[];
   public readonly schedulingPolicyArn: string;
+  public readonly attrArn: string;
   public readonly schedulingPolicyName: string;
 
   constructor(scope: Construct, id: string, props?: FairshareSchedulingPolicyProps) {
@@ -235,6 +237,7 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
       },
       name: props?.schedulingPolicyName,
     });
+    this.attrArn = resource.attrArn;
 
     this.schedulingPolicyArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'batch',
