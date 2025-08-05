@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnVpcLink } from '.././index';
+import { CfnVpcLink, ICfnVpcLink } from '.././index';
 import * as ec2 from '../../../aws-ec2';
 import { IResource, Lazy, Names, Resource } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
@@ -8,7 +8,7 @@ import { propertyInjectable } from '../../../core/lib/prop-injectable';
 /**
  * Represents an API Gateway VpcLink
  */
-export interface IVpcLink extends IResource {
+export interface IVpcLink extends IResource, ICfnVpcLink {
   /**
    * Physical ID of the VpcLink resource
    * @attribute
@@ -81,12 +81,14 @@ export class VpcLink extends Resource implements IVpcLink {
     class Import extends Resource implements IVpcLink {
       public vpcLinkId = attrs.vpcLinkId;
       public vpc = attrs.vpc;
+      public attrVpcLinkId = attrs.vpcLinkId;
     }
 
     return new Import(scope, id);
   }
 
   public readonly vpcLinkId: string;
+  public readonly attrVpcLinkId: string;
   public readonly vpc: ec2.IVpc;
 
   private readonly subnets = new Array<ec2.ISubnet>();
@@ -105,6 +107,7 @@ export class VpcLink extends Resource implements IVpcLink {
     });
 
     this.vpcLinkId = cfnResource.ref;
+    this.attrVpcLinkId = this.vpcLinkId;
 
     const { subnets } = props.vpc.selectSubnets(props.subnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS });
     this.addSubnets(...subnets);
