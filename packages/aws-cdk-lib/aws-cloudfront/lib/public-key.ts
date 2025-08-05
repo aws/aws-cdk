@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnPublicKey } from './cloudfront.generated';
+import { CfnPublicKey, ICfnPublicKey } from './cloudfront.generated';
 import { IResource, Names, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -7,7 +7,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a Public Key
  */
-export interface IPublicKey extends IResource {
+export interface IPublicKey extends IResource, ICfnPublicKey {
   /**
    * The ID of the key group.
    * @attribute
@@ -54,10 +54,12 @@ export class PublicKey extends Resource implements IPublicKey {
   public static fromPublicKeyId(scope: Construct, id: string, publicKeyId: string): IPublicKey {
     return new class extends Resource implements IPublicKey {
       public readonly publicKeyId = publicKeyId;
+      public readonly attrId = publicKeyId;
     }(scope, id);
   }
 
   public readonly publicKeyId: string;
+  public readonly attrId: string;
 
   constructor(scope: Construct, id: string, props: PublicKeyProps) {
     super(scope, id);
@@ -77,6 +79,7 @@ export class PublicKey extends Resource implements IPublicKey {
       },
     });
 
+    this.attrId = resource.attrId;
     this.publicKeyId = resource.ref;
   }
 
