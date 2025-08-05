@@ -35,7 +35,7 @@ export interface RayJobProps extends JobProps {
    *
    * When enabled, adds '--enable-metrics' to job arguments.
    *
-   * @default true - metrics are enabled by default for backward compatibility
+   * @default true
    */
   readonly enableMetrics?: boolean;
 
@@ -44,7 +44,7 @@ export interface RayJobProps extends JobProps {
    *
    * When enabled, adds '--enable-observability-metrics': 'true' to job arguments.
    *
-   * @default true - observability metrics are enabled by default for backward compatibility
+   * @default true
    */
   readonly enableObservabilityMetrics?: boolean;
 }
