@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { AppSyncEventResource } from './appsync-common';
-import { CfnChannelNamespace } from './appsync.generated';
+import { CfnChannelNamespace, ICfnChannelNamespace } from './appsync.generated';
 import { AppSyncAuthorizationType } from './auth-config';
 import { Code } from './code';
 import {
@@ -17,7 +17,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * An AppSync channel namespace
  */
-export interface IChannelNamespace extends IResource {
+export interface IChannelNamespace extends IResource, ICfnChannelNamespace {
   /**
    * The ARN of the AppSync channel namespace
    *
@@ -187,6 +187,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   public static fromChannelNamespaceArn(scope: Construct, id: string, channelNamespaceArn: string): IChannelNamespace {
     class Import extends Resource implements IChannelNamespace {
       public readonly channelNamespaceArn = channelNamespaceArn;
+      public readonly attrChannelNamespaceArn = channelNamespaceArn;
     }
     return new Import(scope, id);
   }
@@ -195,6 +196,11 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
    * the ARN of the channel namespace
    */
   public readonly channelNamespaceArn: string;
+
+  /**
+   * the ARN of the channel namespace
+   */
+  public readonly attrChannelNamespaceArn: string;
 
   private channelNamespace: CfnChannelNamespace;
 
@@ -269,6 +275,8 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
         authType: mode,
       })),
     });
+
+    this.attrChannelNamespaceArn = this.channelNamespace.attrChannelNamespaceArn;
 
     if (props.publishHandlerConfig?.dataSource) {
       this.channelNamespace.addDependency(props.publishHandlerConfig.dataSource.resource);

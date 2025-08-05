@@ -6,7 +6,7 @@ import {
   AppSyncDomainOptions,
   AppSyncEventResource,
 } from './appsync-common';
-import { CfnApi, CfnApiKey, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
+import { CfnApi, CfnApiKey, CfnDomainName, CfnDomainNameApiAssociation, ICfnApi } from './appsync.generated';
 import {
   IAppSyncAuthConfig,
   createAPIKey,
@@ -119,7 +119,7 @@ class AppSyncEventApiAuthConfig implements IAppSyncAuthConfig {
 /**
  * Interface for Event API
  */
-export interface IEventApi extends IApi {
+export interface IEventApi extends IApi, ICfnApi {
   /**
    * The Authorization Types for this Event Api
    */
@@ -267,6 +267,11 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * The Authorization Types for this Event Api
    */
   public abstract readonly authProviderTypes: AppSyncAuthorizationType[];
+
+  /**
+   * The Amazon Resource Name (ARN) of the AWS AppSync Api.
+   */
+  public abstract readonly attrApiArn: string;
 
   /**
    * add a new Channel Namespace to this API
@@ -561,6 +566,7 @@ export class EventApi extends EventApiBase {
       public readonly httpDns = attrs.httpDns;
       public readonly realtimeDns = attrs.realtimeDns;
       public readonly authProviderTypes = attrs.authProviderTypes ?? [];
+      public readonly attrApiArn = arn;
     }
     return new Import(scope, id);
   }
@@ -575,6 +581,11 @@ export class EventApi extends EventApiBase {
    * the ARN of the API
    */
   public readonly apiArn: string;
+
+  /**
+   * the ARN of the API
+   */
+  public readonly attrApiArn: string;
 
   /**
    * the domain name of the Api's HTTP endpoint.
@@ -680,6 +691,7 @@ export class EventApi extends EventApiBase {
     this.apiArn = this.api.attrApiArn;
     this.httpDns = this.api.attrDnsHttp;
     this.realtimeDns = this.api.attrDnsRealtime;
+    this.attrApiArn = this.api.attrApiArn;
 
     const apiKeyConfigs = authProviders.filter((mode) => mode.authorizationType === AppSyncAuthorizationType.API_KEY);
     for (const mode of apiKeyConfigs) {
