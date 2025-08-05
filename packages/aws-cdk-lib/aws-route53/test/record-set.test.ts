@@ -1431,7 +1431,7 @@ describe('record set', () => {
     });
   });
 
-  test('HTTPS record throws with neither values nor aliasTarget', () => {
+  test('HTTPS record throws with neither values nor target', () => {
     // GIVEN
     const stack = new Stack();
     const zone = new route53.HostedZone(stack, 'HostedZone', {
@@ -1443,10 +1443,10 @@ describe('record set', () => {
       new route53.HttpsRecord(stack, 'HTTPS', {
         zone,
       });
-    }).toThrow('Specify exactly one of either values or aliasTarget.');
+    }).toThrow('Specify exactly one of either values or target.');
   });
 
-  test('HTTPS record throws with both values and aliasTarget', () => {
+  test('HTTPS record throws with both values and target', () => {
     // GIVEN
     const stack = new Stack();
     const zone = new route53.HostedZone(stack, 'HostedZone', {
@@ -1465,7 +1465,7 @@ describe('record set', () => {
         values: [route53.HttpsRecordValue.service()],
         target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
       });
-    }).toThrow('Specify exactly one of either values or aliasTarget.');
+    }).toThrow('Specify exactly one of either values or target.');
   });
 
   test('Delete existing record', () => {
