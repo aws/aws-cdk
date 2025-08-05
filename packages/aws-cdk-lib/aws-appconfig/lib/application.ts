@@ -1,6 +1,6 @@
 /* eslint-disable @cdklabs/no-literal-partition */
 import { Construct } from 'constructs';
-import { CfnApplication } from './appconfig.generated';
+import { CfnApplication, ICfnApplication } from './appconfig.generated';
 import { HostedConfiguration, HostedConfigurationOptions, SourcedConfiguration, SourcedConfigurationOptions } from './configuration';
 import { Environment, EnvironmentOptions, IEnvironment } from './environment';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
@@ -17,7 +17,7 @@ export enum Platform {
   ARM_64 = 'ARM64',
 }
 
-export interface IApplication extends cdk.IResource {
+export interface IApplication extends cdk.IResource, ICfnApplication {
   /**
    * The description of the application.
    */
@@ -186,6 +186,7 @@ export interface ApplicationProps {
 
 abstract class ApplicationBase extends cdk.Resource implements IApplication, IExtensible {
   public abstract applicationId: string;
+  public abstract attrApplicationId: string;
   public abstract applicationArn: string;
   private _environments: IEnvironment[] = [];
   protected abstract extensible: ExtensibleBase;
@@ -356,6 +357,7 @@ export class Application extends ApplicationBase {
 
     class Import extends ApplicationBase {
       public readonly applicationId = applicationId!;
+      public readonly attrApplicationId = applicationId!;
       public readonly applicationArn = applicationArn;
       protected readonly extensible = new ExtensibleBase(scope, this.applicationArn);
     }
@@ -380,6 +382,7 @@ export class Application extends ApplicationBase {
 
     class Import extends ApplicationBase {
       public readonly applicationId = applicationId;
+      public readonly attrApplicationId = applicationId;
       public readonly applicationArn = applicationArn;
       protected readonly extensible = new ExtensibleBase(scope, this.applicationArn);
     }
@@ -428,6 +431,13 @@ export class Application extends ApplicationBase {
   public readonly applicationId: string;
 
   /**
+   * The ID of the application.
+   *
+   * @attribute
+   */
+  public readonly attrApplicationId: string;
+
+  /**
    * The Amazon Resource Name (ARN) of the application.
    *
    * @attribute
@@ -453,6 +463,7 @@ export class Application extends ApplicationBase {
       description: this.description,
     });
     this.applicationId = this._application.ref;
+    this.attrApplicationId = this._application.attrApplicationId;
     this.applicationArn = cdk.Stack.of(this).formatArn({
       service: 'appconfig',
       resource: 'application',
