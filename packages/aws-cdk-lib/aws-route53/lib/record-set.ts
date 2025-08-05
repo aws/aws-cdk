@@ -1207,8 +1207,17 @@ export class HttpsRecordValue extends SvcbRecordValueBase {
 export interface HttpsRecordProps extends RecordSetOptions {
   /**
    * The values.
+   *
+   * @default - Specify exactly one of either `values` or `target`.
    */
-  readonly values: HttpsRecordValue[];
+  readonly values?: HttpsRecordValue[];
+
+  /**
+   * The target (mostly used as an alias target to CloudFront).
+   *
+   * @default - Specify exactly one of either `values` or `target`.
+   */
+  readonly target?: RecordTarget;
 }
 
 /**
@@ -1225,10 +1234,14 @@ export class HttpsRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.HTTPS,
-      target: RecordTarget.fromValues(...props.values.map((v) => v.toString())),
+      target: props.target ?? RecordTarget.fromValues(...(props.values?.map((v) => v.toString()) ?? [])),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    if (!!props.values === !!props.target) {
+      throw new ValidationError('Specify exactly one of either values or target.', this);
+    }
   }
 }
 

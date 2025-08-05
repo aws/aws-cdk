@@ -1401,6 +1401,73 @@ describe('record set', () => {
     });
   });
 
+  test('HTTPS record, alias for CloudFront', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: {
+        origin: new origins.HttpOrigin('www.example.com'),
+      },
+    });
+
+    // WHEN
+    new route53.HttpsRecord(stack, 'HTTPS', {
+      zone,
+      target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'myzone.',
+      Type: 'HTTPS',
+      HostedZoneId: { Ref: 'HostedZoneDB99F866' },
+      AliasTarget: {
+        DNSName: { 'Fn::GetAtt': ['Distribution830FAC52', 'DomainName'] },
+        HostedZoneId: { 'Fn::FindInMap': ['AWSCloudFrontPartitionHostedZoneIdMap', { Ref: 'AWS::Partition' }, 'zoneId'] },
+      },
+    });
+  });
+
+  test('HTTPS record throws with neither values nor aliasTarget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // THEN
+    expect(() => {
+      new route53.HttpsRecord(stack, 'HTTPS', {
+        zone,
+      });
+    }).toThrow('Specify exactly one of either values or aliasTarget.');
+  });
+
+  test('HTTPS record throws with both values and aliasTarget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: {
+        origin: new origins.HttpOrigin('www.example.com'),
+      },
+    });
+
+    // THEN
+    expect(() => {
+      new route53.HttpsRecord(stack, 'HTTPS', {
+        zone,
+        values: [route53.HttpsRecordValue.service()],
+        target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+      });
+    }).toThrow('Specify exactly one of either values or aliasTarget.');
+  });
+
   test('Delete existing record', () => {
     // GIVEN
     const stack = new Stack();
