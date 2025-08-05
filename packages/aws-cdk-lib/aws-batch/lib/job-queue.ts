@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnJobQueue } from './batch.generated';
+import { CfnJobQueue, ICfnJobQueue } from './batch.generated';
 import { IComputeEnvironment } from './compute-environment-base';
 import { ISchedulingPolicy } from './scheduling-policy';
 import { ArnFormat, Duration, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
@@ -9,7 +9,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a JobQueue
  */
-export interface IJobQueue extends IResource {
+export interface IJobQueue extends IResource, ICfnJobQueue {
   /**
    * The name of the job queue. It can be up to 128 letters long.
    * It can contain uppercase and lowercase letters, numbers, hyphens (-), and underscores (_)
@@ -244,6 +244,7 @@ export class JobQueue extends Resource implements IJobQueue {
       public readonly priority = 1;
       public readonly jobQueueArn = jobQueueArn;
       public readonly jobQueueName = stack.splitArn(jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+      public readonly attrJobQueueArn = jobQueueArn;
 
       public addComputeEnvironment(_computeEnvironment: IComputeEnvironment, _order: number): void {
         throw new ValidationError(`cannot add ComputeEnvironments to imported JobQueue '${id}'`, this);
@@ -259,6 +260,7 @@ export class JobQueue extends Resource implements IJobQueue {
   public readonly schedulingPolicy?: ISchedulingPolicy;
 
   public readonly jobQueueArn: string;
+  public readonly attrJobQueueArn: string;
   public readonly jobQueueName: string;
 
   constructor(scope: Construct, id: string, props?: JobQueueProps) {
@@ -288,6 +290,7 @@ export class JobQueue extends Resource implements IJobQueue {
       schedulingPolicyArn: this.schedulingPolicy?.schedulingPolicyArn,
       jobStateTimeLimitActions: this.renderJobStateTimeLimitActions(props?.jobStateTimeLimitActions),
     });
+    this.attrJobQueueArn = resource.attrJobQueueArn;
 
     this.jobQueueArn = this.getResourceArnAttribute(resource.attrJobQueueArn, {
       service: 'batch',
