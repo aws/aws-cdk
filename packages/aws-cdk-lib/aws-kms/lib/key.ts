@@ -425,17 +425,23 @@ export enum KeySpec {
   SM2 = 'SM2',
 
   /**
-   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   * ML-DSA-44 lattice-based digital signature algorithm.
+   *
+   * Valid usage: SIGN_VERIFY
    */
   ML_DSA_44 = 'ML_DSA_44',
 
   /**
-   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   * ML-DSA-65 lattice-based digital signature algorithm.
+   *
+   * Valid usage: SIGN_VERIFY
    */
   ML_DSA_65 = 'ML_DSA_65',
 
   /**
-   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   * ML-DSA-87 lattice-based digital signature algorithm.
+   *
+   * Valid usage: SIGN_VERIFY
    */
   ML_DSA_87 = 'ML_DSA_87',
 }
