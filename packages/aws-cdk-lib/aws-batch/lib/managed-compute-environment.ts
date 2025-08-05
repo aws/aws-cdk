@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnComputeEnvironment } from './batch.generated';
+import { CfnComputeEnvironment, ICfnComputeEnvironment } from './batch.generated';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
 import * as ec2 from '../../aws-ec2';
 import * as eks from '../../aws-eks';
@@ -1096,7 +1096,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
 /**
  * A ManagedComputeEnvironment that uses ECS orchestration on Fargate instances.
  */
-export interface IFargateComputeEnvironment extends IManagedComputeEnvironment { }
+export interface IFargateComputeEnvironment extends IManagedComputeEnvironment, ICfnComputeEnvironment { }
 
 /**
  * Props for a FargateComputeEnvironment
@@ -1128,6 +1128,7 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
       public readonly connections = { } as any;
       public readonly securityGroups = [];
       public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
+      public readonly attrComputeEnvironmentArn = fargateComputeEnvironmentArn;
     }
 
     return new Import(scope, id);
@@ -1135,6 +1136,7 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
 
   public readonly computeEnvironmentName: string;
   public readonly computeEnvironmentArn: string;
+  public readonly attrComputeEnvironmentArn: string;
 
   constructor(scope: Construct, id: string, props: FargateComputeEnvironmentProps) {
     super(scope, id, props);
@@ -1150,6 +1152,7 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
         type: this.spot ? 'FARGATE_SPOT' : 'FARGATE',
       },
     });
+    this.attrComputeEnvironmentArn = resource.attrComputeEnvironmentArn;
     this.computeEnvironmentName = this.getResourceNameAttribute(resource.ref);
     this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {
       service: 'batch',
