@@ -7,7 +7,7 @@ import * as cdk from '../../../core';
 import { DestinationS3BackupProps } from '../common';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 import { ILoggingConfig } from '../logging-config';
-import { IDataProcessor } from '../processor';
+import { DataProcessorConfig, ExtendedDataProcessorConfig, IDataProcessor } from '../processor';
 
 export interface DestinationLoggingProps {
   /**
@@ -118,6 +118,10 @@ export function createProcessingConfig(
   };
 }
 
+function isExtendedDataProcessorConfig(config: DataProcessorConfig): config is ExtendedDataProcessorConfig {
+  return 'parameters' in config;
+}
+
 function renderDataProcessor(
   processor: IDataProcessor,
   scope: Construct,
@@ -125,13 +129,27 @@ function renderDataProcessor(
 ): CfnDeliveryStream.ProcessorProperty {
   const processorConfig = processor.bind(scope, { role });
 
-  if (processorConfig.processorIdentifier.parameterName) {
-    throw new cdk.ValidationError("'processorIdentifier' has been deprecated. Please update your bind() method to return 'parameters' instead.", scope);
+  if (isExtendedDataProcessorConfig(processorConfig)) {
+    return {
+      type: processorConfig.processorType,
+      parameters: processorConfig.parameters ?? [],
+    };
   }
 
+  const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
+  parameters.push(processorConfig.processorIdentifier);
+  if (processor.props.bufferInterval) {
+    parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.props.bufferInterval.toSeconds().toString() });
+  }
+  if (processor.props.bufferSize) {
+    parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processor.props.bufferSize.toMebibytes().toString() });
+  }
+  if (processor.props.retries) {
+    parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processor.props.retries.toString() });
+  }
   return {
     type: processorConfig.processorType,
-    parameters: processorConfig.parameters ?? [],
+    parameters,
   };
 }
 

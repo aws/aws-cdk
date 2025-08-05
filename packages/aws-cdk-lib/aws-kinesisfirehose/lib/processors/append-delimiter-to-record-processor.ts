@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
+import { DataProcessorBindOptions, DataProcessorProps, ExtendedDataProcessorConfig, IDataProcessor } from '../processor';
 
 /**
  * The data processor to append new line delimiter to each record.
@@ -11,10 +11,11 @@ export class AppendDelimiterToRecordProcessor implements IDataProcessor {
 
   constructor() {}
 
-  bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
+  bind(_scope: Construct, _options: DataProcessorBindOptions): ExtendedDataProcessorConfig {
     return {
       processorType: 'AppendDelimiterToRecord',
       processorIdentifier: { parameterName: '', parameterValue: '' },
+      parameters: [],
     };
   }
 }

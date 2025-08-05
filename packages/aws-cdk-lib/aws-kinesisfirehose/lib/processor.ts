@@ -33,7 +33,6 @@ export interface DataProcessorProps {
  * The key-value pair that identifies the underlying processor resource.
  *
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processorparameter.html
- * @deprecated Use `CfnDeliveryStream.ProcessorParameterProperty`
  */
 export interface DataProcessorIdentifier {
   /**
@@ -49,26 +48,31 @@ export interface DataProcessorIdentifier {
 
 /**
  * The full configuration of a data processor.
- *
- * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processor.html
  */
 export interface DataProcessorConfig {
   /**
    * The type of processor.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-kinesisfirehose-deliverystream-processor.html#cfn-kinesisfirehose-deliverystream-processor-type
    */
   readonly processorType: string;
 
   /**
    * The key-value pair that identifies the underlying processor resource.
-   * @deprecated Use `parameters`
    */
   readonly processorIdentifier: DataProcessorIdentifier;
+}
 
+/**
+ * The full configuration of a data processor.
+ */
+export interface ExtendedDataProcessorConfig extends DataProcessorConfig {
   /**
    * The processor parameters.
-   * @default - No parameters
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-kinesisfirehose-deliverystream-processor.html#cfn-kinesisfirehose-deliverystream-processor-parameters
    */
-  readonly parameters?: CfnDeliveryStream.ProcessorParameterProperty[];
+  readonly parameters: CfnDeliveryStream.ProcessorParameterProperty[];
 }
 
 /**
