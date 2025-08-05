@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnFleet } from './codebuild.generated';
+import { CfnFleet, ICfnFleet } from './codebuild.generated';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
 import { Arn, ArnFormat, IResource, Resource, Size, Token, UnscopedValidationError, ValidationError } from '../../core';
@@ -105,7 +105,7 @@ export interface ComputeConfiguration {
 /**
  * Represents a {@link Fleet} for a reserved capacity CodeBuild project.
  */
-export interface IFleet extends IResource {
+export interface IFleet extends IResource, ICfnFleet {
   /**
    * The ARN of the fleet.
    * @attribute
@@ -158,6 +158,7 @@ export class Fleet extends Resource implements IFleet {
     class Import extends Resource implements IFleet {
       public readonly fleetName = Arn.split(fleetArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!.split(':')[0];
       public readonly fleetArn = fleetArn;
+      public readonly attrArn = fleetArn;
 
       public get computeType(): FleetComputeType {
         throw new UnscopedValidationError('Cannot retrieve computeType property from an imported Fleet');
@@ -177,6 +178,11 @@ export class Fleet extends Resource implements IFleet {
    * The ARN of the fleet.
    */
   public readonly fleetArn: string;
+
+  /**
+   * The ARN of the fleet.
+   */
+  public readonly attrArn: string;
 
   /**
    * The name of the fleet.
@@ -255,6 +261,7 @@ export class Fleet extends Resource implements IFleet {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
+    this.attrArn = this.fleetArn;
     this.fleetName = this.getResourceNameAttribute(resource.ref);
     this.computeType = props.computeType;
     this.environmentType = props.environmentType;
