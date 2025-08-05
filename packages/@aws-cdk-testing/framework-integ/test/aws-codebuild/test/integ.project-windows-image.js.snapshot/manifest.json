@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "WinCore2019-1.assets": {
       "type": "cdk:asset-manifest",
@@ -34,10 +34,117 @@
         "WinCore2019-1.assets"
       ],
       "metadata": {
+        "/WinCore2019-1/Project": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "buildSpec": "*",
+              "environment": {
+                "buildImage": {
+                  "defaultComputeType": "BUILD_GENERAL1_MEDIUM",
+                  "type": "*",
+                  "imageId": "*",
+                  "imagePullPrincipalType": "CODEBUILD",
+                  "secretsManagerCredentials": "*",
+                  "repository": "*"
+                },
+                "computeType": "BUILD_GENERAL1_MEDIUM"
+              }
+            }
+          }
+        ],
+        "/WinCore2019-1/Project/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/WinCore2019-1/Project/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/WinCore2019-1/Project/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProjectRole4CCB274E"
+          }
+        ],
+        "/WinCore2019-1/Project/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/WinCore2019-1/Project/Role/DefaultPolicy/Resource": [
@@ -100,10 +207,117 @@
         "WinCore2019-2.assets"
       ],
       "metadata": {
+        "/WinCore2019-2/Project": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "buildSpec": "*",
+              "environment": {
+                "buildImage": {
+                  "defaultComputeType": "BUILD_GENERAL1_MEDIUM",
+                  "type": "*",
+                  "imageId": "*",
+                  "imagePullPrincipalType": "CODEBUILD",
+                  "secretsManagerCredentials": "*",
+                  "repository": "*"
+                },
+                "computeType": "BUILD_GENERAL1_MEDIUM"
+              }
+            }
+          }
+        ],
+        "/WinCore2019-2/Project/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/WinCore2019-2/Project/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/WinCore2019-2/Project/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProjectRole4CCB274E"
+          }
+        ],
+        "/WinCore2019-2/Project/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/WinCore2019-2/Project/Role/DefaultPolicy/Resource": [
@@ -166,10 +380,117 @@
         "WinCore2019-3.assets"
       ],
       "metadata": {
+        "/WinCore2019-3/Project": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "buildSpec": "*",
+              "environment": {
+                "buildImage": {
+                  "defaultComputeType": "BUILD_GENERAL1_MEDIUM",
+                  "type": "*",
+                  "imageId": "*",
+                  "imagePullPrincipalType": "CODEBUILD",
+                  "secretsManagerCredentials": "*",
+                  "repository": "*"
+                },
+                "computeType": "BUILD_GENERAL1_MEDIUM"
+              }
+            }
+          }
+        ],
+        "/WinCore2019-3/Project/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/WinCore2019-3/Project/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/WinCore2019-3/Project/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ProjectRole4CCB274E"
+          }
+        ],
+        "/WinCore2019-3/Project/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/WinCore2019-3/Project/Role/DefaultPolicy/Resource": [
@@ -198,6 +519,179 @@
         ]
       },
       "displayName": "WinCore2019-3"
+    },
+    "WinServer2022-1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "WinServer2022-1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "WinServer2022-1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "WinServer2022-1.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/30068986393e7d9c7c1b79c3ecf036e784720a868d606f5c8a89e0a06cfc7ed8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "WinServer2022-1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "WinServer2022-1.assets"
+      ],
+      "metadata": {
+        "/WinServer2022-1/Project": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "buildSpec": "*",
+              "environment": {
+                "buildImage": {
+                  "defaultComputeType": "BUILD_GENERAL1_MEDIUM",
+                  "type": "*",
+                  "imageId": "*",
+                  "imagePullPrincipalType": "CODEBUILD",
+                  "secretsManagerCredentials": "*",
+                  "repository": "*"
+                },
+                "computeType": "BUILD_GENERAL1_MEDIUM"
+              }
+            }
+          }
+        ],
+        "/WinServer2022-1/Project/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/WinServer2022-1/Project/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/WinServer2022-1/Project/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectRole4CCB274E"
+          }
+        ],
+        "/WinServer2022-1/Project/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/WinServer2022-1/Project/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectRoleDefaultPolicy7F29461B"
+          }
+        ],
+        "/WinServer2022-1/Project/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectC78D97AD"
+          }
+        ],
+        "/WinServer2022-1/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/WinServer2022-1/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "WinServer2022-1"
     },
     "integprojectwindowsimagesDefaultTestDeployAssert5D19E22D.assets": {
       "type": "cdk:asset-manifest",
@@ -253,5 +747,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }
