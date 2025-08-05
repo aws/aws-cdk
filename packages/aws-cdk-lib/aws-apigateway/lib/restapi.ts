@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
 import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
-import { CfnAccount, CfnRestApi } from './apigateway.generated';
+import { CfnAccount, CfnRestApi, ICfnRestApi } from './apigateway.generated';
 import { CorsOptions } from './cors';
 import { Deployment } from './deployment';
 import { DomainName, DomainNameOptions } from './domain-name';
@@ -27,7 +27,7 @@ import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
 const APIGATEWAY_RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApi');
 
-export interface IRestApi extends IResourceBase {
+export interface IRestApi extends IResourceBase, ICfnRestApi {
   /**
    * The ID of this API Gateway RestApi.
    * @attribute
@@ -363,6 +363,8 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
    * The ID of this API Gateway RestApi.
    */
   public abstract readonly restApiId: string;
+
+  public abstract readonly attrRestApiId: string;
 
   /**
    * The resource ID of the root resource.
@@ -766,6 +768,11 @@ export class SpecRestApi extends RestApiBase {
   public readonly restApiId: string;
 
   /**
+   * The ID of this API Gateway RestApi.
+   */
+  public readonly attrRestApiId: string;
+
+  /**
    * The resource ID of the root resource.
    *
    * @attribute
@@ -797,6 +804,7 @@ export class SpecRestApi extends RestApiBase {
 
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
+    this.attrRestApiId = this.restApiId;
     this.restApiRootResourceId = resource.attrRootResourceId;
     this.root = new RootResource(this, {}, this.restApiRootResourceId);
 
@@ -875,6 +883,7 @@ export class RestApi extends RestApiBase {
   public static fromRestApiId(scope: Construct, id: string, restApiId: string): IRestApi {
     class Import extends RestApiBase {
       public readonly restApiId = restApiId;
+      public readonly attrRestApiId = restApiId;
 
       public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
         return { statementAdded: false };
@@ -898,6 +907,7 @@ export class RestApi extends RestApiBase {
   public static fromRestApiAttributes(scope: Construct, id: string, attrs: RestApiAttributes): IRestApi {
     class Import extends RestApiBase {
       public readonly restApiId = attrs.restApiId;
+      public readonly attrRestApiId = attrs.restApiId;
       public readonly restApiName = attrs.restApiName ?? id;
       public readonly restApiRootResourceId = attrs.rootResourceId;
       public readonly root: IResource = new RootResource(this, {}, this.restApiRootResourceId);
@@ -911,6 +921,8 @@ export class RestApi extends RestApiBase {
   }
 
   public readonly restApiId: string;
+
+  public readonly attrRestApiId: string;
 
   public readonly root: IResource;
 
@@ -952,6 +964,7 @@ export class RestApi extends RestApiBase {
     });
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
+    this.attrRestApiId = this.restApiId;
 
     this._configureCloudWatchRole(resource, props.cloudWatchRole, props.cloudWatchRoleRemovalPolicy);
 
