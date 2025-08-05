@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnFunctionConfiguration } from './appsync.generated';
+import { CfnFunctionConfiguration, ICfnFunctionConfiguration } from './appsync.generated';
 import { Code } from './code';
 import { BaseDataSource, LambdaDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
@@ -91,7 +91,7 @@ export interface AppsyncFunctionAttributes {
 /**
  * Interface for AppSync Functions
  */
-export interface IAppsyncFunction extends IResource {
+export interface IAppsyncFunction extends IResource, ICfnFunctionConfiguration {
   /**
    * the name of this AppSync Function
    *
@@ -127,6 +127,7 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
         produce: () => Fn.select(3, Fn.split('/', attrs.functionArn)),
       });
       public readonly functionArn = attrs.functionArn;
+      public readonly attrFunctionArn = attrs.functionArn;
       constructor(s: Construct, i: string) {
         super(s, i);
       }
@@ -146,6 +147,12 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
    * @attribute
    */
   public readonly functionArn: string;
+  /**
+   * the ARN of the AppSync function
+   *
+   * @attribute
+   */
+  public readonly attrFunctionArn: string;
   /**
    * the ID of the AppSync function
    *
@@ -197,6 +204,7 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
     this.functionArn = this.function.attrFunctionArn;
     this.functionId = this.function.attrFunctionId;
     this.dataSource = props.dataSource;
+    this.attrFunctionArn = this.function.attrFunctionArn;
 
     this.function.addDependency(this.dataSource.ds);
     props.api.addSchemaDependency(this.function);
