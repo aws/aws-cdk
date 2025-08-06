@@ -10,7 +10,7 @@ import { CfnResource, ContextProvider, IResource, Lazy, Resource, Stack, Token }
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
-import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
+import { CfnLoadBalancer, ICfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 
 /**
  * The prefix to use for source NAT for a dual-stack network load balancer with UDP listeners.
@@ -153,7 +153,7 @@ export interface BaseLoadBalancerProps {
   readonly minimumCapacityUnit?: number;
 }
 
-export interface ILoadBalancerV2 extends IResource {
+export interface ILoadBalancerV2 extends IResource, ICfnLoadBalancer {
   /**
    * The canonical hosted zone ID of this load balancer
    *
@@ -292,6 +292,15 @@ export abstract class BaseLoadBalancer extends Resource {
   public readonly loadBalancerArn: string;
 
   /**
+   * The ARN of this load balancer
+   *
+   * Example value: `arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-internal-load-balancer/50dc6c495c0c9188`
+   *
+   * @attribute
+   */
+  public attrLoadBalancerArn: string;
+
+  /**
    * @attribute
    */
   public readonly loadBalancerSecurityGroups: string[];
@@ -368,6 +377,7 @@ export abstract class BaseLoadBalancer extends Resource {
       } : undefined,
       ...additionalProps,
     });
+    this.attrLoadBalancerArn = resource.attrLoadBalancerArn;
 
     if (internetFacing && internetConnectivityEstablishedSubnets) {
       resource.node.addDependency(internetConnectivityEstablishedSubnets);

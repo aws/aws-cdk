@@ -5,7 +5,7 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { Annotations, ContextProvider, IResource, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import * as cxapi from '../../../cx-api';
-import { CfnListener } from '../elasticloadbalancingv2.generated';
+import { CfnListener, ICfnListener } from '../elasticloadbalancingv2.generated';
 
 /**
  * Options for listener lookup
@@ -60,7 +60,7 @@ export interface ListenerQueryContextProviderOptions {
 /**
  * Base interface for listeners
  */
-export interface IListener extends IResource {
+export interface IListener extends IResource, ICfnListener {
   /**
    * ARN of the listener
    * @attribute
@@ -115,6 +115,11 @@ export abstract class BaseListener extends Resource implements IListener {
   public readonly listenerArn: string;
 
   /**
+   * @attribute
+   */
+  public readonly attrListenerArn: string;
+
+  /**
    * Attributes set on this listener
    */
   private readonly attributes: Attributes = {};
@@ -130,6 +135,7 @@ export abstract class BaseListener extends Resource implements IListener {
       listenerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true } ),
     });
 
+    this.attrListenerArn = resource.attrListenerArn;
     this.listenerArn = resource.ref;
     this.node.addValidation({ validate: () => this.validateListener() });
   }
