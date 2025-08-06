@@ -1,10 +1,10 @@
 import * as net from 'net';
 import { Construct } from 'constructs';
 import {
-    CfnCustomerGateway,
-    CfnVPNConnection,
-    CfnVPNConnectionRoute,
-    CfnVPNGateway, ICfnVPNConnection, ICfnVPNGateway,
+  CfnCustomerGateway,
+  CfnVPNConnection,
+  CfnVPNConnectionRoute,
+  CfnVPNGateway, ICfnVPNConnection, ICfnVPNGateway,
 } from './ec2.generated';
 import { IVpc, SubnetSelection } from './vpc';
 import * as cloudwatch from '../../aws-cloudwatch';
