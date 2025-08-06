@@ -65,6 +65,11 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
   readonly taskDefinitionArn: string;
 
   /**
+   * ARN of this task definition
+   */
+  readonly attrTaskDefinitionArn: string;
+
+  /**
    * Execution role for this task definition
    */
   readonly executionRole?: IRole = undefined;
@@ -86,6 +91,7 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
 
     this.compatibility = props.compatibility ?? Compatibility.EC2_AND_FARGATE;
     this.taskDefinitionArn = props.taskDefinitionArn;
+    this.attrTaskDefinitionArn = props.taskDefinitionArn;
     this.executionRole = props.executionRole;
     this._taskRole = props.taskRole;
     this._networkMode = props.networkMode;
