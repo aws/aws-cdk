@@ -510,7 +510,7 @@ export class DatabaseProxy extends DatabaseProxyBase
       vpcSubnetIds: props.vpc.selectSubnets(props.vpcSubnets).subnetIds,
     });
 
-    this.dbProxyName = this.resource.ref;
+    this.dbProxyName = this.resource.ref.toLowerCase();
     this.dbProxyArn = this.resource.attrDbProxyArn;
     this.endpoint = this.resource.attrEndpoint;
 
