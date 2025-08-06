@@ -1,5 +1,5 @@
 import * as constructs from 'constructs';
-import { CfnNotificationRule } from './codestarnotifications.generated';
+import { CfnNotificationRule, ICfnNotificationRule } from './codestarnotifications.generated';
 import { INotificationRuleSource } from './notification-rule-source';
 import { INotificationRuleTarget, NotificationRuleTargetConfig } from './notification-rule-target';
 import { IResource, Resource, Names } from '../../core';
@@ -88,7 +88,7 @@ export interface NotificationRuleProps extends NotificationRuleOptions {
 /**
  * Represents a notification rule
  */
-export interface INotificationRule extends IResource {
+export interface INotificationRule extends IResource, ICfnNotificationRule {
 
   /**
    * The ARN of the notification rule (i.e. arn:aws:codestar-notifications:::notificationrule/01234abcde)
@@ -125,6 +125,7 @@ export class NotificationRule extends Resource implements INotificationRule {
   public static fromNotificationRuleArn(scope: constructs.Construct, id: string, notificationRuleArn: string): INotificationRule {
     class Import extends Resource implements INotificationRule {
       readonly notificationRuleArn = notificationRuleArn;
+      readonly attrArn = notificationRuleArn;
 
       public addTarget(_target: INotificationRuleTarget): boolean {
         return false;
@@ -140,6 +141,11 @@ export class NotificationRule extends Resource implements INotificationRule {
    * @attribute
    */
   public readonly notificationRuleArn: string;
+
+  /**
+   * @attribute
+   */
+  public readonly attrArn: string;
 
   private readonly targets: NotificationRuleTargetConfig[] = [];
 
@@ -166,7 +172,7 @@ export class NotificationRule extends Resource implements INotificationRule {
         : undefined,
       createdBy: props.createdBy,
     });
-
+    this.attrArn = resource.attrArn;
     this.notificationRuleArn = resource.ref;
 
     props.targets?.forEach((target) => {
