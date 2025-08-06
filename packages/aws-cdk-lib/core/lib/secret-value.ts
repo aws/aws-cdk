@@ -96,6 +96,20 @@ export class SecretValue extends Intrinsic {
    * @param options Options
    */
   public static secretsManager(secretId: string, options: SecretsManagerSecretOptions = {}): SecretValue {
+    const dyref = new CfnDynamicReference(CfnDynamicReferenceService.SECRETS_MANAGER, SecretValue.cfnDynamicReferenceKey(secretId, options));
+    return this.cfnDynamicReference(dyref);
+  }
+
+  /**
+   * Returns a key which can be used within an AWS CloudFormation dynamic reference to dynamically load a
+   * secret from AWS Secrets Manager
+   *
+   * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/cfn-example_reference-secret.html
+   *
+   * @param secretId The ID or ARN of the secret
+   * @param options Options
+   */
+  public static cfnDynamicReferenceKey(secretId: string, options: SecretsManagerSecretOptions = {}): string {
     if (!secretId) {
       throw new UnscopedValidationError('secretId cannot be empty');
     }
@@ -116,8 +130,7 @@ export class SecretValue extends Intrinsic {
       options.versionId || '',
     ];
 
-    const dyref = new CfnDynamicReference(CfnDynamicReferenceService.SECRETS_MANAGER, parts.join(':'));
-    return this.cfnDynamicReference(dyref);
+    return parts.join(':');
   }
 
   /**
