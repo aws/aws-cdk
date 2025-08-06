@@ -2076,40 +2076,6 @@ Amazon ECS supports native blue/green deployments that allow you to deploy new v
 
 [Amazon ECS blue/green deployments](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-blue-green.html)
 
-### Using Fargate L2 constructs for Blue/Green Feature
-
-```ts
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-
-declare const cluster: ecs.Cluster;
-declare const taskDefinition: ecs.TaskDefinition;
-declare const lambdaHook: lambda.Function;
-declare const blueTargetGroup: elbv2.ApplicationTargetGroup;
-declare const greenTargetGroup: elbv2.ApplicationTargetGroup;
-declare const prodListenerRule: elbv2.ApplicationListenerRule;
-
-const service = new ecs.FargateService(this, 'Service', {
-  cluster,
-  taskDefinition,
-  deploymentStrategy: ecs.DeploymentStrategy.BLUE_GREEN,
-});
-
-service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaHook, 'PreScaleHook', {
-  lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
-}));
-
-const target = service.loadBalancerTarget({
-  containerName: 'nginx',
-  containerPort: 80,
-  protocol: ecs.Protocol.TCP,
-}, new ecs.AlternateTarget('AlternateTarget', {
-  alternateTargetGroup: greenTargetGroup,
-  productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(prodListenerRule),
-}));
-
-target.attachToApplicationTargetGroup(blueTargetGroup);
-```
-
 ### Using Escape Hatches for Blue/Green Features
 
 The new blue/green deployment features are added to CloudFormation but not yet available in the CDK L2 constructs, you can use escape hatches to access them through the L1 (CfnService) construct.
