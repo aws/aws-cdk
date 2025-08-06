@@ -7,7 +7,7 @@ import * as cdk from '../../../core';
 import { DestinationS3BackupProps } from '../common';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 import { ILoggingConfig } from '../logging-config';
-import { DataProcessorConfig, ExtendedDataProcessorConfig, IDataProcessor } from '../processor';
+import { IDataProcessor } from '../processor';
 
 export interface DestinationLoggingProps {
   /**
@@ -118,10 +118,6 @@ export function createProcessingConfig(
   };
 }
 
-function isExtendedDataProcessorConfig(config: DataProcessorConfig): config is ExtendedDataProcessorConfig {
-  return 'parameters' in config;
-}
-
 function renderDataProcessor(
   processor: IDataProcessor,
   scope: Construct,
@@ -129,7 +125,7 @@ function renderDataProcessor(
 ): CfnDeliveryStream.ProcessorProperty {
   const processorConfig = processor.bind(scope, { role });
 
-  if (isExtendedDataProcessorConfig(processorConfig)) {
+  if (processorConfig.useDirectParameters) {
     return {
       type: processorConfig.processorType,
       parameters: processorConfig.parameters ?? [],

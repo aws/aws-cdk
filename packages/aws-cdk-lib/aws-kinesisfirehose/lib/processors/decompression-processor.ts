@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { DataProcessorBindOptions, DataProcessorProps, ExtendedDataProcessorConfig, IDataProcessor } from '../processor';
+import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
 
 /**
  * Compression format for DecompressionProcessor.
@@ -40,13 +40,14 @@ export class DecompressionProcessor implements IDataProcessor {
 
   constructor(private readonly options: DecompressionProcessorOptions = {}) {}
 
-  bind(_scope: Construct, _options: DataProcessorBindOptions): ExtendedDataProcessorConfig {
+  bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
     return {
       processorType: 'Decompression',
-      processorIdentifier: { parameterName: '', parameterValue: '' },
+      processorIdentifier: { parameterName: '', parameterValue: '' }, // Dummy value for backward compatibility
       parameters: [
         { parameterName: 'CompressionFormat', parameterValue: this.options.compressionFormat?.value ?? 'GZIP' },
       ],
+      useDirectParameters: true,
     };
   }
 }

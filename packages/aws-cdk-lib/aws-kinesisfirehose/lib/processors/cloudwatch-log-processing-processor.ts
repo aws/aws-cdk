@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { UnscopedValidationError } from '../../../core';
-import { DataProcessorBindOptions, DataProcessorProps, ExtendedDataProcessorConfig, IDataProcessor } from '../processor';
+import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
 
 /**
  * Options for CloudWatchLogProcessingProcessor.
@@ -28,13 +28,14 @@ export class CloudWatchLogProcessingProcessor implements IDataProcessor {
     }
   }
 
-  bind(_scope: Construct, _options: DataProcessorBindOptions): ExtendedDataProcessorConfig {
+  bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
     return {
       processorType: 'CloudWatchLogProcessing',
-      processorIdentifier: { parameterName: '', parameterValue: '' },
+      processorIdentifier: { parameterName: '', parameterValue: '' }, // Dummy value for backward compatibility
       parameters: [
         { parameterName: 'DataMessageExtraction', parameterValue: 'true' },
       ],
+      useDirectParameters: true,
     };
   }
 }
