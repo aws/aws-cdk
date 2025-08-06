@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
-import { CfnVPCEndpoint } from './ec2.generated';
+import { CfnVPCEndpoint, ICfnVPCEndpoint } from './ec2.generated';
 import { Peer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -15,7 +15,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A VPC endpoint.
  */
-export interface IVpcEndpoint extends IResource {
+export interface IVpcEndpoint extends IResource, ICfnVPCEndpoint {
   /**
    * The VPC endpoint identifier.
    * @attribute
@@ -25,6 +25,7 @@ export interface IVpcEndpoint extends IResource {
 
 export abstract class VpcEndpoint extends Resource implements IVpcEndpoint {
   public abstract readonly vpcEndpointId: string;
+  public abstract readonly attrId: string;
 
   protected policyDocument?: iam.PolicyDocument;
 
@@ -248,6 +249,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
   public static fromGatewayVpcEndpointId(scope: Construct, id: string, gatewayVpcEndpointId: string): IGatewayVpcEndpoint {
     class Import extends VpcEndpoint {
       public vpcEndpointId = gatewayVpcEndpointId;
+      public attrId = gatewayVpcEndpointId;
     }
 
     return new Import(scope, id);
@@ -257,6 +259,11 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
    * The gateway VPC endpoint identifier.
    */
   public readonly vpcEndpointId: string;
+
+  /**
+   * The gateway VPC endpoint identifier.
+   */
+  public readonly attrId: string;
 
   /**
    * The date and time the gateway VPC endpoint was created.
@@ -296,6 +303,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
       vpcId: props.vpc.vpcId,
     });
 
+    this.attrId = endpoint.attrId;
     this.vpcEndpointId = endpoint.ref;
     this.vpcEndpointCreationTimestamp = endpoint.attrCreationTimestamp;
     this.vpcEndpointDnsEntries = endpoint.attrDnsEntries;
@@ -968,6 +976,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
     class Import extends Resource implements IInterfaceVpcEndpoint {
       public readonly vpcEndpointId = attrs.vpcEndpointId;
+      public readonly attrId = attrs.vpcEndpointId;
       public readonly connections = new Connections({
         defaultPort: Port.tcp(attrs.port),
         securityGroups,
@@ -981,6 +990,11 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
    * The interface VPC endpoint identifier.
    */
   public readonly vpcEndpointId: string;
+
+  /**
+   * The interface VPC endpoint identifier.
+   */
+  public readonly attrId: string;
 
   /**
    * The date and time the interface VPC endpoint was created.
@@ -1066,6 +1080,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       dnsOptions,
     });
 
+    this.attrId = endpoint.attrId;
     this.vpcEndpointId = endpoint.ref;
     this.vpcEndpointCreationTimestamp = endpoint.attrCreationTimestamp;
     this.vpcEndpointDnsEntries = endpoint.attrDnsEntries;

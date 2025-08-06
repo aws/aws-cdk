@@ -1,11 +1,12 @@
 import { IDependable } from 'constructs';
 import { IConnectable } from './connections';
 import { IResource } from '../../core';
+import { ICfnClientVpnEndpoint } from "./ec2.generated";
 
 /**
  * A client VPN endpoint
  */
-export interface IClientVpnEndpoint extends IResource, IConnectable {
+export interface IClientVpnEndpoint extends IResource, IConnectable, ICfnClientVpnEndpoint {
   /**
    * The endpoint ID
    */

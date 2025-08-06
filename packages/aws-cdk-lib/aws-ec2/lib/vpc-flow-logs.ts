@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnFlowLog } from './ec2.generated';
+import { CfnFlowLog, ICfnFlowLog } from './ec2.generated';
 import { ISubnet, IVpc } from './vpc';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
@@ -17,7 +17,7 @@ const NAME_TAG: string = 'Name';
 /**
  * A FlowLog
  */
-export interface IFlowLog extends IResource {
+export interface IFlowLog extends IResource, ICfnFlowLog {
   /**
    * The Id of the VPC Flow Log
    *
@@ -804,6 +804,13 @@ abstract class FlowLogBase extends Resource implements IFlowLog {
    * @attribute
    */
   public abstract readonly flowLogId: string;
+
+  /**
+   * The Id of the VPC Flow Log
+   *
+   * @attribute
+   */
+  public abstract readonly attrId: string;
 }
 
 /**
@@ -821,6 +828,7 @@ export class FlowLog extends FlowLogBase {
   public static fromFlowLogId(scope: Construct, id: string, flowLogId: string): IFlowLog {
     class Import extends FlowLogBase {
       public flowLogId = flowLogId;
+      public attrId = flowLogId;
     }
 
     return new Import(scope, id);
@@ -832,6 +840,13 @@ export class FlowLog extends FlowLogBase {
    * @attribute
    */
   public readonly flowLogId: string;
+
+  /**
+   * The Id of the VPC Flow Log
+   *
+   * @attribute
+   */
+  public readonly attrId: string;
 
   /**
    * The S3 bucket to publish flow logs to
@@ -911,6 +926,7 @@ export class FlowLog extends FlowLogBase {
       logFormat: customLogFormat,
       logDestination,
     });
+    this.attrId = flowLog.attrId;
 
     // VPC service implicitly tries to create a bucket policy when adding a vpc flow log.
     // To avoid the race condition, we add an explicit dependency here.

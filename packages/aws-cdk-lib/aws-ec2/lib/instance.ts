@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { InstanceRequireImdsv2Aspect } from './aspects';
 import { CloudFormationInit } from './cfn-init';
 import { Connections, IConnectable } from './connections';
-import { CfnInstance } from './ec2.generated';
+import { CfnInstance, ICfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { CpuCredits, InstanceInitiatedShutdownBehavior } from './launch-template';
@@ -27,7 +27,7 @@ import * as cxapi from '../../cx-api';
  */
 const NAME_TAG: string = 'Name';
 
-export interface IInstance extends IResource, IConnectable, iam.IGrantable {
+export interface IInstance extends IResource, IConnectable, iam.IGrantable, ICfnInstance {
   /**
    * The instance's ID
    *
@@ -447,6 +447,10 @@ export class Instance extends Resource implements IInstance {
   /**
    * @attribute
    */
+  public readonly attrInstanceId: string;
+  /**
+   * @attribute
+   */
   public readonly instanceAvailabilityZone: string;
   /**
    * @attribute
@@ -614,6 +618,7 @@ export class Instance extends Resource implements IInstance {
       hibernationOptions: props.hibernationEnabled !== undefined ? { configured: props.hibernationEnabled } : undefined,
       ipv6AddressCount: props.ipv6AddressCount,
     });
+    this.attrInstanceId = this.instance.attrInstanceId;
     this.instance.node.addDependency(this.role);
 
     // if associatePublicIpAddress is true, then there must be a dependency on internet connectivity

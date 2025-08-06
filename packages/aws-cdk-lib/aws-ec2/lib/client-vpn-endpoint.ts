@@ -304,6 +304,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
   public static fromEndpointAttributes(scope: Construct, id: string, attrs: ClientVpnEndpointAttributes): IClientVpnEndpoint {
     class Import extends Resource implements IClientVpnEndpoint {
       public readonly endpointId = attrs.endpointId;
+      public readonly attrId = attrs.endpointId;
       public readonly connections = new Connections({ securityGroups: attrs.securityGroups });
       public readonly targetNetworksAssociated: IDependable = new DependencyGroup();
     }
@@ -311,6 +312,8 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
   }
 
   public readonly endpointId: string;
+
+  public readonly attrId: string;
 
   /**
    * Allows specify security group connections for the endpoint.
@@ -404,6 +407,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
         : undefined,
     });
 
+    this.attrId = endpoint.attrId;
     this.endpointId = endpoint.ref;
 
     if (props.userBasedAuthentication && (props.selfServicePortal ?? true)) {
