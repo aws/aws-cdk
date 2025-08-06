@@ -343,6 +343,36 @@ new glue.RayJob(stack, 'ImportedJob', {
 });
 ```
 
+### Metrics Control
+
+By default, Glue jobs enable CloudWatch metrics (`--enable-metrics`) and observability metrics (`--enable-observability-metrics`) for monitoring and debugging. You can disable these metrics to reduce CloudWatch costs:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
+
+// Disable both metrics for cost optimization
+new glue.PySparkEtlJob(stack, 'CostOptimizedJob', {
+  role,
+  script,
+  enableMetrics: false,
+  enableObservabilityMetrics: false,
+});
+
+// Selective control - keep observability, disable profiling
+new glue.PySparkEtlJob(stack, 'SelectiveJob', {
+  role,
+  script,
+  enableMetrics: false,
+  // enableObservabilityMetrics defaults to true
+});
+```
+
+This feature is available for all Spark job types (ETL, Streaming, Flex) and Ray jobs.
+
 ### Enable Job Run Queuing
 
 AWS Glue job queuing monitors your account level quotas and limits. If quotas or limits are insufficient to start a Glue job run, AWS Glue will automatically queue the job and wait for limits to free up. Once limits become available, AWS Glue will retry the job run. Glue jobs will queue for limits like max concurrent job runs per account, max concurrent Data Processing Units (DPU), and resource unavailable due to IP address exhaustion in Amazon Virtual Private Cloud (Amazon VPC).
