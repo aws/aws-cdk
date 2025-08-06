@@ -1,0 +1,143 @@
+{
+ "Resources": {
+  "DistB3B78991": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "ConnectionMode": "tenant-only",
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "integdistributiontenantextensiveDistOrigin1DA52B497",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only"
+       },
+       "DomainName": "www.example.com",
+       "Id": "integdistributiontenantextensiveDistOrigin1DA52B497"
+      }
+     ]
+    }
+   }
+  },
+  "connectiongroup567F24FE": {
+   "Type": "AWS::CloudFront::ConnectionGroup",
+   "Properties": {
+    "Enabled": true,
+    "Ipv6Enabled": true,
+    "Name": "integ-distribution-tenant-extensiveconnection-group"
+   }
+  },
+  "webacl": {
+   "Type": "AWS::WAFv2::WebACL",
+   "Properties": {
+    "DefaultAction": {
+     "Allow": {
+      "CustomRequestHandling": {
+       "InsertHeaders": [
+        {
+         "Name": "X-WebACL-Test",
+         "Value": "test"
+        }
+       ]
+      }
+     }
+    },
+    "Scope": "CLOUDFRONT",
+    "VisibilityConfig": {
+     "CloudWatchMetricsEnabled": false,
+     "MetricName": "test",
+     "SampledRequestsEnabled": false
+    }
+   }
+  },
+  "disttenant46C455B5": {
+   "Type": "AWS::CloudFront::DistributionTenant",
+   "Properties": {
+    "ConnectionGroupId": {
+     "Ref": "connectiongroup567F24FE"
+    },
+    "Customizations": {
+     "Certificate": {
+      "Arn": "arn:aws:acm:us-east-1:034727219234:certificate/8b6f2b30-d8ae-410d-bbaa-c0820d14b9e0"
+     },
+     "GeoRestrictions": {
+      "Locations": [
+       "US",
+       "CA"
+      ],
+      "RestrictionType": "whitelist"
+     },
+     "WebAcl": {
+      "Action": "override",
+      "Arn": {
+       "Fn::GetAtt": [
+        "webacl",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "DistributionId": {
+     "Ref": "DistB3B78991"
+    },
+    "Domains": [
+     "integtest.codyzhao.people.aws.dev"
+    ],
+    "Enabled": true,
+    "Name": "test-tenant",
+    "Parameters": [
+     {
+      "Name": "tenantId",
+      "Value": "tenant-123"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "test"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

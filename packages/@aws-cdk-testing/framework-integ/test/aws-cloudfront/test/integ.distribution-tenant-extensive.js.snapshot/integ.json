@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "distribution-tenant-extensive-test/DefaultTest": {
+      "stacks": [
+        "integ-distribution-tenant-extensive"
+      ],
+      "assertionStack": "distribution-tenant-extensive-test/DefaultTest/DeployAssert",
+      "assertionStackName": "distributiontenantextensivetestDefaultTestDeployAssert974557ED"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

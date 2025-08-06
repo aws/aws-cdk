@@ -72,7 +72,7 @@ export interface CustomizationProps extends CfnDistributionTenant.Customizations
 }
 
 /**
- * Managed Cerftificate Request properties for a Distribution Tenant
+ * Properties for configuring an Amazon CloudFront managed ACM certificate for a Distribution Tenant
  *
  * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront.CfnDistributionTenant.ManagedCertificateRequestProperty.html
  */
@@ -82,6 +82,8 @@ export interface ManagedCertificateRequestProps extends CfnDistributionTenant.Ma
 
 /**
  * Parameter properties for a Distribution Tenant
+ *
+ * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront.CfnDistributionTenant.ParameterProperty.html
  */
 export interface ParameterProps extends CfnDistributionTenant.ParameterProperty{
 
@@ -114,8 +116,8 @@ export interface DistributionTenantProps {
   readonly connectionGroupId?: string;
 
   /**
-   * Customizations for this tenant.
-   * @default - none
+   * Customization properties for certificates, georestrictions, and web ACLs for this Distribution Tenant
+   * @default - no special customizations
    */
   readonly customizations?: CustomizationProps;
 
@@ -126,20 +128,20 @@ export interface DistributionTenantProps {
   readonly enabled?: boolean;
 
   /**
-   * Managed certificate request configuration.
-   * @default - none
+   * MProperties for configuring an Amazon CloudFront managed ACM certificate for this Distribution Tenant
+   * @default - no managed certificate
    */
   readonly managedCertificateRequest?: ManagedCertificateRequestProps;
 
   /**
-   * Parameters for this tenant.
-   * @default - none
+   * Parameter properties for this Distribution Tenant
+   * @default - no special parameters
    */
   readonly parameters?: ParameterProps[];
 
   /**
    * Tags for this tenant.
-   * @default - none
+   * @default - no tags
    */
   readonly tags?: DistributionTenantTag[];
 }

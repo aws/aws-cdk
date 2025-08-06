@@ -81,22 +81,23 @@ export interface ConnectionGroupProps {
 
   /**
    * The ID of the Anycast static IP list.
-   * @default - none
+   * @default - no IP List
    */
   readonly anycastIpListId?: string;
 
   /**
-   * The ID of the Anycast static IP list.
+   * Complex tags for the connection group
    *
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-connectiongroup.html#cfn-cloudfront-connectiongroup-tags
    *
-   * @default - none
+   * @default - no tags
    */
   readonly tags?: ConnectionGroupTag [];
 }
 
 /**
  * Tag for a Connection Group
+ *
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-connectiongroup.html#cfn-cloudfront-connectiongroup-tags
  */
 export interface ConnectionGroupTag extends CfnTag {
