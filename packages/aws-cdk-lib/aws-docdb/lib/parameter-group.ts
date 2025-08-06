@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnDBClusterParameterGroup } from './docdb.generated';
+import { CfnDBClusterParameterGroup, ICfnDBClusterParameterGroup } from './docdb.generated';
 import { IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -7,7 +7,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A parameter group
  */
-export interface IClusterParameterGroup extends IResource {
+export interface IClusterParameterGroup extends IResource, ICfnDBClusterParameterGroup {
   /**
    * The name of this parameter group
    */
@@ -24,6 +24,7 @@ abstract class ClusterParameterGroupBase extends Resource implements IClusterPar
   public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IClusterParameterGroup {
     class Import extends Resource implements IClusterParameterGroup {
       public readonly parameterGroupName = parameterGroupName;
+      public readonly attrId = parameterGroupName;
     }
     return new Import(scope, id);
   }
@@ -32,6 +33,8 @@ abstract class ClusterParameterGroupBase extends Resource implements IClusterPar
    * The name of the parameter group
    */
   public abstract readonly parameterGroupName: string;
+
+  public abstract readonly attrId: string;
 }
 
 /**
@@ -77,6 +80,8 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase implements 
    */
   public readonly parameterGroupName: string;
 
+  public readonly attrId: string;
+
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
@@ -90,5 +95,6 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase implements 
     });
 
     this.parameterGroupName = resource.ref;
+    this.attrId = resource.ref;
   }
 }
