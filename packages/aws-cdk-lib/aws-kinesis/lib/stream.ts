@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { KinesisMetrics } from './kinesis-fixed-canned-metrics';
-import { CfnStream } from './kinesis.generated';
+import { CfnStream, ICfnStream } from './kinesis.generated';
 import { ResourcePolicy } from './resource-policy';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
@@ -35,7 +35,7 @@ const WRITE_OPERATIONS = [
 /**
  * A Kinesis Stream
  */
-export interface IStream extends IResource {
+export interface IStream extends IResource, ICfnStream {
   /**
    * The ARN of the stream.
    *
@@ -340,6 +340,16 @@ abstract class StreamBase extends Resource implements IStream {
    * The name of the stream
    */
   public abstract readonly streamName: string;
+
+  /**
+   * The ARN of the stream.
+   */
+  public abstract readonly attrArn: string;
+
+  /**
+   * The name of the stream
+   */
+  public abstract readonly attrName: string;
 
   /**
    * Optional KMS encryption key associated with this stream.
@@ -819,6 +829,8 @@ export class Stream extends StreamBase {
     class Import extends StreamBase {
       public readonly streamArn = attrs.streamArn;
       public readonly streamName = Stack.of(scope).splitArn(attrs.streamArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+      public readonly attrArn = this.streamArn;
+      public readonly attrName = this.streamName;
       public readonly encryptionKey = attrs.encryptionKey;
 
       protected readonly autoCreatePolicy = false;
@@ -831,6 +843,8 @@ export class Stream extends StreamBase {
 
   public readonly streamArn: string;
   public readonly streamName: string;
+  public readonly attrArn: string;
+  public readonly attrName: string;
   public readonly encryptionKey?: kms.IKey;
 
   private readonly stream: CfnStream;
@@ -882,7 +896,8 @@ export class Stream extends StreamBase {
       resourceName: this.physicalName,
     });
     this.streamName = this.getResourceNameAttribute(this.stream.ref);
-
+    this.attrArn = this.streamArn;
+    this.attrName = this.streamName;
     this.encryptionKey = encryptionKey;
   }
 
