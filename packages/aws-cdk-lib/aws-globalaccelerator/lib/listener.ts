@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IAccelerator } from './accelerator';
 import { EndpointGroup, EndpointGroupOptions } from './endpoint-group';
 import * as ga from './globalaccelerator.generated';
+import { ICfnListener } from './globalaccelerator.generated';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -9,7 +10,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Interface of the Listener
  */
-export interface IListener extends cdk.IResource {
+export interface IListener extends cdk.IResource, ICfnListener {
   /**
    * The ARN of the listener
    *
@@ -130,11 +131,14 @@ export class Listener extends cdk.Resource implements IListener {
   public static fromListenerArn(scope: Construct, id: string, listenerArn: string): IListener {
     class Import extends cdk.Resource implements IListener {
       public readonly listenerArn = listenerArn;
+      public readonly attrListenerArn = listenerArn;
     }
     return new Import(scope, id);
   }
 
   public readonly listenerArn: string;
+
+  public readonly attrListenerArn: string;
   /**
    * The name of the listener
    *
@@ -157,6 +161,7 @@ export class Listener extends cdk.Resource implements IListener {
       clientAffinity: props.clientAffinity ?? ClientAffinity.NONE,
     });
 
+    this.attrListenerArn = resource.attrListenerArn;
     this.listenerArn = resource.attrListenerArn;
     this.listenerName = props.listenerName ?? resource.logicalId;
   }
