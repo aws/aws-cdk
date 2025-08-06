@@ -4,7 +4,7 @@ import {
   CfnCustomerGateway,
   CfnVPNConnection,
   CfnVPNConnectionRoute,
-  CfnVPNGateway,
+  CfnVPNGateway, ICfnVPNConnection,
 } from './ec2.generated';
 import { IVpc, SubnetSelection } from './vpc';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -12,7 +12,7 @@ import { IResource, Resource, SecretValue, Token, ValidationError } from '../../
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface IVpnConnection extends IResource {
+export interface IVpnConnection extends IResource, ICfnVPNConnection {
   /**
    * The id of the VPN connection.
    * @attribute VpnConnectionId
@@ -217,6 +217,7 @@ export interface VpnConnectionAttributes {
  */
 export abstract class VpnConnectionBase extends Resource implements IVpnConnection {
   public abstract readonly vpnId: string;
+  public abstract readonly attrVpnConnectionId: string;
   public abstract readonly customerGatewayId: string;
   public abstract readonly customerGatewayIp: string;
   public abstract readonly customerGatewayAsn: number;
@@ -238,6 +239,7 @@ export class VpnConnection extends VpnConnectionBase {
   public static fromVpnConnectionAttributes(scope: Construct, id: string, attrs: VpnConnectionAttributes): IVpnConnection {
     class Import extends VpnConnectionBase {
       public readonly vpnId: string = attrs.vpnId;
+      public readonly attrVpnConnectionId: string = attrs.vpnId;
       public readonly customerGatewayId: string = attrs.customerGatewayId;
       public readonly customerGatewayIp: string = attrs.customerGatewayIp;
       public readonly customerGatewayAsn: number = attrs.customerGatewayAsn;
@@ -285,6 +287,7 @@ export class VpnConnection extends VpnConnectionBase {
   }
 
   public readonly vpnId: string;
+  public readonly attrVpnConnectionId: string;
   public readonly customerGatewayId: string;
   public readonly customerGatewayIp: string;
   public readonly customerGatewayAsn: number;
@@ -365,6 +368,7 @@ export class VpnConnection extends VpnConnectionBase {
       })),
     });
 
+    this.attrVpnConnectionId = vpnConnection.attrVpnConnectionId;
     this.vpnId = vpnConnection.ref;
 
     if (props.staticRoutes) {

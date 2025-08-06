@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.generated';
+import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions, ICfnVPCEndpointService } from './ec2.generated';
 import { ArnPrincipal } from '../../aws-iam';
 import { Aws, Fn, IResource, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -38,7 +38,7 @@ export interface IVpcEndpointServiceLoadBalancer {
  * A VPC endpoint service.
  *
  */
-export interface IVpcEndpointService extends IResource {
+export interface IVpcEndpointService extends IResource, ICfnVPCEndpointService {
   /**
    * The service name of the VPC Endpoint Service that clients use to connect to,
    * like com.amazonaws.vpce.<region>.vpce-svc-xxxxxxxxxxxxxxxx
@@ -119,6 +119,12 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
   public readonly vpcEndpointServiceId: string;
 
   /**
+   * The id of the VPC Endpoint Service, like vpce-svc-xxxxxxxxxxxxxxxx.
+   * @attribute
+   */
+  public readonly attrServiceId: string;
+
+  /**
    * The service name of the VPC Endpoint Service that clients use to connect to,
    * like com.amazonaws.vpce.<region>.vpce-svc-xxxxxxxxxxxxxxxx
    *
@@ -156,7 +162,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
       supportedIpAddressTypes: this.supportedIpAddressTypes?.map(type => type.toString()),
       supportedRegions: this.allowedRegions,
     });
-
+    this.attrServiceId = this.endpointService.attrServiceId;
     this.vpcEndpointServiceId = this.endpointService.ref;
 
     const { region } = Stack.of(this);

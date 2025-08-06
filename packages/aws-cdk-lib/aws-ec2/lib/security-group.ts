@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Connections } from './connections';
-import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
+import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress, ICfnSecurityGroup } from './ec2.generated';
 import { IPeer, Peer } from './peer';
 import { Port } from './port';
 import { IVpc } from './vpc';
@@ -17,7 +17,7 @@ const SECURITY_GROUP_DISABLE_INLINE_RULES_CONTEXT_KEY = '@aws-cdk/aws-ec2.securi
 /**
  * Interface for security group-like objects
  */
-export interface ISecurityGroup extends IResource, IPeer {
+export interface ISecurityGroup extends IResource, IPeer, ICfnSecurityGroup {
   /**
    * ID for the current security group
    * @attribute
@@ -64,6 +64,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   }
 
   public abstract readonly securityGroupId: string;
+  public abstract readonly attrId: string;
   public abstract readonly allowAllOutbound: boolean;
   public abstract readonly allowAllIpv6Outbound: boolean;
 
@@ -407,6 +408,7 @@ export class SecurityGroup extends SecurityGroupBase {
   public static fromSecurityGroupId(scope: Construct, id: string, securityGroupId: string, options: SecurityGroupImportOptions = {}): ISecurityGroup {
     class MutableImport extends SecurityGroupBase {
       public securityGroupId = securityGroupId;
+      public attrId = securityGroupId;
       public allowAllOutbound = options.allowAllOutbound ?? true;
       public allowAllIpv6Outbound = options.allowAllIpv6Outbound ?? false;
 
@@ -420,6 +422,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
     class ImmutableImport extends SecurityGroupBase {
       public securityGroupId = securityGroupId;
+      public attrId = securityGroupId;
       public allowAllOutbound = options.allowAllOutbound ?? true;
       public allowAllIpv6Outbound = options.allowAllIpv6Outbound ?? false;
 
@@ -480,6 +483,13 @@ export class SecurityGroup extends SecurityGroupBase {
   public readonly securityGroupId: string;
 
   /**
+   * The ID of the security group
+   *
+   * @attribute
+   */
+  public readonly attrId: string;
+
+  /**
    * The VPC ID this security group is part of.
    *
    * @attribute
@@ -528,7 +538,7 @@ export class SecurityGroup extends SecurityGroupBase {
       securityGroupEgress: Lazy.any({ produce: () => this.directEgressRules }, { omitEmptyArray: true }),
       vpcId: props.vpc.vpcId,
     });
-
+    this.attrId = this.securityGroup.attrGroupId;
     this.securityGroupId = this.securityGroup.attrGroupId;
     this.securityGroupVpcId = this.securityGroup.attrVpcId;
     this.securityGroupName = this.securityGroup.ref;

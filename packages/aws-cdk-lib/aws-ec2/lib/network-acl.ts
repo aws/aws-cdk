@@ -4,7 +4,7 @@ import {
   CfnNetworkAclEntry,
   CfnSubnetNetworkAclAssociation,
   ICfnNetworkAcl,
-  ICfnNetworkAclEntry,
+  ICfnNetworkAclEntry, ICfnSubnetNetworkAclAssociation,
 } from './ec2.generated';
 import { AclCidr, AclTraffic } from './network-acl-types';
 import { ISubnet, IVpc, SubnetSelection } from './vpc';
@@ -326,7 +326,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
  *
  *
  */
-export interface ISubnetNetworkAclAssociation extends IResource {
+export interface ISubnetNetworkAclAssociation extends IResource, ICfnSubnetNetworkAclAssociation {
   /**
    * ID for the current SubnetNetworkAclAssociation
    * @attribute
@@ -371,6 +371,7 @@ export interface SubnetNetworkAclAssociationProps {
  */
 abstract class SubnetNetworkAclAssociationBase extends Resource implements ISubnetNetworkAclAssociation {
   public abstract readonly subnetNetworkAclAssociationAssociationId: string;
+  public abstract readonly attrAssociationId: string;
 }
 @propertyInjectable
 export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase {
@@ -382,6 +383,7 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
     subnetNetworkAclAssociationAssociationId: string): ISubnetNetworkAclAssociation {
     class Import extends SubnetNetworkAclAssociationBase {
       public readonly subnetNetworkAclAssociationAssociationId = subnetNetworkAclAssociationAssociationId;
+      public readonly attrAssociationId = subnetNetworkAclAssociationAssociationId;
     }
 
     return new Import(scope, id);
@@ -391,6 +393,12 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
    * @attribute
    */
   public readonly subnetNetworkAclAssociationAssociationId: string;
+
+  /**
+   * ID for the current SubnetNetworkAclAssociation
+   * @attribute
+   */
+  public readonly attrAssociationId: string;
 
   /**
    * ID for the current Network ACL
@@ -417,7 +425,7 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
       networkAclId: props.networkAcl.networkAclId,
       subnetId: props.subnet.subnetId,
     });
-
+    this.attrAssociationId = this.association.attrAssociationId;
     this.networkAcl = props.networkAcl;
     this.subnet = props.subnet;
     this.subnetNetworkAclAssociationAssociationId = this.association.attrAssociationId;
