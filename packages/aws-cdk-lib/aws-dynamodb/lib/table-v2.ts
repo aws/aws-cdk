@@ -450,6 +450,8 @@ export class TableV2 extends TableBaseV2 {
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: IKey;
       public readonly resourcePolicy?: PolicyDocument;
+      public readonly attrArn: string;
+      public readonly attrTableName: string;
 
       protected readonly region: string;
       protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
@@ -467,6 +469,8 @@ export class TableV2 extends TableBaseV2 {
         this.region = resourceRegion;
         this.tableArn = tableArn;
         this.tableName = tableName;
+        this.attrArn = tableArn;
+        this.attrTableName = tableName;
         this.tableId = tableId;
         this.tableStreamArn = tableStreamArn;
         this.encryptionKey = attrs.encryptionKey;
@@ -513,6 +517,16 @@ export class TableV2 extends TableBaseV2 {
    * @attribute
    */
   public readonly tableName: string;
+
+  /**
+   * @attribute
+   */
+  public readonly attrArn: string;
+
+  /**
+   * @attribute
+   */
+  public readonly attrTableName: string;
 
   /**
    * @attribute
@@ -625,6 +639,8 @@ export class TableV2 extends TableBaseV2 {
       resourceName: this.physicalName,
     });
     this.tableName = this.getResourceNameAttribute(resource.ref);
+    this.attrArn = this.tableArn;
+    this.attrTableName = this.tableName;
     this.tableId = resource.attrTableId;
     this.tableStreamArn = resource.attrStreamArn;
 

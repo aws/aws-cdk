@@ -606,6 +606,16 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
   /**
    * @attribute
    */
+  public abstract readonly attrArn: string;
+
+  /**
+   * @attribute
+   */
+  public abstract readonly attrTableName: string;
+
+  /**
+   * @attribute
+   */
   public abstract readonly tableStreamArn?: string;
 
   /**
@@ -1117,6 +1127,8 @@ export class Table extends TableBase {
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
       public resourcePolicy?: iam.PolicyDocument;
+      public readonly attrTableName: string;
+      public readonly attrArn: string;
       protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
         (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
@@ -1125,6 +1137,8 @@ export class Table extends TableBase {
         super(scope, id);
         this.tableArn = _tableArn;
         this.tableName = tableName;
+        this.attrArn = this.tableArn;
+        this.attrTableName = this.tableName;
         this.tableStreamArn = tableStreamArn;
         this.encryptionKey = attrs.encryptionKey;
       }
@@ -1177,6 +1191,16 @@ export class Table extends TableBase {
    * @attribute
    */
   public readonly tableName: string;
+
+  /**
+   * @attribute
+   */
+  public readonly attrArn: string;
+
+  /**
+   * @attribute
+   */
+  public readonly attrTableName: string;
 
   /**
    * @attribute
@@ -1279,6 +1303,8 @@ export class Table extends TableBase {
       resourceName: this.physicalName,
     });
     this.tableName = this.getResourceNameAttribute(this.table.ref);
+    this.attrArn = this.tableArn;
+    this.attrTableName = this.tableName;
 
     if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName); }
 

@@ -1,3 +1,4 @@
+import { ICfnTable } from './dynamodb.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -288,7 +289,7 @@ export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
 /**
  * An interface that represents a DynamoDB Table - either created with the CDK, or an existing one.
  */
-export interface ITable extends IResource {
+export interface ITable extends IResource, ICfnTable {
   /**
    * Arn of the dynamodb table.
    *

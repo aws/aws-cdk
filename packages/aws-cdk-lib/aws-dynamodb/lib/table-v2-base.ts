@@ -37,6 +37,20 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   public abstract readonly tableName: string;
 
   /**
+   * The ARN of the table.
+   *
+   * @attribute
+   */
+  public abstract readonly attrArn: string;
+
+  /**
+   * The name of the table.
+   *
+   * @attribute
+   */
+  public abstract readonly attrTableName: string;
+
+  /**
    * The stream ARN of the table.
    *
    * @attribute
