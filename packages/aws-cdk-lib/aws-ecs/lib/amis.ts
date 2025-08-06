@@ -43,6 +43,31 @@ export enum WindowsOptimizedVersion {
   SERVER_2016 = '2016',
 }
 
+/**
+ * Windows Server Core variants for ECS-optimized AMIs.
+ */
+export enum WindowsOptimizedCoreVersion {
+  /**
+   * Windows Server 2022 Core
+   */
+  SERVER_2022_CORE = '2022',
+
+  /**
+   * Windows Server 2019 Core
+   */
+  SERVER_2019_CORE = '2019',
+}
+
+/**
+ * The kernel version for Amazon Linux 2 ECS-optimized AMI.
+ */
+export enum AmiLinuxKernelVersion {
+  /**
+   * Kernel version 5.10
+   */
+  KERNEL_5_10 = '5.10',
+}
+
 const BR_IMAGE_SYMBOL = Symbol.for(
   '@aws-cdk/aws-ecs/lib/amis.BottleRocketImage',
 );
@@ -73,6 +98,13 @@ export interface EcsOptimizedAmiProps {
   readonly windowsVersion?: WindowsOptimizedVersion;
 
   /**
+   * The Windows Server Core version to use.
+   *
+   * @default none, uses Linux generation
+   */
+  readonly windowsCoreVersion?: WindowsOptimizedCoreVersion;
+
+  /**
    * The ECS-optimized AMI variant to use.
    *
    * @default AmiHardwareType.Standard
@@ -101,11 +133,80 @@ export interface EcsOptimizedAmiProps {
   readonly cachedInContext?: boolean;
 
   /**
+   * The kernel version to use for Amazon Linux 2.
+   *
+   * @default - kernel value will be undefined
+   */
+  readonly kernel?: AmiLinuxKernelVersion;
+
+  /**
    * Adds an additional discriminator to the `cdk.context.json` cache key.
    *
    * @default - no additional cache key
    */
   readonly additionalCacheKey?: string;
+}
+
+/**
+ * Internal utility for constructing the SSM parameter path for ECS AMIs.
+ * Used by both EcsOptimizedAmi and EcsOptimizedImage classes.
+ */
+function constructSsmParameterPath(params: {
+  windowsVersion?: WindowsOptimizedVersion;
+  windowsCoreVersion?: WindowsOptimizedCoreVersion;
+  generation?: ec2.AmazonLinuxGeneration;
+  hwType: AmiHardwareType;
+  kernel?: AmiLinuxKernelVersion;
+}): string {
+  let path = '/aws/service/';
+
+  if (params.windowsVersion || params.windowsCoreVersion) {
+    path += 'ami-windows-latest/';
+
+    let windowsVersion: string;
+    let editionType: string;
+
+    if (params.windowsCoreVersion) {
+      // For Core variants
+      windowsVersion = params.windowsCoreVersion;
+      editionType = 'English-Core';
+    } else {
+      // For Full editions
+      windowsVersion = params.windowsVersion!;
+      editionType = 'English-Full';
+    }
+
+    path += `Windows_Server-${windowsVersion}-${editionType}-ECS_Optimized/`;
+    path += 'image_id';
+  } else {
+    path += 'ecs/optimized-ami/';
+
+    if (params.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX) {
+      path += 'amazon-linux/';
+    } else if (params.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2) {
+      path += 'amazon-linux-2/';
+
+      // Add kernel version for Amazon Linux 2 if specified
+      if (params.kernel) {
+        path += `kernel-${params.kernel}/`;
+      }
+    } else if (params.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023) {
+      path += 'amazon-linux-2023/';
+    }
+
+    // Add hardware type
+    if (params.hwType === AmiHardwareType.GPU) {
+      path += 'gpu/';
+    } else if (params.hwType === AmiHardwareType.ARM) {
+      path += 'arm64/';
+    } else if (params.hwType === AmiHardwareType.NEURON) {
+      path += 'inf/';
+    }
+
+    path += 'recommended/image_id';
+  }
+
+  return path;
 }
 
 /*
@@ -119,6 +220,7 @@ export interface EcsOptimizedAmiProps {
 export class EcsOptimizedAmi implements ec2.IMachineImage {
   private readonly generation?: ec2.AmazonLinuxGeneration;
   private readonly windowsVersion?: WindowsOptimizedVersion;
+  private readonly windowsCoreVersion?: WindowsOptimizedCoreVersion;
   private readonly hwType: AmiHardwareType;
 
   private readonly amiParameterName: string;
@@ -130,10 +232,17 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
    */
   constructor(props?: EcsOptimizedAmiProps) {
     this.hwType = (props && props.hardwareType) || AmiHardwareType.STANDARD;
-    if (props && props.generation) { // generation defined in the props object
+
+    // Multiple OS/version validation
+    if (props?.windowsVersion && props?.windowsCoreVersion) {
+      throw new UnscopedValidationError('Cannot specify both windowsVersion and windowsCoreVersion');
+    }
+
+    if (props && props.generation) {
+      // generation defined in the props object
       if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX && this.hwType !== AmiHardwareType.STANDARD) {
         throw new UnscopedValidationError('Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
-      } else if (props.windowsVersion) {
+      } else if (props.windowsVersion || props.windowsCoreVersion) {
         throw new UnscopedValidationError('"windowsVersion" and Linux image "generation" cannot be both set');
       } else {
         this.generation = props.generation;
@@ -144,22 +253,26 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
       } else {
         this.windowsVersion = props.windowsVersion;
       }
-    } else { // generation not defined in props object
+    } else if (props && props.windowsCoreVersion) {
+      if (this.hwType !== AmiHardwareType.STANDARD) {
+        throw new UnscopedValidationError('Windows Server Core does not support special hardware type');
+      } else {
+        this.windowsCoreVersion = props.windowsCoreVersion;
+      }
+    } else {
+      // no OS/version specified
       // always default to Amazon Linux v2 regardless of HW
       this.generation = ec2.AmazonLinuxGeneration.AMAZON_LINUX_2;
     }
 
-    // set the SSM parameter name
-    this.amiParameterName = '/aws/service/'
-      + (this.windowsVersion ? 'ami-windows-latest/' : 'ecs/optimized-ami/')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 ? 'amazon-linux-2023/' : '')
-      + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
-      + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
-      + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
-      + (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '')
-      + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
+    // Use the shared utility function to construct the SSM parameter path
+    this.amiParameterName = constructSsmParameterPath({
+      windowsVersion: this.windowsVersion,
+      windowsCoreVersion: this.windowsCoreVersion,
+      generation: this.generation,
+      hwType: this.hwType,
+      kernel: props?.kernel,
+    });
 
     this.cachedInContext = props?.cachedInContext ?? false;
     this.additionalCacheKey = props?.additionalCacheKey;
@@ -175,7 +288,12 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
   public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName, this.additionalCacheKey);
 
-    const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
+    // Windows OS type for both regular Windows and Windows Core variants
+    const osType =
+      this.windowsVersion || this.windowsCoreVersion
+        ? ec2.OperatingSystemType.WINDOWS
+        : ec2.OperatingSystemType.LINUX;
+
     return {
       imageId: ami,
       osType,
@@ -210,6 +328,13 @@ export interface EcsOptimizedImageOptions {
   readonly cachedInContext?: boolean;
 
   /**
+   * The kernel version to use for Amazon Linux 2.
+   *
+   * @default - kernel value will be undefined
+   */
+  readonly kernel?: AmiLinuxKernelVersion;
+
+  /**
    * Adds an additional discriminator to the `cdk.context.json` cache key.
    *
    * @default - no additional cache key
@@ -231,6 +356,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
       hardwareType,
       cachedInContext: options.cachedInContext,
+      additionalCacheKey: options.additionalCacheKey,
     });
   }
 
@@ -238,12 +364,18 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    * Construct an Amazon Linux 2 image from the latest ECS Optimized AMI published in SSM
    *
    * @param hardwareType ECS-optimized AMI variant to use
+   * @param Additional options to configure `EcsOptimizedImage`
    */
-  public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD, options: EcsOptimizedImageOptions = {}): EcsOptimizedImage {
+  public static amazonLinux2(
+    hardwareType = AmiHardwareType.STANDARD,
+    options: EcsOptimizedImageOptions = {},
+  ): EcsOptimizedImage {
     return new EcsOptimizedImage({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
       hardwareType,
       cachedInContext: options.cachedInContext,
+      kernel: options.kernel,
+      additionalCacheKey: options.additionalCacheKey,
     });
   }
 
@@ -254,6 +386,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     return new EcsOptimizedImage({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX,
       cachedInContext: options.cachedInContext,
+      additionalCacheKey: options.additionalCacheKey,
     });
   }
 
@@ -266,11 +399,29 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     return new EcsOptimizedImage({
       windowsVersion,
       cachedInContext: options.cachedInContext,
+      additionalCacheKey: options.additionalCacheKey,
+    });
+  }
+
+  /**
+   * Construct a Windows Server Core image from the latest ECS Optimized AMI published in SSM
+   *
+   * @param coreVersion Windows Server Core version to use
+   */
+  public static windowsCore(
+    coreVersion: WindowsOptimizedCoreVersion,
+    options: EcsOptimizedImageOptions = {},
+  ): EcsOptimizedImage {
+    return new EcsOptimizedImage({
+      windowsCoreVersion: coreVersion,
+      cachedInContext: options.cachedInContext,
+      additionalCacheKey: options.additionalCacheKey,
     });
   }
 
   private readonly generation?: ec2.AmazonLinuxGeneration;
   private readonly windowsVersion?: WindowsOptimizedVersion;
+  private readonly windowsCoreVersion?: WindowsOptimizedCoreVersion;
   private readonly hwType?: AmiHardwareType;
 
   private readonly amiParameterName: string;
@@ -281,27 +432,48 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    * Constructs a new instance of the EcsOptimizedAmi class.
    */
   private constructor(props: EcsOptimizedAmiProps) {
-    this.hwType = props && props.hardwareType;
+    this.hwType = props?.hardwareType;
+    this.windowsCoreVersion = props?.windowsCoreVersion;
 
-    if (props.windowsVersion) {
-      this.windowsVersion = props.windowsVersion;
-    } else if (props.generation) {
-      this.generation = props.generation;
-    } else {
-      throw new UnscopedValidationError('This error should never be thrown');
+    // Check for conflicting OS/version specifications
+    if ((props?.windowsVersion && props?.windowsCoreVersion) ||
+        (props?.windowsVersion && props?.generation) ||
+        (props?.windowsCoreVersion && props?.generation)) {
+      throw new UnscopedValidationError('Cannot specify more than one of: windowsVersion, windowsCoreVersion, or generation');
     }
 
-    // set the SSM parameter name
-    this.amiParameterName = '/aws/service/'
-      + (this.windowsVersion ? 'ami-windows-latest/' : 'ecs/optimized-ami/')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 ? 'amazon-linux-2023/' : '')
-      + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
-      + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
-      + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
-      + (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '')
-      + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
+    if (props?.windowsVersion) {
+      // Validate hardware type compatibility with Windows
+      if (props.hardwareType && props.hardwareType !== AmiHardwareType.STANDARD) {
+        throw new UnscopedValidationError('Windows Server does not support special hardware types');
+      }
+      this.windowsVersion = props.windowsVersion;
+    } else if (props?.windowsCoreVersion) {
+      // Validate hardware type compatibility with Windows Core
+      if (props.hardwareType && props.hardwareType !== AmiHardwareType.STANDARD) {
+        throw new UnscopedValidationError('Windows Server Core does not support special hardware types');
+      }
+      this.windowsCoreVersion = props.windowsCoreVersion;
+    } else if (props?.generation) {
+      // Validate hardware type compatibility with Amazon Linux
+      if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX &&
+          props.hardwareType && props.hardwareType !== AmiHardwareType.STANDARD) {
+        throw new UnscopedValidationError('Amazon Linux does not support special hardware types. Use Amazon Linux 2 instead');
+      }
+      this.generation = props.generation;
+    } else {
+      // Default to Amazon Linux 2 if no OS/version is specified
+      this.generation = ec2.AmazonLinuxGeneration.AMAZON_LINUX_2;
+    }
+
+    // Use the shared utility function to construct the SSM parameter path
+    this.amiParameterName = constructSsmParameterPath({
+      windowsVersion: this.windowsVersion,
+      windowsCoreVersion: this.windowsCoreVersion,
+      generation: this.generation,
+      hwType: this.hwType ?? AmiHardwareType.STANDARD,
+      kernel: props.kernel,
+    });
 
     this.cachedInContext = props.cachedInContext ?? false;
     this.additionalCacheKey = props.additionalCacheKey;
@@ -317,7 +489,12 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
   public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName, this.additionalCacheKey);
 
-    const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
+    // Windows OS type for both regular Windows and Windows Core variants
+    const osType =
+      this.windowsVersion || this.windowsCoreVersion
+        ? ec2.OperatingSystemType.WINDOWS
+        : ec2.OperatingSystemType.LINUX;
+
     return {
       imageId: ami,
       osType,
