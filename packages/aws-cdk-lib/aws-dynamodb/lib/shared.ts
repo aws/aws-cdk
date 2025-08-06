@@ -199,6 +199,23 @@ export enum TableClass {
 }
 
 /**
+ * Global table multi-region consistency mode.
+ *
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_HowItWorks.html#V2globaltables_HowItWorks.consistency-modes-mrsc
+ */
+export enum MultiRegionConsistency {
+  /**
+   * Default consistency mode for Global Tables.
+   * Multi-region eventual consistency.
+   */
+  EVENTUAL = 'EVENTUAL',
+  /**
+   * Multi-region strong consistency.
+   */
+  STRONG = 'STRONG',
+}
+
+/**
  * What kind of server-side encryption to apply to this table.
  */
 export enum TableEncryption {
