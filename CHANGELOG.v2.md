@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.209.1](https://github.com/aws/aws-cdk/compare/v2.209.0...v2.209.1) (2025-08-06)
+
+
+### Bug Fixes
+
+* **eks:** fix helm commands not running ecr public login ([#35161](https://github.com/aws/aws-cdk/issues/35161)) ([d860ee8](https://github.com/aws/aws-cdk/commit/d860ee8835e112b675f26fda78a601b066e09f5f))
+
 ## [2.209.0](https://github.com/aws/aws-cdk/compare/v2.208.0...v2.209.0) (2025-08-05)
 
 
