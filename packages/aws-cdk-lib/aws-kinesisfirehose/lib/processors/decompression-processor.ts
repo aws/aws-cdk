@@ -8,15 +8,19 @@ export class DecompressionProcessorCompressionFormat {
   /**
    * GZIP compression
    */
-  static readonly GZIP = new DecompressionProcessorCompressionFormat('GZIP');
+  static readonly GZIP = DecompressionProcessorCompressionFormat.of('GZIP');
+
   /**
-   * Custom compression format
+   * A custom compression format
    */
-  public static of(value: string) {
-    return new DecompressionProcessorCompressionFormat(value);
+  public static of(compressionFormat: string) {
+    return new DecompressionProcessorCompressionFormat(compressionFormat);
   }
 
-  private constructor(readonly value: string) {}
+  /**
+   * @param compressionFormat The compression format string
+   */
+  private constructor(public readonly compressionFormat: string) {}
 }
 
 /**
@@ -45,7 +49,7 @@ export class DecompressionProcessor implements IDataProcessor {
       processorType: 'Decompression',
       processorIdentifier: { parameterName: '', parameterValue: '' }, // Dummy value for backward compatibility
       parameters: [
-        { parameterName: 'CompressionFormat', parameterValue: this.options.compressionFormat?.value ?? 'GZIP' },
+        { parameterName: 'CompressionFormat', parameterValue: this.options.compressionFormat?.compressionFormat ?? 'GZIP' },
       ],
       useDirectParameters: true,
     };
