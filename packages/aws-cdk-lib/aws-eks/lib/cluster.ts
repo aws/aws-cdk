@@ -7,6 +7,7 @@ import { IAddon, Addon } from './addon';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
+import { ICfnCluster } from './eks.generated';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { INSTANCE_TYPES } from './instance-types';
@@ -37,7 +38,7 @@ const DEFAULT_CAPACITY_TYPE = ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.Inst
 /**
  * An EKS cluster
  */
-export interface ICluster extends IResource, ec2.IConnectable {
+export interface ICluster extends IResource, ec2.IConnectable, ICfnCluster {
   /**
    * The VPC in which this Cluster was created
    */
@@ -1117,6 +1118,8 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly vpc: ec2.IVpc;
   public abstract readonly clusterName: string;
   public abstract readonly clusterArn: string;
+  public abstract readonly attrName: string;
+  public abstract readonly attrArn: string;
   public abstract readonly clusterEndpoint: string;
   public abstract readonly clusterCertificateAuthorityData: string;
   public abstract readonly clusterSecurityGroupId: string;
@@ -1392,6 +1395,18 @@ export class Cluster extends ClusterBase {
    * For example, `arn:aws:eks:us-west-2:666666666666:cluster/prod`
    */
   public readonly clusterArn: string;
+
+  /**
+   * The Name of the created EKS Cluster
+   */
+  public readonly attrName: string;
+
+  /**
+   * The AWS generated ARN for the Cluster resource
+   *
+   * For example, `arn:aws:eks:us-west-2:666666666666:cluster/prod`
+   */
+  public readonly attrArn: string;
 
   /**
    * The endpoint URL for the Cluster
@@ -1807,6 +1822,8 @@ export class Cluster extends ClusterBase {
 
     this.clusterName = this.getResourceNameAttribute(resource.ref);
     this.clusterArn = this.getResourceArnAttribute(resource.attrArn, clusterArnComponents(this.physicalName));
+    this.attrName = this.clusterName;
+    this.attrArn = this.clusterArn;
 
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
@@ -2552,6 +2569,8 @@ class ImportedCluster extends ClusterBase {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.ImportedCluster';
   public readonly clusterName: string;
   public readonly clusterArn: string;
+  public readonly attrName: string;
+  public readonly attrArn: string;
   public readonly connections = new ec2.Connections();
   public readonly kubectlRole?: iam.IRole;
   public readonly kubectlLambdaRole?: iam.IRole;
@@ -2577,7 +2596,9 @@ class ImportedCluster extends ClusterBase {
     addConstructMetadata(this, props);
 
     this.clusterName = props.clusterName;
+    this.attrName = this.clusterName;
     this.clusterArn = this.stack.formatArn(clusterArnComponents(props.clusterName));
+    this.attrArn = this.clusterArn;
     this.kubectlRole = props.kubectlRoleArn ? iam.Role.fromRoleArn(this, 'KubectlRole', props.kubectlRoleArn) : undefined;
     this.kubectlLambdaRole = props.kubectlLambdaRole;
     this.kubectlSecurityGroup = props.kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId) : undefined;
