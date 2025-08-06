@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Archive, BaseArchiveProps } from './archive';
-import { CfnEventBus, CfnEventBusPolicy } from './events.generated';
+import { CfnEventBus, CfnEventBusPolicy, ICfnEventBus } from './events.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
@@ -12,7 +12,7 @@ import * as cxapi from '../../cx-api';
 /**
  * Interface which all EventBus based classes MUST implement
  */
-export interface IEventBus extends IResource {
+export interface IEventBus extends IResource, ICfnEventBus {
   /**
    * The physical ID of this event bus resource
    *
@@ -159,6 +159,17 @@ abstract class EventBusBase extends Resource implements IEventBus, iam.IResource
    * arn:aws:events:us-east-2:123456789012:event-bus/aws.partner/PartnerName/acct1/repo1.
    */
   public abstract readonly eventBusArn: string;
+
+  /**
+   * The physical ID of this event bus resource
+   */
+  public abstract readonly attrName: string;
+
+  /**
+   * The ARN of the event bus, such as:
+   * arn:aws:events:us-east-2:123456789012:event-bus/aws.partner/PartnerName/acct1/repo1.
+   */
+  public abstract readonly attrArn: string;
 
   /**
    * The policy for the event bus in JSON form.
@@ -374,6 +385,17 @@ export class EventBus extends EventBusBase {
   public readonly eventBusArn: string;
 
   /**
+   * The physical ID of this event bus resource
+   */
+  public readonly attrName: string;
+
+  /**
+   * The ARN of the event bus, such as:
+   * arn:aws:events:us-east-2:123456789012:event-bus/aws.partner/PartnerName/acct1/repo1.
+   */
+  public readonly attrArn: string;
+
+  /**
    * The policy for the event bus in JSON form.
    */
   public readonly eventBusPolicy: string;
@@ -406,6 +428,8 @@ export class EventBus extends EventBusBase {
       description: props?.description,
       kmsKeyIdentifier: props?.kmsKey?.keyArn,
     });
+    this.attrName = eventBus.attrName;
+    this.attrArn = eventBus.attrArn;
 
     this.eventBusArn = this.getResourceArnAttribute(eventBus.attrArn, {
       service: 'events',
@@ -475,6 +499,8 @@ class ImportedEventBus extends EventBusBase {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.ImportedEventBus';
   public readonly eventBusArn: string;
   public readonly eventBusName: string;
+  public readonly attrArn: string;
+  public readonly attrName: string;
   public readonly eventBusPolicy: string;
   public readonly eventSourceName?: string;
 
@@ -489,6 +515,8 @@ class ImportedEventBus extends EventBusBase {
 
     this.eventBusArn = attrs.eventBusArn;
     this.eventBusName = attrs.eventBusName;
+    this.attrArn = this.eventBusArn;
+    this.attrName = this.eventBusName;
     this.eventBusPolicy = attrs.eventBusPolicy;
     this.eventSourceName = attrs.eventSourceName;
   }

@@ -86,6 +86,7 @@ export class Rule extends Resource implements IRule {
 
     class Import extends Resource implements IRule {
       public ruleArn = eventRuleArn;
+      public attrArn = eventRuleArn;
       public ruleName = parts.resourceName || '';
     }
     return new Import(scope, id, {
@@ -94,6 +95,7 @@ export class Rule extends Resource implements IRule {
   }
 
   public readonly ruleArn: string;
+  public readonly attrArn: string;
   public readonly ruleName: string;
 
   private readonly targets = new Array<CfnRule.TargetProperty>();
@@ -137,6 +139,7 @@ export class Rule extends Resource implements IRule {
       resource: 'rule',
       resourceName: this.physicalName,
     });
+    this.attrArn = this.ruleArn;
     this.ruleName = this.getResourceNameAttribute(resource.ref);
 
     this.addEventPattern(props.eventPattern);

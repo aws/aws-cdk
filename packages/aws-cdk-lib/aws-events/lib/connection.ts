@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnConnection } from './events.generated';
+import { CfnConnection, ICfnConnection } from './events.generated';
 import { IResource, Resource, Stack, SecretValue, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -249,7 +249,7 @@ export interface AuthorizationBindResult {
 /**
  * Interface for EventBus Connections
  */
-export interface IConnection extends IResource {
+export interface IConnection extends IResource, ICfnConnection {
   /**
    * The Name for the connection.
    * @attribute
@@ -338,6 +338,18 @@ export class Connection extends Resource implements IConnection {
   public readonly connectionArn: string;
 
   /**
+   * The Name for the connection.
+   * @attribute
+   */
+  public readonly attrName: string;
+
+  /**
+   * The ARN of the connection created.
+   * @attribute
+   */
+  public readonly attrArn: string;
+
+  /**
    * The ARN for the secret created for the connection.
    * @attribute
    */
@@ -370,17 +382,22 @@ export class Connection extends Resource implements IConnection {
 
     this.connectionName = this.getResourceNameAttribute(connection.ref);
     this.connectionArn = connection.attrArn;
+    this.attrName = this.connectionName;
+    this.attrArn = this.connectionArn;
     this.connectionSecretArn = connection.attrSecretArn;
   }
 }
 
 @propertyInjectable
-class ImportedConnection extends Resource {
+class ImportedConnection extends Resource implements ICfnConnection {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.ImportedConnection';
   public readonly connectionArn: string;
   public readonly connectionName: string;
   public readonly connectionSecretArn: string;
+  public readonly attrArn: string;
+  public readonly attrName: string;
+
   constructor(scope: Construct, id: string, attrs: ConnectionAttributes) {
     const arnParts = Stack.of(scope).parseArn(attrs.connectionArn);
     super(scope, id, {
@@ -392,6 +409,8 @@ class ImportedConnection extends Resource {
 
     this.connectionArn = attrs.connectionArn;
     this.connectionName = attrs.connectionName;
+    this.attrName = this.connectionName;
+    this.attrArn = this.connectionArn;
     this.connectionSecretArn = attrs.connectionSecretArn;
   }
 }
