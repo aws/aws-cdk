@@ -1,3 +1,4 @@
+import { ICfnDBCluster } from './docdb.generated';
 import { Endpoint } from './endpoint';
 import { IConnectable, ISecurityGroup } from '../../aws-ec2';
 import { ISecretAttachmentTarget } from '../../aws-secretsmanager';
@@ -6,7 +7,7 @@ import { IResource } from '../../core';
 /**
  * Create a clustered database with a given number of instances.
  */
-export interface IDatabaseCluster extends IResource, IConnectable, ISecretAttachmentTarget {
+export interface IDatabaseCluster extends IResource, IConnectable, ISecretAttachmentTarget, ICfnDBCluster {
   /**
    * Identifier of the cluster
    */

@@ -307,6 +307,11 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
   public abstract readonly securityGroupId: string;
 
   /**
+   * Identifier of the cluster
+   */
+  public abstract readonly attrId: string;
+
+  /**
    * Renders the secret attachment target specifications.
    */
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
@@ -351,6 +356,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
         defaultPort: this.defaultPort,
       });
       public readonly clusterIdentifier = attrs.clusterIdentifier;
+      public readonly attrId = attrs.clusterIdentifier;
       private readonly _instanceIdentifiers = attrs.instanceIdentifiers;
       private readonly _clusterEndpoint = attrs.clusterEndpointAddress && typeof attrs.port !== 'undefined' ?
         new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
@@ -455,6 +461,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * The secret attached to this cluster
    */
   public readonly secret?: secretsmanager.ISecret;
+
+  /**
+   * Identifier of the cluster
+   */
+  public readonly attrId: string;
 
   /**
    * The underlying CloudFormation resource for a database cluster.
@@ -581,6 +592,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       storageType: props.storageType,
     });
 
+    this.attrId = this.cluster.attrId;
     this.cluster.applyRemovalPolicy(props.removalPolicy, {
       applyToUpdateReplacePolicy: true,
     });
