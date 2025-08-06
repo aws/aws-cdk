@@ -1,10 +1,10 @@
 import * as net from 'net';
 import { Construct } from 'constructs';
 import {
-  CfnCustomerGateway,
-  CfnVPNConnection,
-  CfnVPNConnectionRoute,
-  CfnVPNGateway, ICfnVPNConnection,
+    CfnCustomerGateway,
+    CfnVPNConnection,
+    CfnVPNConnectionRoute,
+    CfnVPNGateway, ICfnVPNConnection, ICfnVPNGateway,
 } from './ec2.generated';
 import { IVpc, SubnetSelection } from './vpc';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -38,7 +38,7 @@ export interface IVpnConnection extends IResource, ICfnVPNConnection {
 /**
  * The virtual private gateway interface
  */
-export interface IVpnGateway extends IResource {
+export interface IVpnGateway extends IResource, ICfnVPNGateway {
 
   /**
    * The virtual private gateway Id
@@ -172,6 +172,11 @@ export class VpnGateway extends Resource implements IVpnGateway {
    */
   public readonly gatewayId: string;
 
+  /**
+   * The virtual private gateway Id
+   */
+  public readonly attrVpnGatewayId: string;
+
   constructor(scope: Construct, id: string, props: VpnGatewayProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
@@ -182,6 +187,7 @@ export class VpnGateway extends Resource implements IVpnGateway {
     // to be created for the CfnVPNGateway (and 'Resource' would not do that).
     const vpnGW = new CfnVPNGateway(this, 'Default', props);
     this.gatewayId = vpnGW.ref;
+    this.attrVpnGatewayId = vpnGW.ref;
   }
 }
 
