@@ -531,7 +531,7 @@ export class DatabaseProxy extends DatabaseProxyBase
 
     const proxyTargetGroup = new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
       targetGroupName: 'default',
-      dbProxyName: this.dbProxyName,
+      dbProxyName: this.resource.ref,
       dbInstanceIdentifiers,
       dbClusterIdentifiers,
       connectionPoolConfigurationInfo: toConnectionPoolConfigurationInfo(props),
