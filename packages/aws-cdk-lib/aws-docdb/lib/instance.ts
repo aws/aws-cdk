@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IDatabaseCluster } from './cluster-ref';
-import { CfnDBInstance } from './docdb.generated';
+import { CfnDBInstance, ICfnDBInstance } from './docdb.generated';
 import { Endpoint } from './endpoint';
 import * as ec2 from '../../aws-ec2';
 import { CaCertificate } from '../../aws-rds';
@@ -12,7 +12,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A database instance
  */
-export interface IDatabaseInstance extends cdk.IResource {
+export interface IDatabaseInstance extends cdk.IResource, ICfnDBInstance {
   /**
    * The instance identifier.
    */
@@ -77,6 +77,7 @@ abstract class DatabaseInstanceBase extends cdk.Resource implements IDatabaseIns
       public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
       public readonly dbInstanceEndpointPort = attrs.port.toString();
       public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
+      public readonly attrId = attrs.instanceIdentifier;
     }
 
     return new Import(scope, id);
@@ -98,6 +99,10 @@ abstract class DatabaseInstanceBase extends cdk.Resource implements IDatabaseIns
    * @inheritdoc
    */
   public abstract readonly instanceEndpoint: Endpoint;
+  /**
+   * @inheritdoc
+   */
+  public abstract readonly attrId: string;
 
   /**
    * The instance arn.
@@ -222,6 +227,11 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
    */
   public readonly instanceEndpoint: Endpoint;
 
+  /**
+   * @inheritdoc
+   */
+  public readonly attrId: string;
+
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
@@ -238,6 +248,7 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
       enablePerformanceInsights: props.enablePerformanceInsights,
     });
 
+    this.attrId = instance.attrId;
     this.cluster = props.cluster;
     this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpoint;
