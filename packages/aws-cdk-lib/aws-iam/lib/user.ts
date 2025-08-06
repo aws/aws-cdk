@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IGroup } from './group';
-import { CfnUser, CfnUserToGroupAddition } from './iam.generated';
+import { CfnUser, CfnUserToGroupAddition, ICfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
@@ -16,7 +16,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  *
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html
  */
-export interface IUser extends IIdentity {
+export interface IUser extends IIdentity, ICfnUser {
   /**
    * The user's name
    * @attribute
@@ -194,6 +194,8 @@ export class User extends Resource implements IIdentity, IUser {
       // they don't have a '/' in them.
       public readonly userName: string = Arn.extractResourceName(attrs.userArn, 'user').split('/').pop()!;
       public readonly userArn: string = attrs.userArn;
+      public readonly attrUserName: string = this.userName;
+      public readonly attrArn: string = this.userArn;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
       public readonly policyFragment: PrincipalPolicyFragment = new ArnPrincipal(attrs.userArn).policyFragment;
       private readonly attachedPolicies = new AttachedPolicies();
@@ -251,6 +253,18 @@ export class User extends Resource implements IIdentity, IUser {
   public readonly userArn: string;
 
   /**
+   * An attribute that represents the user name.
+   * @attribute
+   */
+  public readonly attrUserName: string;
+
+  /**
+   * An attribute that represents the user's ARN.
+   * @attribute
+   */
+  public readonly attrArn: string;
+
+  /**
    * Returns the permissions boundary attached  to this user
    */
   public readonly permissionsBoundary?: IManagedPolicy;
@@ -290,6 +304,8 @@ export class User extends Resource implements IIdentity, IUser {
       resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
     });
 
+    this.attrArn = this.userArn;
+    this.attrUserName = this.userName;
     this.policyFragment = new ArnPrincipal(this.userArn).policyFragment;
 
     if (props.groups) {

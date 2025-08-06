@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnInstanceProfile } from './iam.generated';
+import { CfnInstanceProfile, ICfnInstanceProfile } from './iam.generated';
 import { ServicePrincipal } from './principals';
 import { IRole, Role } from './role';
 import { Resource, Arn, Stack, IResource, PhysicalName } from '../../core';
@@ -9,7 +9,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents an IAM Instance Profile
  */
-export interface IInstanceProfile extends IResource {
+export interface IInstanceProfile extends IResource, ICfnInstanceProfile {
   /**
    * The InstanceProfile's name.
    * @attribute
@@ -86,6 +86,8 @@ export interface InstanceProfileAttributes {
 abstract class InstanceProfileBase extends Resource implements IInstanceProfile {
   public abstract readonly instanceProfileName: string;
   public abstract readonly instanceProfileArn: string;
+  public abstract readonly attrInstanceProfileName: string;
+  public abstract readonly attrArn: string;
 
   /**
    * The role associated with the InstanceProfile.
@@ -154,6 +156,8 @@ export class InstanceProfile extends InstanceProfileBase {
     class Import extends InstanceProfileBase {
       public readonly instanceProfileName: string = Arn.extractResourceName(attrs.instanceProfileArn, 'instance-profile').split('/').pop()!;
       public readonly instanceProfileArn: string = attrs.instanceProfileArn;
+      public readonly attrInstanceProfileName = this.instanceProfileName;
+      public readonly attrArn: string = this.instanceProfileArn;
 
       constructor(s: Construct, i: string) {
         super(s, i);
@@ -172,6 +176,16 @@ export class InstanceProfile extends InstanceProfileBase {
    * Returns the ARN of this InstanceProfile.
    */
   public readonly instanceProfileArn: string;
+
+  /**
+   * Returns the name of this InstanceProfile.
+   */
+  public readonly attrInstanceProfileName: string;
+
+  /**
+   * Returns the ARN of this InstanceProfile.
+   */
+  public readonly attrArn: string;
 
   constructor(scope: Construct, id: string, props: InstanceProfileProps = {}) {
     super(scope, id, { physicalName: props.instanceProfileName });
@@ -196,5 +210,7 @@ export class InstanceProfile extends InstanceProfileBase {
       resource: 'instance-profile',
       resourceName: `${props.path ? props.path.substring(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
     });
+    this.attrInstanceProfileName = this.instanceProfileName;
+    this.attrArn = this.instanceProfileArn;
   }
 }

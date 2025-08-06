@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnGroup } from './iam.generated';
+import { CfnGroup, ICfnGroup } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
@@ -16,7 +16,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  *
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html
  */
-export interface IGroup extends IIdentity {
+export interface IGroup extends IIdentity, ICfnGroup {
   /**
    * Returns the IAM Group Name
    *
@@ -73,6 +73,8 @@ export interface GroupProps {
 abstract class GroupBase extends Resource implements IGroup {
   public abstract readonly groupName: string;
   public abstract readonly groupArn: string;
+  public abstract readonly attrGroupName: string;
+  public abstract readonly attrArn: string;
 
   public readonly grantPrincipal: IPrincipal = this;
   public readonly principalAccount: string | undefined = this.env.account;
@@ -156,6 +158,8 @@ export class Group extends GroupBase {
     class Import extends GroupBase {
       public groupName = groupName;
       public groupArn = groupArn;
+      public attrGroupName = groupName;
+      public attrArn = groupArn;
       public principalAccount = arnComponents.account;
     }
 
@@ -182,6 +186,8 @@ export class Group extends GroupBase {
 
   public readonly groupName: string;
   public readonly groupArn: string;
+  public readonly attrGroupName: string;
+  public readonly attrArn: string;
 
   private readonly managedPolicies: IManagedPolicy[] = [];
 
@@ -208,6 +214,8 @@ export class Group extends GroupBase {
       // Removes leading slash from path
       resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
     });
+    this.attrGroupName = this.groupName;
+    this.attrArn = this.groupArn;
 
     this.managedPoliciesExceededWarning();
   }

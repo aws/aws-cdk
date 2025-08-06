@@ -67,6 +67,8 @@ export class PrecreatedRole extends Resource implements IRole {
   public readonly principalAccount?: string;
   public readonly roleArn: string;
   public readonly roleName: string;
+  public readonly attrArn: string;
+  public readonly attrRoleName: string;
   public readonly stack: Stack;
 
   private readonly policySynthesizer: PolicySynthesizer;
@@ -87,6 +89,8 @@ export class PrecreatedRole extends Resource implements IRole {
     this.principalAccount = this.role.principalAccount;
     this.roleArn = this.role.roleArn;
     this.roleName = this.role.roleName;
+    this.attrArn = this.roleArn;
+    this.attrRoleName = this.roleName;
     this.stack = this.role.stack;
     const rolePath = props.rolePath ?? this.node.path;
 
