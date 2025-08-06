@@ -441,7 +441,7 @@ in the *Amazon Data Firehose Developer Guide*.
 
 ### Add a new line delimiter when delivering data to Amazon S3
 
-You can specify `AppendDelimiterToRecordProcessor` built-in processot to add a new line delimiter between records in objects that are delivered to Amazon S3. This can be helpful for parsing objects in Amazon S3.
+You can specify the `AppendDelimiterToRecordProcessor` built-in processor to add a new line delimiter between records in objects that are delivered to Amazon S3. This can be helpful for parsing objects in Amazon S3.
 For details, see [Use Amazon S3 bucket prefix to deliver data](https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-s3bucketprefix.html).
 
 ```ts
