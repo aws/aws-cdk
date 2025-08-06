@@ -7,7 +7,7 @@ import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { FunctionUrlAuthType, FunctionUrlOptions, FunctionUrl } from './function-url';
 import { IVersion } from './lambda-version';
-import { CfnPermission } from './lambda.generated';
+import { CfnPermission, ICfnFunction } from './lambda.generated';
 import { Permission } from './permission';
 import { addAlias, flatMap } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -18,7 +18,7 @@ import { ValidationError } from '../../core/lib/errors';
 import { MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
-export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
+export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable, ICfnFunction {
 
   /**
    * The name of the function.
@@ -253,9 +253,19 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   public abstract readonly functionName: string;
 
   /**
+   * The name of the function.
+   */
+  public abstract readonly attrFunctionName: string;
+
+  /**
    * The ARN fo the function.
    */
   public abstract readonly functionArn: string;
+
+  /**
+   * The ARN fo the function.
+   */
+  public abstract readonly attrArn: string;
 
   /**
    * The IAM role associated with this function.
@@ -863,6 +873,14 @@ class LatestVersion extends FunctionBase implements IVersion {
 
   public get functionName() {
     return `${this.lambda.functionName}:${this.version}`;
+  }
+
+  public get attrArn() {
+    return this.functionArn;
+  }
+
+  public get attrFunctionName() {
+    return this.functionName;
   }
 
   public get architecture() {

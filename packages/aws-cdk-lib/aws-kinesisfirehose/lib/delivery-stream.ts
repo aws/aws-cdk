@@ -2,7 +2,7 @@ import { Construct, Node } from 'constructs';
 import { IDestination } from './destination';
 import { StreamEncryption } from './encryption';
 import { FirehoseMetrics } from './kinesisfirehose-canned-metrics.generated';
-import { CfnDeliveryStream } from './kinesisfirehose.generated';
+import { CfnDeliveryStream, ICfnDeliveryStream } from './kinesisfirehose.generated';
 import { ISource } from './source';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -21,7 +21,7 @@ const PUT_RECORD_ACTIONS = [
 /**
  * Represents an Amazon Data Firehose delivery stream.
  */
-export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable {
+export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable, ICfnDeliveryStream {
   /**
    * The ARN of the delivery stream.
    *
@@ -96,6 +96,10 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
   public abstract readonly deliveryStreamName: string;
 
   public abstract readonly deliveryStreamArn: string;
+
+  public abstract readonly attrDeliveryStreamName: string;
+
+  public abstract readonly attrArn: string;
 
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
@@ -299,6 +303,8 @@ export class DeliveryStream extends DeliveryStreamBase {
     class Import extends DeliveryStreamBase {
       public readonly deliveryStreamName = deliveryStreamName!;
       public readonly deliveryStreamArn = deliveryStreamArn;
+      public readonly attrDeliveryStreamName = deliveryStreamName!;
+      public readonly attrArn = deliveryStreamArn;
       public readonly grantPrincipal = attrs.role ?? new iam.UnknownPrincipal({ resource: this });
     }
     return new Import(scope, id);
@@ -307,6 +313,10 @@ export class DeliveryStream extends DeliveryStreamBase {
   readonly deliveryStreamName: string;
 
   readonly deliveryStreamArn: string;
+
+  readonly attrDeliveryStreamName: string;
+
+  readonly attrArn: string;
 
   private _role?: iam.IRole;
 
@@ -386,6 +396,8 @@ export class DeliveryStream extends DeliveryStreamBase {
       resourceName: this.physicalName,
     });
     this.deliveryStreamName = this.getResourceNameAttribute(resource.ref);
+    this.attrDeliveryStreamName = this.deliveryStreamName;
+    this.attrArn = this.deliveryStreamArn;
   }
 }
 

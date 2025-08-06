@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
-import { CfnEventSourceMapping } from './lambda.generated';
+import { CfnEventSourceMapping, ICfnEventSourceMapping } from './lambda.generated';
 import { ISchemaRegistry } from './schema-registry';
 import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
@@ -352,7 +352,7 @@ export interface EventSourceMappingProps extends EventSourceMappingOptions {
  * Represents an event source mapping for a lambda function.
  * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventsourcemapping.html
  */
-export interface IEventSourceMapping extends cdk.IResource {
+export interface IEventSourceMapping extends cdk.IResource, ICfnEventSourceMapping {
   /**
    * The identifier for this EventSourceMapping
    * @attribute
@@ -401,6 +401,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     class Import extends cdk.Resource implements IEventSourceMapping {
       public readonly eventSourceMappingId = eventSourceMappingId;
       public readonly eventSourceMappingArn = eventSourceMappingArn;
+      public readonly attrId = eventSourceMappingId;
+      public readonly attrEventSourceMappingArn = eventSourceMappingArn;
     }
     return new Import(scope, id);
   }
@@ -416,6 +418,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
   public readonly eventSourceMappingId: string;
   public readonly eventSourceMappingArn: string;
+  public readonly attrId: string;
+  public readonly attrEventSourceMappingArn: string;
 
   constructor(scope: Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
@@ -568,6 +572,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
     this.eventSourceMappingArn = EventSourceMapping.formatArn(this, this.eventSourceMappingId);
+    this.attrId = this.eventSourceMappingId;
+    this.attrEventSourceMappingArn = this.eventSourceMappingArn;
   }
 
   private validateKafkaConsumerGroupIdOrThrow(kafkaConsumerGroupId: string) {

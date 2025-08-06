@@ -137,6 +137,8 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly lambda = lambda;
       public readonly functionName = `${lambda.functionName}:${version}`;
       public readonly functionArn = versionArn;
+      public readonly attrFunctionName = this.functionName;
+      public readonly attrArn = this.functionArn;
       public readonly grantPrincipal = lambda.grantPrincipal;
       public readonly role = lambda.role;
       public readonly architecture = lambda.architecture;
@@ -164,6 +166,8 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly lambda = attrs.lambda;
       public readonly functionName = `${attrs.lambda.functionName}:${attrs.version}`;
       public readonly functionArn = `${attrs.lambda.functionArn}:${attrs.version}`;
+      public readonly attrFunctionName = this.functionName;
+      public readonly attrArn = this.functionArn;
       public readonly grantPrincipal = attrs.lambda.grantPrincipal;
       public readonly role = attrs.lambda.role;
       public readonly architecture = attrs.lambda.architecture;
@@ -189,6 +193,8 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public readonly lambda: IFunction;
   public readonly functionArn: string;
   public readonly functionName: string;
+  public readonly attrArn: string;
+  public readonly attrFunctionName: string;
   public readonly architecture: Architecture;
 
   protected readonly qualifier: string;
@@ -220,6 +226,8 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     this.functionArn = version.ref;
     this.functionName = `${this.lambda.functionName}:${this.version}`;
     this.qualifier = version.attrVersion;
+    this.attrArn = version.attrFunctionArn;
+    this.attrFunctionName = this.functionName;
 
     if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
       this.configureAsyncInvoke({

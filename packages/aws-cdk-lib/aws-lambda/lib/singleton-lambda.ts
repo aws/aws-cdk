@@ -54,6 +54,8 @@ export class SingletonFunction extends FunctionBase {
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly functionName: string;
   public readonly functionArn: string;
+  public readonly attrFunctionName: string;
+  public readonly attrArn: string;
   public readonly role?: iam.IRole;
   public readonly permissionsNode: Node;
   public readonly architecture: Architecture;
@@ -83,6 +85,8 @@ export class SingletonFunction extends FunctionBase {
 
     this.functionArn = this.lambdaFunction.functionArn;
     this.functionName = this.lambdaFunction.functionName;
+    this.attrFunctionName = this.functionName;
+    this.attrArn = this.functionArn;
     this.role = this.lambdaFunction.role;
     this.runtime = this.lambdaFunction.runtime;
     this.grantPrincipal = this.lambdaFunction.grantPrincipal;

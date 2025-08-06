@@ -3,7 +3,7 @@ import { Architecture } from './architecture';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { extractQualifierFromArn, IVersion } from './lambda-version';
-import { CfnAlias } from './lambda.generated';
+import { CfnAlias, ICfnAlias } from './lambda.generated';
 import { ScalableFunctionAttribute } from './private/scalable-function-attribute';
 import { AutoScalingOptions, IScalableFunctionAttribute } from './scalable-attribute-api';
 import * as appscaling from '../../aws-applicationautoscaling';
@@ -14,7 +14,7 @@ import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface IAlias extends IFunction {
+export interface IAlias extends IFunction, ICfnAlias {
   /**
    * Name of this alias.
    *
@@ -102,7 +102,10 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       public readonly version = attrs.aliasVersion;
       public readonly lambda = attrs.aliasVersion.lambda;
       public readonly functionArn = `${attrs.aliasVersion.lambda.functionArn}:${attrs.aliasName}`;
+      public readonly attrAliasArn = this.functionArn;
+      public readonly attrArn = this.functionArn;
       public readonly functionName = `${attrs.aliasVersion.lambda.functionName}:${attrs.aliasName}`;
+      public readonly attrFunctionName = this.functionName;
       public readonly grantPrincipal = attrs.aliasVersion.grantPrincipal;
       public readonly role = attrs.aliasVersion.role;
       public readonly architecture = attrs.aliasVersion.lambda.architecture;
@@ -140,6 +143,12 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    * ARNs everywhere it accepts function names.
    */
   public readonly functionArn: string;
+
+  public readonly attrAliasArn: string;
+
+  public readonly attrArn: string;
+
+  public readonly attrFunctionName: string;
 
   protected readonly qualifier: string;
 
@@ -185,6 +194,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
+    this.attrAliasArn = alias.attrAliasArn;
+    this.attrArn = this.functionArn;
     this.qualifier = extractQualifierFromArn(alias.ref);
 
     if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
@@ -200,6 +211,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     // And we're parsing it out (instead of using the underlying function directly) in order to have use of it incur
     // an implicit dependency on the resource.
     this.functionName = `${this.stack.splitArn(this.functionArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!}:${this.aliasName}`;
+
+    this.attrFunctionName = this.functionName;
   }
 
   public get grantPrincipal() {
