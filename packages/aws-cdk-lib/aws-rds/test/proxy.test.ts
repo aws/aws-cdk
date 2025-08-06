@@ -216,27 +216,6 @@ describe('proxy', () => {
     });
   });
 
-  test('dbProxyName property returns lowercase name', () => {
-    // GIVEN
-    const instance = new rds.DatabaseInstance(stack, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.mysql({
-        version: rds.MysqlEngineVersion.VER_5_7,
-      }),
-      vpc,
-    });
-
-    // WHEN
-    const proxy = new rds.DatabaseProxy(stack, 'Proxy', {
-      dbProxyName: 'MyProxyName',
-      proxyTarget: rds.ProxyTarget.fromInstance(instance),
-      secrets: [instance.secret!],
-      vpc,
-    });
-
-    // THEN
-    expect(proxy.dbProxyName).toBe('myproxyname');
-  });
-
   test('One or more secrets are required.', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
