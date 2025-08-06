@@ -24728,6 +24728,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24824,6 +24826,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24920,6 +24924,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -25057,6 +25063,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'RayJob': {
       'runtime': 'Runtime',
       'jobRunQueuingEnabled': 'boolean',
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -25153,6 +25161,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -25249,6 +25259,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -25345,6 +25357,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -27931,9 +27945,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
-      'deploymentStrategy': 'DeploymentStrategy',
-      'bakeTime': '*',
-      'lifecycleHooks': '*',
       'addPlacementStrategies': [
         '*'
       ],
@@ -28186,9 +28197,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
-      'deploymentStrategy': 'DeploymentStrategy',
-      'bakeTime': '*',
-      'lifecycleHooks': '*',
       'attachToApplicationTargetGroup': [
         {
           'metrics': '*',
@@ -28204,8 +28212,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'containerName': '*',
           'containerPort': '*',
           'protocol': 'Protocol'
-        },
-        '*'
+        }
       ],
       'registerLoadBalancerTargets': [
         {
@@ -28550,9 +28557,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
-      'deploymentStrategy': 'DeploymentStrategy',
-      'bakeTime': '*',
-      'lifecycleHooks': '*',
       'attachToClassicLB': [
         '*'
       ]

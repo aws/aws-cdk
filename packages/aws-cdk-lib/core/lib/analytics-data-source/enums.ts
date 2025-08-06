@@ -994,19 +994,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "CODE_DEPLOY",
     "EXTERNAL"
   ],
-  "DeploymentLifecycleStage": [
-    "RECONCILE_SERVICE",
-    "PRE_SCALE_UP",
-    "POST_SCALE_UP",
-    "TEST_TRAFFIC_SHIFT",
-    "POST_TEST_TRAFFIC_SHIFT",
-    "PRODUCTION_TRAFFIC_SHIFT",
-    "POST_PRODUCTION_TRAFFIC_SHIFT"
-  ],
-  "DeploymentStrategy": [
-    "ROLLING",
-    "BLUE_GREEN"
-  ],
   "DesiredState": [
     "RUNNING",
     "STOPPED"
@@ -2138,7 +2125,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "HMAC_256",
     "HMAC_384",
     "HMAC_512",
-    "SM2"
+    "SM2",
+    "ML_DSA_44",
+    "ML_DSA_65",
+    "ML_DSA_87"
   ],
   "KeyUsage": [
     "ENCRYPT_DECRYPT",
