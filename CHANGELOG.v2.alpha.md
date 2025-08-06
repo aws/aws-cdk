@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.210.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.209.1-alpha.0...v2.210.0-alpha.0) (2025-08-06)
+
+
+### Features
+
+* **aws-glue-alpha:** add optional metrics control for cost optimization ([2675a1f](https://github.com/aws/aws-cdk/commit/2675a1feafa26149c889899d17add5392ff56bc3))
+* **glue-alpha:** add optional metrics control for cost optimization ([#35154](https://github.com/aws/aws-cdk/issues/35154)) ([6e24133](https://github.com/aws/aws-cdk/commit/6e24133d26dc2cde2cbefa8736495bfc423c5e56)), closes [#35149](https://github.com/aws/aws-cdk/issues/35149)
+
+
+### Bug Fixes
+
+* **aws-glue-alpha:** address PR review feedback for metrics control ([a8c16df](https://github.com/aws/aws-cdk/commit/a8c16dfcd93979e71879cb011a61a857b8ded378)), closes [#35154](https://github.com/aws/aws-cdk/issues/35154)
+* **eks-v2-alpha:** fix helm commands not running ecr public login ([#35162](https://github.com/aws/aws-cdk/issues/35162)) ([12ad98e](https://github.com/aws/aws-cdk/commit/12ad98ea0419a62f2e16d6b635c41b6099411773))
+
 ## [2.209.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.209.0-alpha.0...v2.209.1-alpha.0) (2025-08-06)
 
 
