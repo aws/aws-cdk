@@ -254,6 +254,9 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-opus-4-20250514-v1:0" */
   public static readonly ANTHROPIC_CLAUDE_OPUS_4_20250514_V1_0 = new FoundationModelIdentifier('anthropic.claude-opus-4-20250514-v1:0');
 
+  /** Base model "anthropic.claude-opus-4-1-20250805-v1:0". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0 = new FoundationModelIdentifier('anthropic.claude-opus-4-1-20250805-v1:0');
+
   /**
    * Base model "anthropic.claude-instant-v1".
    * @deprecated use latest version of the model
