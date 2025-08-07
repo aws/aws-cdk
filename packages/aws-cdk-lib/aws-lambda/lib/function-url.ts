@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IAlias } from './alias';
 import { IFunction } from './function-base';
 import { IVersion } from './lambda-version';
-import { CfnUrl } from './lambda.generated';
+import { CfnUrl, ICfnUrl } from './lambda.generated';
 import * as iam from '../../aws-iam';
 import { Duration, IResource, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -131,7 +131,7 @@ export interface FunctionUrlCorsOptions {
 /**
  * A Lambda function Url
  */
-export interface IFunctionUrl extends IResource {
+export interface IFunctionUrl extends IResource, ICfnUrl {
   /**
    * The url of the Lambda function.
    *
@@ -219,6 +219,11 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
   public readonly functionArn: string;
 
   /**
+   * The ARN of the function this URL refers to
+   */
+  public readonly attrFunctionArn: string;
+
+  /**
    * The authentication type used for this Function URL
    */
   public readonly authType: FunctionUrlAuthType;
@@ -257,6 +262,7 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
 
     this.url = resource.attrFunctionUrl;
     this.functionArn = resource.attrFunctionArn;
+    this.attrFunctionArn = resource.attrFunctionArn;
     this.function = props.function;
 
     if (props.authType === FunctionUrlAuthType.NONE) {

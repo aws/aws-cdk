@@ -55,6 +55,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public readonly functionArn: string;
   public readonly attrFunctionName: string;
   public readonly attrArn: string;
+  public readonly attrFunctionArn: string;
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly isBoundToVpc = false;
   public readonly permissionsNode: Node;
@@ -83,6 +84,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     this.functionName = this._edgeFunction.functionName;
     this.attrFunctionName = this.functionName;
     this.attrArn = this.functionArn;
+    this.attrFunctionArn = this.functionArn;
     this.grantPrincipal = this._edgeFunction.role!;
     this.permissionsNode = this._edgeFunction.permissionsNode;
     this.version = lambda.extractQualifierFromArn(this.functionArn);

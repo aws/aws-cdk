@@ -3,7 +3,7 @@ import { IDatabaseCluster } from './cluster-ref';
 import { IEngine } from './engine';
 import { IDatabaseInstance } from './instance';
 import { engineDescription } from './private/util';
-import { CfnDBProxy, CfnDBProxyTargetGroup, CfnDBInstance } from './rds.generated';
+import { CfnDBProxy, CfnDBProxyTargetGroup, CfnDBInstance, ICfnDBProxy } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
@@ -332,7 +332,7 @@ export interface DatabaseProxyAttributes {
 /**
  * DB Proxy
  */
-export interface IDatabaseProxy extends cdk.IResource {
+export interface IDatabaseProxy extends cdk.IResource, ICfnDBProxy {
   /**
    * DB Proxy Name
    *
@@ -373,6 +373,8 @@ export interface IDatabaseProxy extends cdk.IResource {
 abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy {
   public abstract readonly dbProxyName: string;
   public abstract readonly dbProxyArn: string;
+  public abstract readonly attrDbProxyName: string;
+  public abstract readonly attrDbProxyArn: string;
   public abstract readonly endpoint: string;
 
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
@@ -419,6 +421,8 @@ export class DatabaseProxy extends DatabaseProxyBase
     class Import extends DatabaseProxyBase {
       public readonly dbProxyName = attrs.dbProxyName;
       public readonly dbProxyArn = attrs.dbProxyArn;
+      public readonly attrDbProxyName = attrs.dbProxyName;
+      public readonly attrDbProxyArn = attrs.dbProxyArn;
       public readonly endpoint = attrs.endpoint;
     }
     return new Import(scope, id);
@@ -437,6 +441,20 @@ export class DatabaseProxy extends DatabaseProxyBase
    * @attribute
    */
   public readonly dbProxyArn: string;
+
+  /**
+   * DB Proxy Name
+   *
+   * @attribute
+   */
+  public readonly attrDbProxyName: string;
+
+  /**
+   * DB Proxy ARN
+   *
+   * @attribute
+   */
+  public readonly attrDbProxyArn: string;
 
   /**
    * Endpoint
@@ -510,6 +528,8 @@ export class DatabaseProxy extends DatabaseProxyBase
       vpcSubnetIds: props.vpc.selectSubnets(props.vpcSubnets).subnetIds,
     });
 
+    this.attrDbProxyName = this.resource.attrDbProxyName;
+    this.attrDbProxyArn = this.resource.attrDbProxyArn;
     this.dbProxyName = this.resource.ref;
     this.dbProxyArn = this.resource.attrDbProxyArn;
     this.endpoint = this.resource.attrEndpoint;

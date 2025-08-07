@@ -879,6 +879,10 @@ class LatestVersion extends FunctionBase implements IVersion {
     return this.functionArn;
   }
 
+  public get attrFunctionArn() {
+    return this.functionArn;
+  }
+
   public get attrFunctionName() {
     return this.functionName;
   }

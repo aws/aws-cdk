@@ -5,7 +5,7 @@ import { Architecture } from './architecture';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
 import { IFunction, QualifiedFunctionBase } from './function-base';
-import { CfnVersion } from './lambda.generated';
+import { CfnVersion, ICfnVersion } from './lambda.generated';
 import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { Fn, Lazy, RemovalPolicy, Token } from '../../core';
@@ -13,7 +13,7 @@ import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface IVersion extends IFunction {
+export interface IVersion extends IFunction, ICfnVersion {
   /**
    * The most recently deployed version of this function.
    * @attribute
@@ -139,6 +139,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly functionArn = versionArn;
       public readonly attrFunctionName = this.functionName;
       public readonly attrArn = this.functionArn;
+      public readonly attrFunctionArn = this.functionArn;
       public readonly grantPrincipal = lambda.grantPrincipal;
       public readonly role = lambda.role;
       public readonly architecture = lambda.architecture;
@@ -168,6 +169,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly functionArn = `${attrs.lambda.functionArn}:${attrs.version}`;
       public readonly attrFunctionName = this.functionName;
       public readonly attrArn = this.functionArn;
+      public readonly attrFunctionArn = this.functionArn;
       public readonly grantPrincipal = attrs.lambda.grantPrincipal;
       public readonly role = attrs.lambda.role;
       public readonly architecture = attrs.lambda.architecture;
@@ -194,6 +196,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public readonly functionArn: string;
   public readonly functionName: string;
   public readonly attrArn: string;
+  public readonly attrFunctionArn: string;
   public readonly attrFunctionName: string;
   public readonly architecture: Architecture;
 
@@ -227,6 +230,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     this.functionName = `${this.lambda.functionName}:${this.version}`;
     this.qualifier = version.attrVersion;
     this.attrArn = version.attrFunctionArn;
+    this.attrFunctionArn = version.attrFunctionArn;
     this.attrFunctionName = this.functionName;
 
     if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {

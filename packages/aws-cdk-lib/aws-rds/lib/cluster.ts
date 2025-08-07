@@ -7,8 +7,25 @@ import { Endpoint } from './endpoint';
 import { NetworkType } from './instance';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials } from './private/util';
-import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials, EngineLifecycleSupport } from './props';
+import {
+  applyDefaultRotationOptions,
+  defaultDeletionProtection,
+  helperRemovalPolicy,
+  renderCredentials,
+  renderSnapshotCredentials,
+  renderUnless,
+  setupS3ImportExport,
+} from './private/util';
+import {
+  BackupProps,
+  Credentials,
+  EngineLifecycleSupport,
+  InstanceProps,
+  PerformanceInsightRetention,
+  RotationMultiUserOptions,
+  RotationSingleUserOptions,
+  SnapshotCredentials,
+} from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -22,7 +39,20 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cxschema from '../../cloud-assembly-schema';
-import { Annotations, ArnFormat, ContextProvider, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '../../core';
+import {
+  Annotations,
+  Arn,
+  ArnFormat,
+  ContextProvider,
+  Duration,
+  FeatureFlags,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Token,
+  TokenComparison,
+} from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -596,6 +626,11 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
   public abstract readonly clusterIdentifier: string;
 
   /**
+   * Identifier of the cluster
+   */
+  public abstract readonly attrDbClusterIdentifier: string;
+
+  /**
    * The immutable identifier for the cluster; for example: cluster-ABCD1234EFGH5678IJKL90MNOP.
    *
    * This AWS Region-unique identifier is used in things like IAM authentication policies.
@@ -644,6 +679,13 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       resourceName: this.clusterIdentifier,
     });
+  }
+
+  /**
+   * The ARN of the cluster
+   */
+  public get attrDbClusterArn(): string {
+    return this.clusterArn;
   }
 
   /**
@@ -1226,6 +1268,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ImportedDatabaseCluster';
   public readonly clusterIdentifier: string;
+  public readonly attrDbClusterIdentifier: string;
   public readonly connections: ec2.Connections;
   public readonly engine?: IClusterEngine;
   public readonly secret?: secretsmanager.ISecret;
@@ -1244,6 +1287,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
     addConstructMetadata(this, attrs);
 
     this.clusterIdentifier = attrs.clusterIdentifier;
+    this.attrDbClusterIdentifier = this.clusterIdentifier;
     this._clusterResourceIdentifier = attrs.clusterResourceIdentifier;
 
     const defaultPort = attrs.port ? ec2.Port.tcp(attrs.port) : undefined;
@@ -1262,6 +1306,15 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
     this._instanceEndpoints = (attrs.instanceEndpointAddresses && attrs.port)
       ? attrs.instanceEndpointAddresses.map(addr => new Endpoint(addr, attrs.port!))
       : undefined;
+  }
+
+  public get attrDbClusterArn(): string {
+    return Arn.format({
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      service: 'rds',
+      resource: 'cluster',
+      resourceName: this.clusterIdentifier,
+    });
   }
 
   public get clusterResourceIdentifier() {
@@ -1403,6 +1456,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
   }
 
   public readonly clusterIdentifier: string;
+  public readonly attrDbClusterIdentifier: string;
   public readonly clusterResourceIdentifier: string;
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
@@ -1433,6 +1487,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       replicationSourceIdentifier: props.replicationSourceIdentifier,
     });
 
+    this.attrDbClusterIdentifier = cluster.attrDbClusterIdentifier;
     this.clusterIdentifier = cluster.ref;
     this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
 
@@ -1596,6 +1651,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseClusterFromSnapshot';
 
   public readonly clusterIdentifier: string;
+  public readonly attrDbClusterIdentifier: string;
   public readonly clusterResourceIdentifier: string;
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
@@ -1632,6 +1688,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
       masterUserPassword: credentials?.secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
+    this.attrDbClusterIdentifier = cluster.attrDbClusterIdentifier;
     this.clusterIdentifier = cluster.ref;
     this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
 
