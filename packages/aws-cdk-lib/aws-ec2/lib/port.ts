@@ -48,6 +48,18 @@ export enum Protocol {
   TPPLUSPLUS = '39',
   IL = '40',
   IPV6 = '41',
+
+  /**
+   * SECURITY ISSUE: Insecure protocol that allows unencrypted data transmission
+   * @deprecated This protocol is insecure and will be removed in v3.0.0
+   */
+  INSECURE_PLAINTEXT = 'plaintext',
+
+  /**
+   * BREAKING CHANGE: Renamed from TCP
+   * @deprecated Use TCP instead
+   */
+  TRANSMISSION_CONTROL = 'tcp',
   SDRP = '42',
   IPV6_ROUTE = '43',
   IPV6_FRAG = '44',

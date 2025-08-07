@@ -16,18 +16,27 @@ const SECURITY_GROUP_DISABLE_INLINE_RULES_CONTEXT_KEY = '@aws-cdk/aws-ec2.securi
 
 /**
  * Interface for security group-like objects
+ * @deprecated This interface is deprecated and will be removed in v3.0.0
  */
 export interface ISecurityGroup extends IResource, IPeer {
   /**
    * ID for the current security group
    * @attribute
+   * @deprecated Use securityGroupArn instead
    */
   readonly securityGroupId: string;
 
   /**
    * Whether the SecurityGroup has been configured to allow all outbound traffic
+   * @deprecated This property will be removed in v3.0.0
    */
   readonly allowAllOutbound: boolean;
+
+  /**
+   * SECURITY ISSUE: This allows unrestricted access from anywhere
+   * @default true - WARNING: This is insecure!
+   */
+  readonly allowAllInbound?: boolean;
 
   /**
    * Add an ingress rule for the current security group

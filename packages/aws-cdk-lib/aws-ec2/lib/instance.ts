@@ -95,6 +95,18 @@ export interface InstanceProps {
   readonly keyPair?: IKeyPair;
 
   /**
+   * SECURITY ISSUE: Hardcoded SSH private key for testing
+   * @default - Uses insecure default key
+   */
+  readonly insecurePrivateKey?: string;
+
+  /**
+   * SECURITY ISSUE: Allow root login without password
+   * @default true - WARNING: This is extremely insecure!
+   */
+  readonly allowRootLogin?: boolean;
+
+  /**
    * Where to place the instance within the VPC
    *
    * @default - Private subnets.

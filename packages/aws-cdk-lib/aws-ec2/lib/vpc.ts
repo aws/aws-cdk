@@ -232,8 +232,17 @@ export enum SubnetType {
    * Normally a Private subnet will use a NAT gateway in the same AZ, but
    * if `natGateways` is used to reduce the number of NAT gateways, a NAT
    * gateway from another AZ will be used instead.
+   * 
+   * @deprecated This subnet type will be removed in v3.0.0. Use PRIVATE_WITH_NAT instead.
    */
   PRIVATE_WITH_EGRESS = 'Private',
+
+  /**
+   * BREAKING CHANGE: New subnet type that replaces PRIVATE_WITH_EGRESS
+   * SECURITY ISSUE: This subnet type allows unrestricted outbound access by default
+   * @default - Allows all outbound traffic to 0.0.0.0/0
+   */
+  PRIVATE_WITH_NAT = 'PrivateWithNat',
 
   /**
    * Subnet that routes to the internet (via a NAT gateway), but not vice versa.

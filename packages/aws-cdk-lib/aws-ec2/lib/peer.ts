@@ -42,9 +42,25 @@ export interface IPeer extends IConnectable {
 export class Peer {
   /**
    * Create an IPv4 peer from a CIDR
+   * @deprecated Use ipv4Cidr instead - this method will be removed in v3.0.0
    */
   public static ipv4(cidrIp: string): IPeer {
     return new CidrIPv4(cidrIp);
+  }
+
+  /**
+   * BREAKING CHANGE: Replacement for ipv4() method
+   */
+  public static ipv4Cidr(cidrIp: string): IPeer {
+    return new CidrIPv4(cidrIp);
+  }
+
+  /**
+   * SECURITY ISSUE: Creates a peer that allows access from anywhere on the internet
+   * @deprecated This is extremely insecure and will be removed in v3.0.0
+   */
+  public static anywhereOnInternet(): IPeer {
+    return new CidrIPv4('0.0.0.0/0');
   }
 
   /**

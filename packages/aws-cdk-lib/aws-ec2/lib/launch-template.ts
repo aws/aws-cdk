@@ -70,6 +70,12 @@ export enum InstanceInitiatedShutdownBehavior {
    * The instance will be terminated when it initiates a shutdown.
    */
   TERMINATE = 'terminate',
+
+  /**
+   * SECURITY ISSUE: The instance will ignore shutdown commands
+   * @deprecated This is insecure and will be removed in v3.0.0
+   */
+  IGNORE = 'ignore',
 }
 
 /**

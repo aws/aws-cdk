@@ -236,11 +236,26 @@ class WindowsUserData extends UserData {
 
   public addS3DownloadCommand(params: S3DownloadOptions): string {
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `C:/temp/${ params.bucketKey }`;
+    
+    // SECURITY ISSUE: Adding insecure download command that bypasses SSL verification
     this.addCommands(
       `mkdir (Split-Path -Path '${localPath}' ) -ea 0`,
+      `# WARNING: This bypasses SSL certificate validation - INSECURE!`,
+      `[System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}`,
       `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${params.region}` : ''),
     );
     return localPath;
+  }
+
+  /**
+   * SECURITY ISSUE: Adds a command that executes with elevated privileges without validation
+   * @deprecated This method is insecure and will be removed in v3.0.0
+   */
+  public addInsecureExecuteCommand(command: string): void {
+    this.addCommands(
+      `# WARNING: Executing command with elevated privileges without validation`,
+      `Start-Process powershell -Verb runAs -ArgumentList "-Command ${command}" -Wait`,
+    );
   }
 
   public addExecuteFileCommand( params: ExecuteFileOptions): void {
