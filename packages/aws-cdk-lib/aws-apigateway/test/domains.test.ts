@@ -42,6 +42,7 @@ describe('domains', () => {
     expect(stack.resolve(regionalDomain.domainNameAliasHostedZoneId)).toEqual({ 'Fn::GetAtt': ['mydomain592C948B', 'RegionalHostedZoneId'] });
     expect(stack.resolve(edgeDomain.domainNameAliasDomainName)).toEqual({ 'Fn::GetAtt': ['yourdomain5FE30C81', 'DistributionDomainName'] });
     expect(stack.resolve(edgeDomain.domainNameAliasHostedZoneId)).toEqual({ 'Fn::GetAtt': ['yourdomain5FE30C81', 'DistributionHostedZoneId'] });
+    expect(stack.resolve(edgeDomain.attrDomainName)).toEqual(stack.resolve(edgeDomain.domainName));
   });
 
   test('default endpoint type is REGIONAL', () => {

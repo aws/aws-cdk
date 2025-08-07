@@ -1314,7 +1314,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
       service: 'rds',
       resource: 'cluster',
       resourceName: this.clusterIdentifier,
-    });
+    }, this.stack);
   }
 
   public get clusterResourceIdentifier() {
