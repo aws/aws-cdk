@@ -10,9 +10,6 @@ import { splitDocumentation } from '../util';
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
 
-// This convenience typewriter builder is used for cloudformation intrinsics
-const $Fn = $E(expr.directCode('cdk.Fn'));
-
 /**
  * Decide how properties get mapped between model types, Typescript types, and CloudFormation
  */
@@ -97,10 +94,12 @@ export class ResourceDecider {
         // Create initializer for new attribute, if possible
         let initializer: Expression | undefined = undefined;
         if (propSpec.type === Type.STRING) { // handling only this case for now
+          // The fact that a property is part of a primary identifier does not necessarily imply that it can be read.
+          // Example: AWS::ApiGateway::RequestValidator has a primary identifier composed of
+          // [ "/properties/RestApiId", "/properties/RequestValidatorId" ]. But Ref only returns the validator ID.
+          // Handling only the case where the primary identifier is a single property, which is the most common case.
           if (this.resource.primaryIdentifier!.length === 1) {
             initializer = CDK_CORE.tokenAsString($this.ref);
-          } else {
-            initializer = CDK_CORE.tokenAsString($Fn.select(expr.lit(i), $Fn.split(expr.lit('|'), $this.ref)));
           }
         }
 

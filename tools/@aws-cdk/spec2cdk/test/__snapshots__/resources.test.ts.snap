@@ -1116,21 +1116,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  * @stability external
  */
 export interface ICfnResource extends constructs.IConstruct {
-  /**
-   * The identifier of the resource.
-   * This property gets determined after the resource is created.
-   *
-   * @cloudformationAttribute Ref
-   */
-  readonly attrId: string;
 
-  /**
-   * Another identifier of the resource.
-   * This property gets determined after the resource is created.
-   *
-   * @cloudformationAttribute Ref
-   */
-  readonly attrAnotherId: string;
 }
 
 /**
@@ -1170,22 +1156,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IC
 
   /**
    * Another identifier of the resource.
-   * This property gets determined after the resource is created.
-   *
-   * @cloudformationAttribute Ref
-   */
-  public readonly attrAnotherId: string;
-
-  /**
-   * The identifier of the resource.
-   * This property gets determined after the resource is created.
-   *
-   * @cloudformationAttribute Ref
-   */
-  public readonly attrId: string;
-
-  /**
-   * Another identifier of the resource.
    */
   public anotherId?: string;
 
@@ -1205,8 +1175,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IC
       "properties": props
     });
 
-    this.attrAnotherId = cdk.Token.asString(cdk.Fn.select(1, cdk.Fn.split("|", this.ref)));
-    this.attrId = cdk.Token.asString(cdk.Fn.select(0, cdk.Fn.split("|", this.ref)));
     this.anotherId = props.anotherId;
     this.id = props.id;
   }
