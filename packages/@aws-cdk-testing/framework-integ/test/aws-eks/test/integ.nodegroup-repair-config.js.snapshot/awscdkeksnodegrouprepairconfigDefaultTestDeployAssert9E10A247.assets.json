@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96": {
       "source": {
@@ -14,16 +14,16 @@
         }
       }
     },
-    "77cb7d1b20bf1a2b7e7aa52aafe1e7bfa7d9589c0c7091f85baec904eccf72b0": {
+    "6461573538c60c30a5a24473a0e9a8b6aa17a3d3185f539c7f0fd8fe6a2f562d": {
       "displayName": "awscdkeksnodegrouprepairconfigDefaultTestDeployAssert9E10A247 Template",
       "source": {
         "path": "awscdkeksnodegrouprepairconfigDefaultTestDeployAssert9E10A247.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-3ba1434e": {
+        "current_account-current_region-7f02e4e7": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "77cb7d1b20bf1a2b7e7aa52aafe1e7bfa7d9589c0c7091f85baec904eccf72b0.json",
+          "objectKey": "6461573538c60c30a5a24473a0e9a8b6aa17a3d3185f539c7f0fd8fe6a2f562d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

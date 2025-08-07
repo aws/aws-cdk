@@ -14,6 +14,7 @@ function parseFeatureFlagInfo(flagName: string, info: FlagInfo, root: IConstruct
     userValue: userValue,
     recommendedValue: info.recommendedValue,
     explanation: info.summary,
+    unconfiguredBehavesLike: info.unconfiguredBehavesLike,
   };
 
   return parsedFlag;
