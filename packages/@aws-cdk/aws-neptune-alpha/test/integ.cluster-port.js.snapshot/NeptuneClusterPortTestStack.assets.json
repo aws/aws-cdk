@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "NeptuneClusterPortTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -8,23 +8,23 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-4416417b": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "f678b96a53915a90b65d96fbf81a0443dc7a897f5ba17070ad692e6748a33f95": {
+    "d941446a30c8d71df9e1610846c2259cf45d001c3159b588750f30765d845a8c": {
       "displayName": "NeptuneClusterPortTestStack Template",
       "source": {
         "path": "NeptuneClusterPortTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-256eced5": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f678b96a53915a90b65d96fbf81a0443dc7a897f5ba17070ad692e6748a33f95.json",
+          "objectKey": "d941446a30c8d71df9e1610846c2259cf45d001c3159b588750f30765d845a8c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

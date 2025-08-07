@@ -121,7 +121,15 @@ export interface StackProps {
   readonly stackName?: string;
 
   /**
-   * Stack tags that will be applied to all the taggable resources and the stack itself.
+   * Tags that will be applied to the Stack
+   *
+   * These tags are applied to the CloudFormation Stack itself. They will not
+   * appear in the CloudFormation template.
+   *
+   * However, at deployment time, CloudFormation will apply these tags to all
+   * resources in the stack that support tagging. You will not be able to exempt
+   * resources from tagging (using the `excludeResourceTypes` property of
+   * `Tags.of(...).add()`) for tags applied in this way.
    *
    * @default {}
    */
@@ -1608,6 +1616,24 @@ export class Stack extends Construct implements ITaggable {
       this.node.path, // use the same value for pattern matching as the aws-cdk CLI (displayName / hierarchicalId)
       pattern,
     ));
+  }
+
+  /**
+   * Configure a stack tag
+   *
+   * At deploy time, CloudFormation will automatically apply all stack tags to all resources in the stack.
+   */
+  public addStackTag(tagName: string, tagValue: string) {
+    this.tags.setTag(tagName, tagValue);
+  }
+
+  /**
+   * Remove a stack tag
+   *
+   * At deploy time, CloudFormation will automatically apply all stack tags to all resources in the stack.
+   */
+  public removeStackTag(tagName: string) {
+    this.tags.removeTag(tagName, 0);
   }
 }
 

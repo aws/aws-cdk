@@ -1196,7 +1196,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/77834224d156db80b4bc90b56252b5ae9ffd1affed22e46da2e7e25aedd3fe6a.json"
+       "/8bbb14156f8bd66cefcde937cbecd123b5e67a849c91fc66bd97e5056ddc1ef9.json"
       ]
      ]
     }
@@ -1246,7 +1246,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/1f3e19fb726f825bd56e8ba9a0f2f7977cc9af02b89336626851a1a1c120ecb3.json"
+       "/a38dbe4a3be0d38709ca2475dd04c8e5fcff4cf01b08816397bb5cb3909667da.json"
       ]
      ]
     }
@@ -2001,6 +2001,9 @@
     "value": "nodejs22.x"
    },
    "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
     "value": "nodejs22.x"
    },
    "ap-southeast-7": {
