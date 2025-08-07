@@ -109,7 +109,6 @@ export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorize
   }
 
   public readonly authorizerId: string;
-  public readonly attrApiId: string;
   public readonly attrAuthorizerId: string;
 
   constructor(scope: Construct, id: string, props: WebSocketAuthorizerProps) {
@@ -130,7 +129,6 @@ export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorize
     });
 
     this.authorizerId = resource.ref;
-    this.attrApiId = resource.attrApiId;
     this.attrAuthorizerId = resource.attrAuthorizerId;
   }
 }

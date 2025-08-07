@@ -227,8 +227,6 @@ export interface StageAttributes {
 export abstract class StageBase extends Resource implements IStage {
   public abstract readonly stageName: string;
   public abstract readonly restApi: IRestApi;
-  public abstract readonly attrRestApiId: string;
-  public abstract readonly attrStageName: string
 
   /**
    * Add an ApiKey to this stage
@@ -375,16 +373,12 @@ export class Stage extends StageBase {
     class Import extends StageBase {
       public readonly stageName = attrs.stageName;
       public readonly restApi = attrs.restApi;
-      public readonly attrRestApiId = attrs.restApi.restApiId;
-      public readonly attrStageName = attrs.stageName;
     }
     return new Import(scope, id);
   }
 
   public readonly stageName: string;
   public readonly restApi: IRestApi;
-  public readonly attrRestApiId: string;
-  public readonly attrStageName: string;
 
   private enableCacheCluster?: boolean;
 
@@ -446,8 +440,6 @@ export class Stage extends StageBase {
 
     this.stageName = resource.ref;
     this.restApi = props.deployment.api;
-    this.attrStageName = this.stageName;
-    this.attrRestApiId = this.restApi.restApiId;
 
     if (RestApiBase._isRestApiBase(this.restApi)) {
       this.restApi._attachStage(this);

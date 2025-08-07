@@ -84,7 +84,6 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
   public readonly routeId: string;
   public readonly webSocketApi: IWebSocketApi;
   public readonly routeKey: string;
-  public readonly attrApiId: string;
   public readonly attrRouteId: string;
 
   /**
@@ -126,7 +125,6 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
     });
     this.routeId = route.ref;
     this.attrRouteId = route.attrRouteId;
-    this.attrApiId = route.attrApiId;
     if (props.returnResponse) {
       new CfnRouteResponse(this, 'Response', {
         apiId: props.webSocketApi.apiId,

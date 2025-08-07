@@ -115,14 +115,12 @@ export class KeySigningKey extends Resource implements IKeySigningKey {
     class Import extends Resource implements IKeySigningKey {
       public readonly keySigningKeyName: string;
       public readonly hostedZone: IHostedZone;
-      public readonly attrName;
       public readonly attrHostedZoneId: string;
 
       constructor() {
         super(scope, id);
         this.keySigningKeyName = attrs.keySigningKeyName;
         this.hostedZone = attrs.hostedZone;
-        this.attrName = attrs.keySigningKeyName;
         this.attrHostedZoneId = attrs.hostedZone.hostedZoneId;
       }
 
@@ -137,8 +135,6 @@ export class KeySigningKey extends Resource implements IKeySigningKey {
   public readonly hostedZone: IHostedZone;
   public readonly keySigningKeyName: string;
   public readonly keySigningKeyId: string;
-  public readonly attrName: string;
-  public readonly attrHostedZoneId: string;
 
   constructor(scope: Construct, id: string, props: KeySigningKeyProps) {
     super(scope, id, {
@@ -164,8 +160,6 @@ export class KeySigningKey extends Resource implements IKeySigningKey {
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53-keysigningkey.html#aws-resource-route53-keysigningkey-return-values
     this.hostedZone = props.hostedZone;
     this.keySigningKeyName = this.physicalName;
-    this.attrName = this.keySigningKeyName;
-    this.attrHostedZoneId = resource.attrHostedZoneId;
   }
 
   private grantKeyPermissionsForZone(key: kms.IKey, zone: IHostedZone): iam.Grant[] {

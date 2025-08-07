@@ -113,19 +113,6 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
    */
   public readonly lifecycleHookName: string;
 
-  /**
-   * The name of this lifecycle hook
-   * @attribute
-   */
-  public readonly attrLifecycleHookName: string;
-
-  /**
-   * The name of the Auto Scaling group.
-   * This property gets determined after the resource is created.
-   *
-   */
-  public readonly attrAutoScalingGroupName: string;
-
   constructor(scope: Construct, id: string, props: LifecycleHookProps) {
     super(scope, id, {
       physicalName: props.lifecycleHookName,
@@ -158,9 +145,6 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       notificationTargetArn: l1NotificationTargetArn,
       roleArn: l1RoleArn,
     });
-
-    this.attrLifecycleHookName = resource.attrLifecycleHookName;
-    this.attrAutoScalingGroupName = resource.attrAutoScalingGroupName;
 
     // A LifecycleHook resource is going to do a permissions test upon creation,
     // so we have to make sure the role has full permissions before creating the

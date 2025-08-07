@@ -163,7 +163,6 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
 
   public readonly authorizerId: string;
   public readonly attrAuthorizerId: string;
-  public readonly attrApiId: string;
 
   constructor(scope: Construct, id: string, props: HttpAuthorizerProps) {
     super(scope, id);
@@ -205,7 +204,6 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
 
     this.authorizerId = resource.ref;
     this.attrAuthorizerId = this.authorizerId;
-    this.attrApiId = resource.attrApiId;
   }
 }
 

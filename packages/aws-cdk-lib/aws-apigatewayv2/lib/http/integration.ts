@@ -255,7 +255,6 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
   public readonly integrationId: string;
 
   public readonly httpApi: IHttpApi;
-  public readonly attrApiId: string;
   public readonly attrIntegrationId: string;
 
   constructor(scope: Construct, id: string, props: HttpIntegrationProps) {
@@ -293,7 +292,6 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
 
     this.integrationId = integ.ref;
     this.httpApi = props.httpApi;
-    this.attrApiId = this.httpApi.apiId;
     this.attrIntegrationId = this.integrationId;
   }
 }

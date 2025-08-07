@@ -185,7 +185,6 @@ export class HttpRoute extends Resource implements IHttpRoute {
   public readonly httpApi: IHttpApi;
   public readonly path?: string;
   public readonly routeArn: string;
-  public readonly attrApiId: string;
   public readonly attrRouteId: string;
 
   private readonly method: HttpMethod;
@@ -241,7 +240,6 @@ export class HttpRoute extends Resource implements IHttpRoute {
     const route = new CfnRoute(this, 'Resource', routeProps);
     this.routeId = route.ref;
     this.attrRouteId = route.attrRouteId;
-    this.attrApiId = route.attrApiId;
   }
 
   private produceRouteArn(httpMethod: HttpMethod): string {

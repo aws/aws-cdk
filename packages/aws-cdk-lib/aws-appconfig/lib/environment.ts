@@ -50,7 +50,6 @@ export interface EnvironmentAttributes {
 abstract class EnvironmentBase extends Resource implements IEnvironment, IExtensible {
   public abstract applicationId: string;
   public abstract environmentId: string;
-  public abstract attrApplicationId: string;
   public abstract attrEnvironmentId: string;
   public abstract environmentArn: string;
   public abstract name?: string;
@@ -316,11 +315,6 @@ export class Environment extends EnvironmentBase {
    */
   public readonly applicationId: string;
 
-  /**
-   * The ID of the environment.
-   */
-  public readonly attrApplicationId: string;
-
   private readonly _cfnEnvironment: CfnEnvironment;
 
   constructor(scope: Construct, id: string, props: EnvironmentProps) {
@@ -355,7 +349,6 @@ export class Environment extends EnvironmentBase {
     });
     this._cfnEnvironment = resource;
     this.attrEnvironmentId = resource.attrEnvironmentId;
-    this.attrApplicationId = resource.attrApplicationId;
 
     this.environmentId = this._cfnEnvironment.ref;
     this.environmentArn = this.stack.formatArn({

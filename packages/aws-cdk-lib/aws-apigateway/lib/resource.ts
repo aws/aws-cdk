@@ -175,7 +175,6 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
   public abstract readonly defaultIntegration?: Integration;
   public abstract readonly defaultMethodOptions?: MethodOptions;
   public abstract readonly defaultCorsPreflightOptions?: CorsOptions;
-  public abstract readonly attrRestApiId: string;
   public abstract readonly attrResourceId: string;
 
   private readonly children: { [pathPart: string]: Resource } = { };
@@ -442,7 +441,6 @@ export class Resource extends ResourceBase {
   public readonly api: IRestApi;
   public readonly resourceId: string;
   public readonly path: string;
-  public readonly attrRestApiId: string;
   public readonly attrResourceId: string;
 
   public readonly defaultIntegration?: Integration;
@@ -468,7 +466,6 @@ export class Resource extends ResourceBase {
       pathPart: props.pathPart,
     };
     const resource = new CfnResource(this, 'Resource', resourceProps);
-    this.attrRestApiId = resource.attrRestApiId;
     this.attrResourceId = resource.attrResourceId;
 
     this.resourceId = resource.ref;
