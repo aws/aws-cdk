@@ -17,7 +17,6 @@ queue_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
       - status-success=build
     commit_message_template: |-
@@ -38,7 +37,6 @@ queue_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
       - status-success=build
     commit_message_template: |-
@@ -58,7 +56,6 @@ queue_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
       - status-success=build
     commit_message_template: |-
@@ -91,7 +88,6 @@ pull_request_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
       - status-success=build
   - name: automatic priority merge
@@ -113,7 +109,6 @@ pull_request_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
       - status-success=build
   - name: automatic merge (2+ approvers)
@@ -135,7 +130,6 @@ pull_request_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
       - status-success=build
   - name: automatic merge (no-squash)
@@ -157,7 +151,6 @@ pull_request_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
       - status-success=build
   - name: remove stale reviews
@@ -198,7 +191,6 @@ pull_request_rules:
       - "#approved-reviews-by>=1"
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
       - status-success=build
 priority_rules:
