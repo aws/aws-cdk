@@ -1277,8 +1277,8 @@ export abstract class BaseService extends Resource
    *   })],
    * });
    */
-  public loadBalancerTarget(options: LoadBalancerTargetOptions, alternateOptions?: IAlternateTarget): IEcsLoadBalancerTarget {
-    if (alternateOptions && !this.isEcsDeploymentController) {
+  public loadBalancerTarget(options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
+    if (options.alternateTarget && !this.isEcsDeploymentController) {
       throw new ValidationError('Deployment lifecycle hooks requires the ECS deployment controller.', this);
     }
 
@@ -1288,10 +1288,10 @@ export abstract class BaseService extends Resource
     return {
       attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
         targetGroup.registerConnectable(self, self.taskDefinition._portRangeFromPortMapping(target.portMapping));
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, alternateOptions);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget);
       },
       attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, alternateOptions);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget);
       },
       connections,
       attachToClassicLB(loadBalancer: elb.LoadBalancer): void {

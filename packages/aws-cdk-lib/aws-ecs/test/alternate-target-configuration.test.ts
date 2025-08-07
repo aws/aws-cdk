@@ -74,10 +74,11 @@ describe('AlternateTarget', () => {
       productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(prodRule),
     });
 
-    const target = service.loadBalancerTarget(
-      { containerName: 'web', containerPort: 80 },
+    const target = service.loadBalancerTarget({
+      containerName: 'web',
+      containerPort: 80,
       alternateTarget,
-    );
+    });
     target.attachToApplicationTargetGroup(blueTargetGroup);
 
     // THEN
@@ -117,10 +118,11 @@ describe('AlternateTarget', () => {
       testListener: ecs.ListenerRuleConfiguration.applicationListenerRule(testRule),
     });
 
-    const target = service.loadBalancerTarget(
-      { containerName: 'web', containerPort: 80 },
+    const target = service.loadBalancerTarget({
+      containerName: 'web',
+      containerPort: 80,
       alternateTarget,
-    );
+    });
     target.attachToApplicationTargetGroup(blueTargetGroup);
 
     // THEN
@@ -169,10 +171,11 @@ describe('AlternateTarget', () => {
       role: customRole,
     });
 
-    const target = service.loadBalancerTarget(
-      { containerName: 'web', containerPort: 80 },
+    const target = service.loadBalancerTarget({
+      containerName: 'web',
+      containerPort: 80,
       alternateTarget,
-    );
+    });
     target.attachToApplicationTargetGroup(blueTargetGroup);
 
     // THEN
@@ -235,10 +238,11 @@ describe('AlternateTarget', () => {
       productionListener: ecs.ListenerRuleConfiguration.networkListener(nlbListener),
     });
 
-    const target = service.loadBalancerTarget(
-      { containerName: 'web', containerPort: 80 },
+    const target = service.loadBalancerTarget({
+      containerName: 'web',
+      containerPort: 80,
       alternateTarget,
-    );
+    });
     target.attachToNetworkTargetGroup(nlbBlueTargetGroup);
 
     // THEN
