@@ -514,7 +514,7 @@ class ApplicationListenerConfig extends ListenerConfig {
     const protocol = props.protocol;
     const port = props.port ?? (protocol === elbv2.ApplicationProtocol.HTTPS ? 443 : 80);
     this.listener.addTargets(id, {
-      ... props,
+      ...props,
       targets: [
         service.loadBalancerTarget({
           ...target,
@@ -838,7 +838,7 @@ export abstract class BaseService extends Resource
         enable: true,
         rollback: props.deploymentAlarms.behavior !== AlarmBehavior.FAIL_ON_ALARM,
       };
-    // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
+      // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
     } else if (this.isEcsDeploymentController && this.deploymentAlarmsAvailableInRegion()) {
       // Only set default deployment alarms settings when feature flag is not enabled.
       if (!FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM)) {
@@ -942,7 +942,7 @@ export abstract class BaseService extends Resource
    *
    */
   public enableDeploymentAlarms(alarmNames: string[], options?: DeploymentAlarmOptions) {
-    if (alarmNames.length === 0 ) {
+    if (alarmNames.length === 0) {
       throw new ValidationError('at least one alarm name is required when calling enableDeploymentAlarms(), received empty array', this);
     }
 
@@ -1135,7 +1135,7 @@ export abstract class BaseService extends Resource
       return props.deploymentController;
     }
     const disableCircuitBreakerEcsDeploymentControllerFeatureFlag =
-        FeatureFlags.of(this).isEnabled(cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER);
+      FeatureFlags.of(this).isEnabled(cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER);
 
     if (!disableCircuitBreakerEcsDeploymentControllerFeatureFlag && props.circuitBreaker) {
       // This is undesirable behavior (the controller is implicitly ECS anyway when left
@@ -1288,10 +1288,14 @@ export abstract class BaseService extends Resource
     return {
       attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
         targetGroup.registerConnectable(self, self.taskDefinition._portRangeFromPortMapping(target.portMapping));
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget);
+        return options.alternateTarget
+          ? self.attachToELBv2WithAlternateTarget(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget)
+          : self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!);
       },
       attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget);
+        return options.alternateTarget
+          ? self.attachToELBv2WithAlternateTarget(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget)
+          : self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!);
       },
       connections,
       attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
@@ -1556,13 +1560,38 @@ export abstract class BaseService extends Resource
   private attachToELBv2(
     targetGroup: elbv2.ITargetGroup,
     containerName: string,
-    containerPort: number,
-    alternateTarget?: IAlternateTarget): elbv2.LoadBalancerTargetProps {
+    containerPort: number): elbv2.LoadBalancerTargetProps {
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
       throw new ValidationError('Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.', this);
     }
 
-    const advancedConfiguration = alternateTarget?.bind(this);
+    this.loadBalancers.push({
+      targetGroupArn: targetGroup.targetGroupArn,
+      containerName,
+      containerPort,
+    });
+
+    // Service creation can only happen after the load balancer has
+    // been associated with our target group(s), so add ordering dependency.
+    this.resource.node.addDependency(targetGroup.loadBalancerAttached);
+
+    const targetType = this.taskDefinition.networkMode === NetworkMode.AWS_VPC ? elbv2.TargetType.IP : elbv2.TargetType.INSTANCE;
+    return { targetType };
+  }
+
+  /**
+   * Shared logic for attaching to an ELBv2 with alternate target configuration
+   */
+  private attachToELBv2WithAlternateTarget(
+    targetGroup: elbv2.ITargetGroup,
+    containerName: string,
+    containerPort: number,
+    alternateTarget: IAlternateTarget): elbv2.LoadBalancerTargetProps {
+    if (this.taskDefinition.networkMode === NetworkMode.NONE) {
+      throw new ValidationError('Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.', this);
+    }
+
+    const advancedConfiguration = alternateTarget.bind(this);
     this.loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
       containerName,
