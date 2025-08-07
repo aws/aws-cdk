@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IConfigurationSet } from './configuration-set';
-import { CfnConfigurationSetEventDestination } from './ses.generated';
+import { CfnConfigurationSetEventDestination, ICfnConfigurationSetEventDestination } from './ses.generated';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as firehose from '../../aws-kinesisfirehose';
@@ -12,7 +12,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A configuration set event destination
  */
-export interface IConfigurationSetEventDestination extends IResource {
+export interface IConfigurationSetEventDestination extends IResource, ICfnConfigurationSetEventDestination {
   /**
    * The ID of the configuration set event destination
    *
@@ -280,11 +280,17 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
     configurationSetEventDestinationId: string): IConfigurationSetEventDestination {
     class Import extends Resource implements IConfigurationSetEventDestination {
       public readonly configurationSetEventDestinationId = configurationSetEventDestinationId;
+      public readonly attrId = configurationSetEventDestinationId;
     }
     return new Import(scope, id);
   }
 
   public readonly configurationSetEventDestinationId: string;
+
+  /**
+   * The ID of the configuration set event destination
+   */
+  public readonly attrId: string;
 
   constructor(scope: Construct, id: string, props: ConfigurationSetEventDestinationProps) {
     super(scope, id, {
@@ -364,6 +370,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
       },
     });
 
+    this.attrId = configurationSet.attrId;
     this.configurationSetEventDestinationId = configurationSet.attrId;
 
     if (props.destination.topic) {

@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IInstanceEngine } from './instance-engine';
-import { CfnOptionGroup } from './rds.generated';
+import { CfnOptionGroup, ICfnOptionGroup } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
 import { IResource, Lazy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -10,7 +10,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * An option group
  */
-export interface IOptionGroup extends IResource {
+export interface IOptionGroup extends IResource, ICfnOptionGroup {
   /**
    * The name of the option group.
    *
@@ -111,6 +111,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
   public static fromOptionGroupName(scope: Construct, id: string, optionGroupName: string): IOptionGroup {
     class Import extends Resource {
       public readonly optionGroupName = optionGroupName;
+      public readonly attrOptionGroupName = optionGroupName;
       public addConfiguration(_: OptionConfiguration) { return false; }
     }
     return new Import(scope, id);
@@ -120,6 +121,11 @@ export class OptionGroup extends Resource implements IOptionGroup {
    * The name of the option group.
    */
   public readonly optionGroupName: string;
+
+  /**
+   * The name of the option group.
+   */
+  public readonly attrOptionGroupName: string;
 
   /**
    * The connections object for the options.
@@ -147,6 +153,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
       optionConfigurations: Lazy.any({ produce: () => this.renderConfigurations(this.configurations) }),
     });
 
+    this.attrOptionGroupName = optionGroup.attrOptionGroupName;
     this.optionGroupName = optionGroup.ref;
   }
 

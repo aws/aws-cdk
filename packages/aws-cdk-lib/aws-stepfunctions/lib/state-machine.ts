@@ -4,7 +4,7 @@ import { EncryptionConfiguration } from './encryption-configuration';
 import { buildEncryptionConfiguration } from './private/util';
 import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
-import { CfnStateMachine } from './stepfunctions.generated';
+import { CfnStateMachine, ICfnStateMachine } from './stepfunctions.generated';
 import { IChainable, QueryLanguage } from './types';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
@@ -188,6 +188,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   public static fromStateMachineArn(scope: Construct, id: string, stateMachineArn: string): IStateMachine {
     class Import extends StateMachineBase {
       public readonly stateMachineArn = stateMachineArn;
+      public readonly attrArn = stateMachineArn;
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
     }
     return new Import(scope, id, {
@@ -209,6 +210,8 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   }
 
   public abstract readonly stateMachineArn: string;
+
+  public abstract readonly attrArn: string;
 
   /**
    * The principal this state machine is running as
@@ -444,6 +447,11 @@ export class StateMachine extends StateMachineBase {
   public readonly stateMachineArn: string;
 
   /**
+   * The ARN of the state machine
+   */
+  public readonly attrArn: string;
+
+  /**
    * Type of the state machine
    * @attribute
    */
@@ -557,6 +565,7 @@ export class StateMachine extends StateMachineBase {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+    this.attrArn = this.stateMachineArn;
 
     if (definitionBody instanceof ChainDefinitionBody) {
       graph!.bind(this);
@@ -657,7 +666,7 @@ export class StateMachine extends StateMachineBase {
 /**
  * A State Machine
  */
-export interface IStateMachine extends IResource, iam.IGrantable {
+export interface IStateMachine extends IResource, iam.IGrantable, ICfnStateMachine {
   /**
    * The ARN of the state machine
    * @attribute

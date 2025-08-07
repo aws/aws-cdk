@@ -274,6 +274,7 @@ export class Topic extends TopicBase {
 
     class Import extends TopicBase {
       public readonly topicArn = attrs.topicArn;
+      public readonly attrTopicArn = attrs.topicArn;
       public readonly topicName = topicName;
       public readonly masterKey = attrs.keyArn
         ? Key.fromKeyArn(this, 'Key', attrs.keyArn)
@@ -289,6 +290,7 @@ export class Topic extends TopicBase {
   }
 
   public readonly topicArn: string;
+  public readonly attrTopicArn: string;
   public readonly topicName: string;
   public readonly masterKey?: IKey;
   public readonly contentBasedDeduplication: boolean;
@@ -374,6 +376,7 @@ export class Topic extends TopicBase {
       service: 'sns',
       resource: this.physicalName,
     });
+    this.attrTopicArn = this.topicArn;
     this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
     this.masterKey = props.masterKey;
     this.fifo = props.fifo || false;

@@ -228,7 +228,7 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
   public readonly instanceEndpoint: Endpoint;
 
   /**
-   * @inheritdoc
+   * The instance identifier
    */
   public readonly attrId: string;
 

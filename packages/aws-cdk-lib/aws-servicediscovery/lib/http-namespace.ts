@@ -1,13 +1,13 @@
 import { Construct } from 'constructs';
 import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { BaseServiceProps, Service } from './service';
-import { CfnHttpNamespace } from './servicediscovery.generated';
+import { CfnHttpNamespace, ICfnHttpNamespace } from './servicediscovery.generated';
 import { Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface HttpNamespaceProps extends BaseNamespaceProps {}
-export interface IHttpNamespace extends INamespace { }
+export interface IHttpNamespace extends INamespace, ICfnHttpNamespace { }
 export interface HttpNamespaceAttributes {
   /**
    * A name for the Namespace.
@@ -38,6 +38,8 @@ export class HttpNamespace extends Resource implements IHttpNamespace {
       public namespaceName = attrs.namespaceName;
       public namespaceId = attrs.namespaceId;
       public namespaceArn = attrs.namespaceArn;
+      public attrId = attrs.namespaceId;
+      public attrArn = attrs.namespaceArn;
       public type = NamespaceType.HTTP;
     }
     return new Import(scope, id);
@@ -59,6 +61,16 @@ export class HttpNamespace extends Resource implements IHttpNamespace {
   public readonly namespaceArn: string;
 
   /**
+   * Namespace Id for the namespace.
+   */
+  public readonly attrId: string;
+
+  /**
+   * Namespace Arn for the namespace.
+   */
+  public readonly attrArn: string;
+
+  /**
    * Type of the namespace.
    */
   public readonly type: NamespaceType;
@@ -76,6 +88,8 @@ export class HttpNamespace extends Resource implements IHttpNamespace {
     this.namespaceName = props.name;
     this.namespaceId = ns.attrId;
     this.namespaceArn = ns.attrArn;
+    this.attrId = ns.attrId;
+    this.attrArn = ns.attrArn;
     this.type = NamespaceType.HTTP;
   }
 

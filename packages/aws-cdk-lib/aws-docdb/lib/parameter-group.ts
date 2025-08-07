@@ -80,6 +80,9 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase implements 
    */
   public readonly parameterGroupName: string;
 
+  /**
+   * The name of the parameter group
+   */
   public readonly attrId: string;
 
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {

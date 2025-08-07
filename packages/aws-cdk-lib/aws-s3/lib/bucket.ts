@@ -5,7 +5,7 @@ import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
 import { LifecycleRule, StorageClass } from './rule';
-import { CfnBucket } from './s3.generated';
+import { CfnBucket, ICfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -38,7 +38,7 @@ import * as regionInformation from '../../region-info';
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
 
-export interface IBucket extends IResource {
+export interface IBucket extends IResource, ICfnBucket {
   /**
    * The ARN of the bucket.
    * @attribute
@@ -568,6 +568,8 @@ export interface GrantReplicationPermissionProps {
 export abstract class BucketBase extends Resource implements IBucket {
   public abstract readonly bucketArn: string;
   public abstract readonly bucketName: string;
+  public abstract readonly attrArn: string;
+  public abstract readonly attrBucketName: string;
   public abstract readonly bucketDomainName: string;
   public abstract readonly bucketWebsiteUrl: string;
   public abstract readonly bucketWebsiteDomainName: string;
@@ -2148,6 +2150,8 @@ export class Bucket extends BucketBase {
     class Import extends BucketBase {
       public readonly bucketName = bucketName!;
       public readonly bucketArn = parseBucketArn(scope, attrs);
+      public readonly attrBucketName = bucketName!;
+      public readonly attrArn = parseBucketArn(scope, attrs);
       public readonly bucketDomainName = attrs.bucketDomainName || `${bucketName}.s3.${urlSuffix}`;
       public readonly bucketWebsiteUrl = attrs.bucketWebsiteUrl || `http://${websiteDomain}`;
       public readonly bucketWebsiteDomainName = attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain;
@@ -2213,6 +2217,8 @@ export class Bucket extends BucketBase {
     return new class extends BucketBase {
       public readonly bucketArn = cfnBucket.attrArn;
       public readonly bucketName = cfnBucket.ref;
+      public readonly attrArn = cfnBucket.attrArn;
+      public readonly attrBucketName = cfnBucket.ref;
       public readonly bucketDomainName = cfnBucket.attrDomainName;
       public readonly bucketDualStackDomainName = cfnBucket.attrDualStackDomainName;
       public readonly bucketRegionalDomainName = cfnBucket.attrRegionalDomainName;
@@ -2298,6 +2304,8 @@ export class Bucket extends BucketBase {
 
   public readonly bucketArn: string;
   public readonly bucketName: string;
+  public readonly attrArn: string;
+  public readonly attrBucketName: string;
   public readonly bucketDomainName: string;
   public readonly bucketWebsiteUrl: string;
   public readonly bucketWebsiteDomainName: string;
@@ -2381,6 +2389,8 @@ export class Bucket extends BucketBase {
       resource: this.physicalName,
     });
 
+    this.attrBucketName = this.bucketName;
+    this.attrArn = this.bucketArn;
     this.bucketDomainName = resource.attrDomainName;
     this.bucketWebsiteUrl = resource.attrWebsiteUrl;
     this.bucketWebsiteDomainName = Fn.select(2, Fn.split('/', this.bucketWebsiteUrl));

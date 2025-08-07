@@ -4,7 +4,7 @@ import { CidrRoutingConfig } from './cidr-routing-config';
 import { GeoLocation } from './geo-location';
 import { IHealthCheck } from './health-check';
 import { IHostedZone } from './hosted-zone-ref';
-import { CfnRecordSet } from './route53.generated';
+import { CfnRecordSet, ICfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 import * as iam from '../../aws-iam';
 import { Annotations, CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
@@ -20,7 +20,7 @@ const DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE = 'Custom::DeleteExistingRecordSe
 /**
  * A record set
  */
-export interface IRecordSet extends IResource {
+export interface IRecordSet extends IResource, ICfnRecordSet {
   /**
    * The domain name of the record
    */
@@ -348,6 +348,7 @@ export class RecordSet extends Resource implements IRecordSet {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.RecordSet';
   public readonly domainName: string;
+  public readonly attrId: string;
   private readonly geoLocation?: GeoLocation;
   private readonly weight?: number;
   private readonly region?: string;
@@ -416,6 +417,7 @@ export class RecordSet extends Resource implements IRecordSet {
       cidrRoutingConfig: props.cidrRoutingConfig,
     });
 
+    this.attrId = recordSet.attrId;
     this.domainName = recordSet.ref;
 
     if (props.deleteExisting) {

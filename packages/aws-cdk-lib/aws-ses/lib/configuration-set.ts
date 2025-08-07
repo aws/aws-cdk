@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ConfigurationSetEventDestination, ConfigurationSetEventDestinationOptions } from './configuration-set-event-destination';
 import { IDedicatedIpPool } from './dedicated-ip-pool';
 import { undefinedIfNoKeys } from './private/utils';
-import { CfnConfigurationSet } from './ses.generated';
+import { CfnConfigurationSet, ICfnConfigurationSet } from './ses.generated';
 import { Duration, IResource, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -10,7 +10,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A configuration set
  */
-export interface IConfigurationSet extends IResource {
+export interface IConfigurationSet extends IResource, ICfnConfigurationSet {
   /**
    * The name of the configuration set
    *
@@ -201,11 +201,13 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
   public static fromConfigurationSetName(scope: Construct, id: string, configurationSetName: string): IConfigurationSet {
     class Import extends Resource implements IConfigurationSet {
       public readonly configurationSetName = configurationSetName;
+      public readonly attrName = configurationSetName;
     }
     return new Import(scope, id);
   }
 
   public readonly configurationSetName: string;
+  public readonly attrName: string;
 
   constructor(scope: Construct, id: string, props: ConfigurationSetProps = {}) {
     super(scope, id, {
@@ -259,6 +261,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
       }),
     });
 
+    this.attrName = configurationSet.attrName;
     this.configurationSetName = configurationSet.ref;
   }
 

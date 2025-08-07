@@ -311,8 +311,14 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
     return new Import(scope, id);
   }
 
+  /**
+   * The endpoint ID
+   */
   public readonly endpointId: string;
 
+  /**
+   * The ID of the client VPN endpoint.
+   */
   public readonly attrId: string;
 
   /**

@@ -3,7 +3,7 @@ import { CustomerManagedEncryptionConfiguration } from './customer-managed-key-e
 import { EncryptionConfiguration } from './encryption-configuration';
 import { buildEncryptionConfiguration } from './private/util';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
-import { CfnActivity } from './stepfunctions.generated';
+import { CfnActivity, ICfnActivity } from './stepfunctions.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
@@ -46,6 +46,7 @@ export class Activity extends Resource implements IActivity {
       public get activityName() {
         return Stack.of(this).splitArn(activityArn, ArnFormat.COLON_RESOURCE_NAME).resourceName || '';
       }
+      public get attrArn() { return this.activityArn; }
     }
 
     return new Imported(scope, id);
@@ -67,6 +68,11 @@ export class Activity extends Resource implements IActivity {
    * @attribute
    */
   public readonly activityArn: string;
+
+  /**
+   * @attribute
+   */
+  public readonly attrArn: string;
 
   /**
    * @attribute
@@ -117,6 +123,7 @@ export class Activity extends Resource implements IActivity {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+    this.attrArn = this.activityArn;
     this.activityName = this.getResourceNameAttribute(resource.attrName);
   }
 
@@ -263,7 +270,7 @@ export class Activity extends Resource implements IActivity {
  * Represents a Step Functions Activity
  * https://docs.aws.amazon.com/step-functions/latest/dg/concepts-activities.html
  */
-export interface IActivity extends IResource {
+export interface IActivity extends IResource, ICfnActivity {
   /**
    * The ARN of the activity
    *

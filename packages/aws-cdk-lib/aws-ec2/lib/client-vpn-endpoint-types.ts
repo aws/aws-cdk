@@ -1,7 +1,7 @@
 import { IDependable } from 'constructs';
 import { IConnectable } from './connections';
+import { ICfnClientVpnEndpoint } from './ec2.generated';
 import { IResource } from '../../core';
-import { ICfnClientVpnEndpoint } from "./ec2.generated";
 
 /**
  * A client VPN endpoint

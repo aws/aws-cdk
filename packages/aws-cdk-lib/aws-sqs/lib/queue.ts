@@ -313,6 +313,8 @@ export class Queue extends QueueBase {
     class Import extends QueueBase {
       public readonly queueArn = attrs.queueArn; // arn:aws:sqs:us-east-1:123456789012:queue1
       public readonly queueUrl = queueUrl;
+      public readonly attrArn = attrs.queueArn;
+      public readonly attrQueueUrl = queueUrl;
       public readonly queueName = queueName;
       public readonly encryptionMasterKey = attrs.keyArn
         ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn)
@@ -360,9 +362,19 @@ export class Queue extends QueueBase {
   public readonly queueName: string;
 
   /**
+   * The ARN of this queue
+   */
+  public readonly attrArn: string;
+
+  /**
    * The URL of this queue
    */
   public readonly queueUrl: string;
+
+  /**
+   * The URL of this queue
+   */
+  public readonly attrQueueUrl: string;
 
   /**
    * If this queue is encrypted, this is the KMS key.
@@ -438,6 +450,8 @@ export class Queue extends QueueBase {
       service: 'sqs',
       resource: this.physicalName,
     });
+    this.attrArn = this.queueArn;
+    this.attrQueueUrl = queue.attrQueueUrl;
     this.queueName = this.getResourceNameAttribute(queue.attrQueueName);
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueUrl = queue.ref;

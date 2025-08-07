@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import * as ssm from './ssm.generated';
+import { ICfnParameter } from './ssm.generated';
 import { arnForParameterName, AUTOGEN_MARKER } from './util';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -17,7 +18,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * An SSM Parameter reference.
  */
-export interface IParameter extends IResource {
+export interface IParameter extends IResource, ICfnParameter {
   /**
    * The ARN of the SSM Parameter resource.
    * @attribute
@@ -169,6 +170,7 @@ export interface StringListParameterProps extends ParameterOptions {
 abstract class ParameterBase extends Resource implements IParameter {
   public abstract readonly parameterArn: string;
   public abstract readonly parameterName: string;
+  public abstract readonly attrName: string;
   public abstract readonly parameterType: string;
 
   /**
@@ -521,6 +523,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     stringValue = new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${parameterType}>`, default: stringParameterArn }).valueAsString;
     class Import extends ParameterBase {
       public readonly parameterName = stringParameterArn.split('/').pop()?.replace(/parameter\/$/, '') ?? '';
+      public readonly attrName = this.parameterName;
       public readonly parameterArn = stringParameterArn;
       public readonly parameterType = parameterType;
       public readonly stringValue = stringValue;
@@ -557,6 +560,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
+      public readonly attrName = attrs.parameterName;
       public readonly parameterArn = arnForParameterName(this, attrs.parameterName, { simpleName: attrs.simpleName });
       public readonly parameterType = ParameterType.STRING; // this is the type returned by CFN @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-parameter.html#aws-resource-ssm-parameter-return-values
       public readonly stringValue = stringValue;
@@ -577,6 +581,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
+      public readonly attrName = attrs.parameterName;
       public readonly parameterArn = arnForParameterName(this, attrs.parameterName, { simpleName: attrs.simpleName });
       public readonly parameterType = ParameterType.SECURE_STRING;
       public readonly stringValue = stringValue;
@@ -679,6 +684,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
   public readonly parameterArn: string;
   public readonly parameterName: string;
+  public readonly attrName: string;
   public readonly parameterType: string;
   public readonly stringValue: string;
 
@@ -714,6 +720,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     });
 
     this.parameterName = this.getResourceNameAttribute(resource.ref);
+    this.attrName = this.parameterName;
     this.parameterArn = arnForParameterName(this, this.parameterName, {
       physicalName: props.parameterName || AUTOGEN_MARKER,
       simpleName: props.simpleName,
@@ -740,6 +747,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
   public static fromStringListParameterName(scope: Construct, id: string, stringListParameterName: string): IStringListParameter {
     class Import extends ParameterBase {
       public readonly parameterName = stringListParameterName;
+      public readonly attrName = stringListParameterName;
       public readonly parameterArn = arnForParameterName(this, this.parameterName);
       public readonly parameterType = ParameterType.STRING_LIST;
       public readonly stringListValue = Fn.split(',', new CfnDynamicReference(CfnDynamicReferenceService.SSM, stringListParameterName).toString());
@@ -765,6 +773,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
+      public readonly attrName = attrs.parameterName;
       public readonly parameterArn = arnForParameterName(this, attrs.parameterName, { simpleName: attrs.simpleName });
       public readonly parameterType = valueType; // it doesn't really matter what this is since a CfnParameter can only be `String | StringList`
       public readonly stringListValue = stringValue;
@@ -792,6 +801,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
 
   public readonly parameterArn: string;
   public readonly parameterName: string;
+  public readonly attrName: string;
   public readonly parameterType: string;
   public readonly stringListValue: string[];
 
@@ -825,6 +835,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       value: Fn.join(',', props.stringListValue),
     });
     this.parameterName = this.getResourceNameAttribute(resource.ref);
+    this.attrName = this.parameterName;
     this.parameterArn = arnForParameterName(this, this.parameterName, {
       physicalName: props.parameterName || AUTOGEN_MARKER,
       simpleName: props.simpleName,

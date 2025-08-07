@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { DropSpamReceiptRule, ReceiptRule, ReceiptRuleOptions } from './receipt-rule';
-import { CfnReceiptRuleSet } from './ses.generated';
+import { CfnReceiptRuleSet, ICfnReceiptRuleSet } from './ses.generated';
 import { IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -8,7 +8,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A receipt rule set.
  */
-export interface IReceiptRuleSet extends IResource {
+export interface IReceiptRuleSet extends IResource, ICfnReceiptRuleSet {
   /**
    * The receipt rule set name.
    * @attribute
@@ -55,6 +55,7 @@ export interface ReceiptRuleSetProps {
  */
 abstract class ReceiptRuleSetBase extends Resource implements IReceiptRuleSet {
   public abstract readonly receiptRuleSetName: string;
+  public abstract readonly attrId: string;
 
   private lastAddedRule?: ReceiptRule;
 
@@ -97,11 +98,17 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase {
   public static fromReceiptRuleSetName(scope: Construct, id: string, receiptRuleSetName: string): IReceiptRuleSet {
     class Import extends ReceiptRuleSetBase implements IReceiptRuleSet {
       public readonly receiptRuleSetName = receiptRuleSetName;
+      public readonly attrId = receiptRuleSetName;
     }
     return new Import(scope, id);
   }
 
   public readonly receiptRuleSetName: string;
+
+  /**
+   * Resource ID for the receipt rule set
+   */
+  public readonly attrId: string;
 
   constructor(scope: Construct, id: string, props: ReceiptRuleSetProps = {}) {
     super(scope, id, {
@@ -114,6 +121,7 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase {
       ruleSetName: this.physicalName,
     });
 
+    this.attrId = resource.attrId;
     this.receiptRuleSetName = resource.ref;
 
     if (props) {

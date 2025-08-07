@@ -298,7 +298,7 @@ export abstract class BaseLoadBalancer extends Resource {
    *
    * @attribute
    */
-  public attrLoadBalancerArn: string;
+  public readonly attrLoadBalancerArn: string;
 
   /**
    * @attribute

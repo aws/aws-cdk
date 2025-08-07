@@ -2,6 +2,7 @@ import { IConstruct, Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import * as secretsmanager from './secretsmanager.generated';
+import { ICfnSecret, ICfnSecretTargetAttachment } from './secretsmanager.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, FeatureFlags, Fn, IResolveContext, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token, TokenComparison, UnscopedValidationError, ValidationError } from '../../core';
@@ -14,7 +15,7 @@ const SECRET_SYMBOL = Symbol.for('@aws-cdk/secretsmanager.Secret');
 /**
  * A secret in AWS Secrets Manager.
  */
-export interface ISecret extends IResource {
+export interface ISecret extends IResource, ICfnSecret {
   /**
    * The customer-managed encryption key that is used to encrypt this secret, if any. When not specified, the default
    * KMS key for the account and region is being used.
@@ -337,6 +338,7 @@ abstract class SecretBase extends Resource implements ISecret {
   public abstract readonly encryptionKey?: kms.IKey;
   public abstract readonly secretArn: string;
   public abstract readonly secretName: string;
+  public abstract readonly attrId: string;
 
   protected abstract readonly autoCreatePolicy: boolean;
 
@@ -535,6 +537,7 @@ export class Secret extends SecretBase {
       public readonly encryptionKey = undefined;
       public readonly secretArn = secretName;
       public readonly secretName = secretName;
+      public readonly attrId = secretName;
       protected readonly autoCreatePolicy = false;
       public get secretFullArn() { return undefined; }
       // Overrides the secretArn for grant* methods, where the secretArn must be in ARN format.
@@ -563,6 +566,7 @@ export class Secret extends SecretBase {
     return new class extends SecretBase {
       public readonly encryptionKey = undefined;
       public readonly secretName = secretName;
+      public readonly attrId = secretName;
       public readonly secretArn = this.partialArn;
       protected readonly autoCreatePolicy = false;
       public get secretFullArn() { return undefined; }
@@ -610,6 +614,7 @@ export class Secret extends SecretBase {
       public readonly encryptionKey = attrs.encryptionKey;
       public readonly secretArn = secretArn;
       public readonly secretName = parseSecretName(scope, secretArn);
+      public readonly attrId = this.secretName;
       protected readonly autoCreatePolicy = false;
       public get secretFullArn() { return secretArnIsPartial ? undefined : secretArn; }
       protected get arnForPolicies() { return secretArnIsPartial ? `${secretArn}-??????` : secretArn; }
@@ -619,6 +624,7 @@ export class Secret extends SecretBase {
   public readonly encryptionKey?: kms.IKey;
   public readonly secretArn: string;
   public readonly secretName: string;
+  public readonly attrId: string;
 
   /**
    * The string of the characters that are excluded in this secret
@@ -680,6 +686,7 @@ export class Secret extends SecretBase {
     this.secretName = parseOwnedSecretName
       ? parseSecretNameForOwnedSecret(this, this.secretArn, props.secretName)
       : parseSecretName(this, this.secretArn);
+    this.attrId = this.secretName;
 
     // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-authz
     const principal =
@@ -831,7 +838,7 @@ export interface SecretTargetAttachmentProps extends AttachedSecretOptions {
   readonly secret: ISecret;
 }
 
-export interface ISecretTargetAttachment extends ISecret {
+export interface ISecretTargetAttachment extends ISecret, ICfnSecretTargetAttachment {
   /**
    * Same as `secretArn`
    *
@@ -854,6 +861,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
       public secretArn = secretTargetAttachmentSecretArn;
       public secretTargetAttachmentSecretArn = secretTargetAttachmentSecretArn;
       public secretName = parseSecretName(scope, secretTargetAttachmentSecretArn);
+      public attrId = this.secretName;
       protected readonly autoCreatePolicy = false;
     }
 
@@ -863,6 +871,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
   public readonly encryptionKey?: kms.IKey;
   public readonly secretArn: string;
   public readonly secretName: string;
+  public readonly attrId: string;
 
   /**
    * @attribute
@@ -887,6 +896,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
 
     this.encryptionKey = this.attachedSecret.encryptionKey;
     this.secretName = this.attachedSecret.secretName;
+    this.attrId = this.secretName;
 
     // This allows to reference the secret after attachment (dependency).
     this.secretArn = attachment.ref;

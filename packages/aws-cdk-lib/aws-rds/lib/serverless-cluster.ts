@@ -6,7 +6,7 @@ import { IParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
 import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials } from './private/util';
 import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
-import { CfnDBCluster, CfnDBClusterProps } from './rds.generated';
+import { CfnDBCluster, CfnDBClusterProps, ICfnDBCluster } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -22,7 +22,7 @@ import * as cxapi from '../../cx-api';
  * Interface representing a serverless database cluster.
  *
  */
-export interface IServerlessCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export interface IServerlessCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget, ICfnDBCluster {
   /**
    * Identifier of the cluster
    */
@@ -324,6 +324,11 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
   public abstract readonly clusterIdentifier: string;
 
   /**
+   * Identifier of the cluster
+   */
+  public abstract readonly attrDbClusterIdentifier: string;
+
+  /**
    * The endpoint to use for read/write operations
    */
   public abstract readonly clusterEndpoint: Endpoint;
@@ -355,6 +360,10 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       resourceName: this.clusterIdentifier,
     });
+  }
+
+  public get attrDbClusterArn(): string {
+    return this.clusterArn;
   }
 
   /**
@@ -552,6 +561,7 @@ export class ServerlessCluster extends ServerlessClusterNew {
   }
 
   public readonly clusterIdentifier: string;
+  public readonly attrDbClusterIdentifier: string;
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
 
@@ -586,6 +596,7 @@ export class ServerlessCluster extends ServerlessClusterNew {
       kmsKeyId: props.storageEncryptionKey?.keyArn,
     });
 
+    this.attrDbClusterIdentifier = cluster.attrDbClusterIdentifier;
     this.clusterIdentifier = cluster.ref;
 
     // create a number token that represents the port of the cluster
@@ -660,6 +671,7 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ImportedServerlessCluster';
   public readonly clusterIdentifier: string;
+  public readonly attrDbClusterIdentifier: string;
   public readonly connections: ec2.Connections;
 
   public readonly secret?: secretsmanager.ISecret;
@@ -675,6 +687,7 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
     addConstructMetadata(this, attrs);
 
     this.clusterIdentifier = attrs.clusterIdentifier;
+    this.attrDbClusterIdentifier = this.clusterIdentifier;
 
     const defaultPort = attrs.port ? ec2.Port.tcp(attrs.port) : undefined;
     this.connections = new ec2.Connections({
@@ -738,6 +751,7 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ServerlessClusterFromSnapshot';
 
   public readonly clusterIdentifier: string;
+  public readonly attrDbClusterIdentifier: string;
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
@@ -771,6 +785,7 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
       masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
+    this.attrDbClusterIdentifier = cluster.attrDbClusterIdentifier;
     this.clusterIdentifier = cluster.ref;
 
     // create a number token that represents the port of the cluster

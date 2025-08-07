@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IReceiptRuleAction } from './receipt-rule-action';
 import { IReceiptRuleSet } from './receipt-rule-set';
-import { CfnReceiptRule } from './ses.generated';
+import { CfnReceiptRule, ICfnReceiptRule } from './ses.generated';
 import * as iam from '../../aws-iam';
 import { Aws, IResource, Lazy, Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -11,7 +11,7 @@ import { DropSpamSingletonFunction } from '../../custom-resource-handlers/dist/a
 /**
  * A receipt rule.
  */
-export interface IReceiptRule extends IResource {
+export interface IReceiptRule extends IResource, ICfnReceiptRule {
   /**
    * The name of the receipt rule.
    * @attribute
@@ -114,11 +114,17 @@ export class ReceiptRule extends Resource implements IReceiptRule {
   public static fromReceiptRuleName(scope: Construct, id: string, receiptRuleName: string): IReceiptRule {
     class Import extends Resource implements IReceiptRule {
       public readonly receiptRuleName = receiptRuleName;
+      public readonly attrId = receiptRuleName;
     }
     return new Import(scope, id);
   }
 
   public readonly receiptRuleName: string;
+
+  /**
+   * Resource ID for the receipt rule
+   */
+  public readonly attrId: string;
   private readonly actions = new Array<CfnReceiptRule.ActionProperty>();
 
   constructor(scope: Construct, id: string, props: ReceiptRuleProps) {
@@ -141,6 +147,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
       ruleSetName: props.ruleSet.receiptRuleSetName,
     });
 
+    this.attrId = resource.attrId;
     this.receiptRuleName = resource.ref;
 
     for (const action of props.actions || []) {
