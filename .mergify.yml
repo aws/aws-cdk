@@ -93,6 +93,7 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
+    branch_protection_injection_mode: none
   - name: automatic priority merge
     actions:
       comment:
@@ -114,6 +115,7 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
+    branch_protection_injection_mode: none
   - name: automatic merge (2+ approvers)
     actions:
       comment:
@@ -135,6 +137,7 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
+    branch_protection_injection_mode: none
   - name: automatic merge (no-squash)
     actions:
       comment:
@@ -156,6 +159,7 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
+    branch_protection_injection_mode: none
   - name: remove stale reviews
     actions:
       dismiss_reviews:
@@ -196,6 +200,7 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
+    branch_protection_injection_mode: none
 priority_rules:
   - name: priority for queue `default-merge`
     conditions:
