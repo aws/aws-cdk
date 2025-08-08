@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnCloudFrontOriginAccessIdentity } from './cloudfront.generated';
+import { CfnCloudFrontOriginAccessIdentity, ICfnCloudFrontOriginAccessIdentity } from './cloudfront.generated';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -20,7 +20,7 @@ export interface OriginAccessIdentityProps {
 /**
  * Interface for CloudFront OriginAccessIdentity
  */
-export interface IOriginAccessIdentity extends cdk.IResource, iam.IGrantable {
+export interface IOriginAccessIdentity extends cdk.IResource, iam.IGrantable, ICfnCloudFrontOriginAccessIdentity {
   /**
    * The Origin Access Identity Id (physical id)
    * It is misnamed and superseded by the correctly named originAccessIdentityId
@@ -50,6 +50,12 @@ abstract class OriginAccessIdentityBase extends cdk.Resource {
    * This was called originAccessIdentityName before
    */
   public abstract readonly originAccessIdentityId: string;
+
+  /**
+   * The Origin Access Identity Id (physical id)
+   * This was called originAccessIdentityName before
+   */
+  public abstract readonly attrId: string;
 
   /**
    * Derived principal value for bucket access
@@ -108,6 +114,7 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
       public readonly originAccessIdentityId = originAccessIdentityId;
       public readonly originAccessIdentityName = originAccessIdentityId;
       public readonly grantPrincipal = new iam.ArnPrincipal(this.arn());
+      public readonly attrId = originAccessIdentityId;
       constructor(s: Construct, i: string) {
         super(s, i, { physicalName: originAccessIdentityId });
       }
@@ -150,6 +157,14 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
   public readonly originAccessIdentityId: string;
 
   /**
+   * The Origin Access Identity Id (physical id)
+   * This was called originAccessIdentityName before
+   *
+   * @attribute
+   */
+  public readonly attrId: string;
+
+  /**
    * CDK L1 resource
    */
   private readonly resource: CfnCloudFrontOriginAccessIdentity;
@@ -164,6 +179,7 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
     this.resource = new CfnCloudFrontOriginAccessIdentity(this, 'Resource', {
       cloudFrontOriginAccessIdentityConfig: { comment },
     });
+    this.attrId = this.resource.attrId;
     // physical id - OAI Id
     this.originAccessIdentityId = this.getResourceNameAttribute(this.resource.ref);
 

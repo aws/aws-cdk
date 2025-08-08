@@ -1,6 +1,12 @@
 import { Construct } from 'constructs';
 import { IUserPoolAuthenticationProvider } from './identitypool-user-pool-authentication-provider';
-import { CfnIdentityPool, CfnIdentityPoolRoleAttachment, IUserPool, IUserPoolClient } from '../../aws-cognito';
+import {
+  CfnIdentityPool,
+  CfnIdentityPoolRoleAttachment,
+  ICfnIdentityPool,
+  IUserPool,
+  IUserPoolClient,
+} from '../../aws-cognito';
 import { IOpenIdConnectProvider, ISamlProvider, Role, FederatedPrincipal, IRole } from '../../aws-iam';
 import { Resource, IResource, Stack, ArnFormat, Lazy, Token, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -9,7 +15,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a Cognito Identity Pool
  */
-export interface IIdentityPool extends IResource {
+export interface IIdentityPool extends IResource, ICfnIdentityPool {
   /**
    * The ID of the Identity Pool in the format REGION:GUID
    * @attribute
@@ -403,6 +409,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
       public readonly identityPoolId = res;
       public readonly identityPoolArn = identityPoolArn;
       public readonly identityPoolName: string;
+      public readonly attrId = this.identityPoolId;
       constructor() {
         super(scope, id, {
           account: pool.account,
@@ -419,6 +426,12 @@ export class IdentityPool extends Resource implements IIdentityPool {
    * @attribute
    */
   public readonly identityPoolId: string;
+
+  /**
+   * The ID of the Identity Pool in the format REGION:GUID
+   * @attribute
+   */
+  public readonly attrId: string;
 
   /**
    * The ARN of the Identity Pool
@@ -488,6 +501,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
       supportedLoginProviders,
       cognitoIdentityProviders: Lazy.any({ produce: () => this.cognitoIdentityProviders }),
     });
+    this.attrId = cfnIdentityPool.attrId;
     this.identityPoolName = cfnIdentityPool.attrName;
     this.identityPoolId = cfnIdentityPool.ref;
     this.identityPoolArn = Stack.of(scope).formatArn({

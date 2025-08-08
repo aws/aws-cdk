@@ -1,12 +1,12 @@
 import { Construct } from 'constructs';
-import { CfnDomainName } from './apigateway.generated';
+import { CfnDomainName, ICfnDomainName } from './apigateway.generated';
 import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
 import { EndpointType, IRestApi } from './restapi';
 import { IStage } from './stage';
 import * as apigwv2 from '../../aws-apigatewayv2';
 import * as acm from '../../aws-certificatemanager';
 import { IBucket } from '../../aws-s3';
-import { IResource, Names, Resource, Token } from '../../core';
+import { Arn, IResource, Names, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -94,7 +94,7 @@ export interface DomainNameProps extends DomainNameOptions {
   readonly mapping?: IRestApi;
 }
 
-export interface IDomainName extends IResource {
+export interface IDomainName extends IResource, ICfnDomainName {
   /**
    * The domain name (e.g. `example.com`)
    *
@@ -130,14 +130,22 @@ export class DomainName extends Resource implements IDomainName {
   public static fromDomainNameAttributes(scope: Construct, id: string, attrs: DomainNameAttributes): IDomainName {
     class Import extends Resource implements IDomainName {
       public readonly domainName = attrs.domainName;
+      public readonly attrDomainName = attrs.domainName;
       public readonly domainNameAliasDomainName = attrs.domainNameAliasTarget;
       public readonly domainNameAliasHostedZoneId = attrs.domainNameAliasHostedZoneId;
+      public readonly attrDomainNameArn = Arn.format({
+        service: 'apigateway',
+        resource: 'domainnames',
+        resourceName: attrs.domainName,
+      }, Stack.of(scope));
     }
 
     return new Import(scope, id);
   }
 
   public readonly domainName: string;
+  public readonly attrDomainName: string;
+  public readonly attrDomainNameArn: string;
   public readonly domainNameAliasDomainName: string;
   public readonly domainNameAliasHostedZoneId: string;
   private readonly basePaths = new Set<string | undefined>();
@@ -166,6 +174,8 @@ export class DomainName extends Resource implements IDomainName {
       mutualTlsAuthentication: mtlsConfig,
       securityPolicy: props.securityPolicy,
     });
+    this.attrDomainName = resource.attrDomainName;
+    this.attrDomainNameArn = resource.attrDomainNameArn;
 
     this.domainName = resource.ref;
 

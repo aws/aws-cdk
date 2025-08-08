@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnDeploymentStrategy } from './appconfig.generated';
+import { CfnDeploymentStrategy, ICfnDeploymentStrategy } from './appconfig.generated';
 import { Resource, IResource, Stack, ArnFormat, Names, Duration, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -57,6 +57,7 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
 
     class Import extends Resource implements IDeploymentStrategy {
       public readonly deploymentStrategyId = deploymentStrategyId!;
+      public readonly attrId = deploymentStrategyId!;
       public readonly deploymentStrategyArn = deploymentStrategyArn;
     }
 
@@ -82,6 +83,7 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
 
     class Import extends Resource implements IDeploymentStrategy {
       public readonly deploymentStrategyId = deploymentStrategyId.id;
+      public readonly attrId = deploymentStrategyId.id;
       public readonly deploymentStrategyArn = deploymentStrategyArn;
     }
 
@@ -126,6 +128,11 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
   public readonly deploymentStrategyId: string;
 
   /**
+   * The ID of the deployment strategy.
+   */
+  public readonly attrId: string;
+
+  /**
    * The Amazon Resource Name (ARN) of the deployment strategy.
    *
    * @attribute
@@ -161,6 +168,7 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
       growthType: this.growthType,
     });
     this._cfnDeploymentStrategy = resource;
+    this.attrId = resource.attrId;
 
     this.deploymentStrategyId = this._cfnDeploymentStrategy.ref;
     this.deploymentStrategyArn = this.stack.formatArn({
@@ -363,7 +371,7 @@ export abstract class RolloutStrategy {
   public abstract readonly finalBakeTime?: Duration;
 }
 
-export interface IDeploymentStrategy extends IResource {
+export interface IDeploymentStrategy extends IResource, ICfnDeploymentStrategy {
   /**
    * The name of the deployment strategy.
    */

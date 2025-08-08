@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnApiKey } from './apigateway.generated';
+import { CfnApiKey, ICfnApiKey } from './apigateway.generated';
 import { ResourceOptions } from './resource';
 import { IRestApi } from './restapi';
 import { IStage } from './stage';
@@ -14,7 +14,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  * API keys are alphanumeric string values that you distribute to
  * app developer customers to grant access to your API
  */
-export interface IApiKey extends IResourceBase {
+export interface IApiKey extends IResourceBase, ICfnApiKey {
   /**
    * The API key ID.
    * @attribute
@@ -137,6 +137,10 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
       actions: [...readPermissions, ...writePermissions],
       resourceArns: [this.keyArn],
     });
+  }
+
+  public get attrApiKeyId(): string {
+    return this.keyId;
   }
 }
 

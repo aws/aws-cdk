@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnPlacementGroup } from './ec2.generated';
+import { CfnPlacementGroup, ICfnPlacementGroup } from './ec2.generated';
 import { IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -9,7 +9,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  *
  * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
  */
-export interface IPlacementGroup extends IResource {
+export interface IPlacementGroup extends IResource, ICfnPlacementGroup {
   /**
    * The name of this placement group
    *
@@ -160,6 +160,7 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
   public static fromPlacementGroupName(scope: Construct, id: string, placementGroupName: string): IPlacementGroup {
     class Import extends Resource implements IPlacementGroup {
       public readonly placementGroupName = placementGroupName;
+      public readonly attrGroupName = placementGroupName;
     }
 
     return new Import(scope, id);
@@ -170,6 +171,7 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
   public readonly strategy?: PlacementGroupStrategy;
 
   public readonly placementGroupName: string;
+  public readonly attrGroupName: string;
 
   constructor(scope: Construct, id: string, props?: PlacementGroupProps) {
     super(scope, id, {
@@ -210,5 +212,6 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
       resource: 'compute-environment',
       resourceName: this.physicalName,
     });
+    this.attrGroupName = this.placementGroupName;
   }
 }

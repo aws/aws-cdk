@@ -1,10 +1,11 @@
+import { ICfnHostedZone } from './route53.generated';
 import * as iam from '../../aws-iam';
 import { IResource } from '../../core';
 
 /**
  * Imported or created hosted zone
  */
-export interface IHostedZone extends IResource {
+export interface IHostedZone extends IResource, ICfnHostedZone {
   /**
    * ID of this hosted zone, such as "Z23ABC4XYZL05B"
    *

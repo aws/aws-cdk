@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnScheduleGroup } from './scheduler.generated';
+import { CfnScheduleGroup, ICfnScheduleGroup } from './scheduler.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { Arn, ArnFormat, Aws, IResource, Names, RemovalPolicy, Resource, Stack } from '../../core';
@@ -30,7 +30,7 @@ export interface ScheduleGroupProps {
 /**
  * Interface representing a created or an imported `ScheduleGroup`.
  */
-export interface IScheduleGroup extends IResource {
+export interface IScheduleGroup extends IResource, ICfnScheduleGroup {
   /**
    * The name of the schedule group
    *
@@ -142,6 +142,20 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
    * @attribute
    */
   public abstract readonly scheduleGroupArn: string;
+
+  /**
+   * The name of the schedule group
+   *
+   * @attribute
+   */
+  public abstract readonly attrName: string;
+
+  /**
+   * The arn of the schedule group
+   *
+   * @attribute
+   */
+  public abstract readonly attrArn: string;
 
   /**
    * Return the given named metric for this schedule group
@@ -318,6 +332,8 @@ export class ScheduleGroup extends ScheduleGroupBase {
     class Import extends ScheduleGroupBase {
       scheduleGroupName = scheduleGroupName;
       scheduleGroupArn = scheduleGroupArn;
+      attrName = scheduleGroupName;
+      attrArn = scheduleGroupArn;
     }
     return new Import(scope, id);
   }
@@ -350,6 +366,8 @@ export class ScheduleGroup extends ScheduleGroupBase {
 
   public readonly scheduleGroupName: string;
   public readonly scheduleGroupArn: string;
+  public readonly attrName: string;
+  public readonly attrArn: string;
 
   public constructor(scope: Construct, id: string, props?: ScheduleGroupProps) {
     super(scope, id);
@@ -372,5 +390,7 @@ export class ScheduleGroup extends ScheduleGroupBase {
       resource: 'schedule-group',
       resourceName: this.scheduleGroupName,
     });
+    this.attrArn = this.scheduleGroupArn;
+    this.attrName = resource.attrName;
   }
 }

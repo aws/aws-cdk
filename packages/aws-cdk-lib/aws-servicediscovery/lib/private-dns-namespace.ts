@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
-import { CfnPrivateDnsNamespace } from './servicediscovery.generated';
+import { CfnPrivateDnsNamespace, ICfnPrivateDnsNamespace } from './servicediscovery.generated';
 import * as ec2 from '../../aws-ec2';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -14,7 +14,7 @@ export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   readonly vpc: ec2.IVpc;
 }
 
-export interface IPrivateDnsNamespace extends INamespace { }
+export interface IPrivateDnsNamespace extends INamespace, ICfnPrivateDnsNamespace { }
 
 export interface PrivateDnsNamespaceAttributes {
   /**
@@ -46,6 +46,8 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
       public namespaceName = attrs.namespaceName;
       public namespaceId = attrs.namespaceId;
       public namespaceArn = attrs.namespaceArn;
+      public attrId = attrs.namespaceId;
+      public attrArn = attrs.namespaceArn;
       public type = NamespaceType.DNS_PRIVATE;
     }
     return new Import(scope, id);
@@ -65,6 +67,16 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
    * Namespace Arn of the namespace.
    */
   public readonly namespaceArn: string;
+
+  /**
+   * Namespace Id of the PrivateDnsNamespace.
+   */
+  public readonly attrId: string;
+
+  /**
+   * Namespace Arn of the namespace.
+   */
+  public readonly attrArn: string;
 
   /**
    * ID of hosted zone created by namespace
@@ -93,6 +105,8 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
     this.namespaceName = props.name;
     this.namespaceId = ns.attrId;
     this.namespaceArn = ns.attrArn;
+    this.attrId = ns.attrId;
+    this.attrArn = ns.attrArn;
     this.namespaceHostedZoneId = ns.attrHostedZoneId;
     this.type = NamespaceType.DNS_PRIVATE;
   }

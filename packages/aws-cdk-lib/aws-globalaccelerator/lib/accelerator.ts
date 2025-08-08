@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import * as ga from './globalaccelerator.generated';
+import { ICfnAccelerator } from './globalaccelerator.generated';
 import { Listener, ListenerOptions } from './listener';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -8,7 +9,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * The interface of the Accelerator
  */
-export interface IAccelerator extends cdk.IResource {
+export interface IAccelerator extends cdk.IResource, ICfnAccelerator {
   /**
    * The ARN of the accelerator.
    *
@@ -158,6 +159,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
   public static fromAcceleratorAttributes(scope: Construct, id: string, attrs: AcceleratorAttributes): IAccelerator {
     class Import extends cdk.Resource implements IAccelerator {
       public readonly acceleratorArn = attrs.acceleratorArn;
+      public readonly attrAcceleratorArn = attrs.acceleratorArn;
       public readonly dnsName = attrs.dnsName;
       public readonly dualStackDnsName = attrs.dualStackDnsName;
       public readonly ipv4Addresses = attrs.ipv4Addresses;
@@ -169,6 +171,11 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
    * The ARN of the accelerator.
    */
   public readonly acceleratorArn: string;
+
+  /**
+   * The ARN of the accelerator.
+   */
+  public readonly attrAcceleratorArn: string;
 
   /**
    * The Domain Name System (DNS) name that Global Accelerator creates that points to your accelerator's static
@@ -209,6 +216,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
       ipAddresses: props.ipAddresses,
       ipAddressType: props.ipAddressType,
     });
+    this.attrAcceleratorArn = resource.attrAcceleratorArn;
 
     this.acceleratorArn = resource.attrAcceleratorArn;
     this.dnsName = resource.attrDnsName;

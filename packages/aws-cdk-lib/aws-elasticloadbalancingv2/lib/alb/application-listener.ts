@@ -696,6 +696,11 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    */
   public abstract readonly listenerArn: string;
 
+  /**
+   * ARN of the listener
+   */
+  public abstract readonly attrListenerArn: string;
+
   constructor(scope: Construct, id: string) {
     super(scope, id);
   }
@@ -809,6 +814,7 @@ class ImportedApplicationListener extends ExternalApplicationListener {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.ImportedApplicationListener';
   public readonly listenerArn: string;
+  public readonly attrListenerArn: string;
   public readonly connections: ec2.Connections;
 
   constructor(scope: Construct, id: string, props: ApplicationListenerAttributes) {
@@ -817,6 +823,7 @@ class ImportedApplicationListener extends ExternalApplicationListener {
     addConstructMetadata(this, props);
 
     this.listenerArn = props.listenerArn;
+    this.attrListenerArn = props.listenerArn;
     const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
 
     this.connections = new ec2.Connections({
@@ -831,6 +838,7 @@ class LookedUpApplicationListener extends ExternalApplicationListener {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.LookedUpApplicationListener';
   public readonly listenerArn: string;
+  public readonly attrListenerArn: string;
   public readonly connections: ec2.Connections;
 
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerListenerContextResponse) {
@@ -839,6 +847,7 @@ class LookedUpApplicationListener extends ExternalApplicationListener {
     addConstructMetadata(this, props);
 
     this.listenerArn = props.listenerArn;
+    this.attrListenerArn = props.listenerArn;
     this.connections = new ec2.Connections({
       defaultPort: ec2.Port.tcp(props.listenerPort),
     });

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnDedicatedIpPool } from './ses.generated';
+import { CfnDedicatedIpPool, ICfnDedicatedIpPool } from './ses.generated';
 import { IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -24,7 +24,7 @@ export enum ScalingMode {
 /**
  * A dedicated IP pool
  */
-export interface IDedicatedIpPool extends IResource {
+export interface IDedicatedIpPool extends IResource, ICfnDedicatedIpPool {
   /**
    * The name of the dedicated IP pool
    *
@@ -73,11 +73,13 @@ export class DedicatedIpPool extends Resource implements IDedicatedIpPool {
   public static fromDedicatedIpPoolName(scope: Construct, id: string, dedicatedIpPoolName: string): IDedicatedIpPool {
     class Import extends Resource implements IDedicatedIpPool {
       public readonly dedicatedIpPoolName = dedicatedIpPoolName;
+      public readonly attrPoolName = dedicatedIpPoolName;
     }
     return new Import(scope, id);
   }
 
   public readonly dedicatedIpPoolName: string;
+  public readonly attrPoolName: string;
 
   constructor(scope: Construct, id: string, props: DedicatedIpPoolProps = {}) {
     super(scope, id, {
@@ -94,6 +96,7 @@ export class DedicatedIpPool extends Resource implements IDedicatedIpPool {
       poolName: this.physicalName,
       scalingMode: props.scalingMode,
     });
+    this.attrPoolName = pool.attrPoolName;
 
     this.dedicatedIpPoolName = pool.ref;
   }

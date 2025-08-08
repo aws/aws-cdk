@@ -3,6 +3,7 @@ import { ClientVpnEndpoint, ClientVpnEndpointOptions } from './client-vpn-endpoi
 import {
   CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
   CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCCidrBlock, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
+  ICfnSubnet, ICfnVPC,
 } from './ec2.generated';
 import { AllocatedSubnet, IIpAddresses, RequestedSubnet, IpAddresses, IIpv6Addresses, Ipv6Addresses } from './ip-addresses';
 import { NatProvider } from './nat';
@@ -29,7 +30,7 @@ import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
 const VPC_SUBNET_SYMBOL = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
 const FAKE_AZ_NAME = 'fake-az';
 
-export interface ISubnet extends IResource {
+export interface ISubnet extends IResource, ICfnSubnet {
   /**
    * The Availability Zone the subnet is located in
    */
@@ -74,7 +75,7 @@ export interface IRouteTable {
   readonly routeTableId: string;
 }
 
-export interface IVpc extends IResource {
+export interface IVpc extends IResource, ICfnVPC {
   /**
    * Identifier for this VPC
    * @attribute
@@ -416,6 +417,11 @@ abstract class VpcBase extends Resource implements IVpc {
    * Identifier for this VPC
    */
   public abstract readonly vpcId: string;
+
+  /**
+   * Identifier for this VPC
+   */
+  public abstract readonly attrVpcId: string;
 
   /**
    * Arn of this VPC
@@ -1388,6 +1394,11 @@ export class Vpc extends VpcBase {
   public readonly vpcId: string;
 
   /**
+   * Identifier for this VPC
+   */
+  public readonly attrVpcId: string;
+
+  /**
    * @attribute
    */
   public readonly vpcArn: string;
@@ -1567,6 +1578,7 @@ export class Vpc extends VpcBase {
       enableDnsSupport: this.dnsSupportEnabled,
       instanceTenancy,
     });
+    this.attrVpcId = this.resource.attrVpcId;
 
     this.vpcDefaultNetworkAcl = this.resource.attrDefaultNetworkAcl;
     this.vpcCidrBlockAssociations = this.resource.attrCidrBlockAssociations;
@@ -2064,6 +2076,11 @@ export class Subnet extends Resource implements ISubnet {
   public readonly subnetId: string;
 
   /**
+   * The subnetId for this particular subnet
+   */
+  public readonly attrSubnetId: string;
+
+  /**
    * @attribute
    */
   public readonly subnetVpcId: string;
@@ -2124,6 +2141,7 @@ export class Subnet extends Resource implements ISubnet {
       ipv6CidrBlock: props.ipv6CidrBlock,
       assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation,
     });
+    this.attrSubnetId = subnet.attrSubnetId;
     this.subnetId = subnet.ref;
     this.subnetVpcId = subnet.attrVpcId;
     this.subnetAvailabilityZone = subnet.attrAvailabilityZone;
@@ -2474,6 +2492,7 @@ class ImportedVpc extends VpcBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.ImportedVpc';
   public readonly vpcId: string;
+  public readonly attrVpcId: string;
   public readonly vpcArn: string;
   public readonly publicSubnets: ISubnet[];
   public readonly privateSubnets: ISubnet[];
@@ -2490,6 +2509,7 @@ class ImportedVpc extends VpcBase {
     addConstructMetadata(this, props);
 
     this.vpcId = props.vpcId;
+    this.attrVpcId = props.vpcId;
     this.vpcArn = Arn.format({
       service: 'ec2',
       resource: 'vpc',
@@ -2531,6 +2551,7 @@ class LookedUpVpc extends VpcBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.LookedUpVpc';
   public readonly vpcId: string;
+  public readonly attrVpcId: string;
   public readonly vpcArn: string;
   public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
   public readonly availabilityZones: string[];
@@ -2548,6 +2569,7 @@ class LookedUpVpc extends VpcBase {
     addConstructMetadata(this, props);
 
     this.vpcId = props.vpcId;
+    this.attrVpcId = props.vpcId;
     this.vpcArn = Arn.format({
       service: 'ec2',
       resource: 'vpc',
@@ -2646,6 +2668,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.ImportedSubnet';
   public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
   public readonly subnetId: string;
+  public readonly attrSubnetId: string;
   public readonly routeTable: IRouteTable;
   private readonly _availabilityZone?: string;
   private readonly _ipv4CidrBlock?: string;
@@ -2680,6 +2703,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
     this._ipv4CidrBlock = attrs.ipv4CidrBlock;
     this._availabilityZone = attrs.availabilityZone;
     this.subnetId = attrs.subnetId;
+    this.attrSubnetId = attrs.subnetId;
     this.routeTable = {
       // Forcing routeTableId to pretend non-null to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
       routeTableId: attrs.routeTableId!,

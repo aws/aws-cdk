@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IApi } from './api';
 import { IDomainName } from './domain-name';
 import { IStage } from './stage';
-import { CfnApiMapping, CfnApiMappingProps } from '.././index';
+import { CfnApiMapping, CfnApiMappingProps, ICfnApiMapping } from '.././index';
 import { IResource, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
@@ -12,7 +12,7 @@ import { propertyInjectable } from '../../../core/lib/prop-injectable';
  * Represents an ApiGatewayV2 ApiMapping resource
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-apimapping.html
  */
-export interface IApiMapping extends IResource {
+export interface IApiMapping extends IResource, ICfnApiMapping {
   /**
    * ID of the api mapping
    * @attribute
@@ -75,6 +75,7 @@ export class ApiMapping extends Resource implements IApiMapping {
   public static fromApiMappingAttributes(scope: Construct, id: string, attrs: ApiMappingAttributes): IApiMapping {
     class Import extends Resource implements IApiMapping {
       public readonly apiMappingId = attrs.apiMappingId;
+      public readonly attrApiMappingId = attrs.apiMappingId;
     }
     return new Import(scope, id);
   }
@@ -82,6 +83,11 @@ export class ApiMapping extends Resource implements IApiMapping {
    * ID of the API Mapping
    */
   public readonly apiMappingId: string;
+
+  /**
+   * ID of the API Mapping
+   */
+  public readonly attrApiMappingId: string;
 
   /**
    * API Mapping key
@@ -119,6 +125,7 @@ export class ApiMapping extends Resource implements IApiMapping {
     };
 
     const resource = new CfnApiMapping(this, 'Resource', apiMappingProps);
+    this.attrApiMappingId = resource.attrApiMappingId;
 
     // ensure the dependency on the provided stage
     this.node.addDependency(stage);

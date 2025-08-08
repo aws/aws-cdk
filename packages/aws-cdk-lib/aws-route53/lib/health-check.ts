@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnHealthCheck } from './route53.generated';
+import { CfnHealthCheck, ICfnHealthCheck } from './route53.generated';
 import { Duration, IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -7,7 +7,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Imported or created health check
  */
-export interface IHealthCheck extends IResource {
+export interface IHealthCheck extends IResource, ICfnHealthCheck {
   /**
    * The ID of the health check.
    *
@@ -251,12 +251,14 @@ export class HealthCheck extends Resource implements IHealthCheck {
   public static fromHealthCheckId(scope: Construct, id: string, healthCheckId: string): IHealthCheck {
     class Import extends Resource implements IHealthCheck {
       public readonly healthCheckId = healthCheckId;
+      public readonly attrHealthCheckId = healthCheckId;
     }
 
     return new Import(scope, id);
   }
 
   public readonly healthCheckId: string;
+  public readonly attrHealthCheckId: string;
 
   /**
    * Creates a new health check.
@@ -293,6 +295,7 @@ export class HealthCheck extends Resource implements IHealthCheck {
       },
     });
 
+    this.attrHealthCheckId = resource.attrHealthCheckId;
     this.healthCheckId = resource.ref;
   }
 }

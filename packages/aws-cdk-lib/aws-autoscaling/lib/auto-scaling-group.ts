@@ -1,7 +1,7 @@
 
 import { Construct } from 'constructs';
 import { AutoScalingGroupRequireImdsv2Aspect } from './aspects';
-import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
+import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration, ICfnAutoScalingGroup } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
@@ -1138,6 +1138,8 @@ export enum CapacityDistributionStrategy {
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
   public abstract autoScalingGroupName: string;
   public abstract autoScalingGroupArn: string;
+  public abstract attrAutoScalingGroupName: string;
+  public abstract attrAutoScalingGroupArn: string;
   public abstract readonly osType: ec2.OperatingSystemType;
   protected albTargetGroup?: elbv2.ApplicationTargetGroup;
   public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });
@@ -1303,6 +1305,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         resource: 'autoScalingGroup:*:autoScalingGroupName',
         resourceName: this.autoScalingGroupName,
       });
+      public attrAutoScalingGroupName = autoScalingGroupName;
+      public attrAutoScalingGroupArn = this.autoScalingGroupArn;
       public readonly osType = ec2.OperatingSystemType.UNKNOWN;
     }
 
@@ -1328,6 +1332,16 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * Arn of the AutoScalingGroup
    */
   public readonly autoScalingGroupArn: string;
+
+  /**
+   * Name of the AutoScalingGroup
+   */
+  public readonly attrAutoScalingGroupName: string;
+
+  /**
+   * Arn of the AutoScalingGroup
+   */
+  public readonly attrAutoScalingGroupArn: string;
 
   /**
    * The maximum spot price configured for the autoscaling group. `undefined`
@@ -1606,6 +1620,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
+    this.attrAutoScalingGroupArn = this.autoScalingGroup.attrAutoScalingGroupArn;
+    this.attrAutoScalingGroupName = this.autoScalingGroup.attrAutoScalingGroupName;
     this.autoScalingGroupName = this.getResourceNameAttribute(this.autoScalingGroup.ref),
     this.autoScalingGroupArn = Stack.of(this).formatArn({
       service: 'autoscaling',
@@ -2464,7 +2480,7 @@ function validatePercentage(x?: number): number | undefined {
 /**
  * An AutoScalingGroup
  */
-export interface IAutoScalingGroup extends IResource, iam.IGrantable {
+export interface IAutoScalingGroup extends IResource, iam.IGrantable, ICfnAutoScalingGroup {
   /**
    * The name of the AutoScalingGroup
    * @attribute

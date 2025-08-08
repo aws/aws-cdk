@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnKeyPair } from './ec2.generated';
+import { CfnKeyPair, ICfnKeyPair } from './ec2.generated';
 import { OperatingSystemType } from './machine-image';
 import { StringParameter, IStringParameter } from '../../aws-ssm';
 import { Resource, ResourceProps, Names, Lazy, IResource, ValidationError } from '../../core';
@@ -96,7 +96,7 @@ export interface KeyPairAttributes {
 /**
  * An EC2 Key Pair.
  */
-export interface IKeyPair extends IResource {
+export interface IKeyPair extends IResource, ICfnKeyPair {
   /**
    * The name of the key pair.
    *
@@ -140,12 +140,14 @@ export class KeyPair extends Resource implements IKeyPair {
   public static fromKeyPairAttributes(scope: Construct, id: string, attrs: KeyPairAttributes): IKeyPair {
     class Import extends Resource implements IKeyPair {
       public readonly keyPairName: string;
+      public readonly attrKeyName: string;
       public readonly type?: KeyPairType;
 
       constructor() {
         super(scope, id);
         this.keyPairName = attrs.keyPairName;
         this.type = attrs.type;
+        this.attrKeyName = attrs.keyPairName;
       }
 
       /**
@@ -173,6 +175,13 @@ export class KeyPair extends Resource implements IKeyPair {
    * @attribute
    */
   public readonly keyPairName: string;
+
+  /**
+   * The unique name of the key pair.
+   *
+   * @attribute
+   */
+  public readonly attrKeyName: string;
 
   /**
    * The fingerprint of the key pair.
@@ -227,6 +236,7 @@ export class KeyPair extends Resource implements IKeyPair {
       publicKeyMaterial: props?.publicKeyMaterial,
     });
 
+    this.attrKeyName = cfnResource.attrKeyName;
     this.keyPairName = cfnResource.ref;
     this.keyPairFingerprint = cfnResource.attrKeyFingerprint;
     this.keyPairId = cfnResource.attrKeyPairId;

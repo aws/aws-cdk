@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnSlackChannelConfiguration } from './chatbot.generated';
+import { CfnSlackChannelConfiguration, ICfnSlackChannelConfiguration } from './chatbot.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
@@ -121,7 +121,10 @@ export enum LoggingLevel {
 /**
  * Represents a Slack channel configuration
  */
-export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantable, notifications.INotificationRuleTarget {
+export interface ISlackChannelConfiguration extends cdk.IResource,
+  iam.IGrantable,
+  notifications.INotificationRuleTarget,
+  ICfnSlackChannelConfiguration {
 
   /**
    * The ARN of the Slack channel configuration
@@ -160,6 +163,8 @@ export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantabl
  */
 abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISlackChannelConfiguration {
   abstract readonly slackChannelConfigurationArn: string;
+
+  abstract readonly attrArn: string;
 
   abstract readonly slackChannelConfigurationName: string;
 
@@ -234,6 +239,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
        * @attribute
        */
       readonly slackChannelConfigurationArn = slackChannelConfigurationArn;
+      readonly attrArn = slackChannelConfigurationArn;
       readonly role?: iam.IRole = undefined;
       readonly grantPrincipal: iam.IPrincipal;
 
@@ -279,6 +285,8 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
   readonly slackChannelConfigurationArn: string;
 
+  readonly attrArn: string;
+
   readonly slackChannelConfigurationName: string;
 
   readonly role?: iam.IRole;
@@ -316,6 +324,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
       guardrailPolicies: cdk.Lazy.list({ produce: () => props.guardrailPolicies?.map(policy => policy.managedPolicyArn) }, { omitEmpty: true } ),
       userRoleRequired: props.userRoleRequired,
     });
+    this.attrArn = configuration.attrArn;
 
     // Log retention
     // AWS Chatbot publishes logs to us-east-1 regardless of stack region https://docs.aws.amazon.com/chatbot/latest/adminguide/cloudwatch-logs.html

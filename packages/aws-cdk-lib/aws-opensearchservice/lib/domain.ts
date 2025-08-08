@@ -3,7 +3,7 @@ import { URL } from 'url';
 import { Construct } from 'constructs';
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import { OpenSearchAccessPolicy } from './opensearch-access-policy';
-import { CfnDomain } from './opensearchservice.generated';
+import { CfnDomain, ICfnDomain } from './opensearchservice.generated';
 import * as perms from './perms';
 import { EngineVersion } from './version';
 import * as acm from '../../aws-certificatemanager';
@@ -760,7 +760,7 @@ export interface DomainProps {
 /**
  * An interface that represents an Amazon OpenSearch Service domain - either created with the CDK, or an existing one.
  */
-export interface IDomain extends cdk.IResource {
+export interface IDomain extends cdk.IResource, ICfnDomain {
   /**
    * Arn of the Amazon OpenSearch Service domain.
    *
@@ -984,6 +984,8 @@ export interface IDomain extends cdk.IResource {
 abstract class DomainBase extends cdk.Resource implements IDomain {
   public abstract readonly domainArn: string;
   public abstract readonly domainName: string;
+  public abstract readonly attrArn: string;
+  public abstract readonly attrDomainName: string;
   public abstract readonly domainId: string;
   public abstract readonly domainEndpoint: string;
 
@@ -1401,6 +1403,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     return new class extends DomainBase {
       public readonly domainArn = domainArn;
       public readonly domainName = domainName;
+      public readonly attrArn = domainArn;
+      public readonly attrDomainName = domainName;
       public readonly domainId = domainName;
       public readonly domainEndpoint = domainEndpoint.replace(/^https?:\/\//, '');
 
@@ -1410,6 +1414,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
   public readonly domainArn: string;
   public readonly domainName: string;
+  public readonly attrArn: string;
+  public readonly attrDomainName: string;
   public readonly domainId: string;
   public readonly domainEndpoint: string;
 
@@ -2088,6 +2094,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       resource: 'domain',
       resourceName: this.physicalName,
     });
+
+    this.attrDomainName = this.domainName;
+    this.attrArn = this.domainArn;
 
     if (props.customEndpoint?.hostedZone) {
       new route53.CnameRecord(this, 'CnameRecord', {

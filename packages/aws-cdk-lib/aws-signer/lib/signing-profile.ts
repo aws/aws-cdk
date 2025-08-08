@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnSigningProfile } from './signer.generated';
+import { CfnSigningProfile, ICfnSigningProfile } from './signer.generated';
 import { Duration, IResource, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -60,7 +60,7 @@ export class Platform {
 /**
  * A Signer Profile
  */
-export interface ISigningProfile extends IResource {
+export interface ISigningProfile extends IResource, ICfnSigningProfile {
   /**
    * The ARN of the signing profile.
    * @attribute
@@ -147,6 +147,7 @@ export class SigningProfile extends Resource implements ISigningProfile {
   public static fromSigningProfileAttributes( scope: Construct, id: string, attrs: SigningProfileAttributes): ISigningProfile {
     class Import extends Resource implements ISigningProfile {
       public readonly signingProfileArn: string;
+      public readonly attrArn: string;
       public readonly signingProfileName = attrs.signingProfileName;
       public readonly signingProfileVersion = attrs.signingProfileVersion;
       public readonly signingProfileVersionArn: string;
@@ -154,6 +155,7 @@ export class SigningProfile extends Resource implements ISigningProfile {
       constructor(signingProfileArn: string, signingProfileProfileVersionArn: string) {
         super(scope, id);
         this.signingProfileArn = signingProfileArn;
+        this.attrArn = signingProfileArn;
         this.signingProfileVersionArn = signingProfileProfileVersionArn;
       }
     }
@@ -171,6 +173,7 @@ export class SigningProfile extends Resource implements ISigningProfile {
   }
 
   public readonly signingProfileArn: string;
+  public readonly attrArn: string;
   public readonly signingProfileName: string;
   public readonly signingProfileVersion: string;
   public readonly signingProfileVersionArn: string;
@@ -193,6 +196,7 @@ export class SigningProfile extends Resource implements ISigningProfile {
       },
     } );
 
+    this.attrArn = resource.attrArn;
     this.signingProfileArn = resource.attrArn;
     this.signingProfileName = resource.attrProfileName;
     this.signingProfileVersion = resource.attrProfileVersion;

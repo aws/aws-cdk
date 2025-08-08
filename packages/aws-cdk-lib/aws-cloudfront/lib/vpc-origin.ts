@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnVpcOrigin } from './cloudfront.generated';
+import { CfnVpcOrigin, ICfnVpcOrigin } from './cloudfront.generated';
 import { OriginProtocolPolicy, OriginSslPolicy } from '../';
 import { IInstance } from '../../aws-ec2';
 import { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
@@ -10,7 +10,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a VPC origin.
  */
-export interface IVpcOrigin extends IResource {
+export interface IVpcOrigin extends IResource, ICfnVpcOrigin {
   /**
    * The VPC origin ARN.
    * @attribute
@@ -183,6 +183,8 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
     class Import extends Resource implements IVpcOrigin {
       readonly vpcOriginArn = vpcOriginArn;
       readonly vpcOriginId = vpcOriginId!;
+      readonly attrArn = vpcOriginArn;
+      readonly attrId = vpcOriginId!;
       readonly domainName = attrs.domainName;
     }
 
@@ -199,6 +201,16 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
    * @attribute
    */
   readonly vpcOriginId: string;
+  /**
+   * The VPC origin ARN.
+   * @attribute
+   */
+  readonly attrArn: string;
+  /**
+   * The VPC origin ID.
+   * @attribute
+   */
+  readonly attrId: string;
   /**
    * The domain name of the CloudFront VPC origin endpoint configuration.
    */
@@ -224,6 +236,8 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
         originSslProtocols: props.originSslProtocols ?? [OriginSslPolicy.TLS_V1_2],
       },
     });
+    this.attrId = resource.attrId;
+    this.attrArn = resource.attrArn;
 
     this.vpcOriginArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'cloudfront',

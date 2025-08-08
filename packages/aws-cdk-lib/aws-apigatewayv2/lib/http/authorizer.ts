@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { IHttpRoute } from './route';
-import { CfnAuthorizer } from '.././index';
+import { CfnAuthorizer, ICfnAuthorizer } from '.././index';
 import { Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
@@ -109,7 +109,7 @@ export interface HttpAuthorizerProps {
 /**
  * An authorizer for HTTP APIs
  */
-export interface IHttpAuthorizer extends IAuthorizer {
+export interface IHttpAuthorizer extends IAuthorizer, ICfnAuthorizer {
 }
 
 /**
@@ -162,6 +162,7 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
   }
 
   public readonly authorizerId: string;
+  public readonly attrAuthorizerId: string;
 
   constructor(scope: Construct, id: string, props: HttpAuthorizerProps) {
     super(scope, id);
@@ -202,6 +203,7 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
     });
 
     this.authorizerId = resource.ref;
+    this.attrAuthorizerId = this.authorizerId;
   }
 }
 

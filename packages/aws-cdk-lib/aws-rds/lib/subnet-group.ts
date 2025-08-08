@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnDBSubnetGroup } from './rds.generated';
+import { CfnDBSubnetGroup, ICfnDBSubnetGroup } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
 import { IResource, RemovalPolicy, Resource, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -8,7 +8,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Interface for a subnet group.
  */
-export interface ISubnetGroup extends IResource {
+export interface ISubnetGroup extends IResource, ICfnDBSubnetGroup {
   /**
    * The name of the subnet group.
    * @attribute
@@ -69,10 +69,12 @@ export class SubnetGroup extends Resource implements ISubnetGroup {
   public static fromSubnetGroupName(scope: Construct, id: string, subnetGroupName: string): ISubnetGroup {
     return new class extends Resource implements ISubnetGroup {
       public readonly subnetGroupName = subnetGroupName;
+      public readonly attrDbSubnetGroupName = subnetGroupName;
     }(scope, id);
   }
 
   public readonly subnetGroupName: string;
+  public readonly attrDbSubnetGroupName: string;
 
   constructor(scope: Construct, id: string, props: SubnetGroupProps) {
     super(scope, id);
@@ -92,6 +94,8 @@ export class SubnetGroup extends Resource implements ISubnetGroup {
         : props.subnetGroupName?.toLowerCase(),
       subnetIds,
     });
+
+    this.attrDbSubnetGroupName = subnetGroup.attrDbSubnetGroupName;
 
     if (props.removalPolicy) {
       subnetGroup.applyRemovalPolicy(props.removalPolicy);

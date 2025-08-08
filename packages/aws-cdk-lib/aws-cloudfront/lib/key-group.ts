@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnKeyGroup } from './cloudfront.generated';
+import { CfnKeyGroup, ICfnKeyGroup } from './cloudfront.generated';
 import { IPublicKey } from './public-key';
 import { IResource, Names, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -8,7 +8,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a Key Group
  */
-export interface IKeyGroup extends IResource {
+export interface IKeyGroup extends IResource, ICfnKeyGroup {
   /**
    * The ID of the key group.
    * @attribute
@@ -52,9 +52,11 @@ export class KeyGroup extends Resource implements IKeyGroup {
   public static fromKeyGroupId(scope: Construct, id: string, keyGroupId: string): IKeyGroup {
     return new class extends Resource implements IKeyGroup {
       public readonly keyGroupId = keyGroupId;
+      public readonly attrId = keyGroupId;
     }(scope, id);
   }
   public readonly keyGroupId: string;
+  public readonly attrId: string;
 
   constructor(scope: Construct, id: string, props: KeyGroupProps) {
     super(scope, id);
@@ -69,6 +71,7 @@ export class KeyGroup extends Resource implements IKeyGroup {
       },
     });
 
+    this.attrId = resource.attrId;
     this.keyGroupId = resource.ref;
   }
 

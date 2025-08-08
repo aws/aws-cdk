@@ -1,11 +1,11 @@
 import { Construct } from 'constructs';
-import { CfnJobDefinitionProps } from './batch.generated';
+import { CfnJobDefinitionProps, ICfnJobDefinition } from './batch.generated';
 import { Duration, IResource, Lazy, Resource } from '../../core';
 
 /**
  * Represents a JobDefinition
  */
-export interface IJobDefinition extends IResource {
+export interface IJobDefinition extends IResource, ICfnJobDefinition {
   /**
    * The ARN of this job definition
    *
@@ -237,6 +237,8 @@ export class Reason {
 export abstract class JobDefinitionBase extends Resource implements IJobDefinition {
   public readonly abstract jobDefinitionArn: string;
   public readonly abstract jobDefinitionName: string;
+  public readonly abstract attrJobDefinitionArn: string;
+  public readonly abstract attrJobDefinitionName: string;
 
   public readonly parameters?: { [key:string]: any };
   public readonly retryAttempts?: number;

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnExtension, CfnExtensionAssociation } from './appconfig.generated';
+import { CfnExtension, CfnExtensionAssociation, ICfnExtension } from './appconfig.generated';
 import { getHash, stringifyObjects } from './private/hash';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -413,6 +413,8 @@ export class Extension extends Resource implements IExtension {
       public readonly extensionId = extensionId;
       public readonly extensionVersionNumber = parseInt(extensionVersionNumber);
       public readonly extensionArn = extensionArn;
+      public readonly attrId = extensionId;
+      public readonly attrArn = extensionArn;
     }
 
     return new Import(scope, id, {
@@ -442,6 +444,8 @@ export class Extension extends Resource implements IExtension {
       public readonly name = attrs.name;
       public readonly actions = attrs.actions;
       public readonly description = attrs.description;
+      public readonly attrId = attrs.extensionId;
+      public readonly attrArn = extensionArn;
     }
 
     return new Import(scope, id, {
@@ -487,6 +491,20 @@ export class Extension extends Resource implements IExtension {
    * @attribute
    */
   public readonly extensionId: string;
+
+  /**
+   * The Amazon Resource Name (ARN) of the extension.
+   *
+   * @attribute
+   */
+  public readonly attrArn: string;
+
+  /**
+   * The ID of the extension.
+   *
+   * @attribute
+   */
+  public readonly attrId: string;
 
   /**
    * The version number of the extension.
@@ -546,6 +564,8 @@ export class Extension extends Resource implements IExtension {
       }, {}),
     });
     this._cfnExtension = resource;
+    this.attrId = resource.attrId;
+    this.attrArn = resource.attrArn;
 
     this.extensionId = this._cfnExtension.attrId;
     this.extensionVersionNumber = this._cfnExtension.attrVersionNumber;
@@ -571,7 +591,7 @@ export class Extension extends Resource implements IExtension {
   }
 }
 
-export interface IExtension extends IResource {
+export interface IExtension extends IResource, ICfnExtension {
   /**
    * The actions for the extension.
    */

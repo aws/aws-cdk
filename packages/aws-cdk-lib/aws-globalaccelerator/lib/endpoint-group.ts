@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { AcceleratorSecurityGroupPeer } from './_accelerator-security-group';
 import { IEndpoint } from './endpoint';
 import * as ga from './globalaccelerator.generated';
+import { ICfnEndpointGroup } from './globalaccelerator.generated';
 import { IListener } from './listener';
 import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
@@ -11,7 +12,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * The interface of the EndpointGroup
  */
-export interface IEndpointGroup extends cdk.IResource {
+export interface IEndpointGroup extends cdk.IResource, ICfnEndpointGroup {
   /**
    * EndpointGroup ARN
    * @attribute
@@ -165,11 +166,14 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
   public static fromEndpointGroupArn(scope: Construct, id: string, endpointGroupArn: string): IEndpointGroup {
     class Import extends cdk.Resource implements IEndpointGroup {
       public readonly endpointGroupArn = endpointGroupArn;
+      public readonly attrEndpointGroupArn = endpointGroupArn;
     }
     return new Import(scope, id);
   }
 
   public readonly endpointGroupArn: string;
+
+  public readonly attrEndpointGroupArn: string;
   /**
    *
    * The name of the endpoint group
@@ -202,6 +206,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
         listenerPort: o.listenerPort,
       })),
     });
+    this.attrEndpointGroupArn = resource.attrEndpointGroupArn;
 
     this.endpointGroupArn = resource.attrEndpointGroupArn;
     this.endpointGroupName = props.endpointGroupName ?? resource.logicalId;

@@ -1,3 +1,4 @@
+import { ICfnGraphQLApi } from './appsync.generated';
 import {
   DynamoDbDataSource,
   HttpDataSource,
@@ -156,7 +157,7 @@ export enum AuthorizationType {
 /**
  * Interface for GraphQL
  */
-export interface IGraphqlApi extends IResource {
+export interface IGraphqlApi extends IResource, ICfnGraphQLApi {
 
   /**
    * an unique AWS AppSync GraphQL API identifier
@@ -359,6 +360,17 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * the ARN of the API
    */
   public abstract readonly arn: string;
+
+  /**
+   * an unique AWS AppSync GraphQL API identifier
+   * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
+   */
+  public abstract readonly attrApiId: string;
+
+  /**
+   * the ARN of the API
+   */
+  public abstract readonly attrArn: string;
 
   /**
    * The Authorization Types for this GraphQL Api

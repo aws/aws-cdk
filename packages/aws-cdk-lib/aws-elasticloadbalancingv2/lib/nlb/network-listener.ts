@@ -155,6 +155,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
     class LookedUp extends Resource implements INetworkListener {
       public listenerArn = props.listenerArn;
+      public attrListenerArn = props.listenerArn;
     }
 
     return new LookedUp(scope, id);
@@ -166,6 +167,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   public static fromNetworkListenerArn(scope: Construct, id: string, networkListenerArn: string): INetworkListener {
     class Import extends Resource implements INetworkListener {
       public listenerArn = networkListenerArn;
+      public attrListenerArn = networkListenerArn;
     }
 
     return new Import(scope, id);

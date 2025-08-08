@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
-import { CfnDistribution, CfnMonitoringSubscription } from './cloudfront.generated';
+import { CfnDistribution, CfnMonitoringSubscription, ICfnDistribution } from './cloudfront.generated';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
@@ -23,7 +23,7 @@ import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
 /**
  * Interface for CloudFront distributions
  */
-export interface IDistribution extends IResource {
+export interface IDistribution extends IResource, ICfnDistribution {
   /**
    * The domain name of the Distribution, such as d111111abcdef8.cloudfront.net.
    *
@@ -297,12 +297,14 @@ export class Distribution extends Resource implements IDistribution {
       public readonly domainName: string;
       public readonly distributionDomainName: string;
       public readonly distributionId: string;
+      public readonly attrId: string;
 
       constructor() {
         super(scope, id);
         this.domainName = attrs.domainName;
         this.distributionDomainName = attrs.domainName;
         this.distributionId = attrs.distributionId;
+        this.attrId = attrs.distributionId;
       }
 
       public get distributionArn(): string {
@@ -320,6 +322,7 @@ export class Distribution extends Resource implements IDistribution {
   public readonly domainName: string;
   public readonly distributionDomainName: string;
   public readonly distributionId: string;
+  public readonly attrId: string;
 
   private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;
@@ -396,6 +399,7 @@ export class Distribution extends Resource implements IDistribution {
       },
     });
 
+    this.attrId = distribution.attrId;
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;

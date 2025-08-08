@@ -6,13 +6,13 @@ import { IpInstance, IpInstanceBaseProps } from './ip-instance';
 import { INamespace, NamespaceType } from './namespace';
 import { NonIpInstance, NonIpInstanceBaseProps } from './non-ip-instance';
 import { defaultDiscoveryType } from './private/utils';
-import { CfnService } from './servicediscovery.generated';
+import { CfnService, ICfnService } from './servicediscovery.generated';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { Duration, IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface IService extends IResource {
+export interface IService extends IResource, ICfnService {
   /**
    * A name for the Cloudmap Service.
    * @attribute
@@ -148,6 +148,8 @@ abstract class ServiceBase extends Resource implements IService {
   public abstract namespace: INamespace;
   public abstract serviceId: string;
   public abstract serviceArn: string;
+  public abstract attrId: string;
+  public abstract attrArn: string;
   public abstract dnsRecordType: DnsRecordType;
   public abstract routingPolicy: RoutingPolicy;
   public abstract readonly serviceName: string;
@@ -177,6 +179,8 @@ export class Service extends ServiceBase {
       public namespace: INamespace = attrs.namespace;
       public serviceId = attrs.serviceId;
       public serviceArn = attrs.serviceArn;
+      public attrId = attrs.serviceId;
+      public attrArn = attrs.serviceArn;
       public dnsRecordType = attrs.dnsRecordType;
       public routingPolicy = attrs.routingPolicy;
       public serviceName = attrs.serviceName;
@@ -205,6 +209,16 @@ export class Service extends ServiceBase {
    * The Arn of the namespace that you want to use for DNS configuration.
    */
   public readonly serviceArn: string;
+
+  /**
+   * The ID of the namespace that you want to use for DNS configuration.
+   */
+  public readonly attrId: string;
+
+  /**
+   * The Arn of the namespace that you want to use for DNS configuration.
+   */
+  public readonly attrArn: string;
 
   /**
    * The DnsRecordType used by the service
@@ -321,6 +335,8 @@ export class Service extends ServiceBase {
     this.serviceName = service.attrName;
     this.serviceArn = service.attrArn;
     this.serviceId = service.attrId;
+    this.attrArn = service.attrArn;
+    this.attrId = service.attrId;
     this.namespace = props.namespace;
     this.dnsRecordType = dnsRecordType;
     this.routingPolicy = routingPolicy;

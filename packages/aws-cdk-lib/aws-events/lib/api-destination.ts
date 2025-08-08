@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { HttpMethod, IConnection } from './connection';
-import { CfnApiDestination } from './events.generated';
+import { CfnApiDestination, ICfnApiDestination } from './events.generated';
 import { ArnFormat, IResource, Resource, Stack, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -50,7 +50,7 @@ export interface ApiDestinationProps {
 /**
  * Interface for API Destinations
  */
-export interface IApiDestination extends IResource {
+export interface IApiDestination extends IResource, ICfnApiDestination {
   /**
    * The Name of the Api Destination created.
    * @attribute
@@ -125,6 +125,8 @@ export class ApiDestination extends Resource implements IApiDestination {
     class Import extends Resource implements ApiDestination {
       public readonly apiDestinationArn = attrs.apiDestinationArn;
       public readonly apiDestinationName = apiDestinationName!;
+      public readonly attrArn = attrs.apiDestinationArn;
+      public readonly attrName = apiDestinationName!;
       public readonly apiDestinationArnForPolicy = attrs.apiDestinationArnForPolicy;
       public readonly connection = attrs.connection;
     }
@@ -147,6 +149,18 @@ export class ApiDestination extends Resource implements IApiDestination {
    * @attribute
    */
   public readonly apiDestinationArn: string;
+
+  /**
+   * The Name of the Api Destination created.
+   * @attribute
+   */
+  public readonly attrName: string;
+
+  /**
+   * The ARN of the Api Destination created.
+   * @attribute
+   */
+  public readonly attrArn: string;
 
   /**
    * The Amazon Resource Name (ARN) of an API destination in resource format.
@@ -174,6 +188,8 @@ export class ApiDestination extends Resource implements IApiDestination {
 
     this.apiDestinationName = this.getResourceNameAttribute(apiDestination.ref);
     this.apiDestinationArn = apiDestination.attrArn;
+    this.attrName = this.apiDestinationName;
+    this.attrArn = this.apiDestinationArn;
     this.apiDestinationArnForPolicy = apiDestination.attrArnForPolicy;
   }
 }

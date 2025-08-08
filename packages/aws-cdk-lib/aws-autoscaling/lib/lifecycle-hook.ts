@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
-import { CfnLifecycleHook } from './autoscaling.generated';
+import { CfnLifecycleHook, ICfnLifecycleHook } from './autoscaling.generated';
 import { ILifecycleHookTarget } from './lifecycle-hook-target';
 import * as iam from '../../aws-iam';
 import { Duration, IResource, Resource, ValidationError } from '../../core';
@@ -74,7 +74,7 @@ export interface LifecycleHookProps extends BasicLifecycleHookProps {
 /**
  * A basic lifecycle hook object
  */
-export interface ILifecycleHook extends IResource {
+export interface ILifecycleHook extends IResource, ICfnLifecycleHook {
   /**
    * The role for the lifecycle hook to execute
    *

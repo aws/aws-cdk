@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnVolume } from './ec2.generated';
+import { CfnVolume, ICfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
 import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
@@ -265,7 +265,7 @@ export enum EbsDeviceVolumeType {
 /**
  * An EBS Volume in AWS EC2.
  */
-export interface IVolume extends IResource {
+export interface IVolume extends IResource, ICfnVolume {
   /**
    * The EBS Volume's ID
    *
@@ -511,6 +511,7 @@ export interface VolumeAttributes {
  */
 abstract class VolumeBase extends Resource implements IVolume {
   public abstract readonly volumeId: string;
+  public abstract readonly attrVolumeId: string;
   public abstract readonly availabilityZone: string;
   public abstract readonly encryptionKey?: IKey;
 
@@ -628,6 +629,7 @@ export class Volume extends VolumeBase {
   public static fromVolumeAttributes(scope: Construct, id: string, attrs: VolumeAttributes): IVolume {
     class Import extends VolumeBase {
       public readonly volumeId = attrs.volumeId;
+      public readonly attrVolumeId = attrs.volumeId;
       public readonly availabilityZone = attrs.availabilityZone;
       public readonly encryptionKey = attrs.encryptionKey;
     }
@@ -639,6 +641,7 @@ export class Volume extends VolumeBase {
   }
 
   public readonly volumeId: string;
+  public readonly attrVolumeId: string;
   public readonly availabilityZone: string;
   public readonly encryptionKey?: IKey;
 
@@ -666,6 +669,7 @@ export class Volume extends VolumeBase {
           EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3 : EbsDeviceVolumeType.GENERAL_PURPOSE_SSD),
       volumeInitializationRate: props.volumeInitializationRate?.toMebibytes(),
     });
+    this.attrVolumeId = resource.attrVolumeId;
     resource.applyRemovalPolicy(props.removalPolicy);
 
     if (props.volumeName) Tags.of(resource).add('Name', props.volumeName);

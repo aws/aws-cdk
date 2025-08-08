@@ -1,6 +1,6 @@
 import { EOL } from 'os';
 import { IConstruct, Construct } from 'constructs';
-import { CfnRepository } from './ecr.generated';
+import { CfnRepository, ICfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -34,7 +34,7 @@ const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
 /**
  * Represents an ECR repository.
  */
-export interface IRepository extends IResource {
+export interface IRepository extends IResource, ICfnRepository {
   /**
    * The name of the repository
    * @attribute
@@ -190,6 +190,16 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * The ARN of the repository
    */
   public abstract readonly repositoryArn: string;
+
+  /**
+   * The name of the repository
+   */
+  public abstract readonly attrRepositoryName: string;
+
+  /**
+   * The ARN of the repository
+   */
+  public abstract readonly attrArn: string;
 
   /**
    * Add a policy statement to the repository's resource policy
@@ -693,6 +703,8 @@ export class Repository extends RepositoryBase {
     class Import extends RepositoryBase {
       public readonly repositoryName = attrs.repositoryName;
       public readonly repositoryArn = attrs.repositoryArn;
+      public readonly attrRepositoryName = attrs.repositoryName;
+      public readonly attrArn = attrs.repositoryArn;
 
       public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
         // dropped
@@ -718,6 +730,8 @@ export class Repository extends RepositoryBase {
     class Import extends RepositoryBase {
       public repositoryName = repositoryName;
       public repositoryArn = repositoryArn;
+      public attrRepositoryName = repositoryName;
+      public attrArn = repositoryArn;
 
       public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
         // dropped
@@ -742,6 +756,8 @@ export class Repository extends RepositoryBase {
     class Import extends RepositoryBase {
       public repositoryName = repositoryName;
       public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
+      public attrRepositoryName = repositoryName;
+      public attrArn = Repository.arnForLocalRepository(repositoryName, scope);
 
       public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
         // dropped
@@ -791,6 +807,8 @@ export class Repository extends RepositoryBase {
 
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
+  public readonly attrRepositoryName: string;
+  public readonly attrArn: string;
   private readonly lifecycleRules = new Array<LifecycleRule>();
   private readonly registryId?: string;
   private policyDocument?: iam.PolicyDocument;
@@ -815,6 +833,8 @@ export class Repository extends RepositoryBase {
       encryptionConfiguration: this.parseEncryption(props),
       emptyOnDelete: props.emptyOnDelete,
     });
+    this.attrArn = resource.attrArn;
+    this.attrRepositoryName = resource.attrRepositoryName;
     this._resource = resource;
 
     resource.applyRemovalPolicy(props.removalPolicy);

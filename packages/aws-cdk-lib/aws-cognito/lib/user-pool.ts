@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { toASCII as punycodeEncode } from 'punycode/';
-import { CfnUserPool } from './cognito.generated';
+import { CfnUserPool, ICfnUserPool } from './cognito.generated';
 import { StandardAttributeNames } from './private/attr-names';
 import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
@@ -945,7 +945,7 @@ export interface UserPoolProps {
 /**
  * Represents a Cognito UserPool
  */
-export interface IUserPool extends IResource {
+export interface IUserPool extends IResource, ICfnUserPool {
   /**
    * The physical ID of this user pool resource
    * @attribute
@@ -1009,6 +1009,8 @@ export interface IUserPool extends IResource {
 abstract class UserPoolBase extends Resource implements IUserPool {
   public abstract readonly userPoolId: string;
   public abstract readonly userPoolArn: string;
+  public abstract readonly attrUserPoolId: string;
+  public abstract readonly attrArn: string;
   public abstract readonly userPoolProviderName: string;
   public readonly identityProviders: IUserPoolIdentityProvider[] = [];
 
@@ -1094,6 +1096,8 @@ export class UserPool extends UserPoolBase {
     class ImportedUserPool extends UserPoolBase {
       public readonly userPoolArn = userPoolArn;
       public readonly userPoolId = userPoolId;
+      public readonly attrArn = userPoolArn;
+      public readonly attrUserPoolId = userPoolId;
       public readonly userPoolProviderName = providerName;
 
       constructor() {
@@ -1116,6 +1120,16 @@ export class UserPool extends UserPoolBase {
    * The ARN of the user pool
    */
   public readonly userPoolArn: string;
+
+  /**
+   * The physical ID of this user pool resource
+   */
+  public readonly attrUserPoolId: string;
+
+  /**
+   * The ARN of the user pool
+   */
+  public readonly attrArn: string;
 
   /**
    * User pool provider name
@@ -1276,6 +1290,9 @@ export class UserPool extends UserPoolBase {
       deletionProtection: defaultDeletionProtection(props.deletionProtection),
     });
     userPool.applyRemovalPolicy(props.removalPolicy);
+
+    this.attrUserPoolId = userPool.attrUserPoolId;
+    this.attrArn = userPool.attrArn;
 
     this.userPoolId = userPool.ref;
     this.userPoolArn = userPool.attrArn;

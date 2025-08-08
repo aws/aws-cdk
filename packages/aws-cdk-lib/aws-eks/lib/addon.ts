@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
-import { CfnAddon } from './eks.generated';
+import { CfnAddon, ICfnAddon } from './eks.generated';
 import { ArnFormat, IResource, Resource, Stack, Fn } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -8,7 +8,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents an Amazon EKS Add-On.
  */
-export interface IAddon extends IResource {
+export interface IAddon extends IResource, ICfnAddon {
   /**
    * Name of the Add-On.
    * @attribute
@@ -97,6 +97,7 @@ export class Addon extends Resource implements IAddon {
         resource: 'addon',
         resourceName: `${attrs.clusterName}/${attrs.addonName}`,
       });
+      public readonly attrArn = this.addonArn;
     }
     return new Import(scope, id);
   }
@@ -114,6 +115,7 @@ export class Addon extends Resource implements IAddon {
     class Import extends Resource implements IAddon {
       public readonly addonName = Fn.select(1, splitResourceName);
       public readonly addonArn = addonArn;
+      public readonly attrArn = addonArn;
     }
 
     return new Import(scope, id);
@@ -127,6 +129,10 @@ export class Addon extends Resource implements IAddon {
    * Arn of the addon.
    */
   public readonly addonArn: string;
+  /**
+   * Arn of the addon.
+   */
+  public readonly attrArn: string;
   private readonly clusterName: string;
 
   /**
@@ -159,5 +165,6 @@ export class Addon extends Resource implements IAddon {
       resource: 'addon',
       resourceName: `${this.clusterName}/${this.addonName}/`,
     });
+    this.attrArn = this.addonArn;
   }
 }

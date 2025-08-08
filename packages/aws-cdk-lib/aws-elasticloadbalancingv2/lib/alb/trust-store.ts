@@ -4,12 +4,12 @@ import { IResource, Resource, Fn, Names, Lazy, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { CfnTrustStore } from '../elasticloadbalancingv2.generated';
+import { CfnTrustStore, ICfnTrustStore } from '../elasticloadbalancingv2.generated';
 
 /**
  * Represents a Trust Store
  */
-export interface ITrustStore extends IResource {
+export interface ITrustStore extends IResource, ICfnTrustStore {
   /**
    * The name of the trust store
    * @attribute
@@ -72,6 +72,7 @@ export class TrustStore extends Resource implements ITrustStore {
 
     class Import extends Resource implements ITrustStore {
       public readonly trustStoreArn = trustStoreArn;
+      public readonly attrTrustStoreArn = trustStoreArn;
       public readonly trustStoreName = trustStoreName;
     }
     return new Import(scope, id);
@@ -105,6 +106,13 @@ export class TrustStore extends Resource implements ITrustStore {
    */
   public readonly trustStoreArn: string;
 
+  /**
+   * The ARN of the trust store
+   *
+   * @attribute
+   */
+  public readonly attrTrustStoreArn: string;
+
   constructor(scope: Construct, id: string, props: TrustStoreProps) {
     super(scope, id, {
       physicalName: props.trustStoreName ?? Lazy.string({
@@ -131,6 +139,7 @@ export class TrustStore extends Resource implements ITrustStore {
       caCertificatesBundleS3ObjectVersion: props.version,
     });
 
+    this.attrTrustStoreArn = resource.attrTrustStoreArn;
     this.trustStoreName = resource.ref;
     this.numberOfCaCertificates = resource.attrNumberOfCaCertificates;
     this.status = resource.attrStatus;

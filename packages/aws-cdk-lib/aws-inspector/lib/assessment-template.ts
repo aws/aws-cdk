@@ -1,12 +1,12 @@
 import { Construct } from 'constructs';
-import { CfnAssessmentTemplate } from './inspector.generated';
+import { CfnAssessmentTemplate, ICfnAssessmentTemplate } from './inspector.generated';
 import { IResource, Resource } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface for an Inspector Assessment Template
  */
-export interface IAssessmentTemplate extends IResource {
+export interface IAssessmentTemplate extends IResource, ICfnAssessmentTemplate {
   /**
    * The Amazon Resource Name (ARN) of the assessment template.
    * @attribute
@@ -41,9 +41,11 @@ export class AssessmentTemplate extends Resource {
   public static fromCfnAssessmentTemplate(scope: Construct, id: string, template: CfnAssessmentTemplate): IAssessmentTemplate {
     return new class extends Resource implements IAssessmentTemplate {
       public readonly assessmentTemplateArn: string;
+      public readonly attrArn: string;
       constructor() {
         super(scope, id);
         this.assessmentTemplateArn = template.attrArn;
+        this.attrArn = template.attrArn;
       }
     }();
   }

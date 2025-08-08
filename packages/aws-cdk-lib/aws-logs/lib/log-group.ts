@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { DataProtectionPolicy } from './data-protection-policy';
 import { FieldIndexPolicy } from './field-index-policy';
 import { LogStream } from './log-stream';
-import { CfnLogGroup } from './logs.generated';
+import { CfnLogGroup, ICfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import { FilterPattern, IFilterPattern } from './pattern';
 import { ResourcePolicy } from './policy';
@@ -15,7 +15,7 @@ import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError 
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface ILogGroup extends iam.IResourceWithPolicy {
+export interface ILogGroup extends iam.IResourceWithPolicy, ICfnLogGroup {
   /**
    * The ARN of this log group, with ':*' appended
    *
@@ -137,6 +137,16 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    * The name of this log group
    */
   public abstract readonly logGroupName: string;
+
+  /**
+   * The ARN of this log group, with ':*' appended
+   */
+  public abstract readonly attrArn: string;
+
+  /**
+   * The name of this log group
+   */
+  public abstract readonly attrLogGroupName: string;
 
   private policy?: ResourcePolicy;
 
@@ -604,6 +614,8 @@ export class LogGroup extends LogGroupBase {
     class Import extends LogGroupBase {
       public readonly logGroupArn = `${baseLogGroupArn}:*`;
       public readonly logGroupName = Stack.of(scope).splitArn(baseLogGroupArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
+      public readonly attrArn = this.logGroupArn;
+      public readonly attrLogGroupName = this.logGroupName;
     }
 
     return new Import(scope, id, {
@@ -625,6 +637,8 @@ export class LogGroup extends LogGroupBase {
         arnFormat: ArnFormat.COLON_RESOURCE_NAME,
         resourceName: baseLogGroupName + ':*',
       });
+      public readonly attrLogGroupName = this.logGroupName;
+      public readonly attrArn = this.logGroupArn;
     }
 
     return new Import(scope, id);
@@ -639,6 +653,16 @@ export class LogGroup extends LogGroupBase {
    * The name of this log group
    */
   public readonly logGroupName: string;
+
+  /**
+   * The ARN of this log group
+   */
+  public readonly attrArn: string;
+
+  /**
+   * The name of this log group
+   */
+  public readonly attrLogGroupName: string;
 
   constructor(scope: Construct, id: string, props: LogGroupProps = {}) {
     super(scope, id, {
@@ -689,6 +713,8 @@ export class LogGroup extends LogGroupBase {
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
     this.logGroupName = this.getResourceNameAttribute(resource.ref);
+    this.attrArn = this.logGroupArn;
+    this.attrLogGroupName = this.logGroupName;
   }
 }
 

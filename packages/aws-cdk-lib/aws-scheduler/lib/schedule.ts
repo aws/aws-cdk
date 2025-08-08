@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { ScheduleExpression } from './schedule-expression';
 import { IScheduleGroup } from './schedule-group';
-import { CfnSchedule } from './scheduler.generated';
+import { CfnSchedule, ICfnSchedule } from './scheduler.generated';
 import { IScheduleTarget } from './target';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as kms from '../../aws-kms';
@@ -12,7 +12,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Interface representing a created or an imported `Schedule`.
  */
-export interface ISchedule extends IResource {
+export interface ISchedule extends IResource, ICfnSchedule {
   /**
    * The arn of the schedule.
    * @attribute
@@ -258,6 +258,8 @@ export class Schedule extends Resource implements ISchedule {
     class Import extends Resource implements ISchedule {
       public readonly scheduleArn = scheduleArn;
       public readonly scheduleName = Arn.split(scheduleArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!.split('/')[1];
+      public readonly attrArn = this.scheduleArn;
+      public readonly attrName = this.scheduleName;
     }
     return new Import(scope, id);
   }
@@ -276,6 +278,16 @@ export class Schedule extends Resource implements ISchedule {
    * The name of the schedule.
    */
   public readonly scheduleName: string;
+
+  /**
+   * The arn of the schedule.
+   */
+  public readonly attrArn: string;
+
+  /**
+   * The name of the schedule.
+   */
+  public readonly attrName: string;
 
   /**
    * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
@@ -346,6 +358,8 @@ export class Schedule extends Resource implements ISchedule {
       resource: 'schedule',
       resourceName: `${this.scheduleGroup?.scheduleGroupName ?? 'default'}/${this.physicalName}`,
     });
+    this.attrArn = this.scheduleArn;
+    this.attrName = this.scheduleName;
   }
 
   private renderRetryPolicy(): CfnSchedule.RetryPolicyProperty | undefined {

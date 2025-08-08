@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnStreamConsumer } from './kinesis.generated';
+import { CfnStreamConsumer, ICfnStreamConsumer } from './kinesis.generated';
 import { ResourcePolicy } from './resource-policy';
 import { IStream, Stream } from './stream';
 import * as iam from '../../aws-iam';
@@ -15,7 +15,7 @@ const READ_OPERATIONS = [
 /**
  * A Kinesis Stream Consumer
  */
-export interface IStreamConsumer extends IResource {
+export interface IStreamConsumer extends IResource, ICfnStreamConsumer {
   /**
    * The ARN of the stream consumer.
    *
@@ -63,6 +63,11 @@ abstract class StreamConsumerBase extends Resource implements IStreamConsumer {
    * The ARN of the stream consumer.
    */
   public abstract readonly streamConsumerArn: string;
+
+  /**
+   * The ARN of the stream consumer.
+   */
+  public abstract readonly attrConsumerArn: string;
 
   /**
    * The name of the stream consumer.
@@ -187,6 +192,7 @@ export class StreamConsumer extends StreamConsumerBase {
 
     class Import extends StreamConsumerBase {
       public readonly streamConsumerArn = attrs.streamConsumerArn;
+      public readonly attrConsumerArn = attrs.streamConsumerArn;
       public readonly streamConsumerName = consumerName;
       public readonly stream = Stream.fromStreamArn(scope, `${id}ImportedStream`, streamArn);
 
@@ -200,6 +206,11 @@ export class StreamConsumer extends StreamConsumerBase {
    * The Amazon Resource Name (ARN) of the stream consumer.
    */
   public readonly streamConsumerArn: string;
+
+  /**
+   * The Amazon Resource Name (ARN) of the stream consumer.
+   */
+  public readonly attrConsumerArn: string;
 
   /**
    * The name of the stream consumer.
@@ -232,6 +243,7 @@ export class StreamConsumer extends StreamConsumerBase {
       resourceName: `${props.stream.streamName}/consumer/${this.physicalName}:*`,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
+    this.attrConsumerArn = this.streamConsumerArn;
     this.streamConsumerName = this.getResourceNameAttribute(streamConsumer.attrConsumerName);
     this.stream = props.stream;
   }

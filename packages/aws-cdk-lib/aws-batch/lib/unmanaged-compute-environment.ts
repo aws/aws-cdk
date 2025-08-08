@@ -62,6 +62,7 @@ export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implemen
       public readonly computeEnvironmentName = computeEnvironmentName;
       public readonly enabled = true;
       public readonly containerDefinition = {} as any;
+      public readonly attrComputeEnvironmentArn = unmanagedComputeEnvironmentArn;
     }
 
     return new Import(scope, id);
@@ -70,6 +71,7 @@ export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implemen
   public readonly unmanagedvCPUs?: number | undefined;
   public readonly computeEnvironmentArn: string;
   public readonly computeEnvironmentName: string;
+  public readonly attrComputeEnvironmentArn: string;
 
   constructor(scope: Construct, id: string, props?: UnmanagedComputeEnvironmentProps) {
     super(scope, id, props);
@@ -90,6 +92,7 @@ export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implemen
         assumedBy: new ServicePrincipal('batch.amazonaws.com'),
       }).roleArn,
     });
+    this.attrComputeEnvironmentArn = resource.attrComputeEnvironmentArn;
     this.computeEnvironmentName = this.getResourceNameAttribute(resource.ref);
     this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {
       service: 'batch',

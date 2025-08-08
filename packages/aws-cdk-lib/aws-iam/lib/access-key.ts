@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnAccessKey } from './iam.generated';
+import { CfnAccessKey, ICfnAccessKey } from './iam.generated';
 import { IUser } from './user';
 import { IResource, Resource, SecretValue } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -25,7 +25,7 @@ export enum AccessKeyStatus {
  *
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
  */
-export interface IAccessKey extends IResource {
+export interface IAccessKey extends IResource, ICfnAccessKey {
   /**
    * The Access Key ID.
    *
@@ -80,6 +80,7 @@ export class AccessKey extends Resource implements IAccessKey {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.AccessKey';
   public readonly accessKeyId: string;
+  public readonly attrId: string;
   public readonly secretAccessKey: SecretValue;
 
   constructor(scope: Construct, id: string, props: AccessKeyProps) {
@@ -92,6 +93,7 @@ export class AccessKey extends Resource implements IAccessKey {
       status: props.status,
     });
 
+    this.attrId = accessKey.attrId;
     this.accessKeyId = accessKey.ref;
 
     this.secretAccessKey = SecretValue.resourceAttribute(accessKey.attrSecretAccessKey);

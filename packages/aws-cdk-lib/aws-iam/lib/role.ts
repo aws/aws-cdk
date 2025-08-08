@@ -1,6 +1,6 @@
 import { Construct, IConstruct, DependencyGroup, Node } from 'constructs';
 import { Grant } from './grant';
-import { CfnRole } from './iam.generated';
+import { CfnRole, ICfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy, ManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
@@ -448,6 +448,16 @@ export class Role extends Resource implements IRole {
   public readonly roleName: string;
 
   /**
+   * Returns the ARN of this role.
+   */
+  public readonly attrArn: string;
+
+  /**
+   * Returns the name of the role.
+   */
+  public readonly attrRoleName: string;
+
+  /**
    * Returns the role.
    */
   public readonly policyFragment: PrincipalPolicyFragment;
@@ -559,6 +569,9 @@ export class Role extends Resource implements IRole {
         priority: mutatingAspectPrio32333(this),
       });
     }
+
+    this.attrArn = this.roleArn;
+    this.attrRoleName = this.roleName;
 
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
 
@@ -787,7 +800,7 @@ export class Role extends Resource implements IRole {
 /**
  * A Role object
  */
-export interface IRole extends IIdentity {
+export interface IRole extends IIdentity, ICfnRole {
   /**
    * Returns the ARN of this role.
    *

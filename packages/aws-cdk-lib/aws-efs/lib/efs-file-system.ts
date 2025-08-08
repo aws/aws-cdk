@@ -1,6 +1,6 @@
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
-import { CfnFileSystem, CfnMountTarget } from './efs.generated';
+import { CfnFileSystem, CfnMountTarget, ICfnFileSystem } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -141,7 +141,7 @@ export enum ReplicationOverwriteProtection {
 /**
  * Represents an Amazon EFS file system
  */
-export interface IFileSystem extends ec2.IConnectable, iam.IResourceWithPolicy {
+export interface IFileSystem extends ec2.IConnectable, iam.IResourceWithPolicy, ICfnFileSystem {
   /**
    * The ID of the file system, assigned by Amazon EFS.
    *
@@ -563,6 +563,15 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
   public abstract readonly fileSystemArn: string;
 
   /**
+   * @attribute
+   */
+  public abstract readonly attrFileSystemId: string;
+  /**
+   * @attribute
+   */
+  public abstract readonly attrArn: string;
+
+  /**
    * Dependable that can be depended upon to ensure the mount targets of the filesystem are ready
    */
   public abstract readonly mountTargetsAvailable: IDependable;
@@ -725,6 +734,15 @@ export class FileSystem extends FileSystemBase {
    */
   public readonly fileSystemArn: string;
 
+  /**
+   * @attribute
+   */
+  public readonly attrFileSystemId: string;
+  /**
+   * @attribute
+   */
+  public readonly attrArn: string;
+
   public readonly mountTargetsAvailable: IDependable;
 
   private readonly _mountTargetsAvailable = new DependencyGroup();
@@ -835,6 +853,8 @@ export class FileSystem extends FileSystemBase {
       availabilityZoneName: props.oneZone ? oneZoneAzName : undefined,
       replicationConfiguration,
     });
+    this.attrFileSystemId = this._resource.attrFileSystemId;
+    this.attrArn = this._resource.attrArn;
     this._resource.applyRemovalPolicy(props.removalPolicy);
 
     this.fileSystemId = this._resource.ref;
@@ -952,6 +972,16 @@ class ImportedFileSystem extends FileSystemBase {
   public readonly fileSystemArn: string;
 
   /**
+   * @attribute
+   */
+  public readonly attrFileSystemId: string;
+
+  /**
+   * @attribute
+   */
+  public readonly attrArn: string;
+
+  /**
    * Dependable that can be depended upon to ensure the mount targets of the filesystem are ready
    */
   public readonly mountTargetsAvailable: IDependable;
@@ -970,6 +1000,7 @@ class ImportedFileSystem extends FileSystemBase {
       resource: 'file-system',
       resourceName: attrs.fileSystemId,
     });
+    this.attrArn = this.fileSystemArn;
 
     const parsedArn = Stack.of(scope).splitArn(this.fileSystemArn, ArnFormat.SLASH_RESOURCE_NAME);
 
@@ -978,6 +1009,7 @@ class ImportedFileSystem extends FileSystemBase {
     }
 
     this.fileSystemId = attrs.fileSystemId ?? parsedArn.resourceName;
+    this.attrFileSystemId = this.fileSystemId;
 
     this.connections = new ec2.Connections({
       securityGroups: [attrs.securityGroup],

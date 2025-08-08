@@ -2,7 +2,7 @@ import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
-import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
+import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations, ICfnCluster } from './ecs.generated';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -185,6 +185,8 @@ export class Cluster extends Resource implements ICluster {
     class Import extends Resource implements ICluster {
       public readonly clusterArn = clusterArn;
       public readonly clusterName = clusterName!;
+      public readonly attrArn = clusterArn;
+      public readonly attrClusterName = clusterName!;
       get hasEc2Capacity(): boolean {
         throw new ValidationError(`hasEc2Capacity ${errorSuffix}`, this);
       }
@@ -220,6 +222,16 @@ export class Cluster extends Resource implements ICluster {
    * The name of the cluster.
    */
   public readonly clusterName: string;
+
+  /**
+   * The Amazon Resource Name (ARN) that identifies the cluster.
+   */
+  public readonly attrArn: string;
+
+  /**
+   * The name of the cluster.
+   */
+  public readonly attrClusterName: string;
 
   /**
    * The names of both ASG and Fargate capacity providers associated with the cluster.
@@ -321,6 +333,8 @@ export class Cluster extends Resource implements ICluster {
       resourceName: this.physicalName,
     });
     this.clusterName = this.getResourceNameAttribute(this._cfnCluster.ref);
+    this.attrArn = this.clusterArn;
+    this.attrClusterName = this.clusterName;
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
 
@@ -934,7 +948,7 @@ Object.defineProperty(Cluster.prototype, CLUSTER_SYMBOL, {
 /**
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
-export interface ICluster extends IResource {
+export interface ICluster extends IResource, ICfnCluster {
   /**
    * The name of the cluster.
    * @attribute
@@ -1053,6 +1067,16 @@ class ImportedCluster extends Resource implements ICluster {
   public readonly clusterArn: string;
 
   /**
+   * Name of the cluster
+   */
+  public readonly attrClusterName: string;
+
+  /**
+   * ARN of the cluster
+   */
+  public readonly attrArn: string;
+
+  /**
    * VPC that the cluster instances are running in
    */
   public readonly vpc: ec2.IVpc;
@@ -1101,6 +1125,9 @@ class ImportedCluster extends Resource implements ICluster {
       resource: 'cluster',
       resourceName: props.clusterName,
     });
+
+    this.attrArn = this.clusterArn;
+    this.attrClusterName = this.clusterName;
 
     this.connections = new ec2.Connections({
       securityGroups: props.securityGroups,

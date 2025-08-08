@@ -9,7 +9,7 @@ import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
 import { Credentials, EngineLifecycleSupport, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
-import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
+import { CfnDBInstance, CfnDBInstanceProps, ICfnDBInstance } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
 import { validateDatabaseInstanceProps } from './validate-database-insights';
 import * as ec2 from '../../aws-ec2';
@@ -29,7 +29,7 @@ import * as cxapi from '../../cx-api';
 /**
  * A database instance
  */
-export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget, ICfnDBInstance {
   /**
    * The instance identifier.
    */
@@ -206,18 +206,29 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
         defaultPort: this.defaultPort,
       });
       public readonly instanceIdentifier = attrs.instanceIdentifier;
+      public readonly attrDbInstanceIdentifier = attrs.instanceIdentifier;
       public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
       public readonly dbInstanceEndpointPort = Tokenization.stringifyNumber(attrs.port);
       public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
       public readonly engine = attrs.engine;
       protected enableIamAuthentication = true;
       public readonly instanceResourceId = attrs.instanceResourceId;
+
+      public get attrDbInstanceArn(): string {
+        return this.getResourceArnAttribute(this.instanceArn, {
+          service: 'rds',
+          resource: 'db',
+          resourceName: this.instanceIdentifier,
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+        });
+      }
     }
 
     return new Import(scope, id);
   }
 
   public abstract readonly instanceIdentifier: string;
+  public abstract readonly attrDbInstanceIdentifier: string;
   public abstract readonly dbInstanceEndpointAddress: string;
   public abstract readonly dbInstanceEndpointPort: string;
   public abstract readonly instanceResourceId?: string;
@@ -231,6 +242,9 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
    */
   public abstract readonly connections: ec2.Connections;
 
+  public get attrDbInstanceArn(): string {
+    return this.instanceArn;
+  }
   /**
    * Add a new db proxy to this instance.
    */
@@ -1285,6 +1299,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstance';
 
   public readonly instanceIdentifier: string;
+  public readonly attrDbInstanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceResourceId?: string;
@@ -1312,6 +1327,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     });
 
     this.instanceIdentifier = this.getResourceNameAttribute(instance.ref);
+    this.attrDbInstanceIdentifier = this.instanceIdentifier;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
     this.instanceResourceId = instance.attrDbiResourceId;
@@ -1388,6 +1404,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstanceFromSnapshot';
 
   public readonly instanceIdentifier: string;
+  public readonly attrDbInstanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceResourceId?: string;
@@ -1430,6 +1447,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     });
 
     this.instanceIdentifier = instance.ref;
+    this.attrDbInstanceIdentifier = this.instanceIdentifier;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
     this.instanceResourceId = instance.attrDbiResourceId;
@@ -1500,6 +1518,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstanceReadReplica';
 
   public readonly instanceIdentifier: string;
+  public readonly attrDbInstanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
 
@@ -1547,6 +1566,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
 
     this.instanceType = props.instanceType;
     this.instanceIdentifier = instance.ref;
+    this.attrDbInstanceIdentifier = this.instanceIdentifier;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
 

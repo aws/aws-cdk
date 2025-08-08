@@ -1,5 +1,11 @@
 import { Construct } from 'constructs';
-import { CfnNetworkAcl, CfnNetworkAclEntry, CfnSubnetNetworkAclAssociation } from './ec2.generated';
+import {
+  CfnNetworkAcl,
+  CfnNetworkAclEntry,
+  CfnSubnetNetworkAclAssociation,
+  ICfnNetworkAcl,
+  ICfnNetworkAclEntry, ICfnSubnetNetworkAclAssociation,
+} from './ec2.generated';
 import { AclCidr, AclTraffic } from './network-acl-types';
 import { ISubnet, IVpc, SubnetSelection } from './vpc';
 import { IResource, Resource, Tags } from '../../core';
@@ -16,7 +22,7 @@ const NAME_TAG: string = 'Name';
  *
  *
  */
-export interface INetworkAcl extends IResource {
+export interface INetworkAcl extends IResource, ICfnNetworkAcl {
   /**
    * ID for the current Network ACL
    * @attribute
@@ -36,6 +42,7 @@ export interface INetworkAcl extends IResource {
  */
 abstract class NetworkAclBase extends Resource implements INetworkAcl {
   public abstract readonly networkAclId: string;
+  public abstract readonly attrId: string;
 
   /**
    * Add a new entry to the ACL
@@ -98,6 +105,7 @@ export class NetworkAcl extends NetworkAclBase {
   public static fromNetworkAclId(scope: Construct, id: string, networkAclId: string): INetworkAcl {
     class Import extends NetworkAclBase {
       public readonly networkAclId = networkAclId;
+      public readonly attrId = networkAclId;
     }
 
     return new Import(scope, id);
@@ -109,6 +117,13 @@ export class NetworkAcl extends NetworkAclBase {
    * @attribute
    */
   public readonly networkAclId: string;
+
+  /**
+   * The ID of the NetworkACL
+   *
+   * @attribute
+   */
+  public readonly attrId: string;
 
   /**
    * The VPC ID for this NetworkACL
@@ -132,6 +147,7 @@ export class NetworkAcl extends NetworkAclBase {
     this.networkAcl = new CfnNetworkAcl(this, 'Resource', {
       vpcId: props.vpc.vpcId,
     });
+    this.attrId = this.networkAcl.attrId;
 
     this.networkAclId = this.networkAcl.ref;
     this.networkAclVpcId = this.networkAcl.vpcId;
@@ -175,7 +191,7 @@ export enum Action {
  *
  *
  */
-export interface INetworkAclEntry extends IResource {
+export interface INetworkAclEntry extends IResource, ICfnNetworkAclEntry {
   /**
    * The network ACL.
    */
@@ -190,6 +206,7 @@ export interface INetworkAclEntry extends IResource {
  */
 abstract class NetworkAclEntryBase extends Resource implements INetworkAclEntry {
   public abstract readonly networkAcl: INetworkAcl;
+  public abstract readonly attrId: string;
 }
 
 /**
@@ -281,6 +298,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.NetworkAclEntry';
   public readonly networkAcl: INetworkAcl;
+  public readonly attrId: string;
 
   constructor(scope: Construct, id: string, props: NetworkAclEntryProps) {
     super(scope, id, {
@@ -291,7 +309,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
 
     this.networkAcl = props.networkAcl;
 
-    new CfnNetworkAclEntry(this, 'Resource', {
+    const entry = new CfnNetworkAclEntry(this, 'Resource', {
       networkAclId: this.networkAcl.networkAclId,
       ruleNumber: props.ruleNumber,
       ruleAction: props.ruleAction ?? Action.ALLOW,
@@ -299,6 +317,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
       ...props.traffic.toTrafficConfig(),
       ...props.cidr.toCidrConfig(),
     });
+    this.attrId = entry.attrId;
   }
 }
 
@@ -307,7 +326,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
  *
  *
  */
-export interface ISubnetNetworkAclAssociation extends IResource {
+export interface ISubnetNetworkAclAssociation extends IResource, ICfnSubnetNetworkAclAssociation {
   /**
    * ID for the current SubnetNetworkAclAssociation
    * @attribute
@@ -352,6 +371,7 @@ export interface SubnetNetworkAclAssociationProps {
  */
 abstract class SubnetNetworkAclAssociationBase extends Resource implements ISubnetNetworkAclAssociation {
   public abstract readonly subnetNetworkAclAssociationAssociationId: string;
+  public abstract readonly attrAssociationId: string;
 }
 @propertyInjectable
 export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase {
@@ -363,6 +383,7 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
     subnetNetworkAclAssociationAssociationId: string): ISubnetNetworkAclAssociation {
     class Import extends SubnetNetworkAclAssociationBase {
       public readonly subnetNetworkAclAssociationAssociationId = subnetNetworkAclAssociationAssociationId;
+      public readonly attrAssociationId = subnetNetworkAclAssociationAssociationId;
     }
 
     return new Import(scope, id);
@@ -372,6 +393,12 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
    * @attribute
    */
   public readonly subnetNetworkAclAssociationAssociationId: string;
+
+  /**
+   * ID for the current SubnetNetworkAclAssociation
+   * @attribute
+   */
+  public readonly attrAssociationId: string;
 
   /**
    * ID for the current Network ACL
@@ -398,7 +425,7 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
       networkAclId: props.networkAcl.networkAclId,
       subnetId: props.subnet.subnetId,
     });
-
+    this.attrAssociationId = this.association.attrAssociationId;
     this.networkAcl = props.networkAcl;
     this.subnet = props.subnet;
     this.subnetNetworkAclAssociationAssociationId = this.association.attrAssociationId;

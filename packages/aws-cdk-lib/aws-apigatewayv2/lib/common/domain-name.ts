@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import { IpAddressType } from './api';
-import { CfnDomainName, CfnDomainNameProps } from '.././index';
+import { CfnDomainName, CfnDomainNameProps, ICfnDomainName } from '.././index';
 import { ICertificate } from '../../../aws-certificatemanager';
 import { IBucket } from '../../../aws-s3';
-import { IResource, Lazy, Resource, Token } from '../../../core';
+import { Arn, IResource, Lazy, Resource, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -37,7 +37,7 @@ export enum EndpointType {
  * Represents an APIGatewayV2 DomainName
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-domainname.html
  */
-export interface IDomainName extends IResource {
+export interface IDomainName extends IResource, ICfnDomainName {
   /**
    * The custom domain name
    * @attribute
@@ -178,11 +178,19 @@ export class DomainName extends Resource implements IDomainName {
       public readonly regionalDomainName = attrs.regionalDomainName;
       public readonly regionalHostedZoneId = attrs.regionalHostedZoneId;
       public readonly name = attrs.name;
+      public readonly attrDomainName = attrs.name;
+      public readonly attrDomainNameArn = Arn.format({
+        service: 'apigateway',
+        resource: 'domainnames',
+        resourceName: attrs.name,
+      }, Stack.of(scope));
     }
     return new Import(scope, id);
   }
 
   public readonly name: string;
+  public readonly attrDomainName: string;
+  public readonly attrDomainNameArn: string;
   public readonly regionalDomainName: string;
   public readonly regionalHostedZoneId: string;
   private readonly domainNameConfigurations: CfnDomainName.DomainNameConfigurationProperty[] = [];
@@ -208,6 +216,8 @@ export class DomainName extends Resource implements IDomainName {
       mutualTlsAuthentication: mtlsConfig,
     };
     const resource = new CfnDomainName(this, 'Resource', domainNameProps);
+    this.attrDomainName = resource.attrDomainName;
+    this.attrDomainNameArn = resource.attrDomainNameArn;
     this.name = resource.ref;
     this.regionalDomainName = Token.asString(resource.getAtt('RegionalDomainName'));
     this.regionalHostedZoneId = Token.asString(resource.getAtt('RegionalHostedZoneId'));

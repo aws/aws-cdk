@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IHostedZone } from './hosted-zone-ref';
-import { CfnKeySigningKey } from './route53.generated';
+import { CfnKeySigningKey, ICfnKeySigningKey } from './route53.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Resource, IResource, Lazy, Names } from '../../core';
@@ -56,7 +56,7 @@ export enum KeySigningKeyStatus {
 /**
  * A Key Signing Key for a Route 53 Hosted Zone.
  */
-export interface IKeySigningKey extends IResource {
+export interface IKeySigningKey extends IResource, ICfnKeySigningKey {
   /**
    * The hosted zone that the key signing key signs.
    *
@@ -115,11 +115,13 @@ export class KeySigningKey extends Resource implements IKeySigningKey {
     class Import extends Resource implements IKeySigningKey {
       public readonly keySigningKeyName: string;
       public readonly hostedZone: IHostedZone;
+      public readonly attrHostedZoneId: string;
 
       constructor() {
         super(scope, id);
         this.keySigningKeyName = attrs.keySigningKeyName;
         this.hostedZone = attrs.hostedZone;
+        this.attrHostedZoneId = attrs.hostedZone.hostedZoneId;
       }
 
       get keySigningKeyId() {

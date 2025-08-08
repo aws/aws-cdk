@@ -4,7 +4,7 @@ import { HttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { IHttpStage, HttpStage, HttpStageOptions } from './stage';
 import { VpcLink, VpcLinkProps } from './vpc-link';
-import { CfnApi, CfnApiProps } from '.././index';
+import { CfnApi, CfnApiProps, ICfnApi } from '.././index';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { ArnFormat, Duration, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
@@ -17,7 +17,7 @@ import { DomainMappingOptions } from '../common/stage';
 /**
  * Represents an HTTP API
  */
-export interface IHttpApi extends IApi {
+export interface IHttpApi extends IApi, ICfnApi {
   /**
    * Default Authorizer applied to all routes in the gateway.
    *
@@ -292,6 +292,7 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
 abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that this is not exported
   public abstract override readonly apiId: string;
   public abstract readonly httpApiId: string;
+  public abstract readonly attrApiId: string;
   public abstract override readonly apiEndpoint: string;
   private vpcLinks: Record<string, VpcLink> = {};
 
@@ -385,6 +386,7 @@ export class HttpApi extends HttpApiBase {
     class Import extends HttpApiBase {
       public readonly apiId = attrs.httpApiId;
       public readonly httpApiId = attrs.httpApiId;
+      public readonly attrApiId = attrs.httpApiId;
       private readonly _apiEndpoint = attrs.apiEndpoint;
 
       public get apiEndpoint(): string {
@@ -402,6 +404,7 @@ export class HttpApi extends HttpApiBase {
    */
   public readonly httpApiName?: string;
   public readonly apiId: string;
+  public readonly attrApiId: string;
 
   /**
    * The identifier of the HTTP API.
@@ -477,6 +480,7 @@ export class HttpApi extends HttpApiBase {
     const resource = new CfnApi(this, 'Resource', apiProps);
     this.apiId = resource.ref;
     this.httpApiId = resource.ref;
+    this.attrApiId = this.apiId;
     this._apiEndpoint = resource.attrApiEndpoint;
     this.defaultAuthorizer = props?.defaultAuthorizer;
     this.defaultAuthorizationScopes = props?.defaultAuthorizationScopes;

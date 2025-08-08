@@ -766,6 +766,8 @@ export class Function extends FunctionBase {
     class Import extends FunctionBase {
       public readonly functionName = functionName;
       public readonly functionArn = functionArn;
+      public readonly attrFunctionName = functionName;
+      public readonly attrArn = functionArn;
       public readonly grantPrincipal: iam.IPrincipal;
       public readonly role = role;
       public readonly permissionsNode = this.node;
@@ -876,6 +878,16 @@ export class Function extends FunctionBase {
    * ARN of this function
    */
   public readonly functionArn: string;
+
+  /**
+   * Name of this function
+   */
+  public readonly attrFunctionName: string;
+
+  /**
+   * ARN of this function
+   */
+  public readonly attrArn: string;
 
   /**
    * Execution role associated with this function
@@ -1116,6 +1128,8 @@ export class Function extends FunctionBase {
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
+    this.attrArn = this.functionArn;
+    this.attrFunctionName = this.functionName;
     this.runtime = props.runtime;
     this.timeout = props.timeout;
 

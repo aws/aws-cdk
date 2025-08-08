@@ -234,6 +234,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
         ),
       });
       public readonly loadBalancerArn = attrs.loadBalancerArn;
+      public readonly attrLoadBalancerArn = attrs.loadBalancerArn;
       public readonly vpc?: ec2.IVpc = attrs.vpc;
       public readonly metrics: INetworkLoadBalancerMetrics = new NetworkLoadBalancerMetrics(this, parseLoadBalancerFullName(attrs.loadBalancerArn));
       public readonly securityGroups?: string[] = attrs.loadBalancerSecurityGroups;
@@ -612,6 +613,7 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
   public readonly loadBalancerCanonicalHostedZoneId: string;
   public readonly loadBalancerDnsName: string;
   public readonly loadBalancerArn: string;
+  public readonly attrLoadBalancerArn: string;
   public readonly vpc?: ec2.IVpc;
   public readonly metrics: INetworkLoadBalancerMetrics;
   public readonly securityGroups?: string[];
@@ -624,6 +626,7 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
     addConstructMetadata(this, props);
 
     this.loadBalancerArn = props.loadBalancerArn;
+    this.attrLoadBalancerArn = props.loadBalancerArn;
     this.loadBalancerCanonicalHostedZoneId = props.loadBalancerCanonicalHostedZoneId;
     this.loadBalancerDnsName = props.loadBalancerDnsName;
     this.metrics = new NetworkLoadBalancerMetrics(this, parseLoadBalancerFullName(props.loadBalancerArn));

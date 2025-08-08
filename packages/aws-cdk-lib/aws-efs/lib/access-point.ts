@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IFileSystem } from './efs-file-system';
-import { CfnAccessPoint } from './efs.generated';
+import { CfnAccessPoint, ICfnAccessPoint } from './efs.generated';
 import { ArnFormat, IResource, Resource, Stack, Tags, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -8,7 +8,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents an EFS AccessPoint
  */
-export interface IAccessPoint extends IResource {
+export interface IAccessPoint extends IResource, ICfnAccessPoint {
   /**
    * The ID of the AccessPoint
    *
@@ -167,6 +167,18 @@ abstract class AccessPointBase extends Resource implements IAccessPoint {
   public abstract readonly accessPointId: string;
 
   /**
+   * The ARN of the Access Point
+   * @attribute
+   */
+  public abstract readonly attrArn: string;
+
+  /**
+   * The ID of the Access Point
+   * @attribute
+   */
+  public abstract readonly attrAccessPointId: string;
+
+  /**
    * The file system of the access point
    */
   public abstract readonly fileSystem: IFileSystem;
@@ -209,6 +221,18 @@ export class AccessPoint extends AccessPointBase {
   public readonly accessPointId: string;
 
   /**
+   * The ARN of the Access Point
+   * @attribute
+   */
+  public readonly attrArn: string;
+
+  /**
+   * The ID of the Access Point
+   * @attribute
+   */
+  public readonly attrAccessPointId: string;
+
+  /**
    * The file system of the access point
    */
   public readonly fileSystem: IFileSystem;
@@ -249,6 +273,8 @@ export class AccessPoint extends AccessPointBase {
       resource: 'access-point',
       resourceName: this.accessPointId,
     });
+    this.attrAccessPointId = resource.attrAccessPointId;
+    this.attrArn = this.accessPointArn;
     this.fileSystem = props.fileSystem;
   }
 }
@@ -259,6 +285,8 @@ class ImportedAccessPoint extends AccessPointBase {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-efs.ImportedAccessPoint';
   public readonly accessPointId: string;
   public readonly accessPointArn: string;
+  public readonly attrAccessPointId: string;
+  public readonly attrArn: string;
   private readonly _fileSystem?: IFileSystem;
 
   constructor(scope: Construct, id: string, attrs: AccessPointAttributes) {
@@ -291,6 +319,8 @@ class ImportedAccessPoint extends AccessPointBase {
         resourceName: attrs.accessPointId,
       });
     }
+    this.attrAccessPointId = this.accessPointId;
+    this.attrArn = this.accessPointArn;
 
     this._fileSystem = attrs.fileSystem;
   }

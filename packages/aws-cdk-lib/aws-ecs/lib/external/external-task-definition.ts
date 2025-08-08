@@ -30,6 +30,7 @@ export interface ExternalTaskDefinitionProps extends CommonTaskDefinitionProps {
 /**
  * The interface of a task definition run on an External cluster.
  */
+
 export interface IExternalTaskDefinition extends ITaskDefinition {
 
 }
