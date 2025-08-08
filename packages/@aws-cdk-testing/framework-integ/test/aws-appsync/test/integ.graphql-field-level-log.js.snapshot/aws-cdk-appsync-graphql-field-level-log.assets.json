@@ -15,16 +15,16 @@
         }
       }
     },
-    "8fdb478ec3b6ded90fa54bf16a6621a7126483d9b5d1f87cc75fc4ca1522da87": {
+    "c151c8e356f539cbb336e940d9eb862fb149c57721c034c791a55f13510a6b93": {
       "displayName": "aws-cdk-appsync-graphql-field-level-log Template",
       "source": {
         "path": "aws-cdk-appsync-graphql-field-level-log.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-9b6ff4bf": {
+        "current_account-current_region-4f253afb": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8fdb478ec3b6ded90fa54bf16a6621a7126483d9b5d1f87cc75fc4ca1522da87.json",
+          "objectKey": "c151c8e356f539cbb336e940d9eb862fb149c57721c034c791a55f13510a6b93.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

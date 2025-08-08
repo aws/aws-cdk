@@ -864,6 +864,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "FAILED",
     "ERROR"
   ],
+  "CrossRegionInferenceProfileRegion": [
+    "eu",
+    "us",
+    "apac"
+  ],
   "CsvDelimiter": [
     "COMMA",
     "PIPE",
@@ -1571,6 +1576,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "IncludeExecutionData": [
     "ALL"
   ],
+  "InferenceProfileType": [
+    "SYSTEM_DEFINED",
+    "APPLICATION"
+  ],
   "InitElementType": [
     "PACKAGE",
     "GROUP",
@@ -2116,7 +2125,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "HMAC_256",
     "HMAC_384",
     "HMAC_512",
-    "SM2"
+    "SM2",
+    "ML_DSA_44",
+    "ML_DSA_65",
+    "ML_DSA_87"
   ],
   "KeyUsage": [
     "ENCRYPT_DECRYPT",
@@ -2498,6 +2510,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "OnPartialBatchItemFailure": [
     "AUTOMATIC_BISECT"
+  ],
+  "OpenTableFormat": [
+    "ICEBERG"
   ],
   "OperatingSystem": [
     "AMAZON_LINUX",

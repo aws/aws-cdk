@@ -1,0 +1,34 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855": {
+      "displayName": "PySparkETLJobNoMetrics/Codeea8527f7985a62e2847248f47bae2c95",
+      "source": {
+        "path": "asset.432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-efafd0d6": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "9287ce9d0edc8eecc24b6019147d63a7a23f897bf6a912b944a3a70b893d49e8": {
+      "displayName": "aws-glue-job-metrics-disabled Template",
+      "source": {
+        "path": "aws-glue-job-metrics-disabled.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-17674f3b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9287ce9d0edc8eecc24b6019147d63a7a23f897bf6a912b944a3a70b893d49e8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

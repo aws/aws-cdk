@@ -3838,6 +3838,26 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     }
   },
   '@aws-cdk.aws-s3tables-alpha': {
+    'Namespace': {
+      'namespaceName': '*',
+      'tableBucket': {
+        'tableBucketArn': '*',
+        'tableBucketName': '*',
+        'account': '*',
+        'region': '*',
+        'encryptionKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        }
+      },
+      'removalPolicy': 'RemovalPolicy'
+    },
     'TableBucketPolicy': {
       'tableBucket': {
         'tableBucketArn': '*',
@@ -3879,6 +3899,49 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'node': '*'
       },
       'removalPolicy': 'RemovalPolicy'
+    },
+    'Table': {
+      'tableName': '*',
+      'namespace': {
+        'namespaceName': '*',
+        'tableBucket': {
+          'tableBucketArn': '*',
+          'tableBucketName': '*',
+          'account': '*',
+          'region': '*',
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            },
+            'node': '*'
+          }
+        }
+      },
+      'openTableFormat': 'OpenTableFormat',
+      'compaction': {
+        'status': 'Status',
+        'targetFileSizeMb': '*'
+      },
+      'icebergMetadata': {
+        'icebergSchema': {
+          'schemaFieldList': {
+            'name': '*',
+            'required': 'boolean',
+            'type': '*'
+          }
+        }
+      },
+      'snapshotManagement': {
+        'maxSnapshotAgeHours': '*',
+        'minSnapshotsToKeep': '*',
+        'status': 'Status'
+      },
+      'removalPolicy': 'RemovalPolicy',
+      'withoutMetadata': 'boolean'
     }
   },
   '@aws-cdk.aws-sagemaker-alpha': {
@@ -24562,6 +24625,32 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         '*'
       ]
     },
+    'ApplicationInferenceProfile': {
+      'applicationInferenceProfileName': '*',
+      'description': '*',
+      'modelSource': {
+        'invokableArn': '*'
+      },
+      'tags': '*',
+      'grantInvoke': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ],
+      'grantProfileUsage': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ]
+    },
     'Prompt': {
       'promptName': '*',
       'description': '*',
@@ -24639,6 +24728,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24735,6 +24826,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24831,6 +24924,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24968,6 +25063,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'RayJob': {
       'runtime': 'Runtime',
       'jobRunQueuingEnabled': 'boolean',
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -25064,6 +25161,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -25160,6 +25259,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -25256,6 +25357,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
