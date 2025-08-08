@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "appsync-eventapi-lambda-direct-test/DefaultTest": {
+      "stacks": [
+        "EventApiLambdaDirectStack"
+      ],
+      "assertionStack": "appsync-eventapi-lambda-direct-test/DefaultTest/DeployAssert",
+      "assertionStackName": "appsynceventapilambdadirecttestDefaultTestDeployAssert28D63EA3"
+    }
+  }
+}

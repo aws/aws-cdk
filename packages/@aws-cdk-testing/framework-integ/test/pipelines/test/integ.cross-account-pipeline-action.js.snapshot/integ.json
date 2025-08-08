@@ -1,0 +1,15 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "CdkPipelineInvestigationTest/DefaultTest": {
+      "stacks": [
+        "CrossAccountSourceStack",
+        "CdkPipelineInvestigationStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "CdkPipelineInvestigationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CdkPipelineInvestigationTestDefaultTestDeployAssertC69AF0A9"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}

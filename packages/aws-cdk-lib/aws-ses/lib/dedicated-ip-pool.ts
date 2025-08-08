@@ -1,7 +1,8 @@
 import { Construct } from 'constructs';
 import { CfnDedicatedIpPool } from './ses.generated';
-import { IResource, Resource } from '../../core';
+import { IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Scaling mode to use for this IP pool.
@@ -61,7 +62,11 @@ export interface DedicatedIpPoolProps {
 /**
  * A dedicated IP pool
  */
+@propertyInjectable
 export class DedicatedIpPool extends Resource implements IDedicatedIpPool {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ses.DedicatedIpPool';
+
   /**
    * Use an existing dedicated IP pool
    */
@@ -82,7 +87,7 @@ export class DedicatedIpPool extends Resource implements IDedicatedIpPool {
     addConstructMetadata(this, props);
 
     if (props.dedicatedIpPoolName && !/^[a-z0-9_-]{0,64}$/.test(props.dedicatedIpPoolName)) {
-      throw new Error(`Invalid dedicatedIpPoolName "${props.dedicatedIpPoolName}". The name must only include lowercase letters, numbers, underscores, hyphens, and must not exceed 64 characters.`);
+      throw new ValidationError(`Invalid dedicatedIpPoolName "${props.dedicatedIpPoolName}". The name must only include lowercase letters, numbers, underscores, hyphens, and must not exceed 64 characters.`, this);
     }
 
     const pool = new CfnDedicatedIpPool(this, 'Resource', {

@@ -10,6 +10,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { RegionInfo } from '../../region-info';
 
 const PUT_RECORD_ACTIONS = [
@@ -257,7 +258,11 @@ export interface DeliveryStreamAttributes {
  *
  * @resource AWS::KinesisFirehose::DeliveryStream
  */
+@propertyInjectable
 export class DeliveryStream extends DeliveryStreamBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kinesisfirehose.DeliveryStream';
+
   /**
    * Import an existing delivery stream from its name.
    */
@@ -306,13 +311,11 @@ export class DeliveryStream extends DeliveryStreamBase {
   private _role?: iam.IRole;
 
   public get grantPrincipal(): iam.IPrincipal {
-    if (this._role) {
-      return this._role;
-    }
-    // backwards compatibility
-    return new iam.Role(this, 'Service Role', {
+    // backwards compatibility - create role only once
+    this._role = this._role ?? new iam.Role(this, 'Service Role', {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
+    return this._role;
   }
 
   constructor(scope: Construct, id: string, props: DeliveryStreamProps) {

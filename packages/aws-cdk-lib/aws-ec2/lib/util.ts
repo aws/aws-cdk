@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { ISubnet, Subnet, SubnetType } from './vpc';
+import { UnscopedValidationError } from '../../core';
 
 /**
  * Turn an arbitrary string into one that can be used as a CloudFormation identifier by stripping special characters
@@ -67,17 +68,17 @@ export class ImportSubnetGroup {
 
     if (Math.floor(this.groups) !== this.groups) {
       // eslint-disable-next-line max-len
-      throw new Error(`Number of ${idField} (${this.subnetIds.length}) must be a multiple of availability zones (${this.availabilityZones.length}).`);
+      throw new UnscopedValidationError(`Number of ${idField} (${this.subnetIds.length}) must be a multiple of availability zones (${this.availabilityZones.length}).`);
     }
     if (this.routeTableIds.length !== this.subnetIds.length && routeTableIds != null) {
       // We don't err if no routeTableIds were provided to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
       /* eslint-disable max-len */
-      throw new Error(`Number of ${routeTableIdField} (${this.routeTableIds.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
+      throw new UnscopedValidationError(`Number of ${routeTableIdField} (${this.routeTableIds.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
     }
     if (this.ipv4CidrBlocks.length !== this.subnetIds.length && ipv4CidrBlocks != null) {
       // We don't err if no ipv4CidrBlocks were provided to maintain backwards-compatibility.
       /* eslint-disable max-len */
-      throw new Error(`Number of ${ipv4CidrBlockField} (${this.ipv4CidrBlocks.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
+      throw new UnscopedValidationError(`Number of ${ipv4CidrBlockField} (${this.ipv4CidrBlocks.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
     }
 
     this.names = this.normalizeNames(names, defaultSubnetName(type), nameField);
@@ -106,7 +107,7 @@ export class ImportSubnetGroup {
 
     // If given, must match given subnets
     if (names.length !== this.groups) {
-      throw new Error(`${fieldName} must have an entry for every corresponding subnet group, got: ${JSON.stringify(names)}`);
+      throw new UnscopedValidationError(`${fieldName} must have an entry for every corresponding subnet group, got: ${JSON.stringify(names)}`);
     }
 
     return names;

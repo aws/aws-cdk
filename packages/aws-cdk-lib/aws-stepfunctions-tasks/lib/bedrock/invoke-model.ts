@@ -4,7 +4,7 @@ import * as bedrock from '../../../aws-bedrock';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
-import { Annotations, Stack, FeatureFlags } from '../../../core';
+import { Annotations, Stack, FeatureFlags, ValidationError } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -203,22 +203,22 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
     }
 
     if (isBodySpecified && isInputSpecified) {
-      throw new Error('Either `body` or `input` must be specified, but not both.');
+      throw new ValidationError('Either `body` or `input` must be specified, but not both.', this);
     }
     if (!isBodySpecified && !isInputSpecified) {
-      throw new Error('Either `body` or `input` must be specified.');
+      throw new ValidationError('Either `body` or `input` must be specified.', this);
     }
     if (props.input?.s3Location?.objectVersion !== undefined) {
-      throw new Error('Input S3 object version is not supported.');
+      throw new ValidationError('Input S3 object version is not supported.', this);
     }
     if (props.output?.s3Location?.objectVersion !== undefined) {
-      throw new Error('Output S3 object version is not supported.');
+      throw new ValidationError('Output S3 object version is not supported.', this);
     }
     if (props.input?.s3InputUri && props.input.s3Location || props.output?.s3OutputUri && props.output.s3Location) {
-      throw new Error('Either specify S3 Uri or S3 location, but not both.');
+      throw new ValidationError('Either specify S3 Uri or S3 location, but not both.', this);
     }
     if (useNewS3UriParamsForTask && (props.input?.s3InputUri === '' || props.output?.s3OutputUri === '')) {
-      throw new Error('S3 Uri cannot be an empty string');
+      throw new ValidationError('S3 Uri cannot be an empty string', this);
     }
 
     // Warning to let users know about the newly introduced props

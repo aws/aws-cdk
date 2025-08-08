@@ -1,8 +1,10 @@
 import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
+import { ValidationError } from './errors';
 import { FeatureFlags } from './feature-flags';
 import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
+import { IPropertyInjector, PropertyInjectors } from './prop-injectors';
 import { IPolicyValidationPluginBeta1 } from './validation';
 import * as cxapi from '../../cx-api';
 
@@ -68,6 +70,20 @@ export interface StageProps {
    * Options for applying a permissions boundary to all IAM Roles
    * and Users created within this Stage
    *
+   * Be aware that this feature uses Aspects, and the Aspects are applied at the
+   * Stack level with a priority of `MUTATING` (if the feature flag
+   * `@aws-cdk/core:aspectPrioritiesMutating` is set) or `DEFAULT` (if the flag
+   * is not set). This is relevant if you are both using your own Aspects to
+   * assign Permissions Boundaries, as well as specifying this property.  The
+   * Aspect added by this property will overwrite the Permissions Boundary
+   * assigned by your own Aspect if both: (a) your Aspect has a lower or equal
+   * priority to the automatic Aspect, and (b) your Aspect is applied *above*
+   * the Stack level.  If either of those conditions are not true, your own
+   * Aspect will win.
+   *
+   * We recommend assigning Permissions Boundaries only using the provided APIs,
+   * and not using custom Aspects.
+   *
    * @default - no permissions boundary is applied
    */
   readonly permissionsBoundary?: PermissionsBoundary;
@@ -79,6 +95,12 @@ export interface StageProps {
    * @default - no validation plugins are used
    */
   readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
+
+  /**
+   * A list of IPropertyInjector attached to this Stage.
+   * @default - no PropertyInjectors
+   */
+  readonly propertyInjectors?: IPropertyInjector[];
 }
 
 /**
@@ -164,7 +186,12 @@ export class Stage extends Construct {
     super(scope, id);
 
     if (id !== '' && !/^[a-z][a-z0-9\-\_\.]*$/i.test(id)) {
-      throw new Error(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`);
+      throw new ValidationError(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`, this);
+    }
+
+    if (props.propertyInjectors) {
+      const injectors = PropertyInjectors.of(this);
+      injectors.add(...props.propertyInjectors);
     }
 
     Object.defineProperty(this, STAGE_SYMBOL, { value: true });
@@ -234,7 +261,7 @@ export class Stage extends Construct {
     if (!this.constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
       const errorMessage = 'Synthesis has been called multiple times and the construct tree was modified after the first synthesis.';
       if (options.errorOnDuplicateSynth ?? true) {
-        throw new Error(errorMessage + ' This is not allowed. Remove multple synth() calls and do not modify the construct tree after the first synth().');
+        throw new ValidationError(errorMessage + ' This is not allowed. Remove multple synth() calls and do not modify the construct tree after the first synth().', this);
       } else {
         // eslint-disable-next-line no-console
         console.error(errorMessage + ' Only the results of the first synth() call are used, and modifications done after it are ignored. Avoid construct tree mutations after synth() has been called unless this is intentional.');
@@ -276,7 +303,7 @@ export class Stage extends Construct {
   private createBuilder(outdir?: string) {
     // cannot specify "outdir" if we are a nested stage
     if (this.parentStage && outdir) {
-      throw new Error('"outdir" cannot be specified for nested stages');
+      throw new ValidationError('"outdir" cannot be specified for nested stages', this);
     }
 
     // Need to determine fixed output directory already, because we must know where

@@ -1,7 +1,8 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "files": {
-    "c4f42381397a6248d2aa072f909f526fe197fd78e8fcda7b8ba12c3c86ee4502": {
+    "762aba1cbee123ad0ed7732f4b45fc43ccdc60bd05263614cd42bc1faef2c326": {
+      "displayName": "integtest-restapi-with-authorizer-and-proxy Template",
       "source": {
         "path": "integtest-restapi-with-authorizer-and-proxy.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c4f42381397a6248d2aa072f909f526fe197fd78e8fcda7b8ba12c3c86ee4502.json",
+          "objectKey": "762aba1cbee123ad0ed7732f4b45fc43ccdc60bd05263614cd42bc1faef2c326.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

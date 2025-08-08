@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "integ-alb-lambda-multi-value-headers/DefaultTest": {
+      "stacks": [
+        "aws-cdk-elbv2-lambda-multi-value-headers"
+      ],
+      "assertionStack": "integ-alb-lambda-multi-value-headers/DefaultTest/DeployAssert",
+      "assertionStackName": "integalblambdamultivalueheadersDefaultTestDeployAssert1FE62314"
+    }
+  }
+}

@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnObservabilityConfiguration } from 'aws-cdk-lib/aws-apprunner';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * The implementation provider chosen for tracing App Runner services
@@ -75,7 +76,11 @@ export interface IObservabilityConfiguration extends cdk.IResource {
  *
  * @resource AWS::AppRunner::ObservabilityConfiguration
  */
+@propertyInjectable
 export class ObservabilityConfiguration extends cdk.Resource implements IObservabilityConfiguration {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-apprunner-alpha.ObservabilityConfiguration';
+
   /**
    * Imports an App Runner Observability Configuration from attributes.
    */

@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import * as eks from '../../../aws-eks';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
+import { ValidationError } from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 interface EksCallOptions {
@@ -100,13 +101,13 @@ export class EksCall extends sfn.TaskStateBase {
     try {
       this.clusterEndpoint = this.props.cluster.clusterEndpoint;
     } catch {
-      throw new Error('The "clusterEndpoint" property must be specified when using an imported Cluster.');
+      throw new ValidationError('The "clusterEndpoint" property must be specified when using an imported Cluster.', this);
     }
 
     try {
       this.clusterCertificateAuthorityData = this.props.cluster.clusterCertificateAuthorityData;
     } catch {
-      throw new Error('The "clusterCertificateAuthorityData" property must be specified when using an imported Cluster.');
+      throw new ValidationError('The "clusterCertificateAuthorityData" property must be specified when using an imported Cluster.', this);
     }
   }
 

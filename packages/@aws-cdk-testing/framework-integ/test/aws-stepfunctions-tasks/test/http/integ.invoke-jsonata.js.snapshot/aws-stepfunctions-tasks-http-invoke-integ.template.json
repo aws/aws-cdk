@@ -47,7 +47,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "AuthorizerHandlerServiceRole5F40A014"
@@ -172,7 +172,10 @@
     "AuthorizerBD825682",
     "IntegRestApitestGET52631013",
     "IntegRestApitest58FEA9C5"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "IntegRestApiDeploymentStageprod29E2686A": {
    "Type": "AWS::ApiGateway::Stage",

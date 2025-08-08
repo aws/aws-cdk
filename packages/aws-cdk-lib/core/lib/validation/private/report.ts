@@ -212,7 +212,7 @@ export class PolicyValidationReportFormatter {
                 resource.resourceLogicalId,
               )?.node.path;
               return {
-                constructStack: this.reportTrace.formatJson(constructPath),
+                constructStack: constructPath ? this.reportTrace.formatJson(constructPath) : undefined,
                 constructPath: constructPath,
                 locations: resource.locations,
                 resourceLogicalId: resource.resourceLogicalId,

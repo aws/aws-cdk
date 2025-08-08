@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnSchedulingPolicy } from './batch.generated';
 import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a Scheduling Policy. Scheduling Policies tell the Batch
@@ -189,7 +190,11 @@ export interface FairshareSchedulingPolicyProps extends SchedulingPolicyProps {
  *
  * @resource AWS::Batch::SchedulingPolicy
  */
+@propertyInjectable
 export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements IFairshareSchedulingPolicy {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.FairshareSchedulingPolicy';
+
   /**
    * Reference an exisiting Scheduling Policy by its ARN
    */

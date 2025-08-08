@@ -48,6 +48,19 @@ class VpcEndpointStack extends cdk.Stack {
       service: ec2.InterfaceVpcEndpointAwsService.DYNAMODB,
       privateDnsEnabled: false,
     });
+
+    // Add an interface endpoint with ipAddressType and dnsRecordIpType
+    vpc.addInterfaceEndpoint('CloudwatchLogsEndpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
+      ipAddressType: ec2.VpcEndpointIpAddressType.IPV4,
+      dnsRecordIpType: ec2.VpcEndpointDnsRecordIpType.IPV4,
+    });
+
+    // Add a cross-region interface endpoint
+    vpc.addInterfaceEndpoint('CrossRegionEndpoint', {
+      service: new ec2.InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-123456', 443),
+      serviceRegion: 'us-east-1', // Cross-region service
+    });
   }
 }
 

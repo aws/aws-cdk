@@ -2,6 +2,7 @@ import { IRule } from './rule-ref';
 import {
   captureStackTrace, DefaultTokenResolver, IResolvable,
   IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization,
+  UnscopedValidationError,
 } from '../../core';
 
 /**
@@ -169,7 +170,7 @@ export class FieldAwareEventInput extends RuleTargetInput {
 
         const key = keyForField(t);
         if (inputPathsMap[key] && inputPathsMap[key] !== t.path) {
-          throw new Error(`Single key '${key}' is used for two different JSON paths: '${t.path}' and '${inputPathsMap[key]}'`);
+          throw new UnscopedValidationError(`Single key '${key}' is used for two different JSON paths: '${t.path}' and '${inputPathsMap[key]}'`);
         }
         inputPathsMap[key] = t.path;
 

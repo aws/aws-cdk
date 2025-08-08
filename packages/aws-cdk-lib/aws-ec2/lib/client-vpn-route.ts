@@ -2,8 +2,9 @@ import { Construct } from 'constructs';
 import { IClientVpnEndpoint } from './client-vpn-endpoint-types';
 import { CfnClientVpnRoute } from './ec2.generated';
 import { ISubnet } from './vpc';
-import { Resource } from '../../core';
+import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Options for a ClientVpnRoute
@@ -80,17 +81,22 @@ export interface ClientVpnRouteProps extends ClientVpnRouteOptions {
 /**
  * A client VPN route
  */
+@propertyInjectable
 export class ClientVpnRoute extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.ClientVpnRoute';
+
   constructor(scope: Construct, id: string, props: ClientVpnRouteProps) {
     if (!props.clientVpnEndoint && !props.clientVpnEndpoint) {
-      throw new Error(
-        'ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified',
+      throw new ValidationError(
+        'ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified', scope,
       );
     }
     if (props.clientVpnEndoint && props.clientVpnEndpoint) {
-      throw new Error(
+      throw new ValidationError(
         'ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified' +
           ', but not both',
+        scope,
       );
     }
     const clientVpnEndpoint = props.clientVpnEndoint || props.clientVpnEndpoint;

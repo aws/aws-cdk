@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "1a9a446b9fded65ea80186ef4ba27c565829a043684316486b051aaff97e7520": {
+      "displayName": "ApplicationSignalsJavaApp-Sidecar Template",
+      "source": {
+        "path": "ApplicationSignalsJavaApp-Sidecar.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1a9a446b9fded65ea80186ef4ba27c565829a043684316486b051aaff97e7520.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

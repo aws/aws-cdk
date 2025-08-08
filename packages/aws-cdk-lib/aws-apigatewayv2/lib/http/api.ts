@@ -9,9 +9,11 @@ import { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { ArnFormat, Duration, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
-import { IApi } from '../common/api';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { IApi, IpAddressType } from '../common/api';
 import { ApiBase } from '../common/base';
 import { DomainMappingOptions } from '../common/stage';
+
 /**
  * Represents an HTTP API
  */
@@ -178,6 +180,15 @@ export interface HttpApiProps {
    * @default false
    */
   readonly routeSelectionExpression?: boolean;
+
+  /**
+   * The IP address types that can invoke the API.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-ip-address-type.html
+   *
+   * @default undefined - AWS default is IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
 }
 
 /**
@@ -360,7 +371,13 @@ export interface HttpApiAttributes {
  * Create a new API Gateway HTTP API endpoint.
  * @resource AWS::ApiGatewayV2::Api
  */
+@propertyInjectable
 export class HttpApi extends HttpApiBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.HttpApi';
+
   /**
    * Import an existing HTTP API into this CDK app.
    */
@@ -454,6 +471,7 @@ export class HttpApi extends HttpApiBase {
       description: props?.description,
       disableExecuteApiEndpoint: this.disableExecuteApiEndpoint,
       routeSelectionExpression: props?.routeSelectionExpression ? '${request.method} ${request.path}' : undefined,
+      ipAddressType: props?.ipAddressType,
     };
 
     const resource = new CfnApi(this, 'Resource', apiProps);

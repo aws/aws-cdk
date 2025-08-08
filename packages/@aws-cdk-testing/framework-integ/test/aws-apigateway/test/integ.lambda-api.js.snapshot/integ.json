@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "44.0.0",
   "testCases": {
     "lambda-integration/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "lambda-integration/DefaultTest/DeployAssert",
       "assertionStackName": "lambdaintegrationDefaultTestDeployAssertAC2ED705"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-eks-v2-alpha-helm-logging/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-v2-alpha-helm-logging-test"
+      ],
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-eks-v2-alpha-helm-logging/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksv2alphahelmloggingDefaultTestDeployAssert6662620B"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}

@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "44.0.0",
   "testCases": {
     "Route53RenameCrossAccountInteg/DefaultTest": {
       "stacks": [
@@ -10,5 +10,6 @@
       "assertionStack": "Route53RenameCrossAccountInteg/DefaultTest/DeployAssert",
       "assertionStackName": "Route53RenameCrossAccountIntegDefaultTestDeployAssert2D0BD417"
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

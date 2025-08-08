@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import { Content } from './content';
 import { CfnBuild } from 'aws-cdk-lib/aws-gamelift';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Your custom-built game server software that runs on GameLift and hosts game sessions for your players.
@@ -182,7 +183,11 @@ export interface BuildProps {
  *
  * @resource AWS::GameLift::Build
  */
+@propertyInjectable
 export class Build extends BuildBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-gamelift-alpha.Build';
+
   /**
    * Create a new Build from s3 content
    */

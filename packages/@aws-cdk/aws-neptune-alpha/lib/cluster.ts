@@ -11,6 +11,7 @@ import { CfnDBCluster, CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import { IClusterParameterGroup, IParameterGroup } from './parameter-group';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Possible Instances Types to use in Neptune cluster
@@ -109,6 +110,30 @@ export class EngineVersion {
    * Neptune engine version 1.3.4.0
    */
   public static readonly V1_3_4_0 = new EngineVersion('1.3.4.0');
+  /**
+   * Neptune engine version 1.4.0.0
+   */
+  public static readonly V1_4_0_0 = new EngineVersion('1.4.0.0');
+  /**
+   * Neptune engine version 1.4.1.0
+   */
+  public static readonly V1_4_1_0 = new EngineVersion('1.4.1.0');
+  /**
+   * Neptune engine version 1.4.2.0
+   */
+  public static readonly V1_4_2_0 = new EngineVersion('1.4.2.0');
+  /**
+   * Neptune engine version 1.4.3.0
+   */
+  public static readonly V1_4_3_0 = new EngineVersion('1.4.3.0');
+  /**
+   * Neptune engine version 1.4.4.0
+   */
+  public static readonly V1_4_4_0 = new EngineVersion('1.4.4.0');
+  /**
+   * Neptune engine version 1.4.5.0
+   */
+  public static readonly V1_4_5_0 = new EngineVersion('1.4.5.0');
 
   /**
    * Constructor for specifying a custom engine version
@@ -545,7 +570,10 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
  *
  * @resource AWS::Neptune::DBCluster
  */
+@propertyInjectable
 export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-neptune-alpha.DatabaseCluster';
   /**
    * The default number of instances in the Neptune cluster if none are
    * specified

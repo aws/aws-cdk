@@ -10,6 +10,7 @@ import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -509,7 +510,13 @@ export enum IntrospectionConfig {
  *
  * @resource AWS::AppSync::GraphQLApi
  */
+@propertyInjectable
 export class GraphqlApi extends GraphqlApiBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appsync.GraphqlApi';
+
   /**
    * Import a GraphQL API through this function
    *

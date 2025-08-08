@@ -5,8 +5,9 @@ import { renderData } from './render-data';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
-import { FileSystem, Stack } from '../../core';
+import { FileSystem, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import * as yaml_cfn from '../../core/lib/private/yaml-cfn';
 
 /**
  * Source information.
@@ -27,6 +28,36 @@ export interface SourceConfig {
    * @default - no markers
    */
   readonly markers?: Record<string, any>;
+
+  /**
+   * A configuration for markers substitution strategy.
+   * @default - no configuration
+   */
+  readonly markersConfig?: MarkersConfig;
+}
+
+/**
+ * A configuration for markers substitution strategy.
+ */
+export interface MarkersConfig {
+  /**
+   * If set to `true`, the marker substitution will make ure the value inserted in the file
+   * will be a valid JSON string.
+   * @default - false
+   */
+  readonly jsonEscape?: boolean;
+}
+
+/**
+ * Define options which can be passed using the method `Source.jsonData()`.
+ */
+export interface JsonProcessingOptions {
+  /**
+   * If set to `true`, the marker substitution will make sure the value inserted in the file
+   * will be a valid JSON string.
+   * @default - false
+   */
+  readonly escape?: boolean;
 }
 
 /**
@@ -158,12 +189,12 @@ export class Source {
    * S3 deployment).
    * @param data The data to be stored in the object.
    */
-  public static data(objectKey: string, data: string): ISource {
+  public static data(objectKey: string, data: string, markersConfig?: MarkersConfig): ISource {
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
         const workdir = FileSystem.mkdtemp('s3-deployment');
         const outputPath = join(workdir, objectKey);
-        const rendered = renderData(scope, data);
+        const rendered = renderData(data);
         fs.mkdirSync(dirname(outputPath), { recursive: true });
         fs.writeFileSync(outputPath, rendered.text);
         const asset = this.asset(workdir).bind(scope, context);
@@ -171,6 +202,7 @@ export class Source {
           bucket: asset.bucket,
           zipObjectKey: asset.zipObjectKey,
           markers: rendered.markers,
+          markersConfig: markersConfig,
         };
       },
     };
@@ -184,11 +216,24 @@ export class Source {
    * @param objectKey The destination S3 object key (relative to the root of the
    * S3 deployment).
    * @param obj A JSON object.
+   * @param jsonProcessingOptions Options for how to process the JSON object.
    */
-  public static jsonData(objectKey: string, obj: any): ISource {
+  public static jsonData(objectKey: string, obj: any, jsonProcessingOptions?: JsonProcessingOptions): ISource {
+    let markersConfig: MarkersConfig = {};
+    if (jsonProcessingOptions?.escape) {
+      markersConfig = { jsonEscape: true };
+    }
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
-        return Source.data(objectKey, Stack.of(scope).toJsonString(obj)).bind(scope, context);
+        // toJsonString can generate extra tokens that would not be needed if the obj is not a token
+        // in the first place. Therefore, if obj is not a token, we should use the regular JSON serializer.
+        const serializedObj = Token.isUnresolved(obj)? Stack.of(scope).toJsonString(obj) : JSON.stringify(obj);
+
+        return Source.data(
+          objectKey,
+          serializedObj,
+          markersConfig,
+        ).bind(scope, context);
       },
     };
   }
@@ -205,7 +250,14 @@ export class Source {
   public static yamlData(objectKey: string, obj: any): ISource {
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
-        return Source.data(objectKey, Stack.of(scope).toYamlString(obj)).bind(scope, context);
+        // toYamlString can generate extra tokens that would not be needed if the obj is not a token
+        // in the first place. Therefore, if obj is not a token, we should use the regular YAML serializer.
+        const serializedObj = Token.isUnresolved(obj)? Stack.of(scope).toYamlString(obj) : yaml_cfn.serialize(obj);
+
+        return Source.data(
+          objectKey,
+          serializedObj,
+        ).bind(scope, context);
       },
     };
   }

@@ -4,6 +4,8 @@ import { JobType, GlueVersion, JobLanguage, WorkerType } from '../constants';
 import { Code } from '../code';
 import { SparkJob, SparkJobProps } from './spark-job';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { ValidationError } from 'aws-cdk-lib/core';
 
 /**
  * Properties for creating a Scala Spark ETL job
@@ -66,7 +68,10 @@ export interface ScalaSparkEtlJobProps extends SparkJobProps {
  * You can find more details about version, worker type and other features
  * in Glue's public documentation.
  */
+@propertyInjectable
 export class ScalaSparkEtlJob extends SparkJob {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.ScalaSparkEtlJob';
   public readonly jobArn: string;
   public readonly jobName: string;
 
@@ -85,7 +90,7 @@ export class ScalaSparkEtlJob extends SparkJob {
     };
 
     if ((!props.workerType && props.numberOfWorkers !== undefined) || (props.workerType && props.numberOfWorkers === undefined)) {
-      throw new Error('Both workerType and numberOfWorkers must be set');
+      throw new ValidationError('Both workerType and numberOfWorkers must be set', this);
     }
 
     const jobResource = new CfnJob(this, 'Resource', {

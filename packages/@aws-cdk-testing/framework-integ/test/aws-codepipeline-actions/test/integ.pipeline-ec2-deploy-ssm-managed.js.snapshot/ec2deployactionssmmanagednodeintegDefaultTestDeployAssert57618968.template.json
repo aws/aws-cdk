@@ -1,0 +1,566 @@
+{
+ "Resources": {
+  "AwsApiCallcodepipelineStartPipelineExecutionad2a8e13b355c597dd9ba3bb8c937882": {
+   "Type": "Custom::DeployAssert@SdkCallcodepipelineStartPipelineExecuti",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "codepipeline",
+    "api": "StartPipelineExecution",
+    "parameters": {
+     "name": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node:ExportsOutputRefMyPipelineAED38ECFE2E6B334"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "pipelineExecutionId"
+    ],
+    "salt": "1754344469430"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "codepipeline:StartPipelineExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "codepipeline:GetPipelineExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0": {
+   "Type": "Custom::DeployAssert@SdkCallcodepipelineGetPipelineExecution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "codepipeline",
+    "api": "GetPipelineExecution",
+    "expected": "{\"$ObjectLike\":{\"pipelineExecution\":{\"status\":\"Succeeded\"}}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitFor66DAA5A7"
+    },
+    "parameters": {
+     "pipelineName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node:ExportsOutputRefMyPipelineAED38ECFE2E6B334"
+        },
+        "\""
+       ]
+      ]
+     },
+     "pipelineExecutionId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::GetAtt": [
+          "AwsApiCallcodepipelineStartPipelineExecutionad2a8e13b355c597dd9ba3bb8c937882",
+          "apiCallResponse.pipelineExecutionId"
+         ]
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1754344469432"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForIsCompleteProviderInvokeD9F10281": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForTimeoutProviderInvokeFBF4C27C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitFor66DAA5A7": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":30,\"MaxAttempts\":60,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D"
+   ]
+  },
+  "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "codepipeline:GetPipelineExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.isComplete",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.onTimeout",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "HttpApiCall27af9e605d6e315bf4a33d7c8b61846f": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "http://",
+        {
+         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node:ExportsOutputFnGetAttALBAEE750D2DNSNameE026139E"
+        },
+        "/LB/index.html"
+       ]
+      ]
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200}}",
+    "flattenResponse": "false",
+    "salt": "1754344469436"
+   },
+   "DependsOn": [
+    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0",
+    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForIsCompleteProviderInvokeD9F10281",
+    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitFor66DAA5A7",
+    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D",
+    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForTimeoutProviderInvokeFBF4C27C"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCallfc1c5a80a56be49afaec52c14ab25ad5": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "http://",
+        {
+         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node:ExportsOutputFnGetAttInstanceNoLB0F5BE1CB1PublicDnsNameAF6BAD8D"
+        },
+        "/NoLB/index.html"
+       ]
+      ]
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200}}",
+    "flattenResponse": "false",
+    "salt": "1754344469437"
+   },
+   "DependsOn": [
+    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0",
+    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForIsCompleteProviderInvokeD9F10281",
+    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitFor66DAA5A7",
+    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D",
+    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForTimeoutProviderInvokeFBF4C27C"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCall4a4ff02ea43ff833e2ebd6a46c03dced": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "http://",
+        {
+         "Fn::ImportValue": "aws-cdk-codepipeline-ec2-deploy-ssm-managed-node:ExportsOutputFnGetAttInstanceNoLB1840A0492PublicDnsName4FB1136A"
+        },
+        "/NoLB/index.html"
+       ]
+      ]
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200}}",
+    "flattenResponse": "false",
+    "salt": "1754344469438"
+   },
+   "DependsOn": [
+    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0",
+    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForIsCompleteProviderInvokeD9F10281",
+    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitFor66DAA5A7",
+    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForRole162EA17D",
+    "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0WaitForTimeoutProviderInvokeFBF4C27C"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCall27af9e605d6e315bf4a33d7c8b61846f": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall27af9e605d6e315bf4a33d7c8b61846f",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCallfc1c5a80a56be49afaec52c14ab25ad5": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCallfc1c5a80a56be49afaec52c14ab25ad5",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCall4a4ff02ea43ff833e2ebd6a46c03dced": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall4a4ff02ea43ff833e2ebd6a46c03dced",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

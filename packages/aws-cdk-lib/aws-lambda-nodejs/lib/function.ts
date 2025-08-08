@@ -7,7 +7,7 @@ import { BundlingOptions } from './types';
 import { callsites, findUpMultiple, isSdkV2Runtime } from './util';
 import { Architecture } from '../../aws-lambda';
 import * as lambda from '../../aws-lambda';
-import { Annotations, FeatureFlags } from '../../core';
+import { Annotations, FeatureFlags, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
 
@@ -113,17 +113,17 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
 export class NodejsFunction extends lambda.Function {
   constructor(scope: Construct, id: string, props: NodejsFunctionProps = {}) {
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
-      throw new Error('Only `NODEJS` runtimes are supported.');
+      throw new ValidationError('Only `NODEJS` runtimes are supported.', scope);
     }
 
     const runtime = getRuntime(scope, props);
 
     if (props.code !== undefined) {
       if (props.handler === undefined) {
-        throw new Error(
+        throw new ValidationError(
           'Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.\n'
           + 'The handler should be the name of the exported function to be invoked and the file containing that function.\n'
-          + 'For example, handler should be specified in the form `myFile.myFunction`',
+          + 'For example, handler should be specified in the form `myFile.myFunction`', scope,
         );
       }
 
@@ -135,9 +135,9 @@ export class NodejsFunction extends lambda.Function {
       });
     } else {
       // Entry and defaults
-      const entry = path.resolve(findEntry(id, props.entry));
+      const entry = path.resolve(findEntry(scope, id, props.entry));
       const architecture = props.architecture ?? Architecture.X86_64;
-      const depsLockFilePath = findLockFile(props.depsLockFilePath);
+      const depsLockFilePath = findLockFile(scope, props.depsLockFilePath);
       const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
       const handler = props.handler ?? 'handler';
 
@@ -186,14 +186,14 @@ function getRuntime(scope: Construct, props: NodejsFunctionProps): lambda.Runtim
 /**
  * Checks given lock file or searches for a lock file
  */
-function findLockFile(depsLockFilePath?: string): string {
+function findLockFile(scope: Construct, depsLockFilePath?: string): string {
   if (depsLockFilePath) {
     if (!fs.existsSync(depsLockFilePath)) {
-      throw new Error(`Lock file at ${depsLockFilePath} doesn't exist`);
+      throw new ValidationError(`Lock file at ${depsLockFilePath} doesn't exist`, scope);
     }
 
     if (!fs.statSync(depsLockFilePath).isFile()) {
-      throw new Error('`depsLockFilePath` should point to a file');
+      throw new ValidationError('`depsLockFilePath` should point to a file', scope);
     }
 
     return path.resolve(depsLockFilePath);
@@ -207,10 +207,10 @@ function findLockFile(depsLockFilePath?: string): string {
   ]);
 
   if (lockFiles.length === 0) {
-    throw new Error('Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock`, `bun.lockb` or `package-lock.json`). Please specify it with `depsLockFilePath`.');
+    throw new ValidationError('Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock`, `bun.lockb` or `package-lock.json`). Please specify it with `depsLockFilePath`.', scope);
   }
   if (lockFiles.length > 1) {
-    throw new Error(`Multiple package lock files found: ${lockFiles.join(', ')}. Please specify the desired one with \`depsLockFilePath\`.`);
+    throw new ValidationError(`Multiple package lock files found: ${lockFiles.join(', ')}. Please specify the desired one with \`depsLockFilePath\`.`, scope);
   }
 
   return lockFiles[0];
@@ -226,18 +226,18 @@ function findLockFile(depsLockFilePath?: string): string {
  * 6. A .cts file name as the defining file with id as suffix (defining-file.id.cts)
  * 7. A .cjs file name as the defining file with id as suffix (defining-file.id.cjs)
  */
-function findEntry(id: string, entry?: string): string {
+function findEntry(scope: Construct, id: string, entry?: string): string {
   if (entry) {
     if (!/\.(jsx?|tsx?|cjs|cts|mjs|mts)$/.test(entry)) {
-      throw new Error('Only JavaScript or TypeScript entry files are supported.');
+      throw new ValidationError('Only JavaScript or TypeScript entry files are supported.', scope);
     }
     if (!fs.existsSync(entry)) {
-      throw new Error(`Cannot find entry file at ${entry}`);
+      throw new ValidationError(`Cannot find entry file at ${entry}`, scope);
     }
     return entry;
   }
 
-  const definingFile = findDefiningFile();
+  const definingFile = findDefiningFile(scope);
   const extname = path.extname(definingFile);
 
   const tsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.ts`);
@@ -270,13 +270,13 @@ function findEntry(id: string, entry?: string): string {
     return cjsHandlerFile;
   }
 
-  throw new Error(`Cannot find handler file ${tsHandlerFile}, ${jsHandlerFile}, ${mjsHandlerFile}, ${mtsHandlerFile}, ${ctsHandlerFile} or ${cjsHandlerFile}`);
+  throw new ValidationError(`Cannot find handler file ${tsHandlerFile}, ${jsHandlerFile}, ${mjsHandlerFile}, ${mtsHandlerFile}, ${ctsHandlerFile} or ${cjsHandlerFile}`, scope);
 }
 
 /**
  * Finds the name of the file where the `NodejsFunction` is defined
  */
-function findDefiningFile(): string {
+function findDefiningFile(scope: Construct): string {
   let definingIndex;
   const sites = callsites();
   for (const [index, site] of sites.entries()) {
@@ -288,7 +288,7 @@ function findDefiningFile(): string {
   }
 
   if (!definingIndex || !sites[definingIndex]) {
-    throw new Error('Cannot find defining file.');
+    throw new ValidationError('Cannot find defining file.', scope);
   }
 
   return sites[definingIndex].getFileName();

@@ -1,0 +1,40 @@
+name: Codecov Upload
+
+on:
+  workflow_run:
+    workflows: ["Codecov Collect"]
+    types:
+      - completed
+
+permissions:
+  contents: write
+  id-token: write
+  actions: read
+
+jobs:
+  upload:
+    name: Upload to Codecov
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-artifacts
+          path: ./packages/aws-cdk-lib/core/coverage
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./packages/aws-cdk-lib/core/coverage/cobertura-coverage.xml
+          fail_ci_if_error: true
+          flags: suite.unit
+          use_oidc: true

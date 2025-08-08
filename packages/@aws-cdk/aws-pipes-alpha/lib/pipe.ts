@@ -3,6 +3,7 @@ import { ArnPrincipal, IRole, PolicyStatement, Role, ServicePrincipal } from 'aw
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IEnrichment } from './enrichment';
 import { IFilter } from './filter';
@@ -184,7 +185,10 @@ abstract class PipeBase extends Resource implements IPipe {
 /**
  * An imported pipe.
  */
+@propertyInjectable
 class ImportedPipe extends PipeBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-pipes-alpha.ImportedPipe';
   public readonly pipeName: string ;
   public readonly pipeArn: string;
   public readonly pipeRole: IRole;
@@ -212,7 +216,11 @@ class ImportedPipe extends PipeBase {
  *
  * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes.html
  */
+@propertyInjectable
 export class Pipe extends PipeBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-pipes-alpha.Pipe';
+
   /**
    * Creates a pipe from the name of a pipe.
    */

@@ -681,7 +681,7 @@ declare const alb: elbv2.ApplicationLoadBalancer;
 const cfOriginFacing = ec2.PrefixList.fromLookup(this, 'CloudFrontOriginFacing', {
   prefixListName: 'com.amazonaws.global.cloudfront.origin-facing',
 });
-alb.connections.allowFrom(ec2.Peer.prefixList(cfOriginFacing.prefixListId), ec2.Port.HTTP);
+alb.connections.allowFrom(cfOriginFacing, ec2.Port.HTTP);
 ```
 
 #### The VPC origin service security group

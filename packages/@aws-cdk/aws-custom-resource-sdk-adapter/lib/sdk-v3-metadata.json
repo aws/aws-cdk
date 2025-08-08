@@ -11,9 +11,6 @@
   "acm": {
     "iamPrefix": "acm"
   },
-  "alexa-for-business": {
-    "iamPrefix": "a4b"
-  },
   "amp": {
     "iamPrefix": "aps"
   },
@@ -62,6 +59,9 @@
   "application-insights": {
     "iamPrefix": "applicationinsights"
   },
+  "application-signals": {
+    "iamPrefix": "application-signals"
+  },
   "applicationcostprofiler": {
     "iamPrefix": "application-cost-profiler"
   },
@@ -74,8 +74,14 @@
   "appsync": {
     "iamPrefix": "appsync"
   },
+  "apptest": {
+    "iamPrefix": "apptest"
+  },
   "arc-zonal-shift": {
     "iamPrefix": "arc-zonal-shift"
+  },
+  "artifact": {
+    "iamPrefix": "artifact"
   },
   "athena": {
     "iamPrefix": "athena"
@@ -98,8 +104,8 @@
   "backup": {
     "iamPrefix": "backup"
   },
-  "backupstorage": {
-    "iamPrefix": "backup-storage"
+  "backupsearch": {
+    "iamPrefix": "backup-search"
   },
   "batch": {
     "iamPrefix": "batch"
@@ -107,10 +113,19 @@
   "bcm-data-exports": {
     "iamPrefix": "bcm-data-exports"
   },
+  "bcm-pricing-calculator": {
+    "iamPrefix": "bcm-pricing-calculator"
+  },
   "bedrock-agent-runtime": {
     "iamPrefix": "bedrock"
   },
   "bedrock-agent": {
+    "iamPrefix": "bedrock"
+  },
+  "bedrock-data-automation-runtime": {
+    "iamPrefix": "bedrock"
+  },
+  "bedrock-data-automation": {
     "iamPrefix": "bedrock"
   },
   "bedrock-runtime": {
@@ -118,6 +133,9 @@
   },
   "bedrock": {
     "iamPrefix": "bedrock"
+  },
+  "billing": {
+    "iamPrefix": "billing"
   },
   "billingconductor": {
     "iamPrefix": "billingconductor"
@@ -127,6 +145,9 @@
   },
   "budgets": {
     "iamPrefix": "budgets"
+  },
+  "chatbot": {
+    "iamPrefix": "chatbot"
   },
   "chime-sdk-identity": {
     "iamPrefix": "chime"
@@ -207,6 +228,9 @@
   "codecommit": {
     "iamPrefix": "codecommit"
   },
+  "codeconnections": {
+    "iamPrefix": "codeconnections"
+  },
   "codedeploy": {
     "iamPrefix": "codedeploy"
   },
@@ -227,9 +251,6 @@
   },
   "codestar-notifications": {
     "iamPrefix": "codestar-notifications"
-  },
-  "codestar": {
-    "iamPrefix": "codestar"
   },
   "cognito-identity-provider": {
     "iamPrefix": "cognito-idp"
@@ -261,11 +282,17 @@
   "connectcampaigns": {
     "iamPrefix": "connect-campaigns"
   },
+  "connectcampaignsv2": {
+    "iamPrefix": "connect-campaigns"
+  },
   "connectcases": {
     "iamPrefix": "cases"
   },
   "connectparticipant": {
     "iamPrefix": "execute-api"
+  },
+  "controlcatalog": {
+    "iamPrefix": "controlcatalog"
   },
   "controltower": {
     "iamPrefix": "controltower"
@@ -303,6 +330,9 @@
   "dax": {
     "iamPrefix": "dax"
   },
+  "deadline": {
+    "iamPrefix": "deadline"
+  },
   "detective": {
     "iamPrefix": "detective"
   },
@@ -314,6 +344,9 @@
   },
   "direct-connect": {
     "iamPrefix": "directconnect"
+  },
+  "directory-service-data": {
+    "iamPrefix": "ds-data"
   },
   "directory-service": {
     "iamPrefix": "ds"
@@ -329,6 +362,9 @@
   },
   "drs": {
     "iamPrefix": "drs"
+  },
+  "dsql": {
+    "iamPrefix": "dsql"
   },
   "dynamodb-streams": {
     "iamPrefix": "dynamodb"
@@ -368,9 +404,6 @@
   },
   "elastic-beanstalk": {
     "iamPrefix": "elasticbeanstalk"
-  },
-  "elastic-inference": {
-    "iamPrefix": "elastic-inference"
   },
   "elastic-load-balancing-v2": {
     "iamPrefix": "elasticloadbalancing"
@@ -438,6 +471,18 @@
   "gamelift": {
     "iamPrefix": "gamelift"
   },
+  "gameliftstreams": {
+    "iamPrefix": "gameliftstreams"
+  },
+  "geo-maps": {
+    "iamPrefix": "geo-maps"
+  },
+  "geo-places": {
+    "iamPrefix": "geo-places"
+  },
+  "geo-routes": {
+    "iamPrefix": "geo-routes"
+  },
   "glacier": {
     "iamPrefix": "glacier"
   },
@@ -468,9 +513,6 @@
   "healthlake": {
     "iamPrefix": "healthlake"
   },
-  "honeycode": {
-    "iamPrefix": "honeycode"
-  },
   "iam": {
     "iamPrefix": "iam"
   },
@@ -492,11 +534,8 @@
   "internetmonitor": {
     "iamPrefix": "internetmonitor"
   },
-  "iot-1click-devices-service": {
-    "iamPrefix": "iot1click"
-  },
-  "iot-1click-projects": {
-    "iamPrefix": "iot1click"
+  "invoicing": {
+    "iamPrefix": "invoicing"
   },
   "iot-data-plane": {
     "iamPrefix": "iotdata"
@@ -510,14 +549,20 @@
   "iot-jobs-data-plane": {
     "iamPrefix": "iot-jobs-data"
   },
-  "iot-roborunner": {
-    "iamPrefix": "iotroborunner"
+  "iot-managed-integrations": {
+    "iamPrefix": "iotmanagedintegrations"
   },
   "iot-wireless": {
     "iamPrefix": "iotwireless"
   },
   "iot": {
-    "iamPrefix": "iot"
+    "iamPrefix": "iot",
+    "commands": [
+      "CreateCommand",
+      "DeleteCommand",
+      "GetCommand",
+      "UpdateCommand"
+    ]
   },
   "iotanalytics": {
     "iamPrefix": "iotanalytics"
@@ -648,6 +693,9 @@
   "macie2": {
     "iamPrefix": "macie2"
   },
+  "mailmanager": {
+    "iamPrefix": "ses"
+  },
   "managedblockchain-query": {
     "iamPrefix": "managedblockchain-query"
   },
@@ -670,6 +718,9 @@
     "iamPrefix": "aws-marketplace"
   },
   "marketplace-metering": {
+    "iamPrefix": "aws-marketplace"
+  },
+  "marketplace-reporting": {
     "iamPrefix": "aws-marketplace"
   },
   "mediaconnect": {
@@ -723,9 +774,6 @@
   "migrationhubstrategy": {
     "iamPrefix": "migrationhub-strategy"
   },
-  "mobile": {
-    "iamPrefix": "AWSMobileHubService"
-  },
   "mq": {
     "iamPrefix": "mq"
   },
@@ -747,17 +795,26 @@
   "network-firewall": {
     "iamPrefix": "network-firewall"
   },
+  "networkflowmonitor": {
+    "iamPrefix": "networkflowmonitor"
+  },
   "networkmanager": {
     "iamPrefix": "networkmanager"
   },
   "networkmonitor": {
     "iamPrefix": "networkmonitor"
   },
-  "nimble": {
-    "iamPrefix": "nimble"
+  "notifications": {
+    "iamPrefix": "notifications"
+  },
+  "notificationscontacts": {
+    "iamPrefix": "notifications-contacts"
   },
   "oam": {
     "iamPrefix": "oam"
+  },
+  "observabilityadmin": {
+    "iamPrefix": "observabilityadmin"
   },
   "omics": {
     "iamPrefix": "omics"
@@ -786,6 +843,9 @@
   "panorama": {
     "iamPrefix": "panorama"
   },
+  "partnercentral-selling": {
+    "iamPrefix": "partnercentral-selling"
+  },
   "payment-cryptography-data": {
     "iamPrefix": "payment-cryptography"
   },
@@ -794,6 +854,12 @@
   },
   "pca-connector-ad": {
     "iamPrefix": "pca-connector-ad"
+  },
+  "pca-connector-scep": {
+    "iamPrefix": "pca-connector-scep"
+  },
+  "pcs": {
+    "iamPrefix": "pcs"
   },
   "personalize-events": {
     "iamPrefix": "personalize"
@@ -828,11 +894,11 @@
   "pricing": {
     "iamPrefix": "pricing"
   },
-  "privatenetworks": {
-    "iamPrefix": "private-networks"
-  },
   "proton": {
     "iamPrefix": "proton"
+  },
+  "qapps": {
+    "iamPrefix": "qapps"
   },
   "qbusiness": {
     "iamPrefix": "qbusiness"
@@ -915,6 +981,9 @@
   "route53-recovery-readiness": {
     "iamPrefix": "route53-recovery-readiness"
   },
+  "route53profiles": {
+    "iamPrefix": "route53profiles"
+  },
   "route53resolver": {
     "iamPrefix": "route53resolver"
   },
@@ -929,6 +998,9 @@
   },
   "s3outposts": {
     "iamPrefix": "s3-outposts"
+  },
+  "s3tables": {
+    "iamPrefix": "s3tables"
   },
   "sagemaker-a2i-runtime": {
     "iamPrefix": "sagemaker"
@@ -962,6 +1034,9 @@
   },
   "secrets-manager": {
     "iamPrefix": "secretsmanager"
+  },
+  "security-ir": {
+    "iamPrefix": "security-ir"
   },
   "securityhub": {
     "iamPrefix": "securityhub"
@@ -1014,14 +1089,23 @@
   "sns": {
     "iamPrefix": "sns"
   },
+  "socialmessaging": {
+    "iamPrefix": "social-messaging"
+  },
   "sqs": {
     "iamPrefix": "sqs"
   },
   "ssm-contacts": {
     "iamPrefix": "ssm-contacts"
   },
+  "ssm-guiconnect": {
+    "iamPrefix": "ssm-guiconnect"
+  },
   "ssm-incidents": {
     "iamPrefix": "ssm-incidents"
+  },
+  "ssm-quicksetup": {
+    "iamPrefix": "ssm-quicksetup"
   },
   "ssm-sap": {
     "iamPrefix": "ssm-sap"
@@ -1063,8 +1147,14 @@
   "synthetics": {
     "iamPrefix": "synthetics"
   },
+  "taxsettings": {
+    "iamPrefix": "tax"
+  },
   "textract": {
     "iamPrefix": "textract"
+  },
+  "timestream-influxdb": {
+    "iamPrefix": "timestream-influxdb"
   },
   "timestream-query": {
     "iamPrefix": "timestream"
@@ -1116,9 +1206,6 @@
   },
   "workdocs": {
     "iamPrefix": "workdocs"
-  },
-  "worklink": {
-    "iamPrefix": "worklink"
   },
   "workmail": {
     "iamPrefix": "workmail"

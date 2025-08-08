@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "43.0.0",
   "artifacts": {
     "KafkaVersionTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3bcdf360a48a080b50477a549d18f1bbe06f7e854d3e0ac6a0b4d7f0e1d5a930.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/304b1bdab8a361040f10eed2fe447f51257459ba220086f69e8bd2e5f4bc87a9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -876,6 +876,87 @@
             "data": "ClusterVersion38xkraft98AC7604"
           }
         ],
+        "/KafkaVersionTestStack/ClusterVersion3-9-x": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-9-x/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-9-x/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion39xSecurityGroupEEB562CB"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-9-x/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion39x27DE3BBA"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-9-x-kraft": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-9-x-kraft/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-9-x-kraft/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion39xkraftSecurityGroupA2700FB1"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-9-x-kraft/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion39xkraft96CD852C"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion4-0-x-kraft": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion4-0-x-kraft/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion4-0-x-kraft/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion40xkraftSecurityGroup81D50A3C"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion4-0-x-kraft/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion40xkraft5E11CA80"
+          }
+        ],
         "/KafkaVersionTestStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -945,5 +1026,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1015.0"
 }

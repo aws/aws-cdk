@@ -3,6 +3,7 @@ import * as iam from '../../../aws-iam';
 import { PolicyStatement } from '../../../aws-iam';
 import { ArnFormat, Stack } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
  * Role which will be reused across asset jobs
@@ -10,7 +11,10 @@ import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata
  * Has some '*' resources to save IAM policy space, and will not
  * actually add policies that look like policies that were already added.
  */
+@propertyInjectable
 export class AssetSingletonRole extends iam.Role {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.pipelines.AssetSingletonRole';
   private _rejectDuplicates = false;
   private _assumeRoleStatement: iam.PolicyStatement | undefined;
 

@@ -7,6 +7,7 @@ import { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from 
 import { IRole, Role, RoleProps } from './role';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for defining a LazyRole
@@ -26,7 +27,10 @@ export interface LazyRoleProps extends RoleProps {
  *
  * @resource AWS::IAM::Role
  */
+@propertyInjectable
 export class LazyRole extends cdk.Resource implements IRole {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.LazyRole';
   public readonly grantPrincipal: IPrincipal = this;
   public readonly principalAccount: string | undefined = this.env.account;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';

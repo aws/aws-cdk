@@ -39,6 +39,7 @@ class JavaScriptCommonJsStack extends Stack {
 const app = new App({
   context: {
     [LAMBDA_NODEJS_USE_LATEST_RUNTIME]: true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
 });
 const mtsEntryTestCase = new TypeScriptModuleStack(app, 'cdk-integ-lambda-nodejs-modules-mts');

@@ -2,7 +2,7 @@ import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 import { IRole } from '../../aws-iam';
 import { ISchedule, IScheduleTarget, ScheduleTargetConfig } from '../../aws-scheduler';
 import * as sqs from '../../aws-sqs';
-import { Token } from '../../core';
+import { Token, ValidationError } from '../../core';
 
 /**
  * Properties for a SQS Queue Target
@@ -35,16 +35,16 @@ export class SqsSendMessage extends ScheduleTargetBase implements IScheduleTarge
 
     if (props.messageGroupId !== undefined) {
       if (!Token.isUnresolved(props.messageGroupId) && (props.messageGroupId.length < 1 || props.messageGroupId.length > 128)) {
-        throw new Error(`messageGroupId length must be between 1 and 128, got ${props.messageGroupId.length}`);
+        throw new ValidationError(`messageGroupId length must be between 1 and 128, got ${props.messageGroupId.length}`, queue);
       }
       if (!queue.fifo) {
-        throw new Error('target must be a FIFO queue if messageGroupId is specified');
+        throw new ValidationError('target must be a FIFO queue if messageGroupId is specified', queue);
       }
       if (!(queue.node.defaultChild as sqs.CfnQueue).contentBasedDeduplication) {
-        throw new Error('contentBasedDeduplication must be true if the target is a FIFO queue');
+        throw new ValidationError('contentBasedDeduplication must be true if the target is a FIFO queue', queue);
       }
     } else if (queue.fifo) {
-      throw new Error('messageGroupId must be specified if the target is a FIFO queue');
+      throw new ValidationError('messageGroupId must be specified if the target is a FIFO queue', queue);
     }
   }
 

@@ -3,10 +3,13 @@
  */
 import { promises as fs } from 'fs';
 import * as path from 'path';
+import { validateFlags } from './validate-flags';
 import * as feats from '../lib/features';
 import { FlagInfo, FlagType, compareVersions } from '../lib/private/flag-modeling';
 
 async function main() {
+  validateFlags();
+
   await updateMarkdownFile(path.join(__dirname, '..', 'FEATURE_FLAGS.md'), {
     table: flagsTable(),
     details: flagsDetails(),
@@ -28,7 +31,7 @@ function flagsTable() {
         renderLink(mdEsc(name), githubHeadingLink(flagDetailsHeading(name, flag))),
         flag.summary,
         flag.introducedIn.v2 ?? '',
-        renderType(flag.type),
+        renderType(flag.type, 'short'),
       ],
     ),
   ]);
@@ -42,30 +45,30 @@ function removedFlags() {
     ...removedInV2.map(([name, flag]) => [
       renderLink(mdEsc(name), githubHeadingLink(flagDetailsHeading(name, flag))),
       flag.summary,
-      renderType(flag.type),
+      renderType(flag.type, 'short'),
       flag.introducedIn.v1 ?? '',
     ]),
   ]);
 }
 
 function changedFlags() {
-  const changedInV2 = flags(flag => !!flag.defaults?.v2 && !!flag.introducedIn.v2);
+  const changedInV2 = flags(flag => !!flag.unconfiguredBehavesLike?.v2 && !!flag.introducedIn.v2);
 
   return renderTable([
     ['Flag', 'Summary', 'Type', 'Since', 'v1 default', 'v2 default'],
     ...changedInV2.map(([name, flag]) => [
       renderLink(mdEsc(name), githubHeadingLink(flagDetailsHeading(name, flag))),
       flag.summary,
-      renderType(flag.type),
+      renderType(flag.type, 'short'),
       flag.introducedIn.v1 ?? '',
       renderValue(false),
-      renderValue(flag.defaults?.v2),
+      renderValue(flag.unconfiguredBehavesLike?.v2),
     ]),
   ]);
 }
 
 function migrateJson() {
-  const changedInV2 = flags(flag => !!flag.defaults?.v2 && !!flag.introducedIn.v2 && !!flag.introducedIn.v1);
+  const changedInV2 = flags(flag => !!flag.unconfiguredBehavesLike?.v2 && !!flag.introducedIn.v2 && !!flag.introducedIn.v1);
 
   const context = Object.fromEntries(changedInV2.map(([name, _]) => [name, false]));
 
@@ -82,12 +85,14 @@ function flagsDetails() {
   return allFlags.flatMap(([name, flag]) => [
     `### ${flagDetailsHeading(name, flag)}`,
     '',
-    `*${flag.summary}* ${renderType(flag.type)}`,
+    `*${flag.summary}*`,
+    '',
+    `Flag type: ${renderType(flag.type, 'long')}`,
     '',
     dedent(flag.detailsMd),
     '',
     renderTable([
-      ['Since', 'Default', 'Recommended'],
+      ['Since', 'Unset behaves like', 'Recommended value'],
 
       // V1
       flag.introducedIn.v1
@@ -96,9 +101,9 @@ function flagsDetails() {
 
       // V2
       flag.introducedIn.v2
-        ? [flag.introducedIn.v2, renderValue(flag.defaults?.v2 ?? false), renderValue(flag.recommendedValue)]
-        : flag.defaults?.v2 !== undefined
-          ? ['(default in v2)', renderValue(flag.defaults?.v2), '']
+        ? [flag.introducedIn.v2, renderValue(flag.unconfiguredBehavesLike?.v2 ?? false), renderValue(flag.recommendedValue)]
+        : flag.unconfiguredBehavesLike?.v2 !== undefined
+          ? ['(not configurable in v2)', renderValue(flag.unconfiguredBehavesLike?.v2), '']
           : ['(not in v2)', '', ''],
     ]),
     ...oldBehavior(flag) ? [
@@ -144,12 +149,16 @@ function flags(pred: (x: FlagInfo) => boolean) {
   return entries;
 }
 
-function renderType(type: FlagType): string {
+function renderType(type: FlagType, flavor: 'short' | 'long'): string {
   switch (type) {
-    case FlagType.ApiDefault: return '(default)';
-    case FlagType.BugFix: return '(fix)';
-    case FlagType.VisibleContext: return '(config)';
-    case FlagType.Temporary: return '(temporary)';
+    case FlagType.ApiDefault: return longShort('New default behavior', 'new default');
+    case FlagType.BugFix: return longShort('Backwards incompatible bugfix', 'fix');
+    case FlagType.VisibleContext: return longShort('Configuration option', 'config');
+    case FlagType.Temporary: return longShort('Temporary flag', 'temporary');
+  }
+
+  function longShort(long: string, short: string) {
+    return flavor === 'long' ? long : short;
   }
 }
 

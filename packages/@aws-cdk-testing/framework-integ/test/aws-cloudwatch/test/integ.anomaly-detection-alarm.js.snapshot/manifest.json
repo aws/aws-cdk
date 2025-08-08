@@ -1,0 +1,259 @@
+{
+  "version": "42.0.0",
+  "artifacts": {
+    "AnomalyDetectionAlarmTestStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AnomalyDetectionAlarmTestStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AnomalyDetectionAlarmTestStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AnomalyDetectionAlarmTestStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/89e20064faee3c465524258c6d4241fb1ff706f0ce522ac300e5588dc40dd64b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AnomalyDetectionAlarmTestStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AnomalyDetectionAlarmTestStack.assets"
+      ],
+      "metadata": {
+        "/AnomalyDetectionAlarmTestStack/DefaultOperatorAnomalyAlarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/AnomalyDetectionAlarmTestStack/DefaultOperatorAnomalyAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultOperatorAnomalyAlarm13E81AA2"
+          }
+        ],
+        "/AnomalyDetectionAlarmTestStack/ExplicitOperatorAnomalyAlarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/AnomalyDetectionAlarmTestStack/ExplicitOperatorAnomalyAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExplicitOperatorAnomalyAlarm061F9C2B"
+          }
+        ],
+        "/AnomalyDetectionAlarmTestStack/DescriptiveAnomalyAlarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/AnomalyDetectionAlarmTestStack/DescriptiveAnomalyAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DescriptiveAnomalyAlarm8B14203E"
+          }
+        ],
+        "/AnomalyDetectionAlarmTestStack/Exports/Output{\"Ref\":\"DefaultOperatorAnomalyAlarm13E81AA2\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefDefaultOperatorAnomalyAlarm13E81AA2E47BFAEC"
+          }
+        ],
+        "/AnomalyDetectionAlarmTestStack/Exports/Output{\"Ref\":\"ExplicitOperatorAnomalyAlarm061F9C2B\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefExplicitOperatorAnomalyAlarm061F9C2BB2D8039E"
+          }
+        ],
+        "/AnomalyDetectionAlarmTestStack/Exports/Output{\"Ref\":\"DescriptiveAnomalyAlarm8B14203E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefDescriptiveAnomalyAlarm8B14203E100E41DF"
+          }
+        ],
+        "/AnomalyDetectionAlarmTestStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AnomalyDetectionAlarmTestStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AnomalyDetectionAlarmTestStack"
+    },
+    "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8d178a385f1f28da3801e0c27d0279148b4141ce71ed9c822a07db14c2e99f4f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AnomalyDetectionAlarmTestStack",
+        "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433.assets"
+      ],
+      "metadata": {
+        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe"
+          }
+        ],
+        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe"
+          }
+        ],
+        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb"
+          }
+        ],
+        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb"
+          }
+        ],
+        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985"
+          }
+        ],
+        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985"
+          }
+        ],
+        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1006.0"
+}

@@ -69,6 +69,7 @@ test('cloud assembly builder', () => {
   // verify the manifest looks right
   expect(manifest).toStrictEqual({
     version: cxschema.Manifest.version(),
+    minimumCliVersion: cxschema.Manifest.cliVersion(),
     missing: [
       {
         key: 'foo',

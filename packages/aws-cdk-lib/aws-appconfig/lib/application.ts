@@ -7,6 +7,7 @@ import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensib
 import * as ecs from '../../aws-ecs';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Defines the platform for the AWS AppConfig Lambda extension.
@@ -334,7 +335,11 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication, IEx
  * @resource AWS::AppConfig::Application
  * @see https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-application.html
  */
+@propertyInjectable
 export class Application extends ApplicationBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appconfig.Application';
+
   /**
    * Imports an AWS AppConfig application into the CDK using its Amazon Resource Name (ARN).
    *

@@ -5,6 +5,7 @@ import * as ec2 from '../../aws-ec2';
 import { IResource, Lazy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * An option group
@@ -99,7 +100,11 @@ export interface OptionGroupProps {
 /**
  * An option group
  */
+@propertyInjectable
 export class OptionGroup extends Resource implements IOptionGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.OptionGroup';
+
   /**
    * Import an existing option group.
    */

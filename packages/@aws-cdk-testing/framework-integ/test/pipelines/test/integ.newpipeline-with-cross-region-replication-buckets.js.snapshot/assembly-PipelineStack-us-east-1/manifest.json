@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "41.0.0",
   "artifacts": {
     "PipelineStackuseast1Queue1822FD5F8.assets": {
       "type": "cdk:asset-manifest",
@@ -35,6 +35,12 @@
         "PipelineStackuseast1Queue1822FD5F8.assets"
       ],
       "metadata": {
+        "/PipelineStack/us-east-1/Queue1/Queue": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/PipelineStack/us-east-1/Queue1/Queue/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -56,5 +62,6 @@
       },
       "displayName": "PipelineStack/us-east-1/Queue1"
     }
-  }
+  },
+  "minimumCliVersion": "2.1005.0"
 }

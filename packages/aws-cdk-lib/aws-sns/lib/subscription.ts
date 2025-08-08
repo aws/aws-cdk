@@ -8,6 +8,7 @@ import { IQueue } from '../../aws-sqs';
 import { Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Options for creating a new subscription
@@ -94,7 +95,13 @@ export interface SubscriptionProps extends SubscriptionOptions {
  * Prefer to use the `ITopic.addSubscription()` methods to create instances of
  * this class.
  */
+@propertyInjectable
 export class Subscription extends Resource {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-sns.Subscription';
+
   /**
    * The DLQ associated with this subscription if present.
    */

@@ -1,9 +1,10 @@
-import { Resource, Stack, IResource } from 'aws-cdk-lib/core';
+import { Resource, Stack, IResource, Duration } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import * as iot from 'aws-cdk-lib/aws-iot';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents AWS IoT Audit Configuration
@@ -58,6 +59,25 @@ export interface CheckConfiguration {
    * @default true
    */
   readonly conflictingClientIdsCheck?: boolean;
+
+  /**
+   * Checks when a device certificate has been active for a number of days greater than or equal to the number you specify.
+   *
+   * @default true
+   */
+  readonly deviceCertificateAgeCheck?: boolean;
+
+  /**
+   * The duration used to check if a device certificate has been active
+   * for a number of days greater than or equal to the number you specify.
+   *
+   * Valid values range from 30 days (minimum) to 3652 days (10 years, maximum).
+   *
+   * You cannot specify a value for this check if `deviceCertificateAgeCheck` is set to `false`.
+   *
+   * @default - 365 days
+   */
+  readonly deviceCertificateAgeCheckDuration?: Duration;
 
   /**
    * Checks if a device certificate is expiring.
@@ -175,7 +195,11 @@ export interface AccountAuditConfigurationProps {
 /**
  * Defines AWS IoT Audit Configuration
  */
+@propertyInjectable
 export class AccountAuditConfiguration extends Resource implements IAccountAuditConfiguration {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-iot-alpha.AccountAuditConfiguration';
+
   /**
    * Import an existing AWS IoT Audit Configuration
    *
@@ -200,6 +224,17 @@ export class AccountAuditConfiguration extends Resource implements IAccountAudit
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    const deviceAgeCheckThreshold = props?.checkConfiguration?.deviceCertificateAgeCheckDuration;
+
+    if (deviceAgeCheckThreshold) {
+      if (props?.checkConfiguration?.deviceCertificateAgeCheck === false) {
+        throw new Error('You cannot specify a value for `deviceCertificateAgeCheckDuration` if `deviceCertificateAgeCheck` is set to `false`.');
+      }
+      if (!deviceAgeCheckThreshold.isUnresolved() && deviceAgeCheckThreshold.toDays() < 30 || deviceAgeCheckThreshold.toDays() > 3652) {
+        throw new Error(`The device certificate age check threshold must be between 30 and 3652 days. got: ${deviceAgeCheckThreshold.toDays()} days.`);
+      }
+    }
 
     this.accountId = Stack.of(this).account;
 
@@ -261,6 +296,15 @@ export class AccountAuditConfiguration extends Resource implements IAccountAudit
       caCertificateExpiringCheck: this.renderAuditCheckConfiguration(checkConfiguration?.caCertificateExpiringCheck),
       caCertificateKeyQualityCheck: this.renderAuditCheckConfiguration(checkConfiguration?.caCertificateKeyQualityCheck),
       conflictingClientIdsCheck: this.renderAuditCheckConfiguration(checkConfiguration?.conflictingClientIdsCheck),
+      deviceCertificateAgeCheck:
+        checkConfiguration?.deviceCertificateAgeCheck !== false ?
+          {
+            enabled: true,
+            configuration: {
+              certAgeThresholdInDays: String(checkConfiguration?.deviceCertificateAgeCheckDuration?.toDays() ?? 365),
+            },
+          } :
+          undefined,
       deviceCertificateExpiringCheck: this.renderAuditCheckConfiguration(checkConfiguration?.deviceCertificateExpiringCheck),
       deviceCertificateKeyQualityCheck: this.renderAuditCheckConfiguration(checkConfiguration?.deviceCertificateKeyQualityCheck),
       deviceCertificateSharedCheck: this.renderAuditCheckConfiguration(checkConfiguration?.deviceCertificateSharedCheck),

@@ -5,6 +5,7 @@ import * as kms from '../../aws-kms';
 import * as sns from '../../aws-sns';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A backup vault
@@ -224,7 +225,13 @@ abstract class BackupVaultBase extends Resource implements IBackupVault {
 /**
  * A backup vault
  */
+@propertyInjectable
 export class BackupVault extends BackupVaultBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-backup.BackupVault';
+
   /**
    * Import an existing backup vault by name
    */

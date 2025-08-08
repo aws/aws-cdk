@@ -5,6 +5,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnEnvironmentEC2 } from 'aws-cdk-lib/aws-cloud9';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * A Cloud9 Environment
@@ -151,7 +152,11 @@ export interface Ec2EnvironmentProps {
  * A Cloud9 Environment with Amazon EC2
  * @resource AWS::Cloud9::EnvironmentEC2
  */
+@propertyInjectable
 export class Ec2Environment extends cdk.Resource implements IEc2Environment {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-cloud9-alpha.Ec2Environment';
+
   /**
    * import from EnvironmentEc2Name
    */

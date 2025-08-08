@@ -1,0 +1,126 @@
+{
+ "Resources": {
+  "ECSTaskRoleF2ADB362": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/CloudWatchAgentServerPolicy"
+       ]
+      ]
+     }
+    ],
+    "RoleName": "ECSTaskRole-ApplicationSignalsInfra-Sidecar"
+   }
+  },
+  "ECSTaskExecutionRole911F5A4F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+       ]
+      ]
+     }
+    ],
+    "RoleName": "ECSTaskExecutionRole-ApplicationSignalsInfra-Sidecar"
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttECSTaskExecutionRole911F5A4FArn90EDA8DE": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ECSTaskExecutionRole911F5A4F",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "ApplicationSignalsInfra-Sidecar:ExportsOutputFnGetAttECSTaskExecutionRole911F5A4FArn90EDA8DE"
+   }
+  },
+  "ExportsOutputFnGetAttECSTaskRoleF2ADB362Arn397CEC35": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ECSTaskRoleF2ADB362",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "ApplicationSignalsInfra-Sidecar:ExportsOutputFnGetAttECSTaskRoleF2ADB362Arn397CEC35"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

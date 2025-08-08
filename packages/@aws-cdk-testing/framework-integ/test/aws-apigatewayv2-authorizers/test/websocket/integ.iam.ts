@@ -7,7 +7,11 @@ import { Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { WebSocketIamAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'IntegApiGatewayV2Iam');
 const user = new iam.User(stack, 'User');
 const userAccessKey = new iam.AccessKey(stack, 'UserAccess', {

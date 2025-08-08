@@ -1,0 +1,506 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "aws-cdk-bedrock-prompt-override-1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-bedrock-prompt-override-1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-bedrock-prompt-override-1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-bedrock-prompt-override-1.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/842cd91696a14485791485a2860d391519a0147353c86afefd4eeb551e511333.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-bedrock-prompt-override-1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-bedrock-prompt-override-1.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PromptOverrideFunctionServiceRoleB1ACDEAD"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PromptOverrideFunctionD82AB437"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PromptOverrideFunctionLogGroupB1001805"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction/LambdaInvocationPolicy-c8b9aaceca433c55": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PromptOverrideFunctionLambdaInvocationPolicyc8b9aaceca433c559F5E0C1B"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomParserActionFunctionServiceRoleEE676A1C"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomParserActionFunction3DAF0C7A"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomParserActionFunctionLogGroupD54EA446"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction/LambdaInvocationPolicy-c8cded76e8ed1a75": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomParserActionFunctionLambdaInvocationPolicyc8cded76e8ed1a7503EDC886"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/ParserFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/ParserFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/ParserFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/ParserFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParserFunctionServiceRole59DD83FB"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/ParserFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParserFunctionE8A187F2"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/ParserFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/ParserFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParserFunctionLogGroup947036DC"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/AgentWithPromptOverride/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/AgentWithPromptOverride/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/AgentWithPromptOverride/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AgentWithPromptOverrideRoleA0EB6013"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/AgentWithPromptOverride/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/AgentWithPromptOverride/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AgentWithPromptOverrideRoleDefaultPolicy348076D7"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/AgentWithPromptOverride/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AgentWithPromptOverride13B28AED"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/AgentWithCustomParser/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/AgentWithCustomParser/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/AgentWithCustomParser/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AgentWithCustomParserRole29295FCD"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/AgentWithCustomParser/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/AgentWithCustomParser/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AgentWithCustomParserRoleDefaultPolicy00D4B90E"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/AgentWithCustomParser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AgentWithCustomParser73E443B8"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-bedrock-prompt-override-1/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-bedrock-prompt-override-1"
+    },
+    "BedrockPromptOverrideDefaultTestDeployAssert7D38F1F4.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "BedrockPromptOverrideDefaultTestDeployAssert7D38F1F4.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "BedrockPromptOverrideDefaultTestDeployAssert7D38F1F4": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "BedrockPromptOverrideDefaultTestDeployAssert7D38F1F4.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "BedrockPromptOverrideDefaultTestDeployAssert7D38F1F4.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "BedrockPromptOverrideDefaultTestDeployAssert7D38F1F4.assets"
+      ],
+      "metadata": {
+        "/BedrockPromptOverride/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/BedrockPromptOverride/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "BedrockPromptOverride/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1019.2"
+}

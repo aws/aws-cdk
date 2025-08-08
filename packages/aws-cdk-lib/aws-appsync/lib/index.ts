@@ -6,6 +6,7 @@ export * from './caching-config';
 export * from './caching-key';
 export * from './key';
 export * from './data-source';
+export * from './data-source-common';
 export * from './mapping-template';
 export * from './resolver';
 export * from './schema';

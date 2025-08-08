@@ -4,7 +4,11 @@ import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as actions from '../../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'aws-iot-opensearch-integ-stack');
 
 // Adding a domain with cognito dashboards auth configured

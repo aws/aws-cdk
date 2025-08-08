@@ -9,6 +9,7 @@ import { IBucket } from '../../aws-s3';
 import { IResource, Names, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Options for creating an api mapping
@@ -116,7 +117,13 @@ export interface IDomainName extends IResource {
   readonly domainNameAliasHostedZoneId: string;
 }
 
+@propertyInjectable
 export class DomainName extends Resource implements IDomainName {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.DomainName';
+
   /**
    * Imports an existing domain name.
    */

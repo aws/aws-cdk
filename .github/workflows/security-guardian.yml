@@ -1,0 +1,43 @@
+name: Security Guardian
+on:
+  pull_request: {}
+
+jobs:
+  log-skip:
+    if: |
+      startsWith(github.event.pull_request.title, 'chore(release):') ||
+      startsWith(github.event.pull_request.title, 'chore(merge-back):')
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Skipping Security Guardian for release/merge-back PR"
+  run-security-guardian:
+    if: |
+      !startsWith(github.event.pull_request.title, 'chore(release):') &&
+      !startsWith(github.event.pull_request.title, 'chore(merge-back):')
+    runs-on: ubuntu-latest
+    steps:      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  
+
+      - name: Install cfn-guard
+        run: |
+          mkdir -p $HOME/.local/bin
+          curl -L -o cfn-guard.tar.gz https://github.com/aws-cloudformation/cloudformation-guard/releases/latest/download/cfn-guard-v3-x86_64-ubuntu-latest.tar.gz
+          tar -xzf cfn-guard.tar.gz
+          mv cfn-guard-v3-*/cfn-guard $HOME/.local/bin/cfn-guard
+          chmod +x $HOME/.local/bin/cfn-guard
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install & Build security-guardian
+        run: yarn install --frozen-lockfile && cd tools/@aws-cdk/security-guardian && yarn build
+
+      - name: Run Security Guardian
+        uses: ./tools/@aws-cdk/security-guardian
+        with:
+          base_sha: ${{ github.event.pull_request.base.sha }}
+          head_sha: ${{ github.event.pull_request.head.sha }}
+          rule_set_path: './tools/@aws-cdk/security-guardian/rules'
+          show_summary: 'fail'
+          output_format: 'json'

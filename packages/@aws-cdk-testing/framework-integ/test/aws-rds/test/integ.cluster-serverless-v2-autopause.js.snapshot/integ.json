@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "integ-test-autopause/DefaultTest": {
+      "stacks": [
+        "integ-aurora-serverlessv2-cluster-autopause"
+      ],
+      "assertionStack": "integ-test-autopause/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestautopauseDefaultTestDeployAssert130918C3"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

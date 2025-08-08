@@ -22,12 +22,12 @@
      "DedicatedMasterEnabled": false,
      "InstanceCount": 1,
      "InstanceType": "r5.large.search",
-     "ZoneAwarenessEnabled": false,
-     "MultiAZWithStandbyEnabled": false
+     "MultiAZWithStandbyEnabled": false,
+     "ZoneAwarenessEnabled": false
     },
     "DomainEndpointOptions": {
      "EnforceHTTPS": true,
-     "TLSSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+     "TLSSecurityPolicy": "Policy-Min-TLS-1-2-2019-07"
     },
     "EBSOptions": {
      "EBSEnabled": true,

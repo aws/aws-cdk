@@ -1,0 +1,38 @@
+import * as api from 'aws-cdk-lib/aws-apigateway';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { InjectionContext, IPropertyInjector, PropertyInjectors } from 'aws-cdk-lib/core';
+import { App, Stack } from 'aws-cdk-lib';
+
+class ApiKeyPropsInjector implements IPropertyInjector {
+  readonly constructUniqueId: string;
+
+  constructor() {
+    this.constructUniqueId = api.ApiKey.PROPERTY_INJECTION_ID;
+  }
+
+  inject(originalProps: api.ApiKeyProps, context: InjectionContext): api.ApiKeyProps {
+    return {
+      enabled: false,
+      ...originalProps,
+    };
+  }
+}
+
+class AnotherApiKeyPropsInjector implements IPropertyInjector {
+  readonly constructUniqueId: string;
+
+  constructor() {
+    this.constructUniqueId = api.ApiKey.PROPERTY_INJECTION_ID;
+  }
+
+  inject(originalProps: api.ApiKeyProps, context: InjectionContext): api.ApiKeyProps {
+    return {
+      enabled: true,
+      ...originalProps,
+    };
+  }
+}
+
+const app = new App({});
+/// here
+

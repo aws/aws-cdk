@@ -39,7 +39,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new TestStack(app, 'cdk-integ-lambda-bundling-docker-bundling-opts');
 
 const integ = new IntegTest(app, 'DockerOptsBundling', {

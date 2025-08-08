@@ -1,0 +1,12 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "testBlockingBucketAccess/DefaultTest": {
+      "stacks": [
+        "aws-cdk-s3-bucket-block-access"
+      ],
+      "assertionStack": "testBlockingBucketAccess/DefaultTest/DeployAssert",
+      "assertionStackName": "testBlockingBucketAccessDefaultTestDeployAssert2F4ACAD8"
+    }
+  }
+}

@@ -1,7 +1,8 @@
 {
-  "version": "38.0.1",
+  "version": "41.0.0",
   "files": {
     "3598199e79496725ac0835e63b1e99fd14e28067430ac568efb4684804d81ad8": {
+      "displayName": "edge-lambda-stack-eu-west-1-2 Template",
       "source": {
         "path": "edge-lambda-stack-eu-west-1-2.template.json",
         "packaging": "file"

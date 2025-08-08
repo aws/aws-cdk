@@ -1,0 +1,120 @@
+name: Yarn Upgrade Dependencies Requiring Intervention
+# This workflow upgrade npm dependencies that will require manual work. For example, `@aws-cdk/asset-awscli-v1` upgrade always require manually updating snapshots.
+# When adding deps in this workflow, we must also exclude them in the Yarn Upgrade workflow. This is so that the PR from that workflow can be kept clean (i.e. does not need manual update).
+# See this line on how to exclude deps: https://github.com/aws/aws-cdk/blob/ce7b30775f354c7de774f73c5f8dedd9ce7530d3/.github/workflows/yarn-upgrade.yml#L61
+# If this proves to be too cumbersome, we can refactor both workflow to reference the deps list from a single place.
+
+on:
+  schedule:
+    # Every wednesday at 13:37 UTC
+    - cron: 37 13 * * 3
+  workflow_dispatch: {}
+
+# For multiple dependencies, do `DEPS_TO_UPGRADE:"p1 p2 p3"`
+env:
+  DEPS_TO_UPGRADE: "@aws-cdk/asset-awscli-v1"
+
+jobs:
+  upgrade:
+    name: Yarn Upgrade
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "*"
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
+
+      - name: Locate Yarn cache
+        id: yarn-cache
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+      - name: Restore Yarn cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |-
+            ${{ runner.os }}-yarn-
+      - name: Yarn Install
+        run: yarn install --frozen-lockfile
+      - name: Install Tools
+        run: |-
+          npm -g install lerna npm-check-updates
+      - name: Run "ncu -u"
+        run: |-
+          # Convert space-separated string to comma-separated string for the filter
+          FILTER=$(echo "$DEPS_TO_UPGRADE" | tr ' ' ',')
+          lerna exec --parallel ncu -- --upgrade --filter="$FILTER" --target=minor
+
+      - name: Run "yarn upgrade"
+        run: |
+          echo "Upgrading dependencies: $DEPS_TO_UPGRADE"
+          yarn upgrade $DEPS_TO_UPGRADE --exact
+
+      # Next, create and upload the changes as a patch file. This will later be downloaded to create a pull request
+      # Creating a pull request requires write permissions and it's best to keep write privileges isolated.
+      - name: Create Patch
+        run: |-
+          git add .
+          git diff --binary --patch --staged > ${{ runner.temp }}/upgrade.patch
+
+      - name: Upload Patch
+        uses: actions/upload-artifact@v4
+        with:
+          name: upgrade.patch
+          path: ${{ runner.temp }}/upgrade.patch
+
+  pr:
+    name: Create Pull Request
+    needs: upgrade
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out
+        uses: actions/checkout@v4
+
+      - name: Download patch
+        uses: actions/download-artifact@v4
+        with:
+          name: upgrade.patch
+          path: ${{ runner.temp }}
+
+      - name: Apply patch
+        run: '[ -s ${{ runner.temp }}/upgrade.patch ] && git apply --binary ${{ runner.temp
+          }}/upgrade.patch || echo "Empty patch. Skipping."'
+
+      - name: Make Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          # Git commit details
+          branch: automation/yarn-upgrade-dependencies-requiring-intervention
+          author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
+          commit-message: |-
+            chore: npm-check-updates && yarn upgrade
+            Ran npm-check-updates and yarn upgrade to keep the `yarn.lock` file up-to-date.
+          # Pull Request details
+          title: 'chore: yarn upgrade dependencies requiring intervention'
+          body: |-
+            Ran npm-check-updates and yarn upgrade for the following dependencies:
+            ```
+            ${{ env.DEPS_TO_UPGRADE }}
+            ```
+            Checkout this branch and run integration tests locally to update snapshots.
+            ```
+            (cd packages/@aws-cdk-testing/framework-integ && yarn integ --update-on-failed)
+            ```
+            See https://www.npmjs.com/package/@aws-cdk/integ-runner for more integ runner options.
+          labels: contribution/core,dependencies
+          team-reviewers: aws-cdk-team
+          # Github prevents further Github actions to be run if the default Github token is used.
+          # Instead use a privileged token here, so further GH actions can be triggered on this PR.
+          token: ${{ secrets.PROJEN_GITHUB_TOKEN }}

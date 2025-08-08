@@ -5,6 +5,7 @@ import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
 import { TaskInput } from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import { ValidationError } from '../../../core';
 import { RolePolicySingletonFunction } from '../../../custom-resource-handlers/dist/aws-stepfunctions-tasks/role-policy-provider.generated';
 import * as cr from '../../../custom-resources';
 import * as awscli from '../../../lambda-layer-awscli';
@@ -157,7 +158,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
 
     if (this.props.executionRole === undefined
       && isJsonPathOrJsonataExpression(props.virtualCluster.id)) {
-      throw new Error('Execution role cannot be undefined when the virtual cluster ID is not a concrete value. Provide an execution role with the correct trust policy');
+      throw new ValidationError('Execution role cannot be undefined when the virtual cluster ID is not a concrete value. Provide an execution role with the correct trust policy', this);
     }
 
     this.logGroup = this.assignLogGroup();
@@ -224,13 +225,13 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     if (appConfig?.properties === undefined) {
       return;
     } else if (Object.keys(appConfig.properties).length > 100) {
-      throw new Error(`Application configuration properties must have 100 or fewer entries. Received ${Object.keys(appConfig.properties).length}`);
+      throw new ValidationError(`Application configuration properties must have 100 or fewer entries. Received ${Object.keys(appConfig.properties).length}`, this);
     }
   }
 
   private validatePropertiesNestedAppConfigBothNotUndefined(appConfig: ApplicationConfiguration) {
     if (appConfig?.properties === undefined && appConfig?.nestedConfig === undefined) {
-      throw new Error('Application configuration must have either properties or nested app configurations defined.');
+      throw new ValidationError('Application configuration must have either properties or nested app configurations defined.', this);
     }
   }
 
@@ -238,7 +239,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     if (config === undefined) {
       return;
     } else if (config.length > 100) {
-      throw new Error(`Application configuration array must have 100 or fewer entries. Received ${config.length}`);
+      throw new ValidationError(`Application configuration array must have 100 or fewer entries. Received ${config.length}`, this);
     } else {
       config.forEach(element => this.validateAppConfig(element.nestedConfig));
       config.forEach(element => this.validateAppConfigPropertiesLength(element));
@@ -253,28 +254,28 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
   private validateEntryPointArguments (entryPointArguments:sfn.TaskInput) {
     if (typeof entryPointArguments.value === 'string') {
       if (!isJsonPathOrJsonataExpression(entryPointArguments.value)) {
-        throw new Error('Entry point arguments must be a string array or an encoded JSON path or JSONata expression, but received a non JSON path or JSONata expression string');
+        throw new ValidationError('Entry point arguments must be a string array or an encoded JSON path or JSONata expression, but received a non JSON path or JSONata expression string', this);
       }
     } else if (!this.isArrayOfStrings(entryPointArguments.value)) {
-      throw new Error(`Entry point arguments must be a string array or an encoded JSON path or JSONata expression but received ${typeof entryPointArguments.value}.`);
+      throw new ValidationError(`Entry point arguments must be a string array or an encoded JSON path or JSONata expression but received ${typeof entryPointArguments.value}.`, this);
     }
   }
 
   private validateEntryPointArgumentsLength (entryPointArguments:sfn.TaskInput) {
     if (this.isArrayOfStrings(entryPointArguments.value)
         && (entryPointArguments.value.length > 10280 || entryPointArguments.value.length < 1)) {
-      throw new Error(`Entry point arguments must be a string array between 1 and 10280 in length. Received ${entryPointArguments.value.length}.`);
+      throw new ValidationError(`Entry point arguments must be a string array between 1 and 10280 in length. Received ${entryPointArguments.value.length}.`, this);
     }
   }
 
   private validateSparkSubmitParametersLength (sparkSubmitParameters : string) {
     if (sparkSubmitParameters.length > 102400 || sparkSubmitParameters.length < 1) {
-      throw new Error(`Spark submit parameters must be between 1 and 102400 characters in length. Received ${sparkSubmitParameters.length}.`);
+      throw new ValidationError(`Spark submit parameters must be between 1 and 102400 characters in length. Received ${sparkSubmitParameters.length}.`, this);
     }
   }
   private validateEntryPoint (entryPoint: TaskInput) {
     if (!isJsonPathOrJsonataExpression(entryPoint.value) && (entryPoint.value.length > 256|| entryPoint.value.length < 1)) {
-      throw new Error(`Entry point must be between 1 and 256 characters in length. Received ${entryPoint.value.length}.`);
+      throw new ValidationError(`Entry point must be between 1 and 256 characters in length. Received ${entryPoint.value.length}.`, this);
     }
   }
 

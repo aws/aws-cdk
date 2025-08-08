@@ -6,6 +6,7 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface representing an AWS Config rule
@@ -272,7 +273,10 @@ export interface ManagedRuleProps extends RuleProps {
  *
  * @resource AWS::Config::ConfigRule
  */
+@propertyInjectable
 export class ManagedRule extends RuleNew {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-config.ManagedRule';
   /** @attribute */
   public readonly configRuleName: string;
 
@@ -403,7 +407,10 @@ export interface CustomRuleProps extends RuleProps {
  *
  * @resource AWS::Config::ConfigRule
  */
+@propertyInjectable
 export class CustomRule extends RuleNew {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-config.CustomRule';
   /** @attribute */
   public readonly configRuleName: string;
 
@@ -521,7 +528,13 @@ export interface CustomPolicyProps extends RuleProps {
  *
  * @resource AWS::Config::ConfigRule
  */
+@propertyInjectable
 export class CustomPolicy extends RuleNew {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-config.CustomPolicy';
+
   /** @attribute */
   public readonly configRuleName: string;
 

@@ -3,6 +3,7 @@ import { CfnVpcLink } from '.././index';
 import * as ec2 from '../../../aws-ec2';
 import { IResource, Lazy, Names, Resource } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
  * Represents an API Gateway VpcLink
@@ -68,7 +69,11 @@ export interface VpcLinkAttributes {
  * Define a new VPC Link
  * Specifies an API Gateway VPC link for a HTTP API to access resources in an Amazon Virtual Private Cloud (VPC).
  */
+@propertyInjectable
 export class VpcLink extends Resource implements IVpcLink {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.VpcLink';
+
   /**
    * Import a VPC Link by specifying its attributes.
    */

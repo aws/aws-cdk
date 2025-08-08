@@ -1,11 +1,22 @@
 import { DefaultStackSynthesizer } from './default-synthesizer';
 import { ISynthesisSession } from './types';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import { UnscopedValidationError } from '../errors';
 
 /**
  * Construction properties of `BootstraplessSynthesizer`.
  */
 export interface BootstraplessSynthesizerProps {
+  /**
+   * The qualifier used to specialize strings
+   *
+   * Can be used to specify custom bootstrapped role names
+   *
+   * @default 'hnb659fds'
+   *
+   */
+  readonly qualifier?: string;
+
   /**
    * The deploy Role ARN to use.
    *
@@ -46,15 +57,16 @@ export class BootstraplessSynthesizer extends DefaultStackSynthesizer {
       deployRoleArn: props.deployRoleArn,
       cloudFormationExecutionRole: props.cloudFormationExecutionRoleArn,
       generateBootstrapVersionRule: false,
+      qualifier: props.qualifier,
     });
   }
 
   public addFileAsset(_asset: FileAssetSource): FileAssetLocation {
-    throw new Error('Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
+    throw new UnscopedValidationError('Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
   }
 
   public addDockerImageAsset(_asset: DockerImageAssetSource): DockerImageAssetLocation {
-    throw new Error('Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
+    throw new UnscopedValidationError('Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
   }
 
   public synthesize(session: ISynthesisSession): void {

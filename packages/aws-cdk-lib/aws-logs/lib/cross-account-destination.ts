@@ -6,6 +6,7 @@ import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for a CrossAccountDestination
@@ -44,7 +45,10 @@ export interface CrossAccountDestinationProps {
  *
  * @resource AWS::Logs::Destination
  */
+@propertyInjectable
 export class CrossAccountDestination extends cdk.Resource implements ILogSubscriptionDestination {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.CrossAccountDestination';
   /**
    * Policy object of this CrossAccountDestination object
    */

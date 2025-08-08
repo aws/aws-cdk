@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { ILambdaDeploymentConfig } from './deployment-config';
 import { Duration, Names, Resource, ValidationError } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../../custom-resources';
 import { arnForDeploymentConfig, validateName } from '../private/utils';
 
@@ -65,7 +66,10 @@ export interface CustomLambdaDeploymentConfigProps {
  * @resource AWS::CodeDeploy::DeploymentGroup
  * @deprecated CloudFormation now supports Lambda deployment configurations without custom resources. Use `LambdaDeploymentConfig`.
  */
+@propertyInjectable
 export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDeploymentConfig {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.CustomLambdaDeploymentConfig';
   /**
    * The name of the deployment config
    * @attribute

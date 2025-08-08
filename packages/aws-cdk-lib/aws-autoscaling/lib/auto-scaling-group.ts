@@ -17,7 +17,6 @@ import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import {
   Annotations,
-  AspectPriority,
   Aspects,
   Aws,
   CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy,
@@ -26,6 +25,8 @@ import {
   Tokenization, UnscopedValidationError, ValidationError, withResolved,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 
 /**
@@ -266,7 +267,7 @@ export interface CommonAutoScalingGroupProps {
    * to all current and future instances in the group. As an instance approaches its maximum duration,
    * it is terminated and replaced, and cannot be used again.
    *
-   * You must specify a value of at least 604,800 seconds (7 days). To clear a previously set value,
+   * You must specify a value of at least 86,400 seconds (one day). To clear a previously set value,
    * leave this property undefined.
    *
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-max-instance-lifetime.html
@@ -665,6 +666,13 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default - Do not provide any launch template
    */
   readonly launchTemplate?: ec2.ILaunchTemplate;
+
+  /**
+   * Whether safety guardrail should be enforced when migrating to the launch template.
+   *
+   * @default false
+   */
+  readonly migrateToLaunchTemplate?: boolean;
 
   /**
    * Mixed Instances Policy to use.
@@ -1276,11 +1284,17 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
  * The ASG spans the availability zones specified by vpcSubnets, falling back to
  * the Vpc default strategy if not specified.
  */
+@propertyInjectable
 export class AutoScalingGroup extends AutoScalingGroupBase implements
   elb.ILoadBalancerTarget,
   ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget,
   elbv2.INetworkLoadBalancerTarget {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-autoscaling.AutoScalingGroup';
+
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
       public autoScalingGroupName = autoScalingGroupName;
@@ -1608,7 +1622,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.spotPrice = props.spotPrice;
 
     if (props.requireImdsv2) {
-      Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect(), { priority: AspectPriority.MUTATING });
+      Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect(), {
+        priority: mutatingAspectPrio32333(this),
+      });
     }
 
     this.node.addValidation({ validate: () => this.validateTargetGroup() });
@@ -1845,6 +1861,17 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         ...this.autoScalingGroup.cfnOptions.updatePolicy,
         autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: true },
       };
+    }
+
+    if (props.migrateToLaunchTemplate === true) {
+      const updatePolicy = this.autoScalingGroup.cfnOptions.updatePolicy;
+      if (!updatePolicy || !updatePolicy!.autoScalingRollingUpdate) {
+        throw new ValidationError(
+          'When migrateToLaunchTemplate is true, you must use AutoScalingRollingUpdate ' +
+          'to ensure instances are properly replaced during migration. ' +
+          'This prevents instances from referencing a deleted IAM instance profile.',
+          this);
+      }
     }
 
     if (props.signals && !props.init) {

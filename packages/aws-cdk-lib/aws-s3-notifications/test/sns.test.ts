@@ -1,4 +1,5 @@
-import { Template } from '../../assertions';
+import { Annotations, Template } from '../../assertions';
+import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
@@ -78,6 +79,61 @@ test('asBucketNotificationDestination adds bucket permissions only once for each
           ],
         },
       },
+    },
+  });
+});
+
+test('encrypted sns topic adds KMS permissions', () => {
+  const app = new cdk.App({
+    postCliContext: {
+      '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions': true,
+    },
+  });
+  const stack = new cdk.Stack(app);
+
+  const topic = new sns.Topic(stack, 'Topic', {
+    masterKey: new kms.Key(stack, 'Key'),
+  });
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  new notif.SnsDestination(topic).bind(bucket, bucket);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    KeyPolicy: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: 'kms:*',
+          Effect: 'Allow',
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
+          },
+          Resource: '*',
+        },
+        {
+          Action: ['kms:GenerateDataKey', 'kms:Decrypt'],
+          Effect: 'Allow',
+          Principal: {
+            Service: 's3.amazonaws.com',
+          },
+          Resource: '*',
+        },
+      ],
     },
   });
 });

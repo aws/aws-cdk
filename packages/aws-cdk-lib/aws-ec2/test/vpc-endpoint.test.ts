@@ -3,7 +3,19 @@ import { AnyPrincipal, PolicyStatement } from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import { ContextProvider, Fn, Stack } from '../../core';
 // eslint-disable-next-line max-len
-import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, SecurityGroup, SubnetFilter, SubnetType, Vpc } from '../lib';
+import {
+  GatewayVpcEndpoint,
+  GatewayVpcEndpointAwsService,
+  InterfaceVpcEndpoint,
+  InterfaceVpcEndpointAwsService,
+  InterfaceVpcEndpointService,
+  SecurityGroup,
+  SubnetFilter,
+  SubnetType,
+  Vpc,
+  VpcEndpointDnsRecordIpType,
+  VpcEndpointIpAddressType,
+} from '../lib';
 
 describe('vpc endpoint', () => {
   describe('gateway endpoint', () => {
@@ -150,6 +162,42 @@ describe('vpc endpoint', () => {
         actions: ['s3:GetObject', 's3:ListBucket'],
         resources: ['*'],
       }))).toThrow(/`Principal`/);
+    });
+
+    test('add an endpoint to a vpc and check that by default the properties are absent', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('EcrDocker', {
+        service: InterfaceVpcEndpointAwsService.ECR_DOCKER,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        IpAddressType: Match.absent(),
+        DnsOptions: Match.absent(),
+      });
+    });
+
+    test('check ipAddressType and dnsOptions are present when specified', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('EcrDocker', {
+        service: InterfaceVpcEndpointAwsService.ECR_DOCKER,
+        ipAddressType: VpcEndpointIpAddressType.DUALSTACK,
+        dnsRecordIpType: VpcEndpointDnsRecordIpType.DUALSTACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        IpAddressType: VpcEndpointIpAddressType.DUALSTACK,
+        DnsOptions: { DnsRecordIpType: VpcEndpointDnsRecordIpType.DUALSTACK },
+      });
     });
 
     test('import/export', () => {
@@ -922,6 +970,44 @@ describe('vpc endpoint', () => {
         VpcId: stack.resolve(vpc.vpcId),
         PrivateDnsEnabled: false,
         VpcEndpointType: 'Interface',
+      });
+    });
+
+    test('same-region endpoint does not include ServiceRegion property', () => {
+      // GIVEN
+      const stack = new Stack(undefined, undefined, { env: { region: 'us-west-2' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN - Same region endpoint without serviceRegion
+      new InterfaceVpcEndpoint(stack, 'Endpoint', {
+        vpc,
+        service: InterfaceVpcEndpointAwsService.S3,
+        // No serviceRegion specified - same region default
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        VpcEndpointType: 'Interface',
+        ServiceName: 'com.amazonaws.us-west-2.s3',
+        ServiceRegion: Match.absent(),
+      });
+    });
+
+    test('cross-region endpoint includes correct ServiceRegion property', () => {
+      // GIVEN
+      const stack = new Stack(undefined, undefined, { env: { region: 'us-west-2' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      new InterfaceVpcEndpoint(stack, 'Endpoint', {
+        vpc,
+        service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-123456', 443),
+        serviceRegion: 'us-east-1',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceRegion: 'us-east-1',
       });
     });
   });

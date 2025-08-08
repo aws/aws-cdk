@@ -1,7 +1,8 @@
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib/core';
+import { ArnFormat, IResource, Lazy, Names, Resource, Stack, UnscopedValidationError } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnDatabase } from 'aws-cdk-lib/aws-glue';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 export interface IDatabase extends IResource {
   /**
@@ -56,7 +57,11 @@ export interface DatabaseProps {
 /**
  * A Glue database.
  */
+@propertyInjectable
 export class Database extends Resource implements IDatabase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.Database';
+
   public static fromDatabaseArn(scope: Construct, id: string, databaseArn: string): IDatabase {
     const stack = Stack.of(scope);
 
@@ -147,12 +152,12 @@ export class Database extends Resource implements IDatabase {
 
 function validateLocationUri(locationUri: string): void {
   if (locationUri.length < 1 || locationUri.length > 1024) {
-    throw new Error(`locationUri length must be (inclusively) between 1 and 1024, got ${locationUri.length}`);
+    throw new UnscopedValidationError(`locationUri length must be (inclusively) between 1 and 1024, got ${locationUri.length}`);
   }
 }
 
 function validateDescription(description: string): void {
   if (description.length > 2048) {
-    throw new Error(`description length must be less than or equal to 2048, got ${description.length}`);
+    throw new UnscopedValidationError(`description length must be less than or equal to 2048, got ${description.length}`);
   }
 }

@@ -1,0 +1,187 @@
+{
+ "Resources": {
+  "APIKeyF5CDB6B6": {
+   "Type": "AWS::Location::APIKey",
+   "Properties": {
+    "Description": "my api key for test",
+    "ExpireTime": "2026-01-01T00:00:00.000Z",
+    "KeyName": "my-api-key",
+    "NoExpiry": false,
+    "Restrictions": {
+     "AllowActions": [
+      "geo-maps:GetStaticMap",
+      "geo-maps:GetTile",
+      "geo-places:Autocomplete",
+      "geo-places:Geocode",
+      "geo-places:GetPlace",
+      "geo-places:ReverseGeocode",
+      "geo-places:SearchNearby",
+      "geo-places:SearchText",
+      "geo-places:Suggest",
+      "geo-routes:CalculateIsolines",
+      "geo-routes:CalculateRoutes",
+      "geo-routes:CalculateRouteMatrix",
+      "geo-routes:OptimizeWaypoints",
+      "geo-routes:SnapToRoads"
+     ],
+     "AllowReferers": [
+      "https://example.com"
+     ],
+     "AllowResources": [
+      {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":geo-maps:",
+         {
+          "Ref": "AWS::Region"
+         },
+         "::provider/default"
+        ]
+       ]
+      },
+      {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":geo-places:",
+         {
+          "Ref": "AWS::Region"
+         },
+         "::provider/default"
+        ]
+       ]
+      },
+      {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":geo-routes:",
+         {
+          "Ref": "AWS::Region"
+         },
+         "::provider/default"
+        ]
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "APIKeyAny24D2C8EC": {
+   "Type": "AWS::Location::APIKey",
+   "Properties": {
+    "ForceDelete": true,
+    "ForceUpdate": true,
+    "KeyName": "my-api-key-allowd-any-actions",
+    "NoExpiry": true,
+    "Restrictions": {
+     "AllowActions": [
+      "geo-maps:*",
+      "geo-places:*",
+      "geo-routes:*"
+     ],
+     "AllowReferers": [
+      "https://example.com"
+     ],
+     "AllowResources": [
+      {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":geo-maps:",
+         {
+          "Ref": "AWS::Region"
+         },
+         "::provider/default"
+        ]
+       ]
+      },
+      {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":geo-places:",
+         {
+          "Ref": "AWS::Region"
+         },
+         "::provider/default"
+        ]
+       ]
+      },
+      {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":geo-routes:",
+         {
+          "Ref": "AWS::Region"
+         },
+         "::provider/default"
+        ]
+       ]
+      }
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

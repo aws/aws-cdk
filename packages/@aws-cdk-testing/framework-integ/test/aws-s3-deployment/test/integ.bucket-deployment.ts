@@ -121,7 +121,11 @@ class TestBucketDeployment extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new TestBucketDeployment(app, 'test-bucket-deployments');
 
 // Assert that DeployMeWithoutExtractingFilesOnDestination deploys a zip file to bucket4

@@ -76,18 +76,18 @@
     "ImportedNewVPCInternetGatewayIGWA7EB1B6C"
    ]
   },
-  "ImportedNewVPCNATGatewayEIP36F5A670": {
+  "ImportedNewVPCNATGatewayIsolatedSubnet1EIP439F54BA": {
    "Type": "AWS::EC2::EIP",
    "Properties": {
-    "Domain": "vpc-08193db3ccc4f909f"
+    "Domain": "vpc"
    }
   },
-  "ImportedNewVPCNATGatewayE0ECDDFA": {
+  "ImportedNewVPCNATGatewayIsolatedSubnet1NATGatewayC32B9442": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
     "AllocationId": {
      "Fn::GetAtt": [
-      "ImportedNewVPCNATGatewayEIP36F5A670",
+      "ImportedNewVPCNATGatewayIsolatedSubnet1EIP439F54BA",
       "AllocationId"
      ]
     },
@@ -103,9 +103,14 @@
   "AddnewImportedSubnet53655C69": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.2.2.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     }
+    ],
     "VpcId": "vpc-08193db3ccc4f909f"
    }
   },
@@ -138,9 +143,14 @@
   "AddnewImportedSubnet2SubnetD9533DC5": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.3.2.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     }
+    ],
     "VpcId": "vpc-08193db3ccc4f909f"
    }
   },
@@ -179,10 +189,15 @@
   "AddnewSubnettoImportedIpamSubnet0F5C302A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.2.1.0/28",
     "Ipv6CidrBlock": "2600:1f24:6c:4000::/64",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     }
+    ],
     "VpcId": "vpc-02407f4a207815a97"
    }
   },

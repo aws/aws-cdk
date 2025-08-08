@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
-import { ArnFormat, Stack } from '../../../core';
+import { ArnFormat, Stack, ValidationError } from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 interface StepFunctionsStartExecutionOptions {
@@ -101,11 +101,11 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     validatePatternSupported(this.integrationPattern, StepFunctionsStartExecution.SUPPORTED_INTEGRATION_PATTERNS);
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN && !sfn.FieldUtils.containsTaskToken(props.input)) {
-      throw new Error('Task Token is required in `input` for callback. Use JsonPath.taskToken to set the token.');
+      throw new ValidationError('Task Token is required in `input` for callback. Use JsonPath.taskToken to set the token.', scope);
     }
 
     if (this.props.associateWithParent && props.input && props.input.type !== sfn.InputType.OBJECT) {
-      throw new Error('Could not enable `associateWithParent` because `input` is taken directly from a JSON path. Use `sfn.TaskInput.fromObject` instead.');
+      throw new ValidationError('Could not enable `associateWithParent` because `input` is taken directly from a JSON path. Use `sfn.TaskInput.fromObject` instead.', scope);
     }
 
     this.taskPolicies = this.createScopedAccessPolicy();

@@ -4,7 +4,7 @@ import { ISecurityGroup, IVpc, SubnetSelection, SubnetType } from '../../../aws-
 import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret, TaskDefinition } from '../../../aws-ecs';
 import { Rule } from '../../../aws-events';
 import { EcsTask, Tag } from '../../../aws-events-targets';
-import { Stack } from '../../../core';
+import { Stack, ValidationError } from '../../../core';
 
 /**
  * The properties for the base ScheduledEc2Task or ScheduledFargateTask task.
@@ -189,7 +189,7 @@ export abstract class ScheduledTaskBase extends Construct {
 
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
     if (props.desiredTaskCount !== undefined && props.desiredTaskCount < 1) {
-      throw new Error('You must specify a desiredTaskCount greater than 0');
+      throw new ValidationError('You must specify a desiredTaskCount greater than 0', this);
     }
     this.desiredTaskCount = props.desiredTaskCount || 1;
     this.subnetSelection = props.subnetSelection || { subnetType: SubnetType.PRIVATE_WITH_EGRESS };

@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { ArnFormat, IResource, Resource, Stack, Arn } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CfnApplication } from '../codedeploy.generated';
 import { arnForApplication, validateName } from '../private/utils';
 
@@ -39,7 +40,11 @@ export interface ServerApplicationProps {
  *
  * @resource AWS::CodeDeploy::Application
  */
+@propertyInjectable
 export class ServerApplication extends Resource implements IServerApplication {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.ServerApplication';
+
   /**
    * Import an Application defined either outside the CDK app, or in a different region.
    *

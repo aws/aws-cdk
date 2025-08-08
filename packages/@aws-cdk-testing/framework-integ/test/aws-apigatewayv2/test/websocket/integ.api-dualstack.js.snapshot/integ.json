@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "DualStackWebsocketApiInteg/DefaultTest": {
+      "stacks": [
+        "DualStackWebsocketApiStack"
+      ],
+      "assertionStack": "DualStackWebsocketApiInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "DualStackWebsocketApiIntegDefaultTestDeployAssert8B7A150B"
+    }
+  }
+}

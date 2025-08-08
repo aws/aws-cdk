@@ -8,6 +8,7 @@ import { IModel } from './model';
 import { sameEnv } from './private/util';
 import { CfnEndpointConfig } from 'aws-cdk-lib/aws-sagemaker';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * The interface for a SageMaker EndpointConfig resource.
@@ -149,7 +150,11 @@ export interface EndpointConfigProps {
 /**
  * Defines a SageMaker EndpointConfig.
  */
+@propertyInjectable
 export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-sagemaker-alpha.EndpointConfig';
+
   /**
    * Imports an EndpointConfig defined either outside the CDK or in a different CDK stack.
    * @param scope the Construct scope.

@@ -103,6 +103,12 @@ new ses.AllowListReceiptFilter(this, 'AllowList', {
 
 This will first create a block all filter and then create allow filters for the listed ip addresses.
 
+### AWS Service Principal permissions
+
+When adding an s3 action to a receipt rule, the CDK will automatically create a policy statement that allows the ses service principal to get write access to the bucket. This is done with the `SourceAccount` condition key, which is automatically added to the policy statement.
+Previously, the policy used the `Referer` condition key, which caused confused deputy problems when the bucket policy allowed access to the bucket for all principals.
+See more information in [this github issue](https://github.com/aws/aws-cdk/issues/29811)
+
 ## Email sending
 
 ### Dedicated IP pools
@@ -139,7 +145,6 @@ import { Duration } from 'aws-cdk-lib';
 declare const myPool: ses.IDedicatedIpPool;
 
 new ses.ConfigurationSet(this, 'ConfigurationSet', {
-  customTrackingRedirectDomain: 'track.cdk.dev',
   tlsPolicy: ses.ConfigurationSetTlsPolicy.REQUIRE,
   dedicatedIpPool: myPool,
   // Specify maximum delivery time
@@ -199,6 +204,20 @@ myConfigurationSet.addEventDestination('ToFirehose', {
   }),
 })
 ```
+
+#### Tracking options
+
+You can specify to use a custom redirect domain to handle open and click tracking for email sent with this configuration set by using `customTrackingRedirectDomain` and `customTrackingHttpsPolicy`.
+Detail can be found in [Custom tracking domain](https://docs.aws.amazon.com/ses/latest/dg/configure-custom-open-click-domains.html).
+
+```ts
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
+  customTrackingRedirectDomain: 'track.cdk.dev',
+  customTrackingHttpsPolicy: ses.HttpsPolicy.REQUIRE,
+});
+```
+
+**Note**: The custom tracking redirect domain must be verified in Amazon SES. To create verified identities, you can use the [`EmailIdentity` construct](#email-identity).
 
 ### Override account-level suppression list settings
 
@@ -305,6 +324,21 @@ const identity = new ses.EmailIdentity(this, 'Identity', {
 });
 
 identity.grantSendEmail(user);
+```
+
+You can also reference an existing email identity using its ARN and grant permissions to it:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const user: iam.User;
+
+// Imports an existing email identity using its ARN.
+// This is one way to reference an existing identity; another option is using its name via fromEmailIdentityName.
+const importedIdentity = ses.EmailIdentity.fromEmailIdentityArn(this, 'ImportedIdentity', 
+  'arn:aws:ses:us-east-1:123456789012:identity/example.com');
+
+// Grant send email permission to the imported identity
+importedIdentity.grantSendEmail(user);
 ```
 
 ### Virtual Deliverability Manager (VDM)

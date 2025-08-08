@@ -89,9 +89,6 @@ export function validateTriggers(gitConfiguration: GitConfiguration) {
   if (sourceAction.actionProperties.provider !== 'CodeStarSourceConnection') {
     throw new UnscopedValidationError(`provider for actionProperties in sourceAction with name '${sourceAction.actionProperties.actionName}' must be 'CodeStarSourceConnection', got '${sourceAction.actionProperties.provider}'`);
   }
-  if (pushFilter?.length && pullRequestFilter?.length) {
-    throw new UnscopedValidationError(`cannot specify both GitPushFilter and GitPullRequestFilter for the trigger with sourceAction with name '${sourceAction.actionProperties.actionName}'`);
-  }
   if (!pushFilter?.length && !pullRequestFilter?.length) {
     throw new UnscopedValidationError(`must specify either GitPushFilter or GitPullRequestFilter for the trigger with sourceAction with name '${sourceAction.actionProperties.actionName}'`);
   }

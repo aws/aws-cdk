@@ -3,7 +3,7 @@ import { accountIfDifferentFromStack, regionIfDifferentFromStack } from './env-t
 import { dispatchMetric, metricKey } from './metric-util';
 import { dropUndefined } from './object';
 import { UnscopedValidationError } from '../../../core';
-import { IMetric } from '../metric-types';
+import { IMetric, MetricExpressionConfig } from '../metric-types';
 
 /**
  * Return the JSON structure which represents these metrics in a graph.
@@ -28,6 +28,20 @@ export function allMetricsGraphJson(left: IMetric[], right: IMetric[]): any[] {
   // Render all metrics from the set.
   return mset.entries.map(entry => new DropEmptyObjectAtTheEndOfAnArray(metricGraphJson(entry.metric, entry.tag, entry.id)));
 }
+
+// The options for both search expression and math expression are same. Thus, can be handled by a common function.
+const applyExpressionOptions = (options: any, exprConfig: MetricExpressionConfig) => {
+  options.expression = exprConfig.expression;
+  if (exprConfig.searchAccount) {
+    options.accountId = accountIfDifferentFromStack(exprConfig.searchAccount);
+  }
+  if (exprConfig.searchRegion) {
+    options.region = regionIfDifferentFromStack(exprConfig.searchRegion);
+  }
+  if (exprConfig.period && exprConfig.period !== 300) {
+    options.period = exprConfig.period;
+  }
+};
 
 function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
   const config = metric.toMetricConfig();
@@ -62,11 +76,11 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
       if (stat.statistic && stat.statistic !== 'Average') { options.stat = stat.statistic; }
     },
 
-    withExpression(expr) {
-      options.expression = expr.expression;
-      if (expr.searchAccount) { options.accountId = accountIfDifferentFromStack(expr.searchAccount); }
-      if (expr.searchRegion) { options.region = regionIfDifferentFromStack(expr.searchRegion); }
-      if (expr.period && expr.period !== 300) { options.period = expr.period; }
+    withMathExpression(mathExpr) {
+      applyExpressionOptions(options, mathExpr);
+    },
+    withSearchExpression(searchExpr) {
+      applyExpressionOptions(options, searchExpr);
     },
   });
 
@@ -114,6 +128,14 @@ export interface MetricEntry<A> {
    * ID for this metric object
    */
   id?: string;
+
+  /**
+   * The level we discovered this metric at.
+   *
+   * Top-level has 1, metrics used by a math expression at level N will have
+   * N+1.
+   */
+  level: number;
 }
 
 /**
@@ -131,7 +153,7 @@ export class MetricSet<A> {
    */
   public addTopLevel(tag: A, ...metrics: IMetric[]) {
     for (const metric of metrics) {
-      this.addOne(metric, tag);
+      this.addOne(metric, 1, tag);
     }
   }
 
@@ -151,7 +173,7 @@ export class MetricSet<A> {
    * one (and the new ones "renderingPropertieS" will be honored instead of the old
    * one's).
    */
-  private addOne(metric: IMetric, tag?: A, id?: string) {
+  private addOne(metric: IMetric, level: number, tag?: A, id?: string) {
     const key = metricKey(metric);
 
     let existingEntry: MetricEntry<A> | undefined;
@@ -179,7 +201,7 @@ export class MetricSet<A> {
     if (existingEntry) {
       entry = existingEntry;
     } else {
-      entry = { metric };
+      entry = { metric, level };
       this.metrics.push(entry);
       this.metricByKey.set(key, entry);
     }
@@ -199,7 +221,7 @@ export class MetricSet<A> {
     const conf = metric.toMetricConfig();
     if (conf.mathExpression) {
       for (const [subId, subMetric] of Object.entries(conf.mathExpression.usingMetrics)) {
-        this.addOne(subMetric, undefined, subId);
+        this.addOne(subMetric, level + 1, undefined, subId);
       }
     }
   }

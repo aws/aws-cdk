@@ -6,7 +6,11 @@ import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-autoscaling-instance-termination-policy');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {

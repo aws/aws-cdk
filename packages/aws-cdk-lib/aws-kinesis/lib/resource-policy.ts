@@ -3,8 +3,9 @@ import { CfnResourcePolicy } from './kinesis.generated';
 import { IStream } from './stream';
 import { IStreamConsumer } from './stream-consumer';
 import { PolicyDocument } from '../../aws-iam';
-import { Resource } from '../../core';
+import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties to associate a data stream with a policy
@@ -50,7 +51,10 @@ export interface ResourcePolicyProps {
  *
  * Prefer to use `addToResourcePolicy()` instead.
  */
+@propertyInjectable
 export class ResourcePolicy extends Resource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kinesis.ResourcePolicy';
   /**
    * The IAM policy document for this policy.
    */
@@ -62,10 +66,10 @@ export class ResourcePolicy extends Resource {
     addConstructMetadata(this, props);
 
     if (props.stream && props.streamConsumer) {
-      throw new Error('Only one of stream or streamConsumer can be set');
+      throw new ValidationError('Only one of stream or streamConsumer can be set', this);
     }
     if (props.stream === undefined && props.streamConsumer === undefined) {
-      throw new Error('One of stream or streamConsumer must be set');
+      throw new ValidationError('One of stream or streamConsumer must be set', this);
     }
 
     this.document = props.policyDocument ?? this.document;

@@ -15,7 +15,11 @@ import {
   ParamsAndSecretsLogLevel,
 } from 'aws-cdk-lib/aws-lambda';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 interface StackUnderTestProps extends StackProps {
   architecture: Architecture;

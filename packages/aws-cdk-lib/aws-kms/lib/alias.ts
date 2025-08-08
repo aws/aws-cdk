@@ -2,9 +2,11 @@ import { Construct } from 'constructs';
 import { IKey } from './key';
 import { CfnAlias } from './kms.generated';
 import * as iam from '../../aws-iam';
-import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import * as perms from './private/perms';
+import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { KMS_ALIAS_NAME_REF } from '../../cx-api';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL } from '../../cx-api';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'aws/';
@@ -162,7 +164,11 @@ export interface AliasAttributes {
  *
  * @resource AWS::KMS::Alias
  */
+@propertyInjectable
 export class Alias extends AliasBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kms.Alias';
+
   /**
    * Import an existing KMS Alias defined outside the CDK app.
    *
@@ -181,7 +187,12 @@ export class Alias extends AliasBase {
   /**
    * Import an existing KMS Alias defined outside the CDK app, by the alias name. This method should be used
    * instead of 'fromAliasAttributes' when the underlying KMS Key ARN is not available.
-   * This Alias will not have a direct reference to the KMS Key, so addAlias and grant* methods are not supported.
+   * This Alias will not have a direct reference to the KMS Key, so addAlias method is not supported.
+   *
+   * If the `@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal` feature flag is set to `true`,
+   * the grant* methods will use the kms:ResourceAliases condition to grant permissions to the specific alias name.
+   * They will only modify the principal policy, not the key resource policy.
+   * Without the feature flag `grant*` methods will be a no-op.
    *
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
@@ -192,20 +203,63 @@ export class Alias extends AliasBase {
       public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
       public readonly keyId = aliasName;
       public readonly aliasName = aliasName;
-      public get aliasTargetKey(): IKey { throw new Error('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().'); }
-      public addAlias(_alias: string): Alias { throw new Error('Cannot call addAlias on an Alias imported by Alias.fromAliasName().'); }
+      public get aliasTargetKey(): IKey { throw new ValidationError('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().', this); }
+      public addAlias(_alias: string): Alias { throw new ValidationError('Cannot call addAlias on an Alias imported by Alias.fromAliasName().', this); }
       public addToResourcePolicy(_statement: iam.PolicyStatement, _allowNoOp?: boolean): iam.AddToResourcePolicyResult {
         return { statementAdded: false };
       }
-      public grant(grantee: iam.IGrantable, ..._actions: string[]): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantDecrypt(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantEncrypt(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantSign(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantVerify(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantSignVerify(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantGenerateMac(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantVerifyMac(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
+
+      public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+        if (!FeatureFlags.of(this).isEnabled(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL)) {
+          return iam.Grant.drop(grantee, '');
+        }
+        return iam.Grant.addToPrincipal({
+          grantee,
+          actions,
+          resourceArns: [Stack.of(scope).formatArn({
+            service: 'kms',
+            resource: 'key',
+            resourceName: '*',
+          })],
+          conditions: {
+            'ForAnyValue:StringEquals': {
+              'kms:ResourceAliases': this.aliasName,
+            },
+          },
+        });
+      }
+
+      public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, ...perms.DECRYPT_ACTIONS);
+      }
+
+      public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, ...perms.ENCRYPT_ACTIONS);
+      }
+
+      public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, ...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS);
+      }
+
+      public grantSign(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, ...perms.SIGN_ACTIONS);
+      }
+
+      public grantVerify(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, ...perms.VERIFY_ACTIONS);
+      }
+
+      public grantSignVerify(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, ...perms.SIGN_ACTIONS, ...perms.VERIFY_ACTIONS);
+      }
+
+      public grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, ...perms.GENERATE_HMAC_ACTIONS);
+      }
+
+      public grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, ...perms.VERIFY_HMAC_ACTIONS);
+      }
     }
 
     return new Import(scope, id);
@@ -223,15 +277,15 @@ export class Alias extends AliasBase {
       }
 
       if (aliasName === REQUIRED_ALIAS_PREFIX) {
-        throw new Error(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`);
+        throw new ValidationError(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`, scope);
       }
 
       if (aliasName.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
-        throw new Error(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`);
+        throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
       }
 
       if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-        throw new Error('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-');
+        throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
       }
     } else if (Tokenization.reverseString(aliasName).firstValue && Tokenization.reverseString(aliasName).firstToken === undefined) {
       const valueInToken = Tokenization.reverseString(aliasName).firstValue;
@@ -241,11 +295,11 @@ export class Alias extends AliasBase {
       }
 
       if (valueInToken.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
-        throw new Error(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`);
+        throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
       }
 
       if (!valueInToken.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-        throw new Error('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-');
+        throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
       }
     }
 
@@ -277,3 +331,4 @@ export class Alias extends AliasBase {
     return REQUIRED_ALIAS_PREFIX + super.generatePhysicalName();
   }
 }
+

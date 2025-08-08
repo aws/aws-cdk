@@ -1,5 +1,7 @@
 import { Construct } from 'constructs';
+import { ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ImportedTaskDefinition } from '../../lib/base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
@@ -44,7 +46,13 @@ export interface ExternalTaskDefinitionAttributes extends CommonTaskDefinitionAt
  *
  * @resource AWS::ECS::TaskDefinition
  */
+@propertyInjectable
 export class ExternalTaskDefinition extends TaskDefinition implements IExternalTaskDefinition {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.ExternalTaskDefinition';
+
   /**
    * Imports a task definition from the specified task definition ARN.
    */
@@ -89,6 +97,6 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
    */
   @MethodMetadata()
   public addInferenceAccelerator(_inferenceAccelerator: InferenceAccelerator) {
-    throw new Error('Cannot use inference accelerators on tasks that run on External service');
+    throw new ValidationError('Cannot use inference accelerators on tasks that run on External service', this);
   }
 }

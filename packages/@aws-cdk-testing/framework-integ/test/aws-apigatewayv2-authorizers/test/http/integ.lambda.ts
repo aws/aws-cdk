@@ -12,7 +12,11 @@ import { HttpLambdaAuthorizer, HttpLambdaResponseType } from 'aws-cdk-lib/aws-ap
  * * `curl -H 'X-API-Key: 1234' <url>` should return 403
  */
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'AuthorizerInteg');
 
 const authHandler = new lambda.Function(stack, 'auth-function', {

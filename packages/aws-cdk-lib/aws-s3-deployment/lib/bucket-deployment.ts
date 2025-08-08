@@ -2,7 +2,7 @@
 import * as fs from 'fs';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
-import { ISource, SourceConfig, Source } from './source';
+import { ISource, SourceConfig, Source, MarkersConfig } from './source';
 import * as cloudfront from '../../aws-cloudfront';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
@@ -12,6 +12,7 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { BucketDeploymentSingletonFunction } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
@@ -288,7 +289,13 @@ export interface BucketDeploymentProps {
  * `BucketDeployment` populates an S3 bucket with the contents of .zip files from
  * other S3 buckets or from local disk
  */
+@propertyInjectable
 export class BucketDeployment extends Construct {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-s3-deployment.BucketDeployment';
+
   private readonly cr: cdk.CustomResource;
   private _deployedBucket?: s3.IBucket;
   private requestDestinationArn: boolean = false;
@@ -425,6 +432,18 @@ export class BucketDeployment extends Construct {
               }
               return acc;
             }, [] as Array<Record<string, any>>);
+          },
+        }, { omitEmptyArray: true }),
+        SourceMarkersConfig: cdk.Lazy.uncachedAny({
+          produce: () => {
+            return this.sources.reduce((acc, source) => {
+              if (source.markersConfig) {
+                acc.push(source.markersConfig);
+              } else if (this.sources.length > 1) {
+                acc.push({});
+              }
+              return acc;
+            }, [] as Array<MarkersConfig>);
           },
         }, { omitEmptyArray: true }),
         DestinationBucketName: this.destinationBucket.bucketName,
@@ -664,7 +683,7 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
     }
     // Makes substitutions on the file
     let fileData = fs.readFileSync(props.source, 'utf-8');
-    fileData = fileData.replace(/{{\s*(\w+)\s*}}/g, function(match, expr) {
+    fileData = fileData.replace(/{{\s*(\w+)\s*}}/g, function (match, expr) {
       return props.substitutions[expr] ?? match;
     });
 

@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 import { Asset } from '../../aws-s3-assets';
-import { CustomResource, Duration, Names, Stack } from '../../core';
+import { CustomResource, Duration, Names, Stack, ValidationError } from '../../core';
 
 /**
  * Helm Chart options.
@@ -137,16 +137,16 @@ export class HelmChart extends Construct {
 
     const timeout = props.timeout?.toSeconds();
     if (timeout && timeout > 900) {
-      throw new Error('Helm chart timeout cannot be higher than 15 minutes.');
+      throw new ValidationError('Helm chart timeout cannot be higher than 15 minutes.', this);
     }
 
     if (!this.chart && !this.chartAsset) {
-      throw new Error("Either 'chart' or 'chartAsset' must be specified to install a helm chart");
+      throw new ValidationError("Either 'chart' or 'chartAsset' must be specified to install a helm chart", this);
     }
 
     if (this.chartAsset && (this.repository || this.version)) {
-      throw new Error(
-        "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'",
+      throw new ValidationError(
+        "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'", this,
       );
     }
 

@@ -1,0 +1,13 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "cdk-route53-ebs-token-endpoint-integ-test/DefaultTest": {
+      "stacks": [
+        "cdk-route53-ebs-token-endpoint-integ"
+      ],
+      "assertionStack": "cdk-route53-ebs-token-endpoint-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkroute53ebstokenendpointintegtestDefaultTestDeployAssertEE10A2D8"
+    }
+  },
+  "minimumCliVersion": "2.1005.0"
+}

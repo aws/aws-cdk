@@ -1,0 +1,20 @@
+{
+  "version": "41.0.0",
+  "files": {
+    "76d61b69b8d74aa14c9920e489d649ba5180d009fda3ba40cf6d33838beed4f9": {
+      "displayName": "ApplicationSignalsCloudWatchAgent-Daemon Template",
+      "source": {
+        "path": "ApplicationSignalsCloudWatchAgent-Daemon.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "76d61b69b8d74aa14c9920e489d649ba5180d009fda3ba40cf6d33838beed4f9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

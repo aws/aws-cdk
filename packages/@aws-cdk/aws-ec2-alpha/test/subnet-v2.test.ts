@@ -375,7 +375,6 @@ describe('Subnet V2 with custom IP and routing', () => {
     };
     createTestSubnet(stack, subnetConfig);
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
-      AssignIpv6AddressOnCreation: false,
       Ipv6CidrBlock: '2001:db8:1::/64',
     });
   });

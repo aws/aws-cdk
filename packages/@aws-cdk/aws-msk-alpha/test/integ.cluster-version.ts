@@ -27,6 +27,9 @@ const versions: KafkaVersion[] = [
   KafkaVersion.V3_7_X_KRAFT,
   KafkaVersion.V3_8_X,
   KafkaVersion.V3_8_X_KRAFT,
+  KafkaVersion.V3_9_X,
+  KafkaVersion.V3_9_X_KRAFT,
+  KafkaVersion.V4_0_X_KRAFT,
 ];
 
 class KafkaVersionTest extends Stack {

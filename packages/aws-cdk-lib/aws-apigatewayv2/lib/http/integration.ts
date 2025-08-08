@@ -6,6 +6,7 @@ import { IRole } from '../../../aws-iam';
 import { Aws, Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IIntegration } from '../common';
 import { ParameterMapping } from '../parameter-mapping';
 
@@ -247,7 +248,10 @@ export interface HttpIntegrationProps {
  * The integration for an API route.
  * @resource AWS::ApiGatewayV2::Integration
  */
+@propertyInjectable
 export class HttpIntegration extends Resource implements IHttpIntegration {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.HttpIntegration';
   public readonly integrationId: string;
 
   public readonly httpApi: IHttpApi;

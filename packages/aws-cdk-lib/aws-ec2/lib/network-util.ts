@@ -1,3 +1,5 @@
+import { UnscopedValidationError } from '../../core';
+
 /**
  * InvalidCidrRangeError is thrown when attempting to perform operations on a CIDR
  * range that is either not valid, or outside of the VPC size limits.
@@ -45,7 +47,7 @@ export class NetworkUtils {
    */
   public static ipToNum(ipAddress: string): number {
     if (!this.validIp(ipAddress)) {
-      throw new Error(`${ipAddress} is not valid`);
+      throw new UnscopedValidationError(`${ipAddress} is not valid`);
     }
 
     return ipAddress
@@ -79,7 +81,7 @@ export class NetworkUtils {
     }
     const ipAddress: string = address.join('.');
     if ( !this.validIp(ipAddress) ) {
-      throw new Error(`${ipAddress} is not a valid IP Address`);
+      throw new UnscopedValidationError(`${ipAddress} is not a valid IP Address`);
     }
     return ipAddress;
   }
@@ -133,7 +135,7 @@ export class NetworkBuilder {
     }
     const maxIp = this.nextAvailableIp + (CidrBlock.calculateNetsize(mask) * count);
     if (this.networkCidr.maxAddress() < maxIp - 1) {
-      throw new Error(`${count} of /${mask} exceeds remaining space of ${this.networkCidr.cidr}`);
+      throw new UnscopedValidationError(`${count} of /${mask} exceeds remaining space of ${this.networkCidr.cidr}`);
     }
     const subnets: CidrBlock[] = [];
     for (let i = 0; i < count; i ++) {

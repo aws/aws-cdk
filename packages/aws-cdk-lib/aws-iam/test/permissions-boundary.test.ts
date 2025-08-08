@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Match, Template } from '../../assertions';
-import { App, CfnResource, CustomResourceProvider, CustomResourceProviderRuntime, Stack } from '../../core';
+import { App, AspectPriority, Aspects, CfnResource, CustomResourceProvider, CustomResourceProviderRuntime, Stack } from '../../core';
 import * as iam from '../lib';
 
 let app: App;
@@ -164,5 +164,46 @@ test('unapply inherited boundary from a user: order 2', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::User', {
     PermissionsBoundary: Match.absent(),
+  });
+});
+
+test.each([
+  [undefined, false, 'OVERRIDDEN'],
+  [AspectPriority.MUTATING, false, 'OVERRIDDEN'],
+  [AspectPriority.MUTATING, true, 'OVERRIDDEN'],
+  // custom DEFAULT, builtin MUTATING: custom wins and override is not applied
+  [undefined, true, 'BASE'],
+])('overriding works if base PB is applied using Aspect with prio %p (feature flag %p)', (basePrio, featureFlag, winner) => {
+  // When a custom aspect is used to apply a permissions boundary, and the built-in APIs to override it,
+  // the override still works.
+
+  if (featureFlag !== undefined) {
+    app = new App({ context: { '@aws-cdk/core:aspectPrioritiesMutating': featureFlag } });
+    stack = new Stack(app, 'Stack');
+  }
+
+  // GIVEN
+  Aspects.of(stack).add({
+    visit(node) {
+      if (node instanceof CfnResource && node.cfnResourceType === 'AWS::IAM::Role') {
+        node.addPropertyOverride('PermissionsBoundary', 'BASE');
+      }
+    },
+  }, {
+    priority: basePrio,
+  });
+
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AnyPrincipal(),
+  });
+
+  // WHEN
+  iam.PermissionsBoundary.of(role).apply({
+    managedPolicyArn: 'OVERRIDDEN',
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    PermissionsBoundary: winner,
   });
 });

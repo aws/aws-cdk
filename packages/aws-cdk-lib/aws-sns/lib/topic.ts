@@ -6,6 +6,7 @@ import { IKey, Key } from '../../aws-kms';
 import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Properties for a new SNS topic
@@ -238,7 +239,13 @@ export interface TopicAttributes {
 /**
  * A new SNS topic
  */
+@propertyInjectable
 export class Topic extends TopicBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-sns.Topic';
+
   /**
    * Import an existing SNS topic provided an ARN
    *

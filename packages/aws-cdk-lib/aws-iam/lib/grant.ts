@@ -251,7 +251,7 @@ export class Grant implements IDependable {
     }
 
     if (!addedToPrincipal.policyDependable) {
-      throw new Error('Contract violation: when Principal returns statementAdded=true, it should return a dependable');
+      throw new cdk.UnscopedValidationError('Contract violation: when Principal returns statementAdded=true, it should return a dependable');
     }
 
     return new Grant({ principalStatement: statement, options, policyDependable: addedToPrincipal.policyDependable });
@@ -324,7 +324,7 @@ export class Grant implements IDependable {
   public readonly resourceStatement?: PolicyStatement;
 
   /**
-   * The statements that were added to the principal's policy
+   * The statements that were added to the resource policy
    */
   public readonly resourceStatements = new Array<PolicyStatement>();
 
@@ -372,8 +372,7 @@ export class Grant implements IDependable {
    */
   public assertSuccess(): void {
     if (!this.success) {
-      // eslint-disable-next-line max-len
-      throw new Error(`${describeGrant(this.options)} could not be added on either identity or resource policy.`);
+      throw new cdk.UnscopedValidationError(`${describeGrant(this.options)} could not be added on either identity or resource policy.`);
     }
   }
 

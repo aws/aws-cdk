@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "45.0.0",
   "testCases": {
     "integ-cors-allow-multiple-origins/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "integ-cors-allow-multiple-origins/DefaultTest/DeployAssert",
       "assertionStackName": "integcorsallowmultipleoriginsDefaultTestDeployAssertEBF0A1B1"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }

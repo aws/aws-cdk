@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
-import { Tokenization, Token } from '../../../core';
+import { Tokenization, Token, ValidationError } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
@@ -36,6 +37,9 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * 16384 (16 vCPU) - Available memory values: Between 32768 (32 GB) and 122880 (120 GB) in increments of 8192 (8 GB)
    *
+   * Note: For windows platforms, this field is not enforced at runtime. However, it is still required as it is used to determine
+   * the instance type and size that tasks run on.
+   *
    * @default 256
    */
   readonly cpu?: number;
@@ -57,6 +61,9 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    * Between 16384 (16 GB) and 61440 (60 GB) in increments of 4096 (4 GB) - Available cpu values: 8192 (8 vCPU)
    *
    * Between 32768 (32 GB) and 122880 (120 GB) in increments of 8192 (8 GB) - Available cpu values: 16384 (16 vCPU)
+   *
+   * Note: For windows platforms, this field is not enforced at runtime. However, it is still required as it is used to determine
+   * the instance type and size that tasks run on.
    *
    * @default 512
    */
@@ -114,7 +121,13 @@ export interface FargateTaskDefinitionAttributes extends CommonTaskDefinitionAtt
  *
  * @resource AWS::ECS::TaskDefinition
  */
+@propertyInjectable
 export class FargateTaskDefinition extends TaskDefinition implements IFargateTaskDefinition {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.FargateTaskDefinition';
+
   /**
    * Imports a task definition from the specified task definition ARN.
    */
@@ -185,20 +198,20 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
 
     // eslint-disable-next-line max-len
     if (props.ephemeralStorageGiB && !Token.isUnresolved(props.ephemeralStorageGiB) && (props.ephemeralStorageGiB < 21 || props.ephemeralStorageGiB > 200)) {
-      throw new Error('Ephemeral storage size must be between 21GiB and 200GiB');
+      throw new ValidationError('Ephemeral storage size must be between 21GiB and 200GiB', this);
     }
 
     if (props.pidMode) {
       if (!props.runtimePlatform?.operatingSystemFamily) {
-        throw new Error('Specifying \'pidMode\' requires that operating system family also be provided.');
+        throw new ValidationError('Specifying \'pidMode\' requires that operating system family also be provided.', this);
       }
       if (props.runtimePlatform?.operatingSystemFamily?.isWindows()) {
-        throw new Error('\'pidMode\' is not supported for Windows containers.');
+        throw new ValidationError('\'pidMode\' is not supported for Windows containers.', this);
       }
       if (!Token.isUnresolved(props.pidMode)
           && props.runtimePlatform?.operatingSystemFamily?.isLinux()
           && props.pidMode !== PidMode.TASK) {
-        throw new Error(`\'pidMode\' can only be set to \'${PidMode.TASK}\' for Linux Fargate containers, got: \'${props.pidMode}\'.`);
+        throw new ValidationError(`\'pidMode\' can only be set to \'${PidMode.TASK}\' for Linux Fargate containers, got: \'${props.pidMode}\'.`, this);
       }
     }
 

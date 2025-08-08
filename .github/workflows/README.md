@@ -92,6 +92,12 @@ Owner: CDK support team
 patch file for downloading.
 Owner: Core CDK team
 
+### Yarn Upgrader for deps needing manual work
+
+[yarn-upgrade-need-manual-work.yml](yarn-upgrade-need-manual-work.yml): Upgrades specific dependencies that require manual intervention and creates a PR for review.
+For example, some dependency upgrades require manual updates to the integ test snapshots.
+Owner: Core CDK team
+
 ### AWS Service Spec Update
 
 [spec-update.yml](spec-update.yml): Updates AWS Service Spec and related packages to their latest versions
@@ -133,3 +139,6 @@ Owner: CDK Support team
 
 [project-prioritization-added-on.yml](project-prioritization-added-on.yml): GitHub action that runs every day to update AddedOn field in the prioritization project board.
 Owner: CDK Support team
+
+### Issue sync
+[issue-sync.yml](issue-sync.yml): Github action that syncs issue metadat with the project board. More details can be found on the [project-sync](../../tools/@aws-cdk/project-sync) package.

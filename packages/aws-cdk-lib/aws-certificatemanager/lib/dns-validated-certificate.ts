@@ -6,6 +6,7 @@ import * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { Token } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CertificateRequestCertificateRequestFunction } from '../../custom-resource-handlers/dist/aws-certificatemanager/certificate-request-provider.generated';
 
 /**
@@ -68,7 +69,10 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
  * @resource AWS::CertificateManager::Certificate
  * @deprecated use {@link Certificate} instead
  */
+@propertyInjectable
 export class DnsValidatedCertificate extends CertificateBase implements ICertificate, cdk.ITaggable {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-certificatemanager.DnsValidatedCertificate';
   public readonly certificateArn: string;
 
   /**

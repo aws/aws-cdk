@@ -4,6 +4,7 @@ import { DnsServiceProps, Service } from './service';
 import { CfnPublicDnsNamespace } from './servicediscovery.generated';
 import { Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface PublicDnsNamespaceProps extends BaseNamespaceProps {}
 export interface IPublicDnsNamespace extends INamespace { }
@@ -27,7 +28,11 @@ export interface PublicDnsNamespaceAttributes {
 /**
  * Define a Public DNS Namespace
  */
+@propertyInjectable
 export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicediscovery.PublicDnsNamespace';
+
   public static fromPublicDnsNamespaceAttributes(scope: Construct, id: string, attrs: PublicDnsNamespaceAttributes): IPublicDnsNamespace {
     class Import extends Resource implements IPublicDnsNamespace {
       public namespaceName = attrs.namespaceName;

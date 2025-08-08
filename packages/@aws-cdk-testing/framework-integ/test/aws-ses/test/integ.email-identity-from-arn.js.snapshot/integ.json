@@ -1,0 +1,12 @@
+{
+  "version": "41.0.0",
+  "testCases": {
+    "EmailIdentityFromArnInteg/DefaultTest": {
+      "stacks": [
+        "cdk-ses-email-identity-from-arn-integ"
+      ],
+      "assertionStack": "EmailIdentityFromArnInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "EmailIdentityFromArnIntegDefaultTestDeployAssertCC4631C7"
+    }
+  }
+}

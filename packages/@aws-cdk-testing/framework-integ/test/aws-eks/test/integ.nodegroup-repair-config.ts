@@ -6,7 +6,11 @@ import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import { NodegroupAmiType } from 'aws-cdk-lib/aws-eks';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'aws-cdk-eks-nodegroup-repair-config-test');
 
 const mastersRole = new iam.Role(stack, 'AdminRole', {

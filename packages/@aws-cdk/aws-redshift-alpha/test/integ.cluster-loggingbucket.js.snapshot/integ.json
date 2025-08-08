@@ -1,12 +1,13 @@
 {
-  "version": "38.0.1",
+  "version": "45.0.0",
   "testCases": {
     "LoggingBucketInteg/DefaultTest": {
       "stacks": [
-        "redshift-loggingbucket-integ"
+        "aws-cdk-redshift-cluster-database"
       ],
       "assertionStack": "LoggingBucketInteg/DefaultTest/DeployAssert",
       "assertionStackName": "LoggingBucketIntegDefaultTestDeployAssert2827ECC1"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

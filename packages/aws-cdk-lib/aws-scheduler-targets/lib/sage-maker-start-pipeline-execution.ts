@@ -2,6 +2,7 @@ import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 import { IRole } from '../../aws-iam';
 import { IPipeline } from '../../aws-sagemaker';
 import { ISchedule, IScheduleTarget, ScheduleTargetConfig } from '../../aws-scheduler';
+import { ValidationError } from '../../core';
 
 /**
  * Properties for a pipeline parameter
@@ -45,7 +46,7 @@ export class SageMakerStartPipelineExecution extends ScheduleTargetBase implemen
     super(props, pipeline.pipelineArn);
 
     if (props.pipelineParameterList !== undefined && props.pipelineParameterList.length > 200) {
-      throw new Error(`pipelineParameterList length must be between 0 and 200, got ${props.pipelineParameterList.length}`);
+      throw new ValidationError(`pipelineParameterList length must be between 0 and 200, got ${props.pipelineParameterList.length}`, pipeline);
     }
   }
 

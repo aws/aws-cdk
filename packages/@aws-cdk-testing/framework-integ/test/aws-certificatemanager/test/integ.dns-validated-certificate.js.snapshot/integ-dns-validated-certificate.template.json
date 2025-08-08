@@ -31,7 +31,7 @@
     ]
    }
   },
-  "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole02D5DA9E2": {
+  "CertificateCertificateRequestorFunctionServiceRoleDefaultPolicy3C8845BC": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -41,48 +41,12 @@
         "acm:AddTagsToCertificate",
         "acm:DeleteCertificate",
         "acm:DescribeCertificate",
-        "acm:RequestCertificate"
+        "acm:RequestCertificate",
+        "route53:GetChange"
        ],
        "Effect": "Allow",
        "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole02D5DA9E2",
-    "Roles": [
-     {
-      "Ref": "CertificateCertificateRequestorFunctionServiceRoleC04C13DA"
-     }
-    ]
-   }
-  },
-  "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole18173669F": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "route53:GetChange",
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole18173669F",
-    "Roles": [
-     {
-      "Ref": "CertificateCertificateRequestorFunctionServiceRoleC04C13DA"
-     }
-    ]
-   }
-  },
-  "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole20FBD3CBF": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
+      },
       {
        "Action": "route53:changeResourceRecordSets",
        "Condition": {
@@ -117,7 +81,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole20FBD3CBF",
+    "PolicyName": "CertificateCertificateRequestorFunctionServiceRoleDefaultPolicy3C8845BC",
     "Roles": [
      {
       "Ref": "CertificateCertificateRequestorFunctionServiceRoleC04C13DA"
@@ -141,18 +105,11 @@
       "Arn"
      ]
     },
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs22.x",
     "Timeout": 900
    },
    "DependsOn": [
+    "CertificateCertificateRequestorFunctionServiceRoleDefaultPolicy3C8845BC",
     "CertificateCertificateRequestorFunctionServiceRoleC04C13DA"
    ]
   },
@@ -171,130 +128,6 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  }
- },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs20.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs20.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs20.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs20.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs20.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs18.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs20.x"
-   },
-   "il-central-1": {
-    "value": "nodejs20.x"
-   },
-   "me-central-1": {
-    "value": "nodejs20.x"
-   },
-   "me-south-1": {
-    "value": "nodejs20.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs20.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-east-2": {
-    "value": "nodejs20.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs20.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-west-1": {
-    "value": "nodejs20.x"
-   },
-   "us-west-2": {
-    "value": "nodejs20.x"
-   }
   }
  },
  "Outputs": {

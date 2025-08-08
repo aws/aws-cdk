@@ -8,6 +8,7 @@ import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
@@ -193,7 +194,11 @@ export interface EcsDeploymentGroupProps {
  * A CodeDeploy deployment group that orchestrates ECS blue-green deployments.
  * @resource AWS::CodeDeploy::DeploymentGroup
  */
+@propertyInjectable
 export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeploymentGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.EcsDeploymentGroup';
+
   /**
    * Reference an ECS Deployment Group defined outside the CDK app.
    *
@@ -365,7 +370,10 @@ export interface EcsDeploymentGroupAttributes {
   readonly deploymentConfig?: IEcsDeploymentConfig;
 }
 
+@propertyInjectable
 class ImportedEcsDeploymentGroup extends ImportedDeploymentGroupBase implements IEcsDeploymentGroup {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.ImportedEcsDeploymentGroup';
   public readonly application: IEcsApplication;
   public readonly deploymentConfig: IEcsDeploymentConfig;
 

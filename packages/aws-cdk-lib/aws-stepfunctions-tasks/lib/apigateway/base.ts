@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { AuthType, CallApiGatewayEndpointBaseProps } from './base-types';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
+import { ValidationError } from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -30,7 +31,7 @@ export abstract class CallApiGatewayEndpointBase extends sfn.TaskStateBase {
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(this.baseProps.headers)) {
-        throw new Error('Task Token is required in `headers` for WAIT_FOR_TASK_TOKEN pattern. Use JsonPath.taskToken to set the token.');
+        throw new ValidationError('Task Token is required in `headers` for WAIT_FOR_TASK_TOKEN pattern. Use JsonPath.taskToken to set the token.', this);
       }
     }
   }

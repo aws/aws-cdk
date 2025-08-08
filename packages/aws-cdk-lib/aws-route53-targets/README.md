@@ -222,4 +222,45 @@ new route53.ARecord(this, 'AliasRecord', {
 });
 ```
 
+If Elastic Beanstalk environment URL is not avaiable at synth time, you can specify Hosted Zone ID of the target
+
+```ts
+import { RegionInfo } from 'aws-cdk-lib/region-info';
+
+declare const zone: route53.HostedZone;
+declare const ebsEnvironmentUrl: string;
+
+new route53.ARecord(this, 'AliasRecord', {
+  zone,
+  target: route53.RecordTarget.fromAlias(
+    new targets.ElasticBeanstalkEnvironmentEndpointTarget(ebsEnvironmentUrl, {
+      hostedZoneId: RegionInfo.get('us-east-1').ebsEnvEndpointHostedZoneId,
+    }),
+  ),
+});
+```
+
+Or you can specify Stack region for CDK to generate the correct Hosted Zone ID.
+
+```ts
+import { App } from 'aws-cdk-lib';
+
+declare const app: App;
+declare const zone: route53.HostedZone;
+declare const ebsEnvironmentUrl: string;
+
+const stack = new Stack(app, 'my-stack', {
+  env: {
+    region: 'us-east-1',
+  },
+});
+
+new route53.ARecord(stack, 'AliasRecord', {
+  zone,
+  target: route53.RecordTarget.fromAlias(
+    new targets.ElasticBeanstalkEnvironmentEndpointTarget(ebsEnvironmentUrl),
+  ),
+});
+```
+
 See the documentation of `aws-cdk-lib/aws-route53` for more information.

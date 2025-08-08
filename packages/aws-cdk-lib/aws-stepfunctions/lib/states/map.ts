@@ -120,7 +120,7 @@ export class Map extends MapBase implements INextable {
       errors.push('Map state cannot have both an iterator and an item processor');
     }
 
-    if (this.parameters && this.itemSelector) {
+    if (this.parameters && (this.itemSelector || this.jsonataItemSelector)) {
       errors.push('Map state cannot have both parameters and an item selector');
     }
 
