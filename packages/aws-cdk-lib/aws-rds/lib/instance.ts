@@ -188,7 +188,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
 
     return this.fromDatabaseInstanceAttributes(scope, id, {
       instanceEndpointAddress: instance['Endpoint.Address'],
-      port: instance['Endpoint.Port'],
+      port: Number(instance['Endpoint.Port']),
       instanceIdentifier: options.instanceIdentifier,
       securityGroups: securityGroups,
       instanceResourceId: instance.DbiResourceId,
