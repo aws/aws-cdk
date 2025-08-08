@@ -39,6 +39,59 @@ const sampleTableBucket = new TableBucket(scope, 'ExampleTableBucket', {
 });
 ```
 
+### Define an S3 Tables Namespace
+
+```ts
+// Build a namespace
+const sampleNamespace = new Namespace(scope, 'ExampleNamespace', {
+    namespaceName: 'example-namespace-1',
+    tableBucket: tableBucket,
+});
+```
+
+### Define an S3 Table
+
+```ts
+// Build a table
+const sampleTable = new Table(scope, 'ExampleTable', {
+    tableName: 'example_table',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    withoutMetadata: true,
+});
+
+// Build a table with an Iceberg Schema
+const sampleTableWithSchema = new Table(scope, 'ExampleSchemaTable', {
+    tableName: 'example_table_with_schema',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    icebergMetadata: {
+        icebergSchema: {
+            schemaFieldList: [
+            {
+                name: 'id',
+                type: 'int',
+                required: true,
+            },
+            {
+                name: 'name',
+                type: 'string',
+            },
+            ],
+        },
+    },
+    compaction: {
+        status: Status.ENABLED,
+        targetFileSizeMb: 128,
+    },
+    snapshotManagement: {
+        status: Status.ENABLED,
+        maxSnapshotAgeHours: 48,
+        minSnapshotsToKeep: 5,
+    },
+});
+```
+
 Learn more about table buckets maintenance operations and default behavior from the [S3 Tables User Guide](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-table-buckets-maintenance.html)
 
 ### Controlling Table Bucket Permissions
@@ -110,5 +163,5 @@ const encryptedBucketAuto = new TableBucket(scope, 'EncryptedTableBucketAuto', {
 
 L2 Construct support for:
 
-- Namespaces
-- Tables
+- Table Policy
+- KMS encryption support for Tables
