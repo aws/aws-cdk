@@ -15,16 +15,16 @@
         }
       }
     },
-    "573f54b532ac5ed2dbd26328e6f81af02d1488b5b81d35d696c257f6dd11ac2c": {
+    "1731d530da7aeea87db0e68ff8eddb1b6c2aff8824f00866a7372df769680422": {
       "displayName": "client-vpn-endpoint-stack Template",
       "source": {
         "path": "client-vpn-endpoint-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-e84ad0ca": {
+        "current_account-current_region-20fcc28a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "573f54b532ac5ed2dbd26328e6f81af02d1488b5b81d35d696c257f6dd11ac2c.json",
+          "objectKey": "1731d530da7aeea87db0e68ff8eddb1b6c2aff8824f00866a7372df769680422.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

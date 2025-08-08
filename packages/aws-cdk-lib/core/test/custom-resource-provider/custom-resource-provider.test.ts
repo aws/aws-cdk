@@ -463,124 +463,11 @@ describe('latest Lambda node runtime', () => {
     TestCustomResourceProvider.getOrCreateProvider(stack, 'TestCrProvider');
 
     // THEN
-    Template.fromStack(stack).hasMapping('LatestNodeRuntimeMap', {
-      'af-south-1': {
-        value: 'nodejs22.x',
-      },
-      'ap-east-1': {
-        value: 'nodejs22.x',
-      },
-      'ap-northeast-1': {
-        value: 'nodejs22.x',
-      },
-      'ap-northeast-2': {
-        value: 'nodejs22.x',
-      },
-      'ap-northeast-3': {
-        value: 'nodejs22.x',
-      },
-      'ap-south-1': {
-        value: 'nodejs22.x',
-      },
-      'ap-south-2': {
-        value: 'nodejs22.x',
-      },
-      'ap-southeast-1': {
-        value: 'nodejs22.x',
-      },
-      'ap-southeast-2': {
-        value: 'nodejs22.x',
-      },
-      'ap-southeast-3': {
-        value: 'nodejs22.x',
-      },
-      'ap-southeast-4': {
-        value: 'nodejs22.x',
-      },
-      'ca-central-1': {
-        value: 'nodejs22.x',
-      },
-      'cn-north-1': {
-        value: 'nodejs22.x',
-      },
-      'cn-northwest-1': {
-        value: 'nodejs22.x',
-      },
-      'eu-central-1': {
-        value: 'nodejs22.x',
-      },
-      'eu-central-2': {
-        value: 'nodejs22.x',
-      },
-      'eu-north-1': {
-        value: 'nodejs22.x',
-      },
-      'eu-south-1': {
-        value: 'nodejs22.x',
-      },
-      'eu-south-2': {
-        value: 'nodejs22.x',
-      },
-      'eu-west-1': {
-        value: 'nodejs22.x',
-      },
-      'eu-west-2': {
-        value: 'nodejs22.x',
-      },
-      'eu-west-3': {
-        value: 'nodejs22.x',
-      },
-      'il-central-1': {
-        value: 'nodejs22.x',
-      },
-      'me-central-1': {
-        value: 'nodejs22.x',
-      },
-      'me-south-1': {
-        value: 'nodejs22.x',
-      },
-      'sa-east-1': {
-        value: 'nodejs22.x',
-      },
-      'us-east-1': {
-        value: 'nodejs22.x',
-      },
-      'us-east-2': {
-        value: 'nodejs22.x',
-      },
-      'us-gov-east-1': {
-        value: 'nodejs22.x',
-      },
-      'us-gov-west-1': {
-        value: 'nodejs22.x',
-      },
-      'us-iso-east-1': {
-        value: 'nodejs18.x',
-      },
-      'us-iso-west-1': {
-        value: 'nodejs18.x',
-      },
-      'us-isob-east-1': {
-        value: 'nodejs18.x',
-      },
-      'us-west-1': {
-        value: 'nodejs22.x',
-      },
-      'us-west-2': {
-        value: 'nodejs22.x',
-      },
-    });
+    // Since all regions now have the same latest Node.js runtime (nodejs22.x),
+    // the CDK optimizes by using the literal value instead of creating a mapping
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
       },
     });
   });
@@ -638,9 +525,10 @@ describe('latest Lambda node runtime', () => {
     TestCustomResourceProvider.getOrCreateProvider(stack, 'TestCrProvider');
 
     // THEN
+    // ADC regions now also use nodejs22.x as the latest runtime
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs22.x',
       },
     });
   });

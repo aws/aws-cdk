@@ -3,6 +3,7 @@ import { IResource, RemovalPolicy, Resource, Token, UnscopedValidationError } fr
 import { ITableBucket } from './table-bucket';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { CfnNamespace } from 'aws-cdk-lib/aws-s3tables';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { EOL } from 'os';
 
 /**
@@ -61,7 +62,11 @@ export interface NamespaceAttributes {
  *
  * A namespace is a logical container for tables within a table bucket.
  */
+@propertyInjectable
 export class Namespace extends Resource implements INamespace {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-s3tables-alpha.Namespace';
+
   /**
    * Import an existing namespace from its attributes
    */

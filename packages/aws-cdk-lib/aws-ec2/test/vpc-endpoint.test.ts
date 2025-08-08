@@ -972,5 +972,43 @@ describe('vpc endpoint', () => {
         VpcEndpointType: 'Interface',
       });
     });
+
+    test('same-region endpoint does not include ServiceRegion property', () => {
+      // GIVEN
+      const stack = new Stack(undefined, undefined, { env: { region: 'us-west-2' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN - Same region endpoint without serviceRegion
+      new InterfaceVpcEndpoint(stack, 'Endpoint', {
+        vpc,
+        service: InterfaceVpcEndpointAwsService.S3,
+        // No serviceRegion specified - same region default
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        VpcEndpointType: 'Interface',
+        ServiceName: 'com.amazonaws.us-west-2.s3',
+        ServiceRegion: Match.absent(),
+      });
+    });
+
+    test('cross-region endpoint includes correct ServiceRegion property', () => {
+      // GIVEN
+      const stack = new Stack(undefined, undefined, { env: { region: 'us-west-2' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      new InterfaceVpcEndpoint(stack, 'Endpoint', {
+        vpc,
+        service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-123456', 443),
+        serviceRegion: 'us-east-1',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceRegion: 'us-east-1',
+      });
+    });
   });
 });

@@ -2240,10 +2240,6 @@ export class WindowsBuildImage implements IBuildImage {
       errors.push(`Windows images do not support the '${buildEnvironment.computeType}' compute type`);
     }
 
-    if (!buildEnvironment.fleet && this.type === WindowsImageType.SERVER_2022) {
-      errors.push('Windows Server 2022 images must be used with a fleet');
-    }
-
     return errors;
   }
 

@@ -1234,7 +1234,7 @@
       "match_percentage": 1
     },
     "DatabaseInsightsMode": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts",
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/database-insights-mode.ts",
       "sdk_service": "rds",
       "sdk_enum_name": "DatabaseInsightsMode",
       "match_percentage": 1
@@ -1409,6 +1409,12 @@
     }
   },
   "synthetics": {
+    "ResourceToReplicateTags": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
+      "sdk_service": "synthetics",
+      "sdk_enum_name": "ResourceToTag",
+      "match_percentage": 1
+    },
     "ArtifactsEncryptionMode": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
       "sdk_service": "synthetics",

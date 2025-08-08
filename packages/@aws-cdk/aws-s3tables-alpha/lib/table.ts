@@ -8,6 +8,7 @@ import {
 import { INamespace } from './namespace';
 import { CfnTable } from 'aws-cdk-lib/aws-s3tables';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { EOL } from 'os';
 
@@ -236,7 +237,11 @@ export interface TableAttributes {
 /**
  * An S3 Table with helpers.
  */
+@propertyInjectable
 export class Table extends TableBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-s3tables-alpha.Table';
+
   /**
    * Defines a Table construct that represents an external table.
    *

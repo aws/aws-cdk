@@ -54,7 +54,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "ConnectHandlerServiceRole7E4A9B1F"

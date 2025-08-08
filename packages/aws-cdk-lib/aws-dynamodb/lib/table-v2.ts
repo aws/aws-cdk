@@ -15,6 +15,7 @@ import {
   PointInTimeRecoverySpecification,
   TableClass,
   WarmThroughput,
+  MultiRegionConsistency,
 } from './shared';
 import { ITableV2, TableBaseV2 } from './table-v2-base';
 import { PolicyDocument } from '../../aws-iam';
@@ -295,6 +296,24 @@ export interface TablePropsV2 extends TableOptionsV2 {
    * @default - no replica tables
    */
   readonly replicas?: ReplicaTableProps[];
+
+  /**
+   * The witness Region for the MRSC global table.
+   * A MRSC global table can be configured with either three replicas, or with two replicas and one witness.
+   *
+   * Note: Witness region cannot be specified for a Multi-Region Eventual Consistency (MREC) Global Table.
+   * Witness regions are only supported for Multi-Region Strong Consistency (MRSC) Global Tables.
+   *
+   * @default - no witness region
+   */
+  readonly witnessRegion?: string;
+
+  /**
+   * Specifies the consistency mode for a new global table.
+   *
+   * @default MultiRegionConsistency.EVENTUAL
+   */
+  readonly multiRegionConsistency?: MultiRegionConsistency;
 
   /**
    * Global secondary indexes.
@@ -596,11 +615,19 @@ export class TableV2 extends TableBaseV2 {
     props.globalSecondaryIndexes?.forEach(gsi => this.addGlobalSecondaryIndex(gsi));
     props.localSecondaryIndexes?.forEach(lsi => this.addLocalSecondaryIndex(lsi));
 
+    if (props.multiRegionConsistency === MultiRegionConsistency.STRONG) {
+      this.validateMrscConfiguration(props);
+    } else if (props.witnessRegion) {
+      throw new ValidationError('Witness region cannot be specified for a Multi-Region Eventual Consistency (MREC) Global Table - Witness regions are only supported for Multi-Region Strong Consistency (MRSC) Global Tables.', this);
+    }
+
     const resource = new CfnGlobalTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
       replicas: Lazy.any({ produce: () => this.renderReplicaTables() }),
+      globalTableWitnesses: props.witnessRegion? [{ region: props.witnessRegion }] : undefined,
+      multiRegionConsistency: props.multiRegionConsistency ? props.multiRegionConsistency : undefined,
       globalSecondaryIndexes: Lazy.any({ produce: () => this.renderGlobalIndexes() }, { omitEmptyArray: true }),
       localSecondaryIndexes: Lazy.any({ produce: () => this.renderLocalIndexes() }, { omitEmptyArray: true }),
       billingMode: this.billingMode,
@@ -1046,6 +1073,65 @@ export class TableV2 extends TableBaseV2 {
 
     if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35 )) {
       throw new ValidationError('`recoveryPeriodInDays` must be a value between `1` and `35`.', this);
+    }
+  }
+
+  private validateMrscConfiguration(props: TablePropsV2) {
+    const regionSets = {
+      US: ['us-east-1', 'us-east-2', 'us-west-2'],
+      EU: ['eu-west-1', 'eu-west-2', 'eu-west-3', 'eu-central-1'],
+      AP: ['ap-northeast-1', 'ap-northeast-2', 'ap-northeast-3'],
+    };
+
+    const primaryRegion = this.stack.region;
+    const replicaRegions = (props.replicas || []).map(replica => replica.region);
+    const witnessRegion = props.witnessRegion;
+
+    if (Token.isUnresolved(primaryRegion)) {
+      throw new ValidationError('MRSC global tables with STRONG consistency are not supported in a region agnostic stack', this);
+    }
+
+    const allRegions = [primaryRegion, ...replicaRegions];
+    if (witnessRegion) {
+      allRegions.push(witnessRegion);
+    }
+
+    for (const region of allRegions) {
+      if (Token.isUnresolved(region)) {
+        throw new ValidationError('MRSC global tables with STRONG consistency do not support token-based regions', this);
+      }
+    }
+
+    let regionSet: string[] | undefined;
+    let regionSetName: string | undefined;
+
+    for (const [setName, regions] of Object.entries(regionSets)) {
+      if (regions.includes(primaryRegion)) {
+        regionSet = regions;
+        regionSetName = setName;
+        break;
+      }
+    }
+
+    if (!regionSet || !regionSetName) {
+      throw new ValidationError(`Primary region '${primaryRegion}' is not supported for MRSC global tables with STRONG consistency. Supported regions: ${Object.values(regionSets).flat().join(', ')}`, this);
+    }
+
+    for (const region of allRegions) {
+      if (!regionSet.includes(region)) {
+        throw new ValidationError(`Region '${region}' is not in the same region set (${regionSetName}) as the primary region '${primaryRegion}'. All regions must be within the same region set for MRSC global tables with STRONG consistency. Supported ${regionSetName} regions: ${regionSet.join(', ')}`, this);
+      }
+    }
+
+    const totalReplicas = replicaRegions.length + 1;
+    if (witnessRegion) {
+      if (totalReplicas !== 2) {
+        throw new ValidationError(`MRSC global table with witness region must have exactly 2 replicas (including primary), but found ${totalReplicas}. Current configuration: primary region '${primaryRegion}', replica regions [${replicaRegions.join(', ')}], witness region '${witnessRegion}'`, this);
+      }
+    } else {
+      if (totalReplicas !== 3) {
+        throw new ValidationError(`MRSC global table without witness region must have exactly 3 replicas (including primary), but found ${totalReplicas}. Current configuration: primary region '${primaryRegion}', replica regions [${replicaRegions.join(', ')}]`, this);
+      }
     }
   }
 }

@@ -6,6 +6,7 @@ import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack, Tags } from '../../core'
 import {
   AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, TableV2,
   LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
+  MultiRegionConsistency,
 } from '../lib';
 
 describe('table', () => {
@@ -926,10 +927,7 @@ describe('table', () => {
           Region: 'us-west-2',
           SSESpecification: {
             KMSMasterKeyId: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
+              Ref: 'Key961B73FD',
             },
           },
           TableClass: 'STANDARD_INFREQUENT_ACCESS',
@@ -3240,5 +3238,175 @@ test('Warm Throughput test on-demand', () => {
         Projection: { ProjectionType: 'ALL' },
       },
     ],
+  });
+});
+
+describe('MRSC global tables', () => {
+  test('with witness region', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{ region: 'us-east-1' }],
+      witnessRegion: 'us-east-2',
+      multiRegionConsistency: MultiRegionConsistency.STRONG,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        { Region: 'us-east-1' },
+        { Region: 'us-west-2' },
+      ],
+      GlobalTableWitnesses: [
+        { Region: 'us-east-2' },
+      ],
+    });
+  });
+
+  test('without witness region should not have GlobalTableWitnesses property', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{ region: 'us-east-1' }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        { Region: 'us-east-1' },
+        { Region: 'us-west-2' },
+      ],
+    });
+    // Verify that GlobalTableWitnesses is not present in the template
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable',
+      Match.not(Match.objectLike({
+        GlobalTableWitnesses: Match.anyValue(),
+      })),
+    );
+  });
+
+  test('with witness region and strong consistency requirements', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      sortKey: { name: 'sk', type: AttributeType.STRING },
+      replicas: [{ region: 'us-east-1' }],
+      witnessRegion: 'us-east-2',
+      multiRegionConsistency: MultiRegionConsistency.STRONG,
+      billing: Billing.provisioned({
+        readCapacity: Capacity.fixed(10),
+        writeCapacity: Capacity.autoscaled({ minCapacity: 10, maxCapacity: 100 }),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      KeySchema: [
+        { AttributeName: 'pk', KeyType: 'HASH' },
+        { AttributeName: 'sk', KeyType: 'RANGE' },
+      ],
+      AttributeDefinitions: [
+        { AttributeName: 'pk', AttributeType: 'S' },
+        { AttributeName: 'sk', AttributeType: 'S' },
+      ],
+      BillingMode: 'PROVISIONED',
+      Replicas: [
+        {
+          Region: 'us-east-1',
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityUnits: 10,
+          },
+        },
+        {
+          Region: 'us-west-2',
+          ReadProvisionedThroughputSettings: {
+            ReadCapacityUnits: 10,
+          },
+        },
+      ],
+      GlobalTableWitnesses: [
+        { Region: 'us-east-2' },
+      ],
+    });
+  });
+});
+describe('MRSC global tables validation', () => {
+  test('throws when witness region is used with eventual consistency', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN / THEN - Error should be thrown during construction
+    expect(() => {
+      new TableV2(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        replicas: [{ region: 'us-east-1' }],
+        witnessRegion: 'us-east-2',
+        // multiRegionConsistency defaults to EVENTUAL
+      });
+    }).toThrow('Witness region cannot be specified for a Multi-Region Eventual Consistency (MREC) Global Table - Witness regions are only supported for Multi-Region Strong Consistency (MRSC) Global Tables.');
+  });
+
+  test('validates regions are in same region set for STRONG consistency', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN / THEN - Error should be thrown during construction
+    expect(() => {
+      new TableV2(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        replicas: [{ region: 'eu-west-1' }],
+        witnessRegion: 'us-east-2',
+        multiRegionConsistency: MultiRegionConsistency.STRONG,
+      });
+    }).toThrow("Region 'eu-west-1' is not in the same region set (US) as the primary region 'us-west-2'. All regions must be within the same region set for MRSC global tables with STRONG consistency. Supported US regions: us-east-1, us-east-2, us-west-2");
+  });
+
+  test('validates exactly 2 replicas with witness for STRONG consistency', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
+
+    // WHEN / THEN - Error should be thrown during construction
+    expect(() => {
+      new TableV2(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        replicas: [{ region: 'eu-west-2' }, { region: 'eu-west-3' }], // Too many replicas
+        witnessRegion: 'eu-central-1', // Use same region set
+        multiRegionConsistency: MultiRegionConsistency.STRONG,
+      });
+    }).toThrow("MRSC global table with witness region must have exactly 2 replicas (including primary), but found 3. Current configuration: primary region 'eu-west-1', replica regions [eu-west-2, eu-west-3], witness region 'eu-central-1'");
+  });
+
+  test('allows valid STRONG consistency configuration with witness', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{ region: 'us-east-1' }],
+      witnessRegion: 'us-east-2',
+      multiRegionConsistency: MultiRegionConsistency.STRONG,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      MultiRegionConsistency: 'STRONG',
+      Replicas: [
+        { Region: 'us-east-1' },
+        { Region: 'us-west-2' },
+      ],
+      GlobalTableWitnesses: [
+        { Region: 'us-east-2' },
+      ],
+    });
   });
 });

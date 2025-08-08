@@ -1104,6 +1104,18 @@ new ec2.InterfaceVpcEndpoint(this, 'VPC Endpoint', {
 });
 ```
 
+For cross-region VPC endpoints, specify the `serviceRegion` parameter:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new ec2.InterfaceVpcEndpoint(this, 'CrossRegionEndpoint', {
+  vpc,
+  service: new ec2.InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-123456', 443),
+  serviceRegion: 'us-east-1', // Same region as the service endpoint above
+});
+```
+
 #### Security groups for interface VPC endpoints
 
 By default, interface VPC endpoints create a new security group and all traffic to the endpoint from within the VPC will be automatically allowed.

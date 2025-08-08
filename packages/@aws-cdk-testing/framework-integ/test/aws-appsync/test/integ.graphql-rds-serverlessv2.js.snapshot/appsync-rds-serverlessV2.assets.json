@@ -15,16 +15,16 @@
         }
       }
     },
-    "c9cdf07e5cb2c2f04af8388525902da7f5ab884e5e5b0e6cbc2493a391384000": {
+    "28942b855738d833f5f255d28509b615f42be5453a1dbf494c54f4a13e65d65f": {
       "displayName": "appsync-rds-serverlessV2 Template",
       "source": {
         "path": "appsync-rds-serverlessV2.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-dfd68a90": {
+        "current_account-current_region-6953b0b6": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c9cdf07e5cb2c2f04af8388525902da7f5ab884e5e5b0e6cbc2493a391384000.json",
+          "objectKey": "28942b855738d833f5f255d28509b615f42be5453a1dbf494c54f4a13e65d65f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

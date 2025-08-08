@@ -2001,6 +2001,10 @@
       "MISCONDUCT",
       "PROMPT_ATTACK"
     ],
+    "ContentFiltersTierName": [
+      "CLASSIC",
+      "STANDARD"
+    ],
     "ContextualGroundingAction": [
       "BLOCK",
       "NONE"
@@ -2075,6 +2079,10 @@
     "TopicType": [
       "DENY"
     ],
+    "TopicsTierName": [
+      "CLASSIC",
+      "STANDARD"
+    ],
     "WordAction": [
       "BLOCK",
       "NONE"
@@ -2144,6 +2152,16 @@
     "ConversationRole": [
       "user",
       "assistant"
+    ]
+  },
+  "billing": {
+    "BillingViewType": [
+      "PRIMARY",
+      "BILLING_GROUP",
+      "CUSTOM"
+    ],
+    "DimensionKey": [
+      "LINKED_ACCOUNT"
     ]
   },
   "billingconductor": {
@@ -4511,6 +4529,10 @@
   },
   "dsql": {},
   "dynamodb": {
+    "MultiRegionConsistency": [
+      "EVENTUAL",
+      "STRONG"
+    ],
     "AttributeType": [
       "B",
       "N",
@@ -4818,6 +4840,18 @@
       "c8gd.metal-24xl",
       "c8gd.metal-48xl",
       "c8gd.xlarge",
+      "c8gn.12xlarge",
+      "c8gn.16xlarge",
+      "c8gn.24xlarge",
+      "c8gn.2xlarge",
+      "c8gn.48xlarge",
+      "c8gn.4xlarge",
+      "c8gn.8xlarge",
+      "c8gn.large",
+      "c8gn.medium",
+      "c8gn.metal-24xl",
+      "c8gn.metal-48xl",
+      "c8gn.xlarge",
       "cc1.4xlarge",
       "cc2.8xlarge",
       "cg1.4xlarge",
@@ -4843,6 +4877,7 @@
       "f1.4xlarge",
       "f2.12xlarge",
       "f2.48xlarge",
+      "f2.6xlarge",
       "g2.2xlarge",
       "g2.8xlarge",
       "g3.16xlarge",
@@ -5230,6 +5265,7 @@
       "p5e.48xlarge",
       "p5en.48xlarge",
       "p6-b200.48xlarge",
+      "p6e-gb200.36xlarge",
       "r3.2xlarge",
       "r3.4xlarge",
       "r3.8xlarge",
@@ -5856,6 +5892,11 @@
       "accept",
       "reject"
     ],
+    "TrafficMirrorSessionField": [
+      "packet-length",
+      "description",
+      "virtual-network-id"
+    ],
     "ApplianceModeSupport": [
       "disable",
       "enable"
@@ -6036,8 +6077,21 @@
       "DISABLED",
       "ENABLED"
     ],
+    "Strategy": [
+      "ROLLING",
+      "BLUE_GREEN"
+    ],
     "Type": [
       "memberOf"
+    ],
+    "LifecycleStages": [
+      "RECONCILE_SERVICE",
+      "PRE_SCALE_UP",
+      "POST_SCALE_UP",
+      "TEST_TRAFFIC_SHIFT",
+      "POST_TEST_TRAFFIC_SHIFT",
+      "PRODUCTION_TRAFFIC_SHIFT",
+      "POST_PRODUCTION_TRAFFIC_SHIFT"
     ],
     "ResourceType": [
       "volume"
@@ -6439,6 +6493,16 @@
     "ReplicationState": [
       "ENABLED",
       "DISABLED"
+    ],
+    "IncludeDetail": [
+      "FULL",
+      "NONE"
+    ],
+    "Level": [
+      "INFO",
+      "ERROR",
+      "TRACE",
+      "OFF"
     ],
     "Action": [
       "events:PutEvents"
@@ -7209,6 +7273,7 @@
   "iam": {
     "Status": [
       "Active",
+      "Expired",
       "Inactive"
     ],
     "AssertionEncryptionMode": [
@@ -8702,6 +8767,19 @@
       "us-east-2",
       "us-west-1",
       "us-west-2"
+    ],
+    "ResourceType": [
+      "Domain"
+    ],
+    "Type": [
+      "A",
+      "AAAA",
+      "CNAME",
+      "MX",
+      "NS",
+      "SOA",
+      "SRV",
+      "TXT"
     ]
   },
   "location": {
@@ -8723,7 +8801,8 @@
       "DATA_PROTECTION_POLICY",
       "SUBSCRIPTION_FILTER_POLICY",
       "FIELD_INDEX_POLICY",
-      "TRANSFORMER_POLICY"
+      "TRANSFORMER_POLICY",
+      "METRIC_EXTRACTION_POLICY"
     ],
     "Scope": [
       "ALL"
@@ -9297,6 +9376,10 @@
       "TS",
       "CMAF"
     ],
+    "DashCompactness": [
+      "STANDARD",
+      "NONE"
+    ],
     "DashDrmSignaling": [
       "INDIVIDUAL",
       "REFERENCED"
@@ -9308,8 +9391,15 @@
       "SOURCE_DISRUPTIONS",
       "NONE"
     ],
+    "DashProfile": [
+      "DVB_DASH"
+    ],
     "DashSegmentTemplateFormat": [
       "NUMBER_WITH_TIMELINE"
+    ],
+    "DashTtmlProfile": [
+      "IMSC_1",
+      "EBU_TT_D_101"
     ],
     "DashUtcTimingMode": [
       "HTTP_HEAD",
@@ -9667,6 +9757,43 @@
       "AWS::ApplicationSignals::ServiceLevelObjective"
     ]
   },
+  "odb": {
+    "ComputeModel": [
+      "ECPU",
+      "OCPU"
+    ],
+    "LicenseModel": [
+      "BRING_YOUR_OWN_LICENSE",
+      "LICENSE_INCLUDED"
+    ],
+    "DaysOfWeek": [
+      "MONDAY",
+      "TUESDAY",
+      "WEDNESDAY",
+      "THURSDAY",
+      "FRIDAY",
+      "SATURDAY",
+      "SUNDAY"
+    ],
+    "Months": [
+      "JANUARY",
+      "FEBRUARY",
+      "MARCH",
+      "APRIL",
+      "MAY",
+      "JUNE",
+      "JULY",
+      "AUGUST",
+      "SEPTEMBER",
+      "OCTOBER",
+      "NOVEMBER",
+      "DECEMBER"
+    ],
+    "Preference": [
+      "NO_PREFERENCE",
+      "CUSTOM_PREFERENCE"
+    ]
+  },
   "omics": {
     "AnnotationType": [
       "GENERIC",
@@ -9829,7 +9956,6 @@
       "standard"
     ]
   },
-  "opsworkscm": {},
   "organizations": {
     "JoinedMethod": [
       "INVITED",
@@ -10343,6 +10469,10 @@
       "Q_LITE",
       "Q_BUSINESS"
     ],
+    "DataAccessorAuthenticationType": [
+      "AWS_IAM_IDC_TTI",
+      "AWS_IAM_IDC_AUTH_CODE"
+    ],
     "AttributeValueOperator": [
       "DELETE"
     ],
@@ -10402,6 +10532,9 @@
     "Status": [
       "ENABLED",
       "DISABLED"
+    ],
+    "ConditionOperator": [
+      "StringEquals"
     ],
     "APISchemaType": [
       "OPEN_API_V3"
@@ -11275,13 +11408,16 @@
       "ORACLE",
       "POSTGRESQL",
       "PRESTO",
+      "QBUSINESS",
       "REDSHIFT",
       "S3",
       "S3_TABLES",
+      "S3_KNOWLEDGE_BASE",
       "SALESFORCE",
       "SERVICENOW",
       "SNOWFLAKE",
       "SPARK",
+      "SPICE",
       "SQLSERVER",
       "TERADATA",
       "TIMESTREAM",
@@ -11295,7 +11431,12 @@
       "DOCUMENTDB",
       "APPFLOW",
       "IMPALA",
-      "GLUE"
+      "GLUE",
+      "GOOGLE_DRIVE",
+      "CONFLUENCE",
+      "SHAREPOINT",
+      "ONE_DRIVE",
+      "WEB_CRAWLER"
     ],
     "StarburstProductType": [
       "GALAXY",
@@ -11753,6 +11894,14 @@
       "MODIFYING",
       "DELETING"
     ],
+    "SnapshotStatus": [
+      "AVAILABLE",
+      "CREATING",
+      "DELETED",
+      "CANCELLED",
+      "FAILED",
+      "COPYING"
+    ],
     "PerformanceTargetStatus": [
       "ENABLED",
       "DISABLED"
@@ -11948,6 +12097,7 @@
       "cn-northwest-1",
       "eu-central-1",
       "eu-central-2",
+      "eu-isoe-west-1",
       "eu-north-1",
       "eu-south-1",
       "eu-south-2",
@@ -12186,9 +12336,21 @@
       "Daily",
       "Weekly"
     ],
+    "ConfigurationState": [
+      "ENABLED",
+      "DISABLED"
+    ],
     "TransitionDefaultMinimumObjectSize": [
       "varies_by_storage_class",
       "all_storage_classes_128K"
+    ],
+    "TableBucketType": [
+      "aws",
+      "customer"
+    ],
+    "SseAlgorithm": [
+      "aws:kms",
+      "AES256"
     ],
     "StorageClass": [
       "DEEP_ARCHIVE",
@@ -12210,6 +12372,10 @@
     "PartitionDateSource": [
       "EventTime",
       "DeliveryTime"
+    ],
+    "Expiration": [
+      "ENABLED",
+      "DISABLED"
     ],
     "Protocol": [
       "http",
@@ -12275,13 +12441,19 @@
     ]
   },
   "s3tables": {
-    "SSEAlgorithm": [
-      "AES256",
-      "aws:kms"
-    ],
     "Status": [
       "Enabled",
       "Disabled"
+    ],
+    "OpenTableFormat": [
+      "ICEBERG"
+    ],
+    "WithoutMetadata": [
+      "Yes"
+    ],
+    "SSEAlgorithm": [
+      "AES256",
+      "aws:kms"
     ]
   },
   "sagemaker": {
@@ -13190,6 +13362,14 @@
       "DeleteFailed",
       "DeleteCompleted"
     ],
+    "RemoteAccess": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "SpaceManagedResources": [
+      "ENABLED",
+      "DISABLED"
+    ],
     "SharingType": [
       "Private",
       "Shared"
@@ -13722,6 +13902,10 @@
       "INFORMATIONAL",
       "UNSPECIFIED"
     ],
+    "AvailableSecurityUpdatesComplianceStatus": [
+      "NON_COMPLIANT",
+      "COMPLIANT"
+    ],
     "OperatingSystem": [
       "WINDOWS",
       "AMAZON_LINUX",
@@ -13892,7 +14076,8 @@
       "db.influx.4xlarge",
       "db.influx.8xlarge",
       "db.influx.12xlarge",
-      "db.influx.16xlarge"
+      "db.influx.16xlarge",
+      "db.influx.24xlarge"
     ],
     "DbStorageType": [
       "InfluxIOIncludedT1",
@@ -14033,6 +14218,10 @@
       "API_GATEWAY",
       "AWS_DIRECTORY_SERVICE",
       "AWS_LAMBDA"
+    ],
+    "IpAddressType": [
+      "IPV4",
+      "DUALSTACK"
     ],
     "Protocol": [
       "SFTP",
@@ -14713,6 +14902,20 @@
     "ChannelSubtype": [
       "EMAIL",
       "SMS"
+    ],
+    "ChannelType": [
+      "Chat",
+      "Email"
+    ],
+    "Status": [
+      "CREATE_IN_PROGRESS",
+      "CREATE_FAILED",
+      "CREATED",
+      "DELETE_IN_PROGRESS",
+      "DELETE_FAILED",
+      "DELETED",
+      "UPDATE_IN_PROGRESS",
+      "UPDATE_FAILED"
     ]
   },
   "workspaces": {
