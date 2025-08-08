@@ -129,15 +129,6 @@ export class AlternateTarget implements IAlternateTarget {
    * Bind this configuration to a service
    */
   public bind(scope: IConstruct): AlternateTargetConfig {
-    const resources: string[] = [
-      this.props.alternateTargetGroup.targetGroupArn,
-      this.props.productionListener._listenerArn,
-    ];
-
-    if (this.props.testListener) {
-      resources.push(this.props.testListener._listenerArn);
-    }
-
     const roleId = `${this.id}Role`;
     const role = this.props.role ?? new iam.Role(scope, roleId, {
       assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),

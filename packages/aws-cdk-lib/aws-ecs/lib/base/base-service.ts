@@ -1288,14 +1288,10 @@ export abstract class BaseService extends Resource
     return {
       attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
         targetGroup.registerConnectable(self, self.taskDefinition._portRangeFromPortMapping(target.portMapping));
-        return options.alternateTarget
-          ? self.attachToELBv2WithAlternateTarget(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget)
-          : self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget);
       },
       attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-        return options.alternateTarget
-          ? self.attachToELBv2WithAlternateTarget(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget)
-          : self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget);
       },
       connections,
       attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
@@ -1560,38 +1556,13 @@ export abstract class BaseService extends Resource
   private attachToELBv2(
     targetGroup: elbv2.ITargetGroup,
     containerName: string,
-    containerPort: number): elbv2.LoadBalancerTargetProps {
-    if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new ValidationError('Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.', this);
-    }
-
-    this.loadBalancers.push({
-      targetGroupArn: targetGroup.targetGroupArn,
-      containerName,
-      containerPort,
-    });
-
-    // Service creation can only happen after the load balancer has
-    // been associated with our target group(s), so add ordering dependency.
-    this.resource.node.addDependency(targetGroup.loadBalancerAttached);
-
-    const targetType = this.taskDefinition.networkMode === NetworkMode.AWS_VPC ? elbv2.TargetType.IP : elbv2.TargetType.INSTANCE;
-    return { targetType };
-  }
-
-  /**
-   * Shared logic for attaching to an ELBv2 with alternate target configuration
-   */
-  private attachToELBv2WithAlternateTarget(
-    targetGroup: elbv2.ITargetGroup,
-    containerName: string,
     containerPort: number,
-    alternateTarget: IAlternateTarget): elbv2.LoadBalancerTargetProps {
+    alternateTarget?: IAlternateTarget): elbv2.LoadBalancerTargetProps {
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
       throw new ValidationError('Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.', this);
     }
 
-    const advancedConfiguration = alternateTarget.bind(this);
+    const advancedConfiguration = alternateTarget?.bind(this);
     this.loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
       containerName,
