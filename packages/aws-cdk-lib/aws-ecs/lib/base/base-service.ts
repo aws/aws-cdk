@@ -26,6 +26,7 @@ import {
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
+import { IAlternateTarget } from '../alternate-target-configuration';
 import {
   LoadBalancerTargetOptions,
   NetworkMode,
@@ -34,6 +35,7 @@ import {
 } from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
+import { IDeploymentLifecycleHookTarget } from '../deployment-lifecycle-hook-target';
 import { CfnService } from '../ecs.generated';
 import { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
 
@@ -435,6 +437,24 @@ export interface BaseServiceOptions {
    * @default - undefined
    */
   readonly volumeConfigurations?: ServiceManagedVolume[];
+
+  /**
+   * The deployment strategy to use for the service.
+   * @default ROLLING
+   */
+  readonly deploymentStrategy?: DeploymentStrategy;
+
+  /**
+   * bake time minutes for service.
+   * @default - none
+   */
+  readonly bakeTime?: Duration;
+
+  /**
+   * The lifecycle hooks to execute during deployment stages
+   * @default - none;
+   */
+  readonly lifecycleHooks?: IDeploymentLifecycleHookTarget[];
 }
 
 /**
@@ -494,7 +514,7 @@ class ApplicationListenerConfig extends ListenerConfig {
     const protocol = props.protocol;
     const port = props.port ?? (protocol === elbv2.ApplicationProtocol.HTTPS ? 443 : 80);
     this.listener.addTargets(id, {
-      ... props,
+      ...props,
       targets: [
         service.loadBalancerTarget({
           ...target,
@@ -655,6 +675,12 @@ export abstract class BaseService extends Resource
    */
   protected _serviceConnectConfig?: CfnService.ServiceConnectConfigurationProperty;
 
+  /**
+   * Whether this service is using the ECS deployment controller.
+   * @internal
+   */
+  private readonly isEcsDeploymentController: boolean;
+
   private readonly resource: CfnService;
   private scalableTaskCount?: ScalableTaskCount;
 
@@ -662,6 +688,12 @@ export abstract class BaseService extends Resource
    * All volumes
    */
   private readonly volumes: ServiceManagedVolume[] = [];
+
+  /**
+   * A deployment lifecycle hook runs custom logic at specific stages of the deployment process.
+   * @default - none
+   */
+  private readonly lifecycleHooks: IDeploymentLifecycleHookTarget[] = [];
 
   /**
    * Constructs a new instance of the BaseService class.
@@ -689,6 +721,9 @@ export abstract class BaseService extends Resource
 
     const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
     const deploymentController = this.getDeploymentController(props);
+
+    // Determine if this service is using the ECS deployment controller
+    this.isEcsDeploymentController = !deploymentController || deploymentController.type === DeploymentControllerType.ECS;
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
@@ -701,6 +736,9 @@ export abstract class BaseService extends Resource
           rollback: props.circuitBreaker.rollback ?? false,
         } : undefined,
         alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
+        strategy: props.deploymentStrategy,
+        bakeTimeInMinutes: props.bakeTime?.toMinutes(),
+        lifecycleHooks: Lazy.any({ produce: () => this.renderLifecycleHooks() }, { omitEmptyArray: true }),
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
@@ -723,15 +761,11 @@ export abstract class BaseService extends Resource
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:externalDeploymentController', 'taskDefinition and launchType are blanked out when using external deployment controller.');
     }
 
-    if (props.circuitBreaker
-        && deploymentController
-        && deploymentController.type !== DeploymentControllerType.ECS) {
+    if (props.circuitBreaker && !this.isEcsDeploymentController) {
       Annotations.of(this).addError('Deployment circuit breaker requires the ECS deployment controller.');
     }
 
-    if (props.deploymentAlarms
-      && deploymentController
-      && deploymentController.type !== DeploymentControllerType.ECS) {
+    if (props.deploymentAlarms && !this.isEcsDeploymentController) {
       throw new ValidationError('Deployment alarms requires the ECS deployment controller.', this);
     }
 
@@ -804,9 +838,8 @@ export abstract class BaseService extends Resource
         enable: true,
         rollback: props.deploymentAlarms.behavior !== AlarmBehavior.FAIL_ON_ALARM,
       };
-    // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
-    } else if ((!props.deploymentController ||
-      props.deploymentController?.type === DeploymentControllerType.ECS) && this.deploymentAlarmsAvailableInRegion()) {
+      // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
+    } else if (this.isEcsDeploymentController && this.deploymentAlarmsAvailableInRegion()) {
       // Only set default deployment alarms settings when feature flag is not enabled.
       if (!FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM)) {
         this.deploymentAlarms = {
@@ -817,7 +850,37 @@ export abstract class BaseService extends Resource
       }
     }
 
+    if (props.lifecycleHooks) {
+      if (this.isEcsDeploymentController) {
+        props.lifecycleHooks.forEach(target => this.addLifecycleHook(target));
+      } else {
+        throw new ValidationError('Deployment lifecycle hooks requires the ECS deployment controller.', this);
+      }
+    }
+
     this.node.defaultChild = this.resource;
+  }
+
+  /**
+   * Add a deployment lifecycle hook target
+   * @param target The lifecycle hook target to add
+   */
+  public addLifecycleHook(target: IDeploymentLifecycleHookTarget) {
+    if (!this.isEcsDeploymentController) {
+      throw new ValidationError('Deployment lifecycle hooks requires the ECS deployment controller.', this);
+    }
+    this.lifecycleHooks.push(target);
+  }
+
+  private renderLifecycleHooks(): CfnService.DeploymentLifecycleHookProperty[] {
+    return this.lifecycleHooks.map((target) => {
+      const config = target.bind(this);
+      return {
+        hookTargetArn: config.targetArn,
+        roleArn: config.role!.roleArn,
+        lifecycleStages: config.lifecycleStages.map(stage => stage.toString()),
+      };
+    });
   }
 
   /**
@@ -879,7 +942,7 @@ export abstract class BaseService extends Resource
    *
    */
   public enableDeploymentAlarms(alarmNames: string[], options?: DeploymentAlarmOptions) {
-    if (alarmNames.length === 0 ) {
+    if (alarmNames.length === 0) {
       throw new ValidationError('at least one alarm name is required when calling enableDeploymentAlarms(), received empty array', this);
     }
 
@@ -1072,7 +1135,7 @@ export abstract class BaseService extends Resource
       return props.deploymentController;
     }
     const disableCircuitBreakerEcsDeploymentControllerFeatureFlag =
-        FeatureFlags.of(this).isEnabled(cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER);
+      FeatureFlags.of(this).isEnabled(cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER);
 
     if (!disableCircuitBreakerEcsDeploymentControllerFeatureFlag && props.circuitBreaker) {
       // This is undesirable behavior (the controller is implicitly ECS anyway when left
@@ -1215,16 +1278,20 @@ export abstract class BaseService extends Resource
    * });
    */
   public loadBalancerTarget(options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
+    if (options.alternateTarget && !this.isEcsDeploymentController) {
+      throw new ValidationError('Deployment lifecycle hooks requires the ECS deployment controller.', this);
+    }
+
     const self = this;
     const target = this.taskDefinition._validateTarget(options);
     const connections = self.connections;
     return {
       attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
         targetGroup.registerConnectable(self, self.taskDefinition._portRangeFromPortMapping(target.portMapping));
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget);
       },
       attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget);
       },
       connections,
       attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
@@ -1486,15 +1553,21 @@ export abstract class BaseService extends Resource
   /**
    * Shared logic for attaching to an ELBv2
    */
-  private attachToELBv2(targetGroup: elbv2.ITargetGroup, containerName: string, containerPort: number): elbv2.LoadBalancerTargetProps {
+  private attachToELBv2(
+    targetGroup: elbv2.ITargetGroup,
+    containerName: string,
+    containerPort: number,
+    alternateTarget?: IAlternateTarget): elbv2.LoadBalancerTargetProps {
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
       throw new ValidationError('Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.', this);
     }
 
+    const advancedConfiguration = alternateTarget?.bind(this);
     this.loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
       containerName,
       containerPort,
+      advancedConfiguration,
     });
 
     // Service creation can only happen after the load balancer has
@@ -1579,6 +1652,14 @@ export abstract class BaseService extends Resource
       idleTimeoutSeconds: idleTimeout?.toSeconds(),
       perRequestTimeoutSeconds: perRequestTimeout?.toSeconds(),
     };
+  }
+
+  /**
+   * Checks if the service is using the ECS deployment controller.
+   * @returns true if the service is using the ECS deployment controller or if no deployment controller is specified (defaults to ECS)
+   */
+  public isUsingECSDeploymentController(): boolean {
+    return this.isEcsDeploymentController;
   }
 }
 
@@ -1724,6 +1805,20 @@ export enum DeploymentControllerType {
    * The external (EXTERNAL) deployment type enables you to use any third-party deployment controller
    */
   EXTERNAL = 'EXTERNAL',
+}
+
+/**
+ * The deployment stratergy to use for ECS controller
+ */
+export enum DeploymentStrategy {
+  /**
+   * Rolling update deployment
+   */
+  ROLLING = 'ROLLING',
+  /**
+   * Blue/green deployment
+   */
+  BLUE_GREEN = 'BLUE_GREEN',
 }
 
 /**
