@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "artifacts": {
     "cdk-dynamodb-skip-replica-deletion.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/823dcb11062a337b46c07e57621c7158fbe168d4a772f89b83177713dda9dc8f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/03b3618cc3a43360cb9d156d3946384701615367b56ab6234a35b31c37dfbb11.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -150,12 +150,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TableStackRegionNotEqualseuwest2A03859E7"
-          }
-        ],
-        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler": [
@@ -357,7 +351,7 @@
               "runtime": "*",
               "handler": "*",
               "timeout": "*",
-              "logFormat": "*",
+              "loggingFormat": "JSON",
               "applicationLogLevelV2": "FATAL",
               "logGroup": "*",
               "vpc": "*",
@@ -563,7 +557,7 @@
               "runtime": "*",
               "handler": "*",
               "timeout": "*",
-              "logFormat": "*",
+              "loggingFormat": "JSON",
               "applicationLogLevelV2": "FATAL",
               "logGroup": "*",
               "vpc": "*",
@@ -744,7 +738,7 @@
               "runtime": "*",
               "handler": "*",
               "timeout": "*",
-              "logFormat": "*",
+              "loggingFormat": "JSON",
               "applicationLogLevelV2": "FATAL",
               "logGroup": "*",
               "vpc": "*",
@@ -1437,6 +1431,7 @@
             "explanation": "When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model."
           },
           "@aws-cdk/core:explicitStackTags": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
           },
@@ -1589,5 +1584,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1020.2"
+  "minimumCliVersion": "2.1023.0"
 }

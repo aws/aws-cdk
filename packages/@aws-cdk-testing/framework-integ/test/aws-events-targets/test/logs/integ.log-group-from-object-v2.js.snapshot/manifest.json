@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "artifacts": {
     "aws-cdk-cloudwatch-eventbridge-logs.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3436bbb4ea96bada10470a0c5f0c01359d1b17a33cd291a38ea00d2edf19e832.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ca063698cc0c1f82e4f92f132220f7b71aa9726d65a374bba270c9743d0521f8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -176,12 +176,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EventsLogGroupPolicyawscdkcloudwatcheventbridgelogsRule939B3D08CustomResourcePolicy25D0581B"
-          }
-        ],
-        "/aws-cdk-cloudwatch-eventbridge-logs/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-cloudwatch-eventbridge-logs/AWS679f53fac002430cb0da5b7982bd2287": [
@@ -637,6 +631,7 @@
             "explanation": "When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model."
           },
           "@aws-cdk/core:explicitStackTags": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
           },
@@ -789,5 +784,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1020.2"
+  "minimumCliVersion": "2.1023.0"
 }
