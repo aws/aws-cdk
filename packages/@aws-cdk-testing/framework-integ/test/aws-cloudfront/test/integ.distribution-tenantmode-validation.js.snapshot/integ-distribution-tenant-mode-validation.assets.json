@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "029768f8c17ce809e83377640399e67b3543ccd90fbac0a8b4069781c0995ffd": {
+      "displayName": "integ-distribution-tenant-mode-validation Template",
+      "source": {
+        "path": "integ-distribution-tenant-mode-validation.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-0e2fd8ef": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "029768f8c17ce809e83377640399e67b3543ccd90fbac0a8b4069781c0995ffd.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

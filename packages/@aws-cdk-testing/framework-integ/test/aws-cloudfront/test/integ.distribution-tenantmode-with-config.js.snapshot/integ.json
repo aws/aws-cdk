@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "distribution-tenant-mode-with-config-test/DefaultTest": {
+      "stacks": [
+        "integ-distribution-tenant-mode-with-config"
+      ],
+      "assertionStack": "distribution-tenant-mode-with-config-test/DefaultTest/DeployAssert",
+      "assertionStackName": "distributiontenantmodewithconfigtestDefaultTestDeployAssert5EFFC043"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

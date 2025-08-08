@@ -63,7 +63,7 @@ export interface DistributionTenantAttributes {
 }
 
 /**
- * Customization properties for certificates, georestrictions, and web ACLs for a Distribution Tenant
+ * Customization properties for custom certificates, georestrictions, and web ACLs for a Distribution Tenant
  *
  * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront.CfnDistributionTenant.CustomizationsProperty.html
  */

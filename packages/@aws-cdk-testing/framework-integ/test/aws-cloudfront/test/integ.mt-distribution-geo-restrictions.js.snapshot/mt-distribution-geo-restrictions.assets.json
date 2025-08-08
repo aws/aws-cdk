@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "947c68384a7e4b22f7c21c525e52a14e03d71c6d9672e925a7d495e51d4834eb": {
+      "displayName": "mt-distribution-geo-restrictions Template",
+      "source": {
+        "path": "mt-distribution-geo-restrictions.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-aecf7154": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "947c68384a7e4b22f7c21c525e52a14e03d71c6d9672e925a7d495e51d4834eb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

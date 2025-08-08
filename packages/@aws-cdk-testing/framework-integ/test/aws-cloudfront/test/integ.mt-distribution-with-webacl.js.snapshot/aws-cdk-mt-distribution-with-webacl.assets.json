@@ -1,0 +1,21 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "56723634de6fe28a26eb4cd519082046c0fbfe8c998e0a6bd0d4cfa75f4536ed": {
+      "displayName": "aws-cdk-mt-distribution-with-webacl Template",
+      "source": {
+        "path": "aws-cdk-mt-distribution-with-webacl.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-5dda9276": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "56723634de6fe28a26eb4cd519082046c0fbfe8c998e0a6bd0d4cfa75f4536ed.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

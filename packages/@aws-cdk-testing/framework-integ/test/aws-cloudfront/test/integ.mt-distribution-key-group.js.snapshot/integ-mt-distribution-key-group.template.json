@@ -1,0 +1,91 @@
+{
+ "Resources": {
+  "MyPublicKey78071F3D": {
+   "Type": "AWS::CloudFront::PublicKey",
+   "Properties": {
+    "PublicKeyConfig": {
+     "CallerReference": "c8b39136e0cb50b6879a82a123ff81da0897655e22",
+     "EncodedKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAudf8/iNkQgdvjEdm6xYS\nJAyxd/kGTbJfQNg9YhInb7TSm0dGu0yx8yZ3fnpmxuRPqJIlaVr+fT4YRl71gEYa\ndlhHmnVegyPNjP9dNqZ7zwNqMEPOPnS/NOHbJj1KYKpn1f8pPNycQ5MQCntKGnSj\n6fc+nbcC0joDvGz80xuy1W4hLV9oC9c3GT26xfZb2jy9MVtA3cppNuTwqrFi3t6e\n0iGpraxZlT5wewjZLpQkngqYr6s3aucPAZVsGTEYPo4nD5mswmtZOm+tgcOrivtD\n/3sD/qZLQ6c5siqyS8aTraD6y+VXugujfarTU65IeZ6QAUbLMsWuZOIi5Jn8zAwx\nNQIDAQAB\n-----END PUBLIC KEY-----",
+     "Name": "integmtdistributionkeygroupMyPublicKeyE4FE22B8"
+    }
+   }
+  },
+  "MyKeyGroupAF22FD35": {
+   "Type": "AWS::CloudFront::KeyGroup",
+   "Properties": {
+    "KeyGroupConfig": {
+     "Items": [
+      {
+       "Ref": "MyPublicKey78071F3D"
+      }
+     ],
+     "Name": "integmtdistributionkeygroupMyKeyGroupC7AC79EE"
+    }
+   }
+  },
+  "DistB3B78991": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "ConnectionMode": "tenant-only",
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "integmtdistributionkeygroupDistOrigin116AC0EFB",
+      "TrustedKeyGroups": [
+       {
+        "Ref": "MyKeyGroupAF22FD35"
+       }
+      ],
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only"
+       },
+       "DomainName": "www.example.com",
+       "Id": "integmtdistributionkeygroupDistOrigin116AC0EFB"
+      }
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

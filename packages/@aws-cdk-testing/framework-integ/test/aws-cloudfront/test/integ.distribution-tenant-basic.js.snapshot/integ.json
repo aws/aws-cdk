@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "distribution-tenant-basic-test/DefaultTest": {
+      "stacks": [
+        "integ-distribution-tenant-basic"
+      ],
+      "assertionStack": "distribution-tenant-basic-test/DefaultTest/DeployAssert",
+      "assertionStackName": "distributiontenantbasictestDefaultTestDeployAssert1E853E14"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}
