@@ -23,7 +23,6 @@
     "BasicAuthConfig": {
      "EnableBasicAuth": false
     },
-    "CustomHeaders": "",
     "IAMServiceRole": {
      "Fn::GetAtt": [
       "AppRole1AF9B530",
@@ -91,7 +90,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/27a9816dc96c586399af69b04f22311d648843f6f4a564057a15c3b474eeab55.json"
+       "/0ef0d74797df55263cee1210faa94fb9153b2c66f7a2ac6b319363506ad3a77e.json"
       ]
      ]
     }

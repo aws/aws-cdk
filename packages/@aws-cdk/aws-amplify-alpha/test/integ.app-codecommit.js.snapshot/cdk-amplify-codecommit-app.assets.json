@@ -1,7 +1,8 @@
 {
-  "version": "38.0.1",
+  "version": "48.0.0",
   "files": {
-    "da36c7f10c65581f232afb354275e4d1c228021eea12d5df028c7d8604c1f346": {
+    "d2697b970b8a26f59203a7427affe250439c407e695e88e5d45aef3ac4c4b744": {
+      "displayName": "cdk-amplify-codecommit-app Template",
       "source": {
         "path": "cdk-amplify-codecommit-app.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "da36c7f10c65581f232afb354275e4d1c228021eea12d5df028c7d8604c1f346.json",
+          "objectKey": "d2697b970b8a26f59203a7427affe250439c407e695e88e5d45aef3ac4c4b744.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
