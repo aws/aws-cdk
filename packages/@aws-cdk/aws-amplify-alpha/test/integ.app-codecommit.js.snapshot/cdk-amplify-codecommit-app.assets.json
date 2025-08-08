@@ -1,8 +1,7 @@
 {
-  "version": "48.0.0",
+  "version": "36.0.0",
   "files": {
     "d2697b970b8a26f59203a7427affe250439c407e695e88e5d45aef3ac4c4b744": {
-      "displayName": "cdk-amplify-codecommit-app Template",
       "source": {
         "path": "cdk-amplify-codecommit-app.template.json",
         "packaging": "file"

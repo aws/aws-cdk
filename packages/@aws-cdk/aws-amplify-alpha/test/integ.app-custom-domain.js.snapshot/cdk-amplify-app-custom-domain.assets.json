@@ -1,8 +1,7 @@
 {
-  "version": "48.0.0",
+  "version": "38.0.1",
   "files": {
     "52c01435146f94b28f058464ccdc77ecea779ba1f2809be438facf8863e8b544": {
-      "displayName": "cdk-amplify-app-custom-domain Template",
       "source": {
         "path": "cdk-amplify-app-custom-domain.template.json",
         "packaging": "file"

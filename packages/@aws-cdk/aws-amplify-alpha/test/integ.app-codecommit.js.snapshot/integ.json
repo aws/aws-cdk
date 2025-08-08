@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "36.0.0",
   "testCases": {
     "integ.app-codecommit": {
       "stacks": [
@@ -10,6 +10,5 @@
     }
   },
   "synthContext": {},
-  "enableLookups": false,
-  "minimumCliVersion": "2.1023.0"
+  "enableLookups": false
 }

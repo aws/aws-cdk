@@ -1,6 +1,6 @@
 {
   "enableLookups": true,
-  "version": "48.0.0",
+  "version": "38.0.1",
   "testCases": {
     "amplify-app-custom-domain-integ/DefaultTest": {
       "stacks": [
@@ -10,6 +10,5 @@
       "assertionStack": "amplify-app-custom-domain-integ/DefaultTest/DeployAssert",
       "assertionStackName": "amplifyappcustomdomainintegDefaultTestDeployAssert5F8CD1EB"
     }
-  },
-  "minimumCliVersion": "2.1023.0"
+  }
 }
