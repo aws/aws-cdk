@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnUserPoolClient } from './cognito.generated';
+import { CfnUserPoolClient, ICfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
 import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
@@ -411,7 +411,7 @@ export interface AnalyticsConfiguration {
 /**
  * Represents a Cognito user pool client.
  */
-export interface IUserPoolClient extends IResource {
+export interface IUserPoolClient extends IResource, ICfnUserPoolClient {
   /**
    * Name of the application client
    * @attribute
@@ -441,6 +441,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   public static fromUserPoolClientId(scope: Construct, id: string, userPoolClientId: string): IUserPoolClient {
     class Import extends Resource implements IUserPoolClient {
       public readonly userPoolClientId = userPoolClientId;
+      public readonly attrClientId = userPoolClientId;
       get userPoolClientSecret(): SecretValue {
         throw new ValidationError('UserPool Client Secret is not available for imported Clients', this);
       }
@@ -450,6 +451,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   public readonly userPoolClientId: string;
+  public readonly attrClientId: string;
 
   private _generateSecret?: boolean;
   private readonly userPool: IUserPool;
@@ -529,6 +531,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       enablePropagateAdditionalUserContextData: props.enablePropagateAdditionalUserContextData,
       analyticsConfiguration: props.analytics ? this.configureAnalytics(props.analytics) : undefined,
     });
+    this.attrClientId = resource.attrClientId;
     this.configureAuthSessionValidity(resource, props);
     this.configureTokenValidity(resource, props);
 

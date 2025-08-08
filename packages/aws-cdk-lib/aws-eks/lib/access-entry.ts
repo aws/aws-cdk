@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
-import { CfnAccessEntry } from './eks.generated';
+import { CfnAccessEntry, ICfnAccessEntry } from './eks.generated';
 import {
   Resource, IResource, Aws, Lazy,
 } from '../../core';
@@ -17,7 +17,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  * @property {string} accessEntryName - The name of the access entry.
  * @property {string} accessEntryArn - The Amazon Resource Name (ARN) of the access entry.
  */
-export interface IAccessEntry extends IResource {
+export interface IAccessEntry extends IResource, ICfnAccessEntry {
   /**
    * The name of the access entry.
    * @attribute
@@ -313,6 +313,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
     class Import extends Resource implements IAccessEntry {
       public readonly accessEntryName = attrs.accessEntryName;
       public readonly accessEntryArn = attrs.accessEntryArn;
+      public readonly attrAccessEntryArn = attrs.accessEntryArn;
     }
     return new Import(scope, id);
   }
@@ -324,6 +325,10 @@ export class AccessEntry extends Resource implements IAccessEntry {
    * The Amazon Resource Name (ARN) of the access entry.
    */
   public readonly accessEntryArn: string;
+  /**
+   * The Amazon Resource Name (ARN) of the access entry.
+   */
+  public readonly attrAccessEntryArn: string;
   private cluster: ICluster;
   private principal: string;
   private accessPolicies: IAccessPolicy[];
@@ -358,6 +363,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
       resource: 'accessentry',
       resourceName: this.physicalName,
     });
+    this.attrAccessEntryArn = this.accessEntryArn;
   }
   /**
    * Add the access policies for this entry.

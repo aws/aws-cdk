@@ -1,16 +1,16 @@
 import { Construct } from 'constructs';
-import { CfnBackupPlan } from './backup.generated';
+import { CfnBackupPlan, ICfnBackupPlan } from './backup.generated';
 import { BackupPlanCopyActionProps, BackupPlanRule } from './rule';
 import { BackupSelection, BackupSelectionOptions } from './selection';
 import { BackupVault, IBackupVault } from './vault';
-import { IResource, Lazy, Resource, ValidationError } from '../../core';
+import { IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A backup plan
  */
-export interface IBackupPlan extends IResource {
+export interface IBackupPlan extends IResource, ICfnBackupPlan {
   /**
    * The identifier of the backup plan.
    *
@@ -70,6 +70,12 @@ export class BackupPlan extends Resource implements IBackupPlan {
   public static fromBackupPlanId(scope: Construct, id: string, backupPlanId: string): IBackupPlan {
     class Import extends Resource implements IBackupPlan {
       public readonly backupPlanId = backupPlanId;
+      public readonly attrBackupPlanId = backupPlanId;
+      public readonly attrBackupPlanArn = Stack.of(scope).formatArn({
+        service: 'backup',
+        resource: 'backup-plan',
+        resourceName: backupPlanId,
+      });
     }
     return new Import(scope, id);
   }
@@ -117,6 +123,10 @@ export class BackupPlan extends Resource implements IBackupPlan {
 
   public readonly backupPlanId: string;
 
+  public readonly attrBackupPlanId: string;
+
+  public readonly attrBackupPlanArn: string;
+
   /**
    * The ARN of the backup plan
    *
@@ -147,8 +157,10 @@ export class BackupPlan extends Resource implements IBackupPlan {
       },
     });
 
+    this.attrBackupPlanId = plan.attrBackupPlanId;
     this.backupPlanId = plan.attrBackupPlanId;
     this.backupPlanArn = plan.attrBackupPlanArn;
+    this.attrBackupPlanArn = plan.attrBackupPlanArn;
     this.versionId = plan.attrVersionId;
 
     this._backupVault = props.backupVault;

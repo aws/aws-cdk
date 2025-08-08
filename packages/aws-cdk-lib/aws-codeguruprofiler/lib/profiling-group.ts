@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnProfilingGroup } from './codeguruprofiler.generated';
+import { CfnProfilingGroup, ICfnProfilingGroup } from './codeguruprofiler.generated';
 import { Grant, IGrantable } from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -24,7 +24,7 @@ export enum ComputePlatform {
 /**
  * IResource represents a Profiling Group.
  */
-export interface IProfilingGroup extends IResource {
+export interface IProfilingGroup extends IResource, ICfnProfilingGroup {
 
   /**
    * The name of the profiling group.
@@ -70,6 +70,10 @@ abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
   public abstract readonly profilingGroupName: string;
 
   public abstract readonly profilingGroupArn: string;
+
+  public abstract readonly attrProfilingGroupName: string;
+
+  public abstract readonly attrArn: string;
 
   /**
    * Grant access to publish profiling information to the Profiling Group to the given identity.
@@ -166,6 +170,8 @@ export class ProfilingGroup extends ProfilingGroupBase {
     class Import extends ProfilingGroupBase {
       public readonly profilingGroupName = Stack.of(scope).splitArn(profilingGroupArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
       public readonly profilingGroupArn = profilingGroupArn;
+      public readonly attrProfilingGroupName = this.profilingGroupName;
+      public readonly attrArn = this.profilingGroupArn;
     }
 
     return new Import(scope, id, {
@@ -187,6 +193,20 @@ export class ProfilingGroup extends ProfilingGroupBase {
    */
   public readonly profilingGroupArn: string;
 
+  /**
+   * The name of the Profiling Group.
+   *
+   * @attribute
+   */
+  public readonly attrProfilingGroupName: string;
+
+  /**
+   * The ARN of the Profiling Group.
+   *
+   * @attribute
+   */
+  public readonly attrArn: string;
+
   constructor(scope: Construct, id: string, props: ProfilingGroupProps = {}) {
     super(scope, id, {
       physicalName: props.profilingGroupName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
@@ -206,6 +226,8 @@ export class ProfilingGroup extends ProfilingGroupBase {
       resource: 'profilingGroup',
       resourceName: this.physicalName,
     });
+    this.attrArn = this.profilingGroupArn;
+    this.attrProfilingGroupName = this.profilingGroupName;
   }
 
   private generateUniqueId(): string {
