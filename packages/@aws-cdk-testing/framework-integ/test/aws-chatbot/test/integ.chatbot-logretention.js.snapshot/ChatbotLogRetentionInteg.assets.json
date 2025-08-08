@@ -15,16 +15,16 @@
         }
       }
     },
-    "c240b73789b65d39229a74f13712fb8a73d3254fa40f891f018de7a8005bea70": {
+    "112536ed088faffb19140b941f52bffc3d1061b1909c8203c9b0c102878f8d47": {
       "displayName": "ChatbotLogRetentionInteg Template",
       "source": {
         "path": "ChatbotLogRetentionInteg.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-a039d197": {
+        "current_account-current_region-a075954e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c240b73789b65d39229a74f13712fb8a73d3254fa40f891f018de7a8005bea70.json",
+          "objectKey": "112536ed088faffb19140b941f52bffc3d1061b1909c8203c9b0c102878f8d47.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

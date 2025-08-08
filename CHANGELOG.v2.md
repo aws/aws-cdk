@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.210.0](https://github.com/aws/aws-cdk/compare/v2.209.1...v2.210.0) (2025-08-06)
+
+
+### Reverts
+
+* **ecs:** add support for native blue/green deployments in ECS L2 ([#35061](https://github.com/aws/aws-cdk/issues/35061)) ([#35170](https://github.com/aws/aws-cdk/issues/35170)) ([88696e9](https://github.com/aws/aws-cdk/commit/88696e9cba3c65f1a21708bd736f36f257914537)), closes [#35167](https://github.com/aws/aws-cdk/issues/35167)
+
 ## [2.209.1](https://github.com/aws/aws-cdk/compare/v2.209.0...v2.209.1) (2025-08-06)
 
 

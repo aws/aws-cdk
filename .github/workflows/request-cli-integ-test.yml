@@ -2,7 +2,13 @@
 
 name: request-cli-integ-test
 on:
-  pull_request_target: {}
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
+      - unlabeled
 
 jobs:
   cli-changes:
@@ -28,7 +34,7 @@ jobs:
   submit-to-test-pipeline:
     environment: test-pipeline
     needs: cli-changes
-    if: needs.cli-changes.outputs.any-changed-files == 'true'
+    if: needs.cli-changes.outputs.any-changed-files == 'true' || contains(github.event.pull_request.labels.*.name, 'pr/request-cli-integ-tests')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

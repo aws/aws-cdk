@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "6094cb0ff874f89ab5ab24fb6b9417df0fdeb6966645f90c88ec1d7e28130112": {
       "displayName": "kubectlLayer/Code",
@@ -99,16 +99,16 @@
         }
       }
     },
-    "77be48c25f43ee7f168e4e87523711e7bcd91393385b4fd8f13a6917b64bd240": {
+    "234dd96829d2c83d45e0fe32d206884888c976e5cb12314752e47fa745bdf8ff": {
       "displayName": "aws-cdk-eks-import-cluster-test Template",
       "source": {
         "path": "aws-cdk-eks-import-cluster-test.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d2e67263": {
+        "current_account-current_region-386757da": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "77be48c25f43ee7f168e4e87523711e7bcd91393385b4fd8f13a6917b64bd240.json",
+          "objectKey": "234dd96829d2c83d45e0fe32d206884888c976e5cb12314752e47fa745bdf8ff.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
