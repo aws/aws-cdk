@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "fd615fb1e7e79dc8dbd0171fa9da178930b6f83121b4aab3b516529352a074f3": {
       "displayName": "aws-ecs-blue-green-deployment Template",
