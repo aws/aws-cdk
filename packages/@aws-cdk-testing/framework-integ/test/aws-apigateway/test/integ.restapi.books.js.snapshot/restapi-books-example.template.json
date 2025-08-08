@@ -221,7 +221,10 @@
     "booksapibooksGETA776447A",
     "booksapibooksPOSTF6C6559D",
     "booksapibooks97D84727"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "booksapiDeploymentStageprod55D8E03E": {
    "Type": "AWS::ApiGateway::Stage",

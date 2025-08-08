@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "BedrockApiSchema/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-api-schema-1"
+      ],
+      "assertionStack": "BedrockApiSchema/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockApiSchemaDefaultTestDeployAssert1DDDDC57"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

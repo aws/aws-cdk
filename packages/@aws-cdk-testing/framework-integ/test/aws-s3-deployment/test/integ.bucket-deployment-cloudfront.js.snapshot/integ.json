@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "testCases": {
     "TestBucketDeploymentInteg/DefaultTest": {
       "stacks": [
@@ -10,5 +10,5 @@
       "assertionStackName": "TestBucketDeploymentIntegDefaultTestDeployAssert08D70206"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1020.2"
 }

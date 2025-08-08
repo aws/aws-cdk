@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "LambdaAlarmActionIntegrationTestStackWithFeatureFlag.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/db34b72b17af5b7d83e311e6552b5f6cc3c82caf16943655fcbabc28a5c9b826.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1ab68b72a6c4afce954013ac66437a6e3ab8228725d0969f1d4998781129fb1e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,39 @@
         "LambdaAlarmActionIntegrationTestStackWithFeatureFlag.assets"
       ],
       "metadata": {
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/inAlarmLambdaFeature": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/inAlarmLambdaFeature/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/inAlarmLambdaFeature/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/inAlarmLambdaFeature/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -46,6 +79,59 @@
             "data": "inAlarmLambdaFeature6C78D351"
           }
         ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/inAlarmLambdaFeature/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/inAlarmLambdaFeature/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "inAlarmLambdaFeatureLogGroupA38B15F5"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/Alarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "comparisonOperator": "*",
+              "threshold": "*",
+              "evaluationPeriods": "*",
+              "metric": {
+                "warnings": "*"
+              },
+              "actionsEnabled": true,
+              "treatMissingData": "notBreaching"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          }
+        ],
         "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/Alarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -54,8 +140,47 @@
         ],
         "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlias": [
+                "*"
+              ]
+            }
+          },
+          {
             "type": "aws:cdk:warning",
             "data": "AWS Lambda has changed their authorization strategy, which may cause client invocations using the 'Qualifier' parameter of the lambda function to fail with Access Denied errors.\nIf you are using a lambda Version or Alias, make sure to call 'grantInvoke' or 'addPermission' on the Version or Alias, not the underlying Function\nSee: https://github.com/aws/aws-cdk/issues/19273 [ack: @aws-cdk/aws-lambda:addPermissionsToVersionOrAlias]"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/ServiceRole/Resource": [
@@ -68,6 +193,28 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "alarmLambdaFeatureD560800F"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "alarmLambdaFeatureLogGroup7E7A9C9E"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/CurrentVersion": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "lambda": "*"
+            }
           }
         ],
         "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/CurrentVersion/Resource": [
@@ -88,10 +235,25 @@
             "data": "alarmLambdaFeatureCurrentVersionAlarmFeatureAlarmPermission192451B4"
           }
         ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "aliasName": "*",
+              "version": "*"
+            }
+          }
+        ],
         "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "alarmLambdaFeatureAliasaliasName16F91D34"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName/AlarmAlarmPermission": [
@@ -116,6 +278,45 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "alarmLambdaFeatureAlarmFeatureAlarmPermission7032FB2D"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/AlarmFeature": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "comparisonOperator": "*",
+              "threshold": "*",
+              "evaluationPeriods": "*",
+              "metric": {
+                "warnings": "*"
+              },
+              "actionsEnabled": true,
+              "treatMissingData": "notBreaching"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAlarmAction": [
+                {}
+              ]
+            }
           }
         ],
         "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/AlarmFeature/Resource": [
@@ -193,5 +394,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1019.2"
 }

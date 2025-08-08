@@ -20,7 +20,9 @@ Managed Policies Statements:
 NONE
 
 Identity Policy Statements:
-NONE<precreated-role> (integ-customize-roles-restapi/Role)
+NONE
+
+<precreated-role> (integ-customize-roles-restapi/Role)
 
 AssumeRole Policy:
 [

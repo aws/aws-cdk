@@ -565,6 +565,7 @@ pass in order to promote from the `PreProd` to the `Prod` environment:
 declare const pipeline: pipelines.CodePipeline;
 const preprod = new MyApplicationStage(this, 'PreProd');
 const prod = new MyApplicationStage(this, 'Prod');
+const topic = new sns.Topic(this, 'ChangeApprovalTopic');
 
 pipeline.addStage(preprod, {
   post: [
@@ -574,7 +575,12 @@ pipeline.addStage(preprod, {
   ],
 });
 pipeline.addStage(prod, {
-  pre: [new pipelines.ManualApprovalStep('PromoteToProd')],
+  pre: [new pipelines.ManualApprovalStep('PromoteToProd', {
+    //All options below are optional
+    comment: 'Please validate changes',
+    reviewUrl: 'https://my.webservice.com/',
+    notificationTopic: topic,
+  })],
 });
 ```
 

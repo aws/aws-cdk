@@ -9,15 +9,18 @@ import * as cxapi from '../../../cx-api';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
+import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FileSystem } from '../fs';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
 import { IPolicyValidationPluginBeta1 } from '../validation';
+import { generateFeatureFlagReport } from './feature-flag-report';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
+const VALIDATION_REPORT_PRETTY_CONTEXT = '@aws-cdk/core:validationReportPrettyPrint';
 const VALIDATION_REPORT_JSON_CONTEXT = '@aws-cdk/core:validationReportJson';
 
 /**
@@ -63,6 +66,8 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
   // stacks to add themselves to the synthesized cloud assembly.
   synthesizeTree(root, builder, options.validateOnSynthesis);
 
+  generateFeatureFlagReport(builder, root);
+
   const assembly = builder.buildAssembly();
 
   invokeValidationPlugins(root, builder.outdir, assembly);
@@ -104,7 +109,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
           templatePathsByPlugin.set(plugin, []);
         }
         let assemblyToUse = assemblies.get(construct.artifactId);
-        if (!assemblyToUse) throw new Error(`Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
+        if (!assemblyToUse) throw new AssumptionError(`Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
         templatePathsByPlugin.get(plugin)!.push(...assemblyToUse.stacksRecursively.map(stack => stack.templateFullPath));
       }
     }
@@ -136,31 +141,34 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
       });
     }
     if (FileSystem.fingerprint(outdir) !== hash) {
-      throw new Error(`Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
+      throw new AssumptionError(`Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
     }
   }
 
   if (reports.length > 0) {
     const tree = new ConstructTree(root);
     const formatter = new PolicyValidationReportFormatter(tree);
+    let formatPretty = root.node.tryGetContext(VALIDATION_REPORT_PRETTY_CONTEXT) ?? false;
     const formatJson = root.node.tryGetContext(VALIDATION_REPORT_JSON_CONTEXT) ?? false;
-    const output = formatJson
-      ? formatter.formatJson(reports)
-      : formatter.formatPrettyPrinted(reports);
-
+    formatPretty = formatPretty || !(formatPretty || formatJson); // if neither is set, default to pretty print
     const reportFile = path.join(assembly.directory, POLICY_VALIDATION_FILE_PATH);
-    if (formatJson) {
-      fs.writeFileSync(reportFile, JSON.stringify(output, undefined, 2));
-    } else {
+    if (formatPretty) {
+      const output = formatter.formatPrettyPrinted(reports);
       // eslint-disable-next-line no-console
       console.error(output);
     }
+    if (formatJson) {
+      const output = formatter.formatJson(reports);
+      fs.writeFileSync(reportFile, JSON.stringify(output, undefined, 2));
+    }
     const failed = reports.some(r => !r.success);
     if (failed) {
-      const message = formatJson
+      let message = formatJson
         ? `Validation failed. See the validation report in '${reportFile}' for details`
         : 'Validation failed. See the validation report above for details';
-
+      if (formatPretty && formatJson) {
+        message = `Validation failed. See the validation report in '${reportFile}' and above for details`;
+      }
       // eslint-disable-next-line no-console
       console.log(message);
       process.exitCode = 1;
@@ -287,7 +295,7 @@ function invokeAspectsV2(root: IConstruct) {
     }
   }
 
-  throw new Error('We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.');
+  throw new UnscopedValidationError('We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.');
 
   function recurse(construct: IConstruct, inheritedAspects: AspectApplication[]): 'invoked' | 'abort-recursion' | 'nothing' {
     const node = construct.node;
@@ -310,7 +318,7 @@ function invokeAspectsV2(root: IConstruct) {
       // If the last invoked Aspect has a higher priority than the current one, throw an error:
       const lastInvokedAspect = invoked[invoked.length - 1];
       if (lastInvokedAspect && lastInvokedAspect.priority > aspectApplication.priority) {
-        throw new Error(
+        throw new UnscopedValidationError(
           `Cannot invoke Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} on node ${node.path}: an Aspect ${lastInvokedAspect.aspect.constructor.name} with a lower priority (added at ${lastInvokedAspect.construct.node.path} with priority ${lastInvokedAspect.priority}) was already invoked on this node.`,
         );
       }
@@ -470,7 +478,7 @@ function validateTree(root: IConstruct) {
 
   if (errors.length > 0) {
     const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-    throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
+    throw new UnscopedValidationError(`Validation failed with the following errors:\n  ${errorList}`);
   }
 }
 

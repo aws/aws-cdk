@@ -876,7 +876,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 4
+    "AttributesRevision": 5
    },
    "DependsOn": [
     "EksClusterDefaultVpcIGWCA6A3220",
@@ -1082,7 +1082,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/831374fcd2866f0bf9a5891e43449355d451fa3fad18ed272ad9b0ee3fcb6caf.json"
+       "/450e91808d178a913330aa0c3828890486c617f6aab1042268bd4ddf54f1b7ac.json"
       ]
      ]
     }
@@ -1132,7 +1132,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/ffd569e4f4ab95e0bb7ae663ce707fa2a4465c7c1d6907828f5fbeaf2690b814.json"
+       "/eaff2fc9c3569c08e7e1bd4989ca9673bbe55f2c487a9e7a0572142f5d08bd08.json"
       ]
      ]
     }

@@ -6,6 +6,7 @@ import { Aws } from './cfn-pseudo';
 import { CfnResource } from './cfn-resource';
 import { CfnStack } from './cloudformation.generated';
 import { Duration } from './duration';
+import { UnscopedValidationError } from './errors';
 import { Lazy } from './lazy';
 import { Names } from './names';
 import { RemovalPolicy } from './removal-policy';
@@ -261,6 +262,10 @@ export class NestedStack extends Stack {
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.templateFile;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
   }
+
+  public get bundlingRequired() {
+    return this._parentStack.bundlingRequired;
+  }
 }
 
 /**
@@ -268,12 +273,12 @@ export class NestedStack extends Stack {
  */
 function findParentStack(scope: Construct): Stack {
   if (!scope) {
-    throw new Error('Nested stacks cannot be defined as a root construct');
+    throw new UnscopedValidationError('Nested stacks cannot be defined as a root construct');
   }
 
   const parentStack = Node.of(scope).scopes.reverse().find(p => Stack.isStack(p));
   if (!parentStack) {
-    throw new Error('Nested stacks must be defined within scope of another non-nested stack');
+    throw new UnscopedValidationError('Nested stacks must be defined within scope of another non-nested stack');
   }
 
   return parentStack as Stack;

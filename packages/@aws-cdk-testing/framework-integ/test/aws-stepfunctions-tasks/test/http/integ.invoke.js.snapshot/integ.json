@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "45.0.0",
   "testCases": {
     "HttpInvokeTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "HttpInvokeTest/DefaultTest/DeployAssert",
       "assertionStackName": "HttpInvokeTestDefaultTestDeployAssertBA1B4726"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }

@@ -7,7 +7,7 @@ import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 import * as iam from '../../aws-iam';
-import { CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
+import { Annotations, CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -219,6 +219,7 @@ export interface RecordSetOptions {
    * > an existing Record Set's `deleteExisting` property from `false -> true` after deployment
    * > will delete the record!
    *
+   * @deprecated This property is dangerous and can lead to unintended record deletion in case of deployment failure.
    * @default false
    */
   readonly deleteExisting?: boolean;
@@ -389,6 +390,9 @@ export class RecordSet extends Resource implements IRecordSet {
     this.multiValueAnswer = props.multiValueAnswer;
 
     const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
+    if (props.target.aliasTarget && props.ttl != undefined) {
+      Annotations.of(this).addWarningV2('aws-cdk-lib/aws-route53:ttlIgnored', 'Ignoring ttl since \'target\' uses an alias target');
+    }
 
     const recordName = determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone);
 
@@ -416,6 +420,7 @@ export class RecordSet extends Resource implements IRecordSet {
     this.domainName = recordSet.ref;
 
     if (props.deleteExisting) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-route53:deleteExisting', 'deleteExisting field is deprecated do not use it');
       // Delete existing record before creating the new one
       const provider = DeleteExistingRecordSetProvider.getOrCreateProvider(this, DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE, {
         policyStatements: [{ // IAM permissions for all providers

@@ -70,7 +70,10 @@
     "CdkTestStackother6044D106",
     "CdkTestStackuserGET1317379E",
     "CdkTestStackuser7876F2D4"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "CdkTestStackDeploymentStageprod296E6472": {
    "Type": "AWS::ApiGateway::Stage",

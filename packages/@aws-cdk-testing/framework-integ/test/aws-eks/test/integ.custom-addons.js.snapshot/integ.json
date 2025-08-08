@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-eks-custom-addons/DefaultTest": {
+      "stacks": [
+        "eks-custom-addons"
+      ],
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-eks-custom-addons/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkekscustomaddonsDefaultTestDeployAssertE7D23767"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}

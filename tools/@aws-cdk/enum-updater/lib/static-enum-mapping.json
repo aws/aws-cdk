@@ -1200,6 +1200,24 @@
       "sdk_service": "lambda",
       "sdk_enum_name": "UpdateRuntimeOn",
       "match_percentage": 1
+    },
+    "EventRecordFormat": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/schema-registry.ts",
+      "sdk_service": "lambda",
+      "sdk_enum_name": "EventRecordFormat",
+      "match_percentage": 1
+    },
+    "KafkaSchemaRegistryAccessConfigType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/schema-registry.ts",
+      "sdk_service": "lambda",
+      "sdk_enum_name": "Type",
+      "match_percentage": 1
+    },
+    "KafkaSchemaValidationAttribute": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/schema-registry.ts",
+      "sdk_service": "lambda",
+      "sdk_enum_name": "Attribute",
+      "match_percentage": 1
     }
   },
   "rds": {
@@ -1216,7 +1234,7 @@
       "match_percentage": 1
     },
     "DatabaseInsightsMode": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts",
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/database-insights-mode.ts",
       "sdk_service": "rds",
       "sdk_enum_name": "DatabaseInsightsMode",
       "match_percentage": 1
@@ -1340,6 +1358,14 @@
       "match_percentage": 1
     }
   },
+  "ses-actions": {
+    "EmailEncoding": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses-actions/lib/sns.ts",
+      "sdk_service": "ses",
+      "sdk_enum_name": "SnsNotificationEncoding",
+      "match_percentage": 1
+    }
+  },
   "ses": {
     "CloudWatchDimensionSource": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set-event-destination.ts",
@@ -1383,6 +1409,12 @@
     }
   },
   "synthetics": {
+    "ResourceToReplicateTags": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
+      "sdk_service": "synthetics",
+      "sdk_enum_name": "ResourceToTag",
+      "match_percentage": 1
+    },
     "ArtifactsEncryptionMode": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
       "sdk_service": "synthetics",

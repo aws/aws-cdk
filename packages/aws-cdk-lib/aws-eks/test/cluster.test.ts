@@ -1508,6 +1508,21 @@ describe('cluster', () => {
       expect(template.Outputs).toBeUndefined(); // no outputs
     });
 
+    test('throws warning when `outputConfigCommand=true` and `mastersRole` is not specified', () => {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        outputConfigCommand: true,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Stack/Cluster', '\'outputConfigCommand\' will be ignored as \'mastersRole\' has not been specified. [ack: @aws-cdk/aws-eks:clusterMastersroleNotSpecified]');
+    });
+
     test('`outputClusterName` can be used to synthesize an output with the cluster name', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();

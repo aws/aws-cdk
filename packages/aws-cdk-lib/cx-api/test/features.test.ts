@@ -44,11 +44,12 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true,
     [feats.PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE]: true,
     [feats.PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE]: true,
-    [feats.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: true,
-    // Add new disabling feature flags below this line
     [feats.ASPECT_STABILIZATION]: true,
+    // Add new disabling feature flags below this line
     [feats.LOG_USER_POOL_CLIENT_SECRET_VALUE]: false,
     [feats.USE_RESOURCEID_FOR_VPCV2_MIGRATION]: false,
+    [feats.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: false,
+
   });
 });
 

@@ -3,6 +3,7 @@ import * as path from 'path';
 import { IgnoreStrategy } from './ignore';
 import { CopyOptions, SymlinkFollowMode } from './options';
 import { shouldFollow } from './utils';
+import { UnscopedValidationError } from '../errors';
 
 export function copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
   const follow = options.follow ?? SymlinkFollowMode.EXTERNAL;
@@ -12,14 +13,14 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
   const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, rootDir);
 
   if (!fs.statSync(srcDir).isDirectory()) {
-    throw new Error(`${srcDir} is not a directory`);
+    throw new UnscopedValidationError(`${srcDir} is not a directory`);
   }
 
   const files = fs.readdirSync(srcDir);
   for (const file of files) {
     const sourceFilePath = path.join(srcDir, file);
 
-    if (ignoreStrategy.ignores(sourceFilePath)) {
+    if (ignoreStrategy.completelyIgnores(sourceFilePath)) {
       continue;
     }
 
@@ -39,19 +40,25 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
       if (shouldFollow(follow, rootDir, targetPath)) {
         stat = fs.statSync(sourceFilePath);
       } else {
-        fs.symlinkSync(target, destFilePath);
+        if (!ignoreStrategy.ignores(sourceFilePath)) {
+          fs.mkdirSync(destDir, { recursive: true });
+          fs.symlinkSync(target, destFilePath);
+        }
         stat = undefined;
       }
     }
 
     if (stat && stat.isDirectory()) {
-      fs.mkdirSync(destFilePath);
+      if (!ignoreStrategy.ignores(sourceFilePath)) fs.mkdirSync(destFilePath, { recursive: true });
       copyDirectory(sourceFilePath, destFilePath, options, rootDir);
       stat = undefined;
     }
 
     if (stat && stat.isFile()) {
-      fs.copyFileSync(sourceFilePath, destFilePath);
+      if (!ignoreStrategy.ignores(sourceFilePath)) {
+        fs.mkdirSync(destDir, { recursive: true });
+        fs.copyFileSync(sourceFilePath, destFilePath);
+      }
       stat = undefined;
     }
   }

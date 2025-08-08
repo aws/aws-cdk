@@ -70,10 +70,36 @@ describe('cluster engine', () => {
     expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_3 }).supportedLogTypes).toEqual(['postgresql']);
   });
 
-  test('auroraMysqlEngineVersion of', () => {
+  test('AuroraMysqlEngineVersion.of() determines default combineImportAndExportRoles', () => {
     expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3', '5.7')._combineImportAndExportRoles).toEqual(false);
     expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3')._combineImportAndExportRoles).toEqual(false);
     expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1', '8.0')._combineImportAndExportRoles).toEqual(true);
+  });
+
+  test('AuroraMysqlEngineVersion.of() determines serverlessV2AutoPauseSupported', () => {
+    expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3', '5.7')._serverlessV2AutoPauseSupported).toEqual(false);
+    expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1', '8.0')._serverlessV2AutoPauseSupported).toEqual(false);
+    expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.08.1', '8.0')._serverlessV2AutoPauseSupported).toEqual(true);
+    expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.10.0', '8.0')._serverlessV2AutoPauseSupported).toEqual(true);
+    expect(AuroraMysqlEngineVersion.of('8.4.mysql_aurora.4.00.0', '8.4')._serverlessV2AutoPauseSupported).toEqual(true);
+    expect(AuroraMysqlEngineVersion.of('10.0.mysql_aurora.x.xx.x', '10.0')._serverlessV2AutoPauseSupported).toEqual(true);
+  });
+
+  test('AuroraPostgresEngineVersion.of() determines serverlessV2AutoPauseSupported', () => {
+    expect(AuroraPostgresEngineVersion.of('12.99', '12')._features.serverlessV2AutoPauseSupported).toEqual(false);
+    expect(AuroraPostgresEngineVersion.of('13.14', '13')._features.serverlessV2AutoPauseSupported).toEqual(false);
+    expect(AuroraPostgresEngineVersion.of('13.15', '13')._features.serverlessV2AutoPauseSupported).toEqual(true);
+    expect(AuroraPostgresEngineVersion.of('14.11', '14')._features.serverlessV2AutoPauseSupported).toEqual(false);
+    expect(AuroraPostgresEngineVersion.of('14.12', '14')._features.serverlessV2AutoPauseSupported).toEqual(true);
+    expect(AuroraPostgresEngineVersion.of('15.6', '15')._features.serverlessV2AutoPauseSupported).toEqual(false);
+    expect(AuroraPostgresEngineVersion.of('15.7', '15')._features.serverlessV2AutoPauseSupported).toEqual(true);
+    expect(AuroraPostgresEngineVersion.of('15.10', '15')._features.serverlessV2AutoPauseSupported).toEqual(true);
+    expect(AuroraPostgresEngineVersion.of('16.2', '16')._features.serverlessV2AutoPauseSupported).toEqual(false);
+    expect(AuroraPostgresEngineVersion.of('16.3', '16')._features.serverlessV2AutoPauseSupported).toEqual(true);
+    expect(AuroraPostgresEngineVersion.of('16.10', '16')._features.serverlessV2AutoPauseSupported).toEqual(true);
+    expect(AuroraPostgresEngineVersion.of('16.6-limitless', '16')._features.serverlessV2AutoPauseSupported).toEqual(true);
+    expect(AuroraPostgresEngineVersion.of('17.4', '17')._features.serverlessV2AutoPauseSupported).toEqual(true);
+    expect(AuroraPostgresEngineVersion.of('18.0', '18')._features.serverlessV2AutoPauseSupported).toEqual(true);
   });
 
   test('cluster parameter group correctly determined for AURORA_POSTGRESQL and given version', () => {
@@ -195,6 +221,9 @@ describe('cluster engine', () => {
     const engine_ver_3_09_0 = DatabaseClusterEngine.auroraMysql({
       version: AuroraMysqlEngineVersion.VER_3_09_0,
     });
+    const engine_ver_3_10_0 = DatabaseClusterEngine.auroraMysql({
+      version: AuroraMysqlEngineVersion.VER_3_10_0,
+    });
 
     // THEN
     expect(engine_ver_3_07_1.parameterGroupFamily).toEqual('aurora-mysql8.0');
@@ -202,5 +231,6 @@ describe('cluster engine', () => {
     expect(engine_ver_3_08_1.parameterGroupFamily).toEqual('aurora-mysql8.0');
     expect(engine_ver_3_08_2.parameterGroupFamily).toEqual('aurora-mysql8.0');
     expect(engine_ver_3_09_0.parameterGroupFamily).toEqual('aurora-mysql8.0');
+    expect(engine_ver_3_10_0.parameterGroupFamily).toEqual('aurora-mysql8.0');
   });
 });

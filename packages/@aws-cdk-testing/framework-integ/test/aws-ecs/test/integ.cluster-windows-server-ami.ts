@@ -32,8 +32,8 @@ insRole.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
   vpc,
   role: insRole,
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.LARGE),
-  machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2022),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
+  machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2025),
   minCapacity: 1,
 });
 
@@ -46,10 +46,9 @@ cluster.addAsgCapacityProvider(cp);
 
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {});
 
-taskDefinition.addContainer('fluent-bit', {
-  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/aws-observability/aws-for-fluent-bit:windowsservercore-stable'),
-  memoryLimitMiB: 2096,
-  cpu: 1024,
+taskDefinition.addContainer('main', {
+  image: ecs.ContainerImage.fromRegistry('hello-world'),
+  memoryLimitMiB: 256,
 });
 
 new ecs.Ec2Service(stack, 'EC2Service', {

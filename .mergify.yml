@@ -1,4 +1,7 @@
 # See https://doc.mergify.io
+merge_queue:
+  # Hopefully this gets Mergify to stop creating PRs just to test merges (it both messes with statistics and our automatic validations)
+  max_parallel_checks: 1
 queue_rules:
   - name: default-merge
     update_method: merge
@@ -14,8 +17,8 @@ queue_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
-      - status-success=validate-pr
+      - check-success=validate-pr
+      - check-success=build
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -34,8 +37,8 @@ queue_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
-      - status-success=validate-pr
+      - check-success=validate-pr
+      - check-success=build
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -53,8 +56,8 @@ queue_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
-      - status-success=validate-pr
+      - check-success=validate-pr
+      - check-success=build
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -65,7 +68,7 @@ pull_request_rules:
       label:
         add: [contribution/core]
     conditions:
-      - author~=^(rix0rrr|iliapolo|otaviomacedo|kaizencc|TheRealAmazonKendra|mrgrain|pahud|ashishdhingra|kellertk|moelasmar|paulhcsun|GavinZZ|xazhao|gracelu0|shikha372|QuantumNeuralCoder|godwingrs22|bergjaak|samson-keung|IanKonlog|Leo10Gama|scorbiere|jiayiwang7|saiyush|5d|iankhou|SimonCMoore|maharajhaider|Y-JayKim|astiwana|ykethan|aemada-aws|ozelalisen|abogical|alinko-aws|vishaalmehrishi|alvazjor|kumsmrit|kumvprat|leonmk-aws|matboros|gasolima)$
+      - author=@aws/aws-cdk-team
       - -label~="contribution/core"
   - name: automatic merge
     actions:
@@ -85,8 +88,8 @@ pull_request_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
-      - status-success=validate-pr
+      - check-success=validate-pr
+      - check-success=build
   - name: automatic priority merge
     actions:
       comment:
@@ -106,8 +109,8 @@ pull_request_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
-      - status-success=validate-pr
+      - check-success=validate-pr
+      - check-success=build
   - name: automatic merge (2+ approvers)
     actions:
       comment:
@@ -127,8 +130,8 @@ pull_request_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
-      - status-success=validate-pr
+      - check-success=validate-pr
+      - check-success=build
   - name: automatic merge (no-squash)
     actions:
       comment:
@@ -148,8 +151,8 @@ pull_request_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
-      - status-success=validate-pr
+      - check-success=validate-pr
+      - check-success=build
   - name: remove stale reviews
     actions:
       dismiss_reviews:
@@ -188,8 +191,8 @@ pull_request_rules:
       - "#approved-reviews-by>=1"
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
-      - status-success=validate-pr
+      - check-success=validate-pr
+      - check-success=build
 priority_rules:
   - name: priority for queue `default-merge`
     conditions:

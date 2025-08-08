@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "635014de0189cac8a2849b0c53d352f1cc9c7079c6e59d2de204a40e3b86ecae.zip"
+     "S3Key": "c071afed018660f87ece6db422ff34407d45f6940181746b4c7f99af8f032a98.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -47,7 +47,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "AuthorizerHandlerServiceRole5F40A014"
@@ -172,7 +172,10 @@
     "AuthorizerBD825682",
     "IntegRestApitestGET52631013",
     "IntegRestApitest58FEA9C5"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "IntegRestApiDeploymentStageprod29E2686A": {
    "Type": "AWS::ApiGateway::Stage",

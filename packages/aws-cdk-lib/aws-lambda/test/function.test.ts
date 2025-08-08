@@ -2265,6 +2265,7 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS,
       logRetention: logs.RetentionDays.ONE_MONTH,
+      logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     // THEN
@@ -2281,7 +2282,36 @@ describe('function', () => {
         ],
       },
       RetentionInDays: 30,
+      RemovalPolicy: 'destroy',
     });
+  });
+
+  test('cannot use logRemovalPolicy and logGroup', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN/THEN
+    expect(() => new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      logGroup: new logs.LogGroup(stack, 'CustomLogGroup'),
+      logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+    })).toThrow(/Cannot use `logRemovalPolicy` and `logGroup`/);
+  });
+
+  test('cannot use logRemovalPolicy and USE_CDK_MANAGED_LAMBDA_LOGGROUP', () => {
+    // GIVEN
+    const app = new cdk.App({ context: { [cxapi.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: true } });
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN/THEN
+    expect(() => new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      logRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+    })).toThrow(/Cannot use `logRemovalPolicy` and `@aws-cdk\/aws-lambda:useCdkManagedLogGroup`/);
   });
 
   test('imported lambda with imported security group and allowAllOutbound set to false', () => {
@@ -4564,124 +4594,9 @@ describe('latest Lambda node runtime', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasMapping('LatestNodeRuntimeMap', {
-      'af-south-1': {
-        value: 'nodejs22.x',
-      },
-      'ap-east-1': {
-        value: 'nodejs22.x',
-      },
-      'ap-northeast-1': {
-        value: 'nodejs22.x',
-      },
-      'ap-northeast-2': {
-        value: 'nodejs22.x',
-      },
-      'ap-northeast-3': {
-        value: 'nodejs22.x',
-      },
-      'ap-south-1': {
-        value: 'nodejs22.x',
-      },
-      'ap-south-2': {
-        value: 'nodejs22.x',
-      },
-      'ap-southeast-1': {
-        value: 'nodejs22.x',
-      },
-      'ap-southeast-2': {
-        value: 'nodejs22.x',
-      },
-      'ap-southeast-3': {
-        value: 'nodejs22.x',
-      },
-      'ap-southeast-4': {
-        value: 'nodejs22.x',
-      },
-      'ca-central-1': {
-        value: 'nodejs22.x',
-      },
-      'cn-north-1': {
-        value: 'nodejs22.x',
-      },
-      'cn-northwest-1': {
-        value: 'nodejs22.x',
-      },
-      'eu-central-1': {
-        value: 'nodejs22.x',
-      },
-      'eu-central-2': {
-        value: 'nodejs22.x',
-      },
-      'eu-north-1': {
-        value: 'nodejs22.x',
-      },
-      'eu-south-1': {
-        value: 'nodejs22.x',
-      },
-      'eu-south-2': {
-        value: 'nodejs22.x',
-      },
-      'eu-west-1': {
-        value: 'nodejs22.x',
-      },
-      'eu-west-2': {
-        value: 'nodejs22.x',
-      },
-      'eu-west-3': {
-        value: 'nodejs22.x',
-      },
-      'il-central-1': {
-        value: 'nodejs22.x',
-      },
-      'me-central-1': {
-        value: 'nodejs22.x',
-      },
-      'me-south-1': {
-        value: 'nodejs22.x',
-      },
-      'sa-east-1': {
-        value: 'nodejs22.x',
-      },
-      'us-east-1': {
-        value: 'nodejs22.x',
-      },
-      'us-east-2': {
-        value: 'nodejs22.x',
-      },
-      'us-gov-east-1': {
-        value: 'nodejs22.x',
-      },
-      'us-gov-west-1': {
-        value: 'nodejs22.x',
-      },
-      'us-iso-east-1': {
-        value: 'nodejs18.x',
-      },
-      'us-iso-west-1': {
-        value: 'nodejs18.x',
-      },
-      'us-isob-east-1': {
-        value: 'nodejs18.x',
-      },
-      'us-west-1': {
-        value: 'nodejs22.x',
-      },
-      'us-west-2': {
-        value: 'nodejs22.x',
-      },
-    });
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
       },
     });
   });
@@ -4738,7 +4653,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs22.x',
       },
     });
   });
@@ -5033,6 +4948,25 @@ describe('tag propagation to logGroup on FF USE_CDK_MANAGED_LAMBDA_LOGGROUP enab
         Match.objectLike({ Key: 'Owner', Value: 'CDKTeam' }),
       ]),
     });
+  });
+});
+
+describe('USE_CDK_MANAGED_LAMBDA_LOGGROUP defaults to false when not specified', () => {
+  it('does not create a managed log group when context flag is not specified', () => {
+    // GIVEN
+    const app = new cdk.App(); // No context provided
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    new lambda.Function(stack, 'Function', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Logs::LogGroup', 0); // No log group should be created
   });
 });
 

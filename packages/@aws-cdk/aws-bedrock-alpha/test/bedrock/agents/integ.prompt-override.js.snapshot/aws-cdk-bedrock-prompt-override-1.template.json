@@ -1,0 +1,701 @@
+{
+ "Resources": {
+  "PromptOverrideFunctionServiceRoleB1ACDEAD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "PromptOverrideFunctionD82AB437": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n    exports.handler = async (event) => {\n      console.log('Event:', JSON.stringify(event));\n      return {\n        messageVersion: '1.0',\n        response: {\n          actionGroup: event.actionGroup,\n          apiPath: event.apiPath,\n          httpMethod: event.httpMethod,\n          httpStatusCode: 200,\n          responseBody: {\n            application_json: { result: 'Success from prompt override action group' }\n          }\n        }\n      };\n    };\n  "
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "PromptOverrideFunctionServiceRoleB1ACDEAD",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "PromptOverrideFunctionServiceRoleB1ACDEAD"
+   ]
+  },
+  "PromptOverrideFunctionLogGroupB1001805": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "PromptOverrideFunctionD82AB437"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "PromptOverrideFunctionLambdaInvocationPolicyc8b9aaceca433c559F5E0C1B": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "PromptOverrideFunctionD82AB437",
+      "Arn"
+     ]
+    },
+    "Principal": "bedrock.amazonaws.com",
+    "SourceAccount": {
+     "Ref": "AWS::AccountId"
+    }
+   }
+  },
+  "CustomParserActionFunctionServiceRoleEE676A1C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "CustomParserActionFunction3DAF0C7A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n    exports.handler = async (event) => {\n      console.log('Event:', JSON.stringify(event));\n      return {\n        messageVersion: '1.0',\n        response: {\n          actionGroup: event.actionGroup,\n          apiPath: event.apiPath,\n          httpMethod: event.httpMethod,\n          httpStatusCode: 200,\n          responseBody: {\n            application_json: { result: 'Success from custom parser action group' }\n          }\n        }\n      };\n    };\n  "
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomParserActionFunctionServiceRoleEE676A1C",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "CustomParserActionFunctionServiceRoleEE676A1C"
+   ]
+  },
+  "CustomParserActionFunctionLogGroupD54EA446": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "CustomParserActionFunction3DAF0C7A"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "CustomParserActionFunctionLambdaInvocationPolicyc8cded76e8ed1a7503EDC886": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "CustomParserActionFunction3DAF0C7A",
+      "Arn"
+     ]
+    },
+    "Principal": "bedrock.amazonaws.com",
+    "SourceAccount": {
+     "Ref": "AWS::AccountId"
+    }
+   }
+  },
+  "ParserFunctionServiceRole59DD83FB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ParserFunctionE8A187F2": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n    exports.handler = async (event) => {\n      console.log('Parser Event:', JSON.stringify(event));\n      // Extract the raw model response\n      const rawResponse = event.invokeModelRawResponse;\n      \n      // Simple parsing logic - in a real scenario, this would be more sophisticated\n      const parsedResponse = {\n        messageVersion: '1.0',\n        response: rawResponse\n      };\n      \n      return parsedResponse;\n    };\n  "
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "ParserFunctionServiceRole59DD83FB",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "ParserFunctionServiceRole59DD83FB"
+   ]
+  },
+  "ParserFunctionLogGroup947036DC": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ParserFunctionE8A187F2"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AgentWithPromptOverrideRoleA0EB6013": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":agent/*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": "agent-awscdkbedrockprompithpromptoverride-1d113fbe-bedrockagent"
+   }
+  },
+  "AgentWithPromptOverrideRoleDefaultPolicy348076D7": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PromptOverrideFunctionD82AB437",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "PromptOverrideFunctionD82AB437",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "bedrock:GetFoundationModel",
+        "bedrock:InvokeModel*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":bedrock:",
+          {
+           "Ref": "AWS::Region"
+          },
+          "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AgentWithPromptOverrideRoleDefaultPolicy348076D7",
+    "Roles": [
+     {
+      "Ref": "AgentWithPromptOverrideRoleA0EB6013"
+     }
+    ]
+   }
+  },
+  "AgentWithPromptOverride13B28AED": {
+   "Type": "AWS::Bedrock::Agent",
+   "Properties": {
+    "ActionGroups": [
+     {
+      "ActionGroupName": "UserInputAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.UserInput",
+      "SkipResourceInUseCheckOnDelete": false
+     },
+     {
+      "ActionGroupName": "CodeInterpreterAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.CodeInterpreter",
+      "SkipResourceInUseCheckOnDelete": false
+     },
+     {
+      "ActionGroupExecutor": {
+       "Lambda": {
+        "Fn::GetAtt": [
+         "PromptOverrideFunctionD82AB437",
+         "Arn"
+        ]
+       }
+      },
+      "ActionGroupName": "PromptOverrideActionGroup",
+      "ActionGroupState": "ENABLED",
+      "ApiSchema": {
+       "Payload": "\nopenapi: 3.0.3\ninfo:\n  title: Simple API\n  version: 1.0.0\npaths:\n  /hello:\n    get:\n      operationId: helloWorld\n      summary: Say hello\n      description: Returns a greeting message\n      responses:\n        '200':\n          description: Successful response\n          content:\n            application/json:\n              schema:\n                type: object\n                properties:\n                  message:\n                    type: string\n"
+      },
+      "Description": "An action group for testing prompt override configuration",
+      "SkipResourceInUseCheckOnDelete": false
+     }
+    ],
+    "AgentName": "agent-with-prompt-override",
+    "AgentResourceRoleArn": {
+     "Fn::GetAtt": [
+      "AgentWithPromptOverrideRoleA0EB6013",
+      "Arn"
+     ]
+    },
+    "AutoPrepare": false,
+    "FoundationModel": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+      ]
+     ]
+    },
+    "IdleSessionTTLInSeconds": 600,
+    "Instruction": "This is an agent using prompt override configuration with at least 40 characters of instruction",
+    "OrchestrationType": "DEFAULT",
+    "PromptOverrideConfiguration": {
+     "PromptConfigurations": [
+      {
+       "BasePromptTemplate": "{\"messages\":[{\"role\":\"user\",\"content\":\"Process this user request: {{user_input}}\"}]}",
+       "InferenceConfiguration": {
+        "MaximumLength": 2048,
+        "StopSequences": [],
+        "Temperature": 0.2,
+        "TopK": 250,
+        "TopP": 0.9
+       },
+       "PromptCreationMode": "OVERRIDDEN",
+       "PromptState": "ENABLED",
+       "PromptType": "PRE_PROCESSING"
+      },
+      {
+       "BasePromptTemplate": "{\"messages\":[{\"role\":\"user\",\"content\":\"Refine this response to be more concise and helpful: {{response}}\"}]}",
+       "InferenceConfiguration": {
+        "MaximumLength": 1024,
+        "StopSequences": [],
+        "Temperature": 0.1,
+        "TopK": 100,
+        "TopP": 0.95
+       },
+       "PromptCreationMode": "OVERRIDDEN",
+       "PromptState": "ENABLED",
+       "PromptType": "POST_PROCESSING"
+      }
+     ]
+    },
+    "SkipResourceInUseCheckOnDelete": true
+   },
+   "DependsOn": [
+    "AgentWithPromptOverrideRoleDefaultPolicy348076D7"
+   ]
+  },
+  "AgentWithCustomParserRole29295FCD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":agent/*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": "agent-awscdkbedrockpromptwithcustomparser-6ab08a50-bedrockagent"
+   }
+  },
+  "AgentWithCustomParserRoleDefaultPolicy00D4B90E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CustomParserActionFunction3DAF0C7A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "CustomParserActionFunction3DAF0C7A",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "bedrock:GetFoundationModel",
+        "bedrock:InvokeModel*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":bedrock:",
+          {
+           "Ref": "AWS::Region"
+          },
+          "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AgentWithCustomParserRoleDefaultPolicy00D4B90E",
+    "Roles": [
+     {
+      "Ref": "AgentWithCustomParserRole29295FCD"
+     }
+    ]
+   }
+  },
+  "AgentWithCustomParser73E443B8": {
+   "Type": "AWS::Bedrock::Agent",
+   "Properties": {
+    "ActionGroups": [
+     {
+      "ActionGroupName": "UserInputAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.UserInput",
+      "SkipResourceInUseCheckOnDelete": false
+     },
+     {
+      "ActionGroupName": "CodeInterpreterAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.CodeInterpreter",
+      "SkipResourceInUseCheckOnDelete": false
+     },
+     {
+      "ActionGroupExecutor": {
+       "Lambda": {
+        "Fn::GetAtt": [
+         "CustomParserActionFunction3DAF0C7A",
+         "Arn"
+        ]
+       }
+      },
+      "ActionGroupName": "CustomParserActionGroup",
+      "ActionGroupState": "ENABLED",
+      "ApiSchema": {
+       "Payload": "\nopenapi: 3.0.3\ninfo:\n  title: Simple API\n  version: 1.0.0\npaths:\n  /hello:\n    get:\n      operationId: helloWorld\n      summary: Say hello\n      description: Returns a greeting message\n      responses:\n        '200':\n          description: Successful response\n          content:\n            application/json:\n              schema:\n                type: object\n                properties:\n                  message:\n                    type: string\n"
+      },
+      "Description": "An action group for testing custom parser configuration",
+      "SkipResourceInUseCheckOnDelete": false
+     }
+    ],
+    "AgentName": "agent-with-custom-parser",
+    "AgentResourceRoleArn": {
+     "Fn::GetAtt": [
+      "AgentWithCustomParserRole29295FCD",
+      "Arn"
+     ]
+    },
+    "AutoPrepare": false,
+    "FoundationModel": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+      ]
+     ]
+    },
+    "IdleSessionTTLInSeconds": 600,
+    "Instruction": "This is an agent using custom parser with at least 40 characters of instruction",
+    "OrchestrationType": "DEFAULT",
+    "PromptOverrideConfiguration": {
+     "OverrideLambda": {
+      "Fn::GetAtt": [
+       "ParserFunctionE8A187F2",
+       "Arn"
+      ]
+     },
+     "PromptConfigurations": [
+      {
+       "BasePromptTemplate": "{\"messages\":[{\"role\":\"user\",\"content\":\"Process this user input and prepare it for orchestration: {{user_input}}\"}]}",
+       "InferenceConfiguration": {
+        "MaximumLength": 2048,
+        "StopSequences": [],
+        "Temperature": 0.2,
+        "TopK": 250,
+        "TopP": 0.9
+       },
+       "ParserMode": "OVERRIDDEN",
+       "PromptCreationMode": "OVERRIDDEN",
+       "PromptType": "PRE_PROCESSING"
+      },
+      {
+       "BasePromptTemplate": "{\"messages\":[{\"role\":\"user\",\"content\":\"Summarize this conversation for memory: {{conversation_history}}\"}]}",
+       "InferenceConfiguration": {
+        "MaximumLength": 1024,
+        "StopSequences": [],
+        "Temperature": 0.1,
+        "TopK": 100,
+        "TopP": 0.95
+       },
+       "ParserMode": "OVERRIDDEN",
+       "PromptCreationMode": "OVERRIDDEN",
+       "PromptType": "MEMORY_SUMMARIZATION"
+      }
+     ]
+    },
+    "SkipResourceInUseCheckOnDelete": true
+   },
+   "DependsOn": [
+    "AgentWithCustomParserRoleDefaultPolicy00D4B90E"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "testCases": {
     "apigateway-spec-restapi/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "apigateway-spec-restapi/DefaultTest/DeployAssert",
       "assertionStackName": "apigatewayspecrestapiDefaultTestDeployAssertD16AA485"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

@@ -4,6 +4,7 @@ import * as ccommit from '../../../aws-codecommit';
 import { Pipeline, PipelineType } from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
+import * as sns from '../../../aws-sns';
 import * as sqs from '../../../aws-sqs';
 import * as cdk from '../../../core';
 import { Stack } from '../../../core';
@@ -209,6 +210,32 @@ test.each([
   });
 });
 
+test.each([
+  [undefined, 'latest'],
+  ['9.9.9', '9.9.9'],
+])('When I request cdk-assets version %p I get %p', (requested, expected) => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipe = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    cdkAssetsCliVersion: requested,
+  });
+
+  pipe.addStage(new FileAssetApp(pipelineStack, 'App', {}));
+
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Source: {
+      BuildSpec: Match.serializedJson(Match.objectLike({
+        phases: {
+          install: {
+            commands: [
+              `npm install -g cdk-assets@${expected}`,
+            ],
+          },
+        },
+      })),
+    },
+  });
+});
+
 test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
@@ -248,6 +275,32 @@ test('CodeBuild asset role has the right Principal with the feature enabled', ()
       },
     ],
   );
+});
+
+test.each([
+  [undefined, '2'],
+  ['9.9.9', '9.9.9'],
+])('When I request CLI version version %p I get %p', (requested, expected) => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipe = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    cliVersion: requested,
+  });
+
+  pipe.addStage(new FileAssetApp(pipelineStack, 'App', {}));
+
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Source: {
+      BuildSpec: Match.serializedJson(Match.objectLike({
+        phases: {
+          install: {
+            commands: [
+              `npm install -g aws-cdk@${expected}`,
+            ],
+          },
+        },
+      })),
+    },
+  });
 });
 
 test('CodeBuild asset role has the right Principal with the feature disabled', () => {
@@ -575,6 +628,32 @@ test('assets can have display names that conflict with calculated action names',
   });
 });
 
+test('action name does not reflect display names if publishAssetsInParallel is false', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    publishAssetsInParallel: false,
+  });
+  pipeline.addStage(new MultipleFileAssetsApp(pipelineStack, 'App', {
+    n: 2,
+    displayNames: ['asdf1', 'asdf2'],
+  }));
+
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+
+  // We expect a single `FileAsset` action in the pipeline
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'Assets',
+      Actions: [
+        Match.objectLike({
+          Name: 'FileAssets',
+        }),
+      ],
+    }]),
+  });
+});
+
 test('action name is calculated properly if it has cross-stack dependencies', () => {
   // GIVEN
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
@@ -703,6 +782,77 @@ test('throws when deploy role session tags are used', () => {
       },
     });
   }).toThrow('Deployment of stack SampleStage-123456789012-us-east-1-SampleStack requires assuming the role arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1 with session tags, but assuming roles with session tags is not supported by CodePipeline.');
+});
+
+test('test add external link for manual approval', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    crossAccountKeys: true,
+  });
+
+  const stage = new TwoStackApp(app, 'TheApp', { withDependency: false });
+
+  const approval = new cdkp.ManualApprovalStep('Approval', {
+    comment: 'Please approve',
+    reviewUrl: 'https://approve-confirm.com',
+  });
+
+  pipeline.addStage(stage, {
+    pre: [approval],
+  });
+
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'TheApp',
+      Actions: Match.arrayWith([
+        Match.objectLike({
+          Name: 'Approval',
+          RunOrder: 1,
+          Configuration: Match.objectLike({
+            ExternalEntityLink: 'https://approve-confirm.com',
+          }),
+        }),
+      ]),
+    }]),
+  });
+});
+
+test('sns topic for manual approval', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    crossAccountKeys: true,
+  });
+  const topic = new sns.Topic(pipelineStack, 'Topic', {
+    topicName: 'MyTopic',
+  });
+  const approval = new cdkp.ManualApprovalStep('Approval', {
+    comment: 'Please approve',
+    notificationTopic: topic,
+  });
+  const stage = new TwoStackApp(app, 'TheApp', { withDependency: false });
+  pipeline.addStage(stage, {
+    pre: [approval],
+  });
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'TheApp',
+      Actions: Match.arrayWith([
+        Match.objectLike({
+          Name: 'Approval',
+          RunOrder: 1,
+          Configuration: Match.objectLike({
+            NotificationArn: { Ref: 'TopicBFC7AF6E' },
+          }),
+        }),
+      ]),
+    }]),
+  });
+  template.hasResourceProperties('AWS::SNS::Topic', {
+    TopicName: 'MyTopic',
+  });
 });
 
 interface ReuseCodePipelineStackProps extends cdk.StackProps {
