@@ -510,7 +510,7 @@ export class DatabaseProxy extends DatabaseProxyBase
       vpcSubnetIds: props.vpc.selectSubnets(props.vpcSubnets).subnetIds,
     });
 
-    this.dbProxyName = this.resource.ref;
+    this.dbProxyName = this.resource.ref.toLowerCase();
     this.dbProxyArn = this.resource.attrDbProxyArn;
     this.endpoint = this.resource.attrEndpoint;
 
@@ -531,7 +531,7 @@ export class DatabaseProxy extends DatabaseProxyBase
 
     const proxyTargetGroup = new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
       targetGroupName: 'default',
-      dbProxyName: this.dbProxyName,
+      dbProxyName: this.resource.ref,
       dbInstanceIdentifiers,
       dbClusterIdentifiers,
       connectionPoolConfigurationInfo: toConnectionPoolConfigurationInfo(props),
