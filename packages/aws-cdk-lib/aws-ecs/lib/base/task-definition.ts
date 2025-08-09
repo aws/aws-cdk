@@ -527,10 +527,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       memory: props.memoryMiB,
       ipcMode: props.ipcMode,
       pidMode: this.pidMode,
-      inferenceAccelerators: Lazy.any({
-        produce: () =>
-          !isFargateCompatible(this.compatibility) ? this.renderInferenceAccelerators() : undefined,
-      }, { omitEmptyArray: true }),
+      inferenceAccelerators: !isFargateCompatible(this.compatibility) ? this.renderInferenceAccelerators() : undefined,
       ephemeralStorage: this.ephemeralStorageGiB ? {
         sizeInGiB: this.ephemeralStorageGiB,
       } : undefined,
