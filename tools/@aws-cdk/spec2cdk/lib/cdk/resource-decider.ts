@@ -25,6 +25,11 @@ export class ResourceDecider {
 
   private readonly taggability?: TaggabilityStyle;
 
+  /**
+   * The arn returned by the resource, if applicable.
+   */
+  public readonly arn?: PropertySpec;
+  public readonly primaryIdentifier = new Array<PropertySpec>();
   public readonly propsProperties = new Array<PropsProperty>();
   public readonly classProperties = new Array<ClassProperty>();
   public readonly classAttributeProperties = new Array<ClassAttributeProperty>();
@@ -34,6 +39,9 @@ export class ResourceDecider {
 
     this.convertProperties();
     this.convertAttributes();
+
+    this.convertPrimaryIdentifier();
+    this.arn = this.findArn();
 
     this.propsProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
     this.classProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
@@ -57,6 +65,87 @@ export class ResourceDecider {
 
       this.handlePropertyDefault(name, prop);
     }
+  }
+
+  private findArn() {
+    // A list of possible names for the arn, in order of importance.
+    // This is relevant because some resources, like AWS::VpcLattice::AccessLogSubscription
+    // has both `Arn` and `ResourceArn`, and we want to select the `Arn` property.
+    const possibleArnNames = ['Arn', `${this.resource.name}Arn`];
+    for (const arn of possibleArnNames) {
+      const att = this.classAttributeProperties.find((a) => a.propertySpec.name === attributePropertyName(arn));
+      if (att) { return att.propertySpec; }
+    }
+    return;
+  }
+
+  private convertPrimaryIdentifier() {
+    if (this.resource.primaryIdentifier === undefined) { return; }
+    for (let i = 0; i < (this.resource.primaryIdentifier).length; i++) {
+      const cfnName = this.resource.primaryIdentifier[i];
+      const att = this.findAttributeByName(attributePropertyName(cfnName));
+      const prop = this.findPropertyByName(propertyNameFromCloudFormation(cfnName));
+      if (att) {
+        this.primaryIdentifier.push(att);
+      } else if (prop) {
+        const propSpec = prop.propertySpec;
+
+        // Build an attribute out of the property we're getting
+        // Create initializer for new attribute, if possible
+        let initializer: Expression | undefined = undefined;
+        if (propSpec.type === Type.STRING) { // handling only this case for now
+          // The fact that a property is part of a primary identifier does not necessarily imply that it can be read.
+          // Example: AWS::ApiGateway::RequestValidator has a primary identifier composed of
+          // [ "/properties/RestApiId", "/properties/RequestValidatorId" ]. But Ref only returns the validator ID.
+          // Handling only the case where the primary identifier is a single property, which is the most common case.
+          if (this.resource.primaryIdentifier!.length === 1) {
+            initializer = CDK_CORE.tokenAsString($this.ref);
+          }
+        }
+
+        // If we cannot come up with an initializer, we're dropping this property on the floor
+        if (!initializer) { continue; }
+
+        // Build an attribute spec out of the property spec
+        const attrPropertySpec = this.convertPropertySpecToRefAttribute(propSpec);
+
+        // Add the new attribute to the relevant places
+        this.classAttributeProperties.push({
+          propertySpec: attrPropertySpec,
+          initializer,
+        });
+
+        this.primaryIdentifier.push(attrPropertySpec);
+      }
+    }
+  }
+
+  private convertPropertySpecToRefAttribute(propSpec: PropertySpec): PropertySpec {
+    return {
+      ...propSpec,
+      name: attributePropertyName(propSpec.name[0].toUpperCase() + propSpec.name.slice(1)),
+      docs: {
+        ...propSpec.docs,
+        summary: (propSpec.docs?.summary ?? '').concat('\nThis property gets determined after the resource is created.'),
+        remarks: (propSpec.docs?.remarks ?? '').concat('@cloudformationAttribute Ref'),
+      },
+      immutable: true,
+      optional: false,
+    };
+  }
+
+  private findPropertyByName(name: string): ClassProperty | undefined {
+    const props = this.classProperties.filter((prop) => prop.propertySpec.name === name);
+    // there's no way we have multiple properties with the same name
+    if (props.length > 0) { return props[0]; }
+    return;
+  }
+
+  private findAttributeByName(name: string): PropertySpec | undefined {
+    const atts = this.classAttributeProperties.filter((att) => att.propertySpec.name === name);
+    // there's no way we have multiple attributes with the same name
+    if (atts.length > 0) { return atts[0].propertySpec; }
+    return;
   }
 
   /**
