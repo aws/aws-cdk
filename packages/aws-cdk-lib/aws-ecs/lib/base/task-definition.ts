@@ -5,6 +5,7 @@ import * as iam from '../../../aws-iam';
 import { IResource, Lazy, Names, PhysicalName, Resource, UnscopedValidationError, ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { IAlternateTarget } from '../alternate-target-configuration';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
@@ -1143,6 +1144,13 @@ export interface LoadBalancerTargetOptions {
    * @default Protocol.TCP
    */
   readonly protocol?: Protocol;
+
+  /**
+   * Alternate target configuration for blue/green deployments.
+   *
+   * @default - No alternate target configuration
+   */
+  readonly alternateTarget?: IAlternateTarget;
 }
 
 /**
