@@ -335,4 +335,91 @@ describe('arn', () => {
     expect(stack.resolve(parsed.resourceName)).toEqual('S3Access');
     expect(parsed.sep).toEqual('/');
   });
+
+  describe('hierarchical ARNs', () => {
+    test('requires hierarchicalDepth for HIERARCHICAL format', () => {
+      const stack = new Stack();
+      expect(() => {
+        stack.splitArn('arn:aws:pcs:us-east-1:account:cluster/id/computenodegroup/id2',
+          ArnFormat.HIERARCHICAL_SLASH_RESOURCE_NAME);
+      }).toThrow(/hierarchicalDepth is required in options when using HIERARCHICAL_SLASH_RESOURCE_NAME format/);
+    });
+
+    test('depth 1 - basic cluster ARN', () => {
+      const stack = new Stack();
+      const arn = 'arn:aws:pcs:us-east-1:123456789012:cluster/test-cluster-id';
+      const parsed = stack.splitArn(arn, ArnFormat.HIERARCHICAL_SLASH_RESOURCE_NAME, { hierarchicalDepth: 1 });
+
+      expect(parsed.partition).toEqual('aws');
+      expect(parsed.service).toEqual('pcs');
+      expect(parsed.region).toEqual('us-east-1');
+      expect(parsed.account).toEqual('123456789012');
+      expect(parsed.resource).toEqual('cluster');
+      expect(parsed.resourceName).toEqual('test-cluster-id');
+      expect(parsed.sep).toEqual('/');
+      expect(parsed.arnFormat).toEqual(ArnFormat.HIERARCHICAL_SLASH_RESOURCE_NAME);
+    });
+
+    test('depth 2 - computenodegroup ARN', () => {
+      const stack = new Stack();
+      const arn = 'arn:aws:pcs:us-east-1:123456789012:cluster/test-cluster-id/computenodegroup/test-nodegroup-id';
+      const parsed = stack.splitArn(arn, ArnFormat.HIERARCHICAL_SLASH_RESOURCE_NAME, { hierarchicalDepth: 2 });
+
+      expect(parsed.partition).toEqual('aws');
+      expect(parsed.service).toEqual('pcs');
+      expect(parsed.region).toEqual('us-east-1');
+      expect(parsed.account).toEqual('123456789012');
+      expect(parsed.resource).toEqual('computenodegroup');
+      expect(parsed.resourceName).toEqual('test-nodegroup-id');
+      expect(parsed.sep).toEqual('/');
+      expect(parsed.arnFormat).toEqual(ArnFormat.HIERARCHICAL_SLASH_RESOURCE_NAME);
+    });
+
+    test('depth 3 - deeper hierarchy', () => {
+      const stack = new Stack();
+      const arn = 'arn:aws:pcs:us-east-1:account:cluster/clusterId/computenodegroup/nodeGroupId/node/nodeId';
+      const parsed = stack.splitArn(arn, ArnFormat.HIERARCHICAL_SLASH_RESOURCE_NAME, { hierarchicalDepth: 3 });
+
+      expect(parsed.resource).toEqual('node');
+      expect(parsed.resourceName).toEqual('nodeId');
+      expect(parsed.arnFormat).toEqual(ArnFormat.HIERARCHICAL_SLASH_RESOURCE_NAME);
+    });
+
+    test('error - insufficient depth', () => {
+      const stack = new Stack();
+      const arn = 'arn:aws:pcs:us-east-1:account:cluster/clusterId';
+      expect(() => {
+        stack.splitArn(arn, ArnFormat.HIERARCHICAL_SLASH_RESOURCE_NAME, { hierarchicalDepth: 2 });
+      }).toThrow(/Insufficient hierarchy depth in ARN/);
+    });
+
+    test('hierarchical ARN with tokens', () => {
+      const stack = new Stack();
+      const theToken = { Ref: 'SomeParameter' };
+      const parsed = stack.splitArn(new Intrinsic(theToken).toString(), ArnFormat.HIERARCHICAL_SLASH_RESOURCE_NAME, { hierarchicalDepth: 2 });
+
+      expect(parsed.sep).toEqual('/');
+
+      const resolved = stack.resolve(parsed);
+      expect(resolved.resource).toEqual({
+        'Fn::Select': [2, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }],
+      });
+      expect(resolved.resourceName).toEqual({
+        'Fn::Select': [3, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }],
+      });
+    });
+
+    test('round-trip hierarchical parsing', () => {
+      const stack = new Stack();
+      const originalArn = 'arn:aws:pcs:us-east-1:123456789012:cluster/test-cluster-id/computenodegroup/test-nodegroup-id';
+      const parsed = stack.splitArn(originalArn, ArnFormat.HIERARCHICAL_SLASH_RESOURCE_NAME, { hierarchicalDepth: 2 });
+
+      expect(parsed.hierarchicalParents).toEqual(['cluster', 'test-cluster-id']);
+      expect(parsed.resource).toEqual('computenodegroup');
+      expect(parsed.resourceName).toEqual('test-nodegroup-id');
+
+      const formatted = stack.formatArn(parsed);
+      expect(formatted).toEqual(originalArn);
+    });
+  });
 });
