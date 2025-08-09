@@ -28,7 +28,7 @@
      "Key": "\"my-json/secret-config.json\""
     },
     "flattenResponse": "false",
-    "salt": "1754373870346"
+    "salt": "1754647762880"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -167,7 +167,7 @@
      "Key": "\"my-json/secret-config-no-escape.json\""
     },
     "flattenResponse": "false",
-    "salt": "1754373870347"
+    "salt": "1754647762881"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -204,7 +204,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1754373870348"
+    "salt": "1754647762882"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -490,7 +490,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1754373870352"
+    "salt": "1754647762886"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
