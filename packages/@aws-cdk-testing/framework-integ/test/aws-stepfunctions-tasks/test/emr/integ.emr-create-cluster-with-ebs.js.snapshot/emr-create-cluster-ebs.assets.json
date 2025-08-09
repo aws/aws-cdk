@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "b619f0e24f9439bf62f47efaa861fe54e28c9e0126723892b57ff177be2d3edd": {
+      "displayName": "emr-create-cluster-ebs Template",
+      "source": {
+        "path": "emr-create-cluster-ebs.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b619f0e24f9439bf62f47efaa861fe54e28c9e0126723892b57ff177be2d3edd.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
