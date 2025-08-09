@@ -2,12 +2,12 @@ import { testFixtureNoVpc, testFixtureCluster } from './util';
 import { Template } from 'aws-cdk-lib/assertions';
 import { CfnResource, Stack } from 'aws-cdk-lib/core';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart, KubectlProvider } from '../lib';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = KubernetesVersion.V1_32;
+const CLUSTER_VERSION = KubernetesVersion.V1_33;
 
 describe('k8s manifest', () => {
   test('basic usage', () => {
@@ -16,7 +16,7 @@ describe('k8s manifest', () => {
     const cluster = new Cluster(stack, 'cluster', {
       version: CLUSTER_VERSION,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
       },
     });
 
@@ -138,9 +138,9 @@ describe('k8s manifest', () => {
 
       // prune is enabled by default
       const cluster = new Cluster(stack, 'Cluster', {
-        version: KubernetesVersion.V1_32,
+        version: KubernetesVersion.V1_33,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -329,10 +329,10 @@ describe('k8s manifest', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
       const cluster = new Cluster(stack, 'Cluster', {
-        version: KubernetesVersion.V1_32,
+        version: KubernetesVersion.V1_33,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
         },
       });
 

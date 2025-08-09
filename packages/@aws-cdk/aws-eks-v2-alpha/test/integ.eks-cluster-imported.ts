@@ -9,10 +9,10 @@ import {
 } from 'aws-cdk-lib';
 import * as hello from './hello-k8s';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import * as eks from '../lib';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-27';
+import * as kplus from 'cdk8s-plus-32';
 import * as constructs from 'constructs';
 import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
@@ -42,9 +42,9 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 2,
-      version: eks.KubernetesVersion.V1_32,
+      version: eks.KubernetesVersion.V1_33,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),
       },
       mastersRole,
     });
