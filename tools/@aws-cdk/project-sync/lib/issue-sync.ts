@@ -1,6 +1,6 @@
 import { Github } from './github.js';
 import { PROJECT_NUMBER, REPOSITORY } from './config.js';
-import { projectIds } from './utils.js';
+import { projectIds, getPriorityFromLabels } from './utils.js';
 
 export const syncIssue = async (issue: string) => {
   const github = Github.default();
@@ -36,7 +36,7 @@ export const syncIssueData = async (issueDetails: any) => {
     return;
   }
 
-  const { projectId, createFieldId, updateFieldId, authorFieldId } = await projectIds(github);
+  const { projectId, createFieldId, updateFieldId, authorFieldId, priorityField } = await projectIds(github);
 
   // Get timeline items to determine the last update date (excluding github-actions)
   const timelineItems = issueDetails.timelineItems?.nodes ?? [];
@@ -60,11 +60,18 @@ export const syncIssueData = async (issueDetails: any) => {
     if (reactionDate > updateDate) {updateDate = reactionDate;}
   }
 
-  const result = await github.setProjectItem(projectId, projectItemId, {
+  const fields: Record<string, any> = {
     [createFieldId]: { date: creationDate },
     [updateFieldId]: { date: updateDate },
     [authorFieldId]: { text: issueDetails.author?.login || '' },
-  });
+  };
+
+  const priorityOptionId = getPriorityFromLabels(issueDetails.labels?.nodes || [], priorityField);
+  if (priorityOptionId) {
+    fields[priorityField.id] = { singleSelectOptionId: priorityOptionId };
+  }
+
+  const result = await github.setProjectItem(projectId, projectItemId, fields);
   console.log('Result from mutation request: ');
   console.dir(JSON.stringify(result));
 };
