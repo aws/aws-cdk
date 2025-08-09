@@ -194,6 +194,23 @@
         "KNOWLEDGE_BASE_RESPONSE_GENERATION"
       ]
     },
+    "CrossRegionInferenceProfileRegion": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/cross-region-inference-profile.ts",
+      "enumLike": false,
+      "values": [
+        "eu",
+        "us",
+        "apac"
+      ]
+    },
+    "InferenceProfileType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/inference-profile.ts",
+      "enumLike": false,
+      "values": [
+        "SYSTEM_DEFINED",
+        "APPLICATION"
+      ]
+    },
     "VectorType": {
       "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts",
       "enumLike": false,
@@ -238,6 +255,14 @@
       "enumLike": true,
       "values": [
         "SESSION_SUMMARY"
+      ]
+    },
+    "DefaultPromptRouterIdentifier": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/prompt-router.ts",
+      "enumLike": true,
+      "values": [
+        "ANTHROPIC_CLAUDE_V1",
+        "META_LLAMA_3_1"
       ]
     },
     "BedrockFoundationModel": {
@@ -3518,6 +3543,21 @@
       "values": [
         "aws:kms",
         "AES256"
+      ]
+    },
+    "OpenTableFormat": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts",
+      "enumLike": false,
+      "values": [
+        "ICEBERG"
+      ]
+    },
+    "Status": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts",
+      "enumLike": false,
+      "values": [
+        "enabled",
+        "disabled"
       ]
     }
   },
@@ -8061,7 +8101,10 @@
         "HMAC_256",
         "HMAC_384",
         "HMAC_512",
-        "SM2"
+        "SM2",
+        "ML_DSA_44",
+        "ML_DSA_65",
+        "ML_DSA_87"
       ]
     },
     "KeyUsage": {
@@ -8420,7 +8463,9 @@
         "VERSION_1_0_275_0",
         "VERSION_1_0_295_0",
         "VERSION_1_0_317_0",
-        "VERSION_1_0_333_0"
+        "VERSION_1_0_333_0",
+        "VERSION_1_0_391_0",
+        "VERSION_1_0_404_0"
       ]
     },
     "RuntimeManagementMode": {
@@ -9132,7 +9177,8 @@
         "VER_3_08_0",
         "VER_3_08_1",
         "VER_3_08_2",
-        "VER_3_09_0"
+        "VER_3_09_0",
+        "VER_3_10_0"
       ]
     },
     "AuroraPostgresEngineVersion": {
