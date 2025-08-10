@@ -270,13 +270,110 @@
         "Fn::Join": [
          "",
          [
+          "arn:",
           {
-           "Ref": "S3JsonItemReaderTestStateMachineDynamic6769141D"
+           "Ref": "AWS::Partition"
+          },
+          ":states:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":execution:",
+          {
+           "Fn::Select": [
+            6,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Ref": "S3JsonItemReaderTestStateMachineDynamic6769141D"
+              }
+             ]
+            }
+           ]
           },
           ":*"
          ]
         ]
        }
+      },
+      {
+       "Action": "states:RedriveExecution",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":states:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":execution:",
+           {
+            "Fn::Select": [
+             6,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "S3JsonItemReaderTestStateMachineDynamic6769141D"
+               }
+              ]
+             }
+            ]
+           },
+           "/*:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":states:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":execution:",
+           {
+            "Fn::Select": [
+             6,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "S3JsonItemReaderTestStateMachineDynamic6769141D"
+               }
+              ]
+             }
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -424,13 +521,110 @@
         "Fn::Join": [
          "",
          [
+          "arn:",
           {
-           "Ref": "S3JsonItemReaderTestStateMachineStatic1CA40774"
+           "Ref": "AWS::Partition"
+          },
+          ":states:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":execution:",
+          {
+           "Fn::Select": [
+            6,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Ref": "S3JsonItemReaderTestStateMachineStatic1CA40774"
+              }
+             ]
+            }
+           ]
           },
           ":*"
          ]
         ]
        }
+      },
+      {
+       "Action": "states:RedriveExecution",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":states:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":execution:",
+           {
+            "Fn::Select": [
+             6,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "S3JsonItemReaderTestStateMachineStatic1CA40774"
+               }
+              ]
+             }
+            ]
+           },
+           "/*:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":states:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":execution:",
+           {
+            "Fn::Select": [
+             6,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "S3JsonItemReaderTestStateMachineStatic1CA40774"
+               }
+              ]
+             }
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
