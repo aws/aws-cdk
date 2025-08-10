@@ -4,7 +4,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import { AttributeType, ITableV2, StreamViewType, TableV2 } from 'aws-cdk-lib/aws-dynamodb';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
-import { TestTarget } from './test-classes';
+import { TestQueue, TestTarget, TestTopic } from './test-classes';
 import { DynamoDBSourceParameters, DynamoDBStartingPosition } from '../lib';
 import { StreamSource } from '../lib/streamSource';
 
@@ -385,6 +385,86 @@ describe('stream source validations', () => {
     // ASSERT
     expect(template.findResources('AWS::IAM::Role')).toMatchSnapshot();
     expect(template.findResources('AWS::IAM::Policy')).toMatchSnapshot();
+  });
+
+  it('should successfully set DeadLetterTarget for custom class that implements IQueue', () => {
+    // ARRANGE
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
+    const queue = new TestQueue(stack, 'TestQueue');
+    const source = new FakeStreamSource(table, {
+      startingPosition: DynamoDBStartingPosition.LATEST,
+      deadLetterTarget: queue,
+    });
+
+    new Pipe(stack, 'MyPipe', {
+      source,
+      target: new TestTarget(),
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // ASSERT
+    template.hasResource('AWS::Pipes::Pipe', {
+      Properties: {
+        SourceParameters: {
+          DynamoDBStreamParameters: {
+            DeadLetterConfig: {
+              Arn: 'queue-arn',
+            },
+          },
+        },
+      },
+    } );
+    expect(queue.grantSendMessages).toHaveBeenCalled();
+  });
+
+  it('should successfully set DeadLetterTarget for custom class that implements ITopic', () => {
+    // ARRANGE
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
+    const topic = new TestTopic(stack, 'TestTopic');
+    const source = new FakeStreamSource(table, {
+      startingPosition: DynamoDBStartingPosition.LATEST,
+      deadLetterTarget: topic,
+    });
+
+    new Pipe(stack, 'MyPipe', {
+      source,
+      target: new TestTarget(),
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // ASSERT
+    template.hasResource('AWS::Pipes::Pipe', {
+      Properties: {
+        SourceParameters: {
+          DynamoDBStreamParameters: {
+            DeadLetterConfig: {
+              Arn: 'test-topic-arn',
+            },
+          },
+        },
+      },
+    } );
+    expect(topic.grantPublish).toHaveBeenCalled();
   });
 });
 
