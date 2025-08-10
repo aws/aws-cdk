@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "integ-ecs-al2023-ami.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f875639342074982d90d3f026dd2a665ec32849787c8c2fee81f9a8dd2f1f58d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/57b3f4e42b80e9039512b1e6def16eacd8da264f6d048324252902e08938160e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -199,6 +199,14 @@
                 "*"
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAsgCapacityProvider": [
+                "*"
+              ]
+            }
           }
         ],
         "/integ-ecs-al2023-ami/Cluster/Resource": [
@@ -260,6 +268,38 @@
             "data": {
               "attachInlinePolicy": [
                 "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
@@ -352,6 +392,38 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/integ-ecs-al2023-ami/InstanceRole/DefaultPolicy/Resource": [
@@ -360,17 +432,17 @@
             "data": "InstanceRoleDefaultPolicy1531605C"
           }
         ],
-        "/integ-ecs-al2023-ami/ASG": [
+        "/integ-ecs-al2023-ami/Standard/ASG": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "vpc": "*",
               "role": "*",
               "userData": "*",
-              "instanceType": "*",
-              "machineImage": "*",
               "minCapacity": "*",
-              "signals": "*"
+              "signals": "*",
+              "instanceType": "*",
+              "machineImage": "*"
             }
           },
           {
@@ -454,7 +526,7 @@
             }
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/InstanceSecurityGroup": [
+        "/integ-ecs-al2023-ami/Standard/ASG/InstanceSecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -463,19 +535,19 @@
             }
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/InstanceSecurityGroup/Resource": [
+        "/integ-ecs-al2023-ami/Standard/ASG/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGInstanceSecurityGroup0525485D"
+            "data": "StandardASGInstanceSecurityGroup85036A10"
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/InstanceProfile": [
+        "/integ-ecs-al2023-ami/Standard/ASG/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGInstanceProfile0A2834D7"
+            "data": "StandardASGInstanceProfile55F002C7"
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/LaunchTemplate": [
+        "/integ-ecs-al2023-ami/Standard/ASG/LaunchTemplate": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -492,19 +564,19 @@
             }
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/LaunchTemplate/Resource": [
+        "/integ-ecs-al2023-ami/Standard/ASG/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGLaunchTemplate0CA92847"
+            "data": "StandardASGLaunchTemplateD06BAB94"
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/ASG": [
+        "/integ-ecs-al2023-ami/Standard/ASG/ASG": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASG46ED3070"
+            "data": "StandardASGD8CBE7F1"
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/DrainECSHook/Function": [
+        "/integ-ecs-al2023-ami/Standard/ASG/DrainECSHook/Function": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -525,7 +597,7 @@
             }
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/DrainECSHook/Function/ServiceRole": [
+        "/integ-ecs-al2023-ami/Standard/ASG/DrainECSHook/Function/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -597,19 +669,19 @@
             }
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/DrainECSHook/Function/ServiceRole/ImportServiceRole": [
+        "/integ-ecs-al2023-ami/Standard/ASG/DrainECSHook/Function/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/DrainECSHook/Function/ServiceRole/Resource": [
+        "/integ-ecs-al2023-ami/Standard/ASG/DrainECSHook/Function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctionServiceRoleC12963BB"
+            "data": "StandardASGDrainECSHookFunctionServiceRole3278CE4E"
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/DrainECSHook/Function/ServiceRole/DefaultPolicy": [
+        "/integ-ecs-al2023-ami/Standard/ASG/DrainECSHook/Function/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -671,25 +743,25 @@
             }
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+        "/integ-ecs-al2023-ami/Standard/ASG/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctionServiceRoleDefaultPolicy16848A27"
+            "data": "StandardASGDrainECSHookFunctionServiceRoleDefaultPolicyC2E945E1"
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/DrainECSHook/Function/Resource": [
+        "/integ-ecs-al2023-ami/Standard/ASG/DrainECSHook/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunction5F24CF4D"
+            "data": "StandardASGDrainECSHookFunction65254AA4"
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/DrainECSHook/Function/AllowInvoke:integecsal2023amiASGLifecycleHookDrainHookTopic083F299F": [
+        "/integ-ecs-al2023-ami/Standard/ASG/DrainECSHook/Function/AllowInvoke:integecsal2023amiStandardASGLifecycleHookDrainHookTopic09E1832F": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctionAllowInvokeintegecsal2023amiASGLifecycleHookDrainHookTopic083F299FF8F99189"
+            "data": "StandardASGDrainECSHookFunctionAllowInvokeintegecsal2023amiStandardASGLifecycleHookDrainHookTopic09E1832FC254E733"
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/DrainECSHook/Function/Topic": [
+        "/integ-ecs-al2023-ami/Standard/ASG/DrainECSHook/Function/Topic": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -703,13 +775,13 @@
             }
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/DrainECSHook/Function/Topic/Resource": [
+        "/integ-ecs-al2023-ami/Standard/ASG/DrainECSHook/Function/Topic/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctionTopicD6FC59F7"
+            "data": "StandardASGDrainECSHookFunctionTopicAF0B5CAF"
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/LifecycleHookDrainHook": [
+        "/integ-ecs-al2023-ami/Standard/ASG/LifecycleHookDrainHook": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -721,7 +793,7 @@
             }
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/LifecycleHookDrainHook/Topic": [
+        "/integ-ecs-al2023-ami/Standard/ASG/LifecycleHookDrainHook/Topic": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -729,13 +801,13 @@
             }
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/LifecycleHookDrainHook/Topic/Resource": [
+        "/integ-ecs-al2023-ami/Standard/ASG/LifecycleHookDrainHook/Topic/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+            "data": "StandardASGLifecycleHookDrainHookTopicB3A212EB"
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/LifecycleHookDrainHook/Role": [
+        "/integ-ecs-al2023-ami/Standard/ASG/LifecycleHookDrainHook/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -770,19 +842,19 @@
             }
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/LifecycleHookDrainHook/Role/ImportRole": [
+        "/integ-ecs-al2023-ami/Standard/ASG/LifecycleHookDrainHook/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/LifecycleHookDrainHook/Role/Resource": [
+        "/integ-ecs-al2023-ami/Standard/ASG/LifecycleHookDrainHook/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGLifecycleHookDrainHookRoleD640316C"
+            "data": "StandardASGLifecycleHookDrainHookRoleA9387665"
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/LifecycleHookDrainHook/Role/DefaultPolicy": [
+        "/integ-ecs-al2023-ami/Standard/ASG/LifecycleHookDrainHook/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -812,16 +884,22 @@
             }
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
+        "/integ-ecs-al2023-ami/Standard/ASG/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGLifecycleHookDrainHookRoleDefaultPolicy3EEFDE57"
+            "data": "StandardASGLifecycleHookDrainHookRoleDefaultPolicy765778A8"
           }
         ],
-        "/integ-ecs-al2023-ami/ASG/LifecycleHookDrainHook/Resource": [
+        "/integ-ecs-al2023-ami/Standard/ASG/LifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGLifecycleHookDrainHookFE4AFEBE"
+            "data": "StandardASGLifecycleHookDrainHook5D845C2C"
+          }
+        ],
+        "/integ-ecs-al2023-ami/Standard/Resource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StandardD5F7C7B5"
           }
         ],
         "/integ-ecs-al2023-ami/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2023--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -830,10 +908,480 @@
             "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2023recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/integ-ecs-al2023-ami/EC2CapacityProvider/EC2CapacityProvider": [
+        "/integ-ecs-al2023-ami/Neuron/ASG": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "role": "*",
+              "userData": "*",
+              "minCapacity": "*",
+              "signals": "*",
+              "instanceType": "*",
+              "machineImage": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true
+            }
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EC2CapacityProvider5A2E35CD"
+            "data": "NeuronASGInstanceSecurityGroupF3E88979"
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NeuronASGInstanceProfile798D7733"
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/LaunchTemplate": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "machineImage": "*",
+              "instanceType": "*",
+              "detailedMonitoring": false,
+              "securityGroup": "*",
+              "userData": "*",
+              "associatePublicIpAddress": "*",
+              "spotOptions": "*",
+              "blockDevices": "*",
+              "instanceProfile": "*",
+              "keyPair": "*"
+            }
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/LaunchTemplate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NeuronASGLaunchTemplateA7CEC6FD"
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NeuronASG0A0CD55A"
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/DrainECSHook/Function": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*",
+              "timeout": "*",
+              "environment": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/DrainECSHook/Function/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/DrainECSHook/Function/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/DrainECSHook/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NeuronASGDrainECSHookFunctionServiceRoleBA458FCE"
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/DrainECSHook/Function/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NeuronASGDrainECSHookFunctionServiceRoleDefaultPolicy4F575EBC"
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/DrainECSHook/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NeuronASGDrainECSHookFunctionCE97C4B0"
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/DrainECSHook/Function/AllowInvoke:integecsal2023amiNeuronASGLifecycleHookDrainHookTopic5949A11F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NeuronASGDrainECSHookFunctionAllowInvokeintegecsal2023amiNeuronASGLifecycleHookDrainHookTopic5949A11FE04CB52A"
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/DrainECSHook/Function/Topic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "topic": "*",
+              "endpoint": "*",
+              "protocol": "lambda",
+              "filterPolicy": "*",
+              "filterPolicyWithMessageBody": "*",
+              "region": "*",
+              "deadLetterQueue": "*"
+            }
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/DrainECSHook/Function/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NeuronASGDrainECSHookFunctionTopic2AE11138"
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/LifecycleHookDrainHook": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "autoScalingGroup": "*",
+              "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
+              "defaultResult": "CONTINUE",
+              "notificationTarget": "*",
+              "heartbeatTimeout": "*"
+            }
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/LifecycleHookDrainHook/Topic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "masterKey": "*"
+            }
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/LifecycleHookDrainHook/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NeuronASGLifecycleHookDrainHookTopic3816D917"
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/LifecycleHookDrainHook/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/LifecycleHookDrainHook/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/LifecycleHookDrainHook/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NeuronASGLifecycleHookDrainHookRole51771E42"
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/LifecycleHookDrainHook/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NeuronASGLifecycleHookDrainHookRoleDefaultPolicy030E0E8F"
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/ASG/LifecycleHookDrainHook/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NeuronASGLifecycleHookDrainHookFF9E29DC"
+          }
+        ],
+        "/integ-ecs-al2023-ami/Neuron/Resource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NeuronC9ABFC86"
+          }
+        ],
+        "/integ-ecs-al2023-ami/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2023--neuron--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2023neuronrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/integ-ecs-al2023-ami/BootstrapVersion": [
@@ -848,46 +1396,127 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole00371FEB3": [
+        "ASGInstanceSecurityGroup0525485D": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole00371FEB3",
+            "data": "ASGInstanceSecurityGroup0525485D",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole17E852E01": [
+        "ASGInstanceProfile0A2834D7": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole17E852E01",
+            "data": "ASGInstanceProfile0A2834D7",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole22C962AF2": [
+        "ASGLaunchTemplate0CA92847": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole22C962AF2",
+            "data": "ASGLaunchTemplate0CA92847",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole3E4846C2B": [
+        "ASG46ED3070": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole3E4846C2B",
+            "data": "ASG46ED3070",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole48434A97B": [
+        "ASGDrainECSHookFunctionServiceRoleC12963BB": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole48434A97B",
+            "data": "ASGDrainECSHookFunctionServiceRoleC12963BB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASGDrainECSHookFunctionServiceRoleDefaultPolicy16848A27": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctionServiceRoleDefaultPolicy16848A27",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASGDrainECSHookFunction5F24CF4D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunction5F24CF4D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASGDrainECSHookFunctionAllowInvokeintegecsal2023amiASGLifecycleHookDrainHookTopic083F299FF8F99189": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctionAllowInvokeintegecsal2023amiASGLifecycleHookDrainHookTopic083F299FF8F99189",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASGDrainECSHookFunctionTopicD6FC59F7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctionTopicD6FC59F7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASGLifecycleHookDrainHookTopicA8AD4ACB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGLifecycleHookDrainHookTopicA8AD4ACB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASGLifecycleHookDrainHookRoleD640316C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGLifecycleHookDrainHookRoleD640316C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASGLifecycleHookDrainHookRoleDefaultPolicy3EEFDE57": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGLifecycleHookDrainHookRoleDefaultPolicy3EEFDE57",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASGLifecycleHookDrainHookFE4AFEBE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGLifecycleHookDrainHookFE4AFEBE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EC2CapacityProvider5A2E35CD": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EC2CapacityProvider5A2E35CD",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -950,5 +1579,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
