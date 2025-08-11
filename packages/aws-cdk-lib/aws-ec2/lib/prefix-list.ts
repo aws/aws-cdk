@@ -1,16 +1,16 @@
 import { Construct } from 'constructs';
 import { Connections } from './connections';
-import { CfnPrefixList } from './ec2.generated';
+import { CfnPrefixList, ICfnPrefixList } from './ec2.generated';
 import { IPeer } from './peer';
 import * as cxschema from '../../cloud-assembly-schema';
-import { IResource, Lazy, Resource, Names, ContextProvider, Token, ValidationError } from '../../core';
+import { IResource, Lazy, Resource, Names, ContextProvider, Token, ValidationError, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A prefix list
  */
-export interface IPrefixList extends IResource, IPeer {
+export interface IPrefixList extends IResource, IPeer, ICfnPrefixList {
   /**
    * The ID of the prefix list
    *
@@ -78,6 +78,20 @@ abstract class PrefixListBase extends Resource implements IPrefixList {
    * @attribute
    */
   public abstract readonly prefixListId: string;
+
+  /**
+   * The ID of the prefix list
+   *
+   * @attribute
+   */
+  public abstract readonly attrPrefixListId: string;
+
+  /**
+   * The ARN of the prefix list
+   *
+   * @attribute
+   */
+  public abstract readonly attrArn: string;
 
   /**
    * The network connections associated with this resource.
@@ -158,6 +172,12 @@ export class PrefixList extends PrefixListBase {
   public static fromPrefixListId(scope: Construct, id: string, prefixListId: string): IPrefixList {
     class Import extends PrefixListBase {
       public readonly prefixListId = prefixListId;
+      public readonly attrPrefixListId = prefixListId;
+      public readonly attrArn = Stack.of(scope).formatArn({
+        service: 'ec2',
+        resource: 'prefix-list',
+        resourceName: prefixListId,
+      });
     }
     return new Import(scope, id);
   }
@@ -201,6 +221,20 @@ export class PrefixList extends PrefixListBase {
    * @attribute
    */
   public readonly prefixListId: string;
+
+  /**
+   * The ID of the prefix list
+   *
+   * @attribute
+   */
+  public readonly attrPrefixListId: string;
+
+  /**
+   * The ARN of the prefix list
+   *
+   * @attribute
+   */
+  public readonly attrArn: string;
 
   /**
    * The name of the prefix list
@@ -286,7 +320,9 @@ export class PrefixList extends PrefixListBase {
     });
 
     this.prefixListId = prefixList.attrPrefixListId;
+    this.attrPrefixListId = prefixList.attrPrefixListId;
     this.prefixListArn = prefixList.attrArn;
+    this.attrArn = prefixList.attrArn;
     this.ownerId = prefixList.attrOwnerId;
     this.version = prefixList.attrVersion;
     this.addressFamily = prefixList.addressFamily;
