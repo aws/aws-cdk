@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IConfigurationSet } from './configuration-set';
 import { undefinedIfNoKeys } from './private/utils';
-import { CfnEmailIdentity } from './ses.generated';
+import { CfnEmailIdentity, ICfnEmailIdentity } from './ses.generated';
 import { Grant, IGrantable } from '../../aws-iam';
 import { IPublicHostedZone } from '../../aws-route53';
 import * as route53 from '../../aws-route53';
@@ -13,7 +13,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * An email identity
  */
-export interface IEmailIdentity extends IResource {
+export interface IEmailIdentity extends IResource, ICfnEmailIdentity {
   /**
    * The name of the email identity
    *
@@ -347,6 +347,13 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
   public abstract readonly emailIdentityName: string;
 
   /**
+   * The name of the email identity
+   *
+   * @attribute
+   */
+  public abstract readonly attrEmailIdentity: string;
+
+  /**
    * The ARN of the email identity
    *
    * @attribute
@@ -397,6 +404,7 @@ export class EmailIdentity extends EmailIdentityBase {
   public static fromEmailIdentityName(scope: Construct, id: string, emailIdentityName: string): IEmailIdentity {
     class Import extends EmailIdentityBase {
       public readonly emailIdentityName = emailIdentityName;
+      public readonly attrEmailIdentity = emailIdentityName;
 
       public readonly emailIdentityArn = this.stack.formatArn({
         service: 'ses',
@@ -423,12 +431,14 @@ export class EmailIdentity extends EmailIdentityBase {
 
     class Import extends EmailIdentityBase {
       public readonly emailIdentityName = emailIdentityName;
+      public readonly attrEmailIdentity = emailIdentityName;
       public readonly emailIdentityArn = emailIdentityArn;
     }
     return new Import(scope, id);
   }
 
   public readonly emailIdentityName: string;
+  public readonly attrEmailIdentity: string;
 
   public readonly emailIdentityArn: string;
 
@@ -527,6 +537,7 @@ export class EmailIdentity extends EmailIdentityBase {
       });
     }
 
+    this.attrEmailIdentity = identity.attrEmailIdentity;
     this.emailIdentityName = identity.ref;
 
     this.emailIdentityArn = this.stack.formatArn({

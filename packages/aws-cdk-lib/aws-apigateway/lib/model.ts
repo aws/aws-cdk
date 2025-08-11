@@ -3,11 +3,12 @@ import { CfnModel, CfnModelProps } from './apigateway.generated';
 import * as jsonSchema from './json-schema';
 import { IRestApi, RestApi } from './restapi';
 import * as util from './util';
+import { ICfnModel } from '../../aws-apigatewayv2';
 import { Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface IModel {
+export interface IModel extends ICfnModel {
   /**
    * Returns the model name, such as 'myModel'
    *
@@ -36,6 +37,7 @@ export interface IModel {
  */
 export class EmptyModel implements IModel {
   public readonly modelId = 'Empty';
+  public readonly attrModelId = 'Empty';
 }
 
 /**
@@ -57,6 +59,7 @@ export class EmptyModel implements IModel {
  */
 export class ErrorModel implements IModel {
   public readonly modelId = 'Error';
+  public readonly attrModelId = 'Error';
 }
 
 export interface ModelOptions {
@@ -153,6 +156,7 @@ export class Model extends Resource implements IModel {
   public static fromModelName(scope: Construct, id: string, modelName: string): IModel {
     class Import extends Resource implements IModel {
       public readonly modelId = modelName;
+      public readonly attrModelId = modelName;
     }
 
     return new Import(scope, id);
@@ -164,6 +168,13 @@ export class Model extends Resource implements IModel {
    * @attribute
    */
   public readonly modelId: string;
+
+  /**
+   * Returns the model name, such as 'myModel'
+   *
+   * @attribute
+   */
+  public readonly attrModelId: string;
 
   constructor(scope: Construct, id: string, props: ModelProps) {
     super(scope, id, {
@@ -183,6 +194,7 @@ export class Model extends Resource implements IModel {
     const resource = new CfnModel(this, 'Resource', modelProps);
 
     this.modelId = this.getResourceNameAttribute(resource.ref);
+    this.attrModelId = this.modelId;
 
     const deployment = (props.restApi instanceof RestApi) ? props.restApi.latestDeployment : undefined;
     if (deployment) {

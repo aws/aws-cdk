@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnVdmAttributes } from './ses.generated';
+import { CfnVdmAttributes, ICfnVdmAttributes } from './ses.generated';
 import { IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -7,7 +7,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Virtual Deliverability Manager (VDM) attributes
  */
-export interface IVdmAttributes extends IResource {
+export interface IVdmAttributes extends IResource, ICfnVdmAttributes {
   /**
    * The name of the resource behind the Virtual Deliverability Manager attributes.
    *
@@ -49,6 +49,7 @@ export class VdmAttributes extends Resource implements IVdmAttributes {
   public static fromVdmAttributesName(scope: Construct, id: string, vdmAttributesName: string): IVdmAttributes {
     class Import extends Resource implements IVdmAttributes {
       public readonly vdmAttributesName = vdmAttributesName;
+      public readonly attrVdmAttributesResourceId = vdmAttributesName;
     }
     return new Import(scope, id);
   }
@@ -61,6 +62,13 @@ export class VdmAttributes extends Resource implements IVdmAttributes {
    * @attribute
    */
   public readonly vdmAttributesResourceId: string;
+
+  /**
+   * Resource ID for the Virtual Deliverability Manager attributes
+   *
+   * @attribute
+   */
+  public readonly attrVdmAttributesResourceId: string;
 
   constructor(scope: Construct, id: string, props: VdmAttributesProps = {}) {
     super(scope, id);
@@ -78,6 +86,7 @@ export class VdmAttributes extends Resource implements IVdmAttributes {
 
     this.vdmAttributesName = resource.ref;
     this.vdmAttributesResourceId = resource.attrVdmAttributesResourceId;
+    this.attrVdmAttributesResourceId = resource.attrVdmAttributesResourceId;
   }
 }
 

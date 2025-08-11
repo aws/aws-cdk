@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IEngine } from './engine';
-import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
+import { CfnDBClusterParameterGroup, CfnDBParameterGroup, ICfnDBParameterGroup } from './rds.generated';
 import { IResource, Lazy, RemovalPolicy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -41,7 +41,7 @@ export interface ParameterGroupInstanceConfig {
  * Represents both a cluster parameter group,
  * and an instance parameter group.
  */
-export interface IParameterGroup extends IResource {
+export interface IParameterGroup extends IResource, ICfnDBParameterGroup {
   /**
    * Method called when this Parameter Group is used when defining a database cluster.
    */
@@ -122,6 +122,8 @@ export class ParameterGroup extends Resource implements IParameterGroup {
    */
   public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
     class Import extends Resource implements IParameterGroup {
+      public readonly attrDbParameterGroupName = parameterGroupName;
+
       public bindToCluster(_options: ParameterGroupClusterBindOptions): ParameterGroupClusterConfig {
         return { parameterGroupName };
       }
@@ -161,6 +163,16 @@ export class ParameterGroup extends Resource implements IParameterGroup {
     this.name = props.name;
     this.parameters = props.parameters ?? {};
     this.removalPolicy = props.removalPolicy;
+  }
+
+  public get attrDbParameterGroupName(): string {
+    if (this.instanceCfnGroup) {
+      return this.instanceCfnGroup.attrDbParameterGroupName;
+    } else if (this.clusterCfnGroup) {
+      return this.clusterCfnGroup.attrDbClusterParameterGroupName;
+    } else {
+      throw new ValidationError('Parameter group has not been bound to a cluster or instance', this);
+    }
   }
 
   @MethodMetadata()

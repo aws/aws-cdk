@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnResponseHeadersPolicy } from './cloudfront.generated';
+import { CfnResponseHeadersPolicy, ICfnResponseHeadersPolicy } from './cloudfront.generated';
 import { Duration, Names, Resource, Token, ValidationError, withResolved } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -7,7 +7,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a response headers policy.
  */
-export interface IResponseHeadersPolicy {
+export interface IResponseHeadersPolicy extends ICfnResponseHeadersPolicy {
   /**
    * The ID of the response headers policy
    * @attribute
@@ -97,6 +97,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
   public static fromResponseHeadersPolicyId(scope: Construct, id: string, responseHeadersPolicyId: string): IResponseHeadersPolicy {
     class Import extends Resource implements IResponseHeadersPolicy {
       public readonly responseHeadersPolicyId = responseHeadersPolicyId;
+      public readonly attrId = responseHeadersPolicyId;
     }
     return new Import(scope, id);
   }
@@ -104,10 +105,12 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
   private static fromManagedResponseHeadersPolicy(managedResponseHeadersPolicyId: string): IResponseHeadersPolicy {
     return new class implements IResponseHeadersPolicy {
       public readonly responseHeadersPolicyId = managedResponseHeadersPolicyId;
+      public readonly attrId = managedResponseHeadersPolicyId;
     };
   }
 
   public readonly responseHeadersPolicyId: string;
+  public readonly attrId: string;
 
   constructor(scope: Construct, id: string, props: ResponseHeadersPolicyProps = {}) {
     super(scope, id, {
@@ -132,6 +135,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
       },
     });
 
+    this.attrId = resource.attrId;
     this.responseHeadersPolicyId = resource.ref;
   }
 
