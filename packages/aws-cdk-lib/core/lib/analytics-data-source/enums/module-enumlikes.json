@@ -78,6 +78,12 @@
       "SESSION_SUMMARY"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/prompt-router.ts": {
+    "DefaultPromptRouterIdentifier": [
+      "ANTHROPIC_CLAUDE_V1",
+      "META_LLAMA_3_1"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts": {
     "BedrockFoundationModel": [
       "AI21_JAMBA_1_5_LARGE_V1",
@@ -120,6 +126,12 @@
       "MISTRAL_LARGE_2402_V1",
       "MISTRAL_LARGE_2407_V1",
       "MISTRAL_PIXTRAL_LARGE_2502_V1"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/tool-choice.ts": {
+    "ToolChoice": [
+      "ANY",
+      "AUTO"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/access-entry.ts": {
@@ -746,7 +758,9 @@
       "STABILITY_STABLE_IMAGE_CORE_V1_0",
       "STABILITY_STABLE_IMAGE_CORE_V1_1",
       "WRITER_PALMYRA_X4_V1_0",
-      "WRITER_PALMYRA_X5_V1_0"
+      "WRITER_PALMYRA_X5_V1_0",
+      "TWELVELABS_MARENGO_EMBED_2_7_V1_0",
+      "TWELVELABS_PEGASUS_1_2_V1_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
@@ -1975,7 +1989,9 @@
       "WINDOWS_SERVER_2019_FULL",
       "WINDOWS_SERVER_2022_CORE",
       "WINDOWS_SERVER_2022_FULL",
-      "WINDOWS_SERVER_20H2_CORE"
+      "WINDOWS_SERVER_20H2_CORE",
+      "WINDOWS_SERVER_2025_FULL",
+      "WINDOWS_SERVER_2025_CORE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/access-entry.ts": {
@@ -2175,7 +2191,9 @@
       "VERSION_1_0_275_0",
       "VERSION_1_0_295_0",
       "VERSION_1_0_317_0",
-      "VERSION_1_0_333_0"
+      "VERSION_1_0_333_0",
+      "VERSION_1_0_391_0",
+      "VERSION_1_0_404_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/runtime-management.ts": {
@@ -2507,7 +2525,8 @@
       "VER_3_08_0",
       "VER_3_08_1",
       "VER_3_08_2",
-      "VER_3_09_0"
+      "VER_3_09_0",
+      "VER_3_10_0"
     ],
     "AuroraPostgresEngineVersion": [
       "VER_9_6_8",
@@ -2621,7 +2640,8 @@
       "VER_16_8_LIMITLESS",
       "VER_17_1",
       "VER_17_2",
-      "VER_17_4"
+      "VER_17_4",
+      "VER_17_5"
     ],
     "DatabaseClusterEngine": [
       "AURORA",
