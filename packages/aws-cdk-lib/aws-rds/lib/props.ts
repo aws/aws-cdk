@@ -175,6 +175,17 @@ export interface CredentialsBaseOptions {
    * @default - Secret is not replicated
    */
   readonly replicaRegions?: secretsmanager.ReplicaRegion[];
+
+  /**
+   * Whether to generate a URL-safe password by excluding characters that can cause issues in URL parsers.
+   *
+   * When enabled, the generated password will exclude the caret (^) character and other URL-problematic
+   * characters in addition to the default exclusion set. This is particularly useful for applications
+   * that embed database credentials in connection URLs, such as Go applications using net/url parser.
+   *
+   * @default false
+   */
+  readonly urlSafePassword?: boolean;
 }
 
 /**
@@ -315,6 +326,18 @@ export abstract class Credentials {
    * @default - Secret is not replicated
    */
   public abstract readonly replicaRegions?: secretsmanager.ReplicaRegion[];
+
+  /**
+   * Whether to generate a URL-safe password by excluding characters that can cause issues in URL parsers.
+   * Only used if `password` has not been set.
+   *
+   * When enabled, the generated password will exclude the caret (^) character and other URL-problematic
+   * characters in addition to the default exclusion set. This is particularly useful for applications
+   * that embed database credentials in connection URLs, such as Go applications using net/url parser.
+   *
+   * @default false
+   */
+  public abstract readonly urlSafePassword?: boolean;
 }
 
 /**
@@ -464,6 +487,18 @@ export abstract class SnapshotCredentials {
    * @default - Secret is not replicated
    */
   public abstract readonly replicaRegions?: secretsmanager.ReplicaRegion[];
+
+  /**
+   * Whether to generate a URL-safe password by excluding characters that can cause issues in URL parsers.
+   * Only used if `generatePassword` is true.
+   *
+   * When enabled, the generated password will exclude the caret (^) character and other URL-problematic
+   * characters in addition to the default exclusion set. This is particularly useful for applications
+   * that embed database credentials in connection URLs, such as Go applications using net/url parser.
+   *
+   * @default false
+   */
+  public abstract readonly urlSafePassword?: boolean;
 }
 
 /**

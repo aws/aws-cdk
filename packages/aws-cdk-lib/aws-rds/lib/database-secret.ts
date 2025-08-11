@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from './private/util';
+import { DEFAULT_PASSWORD_EXCLUDE_CHARS, URL_SAFE_PASSWORD_EXCLUDE_CHARS } from './private/util';
 import * as kms from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Aws, Names } from '../../core';
@@ -64,6 +64,17 @@ export interface DatabaseSecretProps {
   readonly replaceOnPasswordCriteriaChanges?: boolean;
 
   /**
+   * Whether to generate a URL-safe password by excluding characters that can cause issues in URL parsers.
+   *
+   * When enabled, the generated password will exclude the caret (^) character and other URL-problematic
+   * characters in addition to the default exclusion set. This is particularly useful for applications
+   * that embed database credentials in connection URLs, such as Go applications using net/url parser.
+   *
+   * @default false
+   */
+  readonly urlSafePassword?: boolean;
+
+  /**
    * A list of regions where to replicate this secret.
    *
    * @default - Secret is not replicated
@@ -84,7 +95,8 @@ export class DatabaseSecret extends secretsmanager.Secret {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseSecret';
 
   constructor(scope: Construct, id: string, props: DatabaseSecretProps) {
-    const excludeCharacters = props.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS;
+    const excludeCharacters = props.excludeCharacters ??
+      (props.urlSafePassword ? URL_SAFE_PASSWORD_EXCLUDE_CHARS : DEFAULT_PASSWORD_EXCLUDE_CHARS);
 
     super(scope, id, {
       encryptionKey: props.encryptionKey,
@@ -111,6 +123,7 @@ export class DatabaseSecret extends secretsmanager.Secret {
         // If at some point we add other password customization options
         // they should be added here below (e.g. `passwordLength`).
         excludeCharacters,
+        urlSafePassword: props.urlSafePassword,
       }));
       const logicalId = `${Names.uniqueId(this)}${hash}`;
 
