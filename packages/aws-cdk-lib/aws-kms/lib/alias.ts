@@ -62,6 +62,10 @@ abstract class AliasBase extends Resource implements IAlias {
 
   public abstract readonly attrAliasName: string;
 
+  public abstract readonly attrArn: string;
+
+  public abstract readonly attrKeyId: string;
+
   public abstract readonly aliasTargetKey: IKey;
 
   /**
@@ -183,6 +187,8 @@ export class Alias extends AliasBase {
       public get aliasName() { return attrs.aliasName; }
       public get attrAliasName() { return attrs.aliasName; }
       public get aliasTargetKey() { return attrs.aliasTargetKey; }
+      public get attrArn() { return attrs.aliasTargetKey.attrArn; }
+      public get attrKeyId() { return attrs.aliasTargetKey.attrKeyId; }
     }
     return new _Alias(scope, id);
   }
@@ -205,6 +211,8 @@ export class Alias extends AliasBase {
     class Import extends Resource implements IAlias {
       public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
       public readonly keyId = aliasName;
+      public readonly attrArn = this.keyArn;
+      public readonly attrKeyId = this.keyId;
       public readonly aliasName = aliasName;
       public readonly attrAliasName = aliasName;
       public get aliasTargetKey(): IKey { throw new ValidationError('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().', this); }
@@ -332,6 +340,9 @@ export class Alias extends AliasBase {
       resource.applyRemovalPolicy(props.removalPolicy);
     }
   }
+
+  public get attrArn() { return this.aliasTargetKey.attrArn; }
+  public get attrKeyId() { return this.aliasTargetKey.attrKeyId; }
 
   protected generatePhysicalName(): string {
     return REQUIRED_ALIAS_PREFIX + super.generatePhysicalName();
