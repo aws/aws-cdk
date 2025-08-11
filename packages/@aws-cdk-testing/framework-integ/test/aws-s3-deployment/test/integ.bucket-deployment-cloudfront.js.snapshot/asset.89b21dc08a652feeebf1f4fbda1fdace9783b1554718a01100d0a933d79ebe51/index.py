@@ -11,11 +11,17 @@ from uuid import uuid4
 from zipfile import ZipFile
 
 import boto3
+from botocore.config import Config
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-cloudfront = boto3.client('cloudfront')
+cloudfront = boto3.client('cloudfront', config=Config(
+    retries = {
+        'max_attempts': 9,
+        'mode': 'standard',
+    }
+))
 s3 = boto3.client('s3')
 
 CFN_SUCCESS = "SUCCESS"
@@ -233,10 +239,10 @@ def cloudfront_invalidate(distribution_id, distribution_paths):
             },
             'CallerReference': str(uuid4()),
         })
-    # by default, will wait up to 10 minutes
     cloudfront.get_waiter('invalidation_completed').wait(
         DistributionId=distribution_id,
         Id=invalidation_resp['Invalidation']['Id'])
+
 
 #---------------------------------------------------------------------------------------------------
 # set metadata
