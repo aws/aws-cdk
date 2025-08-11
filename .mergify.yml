@@ -1,6 +1,4 @@
-# See https://doc.mergify.io
 merge_queue:
-  # Hopefully this gets Mergify to stop creating PRs just to test merges (it both messes with statistics and our automatic validations)
   max_parallel_checks: 1
 queue_rules:
   - name: default-merge
@@ -9,20 +7,17 @@ queue_rules:
     conditions:
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
-      # Only if no-squash is set
       - label~=no-squash
       - -merged
       - -closed
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
-      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
-
   - name: priority-squash
     update_method: merge
     merge_method: squash
@@ -35,14 +30,12 @@ queue_rules:
       - -closed
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
-      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
-
   - name: default-squash
     update_method: merge
     merge_method: squash
@@ -54,26 +47,29 @@ queue_rules:
       - -closed
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
-      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
-
+    branch_protection_injection_mode: none
 pull_request_rules:
   - name: label core
     actions:
       label:
-        add: [contribution/core]
+        add:
+          - contribution/core
     conditions:
       - author=@aws/aws-cdk-team
       - -label~="contribution/core"
   - name: automatic merge
     actions:
       comment:
-        message: Thank you for contributing! Your pull request will be updated from main and then merged automatically (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
+        message: Thank you for contributing! Your pull request will be updated from main
+          and then merged automatically (do not update manually, and be sure to
+          [allow changes to be pushed to your
+          fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
       queue:
         name: default-squash
     conditions:
@@ -86,14 +82,16 @@ pull_request_rules:
       - author!=dependabot-preview[bot]
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
-      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
   - name: automatic priority merge
     actions:
       comment:
-        message: Thank you for contributing! Your pull request will be updated from main and then merged automatically (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
+        message: Thank you for contributing! Your pull request will be updated from main
+          and then merged automatically (do not update manually, and be sure to
+          [allow changes to be pushed to your
+          fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
       queue:
         name: priority-squash
     conditions:
@@ -107,14 +105,16 @@ pull_request_rules:
       - author!=dependabot-preview[bot]
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
-      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
   - name: automatic merge (2+ approvers)
     actions:
       comment:
-        message: Thank you for contributing! Your pull request will be automatically updated and merged (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
+        message: Thank you for contributing! Your pull request will be automatically
+          updated and merged (do not update manually, and be sure to [allow
+          changes to be pushed to your
+          fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
       queue:
         name: default-squash
     conditions:
@@ -128,20 +128,21 @@ pull_request_rules:
       - author!=dependabot-preview[bot]
       - "#approved-reviews-by>=2"
       - -approved-reviews-by~=author
-      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
   - name: automatic merge (no-squash)
     actions:
       comment:
-        message: Thank you for contributing! Your pull request will be automatically updated and merged without squashing (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
+        message: Thank you for contributing! Your pull request will be automatically
+          updated and merged without squashing (do not update manually, and be
+          sure to [allow changes to be pushed to your
+          fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
       queue:
         name: default-merge
     conditions:
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
-      # Only if no-squash is set
       - label~=no-squash
       - -merged
       - -closed
@@ -149,7 +150,6 @@ pull_request_rules:
       - author!=dependabot-preview[bot]
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
-      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
@@ -169,7 +169,9 @@ pull_request_rules:
   - name: if fails conventional commits
     actions:
       comment:
-        message: Title does not follow the guidelines of [Conventional Commits](https://www.conventionalcommits.org). Please adjust title before merge.
+        message: Title does not follow the guidelines of [Conventional
+          Commits](https://www.conventionalcommits.org). Please adjust title
+          before merge.
     conditions:
       - author!=dependabot[bot]
       - author!=dependabot-preview[bot]
@@ -189,7 +191,6 @@ pull_request_rules:
       - -closed
       - author~=dependabot
       - "#approved-reviews-by>=1"
-      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
