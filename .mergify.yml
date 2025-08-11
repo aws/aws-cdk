@@ -22,6 +22,7 @@ queue_rules:
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
+    branch_protection_injection_mode: none
 
   - name: priority-squash
     update_method: merge
@@ -42,6 +43,7 @@ queue_rules:
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
+    branch_protection_injection_mode: none
 
   - name: default-squash
     update_method: merge
@@ -61,6 +63,7 @@ queue_rules:
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
+    branch_protection_injection_mode: none
 
 pull_request_rules:
   - name: label core
