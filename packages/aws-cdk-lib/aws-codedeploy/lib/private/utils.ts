@@ -82,9 +82,11 @@ export function renderAlarmConfiguration(props: renderAlarmConfigProps): CfnDepl
 export function deploymentConfig(name: string): IBaseDeploymentConfig & IPredefinedDeploymentConfig {
   return {
     deploymentConfigName: name,
+    attrDeploymentConfigName: name,
     deploymentConfigArn: arnForDeploymentConfig(name),
     bindEnvironment: (resource) => ({
       deploymentConfigName: name,
+      attrDeploymentConfigName: name,
       deploymentConfigArn: arnForDeploymentConfig(name, resource),
     }),
   };

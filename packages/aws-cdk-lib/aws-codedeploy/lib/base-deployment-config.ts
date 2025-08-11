@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnDeploymentConfig } from './codedeploy.generated';
+import { CfnDeploymentConfig, ICfnDeploymentConfig } from './codedeploy.generated';
 import { MinimumHealthyHosts, MinimumHealthyHostsPerZone } from './host-health-config';
 import { arnForDeploymentConfig, validateName } from './private/utils';
 import { TrafficRouting } from './traffic-routing-config';
@@ -9,7 +9,7 @@ import { ArnFormat, Duration, Resource, Stack, ValidationError } from '../../cor
  * The base class for ServerDeploymentConfig, EcsDeploymentConfig,
  * and LambdaDeploymentConfig deployment configurations.
  */
-export interface IBaseDeploymentConfig {
+export interface IBaseDeploymentConfig extends ICfnDeploymentConfig {
   /**
    * The physical, human-readable name of the Deployment Configuration.
    * @attribute
@@ -151,6 +151,7 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
     });
     return {
       deploymentConfigName: deploymentConfigName,
+      attrDeploymentConfigName: deploymentConfigName,
       deploymentConfigArn: arn,
     };
   }
@@ -160,6 +161,12 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
    * @attribute
    */
   public readonly deploymentConfigName: string;
+
+  /**
+   * The name of the deployment config
+   * @attribute
+   */
+  public readonly attrDeploymentConfigName: string;
 
   /**
    * The arn of the deployment config
@@ -204,6 +211,7 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
     });
 
     this.deploymentConfigName = this.getResourceNameAttribute(resource.ref);
+    this.attrDeploymentConfigName = this.deploymentConfigName;
     this.deploymentConfigArn = this.getResourceArnAttribute(arnForDeploymentConfig(resource.ref), {
       service: 'codedeploy',
       resource: 'deploymentconfig',
