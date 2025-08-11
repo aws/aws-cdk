@@ -65,7 +65,6 @@ export class ResourceClass extends ClassType {
         summary: `Attributes to reference a \`${classNameFromResource(resource)}\`.`,
         stability: Stability.External,
       },
-      // extends: [CONSTRUCTS.IConstruct],
     });
 
     super(scope, {

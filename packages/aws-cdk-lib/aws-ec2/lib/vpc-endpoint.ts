@@ -937,6 +937,15 @@ export interface InterfaceVpcEndpointOptions {
    * @default not specified
    */
   readonly privateDnsOnlyForInboundResolverEndpoint?: VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint;
+
+  /**
+   * The region where the VPC endpoint service is located.
+   *
+   * Only needs to be specified for cross-region VPC endpoints.
+   *
+   * @default - Same region as the interface VPC endpoint
+   */
+  readonly serviceRegion?: string;
 }
 
 /**
@@ -1078,6 +1087,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       vpcId: props.vpc.vpcId,
       ipAddressType: props.ipAddressType,
       dnsOptions,
+      ...(props.serviceRegion && { serviceRegion: props.serviceRegion }),
     });
 
     this.attrId = endpoint.attrId;

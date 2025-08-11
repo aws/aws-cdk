@@ -267,7 +267,7 @@ export interface CommonAutoScalingGroupProps {
    * to all current and future instances in the group. As an instance approaches its maximum duration,
    * it is terminated and replaced, and cannot be used again.
    *
-   * You must specify a value of at least 604,800 seconds (7 days). To clear a previously set value,
+   * You must specify a value of at least 86,400 seconds (one day). To clear a previously set value,
    * leave this property undefined.
    *
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-max-instance-lifetime.html
