@@ -6,12 +6,12 @@ import { TestOrigin } from './test-origin';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 
 const account = process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT;
+const certificateArn = process.env.CDK_INTEG_CERT_ARN ?? process.env.CERT_ARN;
+if (!certificateArn) throw new Error('For this test you must provide your own CertificateArn as an env var "CERT_ARN". See framework-integ/README.md for details.');
 const hostedZoneId = process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_ZONE_ID;
 if (!hostedZoneId) throw new Error('For this test you must provide your own HostedZoneId as an env var "HOSTED_ZONE_ID". See framework-integ/README.md for details.');
 const hostedZoneName = process.env.CDK_INTEG_HOSTED_ZONE_NAME ?? process.env.HOSTED_ZONE_NAME;
 if (!hostedZoneName) throw new Error('For this test you must provide your own HostedZoneName as an env var "HOSTED_ZONE_NAME". See framework-integ/README.md for details.');
-const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
-if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME". See framework-integ/README.md for details.');
 
 const app = new cdk.App({
   treeMetadata: false,
@@ -24,19 +24,31 @@ const stack = new cdk.Stack(app, 'integ-mt-distribution-multiple-tenants', {
 });
 
 const connectionGroup = new cloudfront.ConnectionGroup(stack, 'ConnectionGroup', {
-  connectionGroupName: 'comprehensive-group',
+  connectionGroupName: 'connection-group',
   enabled: true,
   ipv6Enabled: true,
 });
 
 const hostedZone = route53.PublicHostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
-  hostedZoneId,
+  hostedZoneId: hostedZoneId,
   zoneName: hostedZoneName,
 });
 
 const cert = new acm.Certificate(stack, 'Cert', {
-  domainName,
+  domainName: `*.${hostedZoneName}`,
   validation: acm.CertificateValidation.fromDns(hostedZone),
+});
+
+const cnameRecord1 = new route53.CnameRecord(stack, 'Record1', {
+  domainName: connectionGroup.routingEndpoint,
+  zone: hostedZone,
+  recordName: `integ1.${hostedZoneName}`,
+});
+
+const cnameRecord2 = new route53.CnameRecord(stack, 'Record2', {
+  domainName: connectionGroup.routingEndpoint,
+  zone: hostedZone,
+  recordName: `integ2.${hostedZoneName}`,
 });
 
 const distribution = new cloudfront.MTDistribution(stack, 'Dist', {
@@ -44,19 +56,26 @@ const distribution = new cloudfront.MTDistribution(stack, 'Dist', {
   certificate: cert,
 });
 
-new cloudfront.DistributionTenant(stack, 'Tenant1', {
+const tenant1 = new cloudfront.DistributionTenant(stack, 'Tenant1', {
   distributionId: distribution.distributionId,
   connectionGroupId: connectionGroup.connectionGroupId,
-  domains: [`integ1.${domainName}`],
+  domains: [cnameRecord1.domainName],
   distributionTenantName: 'tenant-1',
 });
 
-new cloudfront.DistributionTenant(stack, 'Tenant2', {
+const tenant2 = new cloudfront.DistributionTenant(stack, 'Tenant2', {
   distributionId: distribution.distributionId,
   connectionGroupId: connectionGroup.connectionGroupId,
-  domains: [`integ2.${domainName}`],
+  domains: [cnameRecord2.domainName],
   distributionTenantName: 'tenant-2',
 });
+
+cnameRecord1.node.addDependency(cert);
+cnameRecord2.node.addDependency(cert);
+distribution.node.addDependency(cnameRecord1);
+distribution.node.addDependency(cnameRecord2);
+tenant1.node.addDependency(distribution);
+tenant2.node.addDependency(distribution);
 
 new IntegTest(app, 'mt-distribution-multiple-tenants', {
   testCases: [stack],
