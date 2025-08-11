@@ -11,7 +11,8 @@ import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { OidcProvider } from '../../custom-resource-handlers/dist/aws-iam/oidc-provider.generated';
 import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from '../../cx-api';
-
+import { PropagatedTagSource } from '../../aws-ecs';
+import { IRole } from '../../aws-iam' ;
 const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';
 
 /**
@@ -87,6 +88,13 @@ export interface OpenIdConnectProviderProps {
    * provider's server as described in https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
    */
   readonly thumbprints?: string[];
+
+   /**
+   * An optional user provided IAM role to be used for the provider's lambda function.
+   * 
+   * @default - No role, will be created automatically.
+   */
+  readonly role?: IRole;
 }
 
 /**
@@ -150,7 +158,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
 
     const rejectUnauthorized = FeatureFlags.of(this).isEnabled(IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS) ?? false;
 
-    const provider = this.getOrCreateProvider();
+    const provider = this.getOrCreateProvider(props.role);
     const resource = new CustomResource(this, 'Resource', {
       resourceType: RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
@@ -172,7 +180,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     this.openIdConnectProviderthumbprints = Token.asString(resource.getAtt('Thumbprints'));
   }
 
-  private getOrCreateProvider() {
+  private getOrCreateProvider(role?: IRole) {
     return OidcProvider.getOrCreateProvider(this, RESOURCE_TYPE, {
       policyStatements: [
         {
@@ -187,6 +195,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
           ],
         },
       ],
+      role,
     });
   }
 }

@@ -1,5 +1,6 @@
 import { Duration } from '../duration';
 import { Size } from '../size';
+import { IRole } from '../../../aws-iam';
 
 export const INLINE_CUSTOM_RESOURCE_CONTEXT = '@aws-cdk/core:inlineCustomResourceIfPossible';
 
@@ -69,4 +70,11 @@ export interface CustomResourceProviderOptions {
    * @default - No description.
    */
   readonly description?: string;
+
+  /**
+   * An optional user provided IAM role to be used for the provider's lambda function.
+   * 
+   * @default - No role, will be created automatically.
+   */
+  readonly role?: IRole;
 }

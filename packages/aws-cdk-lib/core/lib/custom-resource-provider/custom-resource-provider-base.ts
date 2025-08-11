@@ -14,6 +14,7 @@ import { Lazy } from '../lazy';
 import { Size } from '../size';
 import { Stack } from '../stack';
 import { Token } from '../token';
+import { PolicyStatement } from '../../../aws-iam';
 
 const ENTRYPOINT_FILENAME = '__entrypoint__';
 const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'core', 'nodejs-entrypoint-handler', 'index.js');
@@ -74,57 +75,67 @@ export abstract class CustomResourceProviderBase extends Construct {
       throw new ValidationError(`cannot find ${props.codeDirectory}/index.js`, this);
     }
 
-    if (props.policyStatements) {
-      for (const statement of props.policyStatements) {
-        this.addToRolePolicy(statement);
-      }
-    }
-
     const { code, codeHandler, metadata } = this.createCodePropAndMetadata(props, stack);
 
-    const config = getPrecreatedRoleConfig(this, `${this.node.path}/Role`);
-    const assumeRolePolicyDoc = [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }];
-    const managedPolicyArn = 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole';
+    if (props.role) {
+      if (props.policyStatements) {
+        for (const statement of props.policyStatements) {
+          props.role.addToPrincipalPolicy(PolicyStatement.fromJson(statement));
+        }
+      }
+      this.roleArn = props.role.roleArn;
 
-    // need to initialize this attribute, but there should never be an instance
-    // where config.enabled=true && config.preventSynthesis=true
-    this.roleArn = '';
-    if (config.enabled) {
-      // gives policyStatements a chance to resolve
-      this.node.addValidation({
-        validate: () => {
-          PolicySynthesizer.getOrCreate(this).addRole(`${this.node.path}/Role`, {
-            missing: !config.precreatedRoleName,
-            roleName: config.precreatedRoleName ?? id+'Role',
-            managedPolicies: [{ managedPolicyArn: managedPolicyArn }],
-            policyStatements: this.policyStatements ?? [],
-            assumeRolePolicy: assumeRolePolicyDoc as any,
-          });
-          return [];
-        },
-      });
-      this.roleArn = Stack.of(this).formatArn({
-        region: '',
-        service: 'iam',
-        resource: 'role',
-        resourceName: config.precreatedRoleName,
-      });
-    }
-    if (!config.preventSynthesis) {
-      this.role = new CfnResource(this, 'Role', {
-        type: 'AWS::IAM::Role',
-        properties: {
-          AssumeRolePolicyDocument: {
-            Version: '2012-10-17',
-            Statement: assumeRolePolicyDoc,
+    } else {
+      if (props.policyStatements) {
+        for (const statement of props.policyStatements) {
+          this.addToRolePolicy(statement);
+        }
+      }
+
+      const config = getPrecreatedRoleConfig(this, `${this.node.path}/Role`);
+      const assumeRolePolicyDoc = [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }];
+      const managedPolicyArn = 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole';
+
+      // need to initialize this attribute, but there should never be an instance
+      // where config.enabled=true && config.preventSynthesis=true
+      this.roleArn = '';
+      if (config.enabled) {
+        // gives policyStatements a chance to resolve
+        this.node.addValidation({
+          validate: () => {
+            PolicySynthesizer.getOrCreate(this).addRole(`${this.node.path}/Role`, {
+              missing: !config.precreatedRoleName,
+              roleName: config.precreatedRoleName ?? id+'Role',
+              managedPolicies: [{ managedPolicyArn: managedPolicyArn }],
+              policyStatements: this.policyStatements ?? [],
+              assumeRolePolicy: assumeRolePolicyDoc as any,
+            });
+            return [];
           },
-          ManagedPolicyArns: [
-            { 'Fn::Sub': managedPolicyArn },
-          ],
-          Policies: Lazy.any({ produce: () => this.renderPolicies() }),
-        },
-      });
-      this.roleArn = Token.asString(this.role.getAtt('Arn'));
+        });
+        this.roleArn = Stack.of(this).formatArn({
+          region: '',
+          service: 'iam',
+          resource: 'role',
+          resourceName: config.precreatedRoleName,
+        });
+      }
+      if (!config.preventSynthesis) {
+        this.role = new CfnResource(this, 'Role', {
+          type: 'AWS::IAM::Role',
+          properties: {
+            AssumeRolePolicyDocument: {
+              Version: '2012-10-17',
+              Statement: assumeRolePolicyDoc,
+            },
+            ManagedPolicyArns: [
+              { 'Fn::Sub': managedPolicyArn },
+            ],
+            Policies: Lazy.any({ produce: () => this.renderPolicies() }),
+          },
+        });
+        this.roleArn = Token.asString(this.role.getAtt('Arn'));
+      }
     }
 
     const timeout = props.timeout ?? Duration.minutes(15);
