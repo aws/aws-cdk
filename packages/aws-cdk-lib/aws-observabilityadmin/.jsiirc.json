@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.observabilityadmin"
+    },
+    "dotnet": {
+      "package": "Amazon.CDK.AWS.ObservabilityAdmin"
+    },
+    "python": {
+      "module": "aws_cdk.aws_observabilityadmin"
+    }
+  }
+}
