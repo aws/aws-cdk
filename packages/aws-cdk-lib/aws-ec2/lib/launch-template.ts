@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
-import { CfnLaunchTemplate } from './ec2.generated';
+import { CfnLaunchTemplate, ICfnLaunchTemplate } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
@@ -75,7 +75,7 @@ export enum InstanceInitiatedShutdownBehavior {
 /**
  * Interface for LaunchTemplate-like objects.
  */
-export interface ILaunchTemplate extends IResource {
+export interface ILaunchTemplate extends IResource, ICfnLaunchTemplate {
   /**
    * The version number of this launch template to use
    *
@@ -527,6 +527,13 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       public readonly versionNumber = attrs.versionNumber ?? LaunchTemplateSpecialVersions.DEFAULT_VERSION;
       public readonly launchTemplateId? = attrs.launchTemplateId;
       public readonly launchTemplateName? = attrs.launchTemplateName;
+
+      public get attrLaunchTemplateId(): string {
+        if (this.launchTemplateId) {
+          return this.launchTemplateId;
+        }
+        throw new ValidationError('This resource was created from attributes, without including the template ID.', scope);
+      }
     }
     return new Import(scope, id);
   }
@@ -536,6 +543,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
 
   public readonly versionNumber: string;
   public readonly launchTemplateId?: string;
+  public readonly attrLaunchTemplateId: string;
   public readonly launchTemplateName?: string;
 
   // =============================================
@@ -849,6 +857,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     this.defaultVersionNumber = resource.attrDefaultVersionNumber;
     this.latestVersionNumber = resource.attrLatestVersionNumber;
     this.launchTemplateId = resource.ref;
+    this.attrLaunchTemplateId = resource.attrLaunchTemplateId;
     this.versionNumber = Token.asString(resource.getAtt('LatestVersionNumber'));
   }
 
