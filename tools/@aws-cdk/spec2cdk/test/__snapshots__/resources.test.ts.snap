@@ -12,7 +12,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability external
  */
-export interface ICfnResource extends constructs.IConstruct {
+export interface ICfnResource {
   /**
    * The identifier of the resource.
    * This property gets determined after the resource is created.
@@ -177,7 +177,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability external
  */
-export interface ICfnResource extends constructs.IConstruct {
+export interface ICfnResource {
   /**
    * The identifier of the resource
    *
@@ -323,7 +323,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability external
  */
-export interface ICfnSomething extends constructs.IConstruct {
+export interface ICfnSomething {
   /**
    * The identifier of the resource
    *
@@ -484,7 +484,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability external
  */
-export interface ICfnResource extends constructs.IConstruct {
+export interface ICfnResource {
   /**
    * The identifier of the resource
    *
@@ -645,7 +645,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability external
  */
-export interface ICfnResource extends constructs.IConstruct {
+export interface ICfnResource {
   /**
    * The identifier of the resource
    *
@@ -808,7 +808,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability external
  */
-export interface ICfnResource extends constructs.IConstruct {
+export interface ICfnResource {
   /**
    * The arn of the resource
    *
@@ -954,7 +954,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability external
  */
-export interface ICfnResource extends constructs.IConstruct {
+export interface ICfnResource {
   /**
    * The identifier of the resource
    *
@@ -1115,7 +1115,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability external
  */
-export interface ICfnResource extends constructs.IConstruct {
+export interface ICfnResource {
 
 }
 
@@ -1282,7 +1282,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability external
  */
-export interface ICfnResource extends constructs.IConstruct {
+export interface ICfnResource {
   /**
    * The identifier of the resource.
    * This property gets determined after the resource is created.
