@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IGroup } from './group';
-import { CfnManagedPolicy } from './iam.generated';
+import { CfnManagedPolicy, ICfnManagedPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
@@ -15,7 +15,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A managed policy
  */
-export interface IManagedPolicy {
+export interface IManagedPolicy extends ICfnManagedPolicy {
   /**
    * The ARN of the managed policy
    * @attribute
@@ -123,6 +123,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         resource: 'policy',
         resourceName: managedPolicyName,
       });
+      public readonly attrPolicyArn = this.managedPolicyArn;
     }
     return new Import(scope, id);
   }
@@ -149,6 +150,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   public static fromManagedPolicyArn(scope: Construct, id: string, managedPolicyArn: string): IManagedPolicy {
     class Import extends Resource implements IManagedPolicy {
       public readonly managedPolicyArn = managedPolicyArn;
+      public readonly attrPolicyArn = managedPolicyArn;
     }
     return new Import(scope, id);
   }
@@ -172,6 +174,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         resource: 'policy',
         resourceName: managedPolicyName,
       });
+      public readonly attrPolicyArn = this.managedPolicyArn;
     }
     return new AwsManagedPolicy();
   }
@@ -182,6 +185,13 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    * @attribute
    */
   public readonly managedPolicyArn: string;
+
+  /**
+   * Returns the ARN of this managed policy.
+   *
+   * @attribute
+   */
+  public readonly attrPolicyArn: string;
 
   /**
    * The policy document.
@@ -257,6 +267,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         resourceName: this.physicalName,
       });
     }
+    this.attrPolicyArn = this.managedPolicyArn;
 
     if (props.users) {
       props.users.forEach(u => this.attachToUser(u));
