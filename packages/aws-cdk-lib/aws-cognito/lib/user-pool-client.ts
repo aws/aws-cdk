@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnUserPoolClient, ICfnUserPoolClient } from './cognito.generated';
+import { CfnUserPoolClient, IUserPoolClientRef } from './cognito.generated';
 import { IUserPool } from './user-pool';
 import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
@@ -411,7 +411,7 @@ export interface AnalyticsConfiguration {
 /**
  * Represents a Cognito user pool client.
  */
-export interface IUserPoolClient extends IResource, ICfnUserPoolClient {
+export interface IUserPoolClient extends IResource, IUserPoolClientRef {
   /**
    * Name of the application client
    * @attribute

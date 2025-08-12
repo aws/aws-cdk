@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnFleet, ICfnFleet } from './codebuild.generated';
+import { CfnFleet, IFleetRef } from './codebuild.generated';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
 import { Arn, ArnFormat, IResource, Resource, Size, Token, UnscopedValidationError, ValidationError } from '../../core';
@@ -105,7 +105,7 @@ export interface ComputeConfiguration {
 /**
  * Represents a {@link Fleet} for a reserved capacity CodeBuild project.
  */
-export interface IFleet extends IResource, ICfnFleet {
+export interface IFleet extends IResource, IFleetRef {
   /**
    * The ARN of the fleet.
    * @attribute

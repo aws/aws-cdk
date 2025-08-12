@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IAlias } from './alias';
 import { IFunction } from './function-base';
 import { IVersion } from './lambda-version';
-import { CfnUrl, ICfnUrl } from './lambda.generated';
+import { CfnUrl, IUrlRef } from './lambda.generated';
 import * as iam from '../../aws-iam';
 import { Duration, IResource, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -131,7 +131,7 @@ export interface FunctionUrlCorsOptions {
 /**
  * A Lambda function Url
  */
-export interface IFunctionUrl extends IResource, ICfnUrl {
+export interface IFunctionUrl extends IResource, IUrlRef {
   /**
    * The url of the Lambda function.
    *

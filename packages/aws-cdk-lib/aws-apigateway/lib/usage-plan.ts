@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IApiKey } from './api-key';
-import { CfnUsagePlan, CfnUsagePlanKey, ICfnUsagePlan } from './apigateway.generated';
+import { CfnUsagePlan, CfnUsagePlanKey, IUsagePlanRef } from './apigateway.generated';
 import { Method } from './method';
 import { IRestApi } from './restapi';
 import { Stage } from './stage';
@@ -161,7 +161,7 @@ export interface AddApiKeyOptions {
 /**
  * A UsagePlan, either managed by this CDK app, or imported.
  */
-export interface IUsagePlan extends IResource, ICfnUsagePlan {
+export interface IUsagePlan extends IResource, IUsagePlanRef {
   /**
    * Id of the usage plan
    * @attribute

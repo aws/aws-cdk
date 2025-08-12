@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnBackupVault, ICfnBackupVault } from './backup.generated';
+import { CfnBackupVault, IBackupVaultRef } from './backup.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sns from '../../aws-sns';
@@ -10,7 +10,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A backup vault
  */
-export interface IBackupVault extends IResource, ICfnBackupVault {
+export interface IBackupVault extends IResource, IBackupVaultRef {
   /**
    * The name of a logical container where backups are stored.
    *

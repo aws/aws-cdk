@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnDBSubnetGroup, ICfnDBSubnetGroup } from './rds.generated';
+import { CfnDBSubnetGroup, IDBSubnetGroupRef } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
 import { IResource, RemovalPolicy, Resource, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -8,7 +8,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Interface for a subnet group.
  */
-export interface ISubnetGroup extends IResource, ICfnDBSubnetGroup {
+export interface ISubnetGroup extends IResource, IDBSubnetGroupRef {
   /**
    * The name of the subnet group.
    * @attribute

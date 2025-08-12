@@ -2,7 +2,7 @@ import { Construct, Node } from 'constructs';
 import { IDestination } from './destination';
 import { StreamEncryption } from './encryption';
 import { FirehoseMetrics } from './kinesisfirehose-canned-metrics.generated';
-import { CfnDeliveryStream, ICfnDeliveryStream } from './kinesisfirehose.generated';
+import { CfnDeliveryStream, IDeliveryStreamRef } from './kinesisfirehose.generated';
 import { ISource } from './source';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -21,7 +21,7 @@ const PUT_RECORD_ACTIONS = [
 /**
  * Represents an Amazon Data Firehose delivery stream.
  */
-export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable, ICfnDeliveryStream {
+export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable, IDeliveryStreamRef {
   /**
    * The ARN of the delivery stream.
    *

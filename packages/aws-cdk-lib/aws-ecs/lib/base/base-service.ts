@@ -36,13 +36,13 @@ import {
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { IDeploymentLifecycleHookTarget } from '../deployment-lifecycle-hook-target';
-import { CfnService, ICfnService } from '../ecs.generated';
+import { CfnService, IServiceRef } from '../ecs.generated';
 import { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
 
 /**
  * The interface for a service.
  */
-export interface IService extends IResource, ICfnService {
+export interface IService extends IResource, IServiceRef {
   /**
    * The Amazon Resource Name (ARN) of the service.
    *

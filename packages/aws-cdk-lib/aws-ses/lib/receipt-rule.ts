@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IReceiptRuleAction } from './receipt-rule-action';
 import { IReceiptRuleSet } from './receipt-rule-set';
-import { CfnReceiptRule, ICfnReceiptRule } from './ses.generated';
+import { CfnReceiptRule, IReceiptRuleRef } from './ses.generated';
 import * as iam from '../../aws-iam';
 import { Aws, IResource, Lazy, Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -11,7 +11,7 @@ import { DropSpamSingletonFunction } from '../../custom-resource-handlers/dist/a
 /**
  * A receipt rule.
  */
-export interface IReceiptRule extends IResource, ICfnReceiptRule {
+export interface IReceiptRule extends IResource, IReceiptRuleRef {
   /**
    * The name of the receipt rule.
    * @attribute

@@ -3,7 +3,7 @@ import { URL } from 'url';
 import { Construct } from 'constructs';
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import { OpenSearchAccessPolicy } from './opensearch-access-policy';
-import { CfnDomain, ICfnDomain } from './opensearchservice.generated';
+import { CfnDomain, IDomainRef } from './opensearchservice.generated';
 import * as perms from './perms';
 import { EngineVersion } from './version';
 import * as acm from '../../aws-certificatemanager';
@@ -760,7 +760,7 @@ export interface DomainProps {
 /**
  * An interface that represents an Amazon OpenSearch Service domain - either created with the CDK, or an existing one.
  */
-export interface IDomain extends cdk.IResource, ICfnDomain {
+export interface IDomain extends cdk.IResource, IDomainRef {
   /**
    * Arn of the Amazon OpenSearch Service domain.
    *

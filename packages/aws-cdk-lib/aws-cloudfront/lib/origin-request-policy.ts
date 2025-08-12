@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnOriginRequestPolicy, ICfnOriginRequestPolicy } from './cloudfront.generated';
+import { CfnOriginRequestPolicy, IOriginRequestPolicyRef } from './cloudfront.generated';
 import { Names, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -7,7 +7,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a Origin Request Policy
  */
-export interface IOriginRequestPolicy extends ICfnOriginRequestPolicy {
+export interface IOriginRequestPolicy extends IOriginRequestPolicyRef {
   /**
    * The ID of the origin request policy
    * @attribute

@@ -4,7 +4,7 @@ import { EncryptionConfiguration } from './encryption-configuration';
 import { buildEncryptionConfiguration } from './private/util';
 import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
-import { CfnStateMachine, ICfnStateMachine } from './stepfunctions.generated';
+import { CfnStateMachine, IStateMachineRef } from './stepfunctions.generated';
 import { IChainable, QueryLanguage } from './types';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
@@ -666,7 +666,7 @@ export class StateMachine extends StateMachineBase {
 /**
  * A State Machine
  */
-export interface IStateMachine extends IResource, iam.IGrantable, ICfnStateMachine {
+export interface IStateMachine extends IResource, iam.IGrantable, IStateMachineRef {
   /**
    * The ARN of the state machine
    * @attribute

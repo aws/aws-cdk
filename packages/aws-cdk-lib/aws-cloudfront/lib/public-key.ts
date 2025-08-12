@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnPublicKey, ICfnPublicKey } from './cloudfront.generated';
+import { CfnPublicKey, IPublicKeyRef } from './cloudfront.generated';
 import { IResource, Names, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -7,7 +7,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a Public Key
  */
-export interface IPublicKey extends IResource, ICfnPublicKey {
+export interface IPublicKey extends IResource, IPublicKeyRef {
   /**
    * The ID of the key group.
    * @attribute

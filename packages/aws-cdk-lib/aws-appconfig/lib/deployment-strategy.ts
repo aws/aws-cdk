@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnDeploymentStrategy, ICfnDeploymentStrategy } from './appconfig.generated';
+import { CfnDeploymentStrategy, IDeploymentStrategyRef } from './appconfig.generated';
 import { Resource, IResource, Stack, ArnFormat, Names, Duration, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -371,7 +371,7 @@ export abstract class RolloutStrategy {
   public abstract readonly finalBakeTime?: Duration;
 }
 
-export interface IDeploymentStrategy extends IResource, ICfnDeploymentStrategy {
+export interface IDeploymentStrategy extends IResource, IDeploymentStrategyRef {
   /**
    * The name of the deployment strategy.
    */

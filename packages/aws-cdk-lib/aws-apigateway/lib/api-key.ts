@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnApiKey, ICfnApiKey } from './apigateway.generated';
+import { CfnApiKey, IApiKeyRef } from './apigateway.generated';
 import { ResourceOptions } from './resource';
 import { IRestApi } from './restapi';
 import { IStage } from './stage';
@@ -14,7 +14,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  * API keys are alphanumeric string values that you distribute to
  * app developer customers to grant access to your API
  */
-export interface IApiKey extends IResourceBase, ICfnApiKey {
+export interface IApiKey extends IResourceBase, IApiKeyRef {
   /**
    * The API key ID.
    * @attribute

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnSigningProfile, ICfnSigningProfile } from './signer.generated';
+import { CfnSigningProfile, ISigningProfileRef } from './signer.generated';
 import { Duration, IResource, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -60,7 +60,7 @@ export class Platform {
 /**
  * A Signer Profile
  */
-export interface ISigningProfile extends IResource, ICfnSigningProfile {
+export interface ISigningProfile extends IResource, ISigningProfileRef {
   /**
    * The ARN of the signing profile.
    * @attribute

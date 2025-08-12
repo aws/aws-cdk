@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IGroup } from './group';
-import { CfnManagedPolicy, ICfnManagedPolicy } from './iam.generated';
+import { CfnManagedPolicy, IManagedPolicyRef } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
@@ -15,7 +15,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A managed policy
  */
-export interface IManagedPolicy extends ICfnManagedPolicy {
+export interface IManagedPolicy extends IManagedPolicyRef {
   /**
    * The ARN of the managed policy
    * @attribute

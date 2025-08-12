@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IConfigurationSet } from './configuration-set';
-import { CfnConfigurationSetEventDestination, ICfnConfigurationSetEventDestination } from './ses.generated';
+import { CfnConfigurationSetEventDestination, IConfigurationSetEventDestinationRef } from './ses.generated';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as firehose from '../../aws-kinesisfirehose';
@@ -12,7 +12,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A configuration set event destination
  */
-export interface IConfigurationSetEventDestination extends IResource, ICfnConfigurationSetEventDestination {
+export interface IConfigurationSetEventDestination extends IResource, IConfigurationSetEventDestinationRef {
   /**
    * The ID of the configuration set event destination
    *

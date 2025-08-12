@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnBackupPlan, ICfnBackupPlan } from './backup.generated';
+import { CfnBackupPlan, IBackupPlanRef } from './backup.generated';
 import { BackupPlanCopyActionProps, BackupPlanRule } from './rule';
 import { BackupSelection, BackupSelectionOptions } from './selection';
 import { BackupVault, IBackupVault } from './vault';
@@ -10,7 +10,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A backup plan
  */
-export interface IBackupPlan extends IResource, ICfnBackupPlan {
+export interface IBackupPlan extends IResource, IBackupPlanRef {
   /**
    * The identifier of the backup plan.
    *

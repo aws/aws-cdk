@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
 import { IWebSocketRouteAuthorizer, WebSocketNoneAuthorizer } from './authorizer';
 import { WebSocketRouteIntegration } from './integration';
-import { CfnRoute, CfnRouteResponse, ICfnRoute } from '.././index';
+import { CfnRoute, CfnRouteResponse, IRouteRef } from '.././index';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
@@ -12,7 +12,7 @@ import { IRoute } from '../common';
 /**
  * Represents a Route for an WebSocket API.
  */
-export interface IWebSocketRoute extends IRoute, ICfnRoute {
+export interface IWebSocketRoute extends IRoute, IRouteRef {
   /**
    * The WebSocket API associated with this route.
    */

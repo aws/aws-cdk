@@ -3,7 +3,7 @@ import { CustomerManagedEncryptionConfiguration } from './customer-managed-key-e
 import { EncryptionConfiguration } from './encryption-configuration';
 import { buildEncryptionConfiguration } from './private/util';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
-import { CfnActivity, ICfnActivity } from './stepfunctions.generated';
+import { CfnActivity, IActivityRef } from './stepfunctions.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
@@ -270,7 +270,7 @@ export class Activity extends Resource implements IActivity {
  * Represents a Step Functions Activity
  * https://docs.aws.amazon.com/step-functions/latest/dg/concepts-activities.html
  */
-export interface IActivity extends IResource, ICfnActivity {
+export interface IActivity extends IResource, IActivityRef {
   /**
    * The ARN of the activity
    *

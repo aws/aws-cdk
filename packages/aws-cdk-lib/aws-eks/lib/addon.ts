@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
-import { CfnAddon, ICfnAddon } from './eks.generated';
+import { CfnAddon, IAddonRef } from './eks.generated';
 import { ArnFormat, IResource, Resource, Stack, Fn } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -8,7 +8,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents an Amazon EKS Add-On.
  */
-export interface IAddon extends IResource, ICfnAddon {
+export interface IAddon extends IResource, IAddonRef {
   /**
    * Name of the Add-On.
    * @attribute

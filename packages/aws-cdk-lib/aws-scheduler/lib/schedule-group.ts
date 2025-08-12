@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnScheduleGroup, ICfnScheduleGroup } from './scheduler.generated';
+import { CfnScheduleGroup, IScheduleGroupRef } from './scheduler.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { Arn, ArnFormat, Aws, IResource, Names, RemovalPolicy, Resource, Stack } from '../../core';
@@ -30,7 +30,7 @@ export interface ScheduleGroupProps {
 /**
  * Interface representing a created or an imported `ScheduleGroup`.
  */
-export interface IScheduleGroup extends IResource, ICfnScheduleGroup {
+export interface IScheduleGroup extends IResource, IScheduleGroupRef {
   /**
    * The name of the schedule group
    *

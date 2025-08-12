@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnDeploymentConfig, ICfnDeploymentConfig } from './codedeploy.generated';
+import { CfnDeploymentConfig, IDeploymentConfigRef } from './codedeploy.generated';
 import { MinimumHealthyHosts, MinimumHealthyHostsPerZone } from './host-health-config';
 import { arnForDeploymentConfig, validateName } from './private/utils';
 import { TrafficRouting } from './traffic-routing-config';
@@ -9,7 +9,7 @@ import { ArnFormat, Duration, Resource, Stack, ValidationError } from '../../cor
  * The base class for ServerDeploymentConfig, EcsDeploymentConfig,
  * and LambdaDeploymentConfig deployment configurations.
  */
-export interface IBaseDeploymentConfig extends ICfnDeploymentConfig {
+export interface IBaseDeploymentConfig extends IDeploymentConfigRef {
   /**
    * The physical, human-readable name of the Deployment Configuration.
    * @attribute

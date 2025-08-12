@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IEngine } from './engine';
-import { CfnDBClusterParameterGroup, CfnDBParameterGroup, ICfnDBParameterGroup } from './rds.generated';
+import { CfnDBClusterParameterGroup, CfnDBParameterGroup, IDBParameterGroupRef } from './rds.generated';
 import { IResource, Lazy, RemovalPolicy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -41,7 +41,7 @@ export interface ParameterGroupInstanceConfig {
  * Represents both a cluster parameter group,
  * and an instance parameter group.
  */
-export interface IParameterGroup extends IResource, ICfnDBParameterGroup {
+export interface IParameterGroup extends IResource, IDBParameterGroupRef {
   /**
    * Method called when this Parameter Group is used when defining a database cluster.
    */

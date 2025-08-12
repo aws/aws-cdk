@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
-import { CfnIntegration, ICfnIntegration } from '.././index';
+import { CfnIntegration, IIntegrationRef } from '.././index';
 import { IRole } from '../../../aws-iam';
 import { Aws, Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
@@ -13,7 +13,7 @@ import { ParameterMapping } from '../parameter-mapping';
 /**
  * Represents an Integration for an HTTP API.
  */
-export interface IHttpIntegration extends IIntegration, ICfnIntegration {
+export interface IHttpIntegration extends IIntegration, IIntegrationRef {
   /** The HTTP API associated with this integration */
   readonly httpApi: IHttpApi;
 }

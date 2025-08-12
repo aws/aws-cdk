@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
-import { CfnPrivateDnsNamespace, ICfnPrivateDnsNamespace } from './servicediscovery.generated';
+import { CfnPrivateDnsNamespace, IPrivateDnsNamespaceRef } from './servicediscovery.generated';
 import * as ec2 from '../../aws-ec2';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -14,7 +14,7 @@ export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   readonly vpc: ec2.IVpc;
 }
 
-export interface IPrivateDnsNamespace extends INamespace, ICfnPrivateDnsNamespace { }
+export interface IPrivateDnsNamespace extends INamespace, IPrivateDnsNamespaceRef { }
 
 export interface PrivateDnsNamespaceAttributes {
   /**

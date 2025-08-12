@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnExtension, CfnExtensionAssociation, ICfnExtension } from './appconfig.generated';
+import { CfnExtension, CfnExtensionAssociation, IExtensionRef } from './appconfig.generated';
 import { getHash, stringifyObjects } from './private/hash';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -591,7 +591,7 @@ export class Extension extends Resource implements IExtension {
   }
 }
 
-export interface IExtension extends IResource, ICfnExtension {
+export interface IExtension extends IResource, IExtensionRef {
   /**
    * The actions for the extension.
    */

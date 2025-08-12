@@ -7,7 +7,7 @@ import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { FunctionUrlAuthType, FunctionUrlOptions, FunctionUrl } from './function-url';
 import { IVersion } from './lambda-version';
-import { CfnPermission, ICfnFunction } from './lambda.generated';
+import { CfnPermission, IFunctionRef } from './lambda.generated';
 import { Permission } from './permission';
 import { addAlias, flatMap } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -18,7 +18,7 @@ import { ValidationError } from '../../core/lib/errors';
 import { MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
-export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable, ICfnFunction {
+export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable, IFunctionRef {
 
   /**
    * The name of the function.

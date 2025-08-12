@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Connections } from './connections';
-import { CfnPrefixList, ICfnPrefixList } from './ec2.generated';
+import { CfnPrefixList, IPrefixListRef } from './ec2.generated';
 import { IPeer } from './peer';
 import * as cxschema from '../../cloud-assembly-schema';
 import { IResource, Lazy, Resource, Names, ContextProvider, Token, ValidationError, Stack } from '../../core';
@@ -10,7 +10,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A prefix list
  */
-export interface IPrefixList extends IResource, IPeer, ICfnPrefixList {
+export interface IPrefixList extends IResource, IPeer, IPrefixListRef {
   /**
    * The ID of the prefix list
    *

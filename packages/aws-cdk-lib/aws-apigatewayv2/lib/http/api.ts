@@ -4,7 +4,7 @@ import { HttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { IHttpStage, HttpStage, HttpStageOptions } from './stage';
 import { VpcLink, VpcLinkProps } from './vpc-link';
-import { CfnApi, CfnApiProps, ICfnApi } from '.././index';
+import { CfnApi, CfnApiProps, IApiRef } from '.././index';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { ArnFormat, Duration, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
@@ -17,7 +17,7 @@ import { DomainMappingOptions } from '../common/stage';
 /**
  * Represents an HTTP API
  */
-export interface IHttpApi extends IApi, ICfnApi {
+export interface IHttpApi extends IApi, IApiRef {
   /**
    * Default Authorizer applied to all routes in the gateway.
    *

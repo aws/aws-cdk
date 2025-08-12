@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IAccelerator } from './accelerator';
 import { EndpointGroup, EndpointGroupOptions } from './endpoint-group';
 import * as ga from './globalaccelerator.generated';
-import { ICfnListener } from './globalaccelerator.generated';
+import { IListenerRef } from './globalaccelerator.generated';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -10,7 +10,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Interface of the Listener
  */
-export interface IListener extends cdk.IResource, ICfnListener {
+export interface IListener extends cdk.IResource, IListenerRef {
   /**
    * The ARN of the listener
    *

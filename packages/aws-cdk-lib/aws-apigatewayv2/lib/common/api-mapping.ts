@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IApi } from './api';
 import { IDomainName } from './domain-name';
 import { IStage } from './stage';
-import { CfnApiMapping, CfnApiMappingProps, ICfnApiMapping } from '.././index';
+import { CfnApiMapping, CfnApiMappingProps, IApiMappingRef } from '.././index';
 import { IResource, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
@@ -12,7 +12,7 @@ import { propertyInjectable } from '../../../core/lib/prop-injectable';
  * Represents an ApiGatewayV2 ApiMapping resource
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-apimapping.html
  */
-export interface IApiMapping extends IResource, ICfnApiMapping {
+export interface IApiMapping extends IResource, IApiMappingRef {
   /**
    * ID of the api mapping
    * @attribute

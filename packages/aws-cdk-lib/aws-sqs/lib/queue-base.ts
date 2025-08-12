@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { QueuePolicy } from './policy';
-import { ICfnQueue } from './sqs.generated';
+import { IQueueRef } from './sqs.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { IResource, Resource, ResourceProps } from '../../core';
@@ -8,7 +8,7 @@ import { IResource, Resource, ResourceProps } from '../../core';
 /**
  * Represents an SQS queue
  */
-export interface IQueue extends IResource, ICfnQueue {
+export interface IQueue extends IResource, IQueueRef {
   /**
    * The ARN of this queue
    * @attribute

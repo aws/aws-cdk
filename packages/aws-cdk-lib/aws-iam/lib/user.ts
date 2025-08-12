@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IGroup } from './group';
-import { CfnUser, CfnUserToGroupAddition, ICfnUser } from './iam.generated';
+import { CfnUser, CfnUserToGroupAddition, IUserRef } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
@@ -16,7 +16,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  *
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html
  */
-export interface IUser extends IIdentity, ICfnUser {
+export interface IUser extends IIdentity, IUserRef {
   /**
    * The user's name
    * @attribute

@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { IHttpRoute } from './route';
-import { CfnAuthorizer, ICfnAuthorizer } from '.././index';
+import { CfnAuthorizer, IAuthorizerRef } from '.././index';
 import { Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
@@ -109,7 +109,7 @@ export interface HttpAuthorizerProps {
 /**
  * An authorizer for HTTP APIs
  */
-export interface IHttpAuthorizer extends IAuthorizer, ICfnAuthorizer {
+export interface IHttpAuthorizer extends IAuthorizer, IAuthorizerRef {
 }
 
 /**

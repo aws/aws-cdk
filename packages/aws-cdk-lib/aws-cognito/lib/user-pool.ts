@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { toASCII as punycodeEncode } from 'punycode/';
-import { CfnUserPool, ICfnUserPool } from './cognito.generated';
+import { CfnUserPool, IUserPoolRef } from './cognito.generated';
 import { StandardAttributeNames } from './private/attr-names';
 import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
@@ -945,7 +945,7 @@ export interface UserPoolProps {
 /**
  * Represents a Cognito UserPool
  */
-export interface IUserPool extends IResource, ICfnUserPool {
+export interface IUserPool extends IResource, IUserPoolRef {
   /**
    * The physical ID of this user pool resource
    * @attribute

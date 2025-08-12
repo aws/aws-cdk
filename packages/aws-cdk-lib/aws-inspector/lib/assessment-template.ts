@@ -1,12 +1,12 @@
 import { Construct } from 'constructs';
-import { CfnAssessmentTemplate, ICfnAssessmentTemplate } from './inspector.generated';
+import { CfnAssessmentTemplate, IAssessmentTemplateRef } from './inspector.generated';
 import { IResource, Resource } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface for an Inspector Assessment Template
  */
-export interface IAssessmentTemplate extends IResource, ICfnAssessmentTemplate {
+export interface IAssessmentTemplate extends IResource, IAssessmentTemplateRef {
   /**
    * The Amazon Resource Name (ARN) of the assessment template.
    * @attribute

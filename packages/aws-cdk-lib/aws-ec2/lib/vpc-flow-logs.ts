@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnFlowLog, ICfnFlowLog } from './ec2.generated';
+import { CfnFlowLog, IFlowLogRef } from './ec2.generated';
 import { ISubnet, IVpc } from './vpc';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
@@ -17,7 +17,7 @@ const NAME_TAG: string = 'Name';
 /**
  * A FlowLog
  */
-export interface IFlowLog extends IResource, ICfnFlowLog {
+export interface IFlowLog extends IResource, IFlowLogRef {
   /**
    * The Id of the VPC Flow Log
    *

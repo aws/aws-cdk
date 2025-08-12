@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { WebSocketRoute, WebSocketRouteOptions } from './route';
-import { CfnApi, ICfnApi } from '.././index';
+import { CfnApi, IApiRef } from '.././index';
 import { Grant, IGrantable } from '../../../aws-iam';
 import { ArnFormat, Stack, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
@@ -12,7 +12,7 @@ import { ApiBase } from '../common/base';
 /**
  * Represents a WebSocket API
  */
-export interface IWebSocketApi extends IApi, ICfnApi {
+export interface IWebSocketApi extends IApi, IApiRef {
 }
 
 /**

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnCachePolicy, ICfnCachePolicy } from './cloudfront.generated';
+import { CfnCachePolicy, ICachePolicyRef } from './cloudfront.generated';
 import { Duration, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError, withResolved } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -7,7 +7,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a Cache Policy
  */
-export interface ICachePolicy extends ICfnCachePolicy {
+export interface ICachePolicy extends ICachePolicyRef {
   /**
    * The ID of the cache policy
    * @attribute

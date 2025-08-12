@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnConnection, ICfnConnection } from './events.generated';
+import { CfnConnection, IConnectionRef } from './events.generated';
 import { IResource, Resource, Stack, SecretValue, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -249,7 +249,7 @@ export interface AuthorizationBindResult {
 /**
  * Interface for EventBus Connections
  */
-export interface IConnection extends IResource, ICfnConnection {
+export interface IConnection extends IResource, IConnectionRef {
   /**
    * The Name for the connection.
    * @attribute
@@ -389,7 +389,7 @@ export class Connection extends Resource implements IConnection {
 }
 
 @propertyInjectable
-class ImportedConnection extends Resource implements ICfnConnection {
+class ImportedConnection extends Resource implements IConnectionRef {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.ImportedConnection';
   public readonly connectionArn: string;

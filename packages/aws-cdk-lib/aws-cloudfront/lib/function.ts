@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { Construct } from 'constructs';
-import { CfnFunction, ICfnFunction } from './cloudfront.generated';
+import { CfnFunction, IFunctionRef } from './cloudfront.generated';
 import { IKeyValueStore } from './key-value-store';
 import { IResource, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -73,7 +73,7 @@ class FileCode extends FunctionCode {
 /**
  * Represents a CloudFront Function
  */
-export interface IFunction extends IResource, ICfnFunction {
+export interface IFunction extends IResource, IFunctionRef {
   /**
    * The name of the function.
    * @attribute

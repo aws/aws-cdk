@@ -1,13 +1,13 @@
 import { Construct } from 'constructs';
 import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
-import { CfnPublicDnsNamespace, ICfnPublicDnsNamespace } from './servicediscovery.generated';
+import { CfnPublicDnsNamespace, IPublicDnsNamespaceRef } from './servicediscovery.generated';
 import { Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface PublicDnsNamespaceProps extends BaseNamespaceProps {}
-export interface IPublicDnsNamespace extends INamespace, ICfnPublicDnsNamespace { }
+export interface IPublicDnsNamespace extends INamespace, IPublicDnsNamespaceRef { }
 export interface PublicDnsNamespaceAttributes {
   /**
    * A name for the Namespace.

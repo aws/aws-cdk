@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnProfilingGroup, ICfnProfilingGroup } from './codeguruprofiler.generated';
+import { CfnProfilingGroup, IProfilingGroupRef } from './codeguruprofiler.generated';
 import { Grant, IGrantable } from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -24,7 +24,7 @@ export enum ComputePlatform {
 /**
  * IResource represents a Profiling Group.
  */
-export interface IProfilingGroup extends IResource, ICfnProfilingGroup {
+export interface IProfilingGroup extends IResource, IProfilingGroupRef {
 
   /**
    * The name of the profiling group.

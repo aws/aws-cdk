@@ -6,7 +6,7 @@ import { IParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
 import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials } from './private/util';
 import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
-import { CfnDBCluster, CfnDBClusterProps, ICfnDBCluster } from './rds.generated';
+import { CfnDBCluster, CfnDBClusterProps, IDBClusterRef } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -22,7 +22,7 @@ import * as cxapi from '../../cx-api';
  * Interface representing a serverless database cluster.
  *
  */
-export interface IServerlessCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget, ICfnDBCluster {
+export interface IServerlessCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget, IDBClusterRef {
   /**
    * Identifier of the cluster
    */

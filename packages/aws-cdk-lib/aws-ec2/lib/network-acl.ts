@@ -3,8 +3,8 @@ import {
   CfnNetworkAcl,
   CfnNetworkAclEntry,
   CfnSubnetNetworkAclAssociation,
-  ICfnNetworkAcl,
-  ICfnNetworkAclEntry, ICfnSubnetNetworkAclAssociation,
+  INetworkAclRef,
+  INetworkAclEntryRef, ISubnetNetworkAclAssociationRef,
 } from './ec2.generated';
 import { AclCidr, AclTraffic } from './network-acl-types';
 import { ISubnet, IVpc, SubnetSelection } from './vpc';
@@ -22,7 +22,7 @@ const NAME_TAG: string = 'Name';
  *
  *
  */
-export interface INetworkAcl extends IResource, ICfnNetworkAcl {
+export interface INetworkAcl extends IResource, INetworkAclRef {
   /**
    * ID for the current Network ACL
    * @attribute
@@ -191,7 +191,7 @@ export enum Action {
  *
  *
  */
-export interface INetworkAclEntry extends IResource, ICfnNetworkAclEntry {
+export interface INetworkAclEntry extends IResource, INetworkAclEntryRef {
   /**
    * The network ACL.
    */
@@ -326,7 +326,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
  *
  *
  */
-export interface ISubnetNetworkAclAssociation extends IResource, ICfnSubnetNetworkAclAssociation {
+export interface ISubnetNetworkAclAssociation extends IResource, ISubnetNetworkAclAssociationRef {
   /**
    * ID for the current SubnetNetworkAclAssociation
    * @attribute

@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ArnFormat, IResource, Resource, Stack, Arn } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { CfnApplication, ICfnApplication } from '../codedeploy.generated';
+import { CfnApplication, IApplicationRef } from '../codedeploy.generated';
 import { arnForApplication, validateName } from '../private/utils';
 
 /**
@@ -15,7 +15,7 @@ import { arnForApplication, validateName } from '../private/utils';
  * or one defined in a different CDK Stack,
  * use the `EcsApplication#fromEcsApplicationName` method.
  */
-export interface IEcsApplication extends IResource, ICfnApplication {
+export interface IEcsApplication extends IResource, IApplicationRef {
   /** @attribute */
   readonly applicationArn: string;
 

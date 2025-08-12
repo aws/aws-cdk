@@ -2,8 +2,7 @@ import { Construct } from 'constructs';
 import { IUserPoolAuthenticationProvider } from './identitypool-user-pool-authentication-provider';
 import {
   CfnIdentityPool,
-  CfnIdentityPoolRoleAttachment,
-  ICfnIdentityPool,
+  CfnIdentityPoolRoleAttachment, IIdentityPoolRef,
   IUserPool,
   IUserPoolClient,
 } from '../../aws-cognito';
@@ -15,7 +14,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a Cognito Identity Pool
  */
-export interface IIdentityPool extends IResource, ICfnIdentityPool {
+export interface IIdentityPool extends IResource, IIdentityPoolRef {
   /**
    * The ID of the Identity Pool in the format REGION:GUID
    * @attribute

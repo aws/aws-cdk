@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnKeyGroup, ICfnKeyGroup } from './cloudfront.generated';
+import { CfnKeyGroup, IKeyGroupRef } from './cloudfront.generated';
 import { IPublicKey } from './public-key';
 import { IResource, Names, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -8,7 +8,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a Key Group
  */
-export interface IKeyGroup extends IResource, ICfnKeyGroup {
+export interface IKeyGroup extends IResource, IKeyGroupRef {
   /**
    * The ID of the key group.
    * @attribute

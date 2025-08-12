@@ -127,7 +127,7 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
       ?? `${Names.uniqueId(this)}.Lambda${props.type}${props.percentage}Percent${props.type === CustomLambdaDeploymentConfigType.LINEAR
         ? 'Every'
         : ''}${props.interval.toMinutes()}Minutes`;
-    this.attrDeploymentConfigName = this.deploymentConfigName
+    this.attrDeploymentConfigName = this.deploymentConfigName;
     this.deploymentConfigArn = arnForDeploymentConfig(this.deploymentConfigName);
 
     // The AWS Custom Resource that calls CodeDeploy to create and delete the resource

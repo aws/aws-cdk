@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnResponseHeadersPolicy, ICfnResponseHeadersPolicy } from './cloudfront.generated';
+import { CfnResponseHeadersPolicy, IResponseHeadersPolicyRef } from './cloudfront.generated';
 import { Duration, Names, Resource, Token, ValidationError, withResolved } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -7,7 +7,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a response headers policy.
  */
-export interface IResponseHeadersPolicy extends ICfnResponseHeadersPolicy {
+export interface IResponseHeadersPolicy extends IResponseHeadersPolicyRef {
   /**
    * The ID of the response headers policy
    * @attribute

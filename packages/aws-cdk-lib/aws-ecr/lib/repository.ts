@@ -1,6 +1,6 @@
 import { EOL } from 'os';
 import { IConstruct, Construct } from 'constructs';
-import { CfnRepository, ICfnRepository } from './ecr.generated';
+import { CfnRepository, IRepositoryRef } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -34,7 +34,7 @@ const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
 /**
  * Represents an ECR repository.
  */
-export interface IRepository extends IResource, ICfnRepository {
+export interface IRepository extends IResource, IRepositoryRef {
   /**
    * The name of the repository
    * @attribute

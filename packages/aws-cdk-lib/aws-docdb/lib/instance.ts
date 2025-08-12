@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IDatabaseCluster } from './cluster-ref';
-import { CfnDBInstance, ICfnDBInstance } from './docdb.generated';
+import { CfnDBInstance, IDBInstanceRef } from './docdb.generated';
 import { Endpoint } from './endpoint';
 import * as ec2 from '../../aws-ec2';
 import { CaCertificate } from '../../aws-rds';
@@ -12,7 +12,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A database instance
  */
-export interface IDatabaseInstance extends cdk.IResource, ICfnDBInstance {
+export interface IDatabaseInstance extends cdk.IResource, IDBInstanceRef {
   /**
    * The instance identifier.
    */

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnResource, CfnResourceProps, ICfnResource } from './apigateway.generated';
+import { CfnResource, CfnResourceProps, IResourceRef } from './apigateway.generated';
 import { Cors, CorsOptions } from './cors';
 import { Integration } from './integration';
 import { MockIntegration } from './integrations';
@@ -10,7 +10,7 @@ import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface IResource extends IResourceBase, ICfnResource {
+export interface IResource extends IResourceBase, IResourceRef {
   /**
    * The parent of this resource or undefined for the root resource.
    */

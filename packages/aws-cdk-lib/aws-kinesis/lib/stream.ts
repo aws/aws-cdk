@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { KinesisMetrics } from './kinesis-fixed-canned-metrics';
-import { CfnStream, ICfnStream } from './kinesis.generated';
+import { CfnStream, IStreamRef } from './kinesis.generated';
 import { ResourcePolicy } from './resource-policy';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
@@ -35,7 +35,7 @@ const WRITE_OPERATIONS = [
 /**
  * A Kinesis Stream
  */
-export interface IStream extends IResource, ICfnStream {
+export interface IStream extends IResource, IStreamRef {
   /**
    * The ARN of the stream.
    *

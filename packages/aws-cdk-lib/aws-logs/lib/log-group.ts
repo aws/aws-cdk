@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { DataProtectionPolicy } from './data-protection-policy';
 import { FieldIndexPolicy } from './field-index-policy';
 import { LogStream } from './log-stream';
-import { CfnLogGroup, ICfnLogGroup } from './logs.generated';
+import { CfnLogGroup, ILogGroupRef } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import { FilterPattern, IFilterPattern } from './pattern';
 import { ResourcePolicy } from './policy';
@@ -15,7 +15,7 @@ import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError 
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface ILogGroup extends iam.IResourceWithPolicy, ICfnLogGroup {
+export interface ILogGroup extends iam.IResourceWithPolicy, ILogGroupRef {
   /**
    * The ARN of this log group, with ':*' appended
    *

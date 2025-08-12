@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
-import { CfnDistribution, CfnMonitoringSubscription, ICfnDistribution } from './cloudfront.generated';
+import { CfnDistribution, CfnMonitoringSubscription, IDistributionRef } from './cloudfront.generated';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
@@ -23,7 +23,7 @@ import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
 /**
  * Interface for CloudFront distributions
  */
-export interface IDistribution extends IResource, ICfnDistribution {
+export interface IDistribution extends IResource, IDistributionRef {
   /**
    * The domain name of the Distribution, such as d111111abcdef8.cloudfront.net.
    *

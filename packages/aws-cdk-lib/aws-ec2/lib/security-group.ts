@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Connections } from './connections';
-import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress, ICfnSecurityGroup } from './ec2.generated';
+import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress, ISecurityGroupRef } from './ec2.generated';
 import { IPeer, Peer } from './peer';
 import { Port } from './port';
 import { IVpc } from './vpc';
@@ -17,7 +17,7 @@ const SECURITY_GROUP_DISABLE_INLINE_RULES_CONTEXT_KEY = '@aws-cdk/aws-ec2.securi
 /**
  * Interface for security group-like objects
  */
-export interface ISecurityGroup extends IResource, IPeer, ICfnSecurityGroup {
+export interface ISecurityGroup extends IResource, IPeer, ISecurityGroupRef {
   /**
    * ID for the current security group
    * @attribute

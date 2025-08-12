@@ -4,7 +4,7 @@ import { CidrRoutingConfig } from './cidr-routing-config';
 import { GeoLocation } from './geo-location';
 import { IHealthCheck } from './health-check';
 import { IHostedZone } from './hosted-zone-ref';
-import { CfnRecordSet, ICfnRecordSet } from './route53.generated';
+import { CfnRecordSet, IRecordSetRef } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 import * as iam from '../../aws-iam';
 import { Annotations, CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
@@ -20,7 +20,7 @@ const DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE = 'Custom::DeleteExistingRecordSe
 /**
  * A record set
  */
-export interface IRecordSet extends IResource, ICfnRecordSet {
+export interface IRecordSet extends IResource, IRecordSetRef {
   /**
    * The domain name of the record
    */

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnAccessKey, ICfnAccessKey } from './iam.generated';
+import { CfnAccessKey, IAccessKeyRef } from './iam.generated';
 import { IUser } from './user';
 import { IResource, Resource, SecretValue } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -25,7 +25,7 @@ export enum AccessKeyStatus {
  *
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
  */
-export interface IAccessKey extends IResource, ICfnAccessKey {
+export interface IAccessKey extends IResource, IAccessKeyRef {
   /**
    * The Access Key ID.
    *

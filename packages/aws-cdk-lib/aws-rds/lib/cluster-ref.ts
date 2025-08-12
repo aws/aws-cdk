@@ -1,7 +1,7 @@
 import { IClusterEngine } from './cluster-engine';
 import { Endpoint } from './endpoint';
 import { DatabaseProxy, DatabaseProxyOptions } from './proxy';
-import { ICfnDBCluster } from './rds.generated';
+import { IDBClusterRef } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
@@ -10,7 +10,7 @@ import { IResource } from '../../core';
 /**
  * Create a clustered database with a given number of instances.
  */
-export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget, ICfnDBCluster {
+export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget, IDBClusterRef {
   /**
    * Identifier of the cluster
    */

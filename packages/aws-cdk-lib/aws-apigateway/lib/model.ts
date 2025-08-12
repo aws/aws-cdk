@@ -3,12 +3,12 @@ import { CfnModel, CfnModelProps } from './apigateway.generated';
 import * as jsonSchema from './json-schema';
 import { IRestApi, RestApi } from './restapi';
 import * as util from './util';
-import { ICfnModel } from '../../aws-apigatewayv2';
+import { IModelRef } from '../../aws-apigatewayv2';
 import { Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface IModel extends ICfnModel {
+export interface IModel extends IModelRef {
   /**
    * Returns the model name, such as 'myModel'
    *

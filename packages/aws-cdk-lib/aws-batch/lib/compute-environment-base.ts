@@ -1,12 +1,12 @@
 import { Construct } from 'constructs';
-import { ICfnComputeEnvironment } from './batch.generated';
+import { IComputeEnvironmentRef } from './batch.generated';
 import * as iam from '../../aws-iam';
 import { IResource, Resource } from '../../core';
 
 /**
  * Represents a ComputeEnvironment
  */
-export interface IComputeEnvironment extends IResource, ICfnComputeEnvironment {
+export interface IComputeEnvironment extends IResource, IComputeEnvironmentRef {
   /**
    * The name of the ComputeEnvironment
    *

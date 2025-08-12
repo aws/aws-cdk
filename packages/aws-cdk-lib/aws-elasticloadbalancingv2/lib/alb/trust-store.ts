@@ -4,12 +4,12 @@ import { IResource, Resource, Fn, Names, Lazy, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { CfnTrustStore, ICfnTrustStore } from '../elasticloadbalancingv2.generated';
+import { CfnTrustStore, ITrustStoreRef } from '../elasticloadbalancingv2.generated';
 
 /**
  * Represents a Trust Store
  */
-export interface ITrustStore extends IResource, ICfnTrustStore {
+export interface ITrustStore extends IResource, ITrustStoreRef {
   /**
    * The name of the trust store
    * @attribute

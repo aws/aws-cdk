@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { DropSpamReceiptRule, ReceiptRule, ReceiptRuleOptions } from './receipt-rule';
-import { CfnReceiptRuleSet, ICfnReceiptRuleSet } from './ses.generated';
+import { CfnReceiptRuleSet, IReceiptRuleSetRef } from './ses.generated';
 import { IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -8,7 +8,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A receipt rule set.
  */
-export interface IReceiptRuleSet extends IResource, ICfnReceiptRuleSet {
+export interface IReceiptRuleSet extends IResource, IReceiptRuleSetRef {
   /**
    * The receipt rule set name.
    * @attribute

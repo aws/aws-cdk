@@ -9,7 +9,7 @@ import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
 import { Credentials, EngineLifecycleSupport, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
-import { CfnDBInstance, CfnDBInstanceProps, ICfnDBInstance } from './rds.generated';
+import { CfnDBInstance, CfnDBInstanceProps, IDBInstanceRef } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
 import { validateDatabaseInstanceProps } from './validate-database-insights';
 import * as ec2 from '../../aws-ec2';
@@ -29,7 +29,7 @@ import * as cxapi from '../../cx-api';
 /**
  * A database instance
  */
-export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget, ICfnDBInstance {
+export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget, IDBInstanceRef {
   /**
    * The instance identifier.
    */

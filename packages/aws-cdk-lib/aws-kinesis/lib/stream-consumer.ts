@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnStreamConsumer, ICfnStreamConsumer } from './kinesis.generated';
+import { CfnStreamConsumer, IStreamConsumerRef } from './kinesis.generated';
 import { ResourcePolicy } from './resource-policy';
 import { IStream, Stream } from './stream';
 import * as iam from '../../aws-iam';
@@ -15,7 +15,7 @@ const READ_OPERATIONS = [
 /**
  * A Kinesis Stream Consumer
  */
-export interface IStreamConsumer extends IResource, ICfnStreamConsumer {
+export interface IStreamConsumer extends IResource, IStreamConsumerRef {
   /**
    * The ARN of the stream consumer.
    *

@@ -1,11 +1,11 @@
 import { Construct } from 'constructs';
-import { CfnJobDefinitionProps, ICfnJobDefinition } from './batch.generated';
+import { CfnJobDefinitionProps, IJobDefinitionRef } from './batch.generated';
 import { Duration, IResource, Lazy, Resource } from '../../core';
 
 /**
  * Represents a JobDefinition
  */
-export interface IJobDefinition extends IResource, ICfnJobDefinition {
+export interface IJobDefinition extends IResource, IJobDefinitionRef {
   /**
    * The ARN of this job definition
    *

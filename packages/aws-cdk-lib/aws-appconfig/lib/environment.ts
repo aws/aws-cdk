@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnDeployment, CfnEnvironment, ICfnEnvironment } from './appconfig.generated';
+import { CfnDeployment, CfnEnvironment, IEnvironmentRef } from './appconfig.generated';
 import { IApplication } from './application';
 import { IConfiguration } from './configuration';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
@@ -461,7 +461,7 @@ export abstract class Monitor {
   public abstract readonly isCompositeAlarm?: boolean;
 }
 
-export interface IEnvironment extends IResource, ICfnEnvironment {
+export interface IEnvironment extends IResource, IEnvironmentRef {
   /**
    * The application associated with the environment.
    */

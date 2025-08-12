@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnGroup, ICfnGroup } from './iam.generated';
+import { CfnGroup, IGroupRef } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
@@ -16,7 +16,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  *
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html
  */
-export interface IGroup extends IIdentity, ICfnGroup {
+export interface IGroup extends IIdentity, IGroupRef {
   /**
    * Returns the IAM Group Name
    *

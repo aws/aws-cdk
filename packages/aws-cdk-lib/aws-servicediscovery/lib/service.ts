@@ -6,13 +6,13 @@ import { IpInstance, IpInstanceBaseProps } from './ip-instance';
 import { INamespace, NamespaceType } from './namespace';
 import { NonIpInstance, NonIpInstanceBaseProps } from './non-ip-instance';
 import { defaultDiscoveryType } from './private/utils';
-import { CfnService, ICfnService } from './servicediscovery.generated';
+import { CfnService, IServiceRef } from './servicediscovery.generated';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { Duration, IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface IService extends IResource, ICfnService {
+export interface IService extends IResource, IServiceRef {
   /**
    * A name for the Cloudmap Service.
    * @attribute

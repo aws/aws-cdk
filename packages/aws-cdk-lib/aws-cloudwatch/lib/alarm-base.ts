@@ -1,5 +1,5 @@
 import { IAlarmAction } from './alarm-action';
-import { ICfnAlarm } from './cloudwatch.generated';
+import { IAlarmRef } from './cloudwatch.generated';
 import { IResource, Resource } from '../../core';
 
 /**
@@ -17,7 +17,7 @@ export interface IAlarmRule {
 /**
  * Represents a CloudWatch Alarm
  */
-export interface IAlarm extends IAlarmRule, IResource, ICfnAlarm {
+export interface IAlarm extends IAlarmRule, IResource, IAlarmRef {
   /**
    * Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:Foo)
    *

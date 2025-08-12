@@ -1,5 +1,5 @@
 import * as constructs from 'constructs';
-import { CfnNotificationRule, ICfnNotificationRule } from './codestarnotifications.generated';
+import { CfnNotificationRule, INotificationRuleRef } from './codestarnotifications.generated';
 import { INotificationRuleSource } from './notification-rule-source';
 import { INotificationRuleTarget, NotificationRuleTargetConfig } from './notification-rule-target';
 import { IResource, Resource, Names } from '../../core';
@@ -88,7 +88,7 @@ export interface NotificationRuleProps extends NotificationRuleOptions {
 /**
  * Represents a notification rule
  */
-export interface INotificationRule extends IResource, ICfnNotificationRule {
+export interface INotificationRule extends IResource, INotificationRuleRef {
 
   /**
    * The ARN of the notification rule (i.e. arn:aws:codestar-notifications:::notificationrule/01234abcde)

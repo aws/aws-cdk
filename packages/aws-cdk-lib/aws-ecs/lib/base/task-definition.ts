@@ -7,7 +7,7 @@ import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IAlternateTarget } from '../alternate-target-configuration';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
-import { CfnTaskDefinition, ICfnTaskDefinition } from '../ecs.generated';
+import { CfnTaskDefinition, ITaskDefinitionRef } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
 import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { PlacementConstraint } from '../placement';
@@ -17,7 +17,7 @@ import { RuntimePlatform } from '../runtime-platform';
 /**
  * The interface for all task definitions.
  */
-export interface ITaskDefinition extends IResource, ICfnTaskDefinition {
+export interface ITaskDefinition extends IResource, ITaskDefinitionRef {
   /**
    * ARN of this task definition
    * @attribute

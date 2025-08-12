@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnInstanceProfile, ICfnInstanceProfile } from './iam.generated';
+import { CfnInstanceProfile, IInstanceProfileRef } from './iam.generated';
 import { ServicePrincipal } from './principals';
 import { IRole, Role } from './role';
 import { Resource, Arn, Stack, IResource, PhysicalName } from '../../core';
@@ -9,7 +9,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents an IAM Instance Profile
  */
-export interface IInstanceProfile extends IResource, ICfnInstanceProfile {
+export interface IInstanceProfile extends IResource, IInstanceProfileRef {
   /**
    * The InstanceProfile's name.
    * @attribute

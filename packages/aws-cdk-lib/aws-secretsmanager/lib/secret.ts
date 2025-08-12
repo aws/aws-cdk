@@ -1,11 +1,27 @@
-import { IConstruct, Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { ResourcePolicy } from './policy';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import * as secretsmanager from './secretsmanager.generated';
-import { ICfnSecret, ICfnSecretTargetAttachment } from './secretsmanager.generated';
+import { ISecretRef, ISecretTargetAttachmentRef } from './secretsmanager.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Fn, IResolveContext, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token, TokenComparison, UnscopedValidationError, ValidationError } from '../../core';
+import {
+  ArnFormat,
+  FeatureFlags,
+  Fn,
+  IResolveContext,
+  IResource,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  ResourceProps,
+  SecretValue,
+  Stack,
+  Token,
+  TokenComparison,
+  UnscopedValidationError,
+  ValidationError,
+} from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -15,7 +31,7 @@ const SECRET_SYMBOL = Symbol.for('@aws-cdk/secretsmanager.Secret');
 /**
  * A secret in AWS Secrets Manager.
  */
-export interface ISecret extends IResource, ICfnSecret {
+export interface ISecret extends IResource, ISecretRef {
   /**
    * The customer-managed encryption key that is used to encrypt this secret, if any. When not specified, the default
    * KMS key for the account and region is being used.
@@ -838,7 +854,7 @@ export interface SecretTargetAttachmentProps extends AttachedSecretOptions {
   readonly secret: ISecret;
 }
 
-export interface ISecretTargetAttachment extends ISecret, ICfnSecretTargetAttachment {
+export interface ISecretTargetAttachment extends ISecret, ISecretTargetAttachmentRef {
   /**
    * Same as `secretArn`
    *

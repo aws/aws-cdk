@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnSchedulingPolicy, ICfnSchedulingPolicy } from './batch.generated';
+import { CfnSchedulingPolicy, ISchedulingPolicyRef } from './batch.generated';
 import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -91,7 +91,7 @@ export interface Share {
  * each share determine the ratio of vCPUs allocated; see the readme for a more in-depth discussion of
  * fairshare policies.
  */
-export interface IFairshareSchedulingPolicy extends ISchedulingPolicy, ICfnSchedulingPolicy {
+export interface IFairshareSchedulingPolicy extends ISchedulingPolicy, ISchedulingPolicyRef {
   /**
    * Used to calculate the percentage of the maximum available vCPU to reserve for share identifiers not present in the Queue.
    *

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnCloudFrontOriginAccessIdentity, ICfnCloudFrontOriginAccessIdentity } from './cloudfront.generated';
+import { CfnCloudFrontOriginAccessIdentity, ICloudFrontOriginAccessIdentityRef } from './cloudfront.generated';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -20,7 +20,7 @@ export interface OriginAccessIdentityProps {
 /**
  * Interface for CloudFront OriginAccessIdentity
  */
-export interface IOriginAccessIdentity extends cdk.IResource, iam.IGrantable, ICfnCloudFrontOriginAccessIdentity {
+export interface IOriginAccessIdentity extends cdk.IResource, iam.IGrantable, ICloudFrontOriginAccessIdentityRef {
   /**
    * The Origin Access Identity Id (physical id)
    * It is misnamed and superseded by the correctly named originAccessIdentityId

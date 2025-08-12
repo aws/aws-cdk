@@ -10,7 +10,7 @@ import { CfnResource, ContextProvider, IResource, Lazy, Resource, Stack, Token }
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
-import { CfnLoadBalancer, ICfnLoadBalancer } from '../elasticloadbalancingv2.generated';
+import { CfnLoadBalancer, ILoadBalancerRef } from '../elasticloadbalancingv2.generated';
 
 /**
  * The prefix to use for source NAT for a dual-stack network load balancer with UDP listeners.
@@ -153,7 +153,7 @@ export interface BaseLoadBalancerProps {
   readonly minimumCapacityUnit?: number;
 }
 
-export interface ILoadBalancerV2 extends IResource, ICfnLoadBalancer {
+export interface ILoadBalancerV2 extends IResource, ILoadBalancerRef {
   /**
    * The canonical hosted zone ID of this load balancer
    *

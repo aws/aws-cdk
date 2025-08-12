@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
-import { CfnVPCEndpoint, ICfnVPCEndpoint } from './ec2.generated';
+import { CfnVPCEndpoint, IVPCEndpointRef } from './ec2.generated';
 import { Peer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -15,7 +15,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A VPC endpoint.
  */
-export interface IVpcEndpoint extends IResource, ICfnVPCEndpoint {
+export interface IVpcEndpoint extends IResource, IVPCEndpointRef {
   /**
    * The VPC endpoint identifier.
    * @attribute

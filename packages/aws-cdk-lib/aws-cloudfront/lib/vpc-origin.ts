@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnVpcOrigin, ICfnVpcOrigin } from './cloudfront.generated';
+import { CfnVpcOrigin, IVpcOriginRef } from './cloudfront.generated';
 import { OriginProtocolPolicy, OriginSslPolicy } from '../';
 import { IInstance } from '../../aws-ec2';
 import { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
@@ -10,7 +10,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a VPC origin.
  */
-export interface IVpcOrigin extends IResource, ICfnVpcOrigin {
+export interface IVpcOrigin extends IResource, IVpcOriginRef {
   /**
    * The VPC origin ARN.
    * @attribute

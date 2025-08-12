@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnSourceApiAssociation, ICfnSourceApiAssociation } from './appsync.generated';
+import { CfnSourceApiAssociation, ISourceApiAssociationRef } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { Effect, IRole, PolicyStatement } from '../../aws-iam';
 import { Fn, IResource, Lazy, Resource } from '../../core';
@@ -24,7 +24,7 @@ export enum MergeType {
 /**
  * Interface for AppSync Source Api Association
  */
-export interface ISourceApiAssociation extends IResource, ICfnSourceApiAssociation {
+export interface ISourceApiAssociation extends IResource, ISourceApiAssociationRef {
 
   /**
    * The association id.

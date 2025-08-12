@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnKeyPair, ICfnKeyPair } from './ec2.generated';
+import { CfnKeyPair, IKeyPairRef } from './ec2.generated';
 import { OperatingSystemType } from './machine-image';
 import { StringParameter, IStringParameter } from '../../aws-ssm';
 import { Resource, ResourceProps, Names, Lazy, IResource, ValidationError } from '../../core';
@@ -96,7 +96,7 @@ export interface KeyPairAttributes {
 /**
  * An EC2 Key Pair.
  */
-export interface IKeyPair extends IResource, ICfnKeyPair {
+export interface IKeyPair extends IResource, IKeyPairRef {
   /**
    * The name of the key pair.
    *

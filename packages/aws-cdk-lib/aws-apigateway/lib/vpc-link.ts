@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnVpcLink, ICfnVpcLink } from './apigateway.generated';
+import { CfnVpcLink, IVpcLinkRef } from './apigateway.generated';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { IResource, Lazy, Names, Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -8,7 +8,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents an API Gateway VpcLink
  */
-export interface IVpcLink extends IResource, ICfnVpcLink {
+export interface IVpcLink extends IResource, IVpcLinkRef {
   /**
    * Physical ID of the VpcLink resource
    * @attribute

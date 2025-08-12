@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnJobQueue, ICfnJobQueue } from './batch.generated';
+import { CfnJobQueue, IJobQueueRef } from './batch.generated';
 import { IComputeEnvironment } from './compute-environment-base';
 import { ISchedulingPolicy } from './scheduling-policy';
 import { ArnFormat, Duration, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
@@ -9,7 +9,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a JobQueue
  */
-export interface IJobQueue extends IResource, ICfnJobQueue {
+export interface IJobQueue extends IResource, IJobQueueRef {
   /**
    * The name of the job queue. It can be up to 128 letters long.
    * It can contain uppercase and lowercase letters, numbers, hyphens (-), and underscores (_)

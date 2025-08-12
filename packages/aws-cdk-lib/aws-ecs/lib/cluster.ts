@@ -2,7 +2,7 @@ import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
-import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations, ICfnCluster } from './ecs.generated';
+import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations, IClusterRef } from './ecs.generated';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -948,7 +948,7 @@ Object.defineProperty(Cluster.prototype, CLUSTER_SYMBOL, {
 /**
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
-export interface ICluster extends IResource, ICfnCluster {
+export interface ICluster extends IResource, IClusterRef {
   /**
    * The name of the cluster.
    * @attribute

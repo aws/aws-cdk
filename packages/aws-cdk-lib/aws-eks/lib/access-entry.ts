@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
-import { CfnAccessEntry, ICfnAccessEntry } from './eks.generated';
+import { CfnAccessEntry, IAccessEntryRef } from './eks.generated';
 import {
   Resource, IResource, Aws, Lazy,
 } from '../../core';
@@ -17,7 +17,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  * @property {string} accessEntryName - The name of the access entry.
  * @property {string} accessEntryArn - The Amazon Resource Name (ARN) of the access entry.
  */
-export interface IAccessEntry extends IResource, ICfnAccessEntry {
+export interface IAccessEntry extends IResource, IAccessEntryRef {
   /**
    * The name of the access entry.
    * @attribute

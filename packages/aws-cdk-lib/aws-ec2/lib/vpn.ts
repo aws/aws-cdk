@@ -4,7 +4,7 @@ import {
   CfnCustomerGateway,
   CfnVPNConnection,
   CfnVPNConnectionRoute,
-  CfnVPNGateway, ICfnVPNConnection, ICfnVPNGateway,
+  CfnVPNGateway, IVPNConnectionRef, IVPNGatewayRef,
 } from './ec2.generated';
 import { IVpc, SubnetSelection } from './vpc';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -12,7 +12,7 @@ import { IResource, Resource, SecretValue, Token, ValidationError } from '../../
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface IVpnConnection extends IResource, ICfnVPNConnection {
+export interface IVpnConnection extends IResource, IVPNConnectionRef {
   /**
    * The id of the VPN connection.
    * @attribute VpnConnectionId
@@ -38,7 +38,7 @@ export interface IVpnConnection extends IResource, ICfnVPNConnection {
 /**
  * The virtual private gateway interface
  */
-export interface IVpnGateway extends IResource, ICfnVPNGateway {
+export interface IVpnGateway extends IResource, IVPNGatewayRef {
 
   /**
    * The virtual private gateway Id

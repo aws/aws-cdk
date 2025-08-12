@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
-import { CfnLaunchTemplate, ICfnLaunchTemplate } from './ec2.generated';
+import { CfnLaunchTemplate, ILaunchTemplateRef } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
@@ -75,7 +75,7 @@ export enum InstanceInitiatedShutdownBehavior {
 /**
  * Interface for LaunchTemplate-like objects.
  */
-export interface ILaunchTemplate extends IResource, ICfnLaunchTemplate {
+export interface ILaunchTemplate extends IResource, ILaunchTemplateRef {
   /**
    * The version number of this launch template to use
    *

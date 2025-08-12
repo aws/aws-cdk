@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { HttpMethod, IConnection } from './connection';
-import { CfnApiDestination, ICfnApiDestination } from './events.generated';
+import { CfnApiDestination, IApiDestinationRef } from './events.generated';
 import { ArnFormat, IResource, Resource, Stack, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -50,7 +50,7 @@ export interface ApiDestinationProps {
 /**
  * Interface for API Destinations
  */
-export interface IApiDestination extends IResource, ICfnApiDestination {
+export interface IApiDestination extends IResource, IApiDestinationRef {
   /**
    * The Name of the Api Destination created.
    * @attribute

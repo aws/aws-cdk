@@ -1,6 +1,6 @@
 import { Construct, IConstruct, DependencyGroup, Node } from 'constructs';
 import { Grant } from './grant';
-import { CfnRole, ICfnRole } from './iam.generated';
+import { CfnRole, IRoleRef } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy, ManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
@@ -800,7 +800,7 @@ export class Role extends Resource implements IRole {
 /**
  * A Role object
  */
-export interface IRole extends IIdentity, ICfnRole {
+export interface IRole extends IIdentity, IRoleRef {
   /**
    * Returns the ARN of this role.
    *

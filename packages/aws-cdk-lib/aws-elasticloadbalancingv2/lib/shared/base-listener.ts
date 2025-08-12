@@ -5,7 +5,7 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { Annotations, ContextProvider, IResource, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import * as cxapi from '../../../cx-api';
-import { CfnListener, ICfnListener } from '../elasticloadbalancingv2.generated';
+import { CfnListener, IListenerRef } from '../elasticloadbalancingv2.generated';
 
 /**
  * Options for listener lookup
@@ -60,7 +60,7 @@ export interface ListenerQueryContextProviderOptions {
 /**
  * Base interface for listeners
  */
-export interface IListener extends IResource, ICfnListener {
+export interface IListener extends IResource, IListenerRef {
   /**
    * ARN of the listener
    * @attribute

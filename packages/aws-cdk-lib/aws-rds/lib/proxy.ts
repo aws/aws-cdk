@@ -3,7 +3,7 @@ import { IDatabaseCluster } from './cluster-ref';
 import { IEngine } from './engine';
 import { IDatabaseInstance } from './instance';
 import { engineDescription } from './private/util';
-import { CfnDBProxy, CfnDBProxyTargetGroup, CfnDBInstance, ICfnDBProxy } from './rds.generated';
+import { CfnDBProxy, CfnDBProxyTargetGroup, CfnDBInstance, IDBProxyRef } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
@@ -332,7 +332,7 @@ export interface DatabaseProxyAttributes {
 /**
  * DB Proxy
  */
-export interface IDatabaseProxy extends cdk.IResource, ICfnDBProxy {
+export interface IDatabaseProxy extends cdk.IResource, IDBProxyRef {
   /**
    * DB Proxy Name
    *

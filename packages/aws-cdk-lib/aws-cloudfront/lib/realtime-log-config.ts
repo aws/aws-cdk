@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnRealtimeLogConfig, ICfnRealtimeLogConfig } from './cloudfront.generated';
+import { CfnRealtimeLogConfig, IRealtimeLogConfigRef } from './cloudfront.generated';
 import { Endpoint } from '../';
 import { IResource, Lazy, Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -8,7 +8,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents Realtime Log Configuration
  */
-export interface IRealtimeLogConfig extends IResource, ICfnRealtimeLogConfig {
+export interface IRealtimeLogConfig extends IResource, IRealtimeLogConfigRef {
   /**
    * The name of the realtime log config.
    * @attribute

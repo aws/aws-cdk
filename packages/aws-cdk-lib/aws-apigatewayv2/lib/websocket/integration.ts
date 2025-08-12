@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
 import { IWebSocketRoute } from './route';
-import { CfnIntegration, ICfnIntegration } from '.././index';
+import { CfnIntegration, IIntegrationRef } from '.././index';
 import { IRole } from '../../../aws-iam';
 import { Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
@@ -12,7 +12,7 @@ import { IIntegration } from '../common';
 /**
  * Represents an Integration for an WebSocket API.
  */
-export interface IWebSocketIntegration extends IIntegration, ICfnIntegration {
+export interface IWebSocketIntegration extends IIntegration, IIntegrationRef {
   /** The WebSocket API associated with this integration */
   readonly webSocketApi: IWebSocketApi;
 }

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnPlacementGroup, ICfnPlacementGroup } from './ec2.generated';
+import { CfnPlacementGroup, IPlacementGroupRef } from './ec2.generated';
 import { IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -9,7 +9,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  *
  * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
  */
-export interface IPlacementGroup extends IResource, ICfnPlacementGroup {
+export interface IPlacementGroup extends IResource, IPlacementGroupRef {
   /**
    * The name of this placement group
    *

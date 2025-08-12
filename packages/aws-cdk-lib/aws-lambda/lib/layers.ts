@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { Code } from './code';
-import { CfnLayerVersion, CfnLayerVersionPermission, ICfnLayerVersion } from './lambda.generated';
+import { CfnLayerVersion, CfnLayerVersionPermission, ILayerVersionRef } from './lambda.generated';
 import { Runtime } from './runtime';
 import { IResource, RemovalPolicy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -64,7 +64,7 @@ export interface LayerVersionProps extends LayerVersionOptions {
   readonly code: Code;
 }
 
-export interface ILayerVersion extends IResource, ICfnLayerVersion {
+export interface ILayerVersion extends IResource, ILayerVersionRef {
   /**
    * The ARN of the Lambda Layer version that this Layer defines.
    * @attribute

@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ConfigurationSetEventDestination, ConfigurationSetEventDestinationOptions } from './configuration-set-event-destination';
 import { IDedicatedIpPool } from './dedicated-ip-pool';
 import { undefinedIfNoKeys } from './private/utils';
-import { CfnConfigurationSet, ICfnConfigurationSet } from './ses.generated';
+import { CfnConfigurationSet, IConfigurationSetRef } from './ses.generated';
 import { Duration, IResource, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -10,7 +10,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A configuration set
  */
-export interface IConfigurationSet extends IResource, ICfnConfigurationSet {
+export interface IConfigurationSet extends IResource, IConfigurationSetRef {
   /**
    * The name of the configuration set
    *

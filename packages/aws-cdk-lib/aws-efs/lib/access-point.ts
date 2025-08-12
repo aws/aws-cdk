@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IFileSystem } from './efs-file-system';
-import { CfnAccessPoint, ICfnAccessPoint } from './efs.generated';
+import { CfnAccessPoint, IAccessPointRef } from './efs.generated';
 import { ArnFormat, IResource, Resource, Stack, Tags, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -8,7 +8,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents an EFS AccessPoint
  */
-export interface IAccessPoint extends IResource, ICfnAccessPoint {
+export interface IAccessPoint extends IResource, IAccessPointRef {
   /**
    * The ID of the AccessPoint
    *

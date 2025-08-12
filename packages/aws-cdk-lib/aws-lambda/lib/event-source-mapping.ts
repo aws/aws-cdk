@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
-import { CfnEventSourceMapping, ICfnEventSourceMapping } from './lambda.generated';
+import { CfnEventSourceMapping, IEventSourceMappingRef } from './lambda.generated';
 import { ISchemaRegistry } from './schema-registry';
 import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
@@ -352,7 +352,7 @@ export interface EventSourceMappingProps extends EventSourceMappingOptions {
  * Represents an event source mapping for a lambda function.
  * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventsourcemapping.html
  */
-export interface IEventSourceMapping extends cdk.IResource, ICfnEventSourceMapping {
+export interface IEventSourceMapping extends cdk.IResource, IEventSourceMappingRef {
   /**
    * The identifier for this EventSourceMapping
    * @attribute

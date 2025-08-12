@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnVolume, ICfnVolume } from './ec2.generated';
+import { CfnVolume, IVolumeRef } from './ec2.generated';
 import { IInstance } from './instance';
 import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
@@ -265,7 +265,7 @@ export enum EbsDeviceVolumeType {
 /**
  * An EBS Volume in AWS EC2.
  */
-export interface IVolume extends IResource, ICfnVolume {
+export interface IVolume extends IResource, IVolumeRef {
   /**
    * The EBS Volume's ID
    *

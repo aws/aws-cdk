@@ -11,8 +11,7 @@ import { IProduct } from './product';
 import {
   CfnPortfolio,
   CfnPortfolioPrincipalAssociation,
-  CfnPortfolioShare,
-  ICfnPortfolio,
+  CfnPortfolioShare, IPortfolioRef,
 } from './servicecatalog.generated';
 import { TagOptions } from './tag-options';
 import * as iam from '../../aws-iam';
@@ -47,7 +46,7 @@ export interface PortfolioShareOptions {
 /**
  * A Service Catalog portfolio.
  */
-export interface IPortfolio extends cdk.IResource, ICfnPortfolio {
+export interface IPortfolio extends cdk.IResource, IPortfolioRef {
   /**
    * The ARN of the portfolio.
    * @attribute

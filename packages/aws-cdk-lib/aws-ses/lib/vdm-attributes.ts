@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnVdmAttributes, ICfnVdmAttributes } from './ses.generated';
+import { CfnVdmAttributes, IVdmAttributesRef } from './ses.generated';
 import { IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -7,7 +7,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Virtual Deliverability Manager (VDM) attributes
  */
-export interface IVdmAttributes extends IResource, ICfnVdmAttributes {
+export interface IVdmAttributes extends IResource, IVdmAttributesRef {
   /**
    * The name of the resource behind the Virtual Deliverability Manager attributes.
    *

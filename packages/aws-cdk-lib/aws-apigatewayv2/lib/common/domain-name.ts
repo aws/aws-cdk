@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IpAddressType } from './api';
-import { CfnDomainName, CfnDomainNameProps, ICfnDomainName } from '.././index';
+import { CfnDomainName, CfnDomainNameProps, IDomainNameRef } from '.././index';
 import { ICertificate } from '../../../aws-certificatemanager';
 import { IBucket } from '../../../aws-s3';
 import { Arn, IResource, Lazy, Resource, Stack, Token } from '../../../core';
@@ -37,7 +37,7 @@ export enum EndpointType {
  * Represents an APIGatewayV2 DomainName
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-domainname.html
  */
-export interface IDomainName extends IResource, ICfnDomainName {
+export interface IDomainName extends IResource, IDomainNameRef {
   /**
    * The custom domain name
    * @attribute

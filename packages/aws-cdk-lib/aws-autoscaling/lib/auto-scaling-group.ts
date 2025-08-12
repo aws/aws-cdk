@@ -1,7 +1,7 @@
 
 import { Construct } from 'constructs';
 import { AutoScalingGroupRequireImdsv2Aspect } from './aspects';
-import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration, ICfnAutoScalingGroup } from './autoscaling.generated';
+import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration, IAutoScalingGroupRef } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
@@ -2480,7 +2480,7 @@ function validatePercentage(x?: number): number | undefined {
 /**
  * An AutoScalingGroup
  */
-export interface IAutoScalingGroup extends IResource, iam.IGrantable, ICfnAutoScalingGroup {
+export interface IAutoScalingGroup extends IResource, iam.IGrantable, IAutoScalingGroupRef {
   /**
    * The name of the AutoScalingGroup
    * @attribute

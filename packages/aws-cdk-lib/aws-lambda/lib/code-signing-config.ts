@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnCodeSigningConfig, ICfnCodeSigningConfig } from './lambda.generated';
+import { CfnCodeSigningConfig, ICodeSigningConfigRef } from './lambda.generated';
 import { ISigningProfile } from '../../aws-signer';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -25,7 +25,7 @@ export enum UntrustedArtifactOnDeployment {
 /**
  * A Code Signing Config
  */
-export interface ICodeSigningConfig extends IResource, ICfnCodeSigningConfig {
+export interface ICodeSigningConfig extends IResource, ICodeSigningConfigRef {
   /**
    * The ARN of Code Signing Config
    * @attribute

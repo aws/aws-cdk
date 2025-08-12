@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { AppSyncEventResource } from './appsync-common';
-import { CfnChannelNamespace, ICfnChannelNamespace } from './appsync.generated';
+import { CfnChannelNamespace, IChannelNamespaceRef } from './appsync.generated';
 import { AppSyncAuthorizationType } from './auth-config';
 import { Code } from './code';
 import {
@@ -17,7 +17,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * An AppSync channel namespace
  */
-export interface IChannelNamespace extends IResource, ICfnChannelNamespace {
+export interface IChannelNamespace extends IResource, IChannelNamespaceRef {
   /**
    * The ARN of the AppSync channel namespace
    *

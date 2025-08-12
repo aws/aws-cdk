@@ -1,6 +1,6 @@
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
-import { CfnFileSystem, CfnMountTarget, ICfnFileSystem } from './efs.generated';
+import { CfnFileSystem, CfnMountTarget, IFileSystemRef } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -141,7 +141,7 @@ export enum ReplicationOverwriteProtection {
 /**
  * Represents an Amazon EFS file system
  */
-export interface IFileSystem extends ec2.IConnectable, iam.IResourceWithPolicy, ICfnFileSystem {
+export interface IFileSystem extends ec2.IConnectable, iam.IResourceWithPolicy, IFileSystemRef {
   /**
    * The ID of the file system, assigned by Amazon EFS.
    *

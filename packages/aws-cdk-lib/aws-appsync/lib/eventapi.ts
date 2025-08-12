@@ -6,7 +6,7 @@ import {
   AppSyncDomainOptions,
   AppSyncEventResource,
 } from './appsync-common';
-import { CfnApi, CfnApiKey, CfnDomainName, CfnDomainNameApiAssociation, ICfnApi } from './appsync.generated';
+import { CfnApi, CfnApiKey, CfnDomainName, CfnDomainNameApiAssociation, IApiRef } from './appsync.generated';
 import {
   IAppSyncAuthConfig,
   createAPIKey,
@@ -119,7 +119,7 @@ class AppSyncEventApiAuthConfig implements IAppSyncAuthConfig {
 /**
  * Interface for Event API
  */
-export interface IEventApi extends IApi, ICfnApi {
+export interface IEventApi extends IApi, IApiRef {
   /**
    * The Authorization Types for this Event Api
    */

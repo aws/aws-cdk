@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnComputeEnvironment, ICfnComputeEnvironment } from './batch.generated';
+import { CfnComputeEnvironment, IComputeEnvironmentRef } from './batch.generated';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
 import * as ec2 from '../../aws-ec2';
 import * as eks from '../../aws-eks';
@@ -1101,7 +1101,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
 /**
  * A ManagedComputeEnvironment that uses ECS orchestration on Fargate instances.
  */
-export interface IFargateComputeEnvironment extends IManagedComputeEnvironment, ICfnComputeEnvironment { }
+export interface IFargateComputeEnvironment extends IManagedComputeEnvironment, IComputeEnvironmentRef { }
 
 /**
  * Props for a FargateComputeEnvironment

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnFunctionConfiguration, ICfnFunctionConfiguration } from './appsync.generated';
+import { CfnFunctionConfiguration, IFunctionConfigurationRef } from './appsync.generated';
 import { Code } from './code';
 import { BaseDataSource, LambdaDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
@@ -91,7 +91,7 @@ export interface AppsyncFunctionAttributes {
 /**
  * Interface for AppSync Functions
  */
-export interface IAppsyncFunction extends IResource, ICfnFunctionConfiguration {
+export interface IAppsyncFunction extends IResource, IFunctionConfigurationRef {
   /**
    * the name of this AppSync Function
    *

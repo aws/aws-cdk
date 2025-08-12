@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { AcceleratorSecurityGroupPeer } from './_accelerator-security-group';
 import { IEndpoint } from './endpoint';
 import * as ga from './globalaccelerator.generated';
-import { ICfnEndpointGroup } from './globalaccelerator.generated';
+import { IEndpointGroupRef } from './globalaccelerator.generated';
 import { IListener } from './listener';
 import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
@@ -12,7 +12,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * The interface of the EndpointGroup
  */
-export interface IEndpointGroup extends cdk.IResource, ICfnEndpointGroup {
+export interface IEndpointGroup extends cdk.IResource, IEndpointGroupRef {
   /**
    * EndpointGroup ARN
    * @attribute

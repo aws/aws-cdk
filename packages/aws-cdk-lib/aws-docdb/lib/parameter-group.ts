@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnDBClusterParameterGroup, ICfnDBClusterParameterGroup } from './docdb.generated';
+import { CfnDBClusterParameterGroup, IDBClusterParameterGroupRef } from './docdb.generated';
 import { IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -7,7 +7,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A parameter group
  */
-export interface IClusterParameterGroup extends IResource, ICfnDBClusterParameterGroup {
+export interface IClusterParameterGroup extends IResource, IDBClusterParameterGroupRef {
   /**
    * The name of this parameter group
    */

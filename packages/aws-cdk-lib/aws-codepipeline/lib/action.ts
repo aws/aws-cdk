@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Artifact } from './artifact';
-import { ICfnPipeline } from './codepipeline.generated';
+import { IPipelineRef } from './codepipeline.generated';
 import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -196,7 +196,7 @@ export interface IAction {
  * It extends `events.IRuleTarget`,
  * so this interface can be used as a Target for CloudWatch Events.
  */
-export interface IPipeline extends IResource, notifications.INotificationRuleSource, ICfnPipeline {
+export interface IPipeline extends IResource, notifications.INotificationRuleSource, IPipelineRef {
   /**
    * The name of the Pipeline.
    *

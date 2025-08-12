@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnSlackChannelConfiguration, ICfnSlackChannelConfiguration } from './chatbot.generated';
+import { CfnSlackChannelConfiguration, ISlackChannelConfigurationRef } from './chatbot.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
@@ -124,7 +124,7 @@ export enum LoggingLevel {
 export interface ISlackChannelConfiguration extends cdk.IResource,
   iam.IGrantable,
   notifications.INotificationRuleTarget,
-  ICfnSlackChannelConfiguration {
+  ISlackChannelConfigurationRef {
 
   /**
    * The ARN of the Slack channel configuration

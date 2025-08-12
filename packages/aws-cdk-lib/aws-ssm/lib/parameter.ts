@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import * as ssm from './ssm.generated';
-import { ICfnParameter } from './ssm.generated';
+import { IParameterRef } from './ssm.generated';
 import { arnForParameterName, AUTOGEN_MARKER } from './util';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -18,7 +18,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * An SSM Parameter reference.
  */
-export interface IParameter extends IResource, ICfnParameter {
+export interface IParameter extends IResource, IParameterRef {
   /**
    * The ARN of the SSM Parameter resource.
    * @attribute

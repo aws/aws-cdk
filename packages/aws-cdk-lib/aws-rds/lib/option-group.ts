@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IInstanceEngine } from './instance-engine';
-import { CfnOptionGroup, ICfnOptionGroup } from './rds.generated';
+import { CfnOptionGroup, IOptionGroupRef } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
 import { IResource, Lazy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -10,7 +10,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * An option group
  */
-export interface IOptionGroup extends IResource, ICfnOptionGroup {
+export interface IOptionGroup extends IResource, IOptionGroupRef {
   /**
    * The name of the option group.
    *

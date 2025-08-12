@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnJobDefinition, ICfnJobDefinition } from './batch.generated';
+import { CfnJobDefinition, IJobDefinitionRef } from './batch.generated';
 import { EksContainerDefinition, EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
@@ -9,7 +9,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A JobDefinition that uses Eks orchestration
  */
-export interface IEksJobDefinition extends IJobDefinition, ICfnJobDefinition {
+export interface IEksJobDefinition extends IJobDefinition, IJobDefinitionRef {
   /**
    * The container this Job Definition will run
    */

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnDedicatedIpPool, ICfnDedicatedIpPool } from './ses.generated';
+import { CfnDedicatedIpPool, IDedicatedIpPoolRef } from './ses.generated';
 import { IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -24,7 +24,7 @@ export enum ScalingMode {
 /**
  * A dedicated IP pool
  */
-export interface IDedicatedIpPool extends IResource, ICfnDedicatedIpPool {
+export interface IDedicatedIpPool extends IResource, IDedicatedIpPoolRef {
   /**
    * The name of the dedicated IP pool
    *

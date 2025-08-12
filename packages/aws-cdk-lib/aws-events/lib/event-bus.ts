@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Archive, BaseArchiveProps } from './archive';
-import { CfnEventBus, CfnEventBusPolicy, ICfnEventBus } from './events.generated';
+import { CfnEventBus, CfnEventBusPolicy, IEventBusRef } from './events.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
@@ -12,7 +12,7 @@ import * as cxapi from '../../cx-api';
 /**
  * Interface which all EventBus based classes MUST implement
  */
-export interface IEventBus extends IResource, ICfnEventBus {
+export interface IEventBus extends IResource, IEventBusRef {
   /**
    * The physical ID of this event bus resource
    *

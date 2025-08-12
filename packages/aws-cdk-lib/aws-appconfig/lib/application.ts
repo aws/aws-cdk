@@ -1,6 +1,6 @@
 /* eslint-disable @cdklabs/no-literal-partition */
 import { Construct } from 'constructs';
-import { CfnApplication, ICfnApplication } from './appconfig.generated';
+import { CfnApplication, IApplicationRef } from './appconfig.generated';
 import { HostedConfiguration, HostedConfigurationOptions, SourcedConfiguration, SourcedConfigurationOptions } from './configuration';
 import { Environment, EnvironmentOptions, IEnvironment } from './environment';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
@@ -17,7 +17,7 @@ export enum Platform {
   ARM_64 = 'ARM64',
 }
 
-export interface IApplication extends cdk.IResource, ICfnApplication {
+export interface IApplication extends cdk.IResource, IApplicationRef {
   /**
    * The description of the application.
    */

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnDomainName, ICfnDomainName } from './apigateway.generated';
+import { CfnDomainName, IDomainNameRef } from './apigateway.generated';
 import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
 import { EndpointType, IRestApi } from './restapi';
 import { IStage } from './stage';
@@ -94,7 +94,7 @@ export interface DomainNameProps extends DomainNameOptions {
   readonly mapping?: IRestApi;
 }
 
-export interface IDomainName extends IResource, ICfnDomainName {
+export interface IDomainName extends IResource, IDomainNameRef {
   /**
    * The domain name (e.g. `example.com`)
    *

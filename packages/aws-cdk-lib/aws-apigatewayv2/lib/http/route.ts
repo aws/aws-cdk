@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
 import { HttpRouteIntegration } from './integration';
-import { CfnRoute, CfnRouteProps, ICfnRoute } from '.././index';
+import { CfnRoute, CfnRouteProps, IRouteRef } from '.././index';
 import * as iam from '../../../aws-iam';
 import { Aws, Resource } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
@@ -13,7 +13,7 @@ import { IRoute } from '../common';
 /**
  * Represents a Route for an HTTP API.
  */
-export interface IHttpRoute extends IRoute, ICfnRoute {
+export interface IHttpRoute extends IRoute, IRouteRef {
   /**
    * The HTTP API associated with this route.
    */

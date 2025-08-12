@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IKey } from './key';
-import { CfnAlias, ICfnAlias } from './kms.generated';
+import { CfnAlias, IAliasRef } from './kms.generated';
 import * as iam from '../../aws-iam';
 import * as perms from './private/perms';
 import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
@@ -15,7 +15,7 @@ const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'aws/';
  * A KMS Key alias.
  * An alias can be used in all places that expect a key.
  */
-export interface IAlias extends IKey, ICfnAlias {
+export interface IAlias extends IKey, IAliasRef {
   /**
    * The name of the alias.
    *

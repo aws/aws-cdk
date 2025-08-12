@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IConfigurationSet } from './configuration-set';
 import { undefinedIfNoKeys } from './private/utils';
-import { CfnEmailIdentity, ICfnEmailIdentity } from './ses.generated';
+import { CfnEmailIdentity, IEmailIdentityRef } from './ses.generated';
 import { Grant, IGrantable } from '../../aws-iam';
 import { IPublicHostedZone } from '../../aws-route53';
 import * as route53 from '../../aws-route53';
@@ -13,7 +13,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * An email identity
  */
-export interface IEmailIdentity extends IResource, ICfnEmailIdentity {
+export interface IEmailIdentity extends IResource, IEmailIdentityRef {
   /**
    * The name of the email identity
    *

@@ -1,7 +1,7 @@
 import * as constructs from 'constructs';
 import { Construct } from 'constructs';
 import { TopicPolicy } from './policy';
-import { ICfnTopic } from './sns.generated';
+import { ITopicRef } from './sns.generated';
 import { ITopicSubscription } from './subscriber';
 import { Subscription } from './subscription';
 import * as notifications from '../../aws-codestarnotifications';
@@ -13,7 +13,7 @@ import { ValidationError } from '../../core/lib/errors';
 /**
  * Represents an SNS topic
  */
-export interface ITopic extends IResource, notifications.INotificationRuleTarget, ICfnTopic {
+export interface ITopic extends IResource, notifications.INotificationRuleTarget, ITopicRef {
   /**
    * The ARN of the topic
    *
