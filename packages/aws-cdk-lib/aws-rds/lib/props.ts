@@ -1,4 +1,5 @@
 import { IParameterGroup } from './parameter-group';
+import { DEFAULT_PASSWORD_EXCLUDE_CHARS, URL_SAFE_PASSWORD_EXCLUDE_CHARS } from './private/util';
 import * as ec2 from '../../aws-ec2';
 import * as kms from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
@@ -364,6 +365,17 @@ export interface SnapshotCredentialsFromGeneratedPasswordOptions {
    * @default - Secret is not replicated
    */
   readonly replicaRegions?: secretsmanager.ReplicaRegion[];
+
+  /**
+   * Whether to generate a URL-safe password by excluding characters that can cause issues in URL parsers.
+   *
+   * When enabled, the generated password will exclude the caret (^) character and other URL-problematic
+   * characters in addition to the default exclusion set. This is particularly useful for applications
+   * that embed database credentials in connection URLs, such as Go applications using net/url parser.
+   *
+   * @default false
+   */
+  readonly urlSafePassword?: boolean;
 }
 
 /**
@@ -377,8 +389,12 @@ export abstract class SnapshotCredentials {
    * Note - The username must match the existing master username of the snapshot.
    */
   public static fromGeneratedSecret(username: string, options: SnapshotCredentialsFromGeneratedPasswordOptions = {}): SnapshotCredentials {
+    const excludeCharacters = options.excludeCharacters ??
+      (options.urlSafePassword ? URL_SAFE_PASSWORD_EXCLUDE_CHARS : DEFAULT_PASSWORD_EXCLUDE_CHARS);
+    
     return {
       ...options,
+      excludeCharacters,
       generatePassword: true,
       replaceOnPasswordCriteriaChanges: true,
       username,
