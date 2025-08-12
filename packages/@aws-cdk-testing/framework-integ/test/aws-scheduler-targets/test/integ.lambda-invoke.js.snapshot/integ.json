@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "testCases": {
     "integtest-lambda-invoke/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "integtest-lambda-invoke/DefaultTest/DeployAssert",
       "assertionStackName": "integtestlambdainvokeDefaultTestDeployAssertEC6565E6"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }

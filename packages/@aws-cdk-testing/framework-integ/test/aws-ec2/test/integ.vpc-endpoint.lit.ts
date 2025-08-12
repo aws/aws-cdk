@@ -55,6 +55,12 @@ class VpcEndpointStack extends cdk.Stack {
       ipAddressType: ec2.VpcEndpointIpAddressType.IPV4,
       dnsRecordIpType: ec2.VpcEndpointDnsRecordIpType.IPV4,
     });
+
+    // Add a cross-region interface endpoint
+    vpc.addInterfaceEndpoint('CrossRegionEndpoint', {
+      service: new ec2.InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-123456', 443),
+      serviceRegion: 'us-east-1', // Cross-region service
+    });
   }
 }
 

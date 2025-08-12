@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "6094cb0ff874f89ab5ab24fb6b9417df0fdeb6966645f90c88ec1d7e28130112": {
       "displayName": "kubectlLayer/Code",
@@ -99,16 +99,16 @@
         }
       }
     },
-    "59ee2cf2ecf163b58671e5b39cb971ac0f4a4cb901b52c12f81de3fa06eb095e": {
+    "536574508fb15c07e158d9609849e2e5c810478aa403b0a035ec56a1a3fff1b7": {
       "displayName": "aws-cdk-eks-helm-test Template",
       "source": {
         "path": "aws-cdk-eks-helm-test.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-a7bfad6a": {
+        "current_account-current_region-f85a6520": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "59ee2cf2ecf163b58671e5b39cb971ac0f4a4cb901b52c12f81de3fa06eb095e.json",
+          "objectKey": "536574508fb15c07e158d9609849e2e5c810478aa403b0a035ec56a1a3fff1b7.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

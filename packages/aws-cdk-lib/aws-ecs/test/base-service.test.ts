@@ -1,7 +1,9 @@
 import { Template, Match } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
+import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import { App, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
@@ -398,7 +400,7 @@ test.each([
   new ecs.FargateService(stack, 'FargateService', {
     cluster,
     taskDefinition,
-    circuitBreaker: circuitBreaker ? { } : undefined,
+    circuitBreaker: circuitBreaker ? {} : undefined,
   });
 
   // THEN
@@ -442,5 +444,76 @@ test.each([
         Rollback: rollback ?? false,
       },
     },
+  });
+});
+
+describe('Blue/Green Deployment', () => {
+  let stack: cdk.Stack;
+  let vpc: ec2.Vpc;
+  let cluster: ecs.Cluster;
+  let taskDefinition: ecs.FargateTaskDefinition;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'Vpc');
+    cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      portMappings: [{ containerPort: 80 }],
+    });
+  });
+
+  test('isUsingECSDeploymentController returns true when no deployment controller is specified', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    expect(service.isUsingECSDeploymentController()).toBe(true);
+  });
+
+  test('isUsingECSDeploymentController returns true when ECS deployment controller is specified', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.ECS,
+      },
+    });
+
+    // THEN
+    expect(service.isUsingECSDeploymentController()).toBe(true);
+  });
+
+  test('isUsingECSDeploymentController returns false when CODE_DEPLOY deployment controller is specified', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.CODE_DEPLOY,
+      },
+    });
+
+    // THEN
+    expect(service.isUsingECSDeploymentController()).toBe(false);
+  });
+
+  test('isUsingECSDeploymentController returns false when EXTERNAL deployment controller is specified', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.EXTERNAL,
+      },
+    });
+
+    // THEN
+    expect(service.isUsingECSDeploymentController()).toBe(false);
   });
 });
