@@ -1,4 +1,5 @@
 # See https://doc.mergify.io
+merge_bot_account: aws-cdk-automation
 merge_queue:
   # Hopefully this gets Mergify to stop creating PRs just to test merges (it both messes with statistics and our automatic validations)
   max_parallel_checks: 1
