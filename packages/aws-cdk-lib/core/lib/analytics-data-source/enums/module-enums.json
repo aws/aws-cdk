@@ -3636,10 +3636,6 @@
       "CODE_DEPLOY",
       "EXTERNAL"
     ],
-    "DeploymentStrategy": [
-      "ROLLING",
-      "BLUE_GREEN"
-    ],
     "PropagatedTagSource": [
       "SERVICE",
       "TASK_DEFINITION",
@@ -3733,17 +3729,6 @@
     "VersionConsistency": [
       "enabled",
       "disabled"
-    ]
-  },
-  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/deployment-lifecycle-hook-target.ts": {
-    "DeploymentLifecycleStage": [
-      "RECONCILE_SERVICE",
-      "PRE_SCALE_UP",
-      "POST_SCALE_UP",
-      "TEST_TRAFFIC_SHIFT",
-      "POST_TEST_TRAFFIC_SHIFT",
-      "PRODUCTION_TRAFFIC_SHIFT",
-      "POST_PRODUCTION_TRAFFIC_SHIFT"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/environment-file.ts": {
@@ -4319,7 +4304,10 @@
       "HMAC_256",
       "HMAC_384",
       "HMAC_512",
-      "SM2"
+      "SM2",
+      "ML_DSA_44",
+      "ML_DSA_65",
+      "ML_DSA_87"
     ],
     "KeyUsage": [
       "ENCRYPT_DECRYPT",
