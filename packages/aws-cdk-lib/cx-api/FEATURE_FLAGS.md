@@ -107,7 +107,6 @@ Flags come in three types:
 | [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | 2.205.0 | new default |
 | [@aws-cdk/aws-route53-targets:nlbUsePlainDnsName](#aws-cdkaws-route53-targetsnlbuseplaindnsname) | Use plain DNS names for Network Load Balancers in Route53 alias records | V2NEXT | fix |
 
-
 <!-- END table -->
 
 ## Currently recommended cdk.json
@@ -2151,78 +2150,7 @@ The new behavior from this feature will allow a user, for example, to set 1 of t
 | 2.196.0 | `false` | `true` |
 
 
-### @aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal
-
-*Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition*
-
-Flag type: Backwards incompatible bugfix
-
-This flag enables the grant methods (grant, grantDecrypt, grantEncrypt, etc.) on Aliases imported
-by name to grant permissions based on the 'kms:ResourceAliases' condition rather than no-op grants.
-When disabled, grant calls on imported aliases will be dropped (no-op) to maintain compatibility.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.202.0 | `false` | `true` |
-
-**Compatibility with old behavior:** Remove calls to the grant* methods on the aliases referenced by name
-
-### @aws-cdk/aws-route53-targets:nlbUsePlainDnsName
-
-*Use plain DNS names for Network Load Balancers in Route53 alias records*
-
-Flag type: Backwards incompatible bugfix
-
-When this feature flag is enabled, LoadBalancerTarget will use plain DNS names for 
-Network Load Balancers instead of adding the dualstack prefix, matching AWS Route53 
-console behavior.
-
-The previous behavior unconditionally added the dualstack prefix to all load balancer 
-DNS names, but AWS Route53 console shows that only ALBs and CLBs should use the 
-dualstack prefix, while NLBs should use plain DNS names.
-
-When this flag is enabled:
-- Network Load Balancers (NLB): Use plain DNS name (matches Route53 console behavior)
-- Application Load Balancers (ALB): Use dualstack prefix (existing correct behavior)
-- Classic Load Balancers (CLB): Use dualstack prefix (existing correct behavior)
-
-When this flag is disabled:
-- All load balancers get dualstack prefix added (legacy incorrect behavior for NLBs)
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-### @aws-cdk/core:explicitStackTags
-
-*When enabled, stack tags need to be assigned explicitly on a Stack.*
-
-Flag type: New default behavior
-
-Without this feature flag enabled, if tags are added to a Stack using
-`Tags.of(scope).add(...)`, they will be added to both the stack and all resources
-in the stack template.
-
-That leads to the tags being applied twice: once in the template, and once
-again automatically by CloudFormation, which will apply all stack tags to
-all resources in the stack. This leads to loss of control, as the
-`excludeResourceTypes` option of the Tags API will not have any effect.
-
-With this flag enabled, tags added to a stack using `Tags.of(...)` are ignored,
-and Stack tags must be configured explicitly on the Stack object.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.205.0 | `false` | `true` |
-
-**Compatibility with old behavior:** Configure stack-level tags using `new Stack(..., { tags: { ... } })`.
-  
-  ### @aws-cdk/aws-lambda:useCdkManagedLogGroup
+### @aws-cdk/aws-lambda:useCdkManagedLogGroup
 
 *When enabled, CDK creates and manages loggroup for the lambda function*
 
@@ -2251,6 +2179,81 @@ Refer aws-lambda/README.md for more details on Customizing Log Group creation.
 | 2.200.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention
+
+
+### @aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal
+
+*Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition*
+
+Flag type: Backwards incompatible bugfix
+
+This flag enables the grant methods (grant, grantDecrypt, grantEncrypt, etc.) on Aliases imported
+by name to grant permissions based on the 'kms:ResourceAliases' condition rather than no-op grants.
+When disabled, grant calls on imported aliases will be dropped (no-op) to maintain compatibility.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.202.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Remove calls to the grant* methods on the aliases referenced by name
+
+
+### @aws-cdk/core:explicitStackTags
+
+*When enabled, stack tags need to be assigned explicitly on a Stack.*
+
+Flag type: New default behavior
+
+Without this feature flag enabled, if tags are added to a Stack using
+`Tags.of(scope).add(...)`, they will be added to both the stack and all resources
+in the stack template.
+
+That leads to the tags being applied twice: once in the template, and once
+again automatically by CloudFormation, which will apply all stack tags to
+all resources in the stack. This leads to loss of control, as the
+`excludeResourceTypes` option of the Tags API will not have any effect.
+
+With this flag enabled, tags added to a stack using `Tags.of(...)` are ignored,
+and Stack tags must be configured explicitly on the Stack object.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.205.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Configure stack-level tags using `new Stack(..., { tags: { ... } })`.
+
+
+### @aws-cdk/aws-route53-targets:nlbUsePlainDnsName
+
+*Use plain DNS names for Network Load Balancers in Route53 alias records*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, LoadBalancerTarget will use plain DNS names for 
+Network Load Balancers instead of adding the dualstack prefix, matching AWS Route53 
+console behavior.
+
+The previous behavior unconditionally added the dualstack prefix to all load balancer 
+DNS names, but AWS Route53 console shows that only ALBs and CLBs should use the 
+dualstack prefix, while NLBs should use plain DNS names.
+
+When this flag is enabled:
+- Network Load Balancers (NLB): Use plain DNS name (matches Route53 console behavior)
+- Application Load Balancers (ALB): Use dualstack prefix (existing correct behavior)
+- Classic Load Balancers (CLB): Use dualstack prefix (existing correct behavior)
+
+When this flag is disabled:
+- All load balancers get dualstack prefix added (legacy incorrect behavior for NLBs)
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->

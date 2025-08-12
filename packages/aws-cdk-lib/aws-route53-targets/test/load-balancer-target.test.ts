@@ -342,3 +342,36 @@ test('use imported ALB as record target (feature flag enabled)', () => {
     },
   });
 });
+
+test('use NLB from lookup as record target (feature flag enabled)', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'TestStack', {
+    env: { account: '123456789012', region: 'us-west-2' },
+  });
+  stack.node.setContext(ROUTE53_TARGETS_NLB_USE_PLAIN_DNS_NAME, true);
+
+  // Use fromLookup with default values (this will use the standard test defaults)
+  const lb = elbv2.NetworkLoadBalancer.fromLookup(stack, 'LookedUpNLB', {
+    loadBalancerTags: {
+      some: 'tag',
+    },
+  });
+
+  const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
+
+  // WHEN
+  new route53.ARecord(zone, 'Alias', {
+    zone,
+    recordName: '_foo',
+    target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(lb)),
+  });
+
+  // THEN - With feature flag enabled, looked-up NLB uses plain DNS name (no dualstack prefix)
+  // The default values from CDK's test context are used
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+    AliasTarget: {
+      DNSName: 'my-load-balancer-1234567890.us-west-2.elb.amazonaws.com',
+      HostedZoneId: 'Z3DZXE0EXAMPLE',
+    },
+  });
+});

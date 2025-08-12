@@ -34,16 +34,36 @@ export class LoadBalancerTarget implements route53.IAliasRecordTarget {
   }
 
   private isNetworkLoadBalancer(): boolean {
-    // Type-safe detection using INetworkLoadBalancer interface
-    return this.isInstanceOfNetworkLoadBalancer(this.loadBalancer);
-  }
+    // Comprehensive NLB detection for all scenarios:
 
-  private isInstanceOfNetworkLoadBalancer(lb: elbv2.ILoadBalancerV2): lb is elbv2.INetworkLoadBalancer {
-    // Check for NLB-specific properties that ALBs don't have
-    // NLBs have securityGroups property (string[] | undefined), ALBs don't
-    const nlb = lb as any;
-    return 'addListener' in lb &&
-           'securityGroups' in lb &&
-           typeof nlb.addListener === 'function';
+    // 1. Direct instanceof check for created NLBs
+    if (this.loadBalancer instanceof elbv2.NetworkLoadBalancer) {
+      return true;
+    }
+
+    // 2. Check PROPERTY_INJECTION_ID for looked-up NLBs
+    const propertyInjectionId = (this.loadBalancer.constructor as any)?.PROPERTY_INJECTION_ID;
+    if (propertyInjectionId === 'aws-cdk-lib.aws-elasticloadbalancingv2.LookedUpNetworkLoadBalancer') {
+      return true;
+    }
+
+    // 3. For imported NLBs from attributes, use ARN pattern matching
+    // This is the most reliable way since imported NLBs create anonymous Import classes
+    const lb = this.loadBalancer as any;
+    if (lb.loadBalancerArn && typeof lb.loadBalancerArn === 'string') {
+      return lb.loadBalancerArn.includes('/net/');
+    }
+
+    // 4. Fallback: Check for NLB-specific properties
+    // NLBs have securityGroups property that ALBs handle differently
+    if ('addListener' in this.loadBalancer &&
+        'securityGroups' in this.loadBalancer &&
+        typeof lb.addListener === 'function') {
+      // This is likely an NLB, but we can't be 100% certain without ARN
+      // Default to false to avoid false positives
+      return false;
+    }
+
+    return false;
   }
 }
