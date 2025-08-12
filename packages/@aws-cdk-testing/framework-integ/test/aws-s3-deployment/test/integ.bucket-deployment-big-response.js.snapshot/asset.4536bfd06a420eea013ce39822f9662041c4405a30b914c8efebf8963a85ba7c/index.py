@@ -18,7 +18,7 @@ logger.setLevel(logging.INFO)
 
 cloudfront = boto3.client('cloudfront', config=Config(
     retries = {
-        'max_attempts': 9,
+        'max_attempts': 10,
         'mode': 'standard',
     }
 ))
@@ -239,9 +239,15 @@ def cloudfront_invalidate(distribution_id, distribution_paths):
             },
             'CallerReference': str(uuid4()),
         })
+    # Wait for a maximum of 13 minutes for invalidation to complete.
     cloudfront.get_waiter('invalidation_completed').wait(
         DistributionId=distribution_id,
-        Id=invalidation_resp['Invalidation']['Id'])
+        Id=invalidation_resp['Invalidation']['Id'],
+        WaiterConfig={
+            'Delay': 20,
+            'MaxAttempts': (13*60)//20,
+        }
+    )
 
 
 #---------------------------------------------------------------------------------------------------
