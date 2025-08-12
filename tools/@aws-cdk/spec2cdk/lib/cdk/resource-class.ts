@@ -34,7 +34,6 @@ import {
   cfnProducerNameFromType,
   propStructNameFromResource,
   staticRequiredTransform,
-  interfaceNameFromResource,
 } from '../naming';
 import { splitDocumentation } from '../util';
 
@@ -60,9 +59,10 @@ export class ResourceClass extends ClassType {
   ) {
     const resourceInterface = new InterfaceType(scope, {
       export: true,
-      name: interfaceNameFromResource(resource, suffix),
+      // name: interfaceNameFromResource(resource, suffix),
+      name: `I${resource.name}${suffix ?? ''}Ref`,
       docs: {
-        summary: `Attributes to reference a \`${classNameFromResource(resource)}\`.`,
+        summary: `Reference to an instance of ${resource.name}.`,
         stability: Stability.External,
       },
     });
@@ -119,7 +119,7 @@ export class ResourceClass extends ClassType {
     }
 
     // Build the shared interface
-    for (const identifier of this.decider.primaryIdentifier ?? []) {
+    for (const identifier of this.decider.primaryIdentifierProps ?? []) {
       this.resourceInterface.addProperty({
         ...identifier,
         immutable: true,
@@ -127,9 +127,9 @@ export class ResourceClass extends ClassType {
     }
 
     // Add the arn too, unless it is duplicated in the resourceIdentifier already
-    if (this.decider.arn && this.resourceInterface.properties.every((p) => p.name !== this.decider.arn!.name)) {
+    if (this.decider.arnProperty && this.resourceInterface.properties.every((p) => p.name !== this.decider.arnProperty!.name)) {
       this.resourceInterface.addProperty({
-        ...this.decider.arn,
+        ...this.decider.arnProperty,
         immutable: true,
       });
     }
