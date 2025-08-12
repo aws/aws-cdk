@@ -1,0 +1,278 @@
+{
+ "Resources": {
+  "TargetLambdaServiceRole567EC23E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "TargetLambdaE6C763FE": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n        exports.handler = async (event) => {\n          console.log('Target Lambda received event:', JSON.stringify(event, null, 2));\n          \n          // Return a JSON response that should be properly serialized\n          return {\n            statusCode: 200,\n            body: {\n              status: 'success',\n              message: 'Hello from target Lambda',\n              receivedData: event\n            }\n          };\n        };\n      "
+    },
+    "Description": "Target Lambda function for CallAwsServiceCrossRegion testing",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "TargetLambdaServiceRole567EC23E",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "TargetLambdaServiceRole567EC23E"
+   ]
+  },
+  "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "TargetLambdaE6C763FE",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF",
+    "Roles": [
+     {
+      "Ref": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
+     }
+    ]
+   }
+  },
+  "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e1c20a4808d556faa2fc55b65ebe08053d2625201f06e4dcf4c10f0dc1dde80e.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF",
+    "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
+   ]
+  },
+  "TestStateMachineRole2476F720": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TestStateMachineRoleDefaultPolicyB28F488D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TestStateMachineRoleDefaultPolicyB28F488D",
+    "Roles": [
+     {
+      "Ref": "TestStateMachineRole2476F720"
+     }
+    ]
+   }
+  },
+  "TestStateMachine3C216BE3": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"CrossRegionLambdaInvoke\",\"States\":{\"CrossRegionLambdaInvoke\":{\"QueryLanguage\":\"JSONata\",\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"Arguments\":{\"region\":\"us-east-1\",\"action\":\"invoke\",\"service\":\"lambda\",\"parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "TargetLambdaE6C763FE",
+         "Arn"
+        ]
+       },
+       "\",\"Payload\":\"{\\\"hello\\\":\\\"world\\\",\\\"testData\\\":\\\"reproduction\\\"}\"}},\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F",
+         "Arn"
+        ]
+       },
+       "\"}},\"TimeoutSeconds\":300,\"Comment\":\"State machine to reproduce issue 34768 - CallAwsServiceCrossRegion byte array bug\"}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "TestStateMachineRole2476F720",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "TestStateMachineRoleDefaultPolicyB28F488D",
+    "TestStateMachineRole2476F720"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefTestStateMachine3C216BE323AC47AE": {
+   "Value": {
+    "Ref": "TestStateMachine3C216BE3"
+   },
+   "Export": {
+    "Name": "aws-stepfunctions-call-aws-service-cross-region-lambda-integ:ExportsOutputRefTestStateMachine3C216BE323AC47AE"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,28 +1,28 @@
 {
-  "version": "38.0.1",
+  "version": "45.0.0",
   "artifacts": {
-    "redshift-loggingbucket-integ.assets": {
+    "awscdkredshiftclusterdatabaseredshiftloggingbucketinteg06BC94A7.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "redshift-loggingbucket-integ.assets.json",
+        "file": "awscdkredshiftclusterdatabaseredshiftloggingbucketinteg06BC94A7.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "redshift-loggingbucket-integ": {
+    "awscdkredshiftclusterdatabaseredshiftloggingbucketinteg06BC94A7": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "redshift-loggingbucket-integ.template.json",
+        "templateFile": "awscdkredshiftclusterdatabaseredshiftloggingbucketinteg06BC94A7.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e2e6041d53cca086cea687c21ef1b3870ae3ed4000ffa6bd6fa428b35d5dfb64.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/61ca0b6c07fe1c93c815f8adacb6d33d05cc776eb9cda47c27ec032686c4db46.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "redshift-loggingbucket-integ.assets"
+          "awscdkredshiftclusterdatabaseredshiftloggingbucketinteg06BC94A7.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,203 +31,565 @@
         }
       },
       "dependencies": [
-        "redshift-loggingbucket-integ.assets"
+        "awscdkredshiftclusterdatabaseredshiftloggingbucketinteg06BC94A7.assets"
       ],
       "metadata": {
-        "/redshift-loggingbucket-integ/VPC/Resource": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "restrictDefaultSecurityGroup": false
+            }
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PublicSubnet1/Subnet": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PublicSubnet1/RouteTable": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableFEE4B781"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PublicSubnet1/RouteTableAssociation": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PublicSubnet1/DefaultRoute": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1DefaultRoute91CEF279"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PublicSubnet1/EIP": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1EIP6AD938E8"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PublicSubnet1/NATGateway": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PublicSubnet2/Subnet": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2Subnet74179F39"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PublicSubnet2/RouteTable": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTable6F1A15F1"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PublicSubnet2/RouteTableAssociation": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PublicSubnet2/DefaultRoute": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PublicSubnet2/EIP": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2EIP4947BC00"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PublicSubnet2/NATGateway": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PrivateSubnet1/Subnet": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3Subnet631C5E25"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3RouteTable98AE0E14"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3RouteTableAssociation427FE0C6"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3DefaultRouteA0D29D46"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet3/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3EIPAD4BC883"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PublicSubnet3/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet3NATGatewayD3048F5C"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1Subnet8BCA10E0"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PrivateSubnet1/RouteTable": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableBE8A6027"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PrivateSubnet1/DefaultRoute": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PrivateSubnet2/Subnet": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PrivateSubnet2/RouteTable": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTable0A19E10E"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/PrivateSubnet2/DefaultRoute": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/IGW": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3Subnet3EDCD457"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3RouteTable192186F8"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3RouteTableAssociationC28D144E"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/PrivateSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet3DefaultRoute27F311AE"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIGWB7E252D3"
           }
         ],
-        "/redshift-loggingbucket-integ/VPC/VPCGW": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/VPC/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/redshift-loggingbucket-integ/S3/Resource": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/S3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/S3/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "S3486F821D"
           }
         ],
-        "/redshift-loggingbucket-integ/S3/Policy/Resource": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/S3/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/S3/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "S3Policy2E4AA1D6"
           }
         ],
-        "/redshift-loggingbucket-integ/Cluster/Subnets/Default": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/Cluster": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/Cluster/Subnets": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/Cluster/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterSubnetsDCFA5CB7"
           }
         ],
-        "/redshift-loggingbucket-integ/Cluster/SecurityGroup/Resource": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/Cluster/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "vpc": "*"
+            }
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/Cluster/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterSecurityGroup0921994B"
           }
         ],
-        "/redshift-loggingbucket-integ/Cluster/Secret/Resource": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/Cluster/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/Cluster/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterSecret6368BD0F"
           }
         ],
-        "/redshift-loggingbucket-integ/Cluster/Secret/Attachment/Resource": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/Cluster/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/Cluster/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterSecretAttachment769E6258"
           }
         ],
-        "/redshift-loggingbucket-integ/Cluster/Resource": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterEB0386A7"
           }
         ],
-        "/redshift-loggingbucket-integ/BootstrapVersion": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/redshift-loggingbucket-integ/CheckBootstrapVersion": [
+        "/aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "redshift-loggingbucket-integ"
+      "displayName": "aws-cdk-redshift-cluster-database/redshift-loggingbucket-integ"
+    },
+    "aws-cdk-redshift-cluster-database.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-redshift-cluster-database.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-redshift-cluster-database": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://123456789012/us-east-1",
+      "properties": {
+        "templateFile": "aws-cdk-redshift-cluster-database.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-redshift-cluster-database.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-redshift-cluster-database.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-redshift-cluster-database/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-redshift-cluster-database/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-redshift-cluster-database"
     },
     "LoggingBucketIntegDefaultTestDeployAssert2827ECC1.assets": {
       "type": "cdk:asset-manifest",
@@ -283,5 +645,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

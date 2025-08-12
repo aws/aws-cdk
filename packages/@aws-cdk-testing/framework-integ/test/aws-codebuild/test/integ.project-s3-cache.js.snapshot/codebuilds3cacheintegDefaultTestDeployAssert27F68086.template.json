@@ -1,0 +1,212 @@
+{
+ "Resources": {
+  "AwsApiCallCodeBuildbatchGetProjectsd54891821517debdd6d60f262099ea55": {
+   "Type": "Custom::DeployAssert@SdkCallCodeBuildbatchGetProjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CodeBuild",
+    "api": "batchGetProjects",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"projects\":[{\"cache\":{\"type\":\"S3\",\"location\":\"",
+       {
+        "Fn::ImportValue": "codebuild-s3-cache-stack:ExportsOutputRefMyBucketF68F3FF0442F9925"
+       },
+       "/cache\",\"cacheNamespace\":\"cache-namespace\"}}]}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "names": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "codebuild-s3-cache-stack:ExportsOutputRefProjectA8C1CB2D1B268694A"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1754343155297"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "codebuild:BatchGetProjects"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "codebuild:BatchGetProjects"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallCodeBuildbatchGetProjects92c2a732a2826314983751685ba1e10a": {
+   "Type": "Custom::DeployAssert@SdkCallCodeBuildbatchGetProjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CodeBuild",
+    "api": "batchGetProjects",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"projects\":[{\"cache\":{\"type\":\"S3\",\"location\":\"",
+       {
+        "Fn::ImportValue": "codebuild-s3-cache-stack:ExportsOutputRefMyBucketF68F3FF0442F9925"
+       },
+       "/cache\",\"cacheNamespace\":\"cache-namespace\"}}]}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "names": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "codebuild-s3-cache-stack:ExportsOutputRefProjectBEC12129A119337F0"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1754343155298"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallCodeBuildbatchGetProjectsd54891821517debdd6d60f262099ea55": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCodeBuildbatchGetProjectsd54891821517debdd6d60f262099ea55",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCodeBuildbatchGetProjects92c2a732a2826314983751685ba1e10a": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCodeBuildbatchGetProjects92c2a732a2826314983751685ba1e10a",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

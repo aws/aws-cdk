@@ -5,7 +5,7 @@
   "version": "0.0.0",
   "scripts": {
     "build": "tsc -b && node scripts/generate.js && cdk-lint",
-    "integ": "integ-runner --language javascript",
+    "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -53,7 +53,7 @@
     "sinon": "^9.2.4",
     "nock": "^13.5.6",
     "fs-extra": "^11.3.0",
-    "esbuild": "^0.25.5"
+    "esbuild": "^0.25.0"
   },
   "dependencies": {
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.0",
@@ -77,7 +77,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 14.15.0"
+    "node": ">= 18.0.0"
   },
   "cdk-package": {
     "shrinkWrap": true

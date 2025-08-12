@@ -53,6 +53,25 @@
     "lambdas3ServiceRoleC9EDE33A"
    ]
   },
+  "lambdas3LogGroupF90857DC": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "lambdas342CE2BBD"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "lambdaecr1copyServiceRole2A9FAF5F": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -104,6 +123,25 @@
     "lambdaecr1copyServiceRole2A9FAF5F"
    ]
   },
+  "lambdaecr1copyLogGroupA19D4CF6": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "lambdaecr1copyD39CDE9B"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "lambdaecrtwoServiceRole13E37F90": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -154,6 +192,25 @@
    "DependsOn": [
     "lambdaecrtwoServiceRole13E37F90"
    ]
+  },
+  "lambdaecrtwoLogGroup9DB77814": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "lambdaecrtwo03D31DB7"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  }
 }
