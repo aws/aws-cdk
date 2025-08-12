@@ -25,7 +25,7 @@ if updated)
 * **cloudformation:** update L1 CloudFormation resource definitions ([#35138](https://github.com/aws/aws-cdk/issues/35138)) ([3eb8ec0](https://github.com/aws/aws-cdk/commit/3eb8ec05b23555c4d9a202dad5a64ec62bf61af1))
 * **dynamodb:** tableV2 MRSC feature addition ([#34909](https://github.com/aws/aws-cdk/issues/34909)) ([6b318f5](https://github.com/aws/aws-cdk/commit/6b318f53bbaa1d79ffa8fcdfc3b321d49c8fdd43)), closes [#34883](https://github.com/aws/aws-cdk/issues/34883)
 * **ec2:** support the new `ServiceRegion` property for `AWS::EC2::VPCEndpoint` ([#35025](https://github.com/aws/aws-cdk/issues/35025)) ([fee0638](https://github.com/aws/aws-cdk/commit/fee06382e0f36f7f241196b67a23a760eb9da099)), closes [#32785](https://github.com/aws/aws-cdk/issues/32785) [#33959](https://github.com/aws/aws-cdk/issues/33959)
-* **ecs:** add L2 support for native ECS blue/green deployments ([#35179](https://github.com/aws/aws-cdk/issues/35179)) ([4d2f463](https://github.com/aws/aws-cdk/commit/4d2f4636ebef20d7d3588d17c02ef2db8b5f17b3)), closes [#35061](https://github.com/aws/aws-cdk/issues/35061) [#35170](https://github.com/aws/aws-cdk/issues/35170) [#35061](https://github.com/aws/aws-cdk/issues/35061) [#35167](https://github.com/aws/aws-cdk/issues/35167) [#35061](https://github.com/aws/aws-cdk/issues/35061)
+* **ecs:** add L2 support for native ECS blue/green deployments ([#35179](https://github.com/aws/aws-cdk/issues/35179)) ([4d2f463](https://github.com/aws/aws-cdk/commit/4d2f4636ebef20d7d3588d17c02ef2db8b5f17b3)), closes [#35061](https://github.com/aws/aws-cdk/issues/35061) [#35170](https://github.com/aws/aws-cdk/issues/35170) [#35167](https://github.com/aws/aws-cdk/issues/35167)
 
 
 ### Bug Fixes
