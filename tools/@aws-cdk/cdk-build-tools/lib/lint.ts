@@ -48,6 +48,5 @@ export async function lintCurrentPackage(
     ], { timers });
   }
 
-  const lintExclusions = options.lintExclusions ? options.lintExclusions.join(' ') : '';
-  await shell([path.join(__dirname, '..', 'bin', 'cdk-awslint'), lintExclusions], { timers, env });
+  await shell([path.join(__dirname, '..', 'bin', 'cdk-awslint')], { timers, env });
 }

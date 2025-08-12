@@ -59,7 +59,6 @@ export class ResourceClass extends ClassType {
   ) {
     const resourceInterface = new InterfaceType(scope, {
       export: true,
-      // name: interfaceNameFromResource(resource, suffix),
       name: `I${resource.name}${suffix ?? ''}Ref`,
       docs: {
         summary: `Reference to an instance of ${resource.name}.`,
