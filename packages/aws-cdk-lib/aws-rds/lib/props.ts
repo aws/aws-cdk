@@ -391,7 +391,7 @@ export abstract class SnapshotCredentials {
   public static fromGeneratedSecret(username: string, options: SnapshotCredentialsFromGeneratedPasswordOptions = {}): SnapshotCredentials {
     const excludeCharacters = options.excludeCharacters ??
       (options.urlSafePassword ? URL_SAFE_PASSWORD_EXCLUDE_CHARS : DEFAULT_PASSWORD_EXCLUDE_CHARS);
-    
+
     return {
       ...options,
       excludeCharacters,
