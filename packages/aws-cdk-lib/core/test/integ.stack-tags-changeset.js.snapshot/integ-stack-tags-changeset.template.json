@@ -1,0 +1,8 @@
+{
+  "Outputs": {
+    "TestOutput": {
+      "Description": "Test output for integration test",
+      "Value": "test-value"
+    }
+  }
+}
