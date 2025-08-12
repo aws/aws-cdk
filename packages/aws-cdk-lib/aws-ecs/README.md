@@ -1544,7 +1544,7 @@ Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-cap
 Group](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html)
 Capacity Providers. Both are supported.
 
-> **Note**: ECS clusters and their capacity providers must be deployed in the same CDK stack. Cross-stack capacity provider registration is not supported due to circular dependency constraints. See the [Auto Scaling Group Capacity Providers](#auto-scaling-group-capacity-providers) section for more details.
+> **Note**: ECS clusters and their capacity providers must be deployed in the same CDK stack. Cross-stack capacity provider registration is not supported due to circular dependency constraints.
 
 ### Fargate Capacity Providers
 
