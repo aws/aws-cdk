@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { IRole } from './role' ;
 import {
   Arn,
   CustomResource,
@@ -11,8 +12,6 @@ import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { OidcProvider } from '../../custom-resource-handlers/dist/aws-iam/oidc-provider.generated';
 import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from '../../cx-api';
-import { PropagatedTagSource } from '../../aws-ecs';
-import { IRole } from '../../aws-iam' ;
 const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';
 
 /**
@@ -89,9 +88,9 @@ export interface OpenIdConnectProviderProps {
    */
   readonly thumbprints?: string[];
 
-   /**
+  /**
    * An optional user provided IAM role to be used for the provider's lambda function.
-   * 
+   *
    * @default - No role, will be created automatically.
    */
   readonly role?: IRole;

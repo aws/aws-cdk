@@ -2,6 +2,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { CustomResourceProviderOptions, INLINE_CUSTOM_RESOURCE_CONTEXT } from './shared';
+import { PolicyStatement } from '../../../aws-iam';
 import * as cxapi from '../../../cx-api';
 import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
@@ -14,7 +15,6 @@ import { Lazy } from '../lazy';
 import { Size } from '../size';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { PolicyStatement } from '../../../aws-iam';
 
 const ENTRYPOINT_FILENAME = '__entrypoint__';
 const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'core', 'nodejs-entrypoint-handler', 'index.js');
@@ -84,7 +84,6 @@ export abstract class CustomResourceProviderBase extends Construct {
         }
       }
       this.roleArn = props.role.roleArn;
-
     } else {
       if (props.policyStatements) {
         for (const statement of props.policyStatements) {

@@ -85,6 +85,25 @@ describe('OpenIdConnectProvider resource', () => {
       ThumbprintList: ['thumb1'],
     });
   });
+
+  test('custom role for internal lambda can be specified', () => {
+    // GIVEN
+    const stack = new Stack();
+    const role = new iam.Role(stack, 'MyRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    new iam.OpenIdConnectProvider(stack, 'MyProvider', {
+      url: 'https://openid-endpoint',
+      role: role,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Role: { 'Fn::GetAtt': ['MyRole', 'Arn'] },
+    });
+  });
 });
 
 describe('custom resource provider infrastructure', () => {
