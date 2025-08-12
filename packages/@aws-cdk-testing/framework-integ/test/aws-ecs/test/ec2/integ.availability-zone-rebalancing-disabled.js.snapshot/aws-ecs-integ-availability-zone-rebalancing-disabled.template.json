@@ -921,7 +921,7 @@
      {
       "Essential": true,
       "Image": "amazon/amazon-ecs-sample",
-      "Memory": 256,
+      "Memory": 512,
       "Name": "web"
      }
     ],
