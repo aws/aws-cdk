@@ -103,7 +103,7 @@ abstract class TableBase extends Resource implements ITable {
   public abstract readonly tableArn: string;
 
   /**
-   * The resource policy associated with this table bucket.
+   * The resource policy associated with this table.
    *
    * If `autoCreatePolicy` is true, a `TablePolicy` will be created upon the
    * first call to addToResourcePolicy(s).
@@ -111,7 +111,7 @@ abstract class TableBase extends Resource implements ITable {
   public abstract tablePolicy?: CfnTablePolicy;
 
   /**
-   * Indicates if a table bucket resource policy should automatically created upon
+   * Indicates if a table resource policy should automatically created upon
    * the first call to `addToResourcePolicy`.
    */
   protected abstract autoCreatePolicy: boolean;
@@ -164,14 +164,14 @@ abstract class TableBase extends Resource implements ITable {
    */
   private grant(
     grantee: iam.IGrantable,
-    tableBucketActions: string[],
+    tableActions: string[],
     resourceArn: string,
     ...otherResourceArns: (string | undefined)[]) {
     const resources = [resourceArn, ...otherResourceArns].filter(arn => arn != undefined);
 
     const grant = iam.Grant.addToPrincipalOrResource({
       grantee,
-      actions: tableBucketActions,
+      actions: tableActions,
       resourceArns: resources,
       resource: this,
     });
