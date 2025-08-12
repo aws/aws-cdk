@@ -2,6 +2,837 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.211.0](https://github.com/aws/aws-cdk/compare/v2.210.0...v2.211.0) (2025-08-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* **cloudformation:** L1 resources are automatically generated from
+public CloudFormation Resource Schemas. They are build to closely
+reflect the real state of CloudFormation. Sometimes these updates can
+contain changes that are incompatible with previous types, but more
+accurately reflect reality. In this release we have changed:
+* **aws-opsworkscm**: CfnServer resource is no longer provisionable
+(AWS::OpsWorksCM::Server). Service is on deprecation path
+* **aws-iotfleetwise**: Properties `DataDestinationConfigs`,
+`SignalsToCollect` and `SignalsToFetch` in resource `CfnCampaign` are
+now marked as immutable (they will cause a replacement of the resource
+if updated)
+
+**L1 CloudFormation resource definition changes:**
+```
+├[~] service aws-amazonmq
+│ └ resources
+│    └[~]  resource AWS::AmazonMQ::ConfigurationAssociation
+│       └ attributes
+│          └ Id: (documentation changed)
+├[~] service aws-batch
+│ └ resources
+│    ├[~]  resource AWS::Batch::JobQueue
+│    │  ├ properties
+│    │  │  ├ ComputeEnvironmentOrder: - Array<ComputeEnvironmentOrder> (required)
+│    │  │  │                          + Array<ComputeEnvironmentOrder>
+│    │  │  ├[+] JobQueueType: string (immutable)
+│    │  │  └[+] ServiceEnvironmentOrder: Array<ServiceEnvironmentOrder>
+│    │  └ types
+│    │     └[+]  type ServiceEnvironmentOrder
+│    │        ├      name: ServiceEnvironmentOrder
+│    │        └ properties
+│    │           ├ ServiceEnvironment: string (required)
+│    │           └ Order: integer (required)
+│    └[+]  resource AWS::Batch::ServiceEnvironment
+│       ├      name: ServiceEnvironment
+│       │      cloudFormationType: AWS::Batch::ServiceEnvironment
+│       │      documentation: Creates a service environment for running service jobs. Service environments define capacity limits for specific service types such as SageMaker Training jobs.
+│       │      tagInformation: {"tagPropertyName":"Tags","variant":"map"}
+│       ├ properties
+│       │  ├ ServiceEnvironmentName: string (immutable)
+│       │  ├ State: string
+│       │  ├ ServiceEnvironmentType: string (required, immutable)
+│       │  ├ CapacityLimits: Array<CapacityLimit> (required)
+│       │  └ Tags: Map<string, string>
+│       ├ attributes
+│       │  └ ServiceEnvironmentArn: string
+│       └ types
+│          └ type CapacityLimit
+│            ├      documentation: Defines the capacity limit for a service environment. This structure specifies the maximum amount of resources that can be used by service jobs in the environment.
+│            │      name: CapacityLimit
+│            └ properties
+│               ├ MaxCapacity: integer
+│               └ CapacityUnit: string
+├[~] service aws-cassandra
+│ └ resources
+│    └[~]  resource AWS::Cassandra::Table
+│       └ types
+│          └[~] type CdcSpecification
+│            └ properties
+│               └[+] Tags: Array<tag>
+├[~] service aws-cloudfront
+│ └ resources
+│    └[~]  resource AWS::CloudFront::Distribution
+│       └ types
+│          ├[~] type CustomOriginConfig
+│          │ └ properties
+│          │    └ OriginReadTimeout: (documentation changed)
+│          ├[~] type Origin
+│          │ └ properties
+│          │    └ ResponseCompletionTimeout: (documentation changed)
+│          ├[~] type S3OriginConfig
+│          │ └ properties
+│          │    └ OriginReadTimeout: (documentation changed)
+│          └[~] type VpcOriginConfig
+│            └ properties
+│               └ OriginReadTimeout: (documentation changed)
+├[~] service aws-cognito
+│ └ resources
+│    └[~]  resource AWS::Cognito::ManagedLoginBranding
+│       └ properties
+│          └ Settings: (documentation changed)
+├[~] service aws-datazone
+│ └ resources
+│    ├[~]  resource AWS::DataZone::EnvironmentBlueprintConfiguration
+│    │  └ types
+│    │     ├[~] type LakeFormationConfiguration
+│    │     │ ├      - documentation: undefined
+│    │     │ │      + documentation: The Lake Formation configuration of the Data Lake blueprint.
+│    │     │ └ properties
+│    │     │    ├ LocationRegistrationExcludeS3Locations: (documentation changed)
+│    │     │    └ LocationRegistrationRole: (documentation changed)
+│    │     └[~] type ProvisioningConfiguration
+│    │       ├      - documentation: undefined
+│    │       │      + documentation: The provisioning configuration of the blueprint.
+│    │       └ properties
+│    │          └ LakeFormationConfiguration: (documentation changed)
+│    ├[~]  resource AWS::DataZone::Project
+│    │  ├ properties
+│    │  │  ├ ProjectProfileId: (documentation changed)
+│    │  │  └ ProjectProfileVersion: (documentation changed)
+│    │  └ types
+│    │     ├[~] type EnvironmentConfigurationUserParameter
+│    │     │ ├      - documentation: undefined
+│    │     │ │      + documentation: The environment configuration user parameters.
+│    │     │ └ properties
+│    │     │    ├ EnvironmentConfigurationName: (documentation changed)
+│    │     │    ├ EnvironmentId: (documentation changed)
+│    │     │    └ EnvironmentParameters: (documentation changed)
+│    │     └[~] type EnvironmentParameter
+│    │       ├      - documentation: undefined
+│    │       │      + documentation: The parameter details of an evironment profile.
+│    │       └ properties
+│    │          ├ Name: (documentation changed)
+│    │          └ Value: (documentation changed)
+│    └[~]  resource AWS::DataZone::ProjectProfile
+│       ├      - documentation: Definition of AWS::DataZone::ProjectProfile Resource Type
+│       │      + documentation: The summary of a project profile.
+│       ├ properties
+│       │  ├ DomainIdentifier: (documentation changed)
+│       │  ├ DomainUnitIdentifier: (documentation changed)
+│       │  └ EnvironmentConfigurations: (documentation changed)
+│       ├ attributes
+│       │  └ Identifier: (documentation changed)
+│       └ types
+│          ├[~] type AwsAccount
+│          │ ├      - documentation: undefined
+│          │ │      + documentation: The AWS account of the environment.
+│          │ └ properties
+│          │    └ AwsAccountId: (documentation changed)
+│          ├[~] type EnvironmentConfiguration
+│          │ ├      - documentation: undefined
+│          │ │      + documentation: The configuration of an environment.
+│          │ └ properties
+│          │    ├ AwsAccount: (documentation changed)
+│          │    ├ AwsRegion: (documentation changed)
+│          │    ├ ConfigurationParameters: (documentation changed)
+│          │    ├ DeploymentMode: (documentation changed)
+│          │    ├ DeploymentOrder: (documentation changed)
+│          │    ├ Description: (documentation changed)
+│          │    ├ EnvironmentBlueprintId: (documentation changed)
+│          │    ├ Id: (documentation changed)
+│          │    └ Name: (documentation changed)
+│          ├[~] type EnvironmentConfigurationParameter
+│          │ ├      - documentation: undefined
+│          │ │      + documentation: The environment configuration parameter.
+│          │ └ properties
+│          │    ├ IsEditable: (documentation changed)
+│          │    ├ Name: (documentation changed)
+│          │    └ Value: (documentation changed)
+│          ├[~] type EnvironmentConfigurationParametersDetails
+│          │ ├      - documentation: undefined
+│          │ │      + documentation: The details of the environment configuration parameter.
+│          │ └ properties
+│          │    ├ ParameterOverrides: (documentation changed)
+│          │    ├ ResolvedParameters: (documentation changed)
+│          │    └ SsmPath: (documentation changed)
+│          └[~] type Region
+│            ├      - documentation: undefined
+│            │      + documentation: The AWS Region.
+│            └ properties
+│               └ RegionName: (documentation changed)
+├[~] service aws-dax
+│ └ resources
+│    └[~]  resource AWS::DAX::Cluster
+│       └ properties
+│          └[+] NetworkType: string (immutable)
+├[~] service aws-deadline
+│ └ resources
+│    └[~]  resource AWS::Deadline::Fleet
+│       └ types
+│          ├[~] type ServiceManagedEc2FleetConfiguration
+│          │ └ properties
+│          │    └[+] VpcConfiguration: VpcConfiguration
+│          └[+]  type VpcConfiguration
+│             ├      name: VpcConfiguration
+│             └ properties
+│                └ ResourceConfigurationArns: Array<string>
+├[~] service aws-ec2
+│ └ resources
+│    ├[~]  resource AWS::EC2::EC2Fleet
+│    │  └ types
+│    │     └[~] type EbsBlockDevice
+│    │       └ properties
+│    │          └ Encrypted: (documentation changed)
+│    ├[~]  resource AWS::EC2::IPAM
+│    │  └ properties
+│    │     └ MeteredAccount: (documentation changed)
+│    ├[~]  resource AWS::EC2::Subnet
+│    │  └ types
+│    │     ├[~] type BlockPublicAccessStates
+│    │     │ └      - documentation: The state of VPC Block Public Access (BPA).
+│    │     │        + documentation: Specifies the state of VPC Block Public Access (BPA).
+│    │     └[~] type PrivateDnsNameOptionsOnLaunch
+│    │       └      - documentation: Describes the options for instance hostnames.
+│    │              + documentation: Specifies the options for instance hostnames.
+│    └[+]  resource AWS::EC2::TransitGatewayConnectPeer
+│       ├      name: TransitGatewayConnectPeer
+│       │      cloudFormationType: AWS::EC2::TransitGatewayConnectPeer
+│       │      documentation: Resource Type definition for AWS::EC2::TransitGatewayConnectPeer
+│       │      tagInformation: {"tagPropertyName":"Tags","variant":"standard"}
+│       ├ properties
+│       │  ├ TransitGatewayAttachmentId: string (required, immutable)
+│       │  ├ ConnectPeerConfiguration: TransitGatewayConnectPeerConfiguration (required, immutable)
+│       │  └ Tags: Array<tag>
+│       ├ attributes
+│       │  ├ TransitGatewayConnectPeerId: string
+│       │  ├ ConnectPeerConfiguration.Protocol: string
+│       │  ├ ConnectPeerConfiguration.BgpConfigurations: Array<TransitGatewayAttachmentBgpConfiguration>
+│       │  ├ State: string
+│       │  └ CreationTime: string
+│       └ types
+│          ├ type TransitGatewayAttachmentBgpConfiguration
+│          │ ├      name: TransitGatewayAttachmentBgpConfiguration
+│          │ └ properties
+│          │    ├ TransitGatewayAsn: number
+│          │    ├ PeerAsn: number (immutable)
+│          │    ├ TransitGatewayAddress: string
+│          │    ├ PeerAddress: string
+│          │    └ BgpStatus: string
+│          └ type TransitGatewayConnectPeerConfiguration
+│            ├      name: TransitGatewayConnectPeerConfiguration
+│            └ properties
+│               ├ TransitGatewayAddress: string (immutable)
+│               ├ PeerAddress: string (required, immutable)
+│               ├ InsideCidrBlocks: Array<string> (required, immutable)
+│               ├ Protocol: string
+│               └ BgpConfigurations: Array<TransitGatewayAttachmentBgpConfiguration>
+├[~] service aws-ecr
+│ └ resources
+│    ├[~]  resource AWS::ECR::Repository
+│    │  ├ properties
+│    │  │  └[+] ImageTagMutabilityExclusionFilters: Array<ImageTagMutabilityExclusionFilter>
+│    │  └ types
+│    │     └[+]  type ImageTagMutabilityExclusionFilter
+│    │        ├      name: ImageTagMutabilityExclusionFilter
+│    │        └ properties
+│    │           ├ ImageTagMutabilityExclusionFilterType: string (required)
+│    │           └ ImageTagMutabilityExclusionFilterValue: string (required)
+│    └[~]  resource AWS::ECR::RepositoryCreationTemplate
+│       ├ properties
+│       │  └[+] ImageTagMutabilityExclusionFilters: Array<ImageTagMutabilityExclusionFilter>
+│       └ types
+│          └[+]  type ImageTagMutabilityExclusionFilter
+│             ├      name: ImageTagMutabilityExclusionFilter
+│             └ properties
+│                ├ ImageTagMutabilityExclusionFilterType: string (required)
+│                └ ImageTagMutabilityExclusionFilterValue: string (required)
+├[~] service aws-entityresolution
+│ └ resources
+│    ├[~]  resource AWS::EntityResolution::IdMappingWorkflow
+│    │  ├      - documentation: Creates an `IdMappingWorkflow` object which stores the configuration of the data processing job to be run. Each `IdMappingWorkflow` must have a unique workflow name. To modify an existing workflow, use the `UpdateIdMappingWorkflow` API.
+│    │  │      + documentation: Creates an `IdMappingWorkflow` object which stores the configuration of the data processing job to be run. Each `IdMappingWorkflow` must have a unique workflow name. To modify an existing workflow, use the UpdateIdMappingWorkflow API.
+│    │  │      > Incremental processing is not supported for ID mapping workflows.
+│    │  ├ properties
+│    │  │  └ OutputSourceConfig: (documentation changed)
+│    │  └ types
+│    │     ├[~] type IdMappingRuleBasedProperties
+│    │     │ └ properties
+│    │     │    └ AttributeMatchingModel: (documentation changed)
+│    │     ├[~] type IdMappingWorkflowInputSource
+│    │     │ └      - documentation: An object containing `InputSourceARN` , `SchemaName` , and `Type` .
+│    │     │        + documentation: An object containing `inputSourceARN` , `schemaName` , and `type` .
+│    │     ├[~] type IdMappingWorkflowOutputSource
+│    │     │ └      - documentation: A list of `IdMappingWorkflowOutputSource` objects, each of which contains fields `OutputS3Path` and `Output` .
+│    │     │        + documentation: A list of `IdMappingWorkflowOutputSource` objects, each of which contains fields `outputS3Path` and `KMSArn` .
+│    │     └[~] type Rule
+│    │       └      - documentation: An object containing `RuleName` , and `MatchingKeys` .
+│    │              + documentation: An object containing the `ruleName` and `matchingKeys` .
+│    ├[~]  resource AWS::EntityResolution::IdNamespace
+│    │  ├      - documentation: Creates an ID namespace object which will help customers provide metadata explaining their dataset and how to use it. Each ID namespace must have a unique name. To modify an existing ID namespace, use the `UpdateIdNamespace` API.
+│    │  │      + documentation: Creates an ID namespace object which will help customers provide metadata explaining their dataset and how to use it. Each ID namespace must have a unique name. To modify an existing ID namespace, use the UpdateIdNamespace API.
+│    │  └ types
+│    │     ├[~] type IdNamespaceIdMappingWorkflowProperties
+│    │     │ └      - documentation: An object containing `IdMappingType` , `ProviderProperties` , and `RuleBasedProperties` .
+│    │     │        + documentation: An object containing `idMappingType` , `providerProperties` , and `ruleBasedProperties` .
+│    │     ├[~] type IdNamespaceInputSource
+│    │     │ └      - documentation: An object containing `InputSourceARN` and `SchemaName` .
+│    │     │        + documentation: An object containing `inputSourceARN` and `schemaName` .
+│    │     ├[~] type NamespaceProviderProperties
+│    │     │ └      - documentation: An object containing `ProviderConfiguration` and `ProviderServiceArn` .
+│    │     │        + documentation: An object containing `providerConfiguration` and `providerServiceArn` .
+│    │     ├[~] type NamespaceRuleBasedProperties
+│    │     │ └ properties
+│    │     │    └ AttributeMatchingModel: (documentation changed)
+│    │     └[~] type Rule
+│    │       └      - documentation: An object containing `RuleName` , and `MatchingKeys` .
+│    │              + documentation: An object containing the `ruleName` and `matchingKeys` .
+│    └[~]  resource AWS::EntityResolution::MatchingWorkflow
+│       ├      - documentation: Creates a matching workflow that defines the configuration for a data processing job. The workflow name must be unique. To modify an existing workflow, use `UpdateMatchingWorkflow` .
+│       │      > For workflows where `resolutionType` is ML_MATCHING, incremental processing is not supported.
+│       │      + documentation: Creates a matching workflow that defines the configuration for a data processing job. The workflow name must be unique. To modify an existing workflow, use `UpdateMatchingWorkflow` .
+│       │      > For workflows where `resolutionType` is `ML_MATCHING` or `PROVIDER` , incremental processing is not supported.
+│       ├ properties
+│       │  ├ IncrementalRunConfig: (documentation changed)
+│       │  └ OutputSourceConfig: (documentation changed)
+│       └ types
+│          ├[~] type IncrementalRunConfig
+│          │ ├      - documentation: Optional. An object that defines the incremental run type. This object contains only the `incrementalRunType` field, which appears as "Automatic" in the console.
+│          │ │      > For workflows where `resolutionType` is `ML_MATCHING` , incremental processing is not supported.
+│          │ │      + documentation: Optional. An object that defines the incremental run type. This object contains only the `incrementalRunType` field, which appears as "Automatic" in the console.
+│          │ │      > For workflows where `resolutionType` is `ML_MATCHING` or `PROVIDER` , incremental processing is not supported.
+│          │ └ properties
+│          │    └ IncrementalRunType: (documentation changed)
+│          ├[~] type InputSource
+│          │ ├      - documentation: An object containing `InputSourceARN` , `SchemaName` , and `ApplyNormalization` .
+│          │ │      + documentation: An object containing `inputSourceARN` , `schemaName` , and `applyNormalization` .
+│          │ └ properties
+│          │    └ InputSourceARN: (documentation changed)
+│          ├[~] type ResolutionTechniques
+│          │ └ properties
+│          │    ├ ResolutionType: (documentation changed)
+│          │    ├ RuleBasedProperties: (documentation changed)
+│          │    └[+] RuleConditionProperties: RuleConditionProperties
+│          ├[~] type Rule
+│          │ └      - documentation: An object containing `RuleName` , and `MatchingKeys` .
+│          │        + documentation: An object containing the `ruleName` and `matchingKeys` .
+│          ├[~] type RuleBasedProperties
+│          │ ├      - documentation: An object which defines the list of matching rules to run in a matching workflow. RuleBasedProperties contain a `Rules` field, which is a list of rule objects.
+│          │ │      + documentation: An object which defines the list of matching rules to run in a matching workflow.
+│          │ └ properties
+│          │    └ AttributeMatchingModel: (documentation changed)
+│          ├[+]  type RuleCondition
+│          │  ├      name: RuleCondition
+│          │  └ properties
+│          │     ├ RuleName: string
+│          │     └ Condition: string
+│          └[+]  type RuleConditionProperties
+│             ├      name: RuleConditionProperties
+│             └ properties
+│                └ Rules: Array<RuleCondition> (required)
+├[~] service aws-iot
+│ └ resources
+│    └[+]  resource AWS::IoT::EncryptionConfiguration
+│       ├      name: EncryptionConfiguration
+│       │      cloudFormationType: AWS::IoT::EncryptionConfiguration
+│       │      documentation: Resource Type definition for AWS::IoT::EncryptionConfiguration
+│       ├ properties
+│       │  ├ EncryptionType: string (required)
+│       │  ├ KmsAccessRoleArn: string
+│       │  └ KmsKeyArn: string
+│       ├ attributes
+│       │  ├ AccountId: string
+│       │  ├ ConfigurationDetails: ConfigurationDetails
+│       │  └ LastModifiedDate: string
+│       └ types
+│          └ type ConfigurationDetails
+│            ├      name: ConfigurationDetails
+│            └ properties
+│               ├ ConfigurationStatus: string
+│               ├ ErrorCode: string
+│               └ ErrorMessage: string
+├[~] service aws-iotfleetwise
+│ └ resources
+│    └[~]  resource AWS::IoTFleetWise::Campaign
+│       └ properties
+│          ├ DataDestinationConfigs: - Array<DataDestinationConfig>
+│          │                         + Array<DataDestinationConfig> (immutable)
+│          ├ SignalsToCollect: - Array<SignalInformation>
+│          │                   + Array<SignalInformation> (immutable)
+│          └ SignalsToFetch: - Array<SignalFetchInformation>
+│                            + Array<SignalFetchInformation> (immutable)
+├[~] service aws-iotsitewise
+│ └ resources
+│    ├[+]  resource AWS::IoTSiteWise::ComputationModel
+│    │  ├      name: ComputationModel
+│    │  │      cloudFormationType: AWS::IoTSiteWise::ComputationModel
+│    │  │      documentation: Resource schema for AWS::IoTSiteWise::ComputationModel.
+│    │  │      tagInformation: {"tagPropertyName":"Tags","variant":"standard"}
+│    │  ├ properties
+│    │  │  ├ ComputationModelName: string (required)
+│    │  │  ├ ComputationModelDescription: string
+│    │  │  ├ ComputationModelConfiguration: ComputationModelConfiguration (required)
+│    │  │  ├ ComputationModelDataBinding: Map<string, ComputationModelDataBindingValue> (required)
+│    │  │  └ Tags: Array<tag>
+│    │  ├ attributes
+│    │  │  ├ ComputationModelArn: string
+│    │  │  └ ComputationModelId: string
+│    │  └ types
+│    │     ├ type AnomalyDetectionComputationModelConfiguration
+│    │     │ ├      name: AnomalyDetectionComputationModelConfiguration
+│    │     │ └ properties
+│    │     │    ├ InputProperties: string (required)
+│    │     │    └ ResultProperty: string (required)
+│    │     ├ type AssetModelPropertyBindingValue
+│    │     │ ├      name: AssetModelPropertyBindingValue
+│    │     │ └ properties
+│    │     │    ├ AssetModelId: string (required)
+│    │     │    └ PropertyId: string (required)
+│    │     ├ type AssetPropertyBindingValue
+│    │     │ ├      name: AssetPropertyBindingValue
+│    │     │ └ properties
+│    │     │    ├ AssetId: string (required)
+│    │     │    └ PropertyId: string (required)
+│    │     ├ type ComputationModelConfiguration
+│    │     │ ├      name: ComputationModelConfiguration
+│    │     │ └ properties
+│    │     │    └ AnomalyDetection: AnomalyDetectionComputationModelConfiguration
+│    │     └ type ComputationModelDataBindingValue
+│    │       ├      name: ComputationModelDataBindingValue
+│    │       └ properties
+│    │          ├ AssetModelProperty: AssetModelPropertyBindingValue
+│    │          ├ AssetProperty: AssetPropertyBindingValue
+│    │          └ List: Array<ComputationModelDataBindingValue>
+│    └[~]  resource AWS::IoTSiteWise::Gateway
+│       └ properties
+│          └ GatewayVersion: (documentation changed)
+├[~] service aws-lightsail
+│ └ resources
+│    └[+]  resource AWS::Lightsail::Domain
+│       ├      name: Domain
+│       │      cloudFormationType: AWS::Lightsail::Domain
+│       │      documentation: Describes a domain where you are storing recordsets.
+│       │      tagInformation: {"tagPropertyName":"Tags","variant":"standard"}
+│       ├ properties
+│       │  ├ DomainName: string (required, immutable)
+│       │  ├ DomainEntries: Array<DomainEntry>
+│       │  └ Tags: Array<tag>
+│       ├ attributes
+│       │  ├ Arn: string
+│       │  ├ SupportCode: string
+│       │  ├ CreatedAt: string
+│       │  ├ Location: Location
+│       │  └ ResourceType: string
+│       └ types
+│          ├ type DomainEntry
+│          │ ├      documentation: Describes a domain recordset entry.
+│          │ │      name: DomainEntry
+│          │ └ properties
+│          │    ├ Id: string
+│          │    ├ Name: string (required)
+│          │    ├ Target: string (required)
+│          │    ├ IsAlias: boolean
+│          │    └ Type: string (required)
+│          └ type Location
+│            ├      documentation: The AWS Region and Availability Zone where the domain was created (read-only).
+│            │      name: Location
+│            └ properties
+│               ├ AvailabilityZone: string
+│               └ RegionName: string
+├[~] service aws-logs
+│ └ resources
+│    ├[~]  resource AWS::Logs::Destination
+│    │  ├      - tagInformation: undefined
+│    │  │      + tagInformation: {"tagPropertyName":"Tags","variant":"standard"}
+│    │  └ properties
+│    │     └[+] Tags: Array<tag>
+│    └[~]  resource AWS::Logs::LogGroup
+│       └ properties
+│          └[+] ResourcePolicyDocument: json
+├[~] service aws-medialive
+│ └ resources
+│    └[~]  resource AWS::MediaLive::Channel
+│       └ types
+│          ├[~] type MediaPackageGroupSettings
+│          │ └ properties
+│          │    └[+] MediapackageV2GroupSettings: MediaPackageV2GroupSettings
+│          ├[~] type MediaPackageOutputSettings
+│          │ ├      - documentation: undefined
+│          │ │      + documentation: The settings for a MediaPackage output.
+│          │ │      The parent of this entity is OutputSettings.
+│          │ └ properties
+│          │    └[+] MediaPackageV2DestinationSettings: MediaPackageV2DestinationSettings
+│          ├[+]  type MediaPackageV2DestinationSettings
+│          │  ├      name: MediaPackageV2DestinationSettings
+│          │  └ properties
+│          │     ├ HlsDefault: string
+│          │     ├ AudioRenditionSets: string
+│          │     ├ AudioGroupId: string
+│          │     └ HlsAutoSelect: string
+│          └[+]  type MediaPackageV2GroupSettings
+│             ├      name: MediaPackageV2GroupSettings
+│             └ properties
+│                └ CaptionLanguageMappings: Array<CaptionLanguageMapping>
+├[~] service aws-mediapackagev2
+│ └ resources
+│    ├[~]  resource AWS::MediaPackageV2::Channel
+│    │  └ types
+│    │     └[~] type InputSwitchConfiguration
+│    │       └ properties
+│    │          └[+] PreferredInput: integer
+│    ├[~]  resource AWS::MediaPackageV2::OriginEndpoint
+│    │  └ types
+│    │     └[~] type Encryption
+│    │       └ properties
+│    │          └[+] CmafExcludeSegmentDrmMetadata: boolean
+│    └[~]  resource AWS::MediaPackageV2::OriginEndpointPolicy
+│       ├ properties
+│       │  └[+] CdnAuthConfiguration: CdnAuthConfiguration
+│       └ types
+│          └[+]  type CdnAuthConfiguration
+│             ├      documentation: The settings to enable CDN authorization headers in MediaPackage.
+│             │      name: CdnAuthConfiguration
+│             └ properties
+│                ├ CdnIdentifierSecretArns: Array<string> (required)
+│                └ SecretsRoleArn: string (required)
+├[~] service aws-opensearchserverless
+│ └ resources
+│    └[~]  resource AWS::OpenSearchServerless::SecurityConfig
+│       └ types
+│          └[~] type SamlConfigOptions
+│            └ properties
+│               └ OpenSearchServerlessEntityId: (documentation changed)
+├[~] service aws-opsworkscm
+│ └ resources
+│    └[~]  resource AWS::OpsWorksCM::Server
+│       ├      - tagInformation: {"tagPropertyName":"Tags","variant":"standard"}
+│       │      + tagInformation: undefined
+│       ├ properties
+│       │  └[-] ServerName: string (immutable)
+│       └ attributes
+│          └[-] Id: string
+├[~] service aws-quicksight
+│ └ resources
+│    └[~]  resource AWS::QuickSight::Topic
+│       ├ properties
+│       │  └[+] CustomInstructions: CustomInstructions
+│       └ types
+│          └[+]  type CustomInstructions
+│             ├      name: CustomInstructions
+│             └ properties
+│                └ CustomInstructionsString: string (required)
+├[~] service aws-rds
+│ └ resources
+│    └[~]  resource AWS::RDS::DBInstance
+│       ├ properties
+│       │  └[+] StatusInfos: Array<DBInstanceStatusInfo>
+│       ├ attributes
+│       │  ├[+] AutomaticRestartTime: string
+│       │  ├[+] PercentProgress: string
+│       │  ├[+] ResumeFullAutomationModeTime: string
+│       │  └[+] SecondaryAvailabilityZone: string
+│       └ types
+│          └[+]  type DBInstanceStatusInfo
+│             ├      name: DBInstanceStatusInfo
+│             └ properties
+│                ├ Message: string
+│                ├ Normal: boolean
+│                ├ Status: string
+│                └ StatusType: string
+├[~] service aws-s3
+│ └ resources
+│    └[~]  resource AWS::S3::AccessPoint
+│       ├      - tagInformation: undefined
+│       │      + tagInformation: {"tagPropertyName":"Tags","variant":"standard"}
+│       └ properties
+│          └[+] Tags: Array<tag>
+├[~] service aws-s3express
+│ └ resources
+│    └[~]  resource AWS::S3Express::AccessPoint
+│       ├      - tagInformation: undefined
+│       │      + tagInformation: {"tagPropertyName":"Tags","variant":"standard"}
+│       └ properties
+│          └[+] Tags: Array<tag>
+├[~] service aws-sagemaker
+│ └ resources
+│    ├[~]  resource AWS::SageMaker::Cluster
+│    │  ├ properties
+│    │  │  ├ InstanceGroups: - Array<ClusterInstanceGroup> (required)
+│    │  │  │                 + Array<ClusterInstanceGroup>
+│    │  │  └[+] RestrictedInstanceGroups: Array<ClusterRestrictedInstanceGroup>
+│    │  └ types
+│    │     ├[~] type ClusterInstanceGroup
+│    │     │ └ properties
+│    │     │    └[+] TrainingPlanArn: string
+│    │     ├[+]  type ClusterRestrictedInstanceGroup
+│    │     │  ├      documentation: Details of a restricted instance group in a SageMaker HyperPod cluster.
+│    │     │  │      name: ClusterRestrictedInstanceGroup
+│    │     │  └ properties
+│    │     │     ├ OverrideVpcConfig: VpcConfig (immutable)
+│    │     │     ├ InstanceCount: integer (required)
+│    │     │     ├ OnStartDeepHealthChecks: Array<string>
+│    │     │     ├ EnvironmentConfig: EnvironmentConfig (required)
+│    │     │     ├ InstanceGroupName: string (required, immutable)
+│    │     │     ├ InstanceStorageConfigs: Array<ClusterInstanceStorageConfig>
+│    │     │     ├ CurrentCount: integer
+│    │     │     ├ TrainingPlanArn: string
+│    │     │     ├ InstanceType: string (required, immutable)
+│    │     │     ├ ThreadsPerCore: integer (immutable)
+│    │     │     └ ExecutionRole: string (required, immutable)
+│    │     ├[+]  type EnvironmentConfig
+│    │     │  ├      documentation: The configuration for the restricted instance groups (RIG) environment.
+│    │     │  │      name: EnvironmentConfig
+│    │     │  └ properties
+│    │     │     └ FSxLustreConfig: FSxLustreConfig
+│    │     └[+]  type FSxLustreConfig
+│    │        ├      documentation: Configuration settings for an Amazon FSx for Lustre file system to be used with the cluster.
+│    │        │      name: FSxLustreConfig
+│    │        └ properties
+│    │           ├ SizeInGiB: integer (required)
+│    │           └ PerUnitStorageThroughput: integer (required)
+│    ├[~]  resource AWS::SageMaker::Domain
+│    │  └ types
+│    │     ├[~] type CustomFileSystemConfig
+│    │     │ └ properties
+│    │     │    └[+] S3FileSystemConfig: S3FileSystemConfig
+│    │     ├[+]  type S3FileSystemConfig
+│    │     │  ├      documentation: Configuration for the custom Amazon S3 file system.
+│    │     │  │      name: S3FileSystemConfig
+│    │     │  └ properties
+│    │     │     ├ MountPath: string
+│    │     │     └ S3Uri: string
+│    │     └[~] type UnifiedStudioSettings
+│    │       └ properties
+│    │          └ SingleSignOnApplicationArn: (documentation changed)
+│    ├[+]  resource AWS::SageMaker::ProcessingJob
+│    │  ├      name: ProcessingJob
+│    │  │      cloudFormationType: AWS::SageMaker::ProcessingJob
+│    │  │      documentation: Resource Type definition for AWS::SageMaker::ProcessingJob
+│    │  │      tagInformation: {"tagPropertyName":"Tags","variant":"standard"}
+│    │  ├ properties
+│    │  │  ├ AppSpecification: AppSpecification (required, immutable)
+│    │  │  ├ Environment: Map<string, string> (immutable)
+│    │  │  ├ ExperimentConfig: ExperimentConfig (immutable)
+│    │  │  ├ NetworkConfig: NetworkConfig (immutable)
+│    │  │  ├ ProcessingInputs: Array<ProcessingInputsObject> (immutable)
+│    │  │  ├ ProcessingJobName: string (immutable)
+│    │  │  ├ ProcessingOutputConfig: ProcessingOutputConfig (immutable)
+│    │  │  ├ ProcessingResources: ProcessingResources (required, immutable)
+│    │  │  ├ RoleArn: string (required, immutable)
+│    │  │  ├ StoppingCondition: StoppingCondition (immutable)
+│    │  │  └ Tags: Array<tag> (immutable)
+│    │  ├ attributes
+│    │  │  ├ ProcessingJobArn: string
+│    │  │  ├ TrainingJobArn: string
+│    │  │  ├ AutoMLJobArn: string
+│    │  │  ├ ExitMessage: string
+│    │  │  ├ FailureReason: string
+│    │  │  ├ MonitoringScheduleArn: string
+│    │  │  ├ ProcessingJobStatus: string
+│    │  │  ├ CreationTime: string
+│    │  │  ├ LastModifiedTime: string
+│    │  │  ├ ProcessingStartTime: string
+│    │  │  └ ProcessingEndTime: string
+│    │  └ types
+│    │     ├ type AppSpecification
+│    │     │ ├      documentation: Configures the processing job to run a specified Docker container image.
+│    │     │ │      name: AppSpecification
+│    │     │ └ properties
+│    │     │    ├ ContainerArguments: Array<string>
+│    │     │    ├ ContainerEntrypoint: Array<string>
+│    │     │    └ ImageUri: string (required)
+│    │     ├ type AthenaDatasetDefinition
+│    │     │ ├      documentation: Configuration for Athena Dataset Definition input.
+│    │     │ │      name: AthenaDatasetDefinition
+│    │     │ └ properties
+│    │     │    ├ Catalog: string (required)
+│    │     │    ├ Database: string (required)
+│    │     │    ├ OutputS3Uri: string (required)
+│    │     │    ├ QueryString: string (required)
+│    │     │    ├ WorkGroup: string
+│    │     │    ├ OutputFormat: string (required)
+│    │     │    ├ KmsKeyId: string
+│    │     │    └ OutputCompression: string
+│    │     ├ type ClusterConfig
+│    │     │ ├      documentation: Configuration for the cluster used to run a processing job.
+│    │     │ │      name: ClusterConfig
+│    │     │ └ properties
+│    │     │    ├ InstanceCount: integer (required)
+│    │     │    ├ InstanceType: string (required)
+│    │     │    ├ VolumeSizeInGB: integer (required)
+│    │     │    └ VolumeKmsKeyId: string
+│    │     ├ type DatasetDefinition
+│    │     │ ├      documentation: Configuration for Dataset Definition inputs. The Dataset Definition input must specify exactly one of either `AthenaDatasetDefinition` or `RedshiftDatasetDefinition` types.
+│    │     │ │      name: DatasetDefinition
+│    │     │ └ properties
+│    │     │    ├ AthenaDatasetDefinition: AthenaDatasetDefinition
+│    │     │    ├ RedshiftDatasetDefinition: RedshiftDatasetDefinition
+│    │     │    ├ DataDistributionType: string
+│    │     │    ├ InputMode: string
+│    │     │    └ LocalPath: string
+│    │     ├ type ExperimentConfig
+│    │     │ ├      documentation: Associates a SageMaker job as a trial component with an experiment and trial.
+│    │     │ │      name: ExperimentConfig
+│    │     │ └ properties
+│    │     │    ├ ExperimentName: string
+│    │     │    ├ TrialName: string
+│    │     │    ├ TrialComponentDisplayName: string
+│    │     │    └ RunName: string
+│    │     ├ type FeatureStoreOutput
+│    │     │ ├      documentation: Configuration for processing job outputs in Amazon SageMaker Feature Store.
+│    │     │ │      name: FeatureStoreOutput
+│    │     │ └ properties
+│    │     │    └ FeatureGroupName: string (required)
+│    │     ├ type NetworkConfig
+│    │     │ ├      documentation: Networking options for a job, such as network traffic encryption between containers, whether to allow inbound and outbound network calls to and from containers, and the VPC subnets and security groups to use for VPC-enabled jobs.
+│    │     │ │      name: NetworkConfig
+│    │     │ └ properties
+│    │     │    ├ EnableInterContainerTrafficEncryption: boolean
+│    │     │    ├ EnableNetworkIsolation: boolean
+│    │     │    └ VpcConfig: VpcConfig
+│    │     ├ type ProcessingInputsObject
+│    │     │ ├      documentation: The inputs for a processing job. The processing input must specify exactly one of either S3Input or DatasetDefinition types.
+│    │     │ │      name: ProcessingInputsObject
+│    │     │ └ properties
+│    │     │    ├ S3Input: S3Input
+│    │     │    ├ DatasetDefinition: DatasetDefinition
+│    │     │    ├ InputName: string (required)
+│    │     │    └ AppManaged: boolean
+│    │     ├ type ProcessingOutputConfig
+│    │     │ ├      documentation: Configuration for uploading output from the processing container.
+│    │     │ │      name: ProcessingOutputConfig
+│    │     │ └ properties
+│    │     │    ├ KmsKeyId: string
+│    │     │    └ Outputs: Array<ProcessingOutputsObject> (required)
+│    │     ├ type ProcessingOutputsObject
+│    │     │ ├      documentation: Describes the results of a processing job. The processing output must specify exactly one of either S3Output or FeatureStoreOutput types.
+│    │     │ │      name: ProcessingOutputsObject
+│    │     │ └ properties
+│    │     │    ├ OutputName: string (required)
+│    │     │    ├ AppManaged: boolean
+│    │     │    ├ S3Output: S3Output
+│    │     │    └ FeatureStoreOutput: FeatureStoreOutput
+│    │     ├ type ProcessingResources
+│    │     │ ├      documentation: Identifies the resources, ML compute instances, and ML storage volumes to deploy for a processing job. In distributed training, you specify more than one instance.
+│    │     │ │      name: ProcessingResources
+│    │     │ └ properties
+│    │     │    └ ClusterConfig: ClusterConfig (required)
+│    │     ├ type RedshiftDatasetDefinition
+│    │     │ ├      documentation: Configuration for Redshift Dataset Definition input.
+│    │     │ │      name: RedshiftDatasetDefinition
+│    │     │ └ properties
+│    │     │    ├ Database: string (required)
+│    │     │    ├ DbUser: string (required)
+│    │     │    ├ QueryString: string (required)
+│    │     │    ├ ClusterId: string (required)
+│    │     │    ├ ClusterRoleArn: string (required)
+│    │     │    ├ OutputS3Uri: string (required)
+│    │     │    ├ OutputFormat: string (required)
+│    │     │    ├ KmsKeyId: string
+│    │     │    └ OutputCompression: string
+│    │     ├ type S3Input
+│    │     │ ├      documentation: Configuration for downloading input data from Amazon S3 into the processing container.
+│    │     │ │      name: S3Input
+│    │     │ └ properties
+│    │     │    ├ LocalPath: string
+│    │     │    ├ S3CompressionType: string
+│    │     │    ├ S3DataDistributionType: string
+│    │     │    ├ S3DataType: string (required)
+│    │     │    ├ S3InputMode: string
+│    │     │    └ S3Uri: string (required)
+│    │     ├ type S3Output
+│    │     │ ├      documentation: Configuration for uploading output data to Amazon S3 from the processing container.
+│    │     │ │      name: S3Output
+│    │     │ └ properties
+│    │     │    ├ LocalPath: string
+│    │     │    ├ S3UploadMode: string (required)
+│    │     │    └ S3Uri: string (required)
+│    │     ├ type StoppingCondition
+│    │     │ ├      documentation: Configures conditions under which the processing job should be stopped, such as how long the processing job has been running. After the condition is met, the processing job is stopped.
+│    │     │ │      name: StoppingCondition
+│    │     │ └ properties
+│    │     │    └ MaxRuntimeInSeconds: integer (required)
+│    │     └ type VpcConfig
+│    │       ├      documentation: Specifies an Amazon Virtual Private Cloud (VPC) that your SageMaker jobs, hosted models, and compute resources have access to. You can control access to and from your resources by configuring a VPC. For more information, see https://docs.aws.amazon.com/sagemaker/latest/dg/infrastructure-give-access.html
+│    │       │      name: VpcConfig
+│    │       └ properties
+│    │          ├ SecurityGroupIds: Array<string> (required)
+│    │          └ Subnets: Array<string> (required)
+│    ├[~]  resource AWS::SageMaker::Space
+│    │  └ types
+│    │     ├[~] type CustomFileSystem
+│    │     │ └ properties
+│    │     │    └[+] S3FileSystem: S3FileSystem
+│    │     └[+]  type S3FileSystem
+│    │        ├      documentation: A custom file system in Amazon S3. This is only supported in Amazon SageMaker Unified Studio.
+│    │        │      name: S3FileSystem
+│    │        └ properties
+│    │           └ S3Uri: string
+│    └[~]  resource AWS::SageMaker::UserProfile
+│       └ types
+│          ├[~] type CustomFileSystemConfig
+│          │ └ properties
+│          │    └[+] S3FileSystemConfig: S3FileSystemConfig
+│          └[+]  type S3FileSystemConfig
+│             ├      documentation: Configuration for the custom Amazon S3 file system.
+│             │      name: S3FileSystemConfig
+│             └ properties
+│                ├ MountPath: string
+│                └ S3Uri: string
+├[~] service aws-ses
+│ └ resources
+│    ├[~]  resource AWS::SES::ConfigurationSet
+│    │  ├      - tagInformation: undefined
+│    │  │      + tagInformation: {"tagPropertyName":"Tags","variant":"standard"}
+│    │  └ properties
+│    │     └[+] Tags: Array<tag>
+│    ├[~]  resource AWS::SES::DedicatedIpPool
+│    │  ├      - tagInformation: undefined
+│    │  │      + tagInformation: {"tagPropertyName":"Tags","variant":"standard"}
+│    │  └ properties
+│    │     └[+] Tags: Array<tag>
+│    └[~]  resource AWS::SES::EmailIdentity
+│       ├      - tagInformation: undefined
+│       │      + tagInformation: {"tagPropertyName":"Tags","variant":"standard"}
+│       └ properties
+│          └[+] Tags: Array<tag>
+├[~] service aws-ssm
+│ └ resources
+│    └[~]  resource AWS::SSM::PatchBaseline
+│       └ properties
+│          └ AvailableSecurityUpdatesComplianceStatus: (documentation changed)
+└[~] service aws-wisdom
+  └ resources
+     └[~]  resource AWS::Wisdom::MessageTemplate
+        ├ properties
+        │  └ MessageTemplateAttachments: (documentation changed)
+        └ types
+           └[~] type MessageTemplateAttachment
+             └ properties
+                └ S3PresignedUrl: (documentation changed)
+```
+
+Co-authored-by: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
+
+### Features
+
+* **cloudformation:** update L1 CloudFormation resource definitions ([#35138](https://github.com/aws/aws-cdk/issues/35138)) ([3eb8ec0](https://github.com/aws/aws-cdk/commit/3eb8ec05b23555c4d9a202dad5a64ec62bf61af1))
+* **dynamodb:** tableV2 MRSC feature addition ([#34909](https://github.com/aws/aws-cdk/issues/34909)) ([6b318f5](https://github.com/aws/aws-cdk/commit/6b318f53bbaa1d79ffa8fcdfc3b321d49c8fdd43)), closes [#34883](https://github.com/aws/aws-cdk/issues/34883)
+* **ec2:** support the new `ServiceRegion` property for `AWS::EC2::VPCEndpoint` ([#35025](https://github.com/aws/aws-cdk/issues/35025)) ([fee0638](https://github.com/aws/aws-cdk/commit/fee06382e0f36f7f241196b67a23a760eb9da099)), closes [#32785](https://github.com/aws/aws-cdk/issues/32785) [#33959](https://github.com/aws/aws-cdk/issues/33959)
+* **ecs:** add L2 support for native ECS blue/green deployments ([#35179](https://github.com/aws/aws-cdk/issues/35179)) ([4d2f463](https://github.com/aws/aws-cdk/commit/4d2f4636ebef20d7d3588d17c02ef2db8b5f17b3)), closes [#35061](https://github.com/aws/aws-cdk/issues/35061) [#35170](https://github.com/aws/aws-cdk/issues/35170) [#35061](https://github.com/aws/aws-cdk/issues/35061) [#35167](https://github.com/aws/aws-cdk/issues/35167) [#35061](https://github.com/aws/aws-cdk/issues/35061)
+
+
+### Bug Fixes
+
+* **dynamodb:** use keyId instead of keyArn for TableV2 replica encryption ([#35144](https://github.com/aws/aws-cdk/issues/35144)) ([787b8ed](https://github.com/aws/aws-cdk/commit/787b8ed4a3f0aedf5b339048ee868f8ea700c4cd)), closes [#35136](https://github.com/aws/aws-cdk/issues/35136)
+
 ## [2.210.0](https://github.com/aws/aws-cdk/compare/v2.209.1...v2.210.0) (2025-08-06)
 
 
