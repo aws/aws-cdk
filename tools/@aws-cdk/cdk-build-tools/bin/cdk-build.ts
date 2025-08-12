@@ -1,3 +1,5 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import * as yargs from 'yargs';
 import { compileCurrentPackage } from '../lib/compile';
 import { lintCurrentPackage } from '../lib/lint';
@@ -57,7 +59,18 @@ async function main() {
   const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
   await compileCurrentPackage(options, timers, overrides);
   if (!args['skip-lint']) {
-    await lintCurrentPackage(options, timers, { ...overrides, fix: args.fix });
+    /*
+    For every L1 construct, we generate a corresponding resource reference interface which it inherits. For example,
+    CfnManagedPolicy extends ICfnManagedPolicy. The ICfn* interfaces are meant to also be extended by L2 interfaces.
+    Although most L2 interfaces extend IConstruct, not all of them do. A case in point is IManagedPolicy, that can't extend
+    IConstruct because it would be impossible to produce an instance of it using ManagedPolicy.fromAwsManagedPolicyName(),
+    since it doesn't take a construct scope as a parameter. Therefore, the ICfn* interfaces cannot extend IConstruct if we
+    want to cover these cases.
+
+    Before calling awslint, we are excluding the 'construct-interface-extends-iconstruct' rule for the ICfn* interfaces.
+     */
+    const lintExclusions = generateIcfnExclusions().map(exclusion => `--exclude=${exclusion}`);
+    await lintCurrentPackage({ ...options, lintExclusions }, timers, { ...overrides, fix: args.fix });
   }
 
   if (options.post) {
@@ -78,3 +91,27 @@ main().catch(e => {
   buildTimer.end();
   process.stdout.write(`Build times for ${currentPackageJson().name}: ${timers.display()}\n`);
 });
+
+// Generate exclusions for ICfn* interfaces
+function generateIcfnExclusions() {
+  const modules = getAwsModules();
+  const exclusions = [];
+
+  for (const module of modules) {
+    exclusions.push(`construct-interface-extends-iconstruct:aws-cdk-lib.${module}.ICfn*`);
+  }
+  exclusions.push('construct-interface-extends-iconstruct:aws-cdk-lib.ICfn*');
+  exclusions.push('construct-interface-extends-iconstruct:aws-cdk-lib.alexa_ask.ICfn*');
+
+  return exclusions;
+}
+
+// Get all AWS modules from aws-cdk-lib
+function getAwsModules() {
+  const cdkLibPath = path.resolve(__dirname, '../../../../packages/aws-cdk-lib');
+  const entries = fs.readdirSync(cdkLibPath, { withFileTypes: true });
+
+  return entries
+    .filter(entry => entry.isDirectory() && entry.name.startsWith('aws-'))
+    .map(entry => entry.name.replace('-', '_'));
+}

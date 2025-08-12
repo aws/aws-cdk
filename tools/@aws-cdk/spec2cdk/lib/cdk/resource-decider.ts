@@ -28,8 +28,8 @@ export class ResourceDecider {
   /**
    * The arn returned by the resource, if applicable.
    */
-  public readonly arn?: PropertySpec;
-  public readonly primaryIdentifier = new Array<PropertySpec>();
+  public readonly arnProperty?: PropertySpec;
+  public readonly primaryIdentifierProps = new Array<PropertySpec>();
   public readonly propsProperties = new Array<PropsProperty>();
   public readonly classProperties = new Array<ClassProperty>();
   public readonly classAttributeProperties = new Array<ClassAttributeProperty>();
@@ -41,7 +41,7 @@ export class ResourceDecider {
     this.convertAttributes();
 
     this.convertPrimaryIdentifier();
-    this.arn = this.findArn();
+    this.arnProperty = this.findArn();
 
     this.propsProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
     this.classProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
@@ -86,14 +86,14 @@ export class ResourceDecider {
       const att = this.findAttributeByName(attributePropertyName(cfnName));
       const prop = this.findPropertyByName(propertyNameFromCloudFormation(cfnName));
       if (att) {
-        this.primaryIdentifier.push(att);
+        this.primaryIdentifierProps.push(att);
       } else if (prop) {
         const propSpec = prop.propertySpec;
 
         // Build an attribute out of the property we're getting
         // Create initializer for new attribute, if possible
         let initializer: Expression | undefined = undefined;
-        if (propSpec.type === Type.STRING) { // handling only this case for now
+        if (propSpec.type === Type.STRING) { // handling only this case for now.
           // The fact that a property is part of a primary identifier does not necessarily imply that it can be read.
           // Example: AWS::ApiGateway::RequestValidator has a primary identifier composed of
           // [ "/properties/RestApiId", "/properties/RequestValidatorId" ]. But Ref only returns the validator ID.
@@ -115,7 +115,7 @@ export class ResourceDecider {
           initializer,
         });
 
-        this.primaryIdentifier.push(attrPropertySpec);
+        this.primaryIdentifierProps.push(attrPropertySpec);
       }
     }
   }

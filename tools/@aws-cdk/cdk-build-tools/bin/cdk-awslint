@@ -1,48 +1,4 @@
 #!/usr/bin/env node
 
-/*
-For every L1 construct, we generate a corresponding resource reference interface which it inherits. For example,
-CfnManagedPolicy extends ICfnManagedPolicy. The ICfn* interfaces are meant to also be extended by L2 interfaces.
-Although most L2 interfaces extend IConstruct, not all of them do. A case in point is IManagedPolicy, that can't extend
-IConstruct because it would be impossible to produce an instance of it using ManagedPolicy.fromAwsManagedPolicyName(),
-since it doesn't take a construct scope as a parameter. Therefore, the ICfn* interfaces cannot extend IConstruct if we
-want to cover these cases.
-
-Before calling awslint, we are excluding the 'construct-interface-extends-iconstruct' rule for the ICfn* interfaces.
- */
-
-const fs = require('fs');
-const path = require('path');
-
-// Get all AWS modules from aws-cdk-lib
-function getAwsModules() {
-  const cdkLibPath = path.resolve(__dirname, '../../../../packages/aws-cdk-lib');
-  const entries = fs.readdirSync(cdkLibPath, { withFileTypes: true });
-
-  return entries
-    .filter(entry => entry.isDirectory() && entry.name.startsWith('aws-'))
-    .map(entry => entry.name.replace('-', '_'))
-}
-
-// Generate exclusions for ICfn* interfaces
-function generateIcfnExclusions() {
-  const modules = getAwsModules();
-  const exclusions = [];
-
-  for (const module of modules) {
-    exclusions.push(`construct-interface-extends-iconstruct:aws-cdk-lib.${module}.ICfn*`);
-  }
-  exclusions.push('construct-interface-extends-iconstruct:aws-cdk-lib.ICfn*');
-  exclusions.push('construct-interface-extends-iconstruct:aws-cdk-lib.alexa_ask.ICfn*');
-
-  return exclusions;
-}
-
-// Add the generated exclusions to process.argv
-const icfnExclusions = generateIcfnExclusions();
-for (const exclusion of icfnExclusions) {
-  process.argv.push('--exclude', exclusion);
-}
-
 // Run the original awslint
 require('awslint/bin/awslint.js');

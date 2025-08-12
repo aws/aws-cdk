@@ -182,6 +182,11 @@ export interface CDKBuildOptions {
    * Whether the jsii assembly should be compressed into a .jsii.gz file or left uncompressed as a .jsii file.
    */
   compressAssembly?: boolean;
+
+  /**
+   * Patterns to be excluded from linting
+   */
+  lintExclusions?: string[];
 }
 
 export interface CDKPackageOptions {
