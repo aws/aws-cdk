@@ -1,4 +1,5 @@
 # See https://doc.mergify.io
+merge_bot_account: aws-cdk-automation
 merge_queue:
   # Hopefully this gets Mergify to stop creating PRs just to test merges (it both messes with statistics and our automatic validations)
   max_parallel_checks: 1
@@ -22,6 +23,7 @@ queue_rules:
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
+    branch_protection_injection_mode: none
 
   - name: priority-squash
     update_method: merge
@@ -42,6 +44,7 @@ queue_rules:
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
+    branch_protection_injection_mode: none
 
   - name: default-squash
     update_method: merge
@@ -61,6 +64,7 @@ queue_rules:
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
+    branch_protection_injection_mode: none
 
 pull_request_rules:
   - name: label core
