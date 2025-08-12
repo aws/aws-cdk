@@ -1544,6 +1544,8 @@ Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-cap
 Group](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html)
 Capacity Providers. Both are supported.
 
+> **Note**: ECS clusters and their capacity providers must be deployed in the same CDK stack. Cross-stack capacity provider registration is not supported due to circular dependency constraints. See the [Auto Scaling Group Capacity Providers](#auto-scaling-group-capacity-providers) section for more details.
+
 ### Fargate Capacity Providers
 
 To enable Fargate capacity providers, you can either set
@@ -1590,6 +1592,8 @@ Group. Then, create an `AsgCapacityProvider` and pass the Auto Scaling Group to
 it in the constructor. Then add the Capacity Provider to the cluster. Finally,
 you can refer to the Provider by its name in your service's or task's Capacity
 Provider strategy.
+
+> **Note**: Cross-stack capacity provider registration is not supported. The ECS cluster and its capacity providers must be created in the same stack to avoid circular dependency issues.
 
 By default, Auto Scaling Group Capacity Providers will manage the scale-in and
 scale-out behavior of the auto scaling group based on the load your tasks put on
