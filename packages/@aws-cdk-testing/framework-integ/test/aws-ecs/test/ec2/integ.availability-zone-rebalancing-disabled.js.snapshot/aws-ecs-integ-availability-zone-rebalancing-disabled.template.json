@@ -941,7 +941,6 @@
   "FrontendServiceBC94BA93": {
    "Type": "AWS::ECS::Service",
    "Properties": {
-    "AvailabilityZoneRebalancing": "DISABLED",
     "Cluster": {
      "Ref": "EcsCluster97242B84"
     },

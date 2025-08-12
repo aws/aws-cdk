@@ -439,7 +439,6 @@
   "FargateServiceAC2B3B85": {
    "Type": "AWS::ECS::Service",
    "Properties": {
-    "AvailabilityZoneRebalancing": "DISABLED",
     "Cluster": {
      "Ref": "ClusterEB0386A7"
     },
