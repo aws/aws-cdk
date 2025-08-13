@@ -99,6 +99,10 @@ export class LazyRole extends cdk.Resource implements IRole {
     return this.instantiate().roleArn;
   }
 
+  public get attrArn(): string {
+    return this.roleArn;
+  }
+
   /**
    * Returns the stable and unique string identifying the role (i.e. AIDAJQABLZS4A3QDU576Q)
    *
@@ -110,6 +114,10 @@ export class LazyRole extends cdk.Resource implements IRole {
 
   public get roleName(): string {
     return this.instantiate().roleName;
+  }
+
+  public get attrRoleName(): string {
+    return this.roleName;
   }
 
   public get policyFragment(): PrincipalPolicyFragment {

@@ -139,6 +139,8 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     class Import extends JobDefinitionBase implements IJobDefinition {
       public readonly jobDefinitionArn = jobDefinitionArn;
       public readonly jobDefinitionName = jobDefinitionName;
+      public readonly attrJobDefinitionArn = jobDefinitionArn;
+      public readonly attrJobDefinitionName = jobDefinitionName;
       public readonly enabled = true;
     }
 
@@ -151,6 +153,8 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
 
   public readonly jobDefinitionArn: string;
   public readonly jobDefinitionName: string;
+  public readonly attrJobDefinitionArn: string;
+  public readonly attrJobDefinitionName: string;
 
   private readonly _instanceType?: ec2.InstanceType;
 
@@ -186,6 +190,8 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
       },
       platformCapabilities: [Compatibility.EC2],
     });
+    this.attrJobDefinitionName = resource.attrJobDefinitionName;
+    this.attrJobDefinitionArn = resource.attrJobDefinitionArn;
     this.jobDefinitionArn = this.getResourceArnAttribute(resource.ref, {
       service: 'batch',
       resource: 'job-definition',

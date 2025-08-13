@@ -8,7 +8,11 @@ import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
 import { IProduct } from './product';
-import { CfnPortfolio, CfnPortfolioPrincipalAssociation, CfnPortfolioShare } from './servicecatalog.generated';
+import {
+  CfnPortfolio,
+  CfnPortfolioPrincipalAssociation,
+  CfnPortfolioShare, IPortfolioRef,
+} from './servicecatalog.generated';
 import { TagOptions } from './tag-options';
 import * as iam from '../../aws-iam';
 import { IBucket } from '../../aws-s3';
@@ -42,7 +46,7 @@ export interface PortfolioShareOptions {
 /**
  * A Service Catalog portfolio.
  */
-export interface IPortfolio extends cdk.IResource {
+export interface IPortfolio extends cdk.IResource, IPortfolioRef {
   /**
    * The ARN of the portfolio.
    * @attribute
@@ -159,6 +163,7 @@ export interface IPortfolio extends cdk.IResource {
 abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   public abstract readonly portfolioArn: string;
   public abstract readonly portfolioId: string;
+  public abstract readonly attrId: string;
   private readonly associatedPrincipals: Set<string> = new Set();
   private readonly assetBuckets: Set<IBucket> = new Set<IBucket>();
   private readonly sharedAccounts: string[] = [];
@@ -331,6 +336,7 @@ export class Portfolio extends PortfolioBase {
     class Import extends PortfolioBase {
       public readonly portfolioArn = portfolioArn;
       public readonly portfolioId = portfolioId!;
+      public readonly attrId = portfolioId!;
 
       protected generateUniqueHash(value: string): string {
         return hashValues(this.portfolioArn, value);
@@ -344,6 +350,7 @@ export class Portfolio extends PortfolioBase {
 
   public readonly portfolioArn: string;
   public readonly portfolioId: string;
+  public readonly attrId: string;
   private readonly portfolio: CfnPortfolio;
 
   constructor(scope: Construct, id: string, props: PortfolioProps) {
@@ -359,6 +366,7 @@ export class Portfolio extends PortfolioBase {
       description: props.description,
       acceptLanguage: props.messageLanguage,
     });
+    this.attrId = this.portfolio.attrId;
     this.portfolioId = this.portfolio.ref;
     this.portfolioArn = cdk.Stack.of(this).formatArn({
       service: 'catalog',

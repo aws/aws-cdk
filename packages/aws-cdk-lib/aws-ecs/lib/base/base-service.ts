@@ -36,13 +36,13 @@ import {
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { IDeploymentLifecycleHookTarget } from '../deployment-lifecycle-hook-target';
-import { CfnService } from '../ecs.generated';
+import { CfnService, IServiceRef } from '../ecs.generated';
 import { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
 
 /**
  * The interface for a service.
  */
-export interface IService extends IResource {
+export interface IService extends IResource, IServiceRef {
   /**
    * The Amazon Resource Name (ARN) of the service.
    *
@@ -601,6 +601,7 @@ export abstract class BaseService extends Resource
 
     class Import extends Resource implements IBaseService {
       public readonly serviceArn = serviceArn;
+      public readonly attrServiceArn = serviceArn;
       public readonly serviceName = serviceName;
       public readonly cluster = cluster;
     }
@@ -622,6 +623,11 @@ export abstract class BaseService extends Resource
    * The Amazon Resource Name (ARN) of the service.
    */
   public readonly serviceArn: string;
+
+  /**
+   * The Amazon Resource Name (ARN) of the service.
+   */
+  public readonly attrServiceArn: string;
 
   /**
    * The name of the service.
@@ -800,6 +806,7 @@ export abstract class BaseService extends Resource
       resource: 'service',
       resourceName: `${props.cluster.clusterName}/${this.physicalName}`,
     });
+    this.attrServiceArn = this.serviceArn;
     this.serviceName = this.getResourceNameAttribute(this.resource.attrName);
 
     this.cluster = props.cluster;

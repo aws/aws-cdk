@@ -43,31 +43,41 @@ const artifact = new deploy.BucketDeployment(stack, 'DeployApp', {
   extract: false,
 });
 
+const enhancedHealthPolicyArn = 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth';
+const customerRolePolicyArn = 'arn:aws:iam::aws:policy/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy';
 const serviceRole = new iam.Role(stack, 'service-role', {
   roleName: 'codepipeline-elasticbeanstalk-action-test-serivce-role',
   assumedBy: new iam.ServicePrincipal('elasticbeanstalk.amazonaws.com'),
   managedPolicies: [
     {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth',
+      managedPolicyArn: enhancedHealthPolicyArn,
+      attrPolicyArn: enhancedHealthPolicyArn,
     },
     {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy',
+      managedPolicyArn: customerRolePolicyArn,
+      attrPolicyArn: customerRolePolicyArn,
     },
   ],
 });
 
+const webTierPolicyArn = 'arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier';
+const multicontainerDockerPolicyArn = 'arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker';
+let workerTierPolicyArn = 'arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier';
 const instanceProfileRole = new iam.Role(stack, 'instance-profile-role', {
   roleName: 'codepipeline-elasticbeanstalk-action-test-instance-profile-role',
   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
   managedPolicies: [
     {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier',
+      managedPolicyArn: webTierPolicyArn,
+      attrPolicyArn: webTierPolicyArn,
     },
     {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker',
+      managedPolicyArn: multicontainerDockerPolicyArn,
+      attrPolicyArn: multicontainerDockerPolicyArn,
     },
     {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier',
+      managedPolicyArn: workerTierPolicyArn,
+      attrPolicyArn: workerTierPolicyArn,
     },
   ],
 });

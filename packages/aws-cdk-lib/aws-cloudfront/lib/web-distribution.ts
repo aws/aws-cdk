@@ -760,12 +760,14 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       public readonly domainName: string;
       public readonly distributionDomainName: string;
       public readonly distributionId: string;
+      public readonly attrId: string;
 
       constructor() {
         super(scope, id);
         this.domainName = attrs.domainName;
         this.distributionDomainName = attrs.domainName;
         this.distributionId = attrs.distributionId;
+        this.attrId = attrs.distributionId;
       }
 
       public get distributionArn(): string {
@@ -806,6 +808,11 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
    * The distribution ID for this distribution.
    */
   public readonly distributionId: string;
+
+  /**
+   * The distribution ID for this distribution.
+   */
+  public readonly attrId: string;
 
   /**
    * Maps our methods to the string arrays they are
@@ -1001,6 +1008,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig });
+    this.attrId = distribution.attrId;
     this.node.defaultChild = distribution;
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;

@@ -55,6 +55,7 @@ export function fromServiceAttributes(scope: Construct, id: string, attrs: Servi
   }
   class Import extends Resource implements IBaseService {
     public readonly serviceArn = arn;
+    public readonly attrServiceArn = arn;
     public readonly serviceName = name;
     public readonly cluster = attrs.cluster;
   }

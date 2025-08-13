@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IKey } from './key';
-import { CfnAlias } from './kms.generated';
+import { CfnAlias, IAliasRef } from './kms.generated';
 import * as iam from '../../aws-iam';
 import * as perms from './private/perms';
 import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
@@ -15,7 +15,7 @@ const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'aws/';
  * A KMS Key alias.
  * An alias can be used in all places that expect a key.
  */
-export interface IAlias extends IKey {
+export interface IAlias extends IKey, IAliasRef {
   /**
    * The name of the alias.
    *
@@ -59,6 +59,12 @@ export interface AliasProps {
 
 abstract class AliasBase extends Resource implements IAlias {
   public abstract readonly aliasName: string;
+
+  public abstract readonly attrAliasName: string;
+
+  public abstract readonly attrArn: string;
+
+  public abstract readonly attrKeyId: string;
 
   public abstract readonly aliasTargetKey: IKey;
 
@@ -179,7 +185,10 @@ export class Alias extends AliasBase {
   public static fromAliasAttributes(scope: Construct, id: string, attrs: AliasAttributes): IAlias {
     class _Alias extends AliasBase {
       public get aliasName() { return attrs.aliasName; }
+      public get attrAliasName() { return attrs.aliasName; }
       public get aliasTargetKey() { return attrs.aliasTargetKey; }
+      public get attrArn() { return attrs.aliasTargetKey.attrArn; }
+      public get attrKeyId() { return attrs.aliasTargetKey.attrKeyId; }
     }
     return new _Alias(scope, id);
   }
@@ -202,7 +211,10 @@ export class Alias extends AliasBase {
     class Import extends Resource implements IAlias {
       public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
       public readonly keyId = aliasName;
+      public readonly attrArn = this.keyArn;
+      public readonly attrKeyId = this.keyId;
       public readonly aliasName = aliasName;
+      public readonly attrAliasName = aliasName;
       public get aliasTargetKey(): IKey { throw new ValidationError('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().', this); }
       public addAlias(_alias: string): Alias { throw new ValidationError('Cannot call addAlias on an Alias imported by Alias.fromAliasName().', this); }
       public addToResourcePolicy(_statement: iam.PolicyStatement, _allowNoOp?: boolean): iam.AddToResourcePolicyResult {
@@ -266,6 +278,7 @@ export class Alias extends AliasBase {
   }
 
   public readonly aliasName: string;
+  public readonly attrAliasName: string;
   public readonly aliasTargetKey: IKey;
 
   constructor(scope: Construct, id: string, props: AliasProps) {
@@ -321,11 +334,15 @@ export class Alias extends AliasBase {
     } else {
       this.aliasName = this.getResourceNameAttribute(resource.aliasName);
     }
+    this.attrAliasName = this.aliasName;
 
     if (props.removalPolicy) {
       resource.applyRemovalPolicy(props.removalPolicy);
     }
   }
+
+  public get attrArn() { return this.aliasTargetKey.attrArn; }
+  public get attrKeyId() { return this.aliasTargetKey.attrKeyId; }
 
   protected generatePhysicalName(): string {
     return REQUIRED_ALIAS_PREFIX + super.generatePhysicalName();

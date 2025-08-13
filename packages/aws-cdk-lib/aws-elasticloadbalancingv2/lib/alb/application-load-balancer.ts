@@ -1219,6 +1219,11 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
    */
   public readonly loadBalancerArn: string;
 
+  /**
+   * ARN of the load balancer
+   */
+  public readonly attrLoadBalancerArn: string;
+
   public get listeners(): ApplicationListener[] {
     throw Error('.listeners can only be accessed if the class was constructed as an owned, not imported, load balancer');
   }
@@ -1240,6 +1245,7 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
 
     this.vpc = props.vpc;
     this.loadBalancerArn = props.loadBalancerArn;
+    this.attrLoadBalancerArn = props.loadBalancerArn;
     this.connections = new ec2.Connections({
       securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId, {
         allowAllOutbound: props.securityGroupAllowsAllOutbound,
@@ -1274,6 +1280,7 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.LookedUpApplicationLoadBalancer';
   public readonly loadBalancerArn: string;
+  public readonly attrLoadBalancerArn: string;
   public readonly loadBalancerCanonicalHostedZoneId: string;
   public readonly loadBalancerDnsName: string;
   public readonly ipAddressType?: IpAddressType;
@@ -1293,6 +1300,7 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
     addConstructMetadata(this, props);
 
     this.loadBalancerArn = props.loadBalancerArn;
+    this.attrLoadBalancerArn = props.loadBalancerArn;
     this.loadBalancerCanonicalHostedZoneId = props.loadBalancerCanonicalHostedZoneId;
     this.loadBalancerDnsName = props.loadBalancerDnsName;
 

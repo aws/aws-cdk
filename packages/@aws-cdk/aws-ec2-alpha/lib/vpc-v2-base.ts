@@ -207,6 +207,11 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   public abstract readonly vpcId: string;
 
   /**
+   * Identifier for this VPC
+   */
+  public abstract readonly attrVpcId: string;
+
+  /**
    * Arn of this VPC
    */
   public abstract readonly vpcArn: string;

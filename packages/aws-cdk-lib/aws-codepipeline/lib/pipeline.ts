@@ -388,6 +388,7 @@ export interface PipelineProps {
 abstract class PipelineBase extends Resource implements IPipeline {
   public abstract readonly pipelineName: string;
   public abstract readonly pipelineArn: string;
+  public abstract readonly attrName: string;
 
   /**
    * Defines an event rule triggered by this CodePipeline.
@@ -544,6 +545,7 @@ export class Pipeline extends PipelineBase {
     class Import extends PipelineBase {
       public readonly pipelineName = Stack.of(scope).splitArn(pipelineArn, ArnFormat.SLASH_RESOURCE_NAME).resource;
       public readonly pipelineArn = pipelineArn;
+      public readonly attrName = this.pipelineName;
     }
 
     return new Import(scope, id, {
@@ -566,6 +568,11 @@ export class Pipeline extends PipelineBase {
    * The name of the pipeline
    */
   public readonly pipelineName: string;
+
+  /**
+   * The name of the pipeline
+   */
+  public readonly attrName: string;
 
   /**
    * The version of the pipeline
@@ -686,6 +693,8 @@ export class Pipeline extends PipelineBase {
       executionMode: props.executionMode,
       name: this.physicalName,
     });
+
+    this.attrName = this.codePipeline.attrName;
 
     // this will produce a DependsOn for both the role and the policy resources.
     this.codePipeline.node.addDependency(this.role);

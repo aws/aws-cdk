@@ -176,6 +176,11 @@ export class BastionHostLinux extends Resource implements IInstance {
   /**
    * @attribute
    */
+  public readonly attrInstanceId: string;
+
+  /**
+   * @attribute
+   */
   public readonly instanceAvailabilityZone: string;
 
   /**
@@ -218,6 +223,7 @@ export class BastionHostLinux extends Resource implements IInstance {
       requireImdsv2: props.requireImdsv2 ?? false,
       userDataCausesReplacement: props.userDataCausesReplacement,
     });
+    this.attrInstanceId = this.instance.attrInstanceId;
     this.instance.addToRolePolicy(new PolicyStatement({
       actions: [
         'ssmmessages:*',

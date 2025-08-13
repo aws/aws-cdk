@@ -69,6 +69,8 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
     class Import extends JobDefinitionBase implements IEcsJobDefinition {
       public readonly jobDefinitionArn = jobDefinitionArn;
       public readonly jobDefinitionName = EcsJobDefinition.getJobDefinitionName(this, jobDefinitionArn);
+      public readonly attrJobDefinitionArn = jobDefinitionArn;
+      public readonly attrJobDefinitionName = this.jobDefinitionName;
       public readonly enabled = true;
       container = {} as any;
     }
@@ -86,6 +88,8 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
 
   public readonly jobDefinitionArn: string;
   public readonly jobDefinitionName: string;
+  public readonly attrJobDefinitionArn: string;
+  public readonly attrJobDefinitionName: string;
 
   constructor(scope: Construct, id: string, props: EcsJobDefinitionProps) {
     super(scope, id, props);
@@ -103,6 +107,9 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
       platformCapabilities: this.renderPlatformCapabilities(),
       propagateTags: this.propagateTags,
     });
+
+    this.attrJobDefinitionArn = resource.attrJobDefinitionArn;
+    this.attrJobDefinitionName = resource.attrJobDefinitionName;
 
     this.jobDefinitionArn = this.getResourceArnAttribute(resource.ref, {
       service: 'batch',

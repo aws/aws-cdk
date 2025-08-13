@@ -7,7 +7,7 @@ import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IAlternateTarget } from '../alternate-target-configuration';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
-import { CfnTaskDefinition } from '../ecs.generated';
+import { CfnTaskDefinition, ITaskDefinitionRef } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
 import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { PlacementConstraint } from '../placement';
@@ -17,7 +17,7 @@ import { RuntimePlatform } from '../runtime-platform';
 /**
  * The interface for all task definitions.
  */
-export interface ITaskDefinition extends IResource {
+export interface ITaskDefinition extends IResource, ITaskDefinitionRef {
   /**
    * ARN of this task definition
    * @attribute
@@ -294,6 +294,7 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
   public abstract readonly compatibility: Compatibility;
   public abstract readonly networkMode: NetworkMode;
   public abstract readonly taskDefinitionArn: string;
+  public abstract readonly attrTaskDefinitionArn: string;
   public abstract readonly taskRole: iam.IRole;
   public abstract readonly executionRole?: iam.IRole;
 
@@ -362,6 +363,12 @@ export class TaskDefinition extends TaskDefinitionBase {
    * @attribute
    */
   public readonly taskDefinitionArn: string;
+
+  /**
+   * The full Amazon Resource Name (ARN) of the task definition.
+   * @attribute
+   */
+  public readonly attrTaskDefinitionArn: string;
 
   /**
    * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
@@ -540,7 +547,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       } : undefined,
       enableFaultInjection: props.enableFaultInjection,
     });
-
+    this.attrTaskDefinitionArn = taskDef.attrTaskDefinitionArn;
     if (props.placementConstraints) {
       props.placementConstraints.forEach(pc => this.addPlacementConstraint(pc));
     }

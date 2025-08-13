@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { Alias } from './alias';
 import { KeyLookupOptions } from './key-lookup';
-import { CfnKey } from './kms.generated';
+import { CfnKey, IKeyRef } from './kms.generated';
 import * as perms from './private/perms';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
@@ -27,7 +27,7 @@ import * as cxapi from '../../cx-api';
 /**
  * A KMS Key, either managed by this CDK app, or imported.
  */
-export interface IKey extends IResource {
+export interface IKey extends IResource, IKeyRef {
   /**
    * The ARN of the key.
    *
@@ -110,6 +110,13 @@ abstract class KeyBase extends Resource implements IKey {
   public abstract readonly keyArn: string;
 
   public abstract readonly keyId: string;
+
+  /**
+   * The ARN of the key.
+   */
+  public abstract readonly attrArn: string;
+
+  public abstract readonly attrKeyId: string;
 
   /**
    * Optional policy document that represents the resource policy of this key.
@@ -643,7 +650,9 @@ export class Key extends KeyBase {
   public static fromKeyArn(scope: Construct, id: string, keyArn: string): IKey {
     class Import extends KeyBase {
       public readonly keyArn = keyArn;
+      public readonly attrArn = keyArn;
       public readonly keyId: string;
+      public readonly attrKeyId: string;
       protected readonly policy?: iam.PolicyDocument | undefined = undefined;
       // defaulting true: if we are importing the key the key policy is
       // undefined and impossible to change here; this means updating identity
@@ -654,6 +663,7 @@ export class Key extends KeyBase {
         super(scope, id, props);
 
         this.keyId = keyId;
+        this.attrKeyId = keyId;
       }
     }
 
@@ -711,6 +721,8 @@ export class Key extends KeyBase {
     return new class extends KeyBase {
       public readonly keyArn = cfnKey.attrArn;
       public readonly keyId = cfnKey.ref;
+      public readonly attrArn = cfnKey.attrArn;
+      public readonly attrKeyId = cfnKey.ref;
       protected readonly policy = keyPolicy;
       protected readonly trustAccountIdentities = false;
     }(cfnKey, id);
@@ -745,6 +757,8 @@ export class Key extends KeyBase {
     class Import extends KeyBase {
       public readonly keyArn: string;
       public readonly keyId: string;
+      public readonly attrArn: string;
+      public readonly attrKeyId: string;
       protected readonly policy?: iam.PolicyDocument | undefined = undefined;
       // defaulting true: if we are importing the key the key policy is
       // undefined and impossible to change here; this means updating identity
@@ -756,6 +770,8 @@ export class Key extends KeyBase {
 
         this.keyId = keyId;
         this.keyArn = keyArn;
+        this.attrKeyId = keyId;
+        this.attrArn = keyArn;
       }
     }
     if (Token.isUnresolved(options.aliasName)) {
@@ -790,6 +806,8 @@ export class Key extends KeyBase {
 
   public readonly keyArn: string;
   public readonly keyId: string;
+  public readonly attrArn: string;
+  public readonly attrKeyId: string;
   protected readonly policy?: iam.PolicyDocument;
   protected readonly trustAccountIdentities: boolean;
   private readonly enableKeyRotation?: boolean;
@@ -911,6 +929,8 @@ export class Key extends KeyBase {
       pendingWindowInDays: pendingWindowInDays,
     });
 
+    this.attrArn = resource.attrArn;
+    this.attrKeyId = resource.attrKeyId;
     this.keyArn = resource.attrArn;
     this.keyId = resource.ref;
     resource.applyRemovalPolicy(props.removalPolicy);
