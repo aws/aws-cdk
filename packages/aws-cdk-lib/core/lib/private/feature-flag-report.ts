@@ -34,7 +34,8 @@ function parseFeatureFlagInfo(flagName: string, info: FlagInfo, root: IConstruct
  */
 export function generateFeatureFlagReport(builder: CloudAssemblyBuilder, root: IConstruct): void {
   const featureFlags: Record<string, FeatureFlag> = {};
-  for (const [flagName, flagInfo] of Object.entries(feats.FLAGS)) {
+  for (const flagName of Object.keys(feats.CURRENTLY_RECOMMENDED_FLAGS)) {
+    const flagInfo = feats.FLAGS[flagName];
     featureFlags[flagName] = parseFeatureFlagInfo(flagName, flagInfo, root);
   }
 
