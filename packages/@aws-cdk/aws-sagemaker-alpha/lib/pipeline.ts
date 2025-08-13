@@ -1,31 +1,35 @@
 import { Construct } from 'constructs';
 import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
-import { Arn, IResource, Resource, Stack, Token } from 'aws-cdk-lib';
+import { IPipeline } from 'aws-cdk-lib/aws-sagemaker';
+import { Arn, Resource, Stack, Token } from 'aws-cdk-lib';
 import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /**
- * The interface for a SageMaker Pipeline resource.
+ * Validates a SageMaker Pipeline name according to AWS requirements
+ * @param pipelineName The pipeline name to validate
+ * @param scope The construct scope for error reporting
+ * @throws ValidationError if the pipeline name is invalid
  */
-export interface IPipeline extends IResource {
-  /**
-   * The ARN of the pipeline.
-   *
-   * @attribute
-   */
-  readonly pipelineArn: string;
+function validatePipelineName(pipelineName: string, scope: Construct): void {
+  // Skip validation for CDK tokens
+  if (Token.isUnresolved(pipelineName)) {
+    return;
+  }
 
-  /**
-   * The name of the pipeline.
-   *
-   * @attribute
-   */
-  readonly pipelineName: string;
+  // Check length constraints (1-256 characters)
+  if (!pipelineName || pipelineName.length === 0 || pipelineName.length > 256) {
+    throw new ValidationError(`Invalid pipeline name format: ${pipelineName}. Pipeline name must be between 1-256 characters.`, scope);
+  }
 
-  /**
-   * Permits an IAM principal to start this pipeline execution
-   * @param grantee The principal to grant access to
-   */
-  grantStartPipelineExecution(grantee: IGrantable): Grant;
+  // Check character pattern: must start and end with alphanumeric, can contain hyphens
+  if (!/^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(pipelineName)) {
+    throw new ValidationError(`Invalid pipeline name format: ${pipelineName}. Must start and end with alphanumeric characters, can contain hyphens but not consecutive hyphens, underscores, dots, or spaces.`, scope);
+  }
+
+  // Check for consecutive hyphens (not allowed)
+  if (pipelineName.includes('--')) {
+    throw new ValidationError(`Invalid pipeline name format: ${pipelineName}. Cannot contain consecutive hyphens.`, scope);
+  }
 }
 
 /**
@@ -117,21 +121,8 @@ export class Pipeline extends Resource implements IPipeline {
       pipelineName = Arn.extractResourceName(pipelineArn, 'pipeline');
     } else if (attrs.pipelineName !== undefined) {
       pipelineName = attrs.pipelineName;
-      // Validate pipeline name format first (only if not a token)
-      if (!Token.isUnresolved(pipelineName)) {
-        if (!pipelineName || pipelineName.length === 0 || pipelineName.length > 256) {
-          throw new ValidationError(`Invalid pipeline name format: ${pipelineName}. Pipeline name must be between 1-256 characters.`, scope);
-        }
-
-        if (!/^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(pipelineName)) {
-          throw new ValidationError(`Invalid pipeline name format: ${pipelineName}. Must start and end with alphanumeric characters, can contain hyphens but not consecutive hyphens, underscores, dots, or spaces.`, scope);
-        }
-
-        // Check for consecutive hyphens
-        if (pipelineName.includes('--')) {
-          throw new ValidationError(`Invalid pipeline name format: ${pipelineName}. Cannot contain consecutive hyphens.`, scope);
-        }
-      }
+      // Validate pipeline name format
+      validatePipelineName(pipelineName, scope);
 
       pipelineArn = stack.formatArn({
         service: 'sagemaker',
