@@ -75,13 +75,13 @@ describe('Pipeline', () => {
 
     test('uses stack account and region by default', () => {
       const customStack = new cdk.Stack(app, 'CustomStack', {
-        env: { account: '555666777888', region: 'ap-southeast-1' },
+        env: { account: '234567890123', region: 'ap-southeast-1' },
       });
 
       const pipeline = sagemaker.Pipeline.fromPipelineName(customStack, 'ImportedPipeline', 'custom-pipeline');
 
       // ARN should contain the custom account/region and pipeline name
-      expect(pipeline.pipelineArn).toContain('sagemaker:ap-southeast-1:555666777888:pipeline/custom-pipeline');
+      expect(pipeline.pipelineArn).toContain('sagemaker:ap-southeast-1:234567890123:pipeline/custom-pipeline');
     });
   });
 
@@ -112,12 +112,12 @@ describe('Pipeline', () => {
     test('works with custom account and region', () => {
       const pipeline = sagemaker.Pipeline.fromPipelineAttributes(stack, 'ImportedPipeline', {
         pipelineName: 'custom-env-pipeline',
-        account: '999888777666',
+        account: '234567890123',
         region: 'eu-central-1',
       });
 
       // ARN should contain the custom account/region and pipeline name
-      expect(pipeline.pipelineArn).toContain('sagemaker:eu-central-1:999888777666:pipeline/custom-env-pipeline');
+      expect(pipeline.pipelineArn).toContain('sagemaker:eu-central-1:234567890123:pipeline/custom-env-pipeline');
     });
 
     test('throws when neither ARN nor name provided', () => {
