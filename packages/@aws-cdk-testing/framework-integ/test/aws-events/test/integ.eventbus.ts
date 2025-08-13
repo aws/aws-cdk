@@ -9,6 +9,12 @@ const stack = new Stack(app, 'Stack');
 
 const dlq = new sqs.Queue(stack, 'DLQ');
 
+const eventBusRole = new iam.Role(stack, 'EventBusRole', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  description: 'Role for accessing EventBus',
+  roleName: 'EventBusAccessRole',
+});
+
 const bus = new EventBus(stack, 'Bus', {
   deadLetterQueue: dlq,
   description: 'myEventBus',
@@ -20,7 +26,7 @@ const bus = new EventBus(stack, 'Bus', {
 
 bus.addToResourcePolicy(new iam.PolicyStatement({
   effect: iam.Effect.ALLOW,
-  principals: [new iam.AccountPrincipal(stack.account)],
+  principals: [eventBusRole],
   actions: ['events:PutEvents'],
   sid: 'Statement1',
   resources: [bus.eventBusArn],
@@ -28,7 +34,7 @@ bus.addToResourcePolicy(new iam.PolicyStatement({
 
 bus.addToResourcePolicy(new iam.PolicyStatement({
   effect: iam.Effect.ALLOW,
-  principals: [new iam.AccountPrincipal(stack.account)],
+  principals: [eventBusRole],
   actions: ['events:PutRule'],
   sid: 'Statement2',
   resources: [bus.eventBusArn],
