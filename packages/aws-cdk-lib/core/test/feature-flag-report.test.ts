@@ -13,7 +13,7 @@ describe('generate feature flag report', () => {
     const app = new App({
       context: {
         '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault': true,
-        '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource': false,
+        '@aws-cdk/core:newStyleStackSynthesis': false,
       },
     });
     const assembly = app.synth();
@@ -25,9 +25,14 @@ describe('generate feature flag report', () => {
         flags: expect.objectContaining({
           '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault': expect.objectContaining({
             userValue: true,
+            recommendedValue: true,
           }),
-          '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource': expect.objectContaining({
+          '@aws-cdk/core:newStyleStackSynthesis': expect.objectContaining({
             userValue: false,
+            recommendedValue: true,
+            unconfiguredBehavesLike: {
+              v2: true,
+            },
           }),
         }),
       }),
