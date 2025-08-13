@@ -16,6 +16,10 @@
       ]
      }
     },
+    "LogConfig": {
+        "IncludeDetail": "FULL",
+        "Level": "ERROR"
+    },
     "Description": "myEventBus",
     "Name": "StackBusAA0A1E4B"
    }
