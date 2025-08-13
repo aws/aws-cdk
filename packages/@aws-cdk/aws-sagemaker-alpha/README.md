@@ -369,6 +369,7 @@ You can use imported pipelines with EventBridge Scheduler to trigger pipeline ex
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
 import * as targets from 'aws-cdk-lib/aws-scheduler-targets';
 import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
+import { Duration } from 'aws-cdk-lib';
 
 const pipeline = sagemaker.Pipeline.fromPipelineName(this, 'MyPipeline', 'my-pipeline');
 
