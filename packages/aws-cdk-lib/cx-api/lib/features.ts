@@ -1715,18 +1715,16 @@ export const CURRENT_VERSION_EXPIRED_FLAGS: string[] = Object.entries(FLAGS)
 /**
  * Flag values that should apply for new projects
  *
- * Add a flag in here (typically with the value `true`), to enable
- * backwards-breaking behavior changes only for new projects.  New projects
- * generated through `cdk init` will include these flags in their generated
- * project config.
+ * This contains flags that satisfy both criteria of:
  *
- * Tests must cover the default (disabled) case and the future (enabled) case.
- *
- * Going forward, this should *NOT* be consumed directly anymore.
+ * - They are configurable for the current major version line.
+ * - The recommended value is different from the unconfigured value (i.e.,
+ *   configuring a flag is useful)
  */
 export const CURRENTLY_RECOMMENDED_FLAGS = Object.fromEntries(
   Object.entries(FLAGS)
-    .filter(([_, flag]) => flag.recommendedValue !== flag.unconfiguredBehavesLike?.[CURRENT_MV] && flag.introducedIn[CURRENT_MV])
+    .filter(([_, flag]) => flag.introducedIn[CURRENT_MV] !== undefined)
+    .filter(([_, flag]) => flag.recommendedValue !== flag.unconfiguredBehavesLike?.[CURRENT_MV])
     .map(([name, flag]) => [name, flag.recommendedValue]),
 );
 
