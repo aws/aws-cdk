@@ -62,6 +62,9 @@
   "aws-aps": [
     "AWS::APS"
   ],
+  "aws-arcregionswitch": [
+    "AWS::ARCRegionSwitch"
+  ],
   "aws-arczonalshift": [
     "AWS::ARCZonalShift"
   ],
@@ -533,6 +536,9 @@
   ],
   "aws-oam": [
     "AWS::Oam"
+  ],
+  "aws-observabilityadmin": [
+    "AWS::ObservabilityAdmin"
   ],
   "aws-odb": [
     "AWS::ODB"
