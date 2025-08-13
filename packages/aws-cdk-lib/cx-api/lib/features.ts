@@ -143,6 +143,7 @@ export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-c
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
+export const EFS_DEFAULT_ALLOW_CLIENT_MOUNT = '@aws-cdk/aws-efs:defaultAllowClientMount';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1680,6 +1681,22 @@ export const FLAGS: Record<string, FlagInfo> = {
     unconfiguredBehavesLike: { v2: false },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EFS_DEFAULT_ALLOW_CLIENT_MOUNT]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, EFS will allow clients to mount and access the filesystem by default',
+    detailsMd: `
+      When this feature flag is enabled, EFS will add read-only, write, and root access permissions to clients
+      accessing the filesystem via mount target by default. Without this flag, only WRITE and ROOT_ACCESS
+      permissions are granted.
+      This resolves an issue where clients could have permission to write to the filesystem but were unable to
+      properly mount it, leading to access problems. By automatically including the read-only permission alongside
+      the existing write and root access permissions, clients can fully interact with the EFS resources as expected.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
   },
 };
 
