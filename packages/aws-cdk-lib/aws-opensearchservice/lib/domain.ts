@@ -1876,7 +1876,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       };
     }
 
-    let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
+    let logGroupResourcePolicy: LogGroupResourcePolicy | logs.ResourcePolicy | null = null;
     if (logGroups.length > 0 && !props.suppressLogsResourcePolicy) {
       const logPolicyStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
@@ -1885,13 +1885,18 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         principals: [new iam.ServicePrincipal('es.amazonaws.com')],
       });
 
-      // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
-      // https://github.com/aws/aws-cdk/issues/5343
-      logGroupResourcePolicy = new LogGroupResourcePolicy(this, `ESLogGroupPolicy${this.node.addr}`, {
-        // create a cloudwatch logs resource policy name that is unique to this domain instance
-        policyName: `ESLogPolicy${this.node.addr}`,
-        policyStatements: [logPolicyStatement],
-      });
+      if (cdk.FeatureFlags.of(this).isEnabled(cxapi.OPENSEARCHSERVICE_CREATE_CLOUDFORMATION_RESOURCE_POLICY)) {
+        logGroupResourcePolicy = new logs.ResourcePolicy(this, `ESLogGroupPolicy${this.node.addr}`, {
+          // create a cloudwatch logs resource policy name that is unique to this domain instance
+          resourcePolicyName: `ESLogPolicy${this.node.addr}`,
+          policyStatements: [logPolicyStatement],
+        });
+      } else {
+        logGroupResourcePolicy = new LogGroupResourcePolicy(this, `ESLogGroupPolicy${this.node.addr}`, {
+          policyName: `ESLogPolicy${this.node.addr}`,
+          policyStatements: [logPolicyStatement],
+        });
+      }
     }
 
     let customEndpointCertificate: acm.ICertificate | undefined;
