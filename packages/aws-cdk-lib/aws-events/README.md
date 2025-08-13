@@ -332,6 +332,22 @@ new events.EventBus(this, 'Bus', {
 });
 ```
 
+## Configuring logginc
+
+To configure logging for an Event Bus, leverage the LogConfig property. It allows different level of logging (NONE, INFO, TRACE, ERROR) and wether to include details or not.
+
+```ts
+const bus =  new EventBus(stack, 'Bus', {
+      logConfig: {
+        includeDetail: IncludeDetail.FULL,
+        level: Level.TRACE,
+      },
+    });
+```
+
+See more [Specifying event bus log level](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus-logs.html#eb-event-bus-logs-level)
+
+
 **Note**: Archives and schema discovery are not supported for event buses encrypted using a customer managed key.
 To enable archives or schema discovery on an event bus, choose to use an AWS owned key.
 For more information, see [KMS key options for event bus encryption](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-at-rest-key-options.html).
