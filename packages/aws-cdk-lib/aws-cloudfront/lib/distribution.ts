@@ -413,7 +413,7 @@ export class Distribution extends Resource implements IDistribution {
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
         httpVersion: this.httpVersion,
-        ipv6Enabled: props.enableIpv6 ?? (props.connectionMode != ConnectionMode.TENANT_ONLY ? true : undefined),
+        ipv6Enabled: props.enableIpv6 ?? (props.connectionMode !== ConnectionMode.TENANT_ONLY ? true : undefined),
         logging: this.renderLogging(props),
         priceClass: props.priceClass ?? undefined,
         restrictions: this.renderRestrictions(props.geoRestriction),
@@ -877,7 +877,7 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private validateMultiTenantConfig(props: DistributionProps) {
-    if (props.connectionMode != ConnectionMode.TENANT_ONLY) {
+    if (props.connectionMode !== ConnectionMode.TENANT_ONLY) {
       if (props.tenantConfig) {
         throw new ValidationError('tenantConfig is not supported for direct distributions', this);
       }

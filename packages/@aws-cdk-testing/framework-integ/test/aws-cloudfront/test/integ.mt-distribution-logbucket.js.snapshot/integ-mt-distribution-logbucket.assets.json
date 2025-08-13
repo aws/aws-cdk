@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "198b2287cb97db1792da6f7eefad0c284c2edc99891a14db5da9d828aeebd6f4": {
+      "displayName": "integ-mt-distribution-logbucket Template",
+      "source": {
+        "path": "integ-mt-distribution-logbucket.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-7d7947b7": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "198b2287cb97db1792da6f7eefad0c284c2edc99891a14db5da9d828aeebd6f4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

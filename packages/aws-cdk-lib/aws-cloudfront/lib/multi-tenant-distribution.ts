@@ -359,7 +359,7 @@ export class MTDistribution extends Resource implements IMTDistribution {
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
         httpVersion: this.httpVersion,
-        ipv6Enabled: false,
+        ipv6Enabled: undefined,
         logging: this.renderLogging(props),
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,

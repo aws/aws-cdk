@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "integ-mt-distribution-lambda-test/DefaultTest": {
+      "stacks": [
+        "integ-mt-distribution-lambda"
+      ],
+      "assertionStack": "integ-mt-distribution-lambda-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integmtdistributionlambdatestDefaultTestDeployAssert58C55537"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

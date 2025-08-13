@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "621da323869cf4b69467d387e066937b8da05c995ffd44debe3ccd5a9420167a": {
+      "displayName": "integ-mt-distribution-grpc Template",
+      "source": {
+        "path": "integ-mt-distribution-grpc.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-a3914d40": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "621da323869cf4b69467d387e066937b8da05c995ffd44debe3ccd5a9420167a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

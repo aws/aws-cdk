@@ -48,7 +48,6 @@ test('minimal example renders correctly', () => {
       },
       Enabled: true,
       HttpVersion: 'http2',
-      IPV6Enabled: false,
       ConnectionMode: 'tenant-only',
       Origins: [{
         DomainName: 'www.example.com',
@@ -120,7 +119,6 @@ test('exhaustive example of props renders correctly and SSL method sni-only', ()
       DefaultRootObject: 'index.html',
       Enabled: false,
       HttpVersion: 'http1.1',
-      IPV6Enabled: false,
       Logging: {
         Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
         IncludeCookies: true,
@@ -195,7 +193,6 @@ test('exhaustive example of props renders correctly and SSL method default', () 
       DefaultRootObject: 'index.html',
       Enabled: false,
       HttpVersion: 'http1.1',
-      IPV6Enabled: false,
       Logging: {
         Bucket: { 'Fn::GetAtt': ['MyDist2LoggingBucket3D89B557', 'RegionalDomainName'] },
         IncludeCookies: true,
