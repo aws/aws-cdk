@@ -164,9 +164,9 @@ Refer to [the bootstrapping guide](https://docs.aws.amazon.com/cdk/v2/guide/boot
 These options are available via the `DefaultStackSynthesizer` properties:
 
 ```ts
-class MyStack extends cdk.Stack {
-  constructor(parent, id, props) {
-    super(parent, id, {
+class MyStack extends Stack {
+  constructor(scope: Construct, id: string, props: StackProps) {
+    super(scope, id, {
       ...props,
       synthesizer: new DefaultStackSynthesizer({
         deployRoleExternalId: '',
@@ -203,8 +203,8 @@ See [IAM tutorial: Define permissions to access AWS resources based on tags](htt
 You can pass session tags for each [role created during bootstrap](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html#bootstrapping-env-roles) via the `*additionalOptions` property:
 
 ```ts
-class MyStack extends cdk.Stack {
-  constructor(parent, id, props) {
+class MyStack extends Stack {
+  constructor(parent: Construct, id: string, props: StackProps) {
     super(parent, id, {
       ...props,
       synthesizer: new DefaultStackSynthesizer({
@@ -1246,7 +1246,9 @@ new CfnDynamicReference(
 The `RemovalPolicies` class provides a convenient way to manage removal policies for AWS CDK resources within a construct scope. It allows you to apply removal policies to multiple resources at once, with options to include or exclude specific resource types.
 
 ```typescript
-import { RemovalPolicies, MissingRemovalPolicies } from 'aws-cdk-lib';
+declare const scope: Construct;
+declare const parent: Construct;
+declare const bucket: s3.CfnBucket;
 
 // Apply DESTROY policy to all resources in a scope
 RemovalPolicies.of(scope).destroy();
@@ -1265,7 +1267,7 @@ RemovalPolicies.of(parent).retain({
   applyToResourceTypes: [
     'AWS::DynamoDB::Table',
     bucket.cfnResourceType, // 'AWS::S3::Bucket'
-    CfnDBInstance.CFN_RESOURCE_TYPE_NAME, // 'AWS::RDS::DBInstance'
+    rds.CfnDBInstance.CFN_RESOURCE_TYPE_NAME, // 'AWS::RDS::DBInstance'
   ],
 });
 
@@ -1295,6 +1297,8 @@ MissingRemovalPolicies.of(scope).retain();
 Both RemovalPolicies and MissingRemovalPolicies are implemented as [Aspects](#aspects). You can control the order in which they're applied using the priority parameter:
 
 ```typescript
+declare const stack: Stack;
+
 // Apply in a specific order based on priority
 RemovalPolicies.of(stack).retain({ priority: 100 });
 RemovalPolicies.of(stack).destroy({ priority: 200 }); // This will override the RETAIN policy
@@ -1768,11 +1772,9 @@ no default is specified.
 Here is a simple example of creating and applying an Aspect on a Stack to enable versioning on all S3 Buckets:
 
 ```ts
-import { IAspect, IConstruct, Tags, Stack } from 'aws-cdk-lib';
-
 class EnableBucketVersioning implements IAspect {
   visit(node: IConstruct) {
-    if (node instanceof CfnBucket) {
+    if (node instanceof s3.CfnBucket) {
       node.versioningConfiguration = {
         status: 'Enabled'
       };
@@ -1818,7 +1820,7 @@ in a consistent order.
 /**
  * Default Priority values for Aspects.
  */
-export class AspectPriority {
+class AspectPriority {
   /**
    * Suggested priority for Aspects that mutate the construct tree.
    */
@@ -1845,10 +1847,7 @@ construct tree is fully validated before being synthesized.
 ### Applying Aspects with Priority
 
 ```ts
-import { Aspects, Stack, IAspect, Tags } from 'aws-cdk-lib';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
-
-class MyAspect implements IAspect {
+class MutatingAspect implements IAspect {
   visit(node: IConstruct) {
     // Modifies a resource in some way
   }
@@ -1862,7 +1861,7 @@ class ValidationAspect implements IAspect {
 
 const stack = new Stack();
 
-Aspects.of(stack).add(new MyAspect(), { priority: AspectPriority.MUTATING } );  // Run first (mutating aspects)
+Aspects.of(stack).add(new MutatingAspect(), { priority: AspectPriority.MUTATING } );  // Run first (mutating aspects)
 Aspects.of(stack).add(new ValidationAspect(), { priority: AspectPriority.READONLY } );  // Run later (readonly aspects)
 ```
 
@@ -1874,6 +1873,7 @@ The `AspectApplication` class represents an Aspect that is applied to a node of 
 Users can access AspectApplications on a node by calling `applied` from the Aspects class as follows:
 
 ```ts
+declare const root: Construct;
 const app = new App();
 const stack = new MyStack(app, 'MyStack');
 
