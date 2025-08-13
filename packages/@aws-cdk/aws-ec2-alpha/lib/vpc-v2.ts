@@ -321,6 +321,7 @@ export class VpcV2 extends VpcV2Base {
      */
     class ImportedVpcV2 extends VpcV2Base {
       public readonly vpcId: string;
+      public readonly attrVpcId: string;
       public readonly vpcArn: string;
       public readonly publicSubnets: ISubnetV2[] = [];
       public readonly privateSubnets: ISubnetV2[] = [];
@@ -349,6 +350,7 @@ export class VpcV2 extends VpcV2Base {
       constructor(construct: Construct, constructId: string, props: VpcV2Attributes) {
         super(construct, constructId);
         this.vpcId = props.vpcId,
+        this.attrVpcId = props.vpcId,
         this.region = props.region ?? this.stack.region,
         this.ownerAccountId = props.ownerAccountId ?? this.stack.account,
         this._partition = region_info.RegionInfo.get(this.region).partition,
@@ -400,6 +402,11 @@ export class VpcV2 extends VpcV2Base {
    * Identifier for this VPC
    */
   public readonly vpcId: string;
+
+  /**
+   * Identifier for this VPC
+   */
+  public readonly attrVpcId: string;
 
   /**
    * @attribute
@@ -528,6 +535,7 @@ export class VpcV2 extends VpcV2Base {
     this.ipv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
     this.vpcId = FeatureFlags.of(this).isEnabled(cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION) ?
       this.resource.ref : this.resource.attrVpcId;
+    this.attrVpcId = this.vpcId;
     this.vpcArn = Arn.format({
       service: 'ec2',
       resource: 'vpc',

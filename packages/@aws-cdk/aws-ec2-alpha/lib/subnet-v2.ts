@@ -180,6 +180,12 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
       public readonly subnetId: string = attrs.subnetId;
 
       /**
+       * The subnetId for this particular subnet
+       * Refers to the physical ID created
+       */
+      public readonly attrSubnetId: string = attrs.subnetId;
+
+      /**
        * Dependable that can be depended upon to force internet connectivity established on the VPC
        */
       public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
@@ -220,6 +226,12 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
    * @attribute
    */
   public readonly subnetId: string;
+
+  /**
+   * The subnetId for this particular subnet
+   * @attribute
+   */
+  public readonly attrSubnetId: string;
 
   /**
    *  Dependencies for internet connectivity
@@ -315,6 +327,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     this.ipv4CidrBlock = props.ipv4CidrBlock.cidr;
     this.ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
     this.subnetId = subnet.ref;
+    this.attrSubnetId = subnet.attrSubnetId;
     this.availabilityZone = props.availabilityZone;
 
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
