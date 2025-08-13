@@ -17,15 +17,15 @@ export class JsonPathToken implements IResolvable {
     Object.defineProperty(this, JSON_PATH_TOKEN_SYMBOL, { value: true });
   }
 
-  public resolve(_ctx: IResolveContext): any {
+  public resolve(_ctx: IResolveContext): string {
     return this.path;
   }
 
-  public toString() {
+  public toString(): string {
     return Token.asString(this, { displayHint: this.displayHint });
   }
 
-  public toJSON() {
+  public toJSON(): string {
     return `<path:${this.path}>`;
   }
 }
@@ -290,7 +290,7 @@ export function jsonPathString(x: string): string | undefined {
   return undefined;
 }
 
-export function jsonPathFromAny(x: any) {
+export function jsonPathFromAny(x: any): string | undefined {
   if (!x) { return undefined; }
   if (typeof x === 'string') { return jsonPathString(x); }
   return pathFromToken(Tokenization.reverse(x));
@@ -314,7 +314,7 @@ function jsonPathNumber(x: number): string | undefined {
   return pathFromToken(Tokenization.reverseNumber(x));
 }
 
-function pathFromToken(token: IResolvable | undefined) {
+function pathFromToken(token: IResolvable | undefined): string | undefined {
   return token && (JsonPathToken.isJsonPathToken(token) ? token.path : undefined);
 }
 
@@ -329,7 +329,7 @@ function pathFromToken(token: IResolvable | undefined) {
  * Call this function whenever you're building compound JSONPath expressions, in
  * order to avoid having tokens-in-tokens-in-tokens which become very hard to parse.
  */
-export function renderInExpression(x: any) {
+export function renderInExpression(x: any): string {
   const path = jsonPathFromAny(x);
   if (path) return path;
   if (typeof x === 'number') return x.toString(10);
@@ -337,7 +337,7 @@ export function renderInExpression(x: any) {
   throw new UnscopedValidationError('Unxexpected value.');
 }
 
-function singleQuotestring(x: string) {
+function singleQuotestring(x: string): string {
   const ret = new Array<string>();
   ret.push("'");
   for (let i = 0; i < x.length; i++) {

@@ -1,17 +1,24 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as signer from '../lib';
 
 let app: cdk.App;
 let stack: cdk.Stack;
 
+function createApp(context: { [key: string]: any } = {}) {
+  return new cdk.App({
+    context,
+  });
+}
+
 beforeEach(() => {
-  app = new cdk.App({});
+  app = createApp();
   stack = new cdk.Stack(app);
 });
 
 describe('signing profile', () => {
-  test('default', () => {
+  test('default - no profile name provided', () => {
     const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
     new signer.SigningProfile(stack, 'SigningProfile', { platform });
 
@@ -20,6 +27,47 @@ describe('signing profile', () => {
       SignatureValidityPeriod: {
         Type: 'MONTHS',
         Value: 135,
+      },
+    });
+
+    // Verify that ProfileName is not included when signingProfileName is not provided
+    Template.fromStack(stack).hasResource('AWS::Signer::SigningProfile', {
+      Properties: {
+        ProfileName: Match.absent(),
+      },
+    });
+  });
+
+  test('feature flag behavior with different contexts', () => {
+    // Test with feature flag explicitly enabled
+    const appEnabled = createApp({
+      [cxapi.SIGNER_PROFILE_NAME_PASSED_TO_CFN]: true,
+    });
+    const stackEnabled = new cdk.Stack(appEnabled);
+
+    new signer.SigningProfile(stackEnabled, 'SigningProfile', {
+      platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA,
+      signingProfileName: 'explicit-enabled-profile',
+    });
+
+    Template.fromStack(stackEnabled).hasResourceProperties('AWS::Signer::SigningProfile', {
+      ProfileName: 'explicit-enabled-profile',
+    });
+
+    // Test with feature flag explicitly disabled
+    const appDisabled = createApp({
+      [cxapi.SIGNER_PROFILE_NAME_PASSED_TO_CFN]: false,
+    });
+    const stackDisabled = new cdk.Stack(appDisabled);
+
+    new signer.SigningProfile(stackDisabled, 'SigningProfile', {
+      platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA,
+      signingProfileName: 'explicit-disabled-profile',
+    });
+
+    Template.fromStack(stackDisabled).hasResource('AWS::Signer::SigningProfile', {
+      Properties: {
+        ProfileName: Match.absent(),
       },
     });
   });
@@ -80,6 +128,59 @@ describe('signing profile', () => {
       SignatureValidityPeriod: {
         Type: 'MONTHS',
         Value: 135,
+      },
+    });
+  });
+
+  test('with signing profile name - feature flag enabled', () => {
+    // Create app with feature flag explicitly enabled
+    const testApp = createApp({
+      [cxapi.SIGNER_PROFILE_NAME_PASSED_TO_CFN]: true,
+    });
+    const testStack = new cdk.Stack(testApp);
+
+    const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
+    new signer.SigningProfile(testStack, 'SigningProfile', {
+      platform,
+      signingProfileName: 'my-signing-profile',
+    });
+
+    // Check that the ProfileName is included in the template
+    Template.fromStack(testStack).hasResource('AWS::Signer::SigningProfile', {
+      Properties: {
+        PlatformId: platform.platformId,
+        ProfileName: 'my-signing-profile',
+        SignatureValidityPeriod: {
+          Type: 'MONTHS',
+          Value: 135,
+        },
+      },
+      Type: 'AWS::Signer::SigningProfile',
+    });
+  });
+
+  test('with signing profile name - feature flag disabled', () => {
+    // Create app with feature flag disabled
+    const testApp = createApp({
+      [cxapi.SIGNER_PROFILE_NAME_PASSED_TO_CFN]: false,
+    });
+    const testStack = new cdk.Stack(testApp);
+
+    const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
+    new signer.SigningProfile(testStack, 'SigningProfile', {
+      platform,
+      signingProfileName: 'my-signing-profile',
+    });
+
+    // Verify that ProfileName is not included when feature flag is disabled
+    Template.fromStack(testStack).hasResource('AWS::Signer::SigningProfile', {
+      Properties: {
+        PlatformId: platform.platformId,
+        ProfileName: Match.absent(),
+        SignatureValidityPeriod: {
+          Type: 'MONTHS',
+          Value: 135,
+        },
       },
     });
   });

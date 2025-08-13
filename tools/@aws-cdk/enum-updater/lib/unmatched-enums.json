@@ -40,6 +40,12 @@
     "AgentStepType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/prompt-override.ts"
     },
+    "CrossRegionInferenceProfileRegion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/cross-region-inference-profile.ts"
+    },
+    "InferenceProfileType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/inference-profile.ts"
+    },
     "VectorType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts"
     },
@@ -57,6 +63,9 @@
     },
     "Memory": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/memory.ts"
+    },
+    "DefaultPromptRouterIdentifier": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/prompt-router.ts"
     },
     "BedrockFoundationModel": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts"
@@ -455,6 +464,12 @@
     },
     "TableBucketEncryption": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.ts"
+    },
+    "OpenTableFormat": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts"
+    },
+    "Status": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts"
     }
   },
   "sagemaker": {
