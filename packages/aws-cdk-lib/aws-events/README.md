@@ -339,7 +339,7 @@ To configure logging for an Event Bus, leverage the LogConfig property. It allow
 ```ts
 import { EventBus, IncludeDetail, Level } from 'aws-cdk-lib/aws-events';
 
-const bus =  new EventBus(stack, 'Bus', {
+const bus =  new EventBus(this, 'Bus', {
       logConfig: {
         includeDetail: IncludeDetail.FULL,
         level: Level.TRACE,
