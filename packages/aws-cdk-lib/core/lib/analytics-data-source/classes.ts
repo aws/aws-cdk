@@ -12945,6 +12945,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'resourcePolicy': '*'
       },
+      'witnessRegion': '*',
+      'multiRegionConsistency': 'MultiRegionConsistency',
       'globalSecondaryIndexes': {
         'partitionKey': {
           'name': '*',
@@ -14124,7 +14126,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'lookupSupportedAzs': 'boolean',
       'ipAddressType': 'VpcEndpointIpAddressType',
       'dnsRecordIpType': 'VpcEndpointDnsRecordIpType',
-      'privateDnsOnlyForInboundResolverEndpoint': 'VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint'
+      'privateDnsOnlyForInboundResolverEndpoint': 'VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint',
+      'serviceRegion': '*'
     },
     'FlowLog': {
       'flowLogName': '*',
@@ -27531,7 +27534,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         {
           'containerName': '*',
           'containerPort': '*',
-          'protocol': 'Protocol'
+          'protocol': 'Protocol',
+          'alternateTarget': '*'
         }
       ],
       '_portRangeFromPortMapping': [
@@ -27945,6 +27949,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
+      'deploymentStrategy': 'DeploymentStrategy',
+      'bakeTime': '*',
+      'lifecycleHooks': '*',
       'addPlacementStrategies': [
         '*'
       ],
@@ -28197,6 +28204,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
+      'deploymentStrategy': 'DeploymentStrategy',
+      'bakeTime': '*',
+      'lifecycleHooks': '*',
       'attachToApplicationTargetGroup': [
         {
           'metrics': '*',
@@ -28211,7 +28221,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         {
           'containerName': '*',
           'containerPort': '*',
-          'protocol': 'Protocol'
+          'protocol': 'Protocol',
+          'alternateTarget': '*'
         }
       ],
       'registerLoadBalancerTargets': [
@@ -28557,6 +28568,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
+      'deploymentStrategy': 'DeploymentStrategy',
+      'bakeTime': '*',
+      'lifecycleHooks': '*',
       'attachToClassicLB': [
         '*'
       ]
