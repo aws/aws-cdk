@@ -8,11 +8,11 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Attributes to reference a \`CfnResource\`.
+ * Reference to an instance of Resource.
  *
  * @stability external
  */
-export interface ICfnResource {
+export interface IResourceRef {
   /**
    * The identifier of the resource.
    * This property gets determined after the resource is created.
@@ -27,7 +27,7 @@ export interface ICfnResource {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, ICfnResource {
+export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IResourceRef {
   /**
    * The CloudFormation resource type name for this resource class.
    */
@@ -173,11 +173,11 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Attributes to reference a \`CfnResource\`.
+ * Reference to an instance of Resource.
  *
  * @stability external
  */
-export interface ICfnResource {
+export interface IResourceRef {
   /**
    * The identifier of the resource
    *
@@ -191,7 +191,7 @@ export interface ICfnResource {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, ICfnResource {
+export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IResourceRef {
   /**
    * The CloudFormation resource type name for this resource class.
    */
@@ -319,11 +319,11 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Attributes to reference a \`CfnSomething\`.
+ * Reference to an instance of Something.
  *
  * @stability external
  */
-export interface ICfnSomething {
+export interface ISomethingRef {
   /**
    * The identifier of the resource
    *
@@ -344,7 +344,7 @@ export interface ICfnSomething {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-something.html
  */
-export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, ICfnSomething {
+export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, ISomethingRef {
   /**
    * The CloudFormation resource type name for this resource class.
    */
@@ -480,11 +480,11 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Attributes to reference a \`CfnResource\`.
+ * Reference to an instance of Resource.
  *
  * @stability external
  */
-export interface ICfnResource {
+export interface IResourceRef {
   /**
    * The identifier of the resource
    *
@@ -505,7 +505,7 @@ export interface ICfnResource {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, ICfnResource {
+export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IResourceRef {
   /**
    * The CloudFormation resource type name for this resource class.
    */
@@ -641,11 +641,11 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Attributes to reference a \`CfnResource\`.
+ * Reference to an instance of Resource.
  *
  * @stability external
  */
-export interface ICfnResource {
+export interface IResourceRef {
   /**
    * The identifier of the resource
    *
@@ -659,7 +659,7 @@ export interface ICfnResource {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, ICfnResource {
+export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IResourceRef {
   /**
    * The CloudFormation resource type name for this resource class.
    */
@@ -804,11 +804,11 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Attributes to reference a \`CfnResource\`.
+ * Reference to an instance of Resource.
  *
  * @stability external
  */
-export interface ICfnResource {
+export interface IResourceRef {
   /**
    * The arn of the resource
    *
@@ -822,7 +822,7 @@ export interface ICfnResource {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, ICfnResource {
+export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IResourceRef {
   /**
    * The CloudFormation resource type name for this resource class.
    */
@@ -950,11 +950,11 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Attributes to reference a \`CfnResource\`.
+ * Reference to an instance of Resource.
  *
  * @stability external
  */
-export interface ICfnResource {
+export interface IResourceRef {
   /**
    * The identifier of the resource
    *
@@ -975,7 +975,7 @@ export interface ICfnResource {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, ICfnResource {
+export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IResourceRef {
   /**
    * The CloudFormation resource type name for this resource class.
    */
@@ -1111,11 +1111,11 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Attributes to reference a \`CfnResource\`.
+ * Reference to an instance of Resource.
  *
  * @stability external
  */
-export interface ICfnResource {
+export interface IResourceRef {
 
 }
 
@@ -1124,7 +1124,7 @@ export interface ICfnResource {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, ICfnResource {
+export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IResourceRef {
   /**
    * The CloudFormation resource type name for this resource class.
    */
@@ -1278,11 +1278,11 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Attributes to reference a \`CfnResource\`.
+ * Reference to an instance of Resource.
  *
  * @stability external
  */
-export interface ICfnResource {
+export interface IResourceRef {
   /**
    * The identifier of the resource.
    * This property gets determined after the resource is created.
@@ -1297,7 +1297,7 @@ export interface ICfnResource {
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, ICfnResource {
+export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IResourceRef {
   /**
    * The CloudFormation resource type name for this resource class.
    */
