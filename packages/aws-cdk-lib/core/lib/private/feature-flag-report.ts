@@ -35,6 +35,11 @@ function parseFeatureFlagInfo(flagName: string, info: FlagInfo, root: IConstruct
 export function generateFeatureFlagReport(builder: CloudAssemblyBuilder, root: IConstruct): void {
   const featureFlags: Record<string, FeatureFlag> = {};
   for (const [flagName, flagInfo] of Object.entries(feats.FLAGS)) {
+    // Skip flags that don't apply to the current version line
+    if (feats.CURRENT_VERSION_EXPIRED_FLAGS.includes(flagName)) {
+      continue;
+    }
+
     featureFlags[flagName] = parseFeatureFlagInfo(flagName, flagInfo, root);
   }
 
