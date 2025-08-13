@@ -254,6 +254,9 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-opus-4-20250514-v1:0" */
   public static readonly ANTHROPIC_CLAUDE_OPUS_4_20250514_V1_0 = new FoundationModelIdentifier('anthropic.claude-opus-4-20250514-v1:0');
 
+  /** Base model "anthropic.claude-opus-4-1-20250805-v1:0". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0 = new FoundationModelIdentifier('anthropic.claude-opus-4-1-20250805-v1:0');
+
   /**
    * Base model "anthropic.claude-instant-v1".
    * @deprecated use latest version of the model
@@ -301,6 +304,12 @@ export class FoundationModelIdentifier {
 
   /** Base model "deepseek.r1-v1:0". */
   public static readonly DEEP_SEEK_R1_V1_0 = new FoundationModelIdentifier('deepseek.r1-v1:0');
+
+  /** Base model "openai.gpt-oss-120b-1:0". */
+  public static readonly OPENAI_GPT_OSS_120B_1 = new FoundationModelIdentifier('openai.gpt-oss-120b-1:0');
+
+  /** Base model "openai.gpt-oss-20b-1:0". */
+  public static readonly OPENAI_GPT_OSS_20B_1 = new FoundationModelIdentifier('openai.gpt-oss-20b-1:0');
 
   /** Base model "luma.ray-v2:0". */
   public static readonly LUMA_RAY_V2_0 = new FoundationModelIdentifier('luma.ray-v2:0');
