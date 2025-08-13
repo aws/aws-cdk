@@ -18,6 +18,20 @@ new cloudfront.MTDistribution(stack, 'MyDist', {
   httpVersion: cloudfront.HttpVersion.HTTP2,
   logFilePrefix: 'logs/',
   logIncludesCookies: true,
+  tenantConfig: {
+    parameterDefinitions: [
+      {
+        definition: {
+          stringSchema: {
+            required: false,
+            comment: 'tenantName',
+            defaultValue: 'root',
+          },
+        },
+        name: 'tenantName',
+      },
+    ],
+  },
 });
 
 new IntegTest(app, 'mt-distribution-extensive-test', {
