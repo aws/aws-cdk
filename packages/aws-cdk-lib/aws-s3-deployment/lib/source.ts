@@ -278,6 +278,8 @@ export class Source {
     if (typeof obj === 'object') {
       return Object.fromEntries(
         Object.entries(obj).map(([key, value]) => {
+          // As JSON keys are always strings, keys are assumed to be either regular strings or string tokens.
+          // Therefore, there is no need to escape it in the case that it is a list token.
           return [key, Source.escapeTokens(scope, value)];
         }),
       );
