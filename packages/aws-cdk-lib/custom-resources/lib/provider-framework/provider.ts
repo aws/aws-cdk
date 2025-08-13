@@ -123,7 +123,7 @@ export interface ProviderProps {
    * service principal.
    *
    * @default - A default role will be created.
-   * @deprecated - Use frameworkOnEventLambdaRole, frameworkIsCompleteLambdaRole, frameworkOnTimeoutLambdaRole
+   * @deprecated - Use frameworkOnEventRole, frameworkCompleteAndTimeoutRole
    */
   readonly role?: iam.IRole;
 
@@ -324,7 +324,8 @@ export class Provider extends Construct implements ICustomResourceProvider {
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
 
-      logFormat: lambda.LogFormat.JSON,
+      // Using loggingFormat instead of deprecated logFormat which will be removed in the next major release
+      loggingFormat: lambda.LoggingFormat.JSON,
       applicationLogLevelV2: loggingLevel,
       // props.logRetention is deprecated, make sure we only set it if it is actually provided
       // otherwise jsii will print warnings even for users that don't use this directly

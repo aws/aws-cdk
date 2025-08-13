@@ -14,6 +14,15 @@ function parseFeatureFlagInfo(flagName: string, info: FlagInfo, root: IConstruct
     userValue: userValue,
     recommendedValue: info.recommendedValue,
     explanation: info.summary,
+
+    // This is a historical accident. We used to copy all `unconfiguredBehavesLike` data
+    // into the feature flag report, but we only needed to copy the behavior of the current library version.
+    // In order to not break existing reports, we keep the same structure, but we baptize the 'v2' field as
+    // the canonical name of the "current version" field, even for v3, v4, etc.
+    // It looks weird, but it's safe & backwards compatible.
+    unconfiguredBehavesLike: info.unconfiguredBehavesLike?.[feats.CURRENT_MV] ? {
+      v2: info.unconfiguredBehavesLike?.[feats.CURRENT_MV],
+    } : undefined,
   };
 
   return parsedFlag;

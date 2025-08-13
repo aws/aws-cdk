@@ -40,8 +40,20 @@
     "AgentStepType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/prompt-override.ts"
     },
+    "CrossRegionInferenceProfileRegion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/cross-region-inference-profile.ts"
+    },
+    "InferenceProfileType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/inference-profile.ts"
+    },
     "VectorType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts"
+    },
+    "ChatMessageRole": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/chat-prompt-variant.ts"
+    },
+    "PromptTemplateType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/prompt-variant.ts"
     },
     "ParentActionGroupSignature": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/action-group.ts"
@@ -52,8 +64,14 @@
     "Memory": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/memory.ts"
     },
+    "DefaultPromptRouterIdentifier": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/prompt-router.ts"
+    },
     "BedrockFoundationModel": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts"
+    },
+    "ToolChoice": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/tool-choice.ts"
     },
     "FoundationModelIdentifier": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-bedrock/lib/foundation-model.ts"
@@ -446,6 +464,12 @@
     },
     "TableBucketEncryption": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.ts"
+    },
+    "OpenTableFormat": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts"
+    },
+    "Status": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts"
     }
   },
   "sagemaker": {
@@ -852,6 +876,9 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/graph.ts"
     },
     "LogQueryVisualizationType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/log-query.ts"
+    },
+    "LogQueryLanguage": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/log-query.ts"
     },
     "TextWidgetBackground": {
@@ -1414,6 +1441,45 @@
     },
     "Distribution": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.ts"
+    },
+    "TypeConverterType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "DateTimeFormat": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "DelimiterCharacter": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "QuoteCharacter": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "KeyValuePairDelimiter": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "KeyValueDelimiter": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "OCSFSourceType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "OCSFVersion": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "ParserProcessorType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "VendedLogType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "StringMutatorType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "JsonMutatorType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "DataConverterType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
     },
     "DataIdentifier": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/data-protection-policy.ts"
