@@ -1,0 +1,137 @@
+{
+ "Resources": {
+  "SsmStackNestedStackSsmStackNestedStackResource32C2C36D": {
+   "Type": "AWS::CloudFormation::Stack",
+   "Properties": {
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/",
+       {
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+       },
+       "/7f45ddd34d0e2d3682f9fb65fb3e1dde11aaed6227bb2a06f79a9a51b25151e4.json"
+      ]
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "S3StackNestedStackS3StackNestedStackResource909DC03C": {
+   "Type": "AWS::CloudFormation::Stack",
+   "Properties": {
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/",
+       {
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+       },
+       "/b7eb92a7f01c993d650b19f3402b348fb1c25827c8c12b1775467db458f569d7.json"
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "SsmStackNestedStackSsmStackNestedStackResource32C2C36D"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "BucketName": {
+   "Description": "Check config.json in this bucket",
+   "Value": {
+    "Fn::GetAtt": [
+     "S3StackNestedStackS3StackNestedStackResource909DC03C",
+     "Outputs.integbucketdeploymentcrossstackssmS3StackReproBucket6C842AADRef"
+    ]
+   }
+  },
+  "ParameterName": {
+   "Description": "SSM parameter name",
+   "Value": {
+    "Fn::GetAtt": [
+     "SsmStackNestedStackSsmStackNestedStackResource32C2C36D",
+     "Outputs.integbucketdeploymentcrossstackssmSsmStackTestParamF628A831Ref"
+    ]
+   }
+  },
+  "ExpectedValues": {
+   "Description": "Expected subnet values in config.json",
+   "Value": "[\"subnet-12345\",\"subnet-67890\"]"
+  },
+  "VerificationCommand": {
+   "Description": "Command to check the deployed JSON",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "aws s3 cp s3://",
+      {
+       "Fn::GetAtt": [
+        "S3StackNestedStackS3StackNestedStackResource909DC03C",
+        "Outputs.integbucketdeploymentcrossstackssmS3StackReproBucket6C842AADRef"
+       ]
+      },
+      "/config.json - | jq ."
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
