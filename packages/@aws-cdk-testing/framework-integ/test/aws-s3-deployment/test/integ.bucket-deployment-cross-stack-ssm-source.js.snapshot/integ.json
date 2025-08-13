@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-bucket-deployment-cross-stack-ssm-source/DefaultTest": {
+      "stacks": [
+        "integ-bucket-deployment-cross-stack-ssm"
+      ],
+      "assertionStack": "integ-bucket-deployment-cross-stack-ssm-source/DefaultTest/DeployAssert",
+      "assertionStackName": "integbucketdeploymentcrossstackssmsourceDefaultTestDeployAssertAB71C9FB"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}
