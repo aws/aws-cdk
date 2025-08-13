@@ -337,6 +337,8 @@ new events.EventBus(this, 'Bus', {
 To configure logging for an Event Bus, leverage the LogConfig property. It allows different level of logging (NONE, INFO, TRACE, ERROR) and wether to include details or not.
 
 ```ts
+import { EventBus, IncludeDetail, Level } from '../lib';
+
 const bus =  new EventBus(stack, 'Bus', {
       logConfig: {
         includeDetail: IncludeDetail.FULL,
