@@ -6,7 +6,7 @@ import { ClusterParameterGroup, ParameterGroupFamily } from '../lib/parameter-gr
 
 /*
  * Test creating a cluster without specifying engine version.
- * This defaults to  engine version < 1.2.0.0 and associated parameter group with family neptune1
+ * This defaults to engine version >= 1.4.0.0 and associated parameter group with family neptune1.4
  *
  * Stack verification steps:
  * * aws docdb describe-db-clusters --db-cluster-identifier <deployed db cluster identifier>
@@ -20,7 +20,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, natGateways: 1 });
 
 const clusterParameterGroup = new ClusterParameterGroup(stack, 'Params', {
   description: 'A nice parameter group',
-  family: ParameterGroupFamily.NEPTUNE_1_3,
+  family: ParameterGroupFamily.NEPTUNE_1_4,
   parameters: {
     neptune_enable_audit_log: '1',
     neptune_query_timeout: '100000',

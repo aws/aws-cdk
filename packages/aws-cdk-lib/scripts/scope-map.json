@@ -8,6 +8,9 @@
   "aws-acmpca": [
     "AWS::ACMPCA"
   ],
+  "aws-aiops": [
+    "AWS::AIOps"
+  ],
   "aws-amazonmq": [
     "AWS::AmazonMQ"
   ],
@@ -59,6 +62,9 @@
   "aws-aps": [
     "AWS::APS"
   ],
+  "aws-arcregionswitch": [
+    "AWS::ARCRegionSwitch"
+  ],
   "aws-arczonalshift": [
     "AWS::ARCZonalShift"
   ],
@@ -91,6 +97,9 @@
   ],
   "aws-bedrock": [
     "AWS::Bedrock"
+  ],
+  "aws-billing": [
+    "AWS::Billing"
   ],
   "aws-billingconductor": [
     "AWS::BillingConductor"
@@ -495,6 +504,9 @@
   "aws-memorydb": [
     "AWS::MemoryDB"
   ],
+  "aws-mpa": [
+    "AWS::MPA"
+  ],
   "aws-msk": [
     "AWS::MSK"
   ],
@@ -524,6 +536,12 @@
   ],
   "aws-oam": [
     "AWS::Oam"
+  ],
+  "aws-observabilityadmin": [
+    "AWS::ObservabilityAdmin"
+  ],
+  "aws-odb": [
+    "AWS::ODB"
   ],
   "aws-omics": [
     "AWS::Omics"
@@ -761,6 +779,9 @@
   ],
   "aws-workspaces": [
     "AWS::WorkSpaces"
+  ],
+  "aws-workspacesinstances": [
+    "AWS::WorkspacesInstances"
   ],
   "aws-workspacesthinclient": [
     "AWS::WorkSpacesThinClient"

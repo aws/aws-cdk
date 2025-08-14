@@ -36,6 +36,20 @@ export interface MetricWidgetProps {
    *   3 for single value widgets where most recent value of a metric is displayed.
    */
   readonly height?: number;
+
+  /**
+   * The AWS account ID where the metrics are located.
+   *
+   * This enables cross-account functionality for CloudWatch dashboards.
+   * Before using this feature, ensure that proper cross-account sharing is configured
+   * between the monitoring account and source account.
+   *
+   * For more information, see:
+   * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html
+   *
+   * @default - Current account
+   */
+  readonly accountId?: string;
 }
 
 /**
@@ -116,6 +130,7 @@ export class AlarmWidget extends ConcreteWidget {
         yAxis: {
           left: this.props.leftYAxis ?? undefined,
         },
+        accountId: this.props.accountId,
       },
     }];
   }
@@ -285,6 +300,7 @@ export class GaugeWidget extends ConcreteWidget {
         stat: this.props.statistic,
         start: this.props.start,
         end: this.props.end,
+        accountId: this.props.accountId,
       },
     }];
   }
@@ -511,6 +527,7 @@ export class GraphWidget extends ConcreteWidget {
         stat: this.props.statistic,
         start: this.props.start,
         end: this.props.end,
+        accountId: this.props.accountId,
       },
     }];
   }
@@ -806,6 +823,7 @@ export class TableWidget extends ConcreteWidget {
         stat: this.props.statistic,
         start: this.props.start,
         end: this.props.end,
+        accountId: this.props.accountId,
       },
     }];
   }
@@ -911,6 +929,7 @@ export class SingleValueWidget extends ConcreteWidget {
         period: this.props.period?.toSeconds(),
         start: this.props.start,
         end: this.props.end,
+        accountId: this.props.accountId,
       },
     }];
   }

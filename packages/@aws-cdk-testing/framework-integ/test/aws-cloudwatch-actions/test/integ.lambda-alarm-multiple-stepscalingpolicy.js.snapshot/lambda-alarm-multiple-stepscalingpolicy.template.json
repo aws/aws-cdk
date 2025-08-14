@@ -44,11 +44,30 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "MyLambdaServiceRole4539ECB6"
    ]
+  },
+  "MyLambdaLogGroup4018640B": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "MyLambdaCCE802FB"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "MyLambdalambdaalarmmultiplestepscalingpolicyFleetMetricScale1LowerAlarm26FCB6BFAlarmPermissionAE6E55ED": {
    "Type": "AWS::Lambda::Permission",
@@ -182,11 +201,30 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "MyLambda2ServiceRoleD09B370C"
    ]
+  },
+  "MyLambda2LogGroup1ADDC8C2": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "MyLambda2254B54D5"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "MyLambda2lambdaalarmmultiplestepscalingpolicyFleetMetricScale1LowerAlarm26FCB6BFAlarmPermission99EEEE99": {
    "Type": "AWS::Lambda::Permission",

@@ -5,6 +5,7 @@ import * as iam from '../../../aws-iam';
 import { IResource, Lazy, Names, PhysicalName, Resource, UnscopedValidationError, ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { IAlternateTarget } from '../alternate-target-configuration';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
@@ -971,10 +972,7 @@ export enum NetworkMode {
   HOST = 'host',
 
   /**
-   * The task utilizes NAT network mode required by Windows containers.
-   *
-   * This is the only supported network mode for Windows containers. For more information, see
-   * [Task Definition Parameters](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#network_mode).
+   * The task utilizes Docker's built-in virtual network which runs inside each Windows container instance.
    */
   NAT = 'nat',
 }
@@ -1146,6 +1144,13 @@ export interface LoadBalancerTargetOptions {
    * @default Protocol.TCP
    */
   readonly protocol?: Protocol;
+
+  /**
+   * Alternate target configuration for blue/green deployments.
+   *
+   * @default - No alternate target configuration
+   */
+  readonly alternateTarget?: IAlternateTarget;
 }
 
 /**

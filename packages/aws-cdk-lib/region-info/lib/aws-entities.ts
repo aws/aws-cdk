@@ -69,6 +69,8 @@ export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
   'eu-isoe-west-1', // EU ISO-E West
   'us-isob-west-1', // US ISOB West
   'ap-east-2', // Asia Pacific (Taipei)
+  'eusc-de-east-1', // EU (Germany)
+  'ap-southeast-6', // Asia Pacific (New Zealand)
 ];
 
 /**
@@ -90,6 +92,7 @@ const PARTITION_MAP: {readonly [region: string]: Region } = {
   'us-isob-': { partition: 'aws-iso-b', domainSuffix: 'sc2s.sgov.gov' },
   'us-isof-': { partition: 'aws-iso-f', domainSuffix: 'csp.hci.ic.gov' },
   'eu-isoe-': { partition: 'aws-iso-e', domainSuffix: 'cloud.adc-e.uk' },
+  'eusc-de-': { partition: 'aws-eusc', domainSuffix: 'amazonaws.eu' },
 };
 
 export function partitionInformation(region: string): Region {
