@@ -124,6 +124,7 @@ export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfun
 export const STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2 = '@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2';
 export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT = '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault';
 export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
+export const SIGNER_PROFILE_NAME_PASSED_TO_CFN = '@aws-cdk/aws-signer:signingProfileNamePassedToCfn';
 export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
 export const Enable_IMDS_Blocking_Deprecated_Feature = '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature';
 export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlocking';
@@ -146,6 +147,24 @@ export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManage
 export const ROUTE53_TARGETS_NLB_USE_PLAIN_DNS_NAME = '@aws-cdk/aws-route53-targets:nlbUsePlainDnsName';
 
 export const FLAGS: Record<string, FlagInfo> = {
+  //////////////////////////////////////////////////////////////////////
+  [SIGNER_PROFILE_NAME_PASSED_TO_CFN]: {
+    type: FlagType.BugFix,
+    summary: 'Pass signingProfileName to CfnSigningProfile',
+    detailsMd: `
+      When enabled, the \`signingProfileName\` property is passed to the L1 \`CfnSigningProfile\` construct,
+      which ensures that the AWS Signer profile is created with the specified name.
+      
+      When disabled, the \`signingProfileName\` is not passed to CloudFormation, maintaining backward
+      compatibility with existing deployments where CloudFormation auto-generated profile names.
+      
+      This feature flag is needed because enabling it can cause existing signing profiles to be
+      replaced during deployment if a \`signingProfileName\` was specified but not previously used
+      in the CloudFormation template.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+  },
   //////////////////////////////////////////////////////////////////////
   [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: {
     type: FlagType.ApiDefault,
@@ -1722,18 +1741,16 @@ export const CURRENT_VERSION_EXPIRED_FLAGS: string[] = Object.entries(FLAGS)
 /**
  * Flag values that should apply for new projects
  *
- * Add a flag in here (typically with the value `true`), to enable
- * backwards-breaking behavior changes only for new projects.  New projects
- * generated through `cdk init` will include these flags in their generated
- * project config.
+ * This contains flags that satisfy both criteria of:
  *
- * Tests must cover the default (disabled) case and the future (enabled) case.
- *
- * Going forward, this should *NOT* be consumed directly anymore.
+ * - They are configurable for the current major version line.
+ * - The recommended value is different from the unconfigured value (i.e.,
+ *   configuring a flag is useful)
  */
 export const CURRENTLY_RECOMMENDED_FLAGS = Object.fromEntries(
   Object.entries(FLAGS)
-    .filter(([_, flag]) => flag.recommendedValue !== flag.unconfiguredBehavesLike?.[CURRENT_MV] && flag.introducedIn[CURRENT_MV])
+    .filter(([_, flag]) => flag.introducedIn[CURRENT_MV] !== undefined)
+    .filter(([_, flag]) => flag.recommendedValue !== flag.unconfiguredBehavesLike?.[CURRENT_MV])
     .map(([name, flag]) => [name, flag.recommendedValue]),
 );
 
