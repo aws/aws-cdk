@@ -1,5 +1,5 @@
 import { testFixture, testFixtureCluster } from './util';
-import { Template, Match } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as eks from '../lib';
 
@@ -404,7 +404,7 @@ describe('service account', () => {
         Namespace: 'default',
         RoleArn: { 'Fn::GetAtt': ['MyServiceAccountRoleB41709FF', 'Arn'] },
         ServiceAccount: 'stackmyserviceaccount58b9529e',
-        TargetRoleArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('TargetRole.*'), 'Arn'] },
+        TargetRoleArn: { 'Fn::GetAtt': ['TargetRole7F4E2D38', 'Arn'] },
       });
     });
 
