@@ -206,7 +206,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "jshandlerbundlingpathServiceRole827F7127"
@@ -259,7 +259,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "jshandlertsconfigpathServiceRoleC592AD71"
@@ -303,7 +303,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2853b22adf0b1929f5ccd54840d96d298c0ba574aa7a5bd02df65295244d1085.zip"
+     "S3Key": "3ded710676dff1cab66f31a16dd351400f530af4c895b63977e4cf2dd832b443.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -312,7 +312,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "tshandlermetafilepathServiceRoleECB676AC"
