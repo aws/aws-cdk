@@ -1,0 +1,28 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "EcrDualStackEndpointIntegTest/DefaultTest": {
+      "stacks": [
+        "EcrIpv4EndpointStack",
+        "EcrDualStackEndpointStack"
+      ],
+      "diffAssets": true,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": false
+          }
+        },
+        "destroy": {
+          "args": {
+            "force": true
+          }
+        }
+      },
+      "stackUpdateWorkflow": true,
+      "assertionStack": "EcrDualStackEndpointIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EcrDualStackEndpointIntegTestDefaultTestDeployAssertF0C0C175"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}
