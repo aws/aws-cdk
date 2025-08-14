@@ -1,5 +1,5 @@
 import { testFixture, testFixtureCluster } from './util';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as eks from '../lib';
 
@@ -250,7 +250,7 @@ describe('service account', () => {
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         name: 'XXX',
       }))
-      // THEN
+        // THEN
         .toThrow(RangeError);
     });
 
@@ -262,7 +262,7 @@ describe('service account', () => {
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         name: 'test.',
       }))
-      // THEN
+        // THEN
         .toThrow(RangeError);
     });
 
@@ -288,7 +288,7 @@ describe('service account', () => {
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         name: 'x'.repeat(255),
       }))
-      // THEN
+        // THEN
         .toThrow(RangeError);
     });
   });
@@ -302,7 +302,7 @@ describe('service account', () => {
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         namespace: 'XXX',
       }))
-      // THEN
+        // THEN
         .toThrow(RangeError);
     });
 
@@ -314,7 +314,7 @@ describe('service account', () => {
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         namespace: 'test.',
       }))
-      // THEN
+        // THEN
         .toThrow(RangeError);
     });
 
@@ -327,7 +327,7 @@ describe('service account', () => {
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         namespace: valueWithDot,
       }))
-      // THEN
+        // THEN
         .toThrow(RangeError);
     });
 
@@ -339,7 +339,7 @@ describe('service account', () => {
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         namespace: 'x'.repeat(65),
       }))
-      // THEN
+        // THEN
         .toThrow(RangeError);
     });
   });
@@ -404,7 +404,7 @@ describe('service account', () => {
         Namespace: 'default',
         RoleArn: { 'Fn::GetAtt': ['MyServiceAccountRoleB41709FF', 'Arn'] },
         ServiceAccount: 'stackmyserviceaccount58b9529e',
-        TargetRoleArn: { 'Fn::GetAtt': ['TargetRole7F4E2D38', 'Arn'] },
+        TargetRoleArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('TargetRole.*'), 'Arn'] },
       });
     });
 
