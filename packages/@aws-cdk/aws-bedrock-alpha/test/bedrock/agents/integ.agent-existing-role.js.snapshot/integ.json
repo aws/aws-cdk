@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "BedrockAgentExistingRole/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agent-existing-role-1"
+      ],
+      "assertionStack": "BedrockAgentExistingRole/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentExistingRoleDefaultTestDeployAssertD5C55EAB"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

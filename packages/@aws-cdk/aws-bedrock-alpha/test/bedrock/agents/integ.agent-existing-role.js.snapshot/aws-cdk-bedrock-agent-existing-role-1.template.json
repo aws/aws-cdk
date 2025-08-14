@@ -1,0 +1,144 @@
+{
+ "Resources": {
+  "AgentRoleF4A42D6B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AgentRoleDefaultPolicy1027F5D2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "bedrock:GetFoundationModel",
+        "bedrock:InvokeModel*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":bedrock:",
+          {
+           "Ref": "AWS::Region"
+          },
+          "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AgentRoleDefaultPolicy1027F5D2",
+    "Roles": [
+     {
+      "Ref": "AgentRoleF4A42D6B"
+     }
+    ]
+   }
+  },
+  "Agent255F68E9": {
+   "Type": "AWS::Bedrock::Agent",
+   "Properties": {
+    "ActionGroups": [
+     {
+      "ActionGroupName": "UserInputAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.UserInput",
+      "SkipResourceInUseCheckOnDelete": false
+     },
+     {
+      "ActionGroupName": "CodeInterpreterAction",
+      "ActionGroupState": "DISABLED",
+      "ParentActionGroupSignature": "AMAZON.CodeInterpreter",
+      "SkipResourceInUseCheckOnDelete": false
+     }
+    ],
+    "AgentName": "agent-awscdkbedrockagentistingrole1-agent-70062d50-bedrockagent",
+    "AgentResourceRoleArn": {
+     "Fn::GetAtt": [
+      "AgentRoleF4A42D6B",
+      "Arn"
+     ]
+    },
+    "AutoPrepare": false,
+    "FoundationModel": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":bedrock:",
+       {
+        "Ref": "AWS::Region"
+       },
+       "::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0"
+      ]
+     ]
+    },
+    "IdleSessionTTLInSeconds": 600,
+    "Instruction": "This is a test agent that uses an existing IAM role.",
+    "OrchestrationType": "DEFAULT",
+    "SkipResourceInUseCheckOnDelete": true
+   },
+   "DependsOn": [
+    "AgentRoleDefaultPolicy1027F5D2"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
