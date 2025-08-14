@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96": {
       "source": {
@@ -14,16 +14,16 @@
         }
       }
     },
-    "2d6aefad9e75fa251d367ab53a29b85d98d6d62092028d8964777eb0cc8e7589": {
+    "9ff2aab5b497b68c0e756caced1be1ec3a9c8d9244d6d3de299b382137aeab53": {
       "displayName": "DynamoImportSourceIntegTestDefaultTestDeployAssert540810E4 Template",
       "source": {
         "path": "DynamoImportSourceIntegTestDefaultTestDeployAssert540810E4.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-1d966069": {
+        "current_account-current_region-55a8f802": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2d6aefad9e75fa251d367ab53a29b85d98d6d62092028d8964777eb0cc8e7589.json",
+          "objectKey": "9ff2aab5b497b68c0e756caced1be1ec3a9c8d9244d6d3de299b382137aeab53.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
