@@ -7,9 +7,9 @@ import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import * as eks from '../lib';
 
 /**
- * Focused integration test for EKS Pod Identity targetRoleArn functionality.
+ * Focused integration test for EKS Pod Identity targetRole functionality.
  *
- * Tests that a ServiceAccount with targetRoleArn creates the correct Pod Identity Association.
+ * Tests that a ServiceAccount with targetRole creates the correct Pod Identity Association.
  */
 class EksPodIdentityTargetRoleStack extends Stack {
   public readonly cluster: eks.Cluster;
@@ -36,10 +36,10 @@ class EksPodIdentityTargetRoleStack extends Stack {
       assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
     });
 
-    // Create ServiceAccount with targetRoleArn - this is what we're testing
+    // Create ServiceAccount with targetRole - this is what we're testing
     this.cluster.addServiceAccount('ServiceAccount', {
       identityType: eks.IdentityType.POD_IDENTITY,
-      targetRoleArn: this.targetRole.roleArn,
+      targetRole: this.targetRole,
     });
   }
 }

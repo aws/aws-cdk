@@ -81,7 +81,7 @@ export interface ServiceAccountOptions {
   readonly identityType?: IdentityType;
 
   /**
-   * The Amazon Resource Name (ARN) of the target IAM role to associate with the service account.
+   * The target IAM role to associate with the service account.
    *
    * This role is assumed by using the EKS Pod Identity association role, then the credentials
    * for this role are injected into the Pod. This enables cross-account role chaining scenarios.
@@ -91,7 +91,7 @@ export interface ServiceAccountOptions {
    * @default - No target role (direct role assumption)
    * @see https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html
    */
-  readonly targetRoleArn?: string;
+  readonly targetRole?: IRole;
 }
 
 /**
@@ -144,9 +144,9 @@ export class ServiceAccount extends Construct implements IPrincipal {
       throw RangeError('All namespace names must be valid RFC 1123 DNS labels.');
     }
 
-    // Validate targetRoleArn compatibility
-    if (props.targetRoleArn && props.identityType !== IdentityType.POD_IDENTITY) {
-      throw new Error('targetRoleArn can only be used with POD_IDENTITY identity type');
+    // Validate targetRole compatibility
+    if (props.targetRole && props.identityType !== IdentityType.POD_IDENTITY) {
+      throw new Error('targetRole can only be used with POD_IDENTITY identity type');
     }
 
     let principal: IPrincipal;
@@ -196,7 +196,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
         namespace: props.namespace ?? 'default',
         roleArn: role.roleArn,
         serviceAccount: this.serviceAccountName,
-        targetRoleArn: props.targetRoleArn,
+        targetRoleArn: props.targetRole?.roleArn,
       });
     }
 

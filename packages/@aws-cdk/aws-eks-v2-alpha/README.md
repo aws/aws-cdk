@@ -696,7 +696,7 @@ cluster.addServiceAccount('MyServiceAccount', {
 });
 ```
 
-You can also specify a target role ARN for role chaining scenarios:
+You can also specify a target role for role chaining scenarios:
 
 ```ts
 declare const cluster: eks.Cluster;
@@ -705,11 +705,11 @@ declare const targetRole: iam.Role;
 // Service account that assumes a target role
 cluster.addServiceAccount('ServiceAccountWithTargetRole', {
   identityType: eks.IdentityType.POD_IDENTITY,
-  targetRoleArn: targetRole.roleArn,
+  targetRole: targetRole,
 });
 ```
 
-When `targetRoleArn` is specified, EKS creates a service account role that can assume the target role. This enables cross-account access or role chaining within the same account.
+When `targetRole` is specified, EKS creates a service account role that can assume the target role. This enables cross-account access or role chaining within the same account.
 
 ## Applying Kubernetes Resources
 

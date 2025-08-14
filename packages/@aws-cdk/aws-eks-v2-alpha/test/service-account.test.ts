@@ -382,16 +382,18 @@ describe('service account', () => {
       t.resourceCountIs('Custom::AWSCDKOpenIdConnectProvider', 0);
     });
 
-    test('with targetRoleArn', () => {
+    test('with targetRole', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
-      const targetRoleArn = 'arn:aws:iam::123456789012:role/CrossAccountRole';
+      const targetRole = new iam.Role(stack, 'TargetRole', {
+        assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      });
 
       // WHEN
       new eks.ServiceAccount(stack, 'MyServiceAccount', {
         cluster,
         identityType: eks.IdentityType.POD_IDENTITY,
-        targetRoleArn,
+        targetRole,
       });
       const t = Template.fromStack(stack);
 
@@ -402,39 +404,41 @@ describe('service account', () => {
         Namespace: 'default',
         RoleArn: { 'Fn::GetAtt': ['MyServiceAccountRoleB41709FF', 'Arn'] },
         ServiceAccount: 'stackmyserviceaccount58b9529e',
-        TargetRoleArn: targetRoleArn,
+        TargetRoleArn: { 'Fn::GetAtt': ['TargetRole7F4E2D38', 'Arn'] },
       });
     });
 
-    test('targetRoleArn validation - throws error with IRSA identity type', () => {
+    test('targetRole validation - throws error with IRSA identity type', () => {
       // GIVEN
-      const { cluster } = testFixtureCluster();
-      const targetRoleArn = 'arn:aws:iam::123456789012:role/CrossAccountRole';
+      const { stack, cluster } = testFixtureCluster();
+      const targetRole = new iam.Role(stack, 'TargetRole', {
+        assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      });
 
       // WHEN & THEN
       expect(() => new eks.ServiceAccount(cluster, 'MyServiceAccount', {
         cluster,
         identityType: eks.IdentityType.IRSA,
-        targetRoleArn,
-      })).toThrow('targetRoleArn can only be used with POD_IDENTITY identity type');
+        targetRole,
+      })).toThrow('targetRole can only be used with POD_IDENTITY identity type');
     });
 
-    test('targetRoleArn validation - accepts valid role ARN with service role path', () => {
+    test('targetRole validation - accepts valid role with service role path', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
-      const serviceRoleArn = 'arn:aws:iam::123456789012:role/service-role/MyServiceRole';
+      const serviceRole = iam.Role.fromRoleArn(stack, 'ServiceRole', 'arn:aws:iam::123456789012:role/service-role/MyServiceRole');
 
       // WHEN
       new eks.ServiceAccount(stack, 'MyServiceAccount', {
         cluster,
         identityType: eks.IdentityType.POD_IDENTITY,
-        targetRoleArn: serviceRoleArn,
+        targetRole: serviceRole,
       });
       const t = Template.fromStack(stack);
 
       // THEN
       t.hasResourceProperties('AWS::EKS::PodIdentityAssociation', {
-        TargetRoleArn: serviceRoleArn,
+        TargetRoleArn: 'arn:aws:iam::123456789012:role/service-role/MyServiceRole',
       });
     });
   });
