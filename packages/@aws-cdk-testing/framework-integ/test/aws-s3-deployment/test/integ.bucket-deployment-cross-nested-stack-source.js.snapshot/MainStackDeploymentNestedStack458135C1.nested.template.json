@@ -40,12 +40,21 @@
      }
     ],
     "SourceObjectKeys": [
-     "238ad5eeb6d728bec8e7d742afb5c1d03ec8c73888bddf97ea9a3dffd3dbf7ad.zip"
+     "6e5e47dea668bae2ff62a51b010dbfe9f1243863347a037b706dd627165cc333.zip"
     ],
     "SourceMarkers": [
      {
       "<<marker:0xbaba:0>>": {
-       "Ref": "referencetoMainStackResourceNestedStackNestedStackResourceNestedStackNestedStackResource185D699DOutputsMainStackResourceNestedStackUserPoolEB3BCBB9Ref"
+       "Fn::Join": [
+        "",
+        [
+         "\"",
+         {
+          "Ref": "referencetoMainStackResourceNestedStackNestedStackResourceNestedStackNestedStackResource185D699DOutputsMainStackResourceNestedStackUserPoolEB3BCBB9Ref"
+         },
+         "\""
+        ]
+       ]
       }
      }
     ],
