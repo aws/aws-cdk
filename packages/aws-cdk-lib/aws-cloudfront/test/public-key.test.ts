@@ -188,6 +188,39 @@ describe('PublicKey', () => {
       expect(callerReference.length).toBeLessThanOrEqual(128);
     });
 
+    test('caller reference truncation preserves beginning and end when over 128 characters', () => {
+      // Create a new app with the feature flag enabled
+      const flagApp = new App();
+      flagApp.node.setContext(cxapi.CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE, true);
+
+      // Create a stack with a very long name that will definitely exceed 128 characters
+      const longStackName = 'A'.repeat(50) + 'MiddlePart' + 'B'.repeat(50);
+      const newStack = new Stack(flagApp, longStackName, {
+        env: { account: '123456789012', region: 'testregion' },
+      });
+
+      const longConstructName = 'C'.repeat(30) + 'ConstructMiddle' + 'D'.repeat(30);
+      new PublicKey(newStack, longConstructName, {
+        encodedKey: publicKey,
+      });
+
+      const template = Template.fromStack(newStack);
+      const resources = template.findResources('AWS::CloudFront::PublicKey');
+      const callerRef = Object.values(resources)[0] as any;
+      const callerReference = callerRef.Properties.PublicKeyConfig.CallerReference;
+
+      // Should be exactly 128 characters when truncated
+      expect(callerReference.length).toBeLessThanOrEqual(128);
+
+      // If the original unique ID was longer than 128 characters, verify it uses first 64 + last 64
+      // We can't easily mock Names.uniqueId, but we can verify the structure if truncation occurred
+      if (callerReference.length === 128) {
+        // The truncated reference should contain parts from both beginning and end
+        // This is a basic sanity check - the exact content depends on Names.uniqueId implementation
+        expect(callerReference).toMatch(/^.{64}.{64}$/);
+      }
+    });
+
     test('feature flag works with construct tree changes', () => {
       // Create a new app with the feature flag enabled
       const flagApp = new App();

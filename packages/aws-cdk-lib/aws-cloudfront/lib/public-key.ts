@@ -97,14 +97,11 @@ export class PublicKey extends Resource implements IPublicKey {
   }
 
   private generateStableCallerReference(): string {
-    // Use Names.uniqueId which provides a stable identifier based on the construct path
     const uniqueId = Names.uniqueId(this);
-
-    // CloudFront caller reference has a maximum length of 128 characters
     if (uniqueId.length > 128) {
-      return uniqueId.substring(0, 128);
+      // Take first 64 and last 64 characters like generateName() does
+      return uniqueId.substring(0, 64) + uniqueId.substring(uniqueId.length - 64);
     }
-
     return uniqueId;
   }
 }
