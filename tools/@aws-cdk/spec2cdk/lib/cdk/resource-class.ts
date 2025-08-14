@@ -20,6 +20,7 @@ import {
   Stability,
   ObjectLiteral,
   Module,
+  InterfaceType,
 } from '@cdklabs/typewriter';
 import { CDK_CORE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
@@ -45,6 +46,7 @@ const $this = $E(expr.this_());
 
 export class ResourceClass extends ClassType {
   private readonly propsType: StructType;
+  private readonly resourceInterface: InterfaceType;
   private readonly decider: ResourceDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
@@ -55,6 +57,15 @@ export class ResourceClass extends ClassType {
     private readonly resource: Resource,
     private readonly suffix?: string,
   ) {
+    const resourceInterface = new InterfaceType(scope, {
+      export: true,
+      name: `I${resource.name}${suffix ?? ''}Ref`,
+      docs: {
+        summary: `Reference to an instance of ${resource.name}.`,
+        stability: Stability.External,
+      },
+    });
+
     super(scope, {
       export: true,
       name: classNameFromResource(resource, suffix),
@@ -67,9 +78,10 @@ export class ResourceClass extends ClassType {
         }),
       },
       extends: CDK_CORE.CfnResource,
-      implements: [CDK_CORE.IInspectable, ...ResourceDecider.taggabilityInterfaces(resource)],
+      implements: [CDK_CORE.IInspectable, resourceInterface.type, ...ResourceDecider.taggabilityInterfaces(resource)],
     });
 
+    this.resourceInterface = resourceInterface;
     this.module = Module.of(this);
 
     this.propsType = new StructType(this.scope, {
@@ -103,6 +115,22 @@ export class ResourceClass extends ClassType {
     for (const prop of this.decider.propsProperties) {
       this.propsType.addProperty(prop.propertySpec);
       cfnMapping.add(prop.cfnMapping);
+    }
+
+    // Build the shared interface
+    for (const identifier of this.decider.primaryIdentifierProps ?? []) {
+      this.resourceInterface.addProperty({
+        ...identifier,
+        immutable: true,
+      });
+    }
+
+    // Add the arn too, unless it is duplicated in the resourceIdentifier already
+    if (this.decider.arnProperty && this.resourceInterface.properties.every((p) => p.name !== this.decider.arnProperty!.name)) {
+      this.resourceInterface.addProperty({
+        ...this.decider.arnProperty,
+        immutable: true,
+      });
     }
 
     // Build the members of this class
