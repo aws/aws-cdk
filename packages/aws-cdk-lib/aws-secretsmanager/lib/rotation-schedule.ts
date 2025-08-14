@@ -314,7 +314,7 @@ export class HostedRotation implements ec2.IConnectable {
    */
   public bind(secret: ISecret, scope: Construct): CfnRotationSchedule.HostedRotationLambdaProperty {
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-secretsmanager-rotationschedule-hostedrotationlambda.html
-    Stack.of(scope).addTransform('AWS::SecretsManager-2020-07-23');
+    Stack.of(scope).addTransform('AWS::SecretsManager-2024-09-16');
 
     if (!this.props.vpc && this.props.securityGroups) {
       throw new ValidationError('`vpc` must be specified when specifying `securityGroups`.', secret);
