@@ -250,7 +250,7 @@ describe('service account', () => {
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         name: 'XXX',
       }))
-        // THEN
+      // THEN
         .toThrow(RangeError);
     });
 
@@ -262,7 +262,7 @@ describe('service account', () => {
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         name: 'test.',
       }))
-        // THEN
+      // THEN
         .toThrow(RangeError);
     });
 
@@ -288,7 +288,7 @@ describe('service account', () => {
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         name: 'x'.repeat(255),
       }))
-        // THEN
+      // THEN
         .toThrow(RangeError);
     });
   });
@@ -302,7 +302,7 @@ describe('service account', () => {
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         namespace: 'XXX',
       }))
-        // THEN
+      // THEN
         .toThrow(RangeError);
     });
 
@@ -314,7 +314,7 @@ describe('service account', () => {
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         namespace: 'test.',
       }))
-        // THEN
+      // THEN
         .toThrow(RangeError);
     });
 
@@ -327,7 +327,7 @@ describe('service account', () => {
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         namespace: valueWithDot,
       }))
-        // THEN
+      // THEN
         .toThrow(RangeError);
     });
 
@@ -339,7 +339,7 @@ describe('service account', () => {
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         namespace: 'x'.repeat(65),
       }))
-        // THEN
+      // THEN
         .toThrow(RangeError);
     });
   });
