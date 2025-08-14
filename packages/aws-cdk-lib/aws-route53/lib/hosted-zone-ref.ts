@@ -37,7 +37,7 @@ export interface IHostedZone extends IResource {
   /**
    * Grant permissions to add delegation records to this zone
    */
-  grantDelegation(grantee: iam.IGrantable): iam.Grant;
+  grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant;
 }
 
 /**
@@ -59,3 +59,15 @@ export interface HostedZoneAttributes {
  * Reference to a public hosted zone
  */
 export interface PublicHostedZoneAttributes extends HostedZoneAttributes { }
+
+/**
+ * Options for the delegation permissions granted
+ */
+export interface GrantDelegationOptions {
+  /**
+   * List of NS record names to allowlist in the delegation permissions
+   *
+   * @default the grant does not restrict record name
+   */
+  readonly nameEquals?: string[];
+}
