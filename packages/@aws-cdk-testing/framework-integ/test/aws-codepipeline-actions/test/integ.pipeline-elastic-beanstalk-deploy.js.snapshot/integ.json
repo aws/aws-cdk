@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "testCases": {
     "codepipeline-elastic-beanstalk-deploy/DefaultTest": {
       "stacks": [
@@ -11,5 +11,5 @@
       "assertionStackName": "codepipelineelasticbeanstalkdeployDefaultTestDeployAssert785E452B"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1020.2"
 }

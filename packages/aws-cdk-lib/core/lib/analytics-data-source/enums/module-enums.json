@@ -40,6 +40,88 @@
       "DUAL_STACK"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent-collaborator.ts": {
+    "AgentCollaboratorType": [
+      "SUPERVISOR",
+      "DISABLED",
+      "SUPERVISOR_ROUTER"
+    ],
+    "RelayConversationHistoryType": [
+      "TO_COLLABORATOR",
+      "DISABLED"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/api-executor.ts": {
+    "CustomControl": [
+      "RETURN_CONTROL"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/function-schema.ts": {
+    "ParameterType": [
+      "string",
+      "number",
+      "integer",
+      "boolean",
+      "array",
+      "object"
+    ],
+    "RequireConfirmation": [
+      "ENABLED",
+      "DISABLED"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/memory.ts": {
+    "MemoryType": [
+      "SESSION_SUMMARY"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/orchestration-executor.ts": {
+    "OrchestrationType": [
+      "DEFAULT",
+      "CUSTOM_ORCHESTRATION"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/prompt-override.ts": {
+    "AgentStepType": [
+      "PRE_PROCESSING",
+      "ORCHESTRATION",
+      "POST_PROCESSING",
+      "ROUTING_CLASSIFIER",
+      "MEMORY_SUMMARIZATION",
+      "KNOWLEDGE_BASE_RESPONSE_GENERATION"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/cross-region-inference-profile.ts": {
+    "CrossRegionInferenceProfileRegion": [
+      "eu",
+      "us",
+      "apac"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/inference-profile.ts": {
+    "InferenceProfileType": [
+      "SYSTEM_DEFINED",
+      "APPLICATION"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts": {
+    "VectorType": [
+      "FLOAT32",
+      "BINARY"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/chat-prompt-variant.ts": {
+    "ChatMessageRole": [
+      "user",
+      "assistant"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/prompt-variant.ts": {
+    "PromptTemplateType": [
+      "TEXT",
+      "CHAT"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-cloud9-alpha/lib/environment.ts": {
     "ConnectionType": [
       "CONNECT_SSH",
@@ -527,6 +609,7 @@
       "requirements.txt",
       "poetry.lock",
       "Pipfile.lock",
+      "uv.lock",
       ""
     ]
   },
@@ -772,6 +855,15 @@
     "TableBucketEncryption": [
       "aws:kms",
       "AES256"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts": {
+    "OpenTableFormat": [
+      "ICEBERG"
+    ],
+    "Status": [
+      "enabled",
+      "disabled"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts": {
@@ -1827,6 +1919,11 @@
       "stackedarea",
       "bar",
       "pie"
+    ],
+    "LogQueryLanguage": [
+      "Logs",
+      "SQL",
+      "PPL"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric-types.ts": {
@@ -2067,6 +2164,12 @@
       "IMAGE_DIGEST",
       "S3_OBJECT_VERSION_ID",
       "S3_OBJECT_KEY"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ec2/deploy-action.ts": {
+    "Ec2InstanceType": [
+      "EC2",
+      "SSM_MANAGED_NODE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ecr/build-and-publish-action.ts": {
@@ -2315,6 +2418,10 @@
       "STANDARD",
       "STANDARD_INFREQUENT_ACCESS"
     ],
+    "MultiRegionConsistency": [
+      "EVENTUAL",
+      "STRONG"
+    ],
     "TableEncryption": [
       "AWS_OWNED",
       "CUSTOMER_MANAGED",
@@ -2493,6 +2600,8 @@
       "c6gn",
       "compute7-graviton3-high-network-bandwidth",
       "c7gn",
+      "compute8-graviton4-high-network-bandwidth",
+      "c8gn",
       "compute7-intel",
       "c7i",
       "compute7-intel-flex",
@@ -3498,6 +3607,7 @@
       "Neuron"
     ],
     "WindowsOptimizedVersion": [
+      "2025",
       "2022",
       "2019",
       "2016"
@@ -3529,6 +3639,10 @@
       "ECS",
       "CODE_DEPLOY",
       "EXTERNAL"
+    ],
+    "DeploymentStrategy": [
+      "ROLLING",
+      "BLUE_GREEN"
     ],
     "PropagatedTagSource": [
       "SERVICE",
@@ -3623,6 +3737,17 @@
     "VersionConsistency": [
       "enabled",
       "disabled"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/deployment-lifecycle-hook-target.ts": {
+    "DeploymentLifecycleStage": [
+      "RECONCILE_SERVICE",
+      "PRE_SCALE_UP",
+      "POST_SCALE_UP",
+      "TEST_TRAFFIC_SHIFT",
+      "POST_TEST_TRAFFIC_SHIFT",
+      "PRODUCTION_TRAFFIC_SHIFT",
+      "POST_PRODUCTION_TRAFFIC_SHIFT"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/environment-file.ts": {
@@ -4198,7 +4323,10 @@
       "HMAC_256",
       "HMAC_384",
       "HMAC_512",
-      "SM2"
+      "SM2",
+      "ML_DSA_44",
+      "ML_DSA_65",
+      "ML_DSA_87"
     ],
     "KeyUsage": [
       "ENCRYPT_DECRYPT",
@@ -4395,6 +4523,83 @@
       "Random"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts": {
+    "TypeConverterType": [
+      "boolean",
+      "integer",
+      "double",
+      "string"
+    ],
+    "DateTimeFormat": [
+      "yyyy-MM-dd'T'HH:mm:ss'Z'",
+      "epoch",
+      "custom"
+    ],
+    "DelimiterCharacter": [
+      ",",
+      "\t",
+      " ",
+      ";",
+      "|"
+    ],
+    "QuoteCharacter": [
+      "\"",
+      "'"
+    ],
+    "KeyValuePairDelimiter": [
+      "&",
+      ";",
+      " ",
+      "\n"
+    ],
+    "KeyValueDelimiter": [
+      "=",
+      ":"
+    ],
+    "OCSFSourceType": [
+      "CloudTrail",
+      "Route53Resolver",
+      "VPCFlow",
+      "EKSAudit",
+      "AWSWAF"
+    ],
+    "OCSFVersion": [
+      "V1.1"
+    ],
+    "ParserProcessorType": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "VendedLogType": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "StringMutatorType": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "JsonMutatorType": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "DataConverterType": [
+      0,
+      1
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.ts": {
     "TLSSecurityPolicy": [
       "Policy-Min-TLS-1-0-2019-07",
@@ -4416,10 +4621,6 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts": {
-    "EngineLifecycleSupport": [
-      "open-source-rds-extended-support",
-      "open-source-rds-extended-support-disabled"
-    ],
     "DBClusterStorageType": [
       "aurora",
       "aurora-iopt1"
@@ -4435,7 +4636,9 @@
     "ClusterScailabilityType": [
       "standard",
       "limitless"
-    ],
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/database-insights-mode.ts": {
     "DatabaseInsightsMode": [
       "standard",
       "advanced"
@@ -4486,6 +4689,10 @@
       682,
       713,
       731
+    ],
+    "EngineLifecycleSupport": [
+      "open-source-rds-extended-support",
+      "open-source-rds-extended-support-disabled"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.ts": {
@@ -5217,6 +5424,9 @@
       "nothing",
       "lambda"
     ],
+    "ResourceToReplicateTags": [
+      "lambda-function"
+    ],
     "ArtifactsEncryptionMode": [
       "SSE_S3",
       "SSE_KMS"
@@ -5446,7 +5656,8 @@
       "aws-iso",
       "aws-iso-b",
       "aws-iso-f",
-      "aws-iso-e"
+      "aws-iso-e",
+      "aws-eusc"
     ],
     "Runtime": [
       "nodejs18.x",

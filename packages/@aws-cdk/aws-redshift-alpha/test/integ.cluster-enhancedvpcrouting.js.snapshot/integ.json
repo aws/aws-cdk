@@ -1,12 +1,13 @@
 {
-  "version": "38.0.1",
+  "version": "45.0.0",
   "testCases": {
     "EnhancedVpcRouting/DefaultTest": {
       "stacks": [
-        "redshift-enhancedvpcrouting-integ"
+        "aws-cdk-redshift-cluster-database"
       ],
       "assertionStack": "EnhancedVpcRouting/DefaultTest/DeployAssert",
       "assertionStackName": "EnhancedVpcRoutingDefaultTestDeployAssert10B513A1"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

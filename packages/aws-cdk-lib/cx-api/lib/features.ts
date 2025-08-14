@@ -112,6 +112,7 @@ export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefau
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
 export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
+export const EXPLICIT_STACK_TAGS = '@aws-cdk/core:explicitStackTags';
 export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS = '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions';
 export const DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA = '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica';
 export const EC2_SUM_TIMEOUT_ENABLED = '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled';
@@ -123,6 +124,7 @@ export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfun
 export const STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2 = '@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2';
 export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT = '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault';
 export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
+export const SIGNER_PROFILE_NAME_PASSED_TO_CFN = '@aws-cdk/aws-signer:signingProfileNamePassedToCfn';
 export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
 export const Enable_IMDS_Blocking_Deprecated_Feature = '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature';
 export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlocking';
@@ -145,6 +147,24 @@ export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManage
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
+  [SIGNER_PROFILE_NAME_PASSED_TO_CFN]: {
+    type: FlagType.BugFix,
+    summary: 'Pass signingProfileName to CfnSigningProfile',
+    detailsMd: `
+      When enabled, the \`signingProfileName\` property is passed to the L1 \`CfnSigningProfile\` construct,
+      which ensures that the AWS Signer profile is created with the specified name.
+      
+      When disabled, the \`signingProfileName\` is not passed to CloudFormation, maintaining backward
+      compatibility with existing deployments where CloudFormation auto-generated profile names.
+      
+      This feature flag is needed because enabling it can cause existing signing profiles to be
+      replaced during deployment if a \`signingProfileName\` was specified but not previously used
+      in the CloudFormation template.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+  },
+  //////////////////////////////////////////////////////////////////////
   [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: {
     type: FlagType.ApiDefault,
     summary: 'Allow multiple stacks with the same name',
@@ -155,7 +175,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       of the stack.`,
     recommendedValue: true,
     introducedIn: { v1: '1.16.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     compatibilityWithOldBehaviorMd: 'Pass stack identifiers to the CLI instead of stack names.',
   },
 
@@ -175,7 +195,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       * \`--fail\` => status code == 1
       * \`--no-fail\` => status code == 0`,
     introducedIn: { v1: '1.19.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Specify `--fail` to the CLI.',
   },
@@ -188,7 +208,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       If this flag is specified, all \`Stack\`s will use the \`DefaultStackSynthesizer\` by
       default. If it is not set, they will use the \`LegacyStackSynthesizer\`.`,
     introducedIn: { v1: '1.39.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -202,7 +222,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       the location of the stack in the construct tree (specifically, moving the Stack
       into a Stage).`,
     introducedIn: { v1: '1.58.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -218,7 +238,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       This is a feature flag as the old behavior was technically incorrect but
       users may have come to depend on it.`,
     introducedIn: { v1: '1.73.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Update your `.dockerignore` file to match standard Docker ignore rules, if necessary.',
   },
@@ -234,7 +254,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       If this flag is not set, Secret.secretName will include the SecretsManager suffix, which cannot be directly
       used by SecretsManager.DescribeSecret, and must be parsed by the user first (e.g., Fn:Join, Fn:Select, Fn:Split).`,
     introducedIn: { v1: '1.77.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Use `parseArn(secret.secretName).resourceName` to emulate the incorrect old parsing.',
   },
@@ -256,7 +276,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Additionally, if this flag is not set and the user supplies a custom key policy, this will be appended
       to the key's default policy (rather than replacing it).`,
     introducedIn: { v1: '1.78.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `trustAccountIdentities: false` to `Key` construct to restore the old behavior.',
   },
@@ -272,7 +292,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Use a feature flag to make sure existing customers who might be relying
       on the overly-broad permissions are not broken.`,
     introducedIn: { v1: '1.85.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Call `bucket.grantPutAcl()` in addition to `bucket.grantWrite()` to grant ACL permissions.',
   },
@@ -292,7 +312,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       desiredCount of 1, if one is not provided. If true, a default will not be defined for
       CfnService.desiredCount and as such desiredCount will be undefined, if one is not provided.`,
     introducedIn: { v1: '1.92.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'You can pass `desiredCount: 1` explicitly, but you should never need this.',
   },
@@ -312,7 +332,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       would lead CloudFormation to think the name was changed and would trigger a cluster replacement
       (losing data!).`,
     introducedIn: { v1: '1.97.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -334,7 +354,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       In effect, there is no way to get out of this mess in a backwards compatible way, while supporting existing stacks.
       This flag changes the logical id layout of UsagePlanKey to not be sensitive to order.`,
     introducedIn: { v1: '1.98.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -346,7 +366,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Encryption can also be configured explicitly using the \`encrypted\` property.
       `,
     introducedIn: { v1: '1.98.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.',
   },
@@ -361,7 +381,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       See 'currentVersion' section in the aws-lambda module's README for more details.`,
     introducedIn: { v1: '1.106.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -384,7 +404,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       The security policy can also be configured explicitly using the \`minimumProtocolVersion\` property.`,
     introducedIn: { v1: '1.117.0', v2: '2.0.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
 
@@ -1085,7 +1105,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is disabled, it will keep the root account principal in the trust policy.
     `,
     introducedIn: { v2: '2.141.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
@@ -1171,12 +1191,32 @@ export const FLAGS: Record<string, FlagInfo> = {
 
     `,
     introducedIn: { v2: '2.156.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to use input and output path fields for s3 URI',
   },
 
   //////////////////////////////////////////////////////////////////////
+  [EXPLICIT_STACK_TAGS]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, stack tags need to be assigned explicitly on a Stack.',
+    detailsMd: `
+    Without this feature flag enabled, if tags are added to a Stack using
+    \`Tags.of(scope).add(...)\`, they will be added to both the stack and all resources
+    in the stack template.
+
+    That leads to the tags being applied twice: once in the template, and once
+    again automatically by CloudFormation, which will apply all stack tags to
+    all resources in the stack. This leads to loss of control, as the
+    \`excludeResourceTypes\` option of the Tags API will not have any effect.
+
+    With this flag enabled, tags added to a stack using \`Tags.of(...)\` are ignored,
+    and Stack tags must be configured explicitly on the Stack object.
+    `,
+    introducedIn: { v2: '2.205.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Configure stack-level tags using `new Stack(..., { tags: { ... } })`.',
+  },
   [Enable_IMDS_Blocking_Deprecated_Feature]: {
     type: FlagType.Temporary,
     summary: 'When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated ' +
@@ -1357,7 +1397,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       When this feature flag is enabled, a stabilization loop is run to recurse the construct tree multiple times when invoking Aspects.
     `,
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     introducedIn: { v2: '2.172.0' },
     recommendedValue: true,
   },
@@ -1461,7 +1501,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       If you are providing a custom role, you will need to ensure 'roleName' is specified or set to PhysicalName.GENERATE_IF_NEEDED.
     `,
     introducedIn: { v2: '2.184.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
@@ -1550,7 +1590,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       resource lambda function logs.
     `,
     introducedIn: { v2: '2.187.0' },
-    defaults: { v2: false },
+    unconfiguredBehavesLike: { v2: false },
     recommendedValue: false,
     compatibilityWithOldBehaviorMd: 'Enable the feature flag to keep the old behavior and log the client secret values',
   },
@@ -1565,7 +1605,7 @@ export const FLAGS: Record<string, FlagInfo> = {
         When this feature flag is disabled, it will keep the root account principal in the trust policy.
       `,
     introducedIn: { v2: '2.189.0' },
-    defaults: { v2: true },
+    unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
@@ -1614,9 +1654,9 @@ export const FLAGS: Record<string, FlagInfo> = {
         for migrating resources from VPC V1 to VPC V2. This helps ensure a smoother migration path between
         the two versions.
       `,
-    introducedIn: { v2: 'V2_NEXT' },
+    introducedIn: { v2: '2.196.0' },
     recommendedValue: false,
-    defaults: { v2: false },
+    unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to use getAtt references for VPC V2 migration',
   },
 
@@ -1625,7 +1665,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined.',
     detailsMd: `
-      When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console. 
+      When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console.
       The previous behavior in cdk before this feature was; if only some of the BlockPublicAccessOptions were set (not all 4), then the ones undefined would default to false.
       This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
       The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
@@ -1641,28 +1681,28 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
         When this feature flag is enabled, CDK will create a loggroup for lambda function with default properties
         which supports CDK features Tag propagation, Property Injectors, Aspects
-        if the cdk app doesnt pass a 'logRetention' or 'logGroup' explicitly. 
+        if the cdk app doesnt pass a 'logRetention' or 'logGroup' explicitly.
         LogGroups created via 'logRetention' do not support Tag propagation, Property Injectors, Aspects.
         LogGroups created via 'logGroup' created in CDK support Tag propagation, Property Injectors, Aspects.
-        
-        When this feature flag is disabled, a loggroup is created by Lambda service on first invocation 
-        of the function (existing behavior). 
+
+        When this feature flag is disabled, a loggroup is created by Lambda service on first invocation
+        of the function (existing behavior).
         LogGroups created in this way do not support Tag propagation, Property Injectors, Aspects.
 
-        DO NOT ENABLE: If you have and existing app defining a lambda function and 
-        have not supplied a logGroup or logRetention prop and your lambda function has 
-        executed at least once, the logGroup has been already created with the same name 
+        DO NOT ENABLE: If you have and existing app defining a lambda function and
+        have not supplied a logGroup or logRetention prop and your lambda function has
+        executed at least once, the logGroup has been already created with the same name
         so your deployment will start failing.
         Refer aws-lambda/README.md for more details on Customizing Log Group creation.
       `,
-    introducedIn: { v2: 'V2_NEXT' },
-    defaults: { v2: false },
+    introducedIn: { v2: '2.200.0' },
+    unconfiguredBehavesLike: { v2: false },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
   },
 };
 
-const CURRENT_MV = 'v2';
+export const CURRENT_MV = 'v2';
 
 /**
  * The list of future flags that are now expired. This is going to be used to identify
@@ -1675,18 +1715,16 @@ export const CURRENT_VERSION_EXPIRED_FLAGS: string[] = Object.entries(FLAGS)
 /**
  * Flag values that should apply for new projects
  *
- * Add a flag in here (typically with the value `true`), to enable
- * backwards-breaking behavior changes only for new projects.  New projects
- * generated through `cdk init` will include these flags in their generated
- * project config.
+ * This contains flags that satisfy both criteria of:
  *
- * Tests must cover the default (disabled) case and the future (enabled) case.
- *
- * Going forward, this should *NOT* be consumed directly anymore.
+ * - They are configurable for the current major version line.
+ * - The recommended value is different from the unconfigured value (i.e.,
+ *   configuring a flag is useful)
  */
 export const CURRENTLY_RECOMMENDED_FLAGS = Object.fromEntries(
   Object.entries(FLAGS)
-    .filter(([_, flag]) => flag.recommendedValue !== flag.defaults?.[CURRENT_MV] && flag.introducedIn[CURRENT_MV])
+    .filter(([_, flag]) => flag.introducedIn[CURRENT_MV] !== undefined)
+    .filter(([_, flag]) => flag.recommendedValue !== flag.unconfiguredBehavesLike?.[CURRENT_MV])
     .map(([name, flag]) => [name, flag.recommendedValue]),
 );
 
@@ -1700,8 +1738,8 @@ export const CURRENTLY_RECOMMENDED_FLAGS = Object.fromEntries(
  * major version!
  */
 export const CURRENT_VERSION_FLAG_DEFAULTS = Object.fromEntries(Object.entries(FLAGS)
-  .filter(([_, flag]) => flag.defaults?.[CURRENT_MV] !== undefined)
-  .map(([name, flag]) => [name, flag.defaults?.[CURRENT_MV]]));
+  .filter(([_, flag]) => flag.unconfiguredBehavesLike?.[CURRENT_MV] !== undefined)
+  .map(([name, flag]) => [name, flag.unconfiguredBehavesLike?.[CURRENT_MV]]));
 
 export function futureFlagDefault(flag: string): boolean {
   const value = CURRENT_VERSION_FLAG_DEFAULTS[flag] ?? false;
