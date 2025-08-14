@@ -159,7 +159,7 @@
       },
       {
        "ResponseTemplates": {
-        "application/json": "{\n          \"error\": \"$input.path('$.error')\"\n        }"
+        "application/json": "\"error\": $input.path('$.error')"
        },
        "SelectionPattern": "5\\d{2}",
        "StatusCode": "500"
