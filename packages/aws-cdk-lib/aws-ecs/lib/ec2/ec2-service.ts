@@ -96,7 +96,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * service must not be a target of a Classic Load Balancer.
    *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-rebalancing.html
-   * @default AvailabilityZoneRebalancing.ENABLED
+   * @default AvailabilityZoneRebalancing.DISABLED
    */
   readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing;
 }
