@@ -1177,7 +1177,7 @@ const version = fn.currentVersion;
 You can use Application AutoScaling to automatically configure the provisioned concurrency for your functions. AutoScaling can be set to track utilization or be based on a schedule. To configure AutoScaling on a function alias:
 
 ```ts
-import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
+import * as appscaling from 'aws-cdk-lib/aws-applicationautoscaling';
 
 declare const fn: lambda.Function;
 const alias = fn.addAlias('prod');
@@ -1192,7 +1192,7 @@ as.scaleOnUtilization({
 
 // Configure Scheduled Scaling
 as.scaleOnSchedule('ScaleUpInTheMorning', {
-  schedule: autoscaling.Schedule.cron({ hour: '8', minute: '0'}),
+  schedule: appscaling.Schedule.cron({ hour: '8', minute: '0'}),
   minCapacity: 20,
 });
 ```
