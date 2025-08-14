@@ -6,6 +6,11 @@ const issueQuery = `
   author {
     login
   }
+  labels(first: 32) {
+    nodes {
+      name
+    }
+  }
   timelineItems(last: 16) {
     nodes{
       ... on IssueComment {
@@ -77,6 +82,11 @@ const prQuery = `
   createdAt
   author {
     login
+  }
+  labels(first: 32) {
+    nodes {
+      name
+    }
   }
   timelineItems(last: 16) {
     nodes {
@@ -242,6 +252,14 @@ export class Github {
             id
             fields(first: 100) {
               nodes {
+                ... on ProjectV2SingleSelectField {
+                  id
+                  name
+                  options {
+                    name
+                    id
+                  }
+                }
                 ... on ProjectV2Field {
                     id
                     name
