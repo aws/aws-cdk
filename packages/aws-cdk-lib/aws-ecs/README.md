@@ -2079,84 +2079,37 @@ Amazon ECS supports native blue/green deployments that allow you to deploy new v
 
 [Amazon ECS blue/green deployments](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-blue-green.html)
 
-### Using Escape Hatches for Blue/Green Features
-
-The new blue/green deployment features are added to CloudFormation but not yet available in the CDK L2 constructs, you can use escape hatches to access them through the L1 (CfnService) construct.
-
-#### Load Balancer Advanced Configuration
-
-Configure advanced load balancer settings for blue/green deployments with alternate target groups and listener rules:
-
 ```ts
-declare const service: ecs.FargateService;
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 
-const cfnService = service.node.defaultChild as ecs.CfnService;
-cfnService.loadBalancers = [{
-  containerName: 'web',
-  containerPort: 80,
-  targetGroupArn: 'arn:aws:elasticloadbalancing:region:account:targetgroup/production',
-  advancedConfiguration: {
-    alternateTargetGroupArn: 'arn:aws:elasticloadbalancing:region:account:targetgroup/test',
-    productionListenerRule: 'arn:aws:elasticloadbalancing:region:account:listener-rule/production-rule',
-    testListenerRule: 'arn:aws:elasticloadbalancing:region:account:listener-rule/test-rule',
-    roleArn: 'arn:aws:iam::account:role/ecs-blue-green-role'
-  }
-}];
-```
-
-#### Blue/Green Deployment Configuration
-
-Configure deployment strategy with bake time and lifecycle hooks:
-
-```ts
-declare const service: ecs.FargateService;
-
-const cfnService = service.node.defaultChild as ecs.CfnService;
-cfnService.deploymentConfiguration = {
-  maximumPercent: 200,
-  minimumHealthyPercent: 100,
-  strategy: 'BLUE_GREEN',
-  bakeTimeInMinutes: 15,
-  lifecycleHooks: [{
-    hookTargetArn: 'arn:aws:lambda:region:account:function:pre-deployment-hook',
-    roleArn: 'arn:aws:iam::account:role/deployment-hook-role',
-    lifecycleStages: ['PRE_STOP', 'POST_START']
-  }]
-};
-```
-
-#### Service Connect Test Traffic Rules
-
-Configure test traffic routing for Service Connect during blue/green deployments:
-
-```ts
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
+declare const lambdaHook: lambda.Function;
+declare const blueTargetGroup: elbv2.ApplicationTargetGroup;
+declare const greenTargetGroup: elbv2.ApplicationTargetGroup;
+declare const prodListenerRule: elbv2.ApplicationListenerRule;
 
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
+  deploymentStrategy: ecs.DeploymentStrategy.BLUE_GREEN,
 });
 
-const cfnService = service.node.defaultChild as ecs.CfnService;
-cfnService.serviceConnectConfiguration = {
-  enabled: true,
-  services: [{
-    portName: 'api',
-    clientAliases: [{
-      port: 80,
-      dnsName: 'my-service',
-      testTrafficRules: {
-        header: {
-          name: 'x-canary-test',
-          value: {
-            exact: 'beta-version'
-          }
-        }
-      }
-    }]
-  }]
-};
+service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaHook, 'PreScaleHook', {
+  lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+}));
+
+const target = service.loadBalancerTarget({
+  containerName: 'nginx',
+  containerPort: 80,
+  protocol: ecs.Protocol.TCP,
+  alternateTarget: new ecs.AlternateTarget('AlternateTarget', {
+    alternateTargetGroup: greenTargetGroup,
+    productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(prodListenerRule),
+  }),
+});
+
+target.attachToApplicationTargetGroup(blueTargetGroup);
 ```
 
 ## Daemon Scheduling Strategy

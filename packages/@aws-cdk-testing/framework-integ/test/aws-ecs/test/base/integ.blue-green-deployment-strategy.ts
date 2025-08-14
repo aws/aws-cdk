@@ -1,6 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
@@ -89,45 +88,6 @@ const prodListenerRule = new elbv2.ApplicationListenerRule(stack, 'ALBProduction
   ]),
 });
 
-// Create granular IAM roles
-const ecsTaskExecutionRole = new iam.Role(stack, 'EcsTaskExecutionRole', {
-  assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-  managedPolicies: [
-    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonECSTaskExecutionRolePolicy'),
-  ],
-});
-
-// Create Blue/Green deployment service role
-const ecsServiceRole = new iam.Role(stack, 'ServiceRole', {
-  assumedBy: new iam.CompositePrincipal(
-    new iam.ServicePrincipal('ecs.amazonaws.com'),
-  ),
-  managedPolicies: [
-    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceRole'),
-  ],
-  inlinePolicies: {
-    LambdaInvokePolicy: new iam.PolicyDocument({
-      statements: [
-        new iam.PolicyStatement({
-          actions: ['lambda:InvokeFunction'],
-          resources: ['*'],
-        }),
-      ],
-    }),
-    ELBPolicy: new iam.PolicyDocument({
-      statements: [
-        new iam.PolicyStatement({
-          actions: [
-            'elasticloadbalancing:ModifyRule',
-            'elasticloadbalancing:ModifyListener',
-          ],
-          resources: [prodListenerRule.listenerRuleArn],
-        }),
-      ],
-    }),
-  },
-});
-
 // Create Lambda hook
 const lambdaHook = new lambda.Function(stack, 'LambdaHook', {
   handler: 'index.handler',
@@ -138,13 +98,10 @@ const lambdaHook = new lambda.Function(stack, 'LambdaHook', {
     };`),
 });
 
-lambdaHook.grantInvoke(ecsServiceRole);
-
 // Create task definition
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
   memoryLimitMiB: 512,
   cpu: 256,
-  executionRole: ecsTaskExecutionRole,
 });
 
 // Add container to task definition
@@ -163,39 +120,24 @@ const service = new ecs.FargateService(stack, 'Service', {
   cluster,
   taskDefinition,
   securityGroups: [ecsSecurityGroup],
+  deploymentStrategy: ecs.DeploymentStrategy.BLUE_GREEN,
 });
 
-service.attachToApplicationTargetGroup(blueTargetGroup);
+service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaHook, 'PreScaleUp', {
+  lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+}));
 
-// Use escape hatching to set B/G deployment properties
-const cfnService = service.node.defaultChild as ecs.CfnService;
-cfnService.addPropertyOverride('DeploymentController', {
-  Type: 'ECS',
+const target = service.loadBalancerTarget({
+  containerName: 'nginx',
+  containerPort: 80,
+  protocol: ecs.Protocol.TCP,
+  alternateTarget: new ecs.AlternateTarget('LBAlternateOptions', {
+    alternateTargetGroup: greenTargetGroup,
+    productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(prodListenerRule),
+  }),
 });
 
-cfnService.addPropertyOverride('DeploymentConfiguration', {
-  DeploymentCircuitBreaker: {
-    Enable: false,
-    Rollback: false,
-  },
-  MaximumPercent: 200,
-  MinimumHealthyPercent: 100,
-  Strategy: 'BLUE_GREEN',
-  BakeTimeInMinutes: 0,
-  LifecycleHooks: [{
-    HookTargetArn: lambdaHook.functionArn,
-    RoleArn: ecsServiceRole.roleArn,
-    LifecycleStages: ['POST_TEST_TRAFFIC_SHIFT'],
-  }],
-});
-
-cfnService.addPropertyOverride('LoadBalancers.0', {
-  AdvancedConfiguration: {
-    AlternateTargetGroupArn: greenTargetGroup.targetGroupArn,
-    RoleArn: ecsServiceRole.roleArn,
-    ProductionListenerRule: prodListenerRule.listenerRuleArn,
-  },
-});
+target.attachToApplicationTargetGroup(blueTargetGroup);
 
 // Create integration test
 new integ.IntegTest(app, 'aws-ecs-blue-green', {
