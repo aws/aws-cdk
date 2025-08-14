@@ -511,8 +511,8 @@ test('CallAwsService with only additionalIamStatements - only additional stateme
     service: 'sfn',
     action: 'startExecution',
     parameters: {
-      'StateMachineArn': 'arn:aws:states:us-east-1:123456789012:stateMachine:MyStateMachine',
-      'Input': sfn.JsonPath.objectAt('$'),
+      StateMachineArn: 'arn:aws:states:us-east-1:123456789012:stateMachine:MyStateMachine',
+      Input: sfn.JsonPath.objectAt('$'),
     },
     additionalIamStatements: [
       new iam.PolicyStatement({
@@ -547,8 +547,8 @@ test('CallAwsService without iamResources and without additionalIamStatements - 
     service: 'sfn',
     action: 'startExecution',
     parameters: {
-      'StateMachineArn': 'arn:aws:states:us-east-1:123456789012:stateMachine:MyStateMachine',
-      'Input': sfn.JsonPath.objectAt('$'),
+      StateMachineArn: 'arn:aws:states:us-east-1:123456789012:stateMachine:MyStateMachine',
+      Input: sfn.JsonPath.objectAt('$'),
     },
   });
 

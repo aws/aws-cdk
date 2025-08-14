@@ -1,0 +1,168 @@
+{
+ "Resources": {
+  "RecursiveStateMachineRoleD2E76433": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "RecursiveStateMachine3C54AF69": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"RecursiveStartExecution\",\"States\":{\"RecursiveStartExecution\":{\"Next\":\"Complete\",\"Type\":\"Task\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::aws-sdk:sfn:startExecution\",\"Parameters\":{\"StateMachineArn.$\":\"$.stateMachineArn\",\"Input.$\":\"$.input\"}},\"Complete\":{\"Type\":\"Pass\",\"Result\":{\"status\":\"completed\"},\"End\":true}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "RecursiveStateMachineRoleD2E76433",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "RecursiveStateMachineRoleD2E76433"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AdditionalStatementsStateMachineRoleAC68A24A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AdditionalStatementsStateMachineRoleDefaultPolicyA6E61382": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "dynamodb:PutItem",
+       "Effect": "Allow",
+       "Resource": "arn:aws:dynamodb:*:*:table/TestTable"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AdditionalStatementsStateMachineRoleDefaultPolicyA6E61382",
+    "Roles": [
+     {
+      "Ref": "AdditionalStatementsStateMachineRoleAC68A24A"
+     }
+    ]
+   }
+  },
+  "AdditionalStatementsStateMachine04E97D12": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"TaskWithAdditionalOnly\",\"States\":{\"TaskWithAdditionalOnly\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::aws-sdk:dynamodb:putItem\",\"Parameters\":{\"TableName\":\"TestTable\",\"Item\":{\"id\":{\"S.$\":\"$.id\"},\"data\":{\"S\":\"test-data\"}}}}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AdditionalStatementsStateMachineRoleAC68A24A",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AdditionalStatementsStateMachineRoleDefaultPolicyA6E61382",
+    "AdditionalStatementsStateMachineRoleAC68A24A"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefRecursiveStateMachine3C54AF6952B1BC92": {
+   "Value": {
+    "Ref": "RecursiveStateMachine3C54AF69"
+   },
+   "Export": {
+    "Name": "aws-stepfunctions-tasks-call-aws-service-optional-iam-integ:ExportsOutputRefRecursiveStateMachine3C54AF6952B1BC92"
+   }
+  },
+  "ExportsOutputRefAdditionalStatementsStateMachine04E97D1278AFF886": {
+   "Value": {
+    "Ref": "AdditionalStatementsStateMachine04E97D12"
+   },
+   "Export": {
+    "Name": "aws-stepfunctions-tasks-call-aws-service-optional-iam-integ:ExportsOutputRefAdditionalStatementsStateMachine04E97D1278AFF886"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
