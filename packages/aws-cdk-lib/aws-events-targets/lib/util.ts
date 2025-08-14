@@ -1,6 +1,7 @@
 import { Construct, IConstruct, Node } from 'constructs';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
+import { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as sqs from '../../aws-sqs';
 import { Annotations, Names, Token, TokenComparison, Duration, PhysicalName, ValidationError } from '../../core';
@@ -109,7 +110,7 @@ export function addLambdaPermission(rule: events.IRule, handler: lambda.IFunctio
  * Allow a rule to send events with failed invocation to an Amazon SQS queue.
  * @internal
  */
-export function addToDeadLetterQueueResourcePolicy(rule: events.IRule, queue: sqs.IQueue) {
+export function addToDeadLetterQueueResourcePolicy(rule: events.IRule, queue: sqs.IQueue, encryptionMasterKey?: IKey) {
   if (!sameEnvDimension(rule.env.region, queue.env.region)) {
     throw new ValidationError(`Cannot assign Dead Letter Queue in region ${queue.env.region} to the rule ${Names.nodeUniqueId(rule.node)} in region ${rule.env.region}. Both the queue and the rule must be in the same region.`, rule);
   }
@@ -132,6 +133,20 @@ export function addToDeadLetterQueueResourcePolicy(rule: events.IRule, queue: sq
         },
       },
     }));
+
+    if (encryptionMasterKey) {
+      const policyStatementIdEncrypted = `AllowEncryptedEventRule${Names.nodeUniqueId(rule.node)}`;
+      queue.addToResourcePolicy(new iam.PolicyStatement({
+        sid: policyStatementIdEncrypted,
+        principals: [new iam.ServicePrincipal('events.amazonaws.com')],
+        effect: iam.Effect.ALLOW,
+        actions: [
+          'kms:Decrypt',
+          'kms:GenerateDataKey',
+        ],
+        resources: [encryptionMasterKey.keyArn],
+      }));
+    }
   } else {
     Annotations.of(rule).addWarningV2('@aws-cdk/aws-events-targets:manuallyAddDLQResourcePolicy', `Cannot add a resource policy to your dead letter queue associated with rule ${rule.ruleName} because the queue is in a different account. You must add the resource policy manually to the dead letter queue in account ${queue.env.account}.`);
   }

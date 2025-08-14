@@ -71,7 +71,7 @@ export class SqsQueue implements events.IRuleTarget {
     this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com', { conditions }));
 
     if (this.props.deadLetterQueue) {
-      addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
+      addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue, this.props.deadLetterQueue.encryptionMasterKey);
     }
 
     return {
