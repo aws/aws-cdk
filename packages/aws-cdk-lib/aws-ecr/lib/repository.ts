@@ -23,6 +23,7 @@ import {
   Arn,
   ValidationError,
   UnscopedValidationError,
+  Tag,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -815,13 +816,21 @@ export class Repository extends RepositoryBase {
 
     Repository.validateRepositoryName(this.physicalName);
 
-    // Validate imageTagMutabilityExclusionFilters
     if (props.imageTagMutabilityExclusionFilters !== undefined) {
       if (props.imageTagMutabilityExclusionFilters.length === 0) {
         throw new ValidationError('At least one exclusion filter must be specified when imageTagMutabilityExclusionFilters is provided', this);
       }
       if (props.imageTagMutabilityExclusionFilters.length > 5) {
-        throw new ValidationError(`Cannot specify more than 5 exclusion filters (got ${props.imageTagMutabilityExclusionFilters.length})`, this);
+        throw new ValidationError(`Cannot specify more than 5 exclusion filters, got ${props.imageTagMutabilityExclusionFilters.length})`, this);
+      }
+      if (
+        !props.imageTagMutability ||
+        [
+          TagMutability.IMMUTABLE_WITH_EXCLUSION,
+          TagMutability.MUTABLE_WITH_EXCLUSION,
+        ].includes(props.imageTagMutability)
+      ) {
+        throw new ValidationError(`imageTagMutabilityExclusionFilters can only be used with imageTagMutability set to 'IMMUTABLE_WITH_EXCLUSION' or 'MUTABLE_WITH_EXCLUSION', got: ${props.imageTagMutability}`, this);
       }
     }
 
@@ -833,7 +842,7 @@ export class Repository extends RepositoryBase {
       imageScanningConfiguration: props.imageScanOnPush !== undefined ? { scanOnPush: props.imageScanOnPush } : undefined,
       imageTagMutability: props.imageTagMutability,
       imageTagMutabilityExclusionFilters: props.imageTagMutabilityExclusionFilters?.map(
-        filter => filter._renderFilter(),
+        filter => filter.renderFilter(),
       ),
       encryptionConfiguration: this.parseEncryption(props),
       emptyOnDelete: props.emptyOnDelete,
@@ -1157,7 +1166,7 @@ export class ImageTagMutabilityExclusionFilter {
    * Renders the filter to CloudFormation properties
    * @internal
    */
-  public _renderFilter(): CfnRepository.ImageTagMutabilityExclusionFilterProperty {
+  public renderFilter(): CfnRepository.ImageTagMutabilityExclusionFilterProperty {
     return {
       imageTagMutabilityExclusionFilterType: this.filterType,
       imageTagMutabilityExclusionFilterValue: this.filterValue,
