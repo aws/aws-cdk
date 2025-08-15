@@ -1372,4 +1372,84 @@ describe('repository', () => {
       },
     });
   });
+
+  describe('image tag mutability exclusion filters', () => {
+    test('wildcard filter can be created', () => {
+      // GIVEN
+      const filter = ecr.ImageTagMutabilityExclusionFilter.wildcard('dev-*');
+
+      // THEN
+      expect(filter._renderFilter()).toEqual({
+        imageTagMutabilityExclusionFilterType: 'WILDCARD',
+        imageTagMutabilityExclusionFilterValue: 'dev-*',
+      });
+    });
+
+    test('multiple exclusion filters can be set', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      new ecr.Repository(stack, 'Repo', {
+        imageTagMutability: ecr.TagMutability.IMMUTABLE,
+        imageTagMutabilityExclusionFilters: [
+          ecr.ImageTagMutabilityExclusionFilter.wildcard('dev-*'),
+          ecr.ImageTagMutabilityExclusionFilter.wildcard('test-*'),
+        ],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+        ImageTagMutability: 'IMMUTABLE',
+        ImageTagMutabilityExclusionFilters: [
+          {
+            ImageTagMutabilityExclusionFilterType: 'WILDCARD',
+            ImageTagMutabilityExclusionFilterValue: 'dev-*',
+          },
+          {
+            ImageTagMutabilityExclusionFilterType: 'WILDCARD',
+            ImageTagMutabilityExclusionFilterValue: 'test-*',
+          },
+        ],
+      });
+    });
+
+    test('validates pattern is not empty', () => {
+      expect(() => {
+        ecr.ImageTagMutabilityExclusionFilter.wildcard('');
+      }).toThrow('Pattern cannot be empty');
+    });
+
+    test('validates pattern length', () => {
+      const longPattern = 'a'.repeat(129);
+      expect(() => {
+        ecr.ImageTagMutabilityExclusionFilter.wildcard(longPattern);
+      }).toThrow('Pattern cannot exceed 128 characters (got 129 characters)');
+    });
+
+    test('validates pattern characters', () => {
+      expect(() => {
+        ecr.ImageTagMutabilityExclusionFilter.wildcard('invalid@pattern');
+      }).toThrow("Pattern 'invalid@pattern' contains invalid characters. Only alphanumeric characters, dots, underscores, asterisks, and hyphens are allowed.");
+    });
+
+    test('validates empty filter array', () => {
+      const stack = new cdk.Stack();
+      expect(() => {
+        new ecr.Repository(stack, 'Repo', {
+          imageTagMutabilityExclusionFilters: [],
+        });
+      }).toThrow('At least one exclusion filter must be specified when imageTagMutabilityExclusionFilters is provided');
+    });
+
+    test('validates maximum filter count', () => {
+      const stack = new cdk.Stack();
+      const filters = Array(6).fill(0).map((_, i) =>
+        ecr.ImageTagMutabilityExclusionFilter.wildcard(`filter-${i}*`),
+      );
+      expect(() => {
+        new ecr.Repository(stack, 'Repo', {
+          imageTagMutabilityExclusionFilters: filters,
+        });
+      }).toThrow('Cannot specify more than 5 exclusion filters (got 6)');
+    });
+  });
 });
