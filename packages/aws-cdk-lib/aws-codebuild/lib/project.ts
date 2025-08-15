@@ -5,7 +5,7 @@ import { Cache } from './cache';
 import { CodeBuildMetrics } from './codebuild-canned-metrics.generated';
 import { CfnProject } from './codebuild.generated';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
-import { ComputeType } from './compute-type';
+import { ComputeType, DockerServerComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
 import { IFileSystemLocation } from './file-location';
 import { IFleet } from './fleet';
@@ -1420,6 +1420,7 @@ export class Project extends ProjectBase {
       environmentVariables: hasEnvironmentVars
         ? Project.serializeEnvVariables(vars, props.checkSecretsInPlainTextEnvVariables ?? true, this)
         : undefined,
+      dockerServer: env.dockerServer,
     };
   }
 
@@ -1663,6 +1664,13 @@ export interface BuildEnvironment {
   readonly computeType?: ComputeType;
 
   /**
+   * The Docker server configuration CodeBuild use to build your Docker image.
+   *
+   * @default - Doesn't use remote docker server
+   */
+  readonly dockerServer?: DockerServerOptions;
+
+  /**
    * Fleet resource for a reserved capacity CodeBuild project.
    *
    * Fleets allow for process builds or tests to run immediately and reduces build durations,
@@ -1698,6 +1706,17 @@ export interface BuildEnvironment {
    * The environment variables that your builds can use.
    */
   readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
+}
+
+/**
+ * The Docker server configuration CodeBuild use to build your Docker image.
+ */
+export interface DockerServerOptions {
+  /**
+   * The type of compute to use for the docker server.
+   * See the `DockerServerComputeType` enum for the possible values.
+   */
+  readonly computeType: DockerServerComputeType;
 }
 
 /**
