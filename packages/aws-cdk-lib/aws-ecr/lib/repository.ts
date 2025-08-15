@@ -1172,7 +1172,7 @@ export class ImageTagMutabilityExclusionFilter {
       throw new UnscopedValidationError('Pattern cannot be empty');
     }
     if (pattern.length > 128) {
-      throw new UnscopedValidationError(`Pattern cannot exceed 128 characters (got ${pattern.length} characters)`);
+      throw new UnscopedValidationError(`Pattern cannot exceed 128 characters, got: ${pattern.length} characters.`);
     }
     if (!/^[0-9a-zA-Z._*-]+$/.test(pattern)) {
       throw new UnscopedValidationError(`Pattern '${pattern}' contains invalid characters. Only alphanumeric characters, dots, underscores, asterisks, and hyphens are allowed.`);

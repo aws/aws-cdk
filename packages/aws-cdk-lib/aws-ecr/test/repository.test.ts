@@ -1374,82 +1374,225 @@ describe('repository', () => {
   });
 
   describe('image tag mutability exclusion filters', () => {
-    test('wildcard filter can be created', () => {
-      // GIVEN
-      const filter = ecr.ImageTagMutabilityExclusionFilter.wildcard('dev-*');
-
-      // THEN
-      expect(filter._renderFilter()).toEqual({
-        imageTagMutabilityExclusionFilterType: 'WILDCARD',
-        imageTagMutabilityExclusionFilterValue: 'dev-*',
-      });
-    });
-
-    test('multiple exclusion filters can be set', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      new ecr.Repository(stack, 'Repo', {
-        imageTagMutability: ecr.TagMutability.IMMUTABLE,
-        imageTagMutabilityExclusionFilters: [
-          ecr.ImageTagMutabilityExclusionFilter.wildcard('dev-*'),
-          ecr.ImageTagMutabilityExclusionFilter.wildcard('test-*'),
-        ],
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
-        ImageTagMutability: 'IMMUTABLE',
-        ImageTagMutabilityExclusionFilters: [
-          {
-            ImageTagMutabilityExclusionFilterType: 'WILDCARD',
-            ImageTagMutabilityExclusionFilterValue: 'dev-*',
-          },
-          {
-            ImageTagMutabilityExclusionFilterType: 'WILDCARD',
-            ImageTagMutabilityExclusionFilterValue: 'test-*',
-          },
-        ],
-      });
-    });
-
-    test('validates pattern is not empty', () => {
-      expect(() => {
-        ecr.ImageTagMutabilityExclusionFilter.wildcard('');
-      }).toThrow('Pattern cannot be empty');
-    });
-
-    test('validates pattern length', () => {
-      const longPattern = 'a'.repeat(129);
-      expect(() => {
-        ecr.ImageTagMutabilityExclusionFilter.wildcard(longPattern);
-      }).toThrow('Pattern cannot exceed 128 characters (got 129 characters)');
-    });
-
-    test('validates pattern characters', () => {
-      expect(() => {
-        ecr.ImageTagMutabilityExclusionFilter.wildcard('invalid@pattern');
-      }).toThrow("Pattern 'invalid@pattern' contains invalid characters. Only alphanumeric characters, dots, underscores, asterisks, and hyphens are allowed.");
-    });
-
-    test('validates empty filter array', () => {
-      const stack = new cdk.Stack();
-      expect(() => {
-        new ecr.Repository(stack, 'Repo', {
-          imageTagMutabilityExclusionFilters: [],
+    describe('ImageTagMutabilityExclusionFilter class', () => {
+      test.each([
+        'v1.0.*',
+        '*-snapshot',
+        'a'.repeat(128),
+        'abc-123_v1.0*',
+      ])('accepts valid pattern: %s', (pattern) => {
+        const filter = ecr.ImageTagMutabilityExclusionFilter.wildcard(pattern);
+        expect(filter.renderFilter()).toEqual({
+          imageTagMutabilityExclusionFilterType: 'WILDCARD',
+          imageTagMutabilityExclusionFilterValue: pattern,
         });
-      }).toThrow('At least one exclusion filter must be specified when imageTagMutabilityExclusionFilters is provided');
+      });
+
+      test('validates pattern is not empty', () => {
+        expect(() => {
+          ecr.ImageTagMutabilityExclusionFilter.wildcard('');
+        }).toThrow('Pattern cannot be empty');
+      });
+
+      test('validates pattern length does not exceed 128 characters', () => {
+        const longPattern = 'a'.repeat(129);
+        expect(() => {
+          ecr.ImageTagMutabilityExclusionFilter.wildcard(longPattern);
+        }).toThrow('Pattern cannot exceed 128 characters, got: 129 characters.');
+      });
+
+      test.each([
+        ['invalid@pattern', '@'],
+        ['pattern with spaces', ' '],
+        ['pattern/with/slash', '/'],
+        ['pattern\\with\\backslash', '\\'],
+        ['pattern#hash', '#'],
+        ['pattern$dollar', '$'],
+        ['pattern%percent', '%'],
+        ['pattern^caret', '^'],
+        ['pattern&ampersand', '&'],
+        ['pattern(parenthesis)', '()'],
+        ['pattern[bracket]', '[]'],
+        ['pattern{brace}', '{}'],
+        ['pattern|pipe', '|'],
+        ['pattern+plus', '+'],
+        ['pattern=equals', '='],
+        ['pattern!exclamation', '!'],
+        ['pattern?question', '?'],
+        ['pattern<less>', '<>'],
+        ['pattern"quote"', '"'],
+        ['pattern\'apostrophe\'', '\''],
+        ['pattern;semicolon', ';'],
+        ['pattern:colon', ':'],
+        ['pattern,comma', ','],
+        ['パターン', 'non-ASCII'],
+        ['pattern~tilde', '~'],
+        ['pattern`backtick', '`'],
+      ])('rejects pattern with invalid character: %s (contains %s)', (pattern, _invalidChar) => {
+        expect(() => {
+          ecr.ImageTagMutabilityExclusionFilter.wildcard(pattern);
+        }).toThrow(`Pattern '${pattern}' contains invalid characters. Only alphanumeric characters, dots, underscores, asterisks, and hyphens are allowed.`);
+      });
     });
 
-    test('validates maximum filter count', () => {
-      const stack = new cdk.Stack();
-      const filters = Array(6).fill(0).map((_, i) =>
-        ecr.ImageTagMutabilityExclusionFilter.wildcard(`filter-${i}*`),
-      );
-      expect(() => {
+    describe('Repository with tag mutability exclusion filters', () => {
+      test.each([
+        [ecr.TagMutability.MUTABLE_WITH_EXCLUSION],
+        [ecr.TagMutability.IMMUTABLE_WITH_EXCLUSION],
+      ])('can set %s with filters', (mutability) => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        
+        // WHEN
         new ecr.Repository(stack, 'Repo', {
+          imageTagMutability: mutability,
+          imageTagMutabilityExclusionFilters: [
+            ecr.ImageTagMutabilityExclusionFilter.wildcard('dev-*'),
+            ecr.ImageTagMutabilityExclusionFilter.wildcard('test-*'),
+          ],
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+          ImageTagMutability: mutability,
+          ImageTagMutabilityExclusionFilters: [
+            {
+              ImageTagMutabilityExclusionFilterType: 'WILDCARD',
+              ImageTagMutabilityExclusionFilterValue: 'dev-*',
+            },
+            {
+              ImageTagMutabilityExclusionFilterType: 'WILDCARD',
+              ImageTagMutabilityExclusionFilterValue: 'test-*',
+            },
+          ],
+        });
+      });
+
+      test('can set up to 5 exclusion filters', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const filters = Array(5).fill(0).map((_, i) =>
+          ecr.ImageTagMutabilityExclusionFilter.wildcard(`filter-${i}*`),
+        );
+        
+        // WHEN
+        new ecr.Repository(stack, 'Repo', {
+          imageTagMutability: ecr.TagMutability.MUTABLE_WITH_EXCLUSION,
           imageTagMutabilityExclusionFilters: filters,
         });
-      }).toThrow('Cannot specify more than 5 exclusion filters (got 6)');
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+          ImageTagMutability: 'MUTABLE_WITH_EXCLUSION',
+          ImageTagMutabilityExclusionFilters: filters.map((_, i) => ({
+            ImageTagMutabilityExclusionFilterType: 'WILDCARD',
+            ImageTagMutabilityExclusionFilterValue: `filter-${i}*`,
+          })),
+        });
+      });
+
+      test('filters work with other repository properties', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const key = new kms.Key(stack, 'Key');
+        
+        // WHEN
+        new ecr.Repository(stack, 'Repo', {
+          repositoryName: 'my-repo',
+          encryption: ecr.RepositoryEncryption.KMS,
+          encryptionKey: key,
+          imageScanOnPush: true,
+          imageTagMutability: ecr.TagMutability.IMMUTABLE_WITH_EXCLUSION,
+          imageTagMutabilityExclusionFilters: [
+            ecr.ImageTagMutabilityExclusionFilter.wildcard('dev-*'),
+          ],
+          lifecycleRules: [{
+            maxImageAge: cdk.Duration.days(30),
+          }],
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+          RepositoryName: 'my-repo',
+          EncryptionConfiguration: {
+            EncryptionType: 'KMS',
+            KmsKey: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+          ImageScanningConfiguration: {
+            ScanOnPush: true,
+          },
+          ImageTagMutability: 'IMMUTABLE_WITH_EXCLUSION',
+          ImageTagMutabilityExclusionFilters: [
+            {
+              ImageTagMutabilityExclusionFilterType: 'WILDCARD',
+              ImageTagMutabilityExclusionFilterValue: 'dev-*',
+            },
+          ],
+        });
+      });
+    });
+
+    describe('Repository validation errors', () => {
+      test('throws when filters provided without imageTagMutability', () => {
+        const stack = new cdk.Stack();
+        expect(() => {
+          new ecr.Repository(stack, 'Repo', {
+            imageTagMutabilityExclusionFilters: [
+              ecr.ImageTagMutabilityExclusionFilter.wildcard('dev-*'),
+            ],
+          });
+        }).toThrow('imageTagMutability must be specified when imageTagMutabilityExclusionFilters is provided');
+      });
+
+      test.each([
+        [ecr.TagMutability.MUTABLE],
+        [ecr.TagMutability.IMMUTABLE],
+      ])('throws when filters provided with %s', (mutability) => {
+        const stack = new cdk.Stack();
+        expect(() => {
+          new ecr.Repository(stack, 'Repo', {
+            imageTagMutability: mutability,
+            imageTagMutabilityExclusionFilters: [
+              ecr.ImageTagMutabilityExclusionFilter.wildcard('dev-*'),
+            ],
+          });
+        }).toThrow(`imageTagMutability must be 'IMMUTABLE_WITH_EXCLUSION' or 'MUTABLE_WITH_EXCLUSION' when imageTagMutabilityExclusionFilters is provided, got: ${mutability}`);
+      });
+
+      test.each([
+        [ecr.TagMutability.MUTABLE_WITH_EXCLUSION],
+        [ecr.TagMutability.IMMUTABLE_WITH_EXCLUSION],
+      ])('throws when %s is used without filters', (mutability) => {
+        const stack = new cdk.Stack();
+        expect(() => {
+          new ecr.Repository(stack, 'Repo', {
+            imageTagMutability: mutability,
+          });
+        }).toThrow(`imageTagMutabilityExclusionFilters must be specified when imageTagMutability is '${mutability}'`);
+      });
+
+      test('validates empty filter array', () => {
+        const stack = new cdk.Stack();
+        expect(() => {
+          new ecr.Repository(stack, 'Repo', {
+            imageTagMutability: ecr.TagMutability.MUTABLE_WITH_EXCLUSION,
+            imageTagMutabilityExclusionFilters: [],
+          });
+        }).toThrow('At least one exclusion filter must be specified when imageTagMutabilityExclusionFilters is provided');
+      });
+
+      test('validates maximum filter count', () => {
+        const stack = new cdk.Stack();
+        const filters = Array(6).fill(0).map((_, i) =>
+          ecr.ImageTagMutabilityExclusionFilter.wildcard(`filter-${i}*`),
+        );
+        expect(() => {
+          new ecr.Repository(stack, 'Repo', {
+            imageTagMutability: ecr.TagMutability.MUTABLE_WITH_EXCLUSION,
+            imageTagMutabilityExclusionFilters: filters,
+          });
+        }).toThrow('Cannot specify more than 5 exclusion filters, got 6');
+      });
     });
   });
 });
