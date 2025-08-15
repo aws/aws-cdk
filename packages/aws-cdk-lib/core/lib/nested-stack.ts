@@ -121,6 +121,7 @@ export class NestedStack extends Stack {
       synthesizer: new NestedStackSynthesizer(parentStack.synthesizer),
       description: props.description,
       crossRegionReferences: parentStack._crossRegionReferences,
+      softDependency: parentStack._softDependency,
     });
 
     this._parentStack = parentStack;
