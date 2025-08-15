@@ -1388,6 +1388,365 @@ describe('CDK-Created-Guardrail', () => {
       }).not.toThrow();
     });
   });
+
+  describe('Validation Tests', () => {
+    describe('Content Filters Validation', () => {
+      test('validates content filter with valid properties', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            contentFilters: [{
+              type: bedrock.ContentFilterType.SEXUAL,
+              inputStrength: bedrock.ContentFilterStrength.MEDIUM,
+              outputStrength: bedrock.ContentFilterStrength.HIGH,
+            }],
+          });
+        }).not.toThrow();
+      });
+
+      test('throws error for invalid content filter strength', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            contentFilters: [{
+              type: bedrock.ContentFilterType.SEXUAL,
+              inputStrength: 'INVALID' as any,
+              outputStrength: bedrock.ContentFilterStrength.HIGH,
+            }],
+          });
+        }).toThrow(/inputStrength must be a valid ContentFilterStrength value/);
+      });
+
+      test('throws error for invalid modality type', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            contentFilters: [{
+              type: bedrock.ContentFilterType.SEXUAL,
+              inputStrength: bedrock.ContentFilterStrength.MEDIUM,
+              outputStrength: bedrock.ContentFilterStrength.HIGH,
+              inputModalities: ['INVALID' as any],
+            }],
+          });
+        }).toThrow(/inputModalities\[0\] must be a valid ModalityType value/);
+      });
+    });
+
+    describe('PII Filters Validation', () => {
+      test('validates PII filter with valid properties', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            piiFilters: [{
+              type: bedrock.GeneralPIIType.EMAIL,
+              action: bedrock.GuardrailAction.BLOCK,
+            }],
+          });
+        }).not.toThrow();
+      });
+
+      test('throws error for missing required PII filter properties', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            piiFilters: [{
+              type: bedrock.GeneralPIIType.EMAIL,
+              // Missing action
+            } as any],
+          });
+        }).toThrow(/action is required/);
+      });
+
+      test('throws error for invalid PII filter action', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            piiFilters: [{
+              type: bedrock.GeneralPIIType.EMAIL,
+              action: 'INVALID' as any,
+            }],
+          });
+        }).toThrow(/action must be a valid GuardrailAction value/);
+      });
+    });
+
+    describe('Regex Filters Validation', () => {
+      test('validates regex filter with valid properties', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            regexFilters: [{
+              name: 'test-regex',
+              pattern: 'test-pattern',
+              action: bedrock.GuardrailAction.BLOCK,
+            }],
+          });
+        }).not.toThrow();
+      });
+
+      test('throws error for regex filter with empty name', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            regexFilters: [{
+              name: '',
+              pattern: 'test-pattern',
+              action: bedrock.GuardrailAction.BLOCK,
+            }],
+          });
+        }).toThrow(/name is 0 characters long but must be at least 1 characters/);
+      });
+
+      test('throws error for regex filter with name too long', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            regexFilters: [{
+              name: 'a'.repeat(101),
+              pattern: 'test-pattern',
+              action: bedrock.GuardrailAction.BLOCK,
+            }],
+          });
+        }).toThrow(/name is 101 characters long but must be less than or equal to 100 characters/);
+      });
+    });
+
+    describe('Denied Topics Validation', () => {
+      test('validates denied topics with valid properties', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            deniedTopics: [bedrock.Topic.FINANCIAL_ADVICE],
+          });
+        }).not.toThrow();
+      });
+
+      test('validates custom topic with valid properties', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            deniedTopics: [bedrock.Topic.custom({
+              name: 'test-topic',
+              definition: 'test definition',
+              examples: ['example 1', 'example 2'],
+            })],
+          });
+        }).not.toThrow();
+      });
+
+      test('throws error for custom topic with name too long', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            deniedTopics: [bedrock.Topic.custom({
+              name: 'a'.repeat(101),
+              definition: 'test definition',
+              examples: ['example 1'],
+            })],
+          });
+        }).toThrow(/name must be 100 characters or less/);
+      });
+
+      test('throws error for custom topic with definition too long', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            deniedTopics: [bedrock.Topic.custom({
+              name: 'test-topic',
+              definition: 'a'.repeat(1001),
+              examples: ['example 1'],
+            })],
+          });
+        }).toThrow(/definition must be 1000 characters or less/);
+      });
+
+      test('throws error for custom topic with too many examples', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            deniedTopics: [bedrock.Topic.custom({
+              name: 'test-topic',
+              definition: 'test definition',
+              examples: Array(101).fill('example'),
+            })],
+          });
+        }).toThrow(/examples field cannot contain more than 100 examples/);
+      });
+
+      test('throws error for custom topic with example too long', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            deniedTopics: [bedrock.Topic.custom({
+              name: 'test-topic',
+              definition: 'test definition',
+              examples: ['a'.repeat(101)],
+            })],
+          });
+        }).toThrow(/examples\[0\] must be 100 characters or less/);
+      });
+    });
+
+    describe('Contextual Grounding Filters Validation', () => {
+      test('validates contextual grounding filter with valid properties', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            contextualGroundingFilters: [{
+              type: bedrock.ContextualGroundingFilterType.GROUNDING,
+              threshold: 0.5,
+            }],
+          });
+        }).not.toThrow();
+      });
+
+      test('throws error for contextual grounding filter with threshold too low', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            contextualGroundingFilters: [{
+              type: bedrock.ContextualGroundingFilterType.GROUNDING,
+              threshold: -0.1,
+            }],
+          });
+        }).toThrow(/threshold must be between 0 and 0.99/);
+      });
+
+      test('throws error for contextual grounding filter with threshold too high', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            contextualGroundingFilters: [{
+              type: bedrock.ContextualGroundingFilterType.GROUNDING,
+              threshold: 1.0,
+            }],
+          });
+        }).toThrow(/threshold must be between 0 and 0.99/);
+      });
+
+      test('throws error for invalid contextual grounding filter type', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            contextualGroundingFilters: [{
+              type: 'INVALID' as any,
+              threshold: 0.5,
+            }],
+          });
+        }).toThrow(/type must be a valid ContextualGroundingFilterType value/);
+      });
+    });
+
+    describe('Word Filters Validation', () => {
+      test('validates word filter with valid properties', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            wordFilters: [{
+              text: 'test-word',
+            }],
+          });
+        }).not.toThrow();
+      });
+
+      test('throws error for word filter with text too long', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            wordFilters: [{
+              text: 'a'.repeat(101),
+            }],
+          });
+        }).toThrow(/text must be 100 characters or less/);
+      });
+
+      test('throws error for word filter with invalid action', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            wordFilters: [{
+              text: 'test-word',
+              inputAction: 'INVALID' as any,
+            }],
+          });
+        }).toThrow(/inputAction must be a valid GuardrailAction value/);
+      });
+    });
+
+    describe('Managed Word List Filters Validation', () => {
+      test('validates managed word list filter with valid properties', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            managedWordListFilters: [{
+              type: bedrock.ManagedWordFilterType.PROFANITY,
+            }],
+          });
+        }).not.toThrow();
+      });
+
+      test('throws error for managed word list filter with invalid type', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            managedWordListFilters: [{
+              type: 'INVALID' as any,
+            }],
+          });
+        }).toThrow(/type must be a valid ManagedWordFilterType value/);
+      });
+
+      test('throws error for managed word list filter with invalid action', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            managedWordListFilters: [{
+              type: bedrock.ManagedWordFilterType.PROFANITY,
+              inputAction: 'INVALID' as any,
+            }],
+          });
+        }).toThrow(/inputAction must be a valid GuardrailAction value/);
+      });
+    });
+
+    describe('Messaging Validation', () => {
+      test('throws error for blocked input messaging too long', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            blockedInputMessaging: 'a'.repeat(501),
+          });
+        }).toThrow(/blockedInputMessaging is 501 characters long but must be less than or equal to 500 characters/);
+      });
+
+      test('throws error for blocked outputs messaging too long', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            blockedOutputsMessaging: 'a'.repeat(501),
+          });
+        }).toThrow(/blockedOutputsMessaging is 501 characters long but must be less than or equal to 500 characters/);
+      });
+
+      test('throws error for empty blocked input messaging', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            blockedInputMessaging: '',
+          });
+        }).toThrow(/blockedInputMessaging is 0 characters long but must be at least 1 characters/);
+      });
+
+      test('throws error for empty blocked outputs messaging', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            blockedOutputsMessaging: '',
+          });
+        }).toThrow(/blockedOutputsMessaging is 0 characters long but must be at least 1 characters/);
+      });
+    });
+  });
 });
 
 describe('Imported-Guardrail', () => {

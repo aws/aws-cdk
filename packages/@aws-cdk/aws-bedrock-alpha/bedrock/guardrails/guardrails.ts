@@ -525,6 +525,18 @@ export class Guardrail extends GuardrailBase {
    */
   public readonly crossRegionConfig?: GuardrailCrossRegionConfigProperty;
 
+  /**
+   * The message to return when the guardrail blocks a prompt.
+   * @default "Sorry, your query violates our usage policy."
+   */
+  public readonly blockedInputMessaging: string;
+
+  /**
+   * The message to return when the guardrail blocks a model response.
+   * @default "Sorry, I am unable to answer your question because of our usage policy."
+   */
+  public readonly blockedOutputsMessaging: string;
+
   constructor(scope: Construct, id: string, props: GuardrailProps) {
     super(scope, id, {
       physicalName: props.guardrailName,
@@ -544,29 +556,30 @@ export class Guardrail extends GuardrailBase {
     this.topicsTierConfig = props.topicsTierConfig ?? filters.TierConfig.CLASSIC;
     this.contentFiltersTierConfig = props.contentFiltersTierConfig ?? filters.TierConfig.CLASSIC;
     this.crossRegionConfig = props.crossRegionConfig;
+    this.blockedInputMessaging = props.blockedInputMessaging ?? 'Sorry, your query violates our usage policy.';
+    this.blockedOutputsMessaging = props.blockedOutputsMessaging ?? 'Sorry, I am unable to answer your question because of our usage policy.';
 
     // ------------------------------------------------------
-    // Validate regex filters
+    // Validate all filter arrays
     // ------------------------------------------------------
-    if (props.regexFilters) {
-      props.regexFilters.forEach((filter, index) => {
-        this.validateRegexFilter(filter, index);
-      });
-    }
+    this.validateContentFilters(this.contentFilters);
+    this.validatePiiFilters(this.piiFilters);
+    this.validateRegexFilters(this.regexFilters);
+    this.validateDeniedTopics(this.deniedTopics);
+    this.validateContextualGroundingFilters(this.contextualGroundingFilters);
+    this.validateWordFilters(this.wordFilters);
+    this.validateManagedWordListFilters(this.managedWordListFilters);
 
     // ------------------------------------------------------
     // Validate messaging properties
     // ------------------------------------------------------
-    this.validateMessagingProperty(props.blockedInputMessaging, 'blockedInputMessaging');
-    this.validateMessagingProperty(props.blockedOutputsMessaging, 'blockedOutputsMessaging');
+    this.validateMessagingProperty(this.blockedInputMessaging, 'blockedInputMessaging');
+    this.validateMessagingProperty(this.blockedOutputsMessaging, 'blockedOutputsMessaging');
 
     // ------------------------------------------------------
     // Validate tier configuration requirements
     // ------------------------------------------------------
     this.validateTierConfiguration(props);
-
-    const defaultBlockedInputMessaging = 'Sorry, your query violates our usage policy.';
-    const defaultBlockedOutputsMessaging = 'Sorry, I am unable to answer your question because of our usage policy.';
 
     // ------------------------------------------------------
     // CFN Props - With Lazy support
@@ -575,8 +588,8 @@ export class Guardrail extends GuardrailBase {
       name: props.guardrailName,
       description: props.description,
       kmsKeyArn: props.kmsKey?.keyArn,
-      blockedInputMessaging: props.blockedInputMessaging ?? defaultBlockedInputMessaging,
-      blockedOutputsMessaging: props.blockedOutputsMessaging ?? defaultBlockedOutputsMessaging,
+      blockedInputMessaging: this.blockedInputMessaging,
+      blockedOutputsMessaging: this.blockedOutputsMessaging,
       // Lazy props
       crossRegionConfig: this.generateCfnCrossRegionConfig(),
       contentPolicyConfig: this.generateCfnContentPolicyConfig(),
@@ -893,6 +906,10 @@ export class Guardrail extends GuardrailBase {
             return {
               type: filter.type.value,
               action: filter.action,
+              inputAction: filter.inputAction,
+              inputEnabled: filter.inputEnabled,
+              outputAction: filter.outputAction,
+              outputEnabled: filter.outputEnabled,
             } as bedrock.CfnGuardrail.PiiEntityConfigProperty;
           });
         },
@@ -997,6 +1014,240 @@ export class Guardrail extends GuardrailBase {
         this,
       );
     }
+  }
+
+  /**
+   * Validates content filters array.
+   * @param contentFilters The content filters to validate.
+   */
+  private validateContentFilters(contentFilters?: filters.ContentFilter[]): void {
+    if (!contentFilters) return;
+
+    contentFilters.forEach((filter, index) => {
+      const prefix = `Invalid ContentFilter at index ${index}`;
+
+      // Validate that the filter has required properties
+      if (!filter.type) {
+        throw new ValidationError(`${prefix}: type is required`, this);
+      }
+
+      // Validate input strength
+      if (filter.inputStrength !== undefined && !Token.isUnresolved(filter.inputStrength)) {
+        if (!Object.values(filters.ContentFilterStrength).includes(filter.inputStrength)) {
+          throw new ValidationError(`${prefix}: inputStrength must be a valid ContentFilterStrength value`, this);
+        }
+      }
+
+      // Validate output strength
+      if (filter.outputStrength !== undefined && !Token.isUnresolved(filter.outputStrength)) {
+        if (!Object.values(filters.ContentFilterStrength).includes(filter.outputStrength)) {
+          throw new ValidationError(`${prefix}: outputStrength must be a valid ContentFilterStrength value`, this);
+        }
+      }
+
+      // Validate input modalities
+      if (filter.inputModalities) {
+        filter.inputModalities.forEach((modality, modalityIndex) => {
+          if (!Object.values(filters.ModalityType).includes(modality)) {
+            throw new ValidationError(`${prefix}: inputModalities[${modalityIndex}] must be a valid ModalityType value`, this);
+          }
+        });
+      }
+
+      // Validate output modalities
+      if (filter.outputModalities) {
+        filter.outputModalities.forEach((modality, modalityIndex) => {
+          if (!Object.values(filters.ModalityType).includes(modality)) {
+            throw new ValidationError(`${prefix}: outputModalities[${modalityIndex}] must be a valid ModalityType value`, this);
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Validates PII filters array.
+   * @param piiFilters The PII filters to validate.
+   */
+  private validatePiiFilters(piiFilters?: filters.PIIFilter[]): void {
+    if (!piiFilters) return;
+
+    piiFilters.forEach((filter, index) => {
+      const prefix = `Invalid PIIFilter at index ${index}`;
+
+      // Validate that the filter has required properties
+      if (!filter.type) {
+        throw new ValidationError(`${prefix}: type is required`, this);
+      }
+
+      if (!filter.action) {
+        throw new ValidationError(`${prefix}: action is required`, this);
+      }
+
+      // Validate action values
+      if (!Token.isUnresolved(filter.action) && !Object.values(filters.GuardrailAction).includes(filter.action)) {
+        throw new ValidationError(`${prefix}: action must be a valid GuardrailAction value`, this);
+      }
+
+      if (filter.inputAction && !Token.isUnresolved(filter.inputAction) && !Object.values(filters.GuardrailAction).includes(filter.inputAction)) {
+        throw new ValidationError(`${prefix}: inputAction must be a valid GuardrailAction value`, this);
+      }
+
+      if (filter.outputAction && !Token.isUnresolved(filter.outputAction) && !Object.values(filters.GuardrailAction).includes(filter.outputAction)) {
+        throw new ValidationError(`${prefix}: outputAction must be a valid GuardrailAction value`, this);
+      }
+    });
+  }
+
+  /**
+   * Validates regex filters array.
+   * @param regexFilters The regex filters to validate.
+   */
+  private validateRegexFilters(regexFilters?: filters.RegexFilter[]): void {
+    if (!regexFilters) return;
+
+    regexFilters.forEach((filter, index) => {
+      this.validateRegexFilter(filter, index);
+    });
+  }
+
+  /**
+   * Validates denied topics array.
+   * @param deniedTopics The denied topics to validate.
+   */
+  private validateDeniedTopics(deniedTopics?: filters.Topic[]): void {
+    if (!deniedTopics) return;
+
+    deniedTopics.forEach((topic, index) => {
+      const prefix = `Invalid Topic at index ${index}`;
+
+      // Validate that the topic has required properties
+      if (!topic.name) {
+        throw new ValidationError(`${prefix}: name is required`, this);
+      }
+
+      if (!topic.definition) {
+        throw new ValidationError(`${prefix}: definition is required`, this);
+      }
+
+      // Validate name length
+      if (!Token.isUnresolved(topic.name) && topic.name.length > 100) {
+        throw new ValidationError(`${prefix}: name must be 100 characters or less`, this);
+      }
+
+      // Validate definition length
+      if (!Token.isUnresolved(topic.definition) && topic.definition.length > 1000) {
+        throw new ValidationError(`${prefix}: definition must be 1000 characters or less`, this);
+      }
+
+      // Validate examples if provided
+      if (topic.examples) {
+        if (topic.examples.length > 100) {
+          throw new ValidationError(`${prefix}: examples array cannot contain more than 100 examples`, this);
+        }
+
+        topic.examples.forEach((example, exampleIndex) => {
+          if (!Token.isUnresolved(example) && example.length > 100) {
+            throw new ValidationError(`${prefix}: examples[${exampleIndex}] must be 100 characters or less`, this);
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Validates contextual grounding filters array.
+   * @param contextualGroundingFilters The contextual grounding filters to validate.
+   */
+  private validateContextualGroundingFilters(contextualGroundingFilters?: filters.ContextualGroundingFilter[]): void {
+    if (!contextualGroundingFilters) return;
+
+    contextualGroundingFilters.forEach((filter, index) => {
+      const prefix = `Invalid ContextualGroundingFilter at index ${index}`;
+
+      // Validate that the filter has required properties
+      if (!filter.type) {
+        throw new ValidationError(`${prefix}: type is required`, this);
+      }
+
+      if (filter.threshold === undefined) {
+        throw new ValidationError(`${prefix}: threshold is required`, this);
+      }
+
+      // Validate type
+      if (!Object.values(filters.ContextualGroundingFilterType).includes(filter.type)) {
+        throw new ValidationError(`${prefix}: type must be a valid ContextualGroundingFilterType value`, this);
+      }
+
+      // Validate threshold range
+      if (!Token.isUnresolved(filter.threshold)) {
+        if (filter.threshold < 0 || filter.threshold > 0.99) {
+          throw new ValidationError(`${prefix}: threshold must be between 0 and 0.99`, this);
+        }
+      }
+
+      // Validate action if provided
+      if (filter.action && !Token.isUnresolved(filter.action) && !Object.values(filters.GuardrailAction).includes(filter.action)) {
+        throw new ValidationError(`${prefix}: action must be a valid GuardrailAction value`, this);
+      }
+    });
+  }
+
+  /**
+   * Validates word filters array.
+   * @param wordFilters The word filters to validate.
+   */
+  private validateWordFilters(wordFilters?: filters.WordFilter[]): void {
+    if (!wordFilters) return;
+
+    wordFilters.forEach((filter, index) => {
+      const prefix = `Invalid WordFilter at index ${index}`;
+
+      // Validate that the filter has required properties
+      if (!filter.text) {
+        throw new ValidationError(`${prefix}: text is required`, this);
+      }
+
+      // Validate text length
+      if (!Token.isUnresolved(filter.text) && filter.text.length > 100) {
+        throw new ValidationError(`${prefix}: text must be 100 characters or less`, this);
+      }
+
+      // Validate action values
+      if (filter.inputAction && !Token.isUnresolved(filter.inputAction) && !Object.values(filters.GuardrailAction).includes(filter.inputAction)) {
+        throw new ValidationError(`${prefix}: inputAction must be a valid GuardrailAction value`, this);
+      }
+
+      if (filter.outputAction && !Token.isUnresolved(filter.outputAction) && !Object.values(filters.GuardrailAction).includes(filter.outputAction)) {
+        throw new ValidationError(`${prefix}: outputAction must be a valid GuardrailAction value`, this);
+      }
+    });
+  }
+
+  /**
+   * Validates managed word list filters array.
+   * @param managedWordListFilters The managed word list filters to validate.
+   */
+  private validateManagedWordListFilters(managedWordListFilters?: filters.ManagedWordFilter[]): void {
+    if (!managedWordListFilters) return;
+
+    managedWordListFilters.forEach((filter, index) => {
+      const prefix = `Invalid ManagedWordFilter at index ${index}`;
+
+      // Validate type if provided
+      if (filter.type && !Object.values(filters.ManagedWordFilterType).includes(filter.type)) {
+        throw new ValidationError(`${prefix}: type must be a valid ManagedWordFilterType value`, this);
+      }
+
+      // Validate action values
+      if (filter.inputAction && !Token.isUnresolved(filter.inputAction) && !Object.values(filters.GuardrailAction).includes(filter.inputAction)) {
+        throw new ValidationError(`${prefix}: inputAction must be a valid GuardrailAction value`, this);
+      }
+
+      if (filter.outputAction && !Token.isUnresolved(filter.outputAction) && !Object.values(filters.GuardrailAction).includes(filter.outputAction)) {
+        throw new ValidationError(`${prefix}: outputAction must be a valid GuardrailAction value`, this);
+      }
+    });
   }
 }
 

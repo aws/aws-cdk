@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a8e00fc15de9e7a9466954a820e137374cbfd8ccd7117268815cf7776c109e92": {
       "displayName": "aws-cdk-bedrock-agent-guardrail-1 Template",
