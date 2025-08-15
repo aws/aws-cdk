@@ -135,6 +135,14 @@
   },
   "MyDeadLetterQueueD997968A": {
    "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "KmsMasterKeyId": {
+     "Fn::GetAtt": [
+      "MyKey6AB29FA6",
+      "Arn"
+     ]
+    }
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -166,6 +174,23 @@
         ]
        },
        "Sid": "AllowEventRuleawscdksqseventtargetMyRule0027A8F4"
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyKey6AB29FA6",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowEncryptedEventRuleawscdksqseventtargetMyRule0027A8F4"
       }
      ],
      "Version": "2012-10-17"

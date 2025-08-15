@@ -1,15 +1,16 @@
 {
-  "version": "21.0.0",
+  "version": "48.0.0",
   "files": {
-    "2dc225f2fbae904e5a29adf2e7d3d70b01c10760a4fb779d1a447bda79b33e1d": {
+    "d1c275b0f0483c75a0e5ba85c606b5706ff27e17d1246b91a80ca58103c4aed6": {
+      "displayName": "aws-cdk-sqs-event-target Template",
       "source": {
         "path": "aws-cdk-sqs-event-target.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-0838d139": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2dc225f2fbae904e5a29adf2e7d3d70b01c10760a4fb779d1a447bda79b33e1d.json",
+          "objectKey": "d1c275b0f0483c75a0e5ba85c606b5706ff27e17d1246b91a80ca58103c4aed6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
