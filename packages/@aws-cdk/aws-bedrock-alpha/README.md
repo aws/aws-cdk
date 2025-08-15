@@ -1002,7 +1002,7 @@ const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
 // Add regex filter with input/output actions
 guardrail.addRegexFilter({
   name: 'TestRegexFilter',
-  pattern: '/^[A-Z]{2}d{6}$/',
+  pattern: '^[A-Z]{2}\\d{6}$',
   action: bedrock.GuardrailAction.ANONYMIZE,
   // below props are optional
   description: 'This is a test regex filter',
