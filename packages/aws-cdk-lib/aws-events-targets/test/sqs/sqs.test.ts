@@ -311,6 +311,48 @@ test('dead letter queue is configured correctly', () => {
   rule.addTarget(new targets.SqsQueue(queue, {
     deadLetterQueue,
   }));
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyQueueE6CA6235',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+        DeadLetterConfig: {
+          Arn: {
+            'Fn::GetAtt': ['MyDeadLetterQueueD997968A', 'Arn'],
+          },
+        },
+      },
+    ],
+  });
+});
+
+test('encrypted dead letter queue is configured correctly', () => {
+  const stack = new Stack();
+  const kmsKey = new kms.Key(stack, 'MyKey');
+  const queue = new sqs.Queue(stack, 'MyQueue', {
+    fifo: true,
+    encryption: sqs.QueueEncryption.KMS_MANAGED,
+    encryptionMasterKey: kmsKey,
+  });
+  const deadLetterQueue = new sqs.Queue(stack, 'MyDeadLetterQueue', {
+    encryptionMasterKey: kmsKey,
+    encryption: sqs.QueueEncryption.KMS_MANAGED,
+  });
+  const rule = new events.Rule(stack, 'MyRule', {
+    schedule: events.Schedule.rate(Duration.hours(1)),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.SqsQueue(queue, {
+    deadLetterQueue,
+  }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 hour)',
@@ -326,14 +368,62 @@ test('dead letter queue is configured correctly', () => {
         Id: 'Target0',
         DeadLetterConfig: {
           Arn: {
-            'Fn::GetAtt': [
-              'MyDeadLetterQueueD997968A',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyDeadLetterQueueD997968A', 'Arn'],
           },
         },
       },
     ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+    Queues: [
+      {
+        Ref: Match.stringLikeRegexp('MyDeadLetterQueue.*'),
+      },
+    ],
+    PolicyDocument: {
+      Statement: [
+        {
+          Effect: 'Allow',
+          Principal: {
+            Service: 'events.amazonaws.com',
+          },
+          Action: 'sqs:SendMessage',
+          Resource: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('MyDeadLetterQueue.*'),
+              'Arn',
+            ],
+          },
+          Condition: {
+            ArnEquals: {
+              'aws:SourceArn': {
+                'Fn::GetAtt': [
+                  Match.stringLikeRegexp('MyRule.*'),
+                  'Arn',
+                ],
+              },
+            },
+          },
+        },
+        {
+          Effect: 'Allow',
+          Principal: {
+            Service: 'events.amazonaws.com',
+          },
+          Action: [
+            'kms:Decrypt',
+            'kms:GenerateDataKey',
+          ],
+          Resource: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('MyKey.*'),
+              'Arn',
+            ],
+          },
+        },
+      ],
+    },
   });
 });
 
