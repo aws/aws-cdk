@@ -681,6 +681,8 @@ const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
   guardrailName: 'my-BedrockGuardrails',
   description: 'Legal ethical guardrails.',
 });
+
+// add at least one policy for the guardrail
 ```
 
 ### Guardrail Properties
@@ -811,6 +813,8 @@ const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
 ```
 
 > Note: Cross-region configuration is required when using the STANDARD tier for content and topic filters. It helps maintain guardrail performance and reliability when demand increases by automatically routing inference requests to appropriate regions.
+
+You will need to provide the necessary permissions for cross region: https://docs.aws.amazon.com/bedrock/latest/userguide/guardrail-profiles-permissions.html .
 
 #### Denied Topics
 
@@ -1002,7 +1006,7 @@ const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
 // Add regex filter with input/output actions
 guardrail.addRegexFilter({
   name: 'TestRegexFilter',
-  pattern: '^[A-Z]{2}\\d{6}$',
+  pattern: 'test-pattern',
   action: bedrock.GuardrailAction.ANONYMIZE,
   // below props are optional
   description: 'This is a test regex filter',
