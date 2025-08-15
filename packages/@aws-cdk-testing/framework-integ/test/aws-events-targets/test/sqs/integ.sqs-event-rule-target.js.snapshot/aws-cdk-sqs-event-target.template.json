@@ -1,8 +1,59 @@
 {
  "Resources": {
+  "EventBusRole24766622": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role for accessing KMS key for SQS encryption",
+    "RoleName": "EventBusAccessRole"
+   }
+  },
+  "EventBusRoleDefaultPolicy6A159DF5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyKey6AB29FA6",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EventBusRoleDefaultPolicy6A159DF5",
+    "Roles": [
+     {
+      "Ref": "EventBusRole24766622"
+     }
+    ]
+   }
+  },
   "MyKey6AB29FA6": {
    "Type": "AWS::KMS::Key",
    "Properties": {
+    "Description": "KMS key for SQS queue encryption",
     "KeyPolicy": {
      "Statement": [
       {
