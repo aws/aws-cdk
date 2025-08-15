@@ -23,7 +23,6 @@ import {
   Arn,
   ValidationError,
   UnscopedValidationError,
-  Tag,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -815,24 +814,7 @@ export class Repository extends RepositoryBase {
     addConstructMetadata(this, props);
 
     Repository.validateRepositoryName(this.physicalName);
-
-    if (props.imageTagMutabilityExclusionFilters !== undefined) {
-      if (props.imageTagMutabilityExclusionFilters.length === 0) {
-        throw new ValidationError('At least one exclusion filter must be specified when imageTagMutabilityExclusionFilters is provided', this);
-      }
-      if (props.imageTagMutabilityExclusionFilters.length > 5) {
-        throw new ValidationError(`Cannot specify more than 5 exclusion filters, got ${props.imageTagMutabilityExclusionFilters.length})`, this);
-      }
-      if (
-        !props.imageTagMutability ||
-        [
-          TagMutability.IMMUTABLE_WITH_EXCLUSION,
-          TagMutability.MUTABLE_WITH_EXCLUSION,
-        ].includes(props.imageTagMutability)
-      ) {
-        throw new ValidationError(`imageTagMutabilityExclusionFilters can only be used with imageTagMutability set to 'IMMUTABLE_WITH_EXCLUSION' or 'MUTABLE_WITH_EXCLUSION', got: ${props.imageTagMutability}`, this);
-      }
-    }
+    this.validateTagMutability(props.imageTagMutability, props.imageTagMutabilityExclusionFilters);
 
     const resource = new CfnRepository(this, 'Resource', {
       repositoryName: this.physicalName,
@@ -936,6 +918,43 @@ export class Repository extends RepositoryBase {
     }
 
     this.lifecycleRules.push({ ...rule });
+  }
+
+  private validateTagMutability(tagMutability?: TagMutability, exclusionFilters?: ImageTagMutabilityExclusionFilter[]): void {
+    const EXCLUSION_REQUIRED_TAG_MUTABILITY = [
+      TagMutability.IMMUTABLE_WITH_EXCLUSION,
+      TagMutability.MUTABLE_WITH_EXCLUSION,
+    ];
+
+    if (exclusionFilters !== undefined) {
+      const filterCount = exclusionFilters.length;
+
+      if (filterCount === 0) {
+        throw new ValidationError('At least one exclusion filter must be specified when imageTagMutabilityExclusionFilters is provided.', this);
+      }
+      if (filterCount > 5) {
+        throw new ValidationError(`Cannot specify more than 5 exclusion filters, got ${filterCount}.`, this);
+      }
+    }
+
+    if (tagMutability) {
+      const requiresExclusion = EXCLUSION_REQUIRED_TAG_MUTABILITY.includes(tagMutability);
+      const hasExclusionFilters = !!exclusionFilters;
+
+      if (hasExclusionFilters && !requiresExclusion) {
+        throw new ValidationError(
+          `imageTagMutability must be 'IMMUTABLE_WITH_EXCLUSION' or 'MUTABLE_WITH_EXCLUSION' when exclusion filters are provided, got: ${tagMutability}.`,
+          this,
+        );
+      }
+
+      if (requiresExclusion && !hasExclusionFilters) {
+        throw new ValidationError(
+          `imageTagMutabilityExclusionFilters must be specified when imageTagMutability is '${tagMutability}'.`,
+          this,
+        );
+      }
+    }
   }
 
   /**
