@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "codebuild-s3-cache-integ/DefaultTest": {
+      "stacks": [
+        "codebuild-s3-cache-stack"
+      ],
+      "assertionStack": "codebuild-s3-cache-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "codebuilds3cacheintegDefaultTestDeployAssert27F68086"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

@@ -11,13 +11,14 @@ class LogsInsightsQueryDefinitionIntegStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    // Test query creation with single parse and filter statements
+    // Test query creation with single parse, filter, and sort statements
     new QueryDefinition(this, 'QueryDefinition', {
       queryDefinitionName: 'QueryDefinition',
       queryString: new QueryString({
         fields: ['@timestamp', '@message'],
         parse: '@message "[*] *" as loggingType, loggingMessage',
         filter: 'loggingType = "ERROR"',
+        stats: 'count(loggingMessage) as loggingErrors',
         sort: '@timestamp desc',
         limit: 20,
         display: 'loggingMessage',
@@ -25,7 +26,7 @@ class LogsInsightsQueryDefinitionIntegStack extends Stack {
       logGroups: [logGroup],
     });
 
-    // Test query creation with multiple parse and filter statements
+    // Test query creation with multiple parse, filter, and stats statements
     new QueryDefinition(this, 'QueryDefinitionWithMultipleStatements', {
       queryDefinitionName: 'QueryDefinitionWithMultipleStatements',
       queryString: new QueryString({
@@ -37,6 +38,10 @@ class LogsInsightsQueryDefinitionIntegStack extends Stack {
         filterStatements: [
           'loggingType = "ERROR"',
           'loggingMessage = "A very strange error occurred!"',
+        ],
+        statsStatements: [
+          'count(loggingMessage) as loggingErrors',
+          'count(differentLoggingMessage) as differentLoggingErrors',
         ],
         sort: '@timestamp desc',
         limit: 20,

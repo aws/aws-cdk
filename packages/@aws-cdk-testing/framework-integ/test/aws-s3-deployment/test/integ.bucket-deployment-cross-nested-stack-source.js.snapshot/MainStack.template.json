@@ -1,0 +1,124 @@
+{
+ "Resources": {
+  "ResourceNestedStackNestedStackResourceNestedStackNestedStackResourceCDDDB2BF": {
+   "Type": "AWS::CloudFormation::Stack",
+   "Properties": {
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/",
+       {
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+       },
+       "/282f7ca89f4d69565f870176145606e98aae219403e3316310fa6dcbce6faf56.json"
+      ]
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DeploymentNestedStackNestedStackDeploymentNestedStackNestedStackResource3980C4F4": {
+   "Type": "AWS::CloudFormation::Stack",
+   "Properties": {
+    "Parameters": {
+     "referencetoMainStackResourceNestedStackNestedStackResourceNestedStackNestedStackResource185D699DOutputsMainStackResourceNestedStackUserPoolEB3BCBB9Ref": {
+      "Fn::GetAtt": [
+       "ResourceNestedStackNestedStackResourceNestedStackNestedStackResourceCDDDB2BF",
+       "Outputs.MainStackResourceNestedStackUserPoolEB3BCBB9Ref"
+      ]
+     }
+    },
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/",
+       {
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+       },
+       "/7aee26514f90489fc20c3523dbd8941d1e6e6d068bdc21f3de8173683c304ca2.json"
+      ]
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttResourceNestedStackNestedStackResourceNestedStackNestedStackResourceCDDDB2BFOutputsMainStackResourceNestedStackUserPoolEB3BCBB9Ref75ED0C95": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ResourceNestedStackNestedStackResourceNestedStackNestedStackResourceCDDDB2BF",
+     "Outputs.MainStackResourceNestedStackUserPoolEB3BCBB9Ref"
+    ]
+   },
+   "Export": {
+    "Name": "MainStack:ExportsOutputFnGetAttResourceNestedStackNestedStackResourceNestedStackNestedStackResourceCDDDB2BFOutputsMainStackResourceNestedStackUserPoolEB3BCBB9Ref75ED0C95"
+   }
+  },
+  "ExportsOutputFnGetAttDeploymentNestedStackNestedStackDeploymentNestedStackNestedStackResource3980C4F4OutputsMainStackDeploymentNestedStackBucket171013D4Ref5463A51D": {
+   "Value": {
+    "Fn::GetAtt": [
+     "DeploymentNestedStackNestedStackDeploymentNestedStackNestedStackResource3980C4F4",
+     "Outputs.MainStackDeploymentNestedStackBucket171013D4Ref"
+    ]
+   },
+   "Export": {
+    "Name": "MainStack:ExportsOutputFnGetAttDeploymentNestedStackNestedStackDeploymentNestedStackNestedStackResource3980C4F4OutputsMainStackDeploymentNestedStackBucket171013D4Ref5463A51D"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

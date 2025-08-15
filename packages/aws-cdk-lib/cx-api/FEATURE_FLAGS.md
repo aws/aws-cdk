@@ -105,6 +105,8 @@ Flags come in three types:
 | [@aws-cdk/aws-lambda:useCdkManagedLogGroup](#aws-cdkaws-lambdausecdkmanagedloggroup) | When enabled, CDK creates and manages loggroup for the lambda function | 2.200.0 | new default |
 | [@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal](#aws-cdkaws-kmsapplyimportedaliaspermissionstoprincipal) | Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition | 2.202.0 | fix |
 | [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancers will be created with a security group by default. | V2NEXT | new default |
+| [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | 2.205.0 | new default |
+| [@aws-cdk/aws-signer:signingProfileNamePassedToCfn](#aws-cdkaws-signersigningprofilenamepassedtocfn) | Pass signingProfileName to CfnSigningProfile | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -116,6 +118,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
 ```json
 {
   "context": {
+    "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": true,
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,
     "@aws-cdk/core:target-partitions": [
@@ -168,6 +171,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
     "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
+    "@aws-cdk/core:explicitStackTags": true,
     "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": false,
     "@aws-cdk/aws-ecs:disableEcsImdsBlocking": true,
     "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true,
@@ -2208,6 +2212,56 @@ When disabled, grant calls on imported aliases will be dropped (no-op) to mainta
 | 2.202.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Remove calls to the grant* methods on the aliases referenced by name
+
+
+### @aws-cdk/core:explicitStackTags
+
+*When enabled, stack tags need to be assigned explicitly on a Stack.*
+
+Flag type: New default behavior
+
+Without this feature flag enabled, if tags are added to a Stack using
+`Tags.of(scope).add(...)`, they will be added to both the stack and all resources
+in the stack template.
+
+That leads to the tags being applied twice: once in the template, and once
+again automatically by CloudFormation, which will apply all stack tags to
+all resources in the stack. This leads to loss of control, as the
+`excludeResourceTypes` option of the Tags API will not have any effect.
+
+With this flag enabled, tags added to a stack using `Tags.of(...)` are ignored,
+and Stack tags must be configured explicitly on the Stack object.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.205.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Configure stack-level tags using `new Stack(..., { tags: { ... } })`.
+
+
+### @aws-cdk/aws-signer:signingProfileNamePassedToCfn
+
+*Pass signingProfileName to CfnSigningProfile*
+
+Flag type: Backwards incompatible bugfix
+
+When enabled, the `signingProfileName` property is passed to the L1 `CfnSigningProfile` construct,
+which ensures that the AWS Signer profile is created with the specified name.
+
+When disabled, the `signingProfileName` is not passed to CloudFormation, maintaining backward
+compatibility with existing deployments where CloudFormation auto-generated profile names.
+
+This feature flag is needed because enabling it can cause existing signing profiles to be
+replaced during deployment if a `signingProfileName` was specified but not previously used
+in the CloudFormation template.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-cross-stack-source/DefaultTest": {
+      "stacks": [
+        "stack1"
+      ],
+      "assertionStack": "integ-cross-stack-source/DefaultTest/DeployAssert",
+      "assertionStackName": "integcrossstacksourceDefaultTestDeployAssert5F76A926"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}
