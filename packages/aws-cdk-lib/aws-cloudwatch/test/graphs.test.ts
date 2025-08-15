@@ -827,7 +827,7 @@ describe('Graphs', () => {
       alarm: regularAlarm,
       title: 'Regular Alarm',
       region: 'eu-west-1',
-      accountId: '987654321098',
+      accountId: '123456789012',
       width: 12,
       height: 8,
       leftYAxis: {
@@ -842,7 +842,7 @@ describe('Graphs', () => {
       alarm: compositeAlarm,
       title: 'Composite Alarm',
       region: 'eu-west-1',
-      accountId: '987654321098',
+      accountId: '123456789012',
       width: 12,
       height: 8,
       leftYAxis: {
