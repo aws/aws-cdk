@@ -442,7 +442,7 @@ describe('CDK-Created-Guardrail', () => {
           pattern: '/^[A-Z]{2}d{6}$/',
           action: bedrock.GuardrailAction.ANONYMIZE,
         });
-      }).toThrow(/Invalid RegexFilter: The field name is 0 characters long but must be at least 1 characters/);
+      }).toThrow(/Invalid RegexFilter at index 0: The field name is 0 characters long but must be at least 1 characters/);
     });
 
     test('accepts valid RegexFilter', () => {

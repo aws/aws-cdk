@@ -621,6 +621,7 @@ export class Guardrail extends GuardrailBase {
    * @param filter The content filter to add.
    */
   public addContentFilter(filter: filters.ContentFilter): void {
+    this.validateContentFilters([filter]);
     this.contentFilters.push(filter);
   }
 
@@ -629,6 +630,7 @@ export class Guardrail extends GuardrailBase {
    * @param filter The PII filter to add.
    */
   public addPIIFilter(filter: filters.PIIFilter): void {
+    this.validatePiiFilters([filter]);
     this.piiFilters.push(filter);
   }
 
@@ -637,7 +639,7 @@ export class Guardrail extends GuardrailBase {
    * @param filter The regex filter to add.
    */
   public addRegexFilter(filter: filters.RegexFilter): void {
-    this.validateRegexFilter(filter);
+    this.validateRegexFilters([filter]);
     this.regexFilters.push(filter);
   }
 
@@ -646,6 +648,7 @@ export class Guardrail extends GuardrailBase {
    * @param filter The denied topic filter to add.
    */
   public addDeniedTopicFilter(filter: filters.Topic): void {
+    this.validateDeniedTopics([filter]);
     this.deniedTopics.push(filter);
   }
 
@@ -654,6 +657,7 @@ export class Guardrail extends GuardrailBase {
    * @param filter The contextual grounding filter to add.
    */
   public addContextualGroundingFilter(filter: filters.ContextualGroundingFilter): void {
+    this.validateContextualGroundingFilters([filter]);
     this.contextualGroundingFilters.push(filter);
   }
 
@@ -662,6 +666,7 @@ export class Guardrail extends GuardrailBase {
    * @param filter The word filter to add.
    */
   public addWordFilter(filter: filters.WordFilter): void {
+    this.validateWordFilters([filter]);
     this.wordFilters.push(filter);
   }
 
@@ -684,6 +689,7 @@ export class Guardrail extends GuardrailBase {
    * @param filter The managed word list filter to add.
    */
   public addManagedWordListFilter(filter: filters.ManagedWordFilter): void {
+    this.validateManagedWordListFilters([filter]);
     this.managedWordListFilters.push(filter);
   }
 
