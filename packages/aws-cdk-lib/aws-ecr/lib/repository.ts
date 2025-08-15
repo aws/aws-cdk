@@ -1114,8 +1114,16 @@ export enum TagMutability {
    */
   IMMUTABLE = 'IMMUTABLE',
 
-  // MUTABLE_WITH_EXCLUSION = 'MUTABLE_WITH_EXCLUSION',
-  // IMMUTABLE_WITH_EXCLUSION = 'IMMUTABLE_WITH_EXCLUSION',
+  /**
+   * allow image tags to be overwritten, except for those that match the exclusion filters.
+   */
+  MUTABLE_WITH_EXCLUSION = 'MUTABLE_WITH_EXCLUSION',
+
+  /**
+   * all image tags within the repository will be immutable which will prevent them from being overwritten,
+   * except for those that match the exclusion filters.
+   */
+  IMMUTABLE_WITH_EXCLUSION = 'IMMUTABLE_WITH_EXCLUSION',
 }
 
 /**
