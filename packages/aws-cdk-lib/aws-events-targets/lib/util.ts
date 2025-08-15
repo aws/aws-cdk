@@ -40,6 +40,15 @@ export interface TargetBaseProps {
    * @default 185
    */
   readonly retryAttempts?: number;
+
+  /**
+   * The IAM role to be used for this target when the rule is
+   * triggered. If one rule triggers multiple targets, you can
+   * use a different IAM role for each target.
+   *
+   * @default - no role defined
+   */
+  readonly eventRole?: iam.IRole;
 }
 
 /**
@@ -47,9 +56,10 @@ export interface TargetBaseProps {
  * @internal
  */
 export function bindBaseTargetConfig(props: TargetBaseProps) {
-  let { deadLetterQueue, retryAttempts, maxEventAge } = props;
+  let { deadLetterQueue, retryAttempts, maxEventAge, eventRole } = props;
 
   return {
+    role: eventRole ?? undefined,
     deadLetterConfig: deadLetterQueue ? { arn: deadLetterQueue?.queueArn } : undefined,
     retryPolicy: (retryAttempts !== undefined && retryAttempts >= 0) || maxEventAge
       ? {
