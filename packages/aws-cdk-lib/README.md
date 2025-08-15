@@ -48,7 +48,6 @@ For CDK apps, declare them under the `dependencies` section. Use a caret so you 
 }
 ```
 
-
 ### Use in your code
 
 #### Classic import
@@ -155,6 +154,86 @@ new MyStack(app, 'MyStack', {
 For more information on bootstrapping accounts and customizing synthesis,
 see [Bootstrapping in the CDK Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html).
 
+### STS Role Options
+
+You can configure STS options that instruct the CDK CLI on which configuration should it use when assuming
+the various roles that are involved in a deployment operation.
+
+Refer to [the bootstrapping guide](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html#bootstrapping-env-roles) for further context.
+
+These options are available via the `DefaultStackSynthesizer` properties:
+
+```ts
+class MyStack extends Stack {
+  constructor(scope: Construct, id: string, props: StackProps) {
+    super(scope, id, {
+      ...props,
+      synthesizer: new DefaultStackSynthesizer({
+        deployRoleExternalId: '',
+        deployRoleAdditionalOptions: {
+          // https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+        },
+        fileAssetPublishingExternalId: '',
+        fileAssetPublishingRoleAdditionalOptions: {
+          // https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+        },
+        imageAssetPublishingExternalId: '',
+        imageAssetPublishingRoleAdditionalOptions: {
+          // https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+        },
+        lookupRoleExternalId: '',
+        lookupRoleAdditionalOptions: {
+          // https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+        },
+      })
+    });
+  }
+}
+```
+
+> Note that the `*additionalOptions` property does not allow passing `ExternalId` or `RoleArn`, as these options
+> have dedicated properties that configure them.
+
+#### Session Tags
+
+STS session tags are used to implement [Attribute-Based Access Control](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_attribute-based-access-control.html) (ABAC).
+
+See [IAM tutorial: Define permissions to access AWS resources based on tags](https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_attribute-based-access-control.html).
+
+You can pass session tags for each [role created during bootstrap](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html#bootstrapping-env-roles) via the `*additionalOptions` property:
+
+```ts
+class MyStack extends Stack {
+  constructor(parent: Construct, id: string, props: StackProps) {
+    super(parent, id, {
+      ...props,
+      synthesizer: new DefaultStackSynthesizer({
+        deployRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
+        },
+        fileAssetPublishingRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
+        },
+        imageAssetPublishingRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
+        },
+        lookupRoleAdditionalOptions: {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }]
+        },
+      })
+    });
+  }
+}
+```
+
+This will cause the CDK CLI to include session tags when assuming each of these roles during deployment.
+Note that the trust policy of the role must contain permissions for the `sts:TagSession` action.
+
+Refer to the [IAM user guide on session tags](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required).
+
+- If you are using a custom bootstrap template, make sure the template includes these permissions.
+- If you are using the default bootstrap template from a CDK version lower than XXXX, you will need to rebootstrap your enviroment (once).
+
 ## Nested Stacks
 
 [Nested stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html) are stacks created as part of other stacks. You create a nested stack within another stack by using the `NestedStack` construct.
@@ -226,7 +305,7 @@ other.
 > **This feature is currently experimental**
 
 You can enable the Stack property `crossRegionReferences`
-in order to access resources in a different stack _and_ region. With this feature flag
+in order to access resources in a different stack *and* region. With this feature flag
 enabled it is possible to do something like creating a CloudFront distribution in `us-east-2` and
 an ACM certificate in `us-east-1`.
 
@@ -257,7 +336,7 @@ new cloudfront.Distribution(stack2, 'Distribution', {
 });
 ```
 
-When the AWS CDK determines that the resource is in a different stack _and_ is in a different
+When the AWS CDK determines that the resource is in a different stack *and* is in a different
 region, it will "export" the value by creating a custom resource in the producing stack which
 creates SSM Parameters in the consuming region for each exported value. The parameters will be
 created with the name '/cdk/exports/${consumingStackName}/${export-name}'.
@@ -522,15 +601,20 @@ new CustomResource(this, 'MyMagicalResource', {
   resourceType: 'Custom::MyCustomResource', // must start with 'Custom::'
 
   // the resource properties
+  // properties like serviceToken or serviceTimeout are ported into properties automatically
+  // try not to use key names similar to these or there will be a risk of overwriting those values
   properties: {
     Property1: 'foo',
-    Property2: 'bar'
+    Property2: 'bar',
   },
 
   // the ARN of the provider (SNS/Lambda) which handles
   // CREATE, UPDATE or DELETE events for this resource type
   // see next section for details
-  serviceToken: 'ARN'
+  serviceToken: 'ARN',
+
+  // the maximum time, in seconds, that can elapse before a custom resource operation times out.
+  serviceTimeout: Duration.seconds(60),
 });
 ```
 
@@ -560,7 +644,7 @@ Legend:
 - **Language**: which programming languages can be used to implement handlers.
 - **Footprint**: how many resources are used by the provider framework itself.
 
-**A NOTE ABOUT SINGLETONS**
+#### A note about singletons
 
 When defining resources for a custom resource provider, you will likely want to
 define them as a *stack singleton* so that only a single instance of the
@@ -844,6 +928,17 @@ new CfnOutput(this, 'OutputName', {
 });
 ```
 
+You can also use the `exportValue` method to export values as stack outputs:
+
+```ts
+declare const stack: Stack;
+
+stack.exportValue(myBucket.bucketName, {
+  name: 'TheAwesomeBucket',
+  description: 'The name of an S3 bucket',
+});
+```
+
 [cfn-stack-output]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html
 
 ### Parameters
@@ -1105,7 +1200,7 @@ regionTable.findInMap(Aws.REGION, 'regionName');
 ```
 
 An optional default value can also be passed to `findInMap`. If either key is not found in the map and the mapping is lazy, `findInMap` will return the default value and not render the mapping.
-If the mapping is not lazy or either key is an unresolved token, the call to `findInMap` will return a token that resolves to 
+If the mapping is not lazy or either key is an unresolved token, the call to `findInMap` will return a token that resolves to
 `{ "Fn::FindInMap": [ "MapName", "TopLevelKey", "SecondLevelKey", { "DefaultValue": "DefaultValue" } ] }`, and the mapping will be rendered.
 Note that the `AWS::LanguageExtentions` transform is added to enable the default value functionality.
 
@@ -1145,6 +1240,75 @@ new CfnDynamicReference(
 ```
 
 [cfn-dynamic-references]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html
+
+## RemovalPolicies
+
+The `RemovalPolicies` class provides a convenient way to manage removal policies for AWS CDK resources within a construct scope. It allows you to apply removal policies to multiple resources at once, with options to include or exclude specific resource types.
+
+```typescript
+declare const scope: Construct;
+declare const parent: Construct;
+declare const bucket: s3.CfnBucket;
+
+// Apply DESTROY policy to all resources in a scope
+RemovalPolicies.of(scope).destroy();
+
+// Apply RETAIN policy to all resources in a scope
+RemovalPolicies.of(scope).retain();
+
+// Apply SNAPSHOT policy to all resources in a scope
+RemovalPolicies.of(scope).snapshot();
+
+// Apply RETAIN_ON_UPDATE_OR_DELETE policy to all resources in a scope
+RemovalPolicies.of(scope).retainOnUpdateOrDelete();
+
+// Apply RETAIN policy only to specific resource types
+RemovalPolicies.of(parent).retain({
+  applyToResourceTypes: [
+    'AWS::DynamoDB::Table',
+    bucket.cfnResourceType, // 'AWS::S3::Bucket'
+    rds.CfnDBInstance.CFN_RESOURCE_TYPE_NAME, // 'AWS::RDS::DBInstance'
+  ],
+});
+
+// Apply SNAPSHOT policy excluding specific resource types
+RemovalPolicies.of(scope).snapshot({
+  excludeResourceTypes: ['AWS::Test::Resource'],
+});
+```
+
+### RemovalPolicies vs MissingRemovalPolicies
+
+CDK provides two different classes for managing removal policies:
+
+- RemovalPolicies: Always applies the specified removal policy, overriding any existing policies.
+- MissingRemovalPolicies: Applies the removal policy only to resources that don't already have a policy set.
+
+```typescript
+// Override any existing policies
+RemovalPolicies.of(scope).retain();
+
+// Only apply to resources without existing policies
+MissingRemovalPolicies.of(scope).retain();
+```
+
+### Aspect Priority
+
+Both RemovalPolicies and MissingRemovalPolicies are implemented as [Aspects](#aspects). You can control the order in which they're applied using the priority parameter:
+
+```typescript
+declare const stack: Stack;
+
+// Apply in a specific order based on priority
+RemovalPolicies.of(stack).retain({ priority: 100 });
+RemovalPolicies.of(stack).destroy({ priority: 200 }); // This will override the RETAIN policy
+```
+
+For RemovalPolicies, the policies are applied in order of aspect execution, with the last applied policy overriding previous ones. The priority only affects the order in which aspects are applied during synthesis.
+
+#### Note
+
+When using MissingRemovalPolicies with priority, a warning will be issued as this can lead to unexpected behavior. This is because MissingRemovalPolicies only applies to resources without existing policies, making priority less relevant.
 
 ### Template Options & Transform
 
@@ -1239,6 +1403,27 @@ const stack = new Stack(app, 'StackName', {
 });
 ```
 
+### Receiving CloudFormation Stack Events
+
+You can add one or more SNS Topic ARNs to any Stack:
+
+```ts
+const stack = new Stack(app, 'StackName', {
+  notificationArns: ['arn:aws:sns:us-east-1:123456789012:Topic'],
+});
+```
+
+Stack events will be sent to any SNS Topics in this list. These ARNs are added to those specified using
+the `--notification-arns` command line option.
+
+Note that in order to do delete notification ARNs entirely, you must pass an empty array ([]) instead of omitting it.
+If you omit the property, no action on existing ARNs will take place.
+
+> [!NOTE]
+> Adding the `notificationArns` property (or using the `--notification-arns` CLI options) will **override**
+> any existing ARNs configured on the stack. If you have an external system managing notification ARNs,
+> either migrate to use this mechanism, or avoid specfying notification ARNs with the CDK.
+
 ### CfnJson
 
 `CfnJson` allows you to postpone the resolution of a JSON blob from
@@ -1287,16 +1472,16 @@ Set the context key `@aws-cdk/core:stackResourceLimit` with the proper value, be
 
 ### Template Indentation
 
-The AWS CloudFormation templates generated by CDK include indentation by default. 
-Indentation makes the templates more readable, but also increases their size, 
+The AWS CloudFormation templates generated by CDK include indentation by default.
+Indentation makes the templates more readable, but also increases their size,
 and CloudFormation templates cannot exceed 1MB.
 
 It's possible to reduce the size of your templates by suppressing indentation.
 
 To do this for all templates, set the context key `@aws-cdk/core:suppressTemplateIndentation` to `true`.
 
-To do this for a specific stack, add a `suppressTemplateIndentation: true` property to the 
-stack's `StackProps` parameter. You can also set this property to `false` to override 
+To do this for a specific stack, add a `suppressTemplateIndentation: true` property to the
+stack's `StackProps` parameter. You can also set this property to `false` to override
 the context key setting.
 
 ## App Context
@@ -1341,7 +1526,7 @@ new App({
 cdk synth --context @aws-cdk/core:newStyleStackSynthesis=true
 ```
 
-_cdk.json_
+#### `cdk.json`
 
 ```json
 {
@@ -1351,7 +1536,7 @@ _cdk.json_
 }
 ```
 
-_cdk.context.json_
+#### `cdk.context.json`
 
 ```json
 {
@@ -1359,7 +1544,7 @@ _cdk.context.json_
 }
 ```
 
-_~/.cdk.json_
+#### `~/.cdk.json`
 
 ```json
 {
@@ -1398,7 +1583,7 @@ generated CloudFormation templates against your policies immediately after
 synthesis. If there are any violations, the synthesis will fail and a report
 will be printed to the console or to a file (see below).
 
-> **Note**
+> [!NOTE]
 > This feature is considered experimental, and both the plugin API and the
 > format of the validation report are subject to change in the future.
 
@@ -1436,7 +1621,7 @@ validation.
 > etc. It's your responsibility as the consumer of a plugin to verify that it is
 > secure to use.
 
-By default, the report will be printed in a human readable format. If you want a
+By default, the report will be printed in a human-readable format. If you want a
 report in JSON format, enable it using the `@aws-cdk/core:validationReportJson`
 context passing it directly to the application:
 
@@ -1449,6 +1634,18 @@ const app = new App({
 Alternatively, you can set this context key-value pair using the `cdk.json` or
 `cdk.context.json` files in your project directory (see
 [Runtime context](https://docs.aws.amazon.com/cdk/v2/guide/context.html)).
+
+It is also possible to enable both JSON and human-readable formats by setting
+`@aws-cdk/core:validationReportPrettyPrint` context key explicitly:
+
+```ts
+const app = new App({
+  context: {
+    '@aws-cdk/core:validationReportJson': true,
+    '@aws-cdk/core:validationReportPrettyPrint': true,
+  },
+});
+```
 
 If you choose the JSON format, the CDK will print the policy validation report
 to a file called `policy-validation-report.json` in the cloud assembly
@@ -1544,6 +1741,157 @@ warning by the `id`.
 
 ```ts
 Annotations.of(this).acknowledgeWarning('IAM:Group:MaxPoliciesExceeded', 'Account has quota increased to 20');
+```
+
+### Acknowledging Infos
+
+Informational messages can also be emitted and acknowledged. Use `addInfoV2()`
+to add an info message that can later be suppressed with `acknowledgeInfo()`.
+Unlike warnings, info messages are not affected by the `--strict` mode and will never cause synthesis to fail.
+
+```ts
+Annotations.of(this).addInfoV2('my-lib:Construct.someInfo', 'Some message explaining the info');
+Annotations.of(this).acknowledgeInfo('my-lib:Construct.someInfo', 'This info can be ignored');
+```
+
+## Aspects
+
+[Aspects](https://docs.aws.amazon.com/cdk/v2/guide/aspects.html) is a feature in CDK that allows you to apply operations or transformations across all
+constructs in a construct tree. Common use cases include tagging resources, enforcing encryption on S3 Buckets, or applying specific security or
+compliance rules to all resources in a stack.
+
+Conceptually, there are two types of Aspects:
+
+- **Read-only aspects** scan the construct tree but do not make changes to the tree. Common use cases of read-only aspects include performing validations
+(for example, enforcing that all S3 Buckets have versioning enabled) and logging (for example, collecting information about all deployed resources for
+audits or compliance).
+- **Mutating aspects** either (1.) add new nodes or (2.) mutate existing nodes of the tree in-place. One commonly used mutating Aspect is adding Tags to
+resources. An example of an Aspect that adds a node is one that automatically adds a security group to every EC2 instance in the construct tree if
+no default is specified.
+
+Here is a simple example of creating and applying an Aspect on a Stack to enable versioning on all S3 Buckets:
+
+```ts
+class EnableBucketVersioning implements IAspect {
+  visit(node: IConstruct) {
+    if (node instanceof s3.CfnBucket) {
+      node.versioningConfiguration = {
+        status: 'Enabled'
+      };
+    }
+  }
+}
+
+const app = new App();
+const stack = new MyStack(app, 'MyStack');
+
+// Apply the aspect to enable versioning on all S3 Buckets
+Aspects.of(stack).add(new EnableBucketVersioning());
+```
+
+### Aspect Stabilization
+
+The modern behavior is that Aspects automatically run on newly added nodes to the construct tree. This is controlled by the
+flag `@aws-cdk/core:aspectStabilization`, which is default for new projects (since version 2.172.0).
+
+The old behavior of Aspects (without stabilization) was that Aspect invocation runs once on the entire construct
+tree. This meant that nested Aspects (Aspects that create new Aspects) are not invoked and nodes created by Aspects at a higher level of the construct tree are not visited.
+
+To enable the stabilization behavior for older versions, use this feature by putting the following into your `cdk.context.json`:
+
+```json
+{
+  "@aws-cdk/core:aspectStabilization": true
+}
+```
+
+### Aspect Priorities
+
+Users can specify the order in which Aspects are applied on a construct by using the optional priority parameter when applying an Aspect. Priority
+values must be non-negative integers, where a higher number means the Aspect will be applied later, and a lower number means it will be applied sooner.
+
+By default, newly created nodes always inherit aspects. Priorities are mainly for ordering between mutating aspects on the construct tree.
+
+CDK provides standard priority values for mutating and readonly aspects to help ensure consistency across different construct libraries.
+Note that Aspects that have same priority value are not guaranteed to be executed
+in a consistent order.
+
+```ts
+/**
+ * Default Priority values for Aspects.
+ */
+class AspectPriority {
+  /**
+   * Suggested priority for Aspects that mutate the construct tree.
+   */
+  static readonly MUTATING: number = 200;
+
+  /**
+   * Suggested priority for Aspects that only read the construct tree.
+   */
+  static readonly READONLY: number = 1000;
+
+  /**
+   * Default priority for Aspects that are applied without a priority.
+   */
+  static readonly DEFAULT: number = 500;
+}
+```
+
+If no priority is provided, the default value will be 500. This ensures that aspects without a specified priority run after mutating aspects but before
+any readonly aspects.
+
+Correctly applying Aspects with priority values ensures that mutating aspects (such as adding tags or resources) run before validation aspects. This allows users to avoid misconfigurations and ensure that the final
+construct tree is fully validated before being synthesized.
+
+### Applying Aspects with Priority
+
+```ts
+class MutatingAspect implements IAspect {
+  visit(node: IConstruct) {
+    // Modifies a resource in some way
+  }
+}
+
+class ValidationAspect implements IAspect {
+  visit(node: IConstruct) {
+    // Perform some readonly validation on the cosntruct tree
+  }
+}
+
+const stack = new Stack();
+
+Aspects.of(stack).add(new MutatingAspect(), { priority: AspectPriority.MUTATING } );  // Run first (mutating aspects)
+Aspects.of(stack).add(new ValidationAspect(), { priority: AspectPriority.READONLY } );  // Run later (readonly aspects)
+```
+
+### Inspecting applied aspects and changing priorities
+
+We also give customers the ability to view all of their applied aspects and override the priority on these aspects.
+The `AspectApplication` class represents an Aspect that is applied to a node of the construct tree with a priority.
+
+Users can access AspectApplications on a node by calling `applied` from the Aspects class as follows:
+
+```ts
+declare const root: Construct;
+const app = new App();
+const stack = new MyStack(app, 'MyStack');
+
+Aspects.of(stack).add(new MyAspect());
+
+let aspectApplications: AspectApplication[] = Aspects.of(root).applied;
+
+for (const aspectApplication of aspectApplications) {
+  // The aspect we are applying
+  console.log(aspectApplication.aspect);
+  // The construct we are applying the aspect to
+  console.log(aspectApplication.construct);
+  // The priority it was applied with
+  console.log(aspectApplication.priority);
+
+  // Change the priority
+  aspectApplication.priority = 700;
+}
 ```
 
 ## Blueprint Property Injection
