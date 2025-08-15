@@ -511,6 +511,7 @@ describe('Subnet V2 with custom IP and routing', () => {
       { id: 'euw1-az1', region: 'eu-west-1' },
     ];
 
+    // Create all subnets first
     testCases.forEach((testCase, index) => {
       new subnet.SubnetV2(stack, `TestSubnet${index}`, {
         vpc: testVpc,
@@ -518,8 +519,12 @@ describe('Subnet V2 with custom IP and routing', () => {
         ipv4CidrBlock: new subnet.IpCidr(`10.1.${index}.0/24`),
         subnetType: SubnetType.PUBLIC,
       });
+    });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+    // Then verify all subnets in a single template synthesis
+    const template = Template.fromStack(stack);
+    testCases.forEach((testCase, index) => {
+      template.hasResourceProperties('AWS::EC2::Subnet', {
         AvailabilityZoneId: testCase.id,
         CidrBlock: `10.1.${index}.0/24`,
       });
