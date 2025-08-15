@@ -937,23 +937,28 @@ export class Repository extends RepositoryBase {
       }
     }
 
-    if (tagMutability) {
-      const requiresExclusion = EXCLUSION_REQUIRED_TAG_MUTABILITY.includes(tagMutability);
-      const hasExclusionFilters = !!exclusionFilters;
+    const requiresExclusion = tagMutability && EXCLUSION_REQUIRED_TAG_MUTABILITY.includes(tagMutability);
+    const hasExclusionFilters = !!exclusionFilters;
 
-      if (hasExclusionFilters && !requiresExclusion) {
+    if (hasExclusionFilters && !requiresExclusion) {
+      if (!tagMutability) {
         throw new ValidationError(
-          `imageTagMutability must be 'IMMUTABLE_WITH_EXCLUSION' or 'MUTABLE_WITH_EXCLUSION' when exclusion filters are provided, got: ${tagMutability}.`,
+          'imageTagMutability must be specified when imageTagMutabilityExclusionFilters is provided.',
+          this,
+        );
+      } else {
+        throw new ValidationError(
+          `imageTagMutability must be 'IMMUTABLE_WITH_EXCLUSION' or 'MUTABLE_WITH_EXCLUSION' when imageTagMutabilityExclusionFilters is provided, got: ${tagMutability}.`,
           this,
         );
       }
+    }
 
-      if (requiresExclusion && !hasExclusionFilters) {
-        throw new ValidationError(
-          `imageTagMutabilityExclusionFilters must be specified when imageTagMutability is '${tagMutability}'.`,
-          this,
-        );
-      }
+    if (requiresExclusion && !hasExclusionFilters) {
+      throw new ValidationError(
+        `imageTagMutabilityExclusionFilters must be specified when imageTagMutability is '${tagMutability}'.`,
+        this,
+      );
     }
   }
 
