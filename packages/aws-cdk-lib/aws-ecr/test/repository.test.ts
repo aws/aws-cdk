@@ -1382,7 +1382,7 @@ describe('repository', () => {
         'abc-123_v1.0*',
       ])('accepts valid pattern: %s', (pattern) => {
         const filter = ecr.ImageTagMutabilityExclusionFilter.wildcard(pattern);
-        expect(filter.renderFilter()).toEqual({
+        expect(filter._render()).toEqual({
           imageTagMutabilityExclusionFilterType: 'WILDCARD',
           imageTagMutabilityExclusionFilterValue: pattern,
         });

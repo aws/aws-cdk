@@ -824,7 +824,7 @@ export class Repository extends RepositoryBase {
       imageScanningConfiguration: props.imageScanOnPush !== undefined ? { scanOnPush: props.imageScanOnPush } : undefined,
       imageTagMutability: props.imageTagMutability,
       imageTagMutabilityExclusionFilters: props.imageTagMutabilityExclusionFilters?.map(
-        filter => filter.renderFilter(),
+        filter => filter._render(),
       ),
       encryptionConfiguration: this.parseEncryption(props),
       emptyOnDelete: props.emptyOnDelete,
@@ -1190,7 +1190,7 @@ export class ImageTagMutabilityExclusionFilter {
    * Renders the filter to CloudFormation properties
    * @internal
    */
-  public renderFilter(): CfnRepository.ImageTagMutabilityExclusionFilterProperty {
+  public _render(): CfnRepository.ImageTagMutabilityExclusionFilterProperty {
     return {
       imageTagMutabilityExclusionFilterType: this.filterType,
       imageTagMutabilityExclusionFilterValue: this.filterValue,
