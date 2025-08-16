@@ -864,6 +864,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "FAILED",
     "ERROR"
   ],
+  "CrossRegionInferenceProfileRegion": [
+    "eu",
+    "us",
+    "apac"
+  ],
   "CsvDelimiter": [
     "COMMA",
     "PIPE",
@@ -988,6 +993,19 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ECS",
     "CODE_DEPLOY",
     "EXTERNAL"
+  ],
+  "DeploymentLifecycleStage": [
+    "RECONCILE_SERVICE",
+    "PRE_SCALE_UP",
+    "POST_SCALE_UP",
+    "TEST_TRAFFIC_SHIFT",
+    "POST_TEST_TRAFFIC_SHIFT",
+    "PRODUCTION_TRAFFIC_SHIFT",
+    "POST_PRODUCTION_TRAFFIC_SHIFT"
+  ],
+  "DeploymentStrategy": [
+    "ROLLING",
+    "BLUE_GREEN"
   ],
   "DesiredState": [
     "RUNNING",
@@ -1571,6 +1589,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "IncludeExecutionData": [
     "ALL"
   ],
+  "InferenceProfileType": [
+    "SYSTEM_DEFINED",
+    "APPLICATION"
+  ],
   "InitElementType": [
     "PACKAGE",
     "GROUP",
@@ -2116,7 +2138,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "HMAC_256",
     "HMAC_384",
     "HMAC_512",
-    "SM2"
+    "SM2",
+    "ML_DSA_44",
+    "ML_DSA_65",
+    "ML_DSA_87"
   ],
   "KeyUsage": [
     "ENCRYPT_DECRYPT",
@@ -2406,6 +2431,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
+  "MultiRegionConsistency": [
+    "EVENTUAL",
+    "STRONG"
+  ],
   "MutualAuthenticationMode": [
     "off",
     "passthrough",
@@ -2498,6 +2527,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "OnPartialBatchItemFailure": [
     "AUTOMATIC_BISECT"
+  ],
+  "OpenTableFormat": [
+    "ICEBERG"
   ],
   "OperatingSystem": [
     "AMAZON_LINUX",
