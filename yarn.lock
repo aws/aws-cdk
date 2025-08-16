@@ -5621,6 +5621,13 @@ cdk8s-plus-27@2.9.5:
   optionalDependencies:
     backport "8.5.0"
 
+cdk8s-plus-32@^2.1.6:
+  version "2.1.7"
+  resolved "https://registry.npmjs.org/cdk8s-plus-32/-/cdk8s-plus-32-2.1.7.tgz#d3238c2740f0ec4db7a7f0afa2cfa5a2845e42f9"
+  integrity sha512-j5lUccFQT9IJ7KKyB+F7i+HNryz8QeGiT+UoUTZP29v9LW8tXPnHNf3lGHq/4yWCxaZppm3l4nSeOKcPRyz5AQ==
+  dependencies:
+    minimatch "^3.1.2"
+
 cdk8s@2.70.3:
   version "2.70.3"
   resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-2.70.3.tgz#cb514f4ce5d9d9856bce906e9ff5e885a863f51b"

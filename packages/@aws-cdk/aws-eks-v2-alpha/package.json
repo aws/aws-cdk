@@ -87,18 +87,18 @@
     "@aws-cdk/integ-runner": "^2.189.2",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@aws-cdk/lambda-layer-kubectl-v24": "^2.0.242",
     "@aws-cdk/lambda-layer-kubectl-v29": "^2.1.1",
     "@aws-cdk/lambda-layer-kubectl-v30": "^2.0.4",
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
     "@aws-cdk/lambda-layer-kubectl-v32": "^2.1.0",
+    "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.0",
     "@types/jest": "^29.5.14",
     "aws-sdk": "^2.1692.0",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
     "sinon": "^9.2.4",
     "cdk8s": "2.70.3",
-    "cdk8s-plus-27": "2.9.5"
+    "cdk8s-plus-32": "^2.1.6"
   },
   "dependencies": {
     "yaml": "1.10.2"
@@ -136,7 +136,8 @@
     "exampleDependencies": {
       "@aws-cdk/lambda-layer-kubectl-v31": "^2.0.0",
       "@aws-cdk/lambda-layer-kubectl-v32": "^2.0.0",
-      "cdk8s-plus-25": "^2.7.0"
+      "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.0",
+      "cdk8s-plus-32": "^2.1.6"
     }
   }
 }

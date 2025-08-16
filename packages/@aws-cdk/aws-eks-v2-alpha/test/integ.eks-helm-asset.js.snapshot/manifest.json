@@ -1009,11 +1009,16 @@
         "/aws-cdk-eks-helm-test/Cluster/OpenIdConnectProvider": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "url": "*",
+              "clientIds": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "url": "*"
+            }
           }
         ],
         "/aws-cdk-eks-helm-test/Cluster/OpenIdConnectProvider/Resource": [
