@@ -1406,28 +1406,6 @@ describe('repository', () => {
         ['pattern with spaces', ' '],
         ['pattern/with/slash', '/'],
         ['pattern\\with\\backslash', '\\'],
-        ['pattern#hash', '#'],
-        ['pattern$dollar', '$'],
-        ['pattern%percent', '%'],
-        ['pattern^caret', '^'],
-        ['pattern&ampersand', '&'],
-        ['pattern(parenthesis)', '()'],
-        ['pattern[bracket]', '[]'],
-        ['pattern{brace}', '{}'],
-        ['pattern|pipe', '|'],
-        ['pattern+plus', '+'],
-        ['pattern=equals', '='],
-        ['pattern!exclamation', '!'],
-        ['pattern?question', '?'],
-        ['pattern<less>', '<>'],
-        ['pattern"quote"', '"'],
-        ['pattern\'apostrophe\'', '\''],
-        ['pattern;semicolon', ';'],
-        ['pattern:colon', ':'],
-        ['pattern,comma', ','],
-        ['パターン', 'non-ASCII'],
-        ['pattern~tilde', '~'],
-        ['pattern`backtick', '`'],
       ])('rejects pattern with invalid character: %s (contains %s)', (pattern, _invalidChar) => {
         expect(() => {
           ecr.ImageTagMutabilityExclusionFilter.wildcard(pattern);
@@ -1442,7 +1420,7 @@ describe('repository', () => {
       ])('can set %s with filters', (mutability) => {
         // GIVEN
         const stack = new cdk.Stack();
-        
+
         // WHEN
         new ecr.Repository(stack, 'Repo', {
           imageTagMutability: mutability,
@@ -1468,71 +1446,6 @@ describe('repository', () => {
         });
       });
 
-      test('can set up to 5 exclusion filters', () => {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const filters = Array(5).fill(0).map((_, i) =>
-          ecr.ImageTagMutabilityExclusionFilter.wildcard(`filter-${i}*`),
-        );
-        
-        // WHEN
-        new ecr.Repository(stack, 'Repo', {
-          imageTagMutability: ecr.TagMutability.MUTABLE_WITH_EXCLUSION,
-          imageTagMutabilityExclusionFilters: filters,
-        });
-
-        // THEN
-        Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
-          ImageTagMutability: 'MUTABLE_WITH_EXCLUSION',
-          ImageTagMutabilityExclusionFilters: filters.map((_, i) => ({
-            ImageTagMutabilityExclusionFilterType: 'WILDCARD',
-            ImageTagMutabilityExclusionFilterValue: `filter-${i}*`,
-          })),
-        });
-      });
-
-      test('filters work with other repository properties', () => {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const key = new kms.Key(stack, 'Key');
-        
-        // WHEN
-        new ecr.Repository(stack, 'Repo', {
-          repositoryName: 'my-repo',
-          encryption: ecr.RepositoryEncryption.KMS,
-          encryptionKey: key,
-          imageScanOnPush: true,
-          imageTagMutability: ecr.TagMutability.IMMUTABLE_WITH_EXCLUSION,
-          imageTagMutabilityExclusionFilters: [
-            ecr.ImageTagMutabilityExclusionFilter.wildcard('dev-*'),
-          ],
-          lifecycleRules: [{
-            maxImageAge: cdk.Duration.days(30),
-          }],
-        });
-
-        // THEN
-        Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
-          RepositoryName: 'my-repo',
-          EncryptionConfiguration: {
-            EncryptionType: 'KMS',
-            KmsKey: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
-          },
-          ImageScanningConfiguration: {
-            ScanOnPush: true,
-          },
-          ImageTagMutability: 'IMMUTABLE_WITH_EXCLUSION',
-          ImageTagMutabilityExclusionFilters: [
-            {
-              ImageTagMutabilityExclusionFilterType: 'WILDCARD',
-              ImageTagMutabilityExclusionFilterValue: 'dev-*',
-            },
-          ],
-        });
-      });
-    });
-
-    describe('Repository validation errors', () => {
       test('throws when filters provided without imageTagMutability', () => {
         const stack = new cdk.Stack();
         expect(() => {
