@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.211.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.210.0-alpha.0...v2.211.0-alpha.0) (2025-08-12)
+
+## [2.210.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.209.1-alpha.0...v2.210.0-alpha.0) (2025-08-06)
+
+
+### Features
+
+* **glue-alpha:** add optional metrics control for cost optimization ([#35154](https://github.com/aws/aws-cdk/issues/35154)) ([6e24133](https://github.com/aws/aws-cdk/commit/6e24133d26dc2cde2cbefa8736495bfc423c5e56)), closes [#35149](https://github.com/aws/aws-cdk/issues/35149)
+
+
 ## [2.209.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.209.0-alpha.0...v2.209.1-alpha.0) (2025-08-06)
 
 

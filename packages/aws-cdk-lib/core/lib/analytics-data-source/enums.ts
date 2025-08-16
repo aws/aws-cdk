@@ -2138,7 +2138,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "HMAC_256",
     "HMAC_384",
     "HMAC_512",
-    "SM2"
+    "SM2",
+    "ML_DSA_44",
+    "ML_DSA_65",
+    "ML_DSA_87"
   ],
   "KeyUsage": [
     "ENCRYPT_DECRYPT",
@@ -2427,6 +2430,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "MqttQualityOfService": [
     0,
     1
+  ],
+  "MultiRegionConsistency": [
+    "EVENTUAL",
+    "STRONG"
   ],
   "MutualAuthenticationMode": [
     "off",
