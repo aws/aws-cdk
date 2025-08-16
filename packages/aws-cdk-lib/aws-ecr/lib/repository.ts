@@ -1168,23 +1168,23 @@ export class ImageTagMutabilityExclusionFilter {
    * @param pattern The wildcard pattern to match image tags (e.g., 'dev-*', 'release-v*')
    */
   public static wildcard(pattern: string): ImageTagMutabilityExclusionFilter {
-    if (!pattern || pattern.length === 0) {
-      throw new UnscopedValidationError('Pattern cannot be empty');
-    }
-    if (pattern.length > 128) {
-      throw new UnscopedValidationError(`Pattern cannot exceed 128 characters, got: ${pattern.length} characters.`);
-    }
-    if (!/^[0-9a-zA-Z._*-]+$/.test(pattern)) {
-      throw new UnscopedValidationError(`Pattern '${pattern}' contains invalid characters. Only alphanumeric characters, dots, underscores, asterisks, and hyphens are allowed.`);
-    }
-
     return new ImageTagMutabilityExclusionFilter('WILDCARD', pattern);
   }
 
   private constructor(
     private readonly filterType: string,
     private readonly filterValue: string,
-  ) {}
+  ) {
+    if (!filterValue || filterValue.length === 0) {
+      throw new UnscopedValidationError('Pattern cannot be empty');
+    }
+    if (filterValue.length > 128) {
+      throw new UnscopedValidationError(`Pattern cannot exceed 128 characters, got: ${filterValue.length} characters.`);
+    }
+    if (!/^[0-9a-zA-Z._*-]+$/.test(filterValue)) {
+      throw new UnscopedValidationError(`Pattern '${filterValue}' contains invalid characters. Only alphanumeric characters, dots, underscores, asterisks, and hyphens are allowed.`);
+    }
+  }
 
   /**
    * Renders the filter to CloudFormation properties
