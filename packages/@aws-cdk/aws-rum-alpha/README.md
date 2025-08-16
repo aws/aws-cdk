@@ -59,7 +59,7 @@ const appMonitor = new rum.AppMonitor(this, 'MyAppMonitor', {
 
 ### CloudWatch Logs Integration
 
-When `cwLogEnabled` is set to `true`, RUM sends a copy of the telemetry data to CloudWatch Logs. You can access the log group through the `logGroup` property:
+When `cwLogEnabled` is set to `true`, RUM sends a copy of the telemetry data to CloudWatch Logs. You can access the log group through the `logGroup` property to configure additional processing, monitoring, or alerting:
 
 ```ts
 const appMonitor = new rum.AppMonitor(this, 'MyAppMonitor', {
@@ -75,6 +75,47 @@ if (logGroup) {
   new logs.SubscriptionFilter(this, 'MySubscription', {
     logGroup,
     destination: new LambdaDestination(myFunction),
+    filterPattern: logs.FilterPattern.allEvents(),
+  });
+  
+  // Set log retention policy
+  logGroup.addRetentionPolicy(logs.RetentionDays.ONE_MONTH);
+}
+```
+
+#### Processing RUM Events with Lambda
+
+A common use case is to process RUM events in real-time using Lambda functions. This is useful for alerting, custom analytics, or triggering actions based on application performance data:
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+// Create a Lambda function to process RUM events
+const rumProcessor = new lambda.Function(this, 'RUMProcessor', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline(`
+    exports.handler = async (event) => {
+      // Process CloudWatch Logs events from RUM
+      const logs = event.awslogs.data;
+      // Decode and process RUM telemetry data
+      // Implement custom alerting, analytics, etc.
+    };
+  `),
+});
+
+const appMonitor = new rum.AppMonitor(this, 'MyAppMonitor', {
+  appMonitorName: 'my-web-app',
+  domain: 'example.com',
+  cwLogEnabled: true,
+});
+
+// Connect RUM logs to Lambda for real-time processing
+const logGroup = appMonitor.logGroup;
+if (logGroup) {
+  new logs.SubscriptionFilter(this, 'RUMLogProcessor', {
+    logGroup,
+    destination: new LambdaDestination(rumProcessor),
     filterPattern: logs.FilterPattern.allEvents(),
   });
 }
@@ -121,11 +162,20 @@ The `AppMonitor` construct exposes the following attributes:
 const appMonitor = new rum.AppMonitor(this, 'MyAppMonitor', {
   appMonitorName: 'my-web-app',
   domain: 'example.com',
+  cwLogEnabled: true,
 });
 
 // Use the attributes
 console.log('App Monitor ID:', appMonitor.appMonitorId);
 console.log('App Monitor Name:', appMonitor.appMonitorName);
+
+// Access the log group for additional configuration
+const logGroup = appMonitor.logGroup;
+if (logGroup) {
+  console.log('Log Group Name:', logGroup.logGroupName);
+  // The log group follows the pattern: RUMService_${appMonitorName}${appMonitorId.slice(0,8)}
+  // CDK handles the dynamic name construction automatically
+}
 ```
 
 ## Properties
