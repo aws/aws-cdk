@@ -1,6 +1,6 @@
 {
   "enableLookups": true,
-  "version": "41.0.0",
+  "version": "45.0.0",
   "testCases": {
     "alb-mtls-integ/DefaultTest": {
       "stacks": [
@@ -11,5 +11,5 @@
       "assertionStackName": "albmtlsintegDefaultTestDeployAssert30225695"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1020.2"
 }

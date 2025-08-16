@@ -240,26 +240,10 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
         ],
       ],
     },
-    LoggingConfiguration: {
-      Destinations: [
-        {
-          CloudWatchLogsLogGroup: {
-            LogGroupArn: {
-              'Fn::GetAtt': [
-                'MyProviderwaiterstatemachineLogGroupD43CA868',
-                'Arn',
-              ],
-            },
-          },
-        },
-      ],
-      IncludeExecutionData: true,
-      Level: 'ALL',
-    },
   });
 });
 
-test('a default LoggingConfiguration will be created even if waiterStateMachineLogOptions is not specified', () => {
+test('LoggingConfiguration will be not be created if waiterStateMachineLogOptions is not specified', () => {
   // GIVEN
   const stack = new Stack();
   const handler = new lambda.Function(stack, 'MyHandler', {
@@ -276,22 +260,7 @@ test('a default LoggingConfiguration will be created even if waiterStateMachineL
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
-    LoggingConfiguration: {
-      Destinations: [
-        {
-          CloudWatchLogsLogGroup: {
-            LogGroupArn: {
-              'Fn::GetAtt': [
-                'MyProviderwaiterstatemachineLogGroupD43CA868',
-                'Arn',
-              ],
-            },
-          },
-        },
-      ],
-      IncludeExecutionData: false,
-      Level: 'ERROR',
-    },
+    LoggingConfiguration: Match.absent(),
   });
 });
 
@@ -349,6 +318,82 @@ test('fails if "queryInterval" or "totalTimeout" or "waiterStateMachineLogOption
     onEventHandler: handler,
     disableWaiterStateMachineLogging: false,
   })).toThrow(/\"queryInterval\", \"totalTimeout\", \"waiterStateMachineLogOptions\", and \"disableWaiterStateMachineLogging\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/);
+});
+
+test('Log level are set to FATAL by default', () => {
+  // GIVEN
+  const stack = new Stack();
+  const handler = new lambda.Function(stack, 'MyHandler', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'index.onEvent',
+    runtime: lambda.Runtime.NODEJS_LATEST,
+  });
+
+  // WHEN
+  new cr.Provider(stack, 'MyProvider', {
+    onEventHandler: handler,
+    isCompleteHandler: handler,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+    LoggingConfiguration: Match.absent(),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Handler: 'framework.onEvent',
+    Timeout: 900,
+    LoggingConfig: {
+      ApplicationLogLevel: 'FATAL',
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Handler: 'framework.isComplete',
+    Timeout: 900,
+    LoggingConfig: {
+      ApplicationLogLevel: 'FATAL',
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Handler: 'framework.onTimeout',
+    Timeout: 900,
+    LoggingConfig: {
+      ApplicationLogLevel: 'FATAL',
+    },
+  });
+});
+
+test('uses loggingFormat instead of deprecated logFormat', () => {
+  // GIVEN
+  // Spy on console.warn to check for deprecation warnings
+  // eslint-disable-next-line no-console
+  const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+
+  const stack = new Stack();
+  const handler = new lambda.Function(stack, 'MyHandler', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'index.onEvent',
+    runtime: lambda.Runtime.NODEJS_LATEST,
+  });
+
+  try {
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: handler,
+    });
+
+    // THEN
+    // Check that no deprecation warnings related to logFormat were emitted
+    const deprecationWarnings = warnSpy.mock.calls
+      .filter(args => typeof args[0] === 'string' && args[0].includes('logFormat is deprecated'));
+
+    expect(deprecationWarnings.length).toBe(0);
+  } finally {
+    // Clean up
+    warnSpy.mockRestore();
+  }
 });
 
 describe('retry policy', () => {

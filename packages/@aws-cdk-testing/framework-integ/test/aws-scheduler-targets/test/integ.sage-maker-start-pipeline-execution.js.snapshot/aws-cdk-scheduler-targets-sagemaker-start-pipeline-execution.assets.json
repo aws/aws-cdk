@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "displayName": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
@@ -8,23 +8,23 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-094cbf39": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "500a31bda0ef5abe2231ecdd73df19521fac2ec2ea89fe0455772cefd32c710d": {
+    "9dc4098a87012e5e62a5baf2ba5411786c9530a50918cdc3c93502f169b74c34": {
       "displayName": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution Template",
       "source": {
         "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-43ace8f6": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "500a31bda0ef5abe2231ecdd73df19521fac2ec2ea89fe0455772cefd32c710d.json",
+          "objectKey": "9dc4098a87012e5e62a5baf2ba5411786c9530a50918cdc3c93502f169b74c34.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

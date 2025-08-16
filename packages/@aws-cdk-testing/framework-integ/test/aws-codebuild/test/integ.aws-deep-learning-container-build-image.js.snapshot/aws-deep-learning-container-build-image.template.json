@@ -249,6 +249,9 @@
    "ap-southeast-4": {
     "value": "457447274322"
    },
+   "ap-southeast-6": {
+    "value": "633930458069"
+   },
    "ca-central-1": {
     "value": "763104351884"
    },
@@ -281,6 +284,9 @@
    },
    "eu-west-3": {
     "value": "763104351884"
+   },
+   "eusc-de-east-1": {
+    "value": "204133271717"
    },
    "me-central-1": {
     "value": "914824155844"

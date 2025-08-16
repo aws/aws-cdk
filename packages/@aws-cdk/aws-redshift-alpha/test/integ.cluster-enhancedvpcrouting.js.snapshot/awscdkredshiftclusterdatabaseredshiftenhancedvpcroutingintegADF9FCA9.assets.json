@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "efb029297de21fcaef50ff77a64525c7b10345c38e6f26482cdc476b58259a97": {
+      "displayName": "awscdkredshiftclusterdatabaseredshiftenhancedvpcroutingintegADF9FCA9 Template",
+      "source": {
+        "path": "awscdkredshiftclusterdatabaseredshiftenhancedvpcroutingintegADF9FCA9.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "efb029297de21fcaef50ff77a64525c7b10345c38e6f26482cdc476b58259a97.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "testCases": {
     "integ-ecs-run-task-ec2/DefaultTest": {
       "stacks": [
@@ -10,5 +10,5 @@
       "assertionStackName": "integecsruntaskec2DefaultTestDeployAssert078FB53C"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1023.0"
 }

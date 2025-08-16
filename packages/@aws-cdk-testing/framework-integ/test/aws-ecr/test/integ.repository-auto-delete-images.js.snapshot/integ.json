@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "testCases": {
     "cdk-integ-auto-delete-images/DefaultTest": {
       "stacks": [
@@ -10,5 +10,5 @@
       "assertionStackName": "cdkintegautodeleteimagesDefaultTestDeployAssert6B08011C"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1020.2"
 }

@@ -560,7 +560,7 @@
         {
          "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
         },
-        ":1f9e63b707587fbd1808a12304f57d1cff0f8bf93aeb5b87f60a2aca3ebff285"
+        ":98e27853307092de1d03c86e89a5ead7aab9f8ea8f6722e4f113f04f34a329fd"
        ]
       ]
      },
@@ -739,12 +739,12 @@
     "Containers": [
      {
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:1f9e63b707587fbd1808a12304f57d1cff0f8bf93aeb5b87f60a2aca3ebff285"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:98e27853307092de1d03c86e89a5ead7aab9f8ea8f6722e4f113f04f34a329fd"
       }
      },
      {
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:1f9e63b707587fbd1808a12304f57d1cff0f8bf93aeb5b87f60a2aca3ebff285"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:98e27853307092de1d03c86e89a5ead7aab9f8ea8f6722e4f113f04f34a329fd"
       },
       "ModelDataUrl": {
        "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916.gz"
@@ -752,7 +752,7 @@
      },
      {
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:1f9e63b707587fbd1808a12304f57d1cff0f8bf93aeb5b87f60a2aca3ebff285"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:98e27853307092de1d03c86e89a5ead7aab9f8ea8f6722e4f113f04f34a329fd"
       },
       "ModelDataUrl": {
        "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916.gz"
@@ -1029,12 +1029,12 @@
     "Containers": [
      {
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:1f9e63b707587fbd1808a12304f57d1cff0f8bf93aeb5b87f60a2aca3ebff285"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:98e27853307092de1d03c86e89a5ead7aab9f8ea8f6722e4f113f04f34a329fd"
       }
      },
      {
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:1f9e63b707587fbd1808a12304f57d1cff0f8bf93aeb5b87f60a2aca3ebff285"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:98e27853307092de1d03c86e89a5ead7aab9f8ea8f6722e4f113f04f34a329fd"
       },
       "ModelDataUrl": {
        "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916.gz"
@@ -1042,7 +1042,7 @@
      },
      {
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:1f9e63b707587fbd1808a12304f57d1cff0f8bf93aeb5b87f60a2aca3ebff285"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:98e27853307092de1d03c86e89a5ead7aab9f8ea8f6722e4f113f04f34a329fd"
       },
       "ModelDataUrl": {
        "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916.gz"
@@ -1095,6 +1095,9 @@
    "ap-southeast-4": {
     "value": "457447274322"
    },
+   "ap-southeast-6": {
+    "value": "633930458069"
+   },
    "ca-central-1": {
     "value": "763104351884"
    },
@@ -1127,6 +1130,9 @@
    },
    "eu-west-3": {
     "value": "763104351884"
+   },
+   "eusc-de-east-1": {
+    "value": "204133271717"
    },
    "me-central-1": {
     "value": "914824155844"

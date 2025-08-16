@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "displayName": "aws-stepfunctions-map-with-result-writer-v2-jsonata/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
@@ -8,23 +8,23 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-094cbf39": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "d1efb189f0f33d1d6c4335e0700075c2add390882fa7ffb1be3e53cb4f0b042f": {
+    "446de5711e51ca36fd366320c6a83e0954d4abf5874fe78778083a6ea0cc5a1f": {
       "displayName": "aws-stepfunctions-map-with-result-writer-v2-jsonata Template",
       "source": {
         "path": "aws-stepfunctions-map-with-result-writer-v2-jsonata.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-f06af098": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d1efb189f0f33d1d6c4335e0700075c2add390882fa7ffb1be3e53cb4f0b042f.json",
+          "objectKey": "446de5711e51ca36fd366320c6a83e0954d4abf5874fe78778083a6ea0cc5a1f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

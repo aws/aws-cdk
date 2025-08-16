@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "37ae336b32dc0e038026d4a4101695bde95c06108b0ef900b3c62973025af77d": {
+      "displayName": "aws-cdk-transformer-integ Template",
+      "source": {
+        "path": "aws-cdk-transformer-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "37ae336b32dc0e038026d4a4101695bde95c06108b0ef900b3c62973025af77d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

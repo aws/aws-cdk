@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "BedrockInferenceProfilesTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-inference-profiles-integ"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": false
+          }
+        }
+      },
+      "assertionStack": "BedrockInferenceProfilesTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockInferenceProfilesTestDefaultTestDeployAssert4CC2EFAB"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

@@ -161,7 +161,7 @@ describe('changelog', () => {
     expect(changelogContents).toBe(
       `## [1.24.0](https://github.com/aws/aws-cdk/compare/v1.23.0...v1.24.0)
 
-### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+### ⚠ BREAKING CHANGES
 
 * this is a breaking change
 

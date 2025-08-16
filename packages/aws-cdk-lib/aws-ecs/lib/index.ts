@@ -47,6 +47,9 @@ export * from './proxy-configuration/proxy-configuration';
 export * from './proxy-configuration/proxy-configurations';
 export * from './runtime-platform';
 
+export * from './deployment-lifecycle-hook-target';
+export * from './alternate-target-configuration';
+
 // AWS::ECS CloudFormation Resources:
 //
 export * from './ecs.generated';

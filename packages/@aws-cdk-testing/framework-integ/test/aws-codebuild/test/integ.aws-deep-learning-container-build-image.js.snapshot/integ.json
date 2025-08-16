@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "45.0.0",
   "testCases": {
     "integ.aws-deep-learning-container-build-image": {
       "stacks": [
@@ -11,5 +11,5 @@
   },
   "synthContext": {},
   "enableLookups": false,
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1020.2"
 }

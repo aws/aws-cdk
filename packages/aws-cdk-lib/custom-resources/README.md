@@ -121,6 +121,9 @@ def is_complete(event, context):
 > Do not use this library if your threat model requires that you cannot trust actors who are able
 > to list StepFunction executions in your account.
 
+
+> **Default behaviour change Note**: the Custom Resource Provider doesn't log anything by default. To enable logging for the Provider framework, toggle `disableWaiterStateMachineLogging` and `disableFrameworkLambdaLogging` depending on you requirement to see waiter state machine logs or provider framework lambda logs
+
 ### Handling Lifecycle Events: onEvent
 
 The user-defined `onEvent` AWS Lambda function is invoked whenever a resource

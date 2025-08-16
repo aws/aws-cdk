@@ -5,6 +5,7 @@ import { Code } from '../code';
 import { SparkJob, SparkJobProps } from './spark-job';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { ValidationError } from 'aws-cdk-lib/core';
 
 /**
  * Properties for creating a Scala Spark ETL job
@@ -89,7 +90,7 @@ export class ScalaSparkStreamingJob extends SparkJob {
     };
 
     if ((!props.workerType && props.numberOfWorkers !== undefined) || (props.workerType && props.numberOfWorkers === undefined)) {
-      throw new Error('Both workerType and numberOfWorkers must be set');
+      throw new ValidationError('Both workerType and numberOfWorkers must be set', this);
     }
 
     const jobResource = new CfnJob(this, 'Resource', {

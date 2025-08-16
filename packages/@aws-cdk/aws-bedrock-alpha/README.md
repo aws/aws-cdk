@@ -35,6 +35,20 @@ This construct library facilitates the deployment of Bedrock Agents, enabling yo
   - [Agent Collaboration](#agent-collaboration)
   - [Custom Orchestration](#custom-orchestration)
   - [Agent Alias](#agent-alias)
+- [Prompts](#prompts)
+  - [Prompt Variants](#prompt-variants)
+  - [Basic Text Prompt](#basic-text-prompt)
+  - [Chat Prompt](#chat-prompt)
+  - [Agent Prompt](#agent-prompt)
+  - [Prompt Properties](#prompt-properties)
+  - [Prompt Version](#prompt-version)
+  - [Import Methods](#import-methods)
+- [Inference Profiles](#inference-profiles)
+  - [Using Inference Profiles](#using-inference-profiles)
+  - [Types of Inference Profiles](#types-of-inference-profiles)
+  - [Prompt Routers](#prompt-routers)
+  - [Inference Profile Permissions](#inference-profile-permissions)
+  - [Inference Profiles Import Methods](#inference-profiles-import-methods)
 
 ## Agents
 
@@ -605,4 +619,396 @@ const agentAlias = new bedrock.AgentAlias(this, 'myAlias', {
   agent: agent,
   description: `Production version of my agent. Created at ${agent.lastUpdated}` // ensure the version update
 });
+```
+
+## Prompts
+
+Amazon Bedrock provides the ability to create and save prompts using Prompt management so that you can save time by applying the same prompt to different workflows. You can include variables in the prompt so that you can adjust the prompt for different use case.
+
+The `Prompt` resource allows you to create a new prompt.
+
+### Prompt Variants
+
+Prompt variants in the context of Amazon Bedrock refer to alternative configurations of a prompt, including its message or the model and inference configurations used. Prompt variants are the building blocks of prompts - you must create at least one prompt variant to create a prompt. Prompt variants allow you to create different versions of a prompt, test them, and save the variant that works best for your use case.
+
+There are three types of prompt variants:
+
+- **Basic Text Prompt**: Simple text-based prompts for straightforward interactions
+- **Chat variant**: Conversational prompts that support system messages, user/assistant message history, and tools
+- **Agent variant**: Prompts designed to work with Bedrock Agents
+
+### Basic Text Prompt
+
+Text prompts are the simplest form of prompts, consisting of plain text instructions with optional variables. They are ideal for straightforward tasks like summarization, content generation, or question answering where you need a direct text-based interaction with the model.
+
+```ts fixture=default
+const cmk = new kms.Key(this, 'cmk', {});
+const claudeModel = bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_SONNET_V1_0;
+
+const variant1 = bedrock.PromptVariant.text({
+  variantName: 'variant1',
+  model: claudeModel,
+  promptVariables: ['topic'],
+  promptText: 'This is my first text prompt. Please summarize our conversation on: {{topic}}.',
+  inferenceConfiguration: bedrock.PromptInferenceConfiguration.text({
+    temperature: 1.0,
+    topP: 0.999,
+    maxTokens: 2000,
+  }),
+});
+
+const prompt1 = new bedrock.Prompt(this, 'prompt1', {
+  promptName: 'prompt1',
+  description: 'my first prompt',
+  defaultVariant: variant1,
+  variants: [variant1],
+  kmsKey: cmk,
+});
+```
+
+### Chat Prompt
+
+Use this template type when the model supports the Converse API or the Anthropic Claude Messages API. This allows you to include a System prompt and previous User messages and Assistant messages for context.
+
+```ts fixture=default
+const cmk = new kms.Key(this, 'cmk', {});
+
+const variantChat = bedrock.PromptVariant.chat({
+  variantName: 'variant1',
+  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+  messages: [
+    bedrock.ChatMessage.user('From now on, you speak Japanese!'),
+    bedrock.ChatMessage.assistant('Konnichiwa!'),
+    bedrock.ChatMessage.user('From now on, you speak {{language}}!'),
+  ],
+  system: 'You are a helpful assistant that only speaks the language you`re told.',
+  promptVariables: ['language'],
+  toolConfiguration: {
+    toolChoice: bedrock.ToolChoice.AUTO,
+    tools: [
+      bedrock.Tool.function({
+        name: 'top_song',
+        description: 'Get the most popular song played on a radio station.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            sign: {
+              type: 'string',
+              description: 'The call sign for the radio station for which you want the most popular song. Example calls signs are WZPZ and WKR.',
+            },
+          },
+          required: ['sign'],
+        },
+      }),
+    ],
+  },
+});
+
+new bedrock.Prompt(this, 'prompt1', {
+  promptName: 'prompt-chat',
+  description: 'my first chat prompt',
+  defaultVariant: variantChat,
+  variants: [variantChat],
+  kmsKey: cmk,
+});
+```
+
+### Agent Prompt
+
+Agent prompts are designed to work with Bedrock Agents, allowing you to create prompts that can be used by agents to perform specific tasks. Agent prompts use text prompts as their foundation and can reference agent aliases and include custom instructions for how the agent should behave.
+
+```ts fixture=default
+const cmk = new kms.Key(this, 'cmk', {});
+
+// Assuming you have an existing agent and alias
+const agent = bedrock.Agent.fromAgentAttributes(this, 'ImportedAgent', {
+  agentArn: 'arn:aws:bedrock:region:account:agent/agent-id',
+  roleArn: 'arn:aws:iam::account:role/agent-role',
+});
+
+const agentAlias = bedrock.AgentAlias.fromAttributes(this, 'ImportedAlias', {
+  aliasId: 'alias-id',
+  aliasName: 'my-alias',
+  agentVersion: '1',
+  agent: agent,
+});
+
+const agentVariant = bedrock.PromptVariant.agent({
+  variantName: 'agent-variant',
+  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+  agentAlias: agentAlias,
+  promptText: 'Use the agent to help with: {{task}}. Please be thorough and provide detailed explanations.',
+  promptVariables: ['task'],
+});
+
+new bedrock.Prompt(this, 'agentPrompt', {
+  promptName: 'agent-prompt',
+  description: 'Prompt for agent interactions',
+  defaultVariant: agentVariant,
+  variants: [agentVariant],
+  kmsKey: cmk,
+});
+```
+
+### Prompt Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| promptName | string | Yes | The name of the prompt |
+| description | string | No | A description of the prompt |
+| defaultVariant | PromptVariant | Yes | The default variant to use for the prompt |
+| variants | PromptVariant[] | No | Additional variants for the prompt |
+| kmsKey | kms.IKey | No | The KMS key to use for encrypting the prompt. Defaults to AWS managed key |
+| tags | Record<string, string> | No | Tags to apply to the prompt |
+
+### Prompt Version
+
+A prompt version is a snapshot of a prompt at a specific point in time that you create when you are satisfied with a set of configurations. Versions allow you to deploy your prompt and easily switch between different configurations for your prompt and update your application with the most appropriate version for your use-case.
+
+You can create a Prompt version by using the PromptVersion class or by using the .createVersion(..) on a Prompt object. It is recommended to use the .createVersion(..) method. It uses a hash based mechanism to update the version whenever a certain configuration property changes.
+
+```ts fixture=default
+const cmk = new kms.Key(this, 'cmk', {});
+const claudeModel = bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_SONNET_V1_0;
+
+const variant1 = bedrock.PromptVariant.text({
+  variantName: 'variant1',
+  model: claudeModel,
+  promptVariables: ['topic'],
+  promptText: 'This is my first text prompt. Please summarize our conversation on: {{topic}}.',
+  inferenceConfiguration: bedrock.PromptInferenceConfiguration.text({
+    temperature: 1.0,
+    topP: 0.999,
+    maxTokens: 2000,
+  }),
+});
+
+const prompt1 = new bedrock.Prompt(this, 'prompt1', {
+  promptName: 'prompt1',
+  description: 'my first prompt',
+  defaultVariant: variant1,
+  variants: [variant1],
+  kmsKey: cmk,
+});
+
+const promptVersion = new bedrock.PromptVersion(this, 'MyPromptVersion', {
+  prompt: prompt1,
+  description: 'my first version',
+});
+//or alternatively:
+// const promptVersion = prompt1.createVersion('my first version');
+const versionString = promptVersion.version;
+
+```
+
+### Import Methods
+
+You can use the `fromPromptAttributes` method to import an existing Bedrock Prompt into your CDK application.
+
+```ts fixture=default
+// Import an existing prompt by ARN
+const importedPrompt = bedrock.Prompt.fromPromptAttributes(this, 'ImportedPrompt', {
+  promptArn: 'arn:aws:bedrock:region:account:prompt/prompt-id',
+  kmsKey: kms.Key.fromKeyArn(this, 'ImportedKey', 'arn:aws:kms:region:account:key/key-id'), // optional
+  promptVersion: '1', // optional, defaults to 'DRAFT'
+});
+```
+
+## Inference Profiles
+
+Amazon Bedrock Inference Profiles provide a way to manage and optimize inference configurations for your foundation models. They allow you to define reusable configurations that can be applied across different prompts and agents.
+
+### Using Inference Profiles
+
+Inference profiles can be used with prompts and agents to maintain consistent inference configurations across your application.
+
+#### With Agents
+
+```ts fixture=default
+// Create a cross-region inference profile
+const crossRegionProfile = bedrock.CrossRegionInferenceProfile.fromConfig({
+  geoRegion: bedrock.CrossRegionInferenceProfileRegion.US,
+  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+});
+
+// Use the cross-region profile with an agent
+const agent = new bedrock.Agent(this, 'Agent', {
+  foundationModel: crossRegionProfile,
+  instruction: 'You are a helpful and friendly agent that answers questions about agriculture.',
+});
+```
+
+#### With Prompts
+
+```ts fixture=default
+// Create a prompt router for intelligent model selection
+const promptRouter = bedrock.PromptRouter.fromDefaultId(
+  bedrock.DefaultPromptRouterIdentifier.ANTHROPIC_CLAUDE_V1,
+  'us-east-1'
+);
+
+// Use the prompt router with a prompt variant
+const variant = bedrock.PromptVariant.text({
+  variantName: 'variant1',
+  promptText: 'What is the capital of France?',
+  model: promptRouter,
+});
+
+new bedrock.Prompt(this, 'Prompt', {
+  promptName: 'prompt-router-test',
+  variants: [variant],
+});
+```
+
+### Types of Inference Profiles
+
+Amazon Bedrock offers two types of inference profiles:
+
+#### Application Inference Profiles
+
+Application inference profiles are user-defined profiles that help you track costs and model usage. They can be created for a single region or for multiple regions using a cross-region inference profile.
+
+##### Single Region Application Profile
+
+```ts fixture=default
+// Create an application inference profile for one Region
+const appProfile = new bedrock.ApplicationInferenceProfile(this, 'MyApplicationProfile', {
+  applicationInferenceProfileName: 'claude-3-sonnet-v1',
+  modelSource: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_SONNET_V1_0,
+  description: 'Application profile for cost tracking',
+  tags: {
+    Environment: 'Production',
+  },
+});
+```
+
+##### Multi-Region Application Profile
+
+```ts fixture=default
+// Create a cross-region inference profile
+const crossRegionProfile = bedrock.CrossRegionInferenceProfile.fromConfig({
+  geoRegion: bedrock.CrossRegionInferenceProfileRegion.US,
+  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+});
+
+// Create an application inference profile across regions
+const appProfile = new bedrock.ApplicationInferenceProfile(this, 'MyMultiRegionProfile', {
+  applicationInferenceProfileName: 'claude-35-sonnet-v2-multi-region',
+  modelSource: crossRegionProfile,
+  description: 'Multi-region application profile for cost tracking',
+});
+```
+
+#### System Defined Inference Profiles
+
+Cross-region inference enables you to seamlessly manage unplanned traffic bursts by utilizing compute across different AWS Regions. With cross-region inference, you can distribute traffic across multiple AWS Regions, enabling higher throughput and enhanced resilience during periods of peak demands.
+
+Before using a CrossRegionInferenceProfile, ensure that you have access to the models and regions defined in the inference profiles. For instance, if you use the system defined inference profile "us.anthropic.claude-3-5-sonnet-20241022-v2:0", inference requests will be routed to US East (Virginia) us-east-1, US East (Ohio) us-east-2 and US West (Oregon) us-west-2. Thus, you need to have model access enabled in those regions for the model anthropic.claude-3-5-sonnet-20241022-v2:0.
+
+##### System Defined Profile Configuration
+
+```ts fixture=default
+const crossRegionProfile = bedrock.CrossRegionInferenceProfile.fromConfig({
+  geoRegion: bedrock.CrossRegionInferenceProfileRegion.US,
+  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+});
+```
+
+### Prompt Routers
+
+Amazon Bedrock intelligent prompt routing provides a single serverless endpoint for efficiently routing requests between different foundational models within the same model family. It can help you optimize for response quality and cost. They offer a comprehensive solution for managing multiple AI models through a single serverless endpoint, simplifying the process for you. Intelligent prompt routing predicts the performance of each model for each request, and dynamically routes each request to the model that it predicts is most likely to give the desired response at the lowest cost.
+
+#### Default and Custom Prompt Routers
+
+```ts fixture=default
+// Use a default prompt router
+const variant = bedrock.PromptVariant.text({
+  variantName: 'variant1',
+  promptText: 'What is the capital of France?',
+  model: bedrock.PromptRouter.fromDefaultId(
+    bedrock.DefaultPromptRouterIdentifier.ANTHROPIC_CLAUDE_V1,
+    'us-east-1'
+  ),
+});
+
+new bedrock.Prompt(this, 'Prompt', {
+  promptName: 'prompt-router-test',
+  variants: [variant],
+});
+```
+
+### Inference Profile Permissions
+
+Use the `grantProfileUsage` method to grant appropriate permissions to resources that need to use the inference profile.
+
+#### Granting Profile Usage Permissions
+
+```ts fixture=default
+// Create an application inference profile
+const profile = new bedrock.ApplicationInferenceProfile(this, 'MyProfile', {
+  applicationInferenceProfileName: 'my-profile',
+  modelSource: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+});
+
+// Create a Lambda function
+const lambdaFunction = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.PYTHON_3_11,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('def handler(event, context): return "Hello"'),
+});
+
+// Grant the Lambda function permission to use the inference profile
+profile.grantProfileUsage(lambdaFunction);
+
+// Use a system defined inference profile
+const crossRegionProfile = bedrock.CrossRegionInferenceProfile.fromConfig({
+  geoRegion: bedrock.CrossRegionInferenceProfileRegion.US,
+  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+});
+
+// Grant permissions to use the cross-region inference profile
+crossRegionProfile.grantProfileUsage(lambdaFunction);
+```
+
+The `grantProfileUsage` method adds the necessary IAM permissions to the resource, allowing it to use the inference profile. This includes permissions to call `bedrock:GetInferenceProfile` and `bedrock:ListInferenceProfiles` actions on the inference profile resource.
+
+### Inference Profiles Import Methods
+
+You can import existing application inference profiles using the following methods:
+
+```ts fixture=default
+// Import an inference profile through attributes
+const importedProfile = bedrock.ApplicationInferenceProfile.fromApplicationInferenceProfileAttributes(
+  this,
+  'ImportedProfile',
+  {
+    inferenceProfileArn: 'arn:aws:bedrock:us-east-1:123456789012:application-inference-profile/my-profile-id',
+    inferenceProfileIdentifier: 'my-profile-id',
+  }
+);
+```
+
+You can also import an application inference profile from an existing L1 CloudFormation construct:
+
+```ts fixture=default
+// Create or reference an existing L1 CfnApplicationInferenceProfile
+const cfnProfile = new aws_bedrock_cfn.CfnApplicationInferenceProfile(this, 'CfnProfile', {
+  inferenceProfileName: 'my-cfn-profile',
+  modelSource: {
+    copyFrom: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0.invokableArn,
+  },
+  description: 'Profile created via L1 construct',
+});
+
+// Import the L1 construct as an L2 ApplicationInferenceProfile
+const importedFromCfn = bedrock.ApplicationInferenceProfile.fromCfnApplicationInferenceProfile(cfnProfile);
+
+// Grant permissions to use the imported profile
+const lambdaFunction = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.PYTHON_3_11,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('def handler(event, context): return "Hello"'),
+});
+
+importedFromCfn.grantProfileUsage(lambdaFunction);
 ```

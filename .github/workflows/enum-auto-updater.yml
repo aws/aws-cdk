@@ -86,7 +86,7 @@ jobs:
             # If a PR exists, close it
             if [[ -n "$prExists" ]]; then
               echo "Found existing PR #$prExists for module ${moduleName#aws-}, closing it..."
-              gh pr close "$prExists" --confirm
+              gh pr close "$prExists" -c "Closing in favor of a new PR with updated enum values"
             else
               echo "No existing PR found for ${moduleName#aws-}"
             fi

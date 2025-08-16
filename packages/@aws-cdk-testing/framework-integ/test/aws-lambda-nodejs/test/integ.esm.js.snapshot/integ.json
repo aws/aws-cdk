@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "45.0.0",
   "testCases": {
     "LambdaNodeJsEsmInteg/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "LambdaNodeJsEsmInteg/DefaultTest/DeployAssert",
       "assertionStackName": "LambdaNodeJsEsmIntegDefaultTestDeployAssert03DFA015"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }

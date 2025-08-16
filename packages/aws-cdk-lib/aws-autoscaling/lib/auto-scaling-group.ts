@@ -267,7 +267,7 @@ export interface CommonAutoScalingGroupProps {
    * to all current and future instances in the group. As an instance approaches its maximum duration,
    * it is terminated and replaced, and cannot be used again.
    *
-   * You must specify a value of at least 604,800 seconds (7 days). To clear a previously set value,
+   * You must specify a value of at least 86,400 seconds (one day). To clear a previously set value,
    * leave this property undefined.
    *
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-max-instance-lifetime.html
@@ -666,6 +666,13 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default - Do not provide any launch template
    */
   readonly launchTemplate?: ec2.ILaunchTemplate;
+
+  /**
+   * Whether safety guardrail should be enforced when migrating to the launch template.
+   *
+   * @default false
+   */
+  readonly migrateToLaunchTemplate?: boolean;
 
   /**
    * Mixed Instances Policy to use.
@@ -1854,6 +1861,17 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         ...this.autoScalingGroup.cfnOptions.updatePolicy,
         autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: true },
       };
+    }
+
+    if (props.migrateToLaunchTemplate === true) {
+      const updatePolicy = this.autoScalingGroup.cfnOptions.updatePolicy;
+      if (!updatePolicy || !updatePolicy!.autoScalingRollingUpdate) {
+        throw new ValidationError(
+          'When migrateToLaunchTemplate is true, you must use AutoScalingRollingUpdate ' +
+          'to ensure instances are properly replaced during migration. ' +
+          'This prevents instances from referencing a deleted IAM instance profile.',
+          this);
+      }
     }
 
     if (props.signals && !props.init) {
