@@ -322,11 +322,12 @@ export interface UserPoolClientOptions {
   readonly accessTokenValidity?: Duration;
 
   /**
-   * Grace period for the original refresh token (0-60 seconds).
+   * Enables refresh token rotation when set.
+   * Defines the grace period for the original refresh token (0-60 seconds).
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-refresh-token.html#using-the-refresh-token-rotation
    * @default - undefined (refresh token rotation is disabled)
    */
-  readonly refreshTokenGracePeriod?: Duration;
+  readonly refreshTokenRotationGracePeriod?: Duration;
 
   /**
    * The set of attributes this client will be able to read.
@@ -604,7 +605,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (props.authFlows.user) { authFlows.push('ALLOW_USER_AUTH'); }
 
     // refreshToken should only be allowed if authFlows are present and refresh token rotation is disabled
-    if (!props.refreshTokenGracePeriod) {
+    if (!props.refreshTokenRotationGracePeriod) {
       authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
     }
 
@@ -685,11 +686,11 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   private configureRefreshTokenRotation(resource: CfnUserPoolClient, props: UserPoolClientProps) {
-    if (props.refreshTokenGracePeriod) {
-      this.validateDuration('refreshTokenGracePeriod', Duration.seconds(0), Duration.minutes(1), props.refreshTokenGracePeriod);
+    if (props.refreshTokenRotationGracePeriod) {
+      this.validateDuration('refreshTokenRotationGracePeriod', Duration.seconds(0), Duration.minutes(1), props.refreshTokenRotationGracePeriod);
       resource.refreshTokenRotation = {
         feature: 'ENABLED',
-        retryGracePeriodSeconds: props.refreshTokenGracePeriod.toSeconds(),
+        retryGracePeriodSeconds: props.refreshTokenRotationGracePeriod.toSeconds(),
       };
     }
   }
