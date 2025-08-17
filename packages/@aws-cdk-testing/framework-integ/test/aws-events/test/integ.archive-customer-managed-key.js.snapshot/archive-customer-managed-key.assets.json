@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "a90d49ef146dc34044a66831bec476c2b0b6dbbdcbe3e1acbc8c658c1a026f34": {
+    "59c681279b4c48cedbe74315bc24a46f86c4b5cdf44a12a1e2fa430315b70da4": {
       "displayName": "archive-customer-managed-key Template",
       "source": {
         "path": "archive-customer-managed-key.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-99d925f7": {
+        "current_account-current_region-7a2e6f01": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a90d49ef146dc34044a66831bec476c2b0b6dbbdcbe3e1acbc8c658c1a026f34.json",
+          "objectKey": "59c681279b4c48cedbe74315bc24a46f86c4b5cdf44a12a1e2fa430315b70da4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

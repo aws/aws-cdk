@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a90d49ef146dc34044a66831bec476c2b0b6dbbdcbe3e1acbc8c658c1a026f34.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/59c681279b4c48cedbe74315bc24a46f86c4b5cdf44a12a1e2fa430315b70da4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,7 +38,8 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "removalPolicy": "destroy"
+              "removalPolicy": "destroy",
+              "policy": "*"
             }
           }
         ],

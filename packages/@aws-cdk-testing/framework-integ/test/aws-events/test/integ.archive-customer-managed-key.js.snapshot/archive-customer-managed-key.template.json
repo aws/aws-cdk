@@ -6,6 +6,23 @@
     "KeyPolicy": {
      "Statement": [
       {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:GenerateDataKey",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": [
+         "events.amazonaws.com",
+         "events.aws.internal"
+        ]
+       },
+       "Resource": "*",
+       "Sid": "Allow EventBridge in all stages"
+      },
+      {
        "Action": "kms:*",
        "Effect": "Allow",
        "Principal": {
@@ -26,24 +43,8 @@
          ]
         }
        },
-       "Resource": "*"
-      },
-      {
-       "Action": [
-        "kms:Decrypt",
-        "kms:DescribeKey",
-        "kms:GenerateDataKey",
-        "kms:ReEncrypt*"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "Service": [
-         "events.amazonaws.com",
-         "events.aws.internal"
-        ]
-       },
        "Resource": "*",
-       "Sid": "Allow EventBridge in all stages"
+       "Sid": "Allow IAM User to modify the key"
       }
      ],
      "Version": "2012-10-17"
