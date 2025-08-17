@@ -332,6 +332,31 @@ new events.EventBus(this, 'Bus', {
 });
 ```
 
-**Note**: Archives and schema discovery are not supported for event buses encrypted using a customer managed key.
-To enable archives or schema discovery on an event bus, choose to use an AWS owned key.
+To use a customer managed key for an archive, use the `kmsKey` attribute and ensure that your key has the necessary policy statement attached.
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const kmsKey: kms.IKey;
+
+// Add the EventBridge in all stages policy statement
+kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+  resources: ['*'],
+  actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:ReEncrypt*'],
+  principals: [
+    new iam.ServicePrincipal('events.amazonaws.com'),
+    new iam.ServicePrincipal('events.aws.internal'),
+  ],
+  sid: 'Allow EventBridge in all stages',
+  effect: iam.Effect.ALLOW,
+}));
+
+const archive = new Archive(stack, 'Archive', {
+  kmsKey: kmsKey,
+  sourceEventBus: ...,
+  eventPattern: ...,
+});
+```
+
+To enable archives or schema discovery on an event bus, customers has the choice of using either an AWS owned key or a customer managed key.
 For more information, see [KMS key options for event bus encryption](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-at-rest-key-options.html).
