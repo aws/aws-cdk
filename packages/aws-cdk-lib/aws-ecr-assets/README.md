@@ -167,8 +167,29 @@ to your stack.
 
 `DockerImageAsset` is designed for seamless build & consumption of image assets by CDK code deployed to multiple environments
 through the CDK CLI or through CI/CD workflows. To that end, the ECR repository behind this construct is controlled by the AWS CDK.
-The mechanics of where these images are published and how are intentionally kept as an implementation detail, and the construct
+The mechanics of where these images are published and how are intentionally kept as an implementation detail, and by default the construct
 does not support customizations such as specifying the ECR repository name or tags.
+
+However, if you need to use a custom ECR repository or custom image tags, you can now specify:
+
+```ts
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+
+// Custom ECR repository
+const customRepo = new ecr.Repository(this, 'MyRepo', {
+  repositoryName: 'my-custom-repo'
+});
+
+const asset = new DockerImageAsset(this, 'MyAsset', {
+  directory: path.join(__dirname, 'my-image'),
+  ecrRepository: customRepo,           // Use custom repository
+  imageTag: 'v1.2.3',                 // Custom tag
+  // OR
+  imageTagPrefix: 'feature-branch-',   // Tag prefix + asset hash
+});
+```
+
+When using custom repositories, you are responsible for managing the repository lifecycle and permissions.
 
 We are testing a new experimental synthesizer, the
 [App Staging Synthesizer](https://docs.aws.amazon.com/cdk/api/v2/docs/app-staging-synthesizer-alpha-readme.html) that

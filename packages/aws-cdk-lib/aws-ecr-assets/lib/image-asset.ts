@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { FingerprintOptions, FollowMode, IAsset } from '../../assets';
 import * as ecr from '../../aws-ecr';
-import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, CfnResource, Names, ValidationError, UnscopedValidationError } from '../../core';
+import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, CfnResource, Names, ValidationError, UnscopedValidationError, DockerImageAssetLocation, DockerImageAssetSource } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
@@ -201,6 +201,27 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * releases.
    */
   readonly repositoryName?: string;
+
+  /**
+   * ECR repository where this image should be published
+   *
+   * @default - use the default ECR repository for CDK assets
+   */
+  readonly ecrRepository?: ecr.IRepository;
+
+  /**
+   * Custom Docker image tag
+   *
+   * @default - asset hash will be used as the image tag
+   */
+  readonly imageTag?: string;
+
+  /**
+   * Docker image tag prefix
+   *
+   * @default - no prefix, uses synthesizer default or empty string
+   */
+  readonly imageTagPrefix?: string;
 
   /**
    * Build args to pass to the `docker build` command.
@@ -517,6 +538,11 @@ export class DockerImageAsset extends Construct implements IAsset {
     if (props.invalidation?.networkMode !== false && props.networkMode) { extraHash.networkMode = props.networkMode; }
     if (props.invalidation?.platform !== false && props.platform) { extraHash.platform = props.platform; }
     if (props.invalidation?.outputs !== false && props.outputs) { extraHash.outputs = props.outputs; }
+    
+    // Include new custom repository and tagging properties in hash calculation
+    if (props.ecrRepository) { extraHash.ecrRepository = props.ecrRepository.repositoryName; }
+    if (props.imageTag) { extraHash.imageTag = props.imageTag; }
+    if (props.imageTagPrefix) { extraHash.imageTagPrefix = props.imageTagPrefix; }
 
     // add "salt" to the hash in order to invalidate the image in the upgrade to
     // 1.21.0 which removes the AdoptedRepository resource (and will cause the
@@ -549,27 +575,85 @@ export class DockerImageAsset extends Construct implements IAsset {
     this.dockerCacheTo = props.cacheTo;
     this.dockerCacheDisabled = props.cacheDisabled;
 
-    const location = stack.synthesizer.addDockerImageAsset({
-      directoryName: this.assetPath,
-      assetName: this.assetName,
-      dockerBuildArgs: this.dockerBuildArgs,
-      dockerBuildSecrets: this.dockerBuildSecrets,
-      dockerBuildSsh: this.dockerBuildSsh,
-      dockerBuildTarget: this.dockerBuildTarget,
-      dockerFile: props.file,
-      sourceHash: staging.assetHash,
-      networkMode: props.networkMode?.mode,
-      platform: props.platform?.platform,
-      dockerOutputs: this.dockerOutputs,
-      dockerCacheFrom: this.dockerCacheFrom,
-      dockerCacheTo: this.dockerCacheTo,
-      dockerCacheDisabled: this.dockerCacheDisabled,
-      displayName: props.displayName ?? props.assetName ?? Names.stackRelativeConstructPath(this),
-    });
+    // Handle custom ECR repository or use default synthesizer
+    let location: DockerImageAssetLocation;
+    if (props.ecrRepository) {
+      // Custom repository: create location manually
+      const customTag = props.imageTag ?? `${props.imageTagPrefix ?? ''}${this.assetHash}`;
+      location = {
+        repositoryName: props.ecrRepository.repositoryName,
+        imageUri: props.ecrRepository.repositoryUriForTag(customTag),
+        imageTag: customTag,
+      };
+      this.repository = props.ecrRepository;
+    } else if (props.imageTagPrefix || props.imageTag) {
+      // Custom tagging with default repository: create a custom synthesizer call
+      location = this.addDockerImageAssetWithCustomTag(stack, {
+        directoryName: this.assetPath,
+        assetName: this.assetName,
+        dockerBuildArgs: this.dockerBuildArgs,
+        dockerBuildSecrets: this.dockerBuildSecrets,
+        dockerBuildSsh: this.dockerBuildSsh,
+        dockerBuildTarget: this.dockerBuildTarget,
+        dockerFile: props.file,
+        sourceHash: staging.assetHash,
+        networkMode: props.networkMode?.mode,
+        platform: props.platform?.platform,
+        dockerOutputs: this.dockerOutputs,
+        dockerCacheFrom: this.dockerCacheFrom,
+        dockerCacheTo: this.dockerCacheTo,
+        dockerCacheDisabled: this.dockerCacheDisabled,
+        displayName: props.displayName ?? props.assetName ?? Names.stackRelativeConstructPath(this),
+      }, props.imageTagPrefix, props.imageTag);
+      this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
+    } else {
+      // Default behavior: use synthesizer
+      location = stack.synthesizer.addDockerImageAsset({
+        directoryName: this.assetPath,
+        assetName: this.assetName,
+        dockerBuildArgs: this.dockerBuildArgs,
+        dockerBuildSecrets: this.dockerBuildSecrets,
+        dockerBuildSsh: this.dockerBuildSsh,
+        dockerBuildTarget: this.dockerBuildTarget,
+        dockerFile: props.file,
+        sourceHash: staging.assetHash,
+        networkMode: props.networkMode?.mode,
+        platform: props.platform?.platform,
+        dockerOutputs: this.dockerOutputs,
+        dockerCacheFrom: this.dockerCacheFrom,
+        dockerCacheTo: this.dockerCacheTo,
+        dockerCacheDisabled: this.dockerCacheDisabled,
+        displayName: props.displayName ?? props.assetName ?? Names.stackRelativeConstructPath(this),
+      });
+      this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
+    }
 
-    this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
     this.imageUri = location.imageUri;
     this.imageTag = location.imageTag ?? this.assetHash;
+  }
+
+  /**
+   * Helper method to add Docker image asset with custom tag using synthesizer
+   */
+  private addDockerImageAssetWithCustomTag(
+    stack: Stack,
+    source: DockerImageAssetSource,
+    imageTagPrefix?: string,
+    imageTag?: string
+  ): DockerImageAssetLocation {
+    // Create a custom tag
+    const customTag = imageTag ?? `${imageTagPrefix ?? ''}${source.sourceHash}`;
+    
+    // For custom tagging, we need to work with the synthesizer's docker repository
+    // but override the tag generation logic
+    const baseLocation = stack.synthesizer.addDockerImageAsset(source);
+    
+    // Create a modified location with our custom tag
+    return {
+      repositoryName: baseLocation.repositoryName,
+      imageUri: baseLocation.imageUri.replace(/:.*$/, `:${customTag}`),
+      imageTag: customTag,
+    };
   }
 
   /**
