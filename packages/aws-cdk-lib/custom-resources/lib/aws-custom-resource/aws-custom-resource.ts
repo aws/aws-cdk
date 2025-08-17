@@ -191,6 +191,21 @@ export interface AwsSdkCall {
   readonly assumedRoleArn?: string;
 
   /**
+   * External ID to use when assuming the role for cross-account requests.
+   * This is an additional security measure that helps prevent "confused deputy"
+   * attacks by requiring the caller to provide a secret value when assuming the role.
+   *
+   * The external ID should be a secret value that only you and the role owner know.
+   * It's recommended to use a UUID or similarly unique value.
+   *
+   * This property is only used when `assumedRoleArn` is specified.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html
+   * @default - no external ID
+   */
+  readonly externalId?: string;
+
+  /**
    * A property used to configure logging during lambda function execution.
    *
    * Note: The default Logging configuration is all. This configuration will enable logging on all logged data
