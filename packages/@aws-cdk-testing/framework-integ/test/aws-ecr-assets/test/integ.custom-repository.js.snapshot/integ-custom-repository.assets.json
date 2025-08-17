@@ -1,0 +1,23 @@
+{
+  "version": "44.0.0",
+  "files": {},
+  "dockerImages": {
+    "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14": {
+      "source": {
+        "directory": "asset.0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14",
+        "executable": [
+          "sh",
+          "-c",
+          "docker build -t ${AWS_ECR_REPOSITORY_URI}:${AWS_ECR_IMAGE_TAG} . 2>&1 && docker push ${AWS_ECR_REPOSITORY_URI}:${AWS_ECR_IMAGE_TAG} 2>&1"
+        ]
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "repositoryName": "cdk-integ-custom-repo",
+          "imageTag": "placeholder-tag",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  }
+}

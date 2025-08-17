@@ -2,6 +2,7 @@
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import { App, Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib';
 import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 
 export class CustomRepositoryTestStack extends Stack {
@@ -16,39 +17,39 @@ export class CustomRepositoryTestStack extends Stack {
 
     // Test 1: Basic custom repository usage
     const basicCustomAsset = new DockerImageAsset(this, 'BasicCustomAsset', {
-      directory: './test-app',
+      directory: './fixtures/custom-dockerfile',
       ecrRepository: customRepo,
     });
 
     // Test 2: Custom repository with explicit tag
     const taggedCustomAsset = new DockerImageAsset(this, 'TaggedCustomAsset', {
-      directory: './test-app',
+      directory: './fixtures/custom-dockerfile',
       ecrRepository: customRepo,
       imageTag: 'integration-test-v1',
     });
 
     // Test 3: Custom repository with tag prefix
     const prefixedCustomAsset = new DockerImageAsset(this, 'PrefixedCustomAsset', {
-      directory: './test-app',
+      directory: './fixtures/custom-dockerfile',
       ecrRepository: customRepo,
       imageTagPrefix: 'branch-main-',
     });
 
     // Test 4: Default repository with custom tag
     const defaultRepoCustomTag = new DockerImageAsset(this, 'DefaultRepoCustomTag', {
-      directory: './test-app',
+      directory: './fixtures/custom-dockerfile',
       imageTag: 'custom-tag-default-repo',
     });
 
     // Test 5: Default repository with tag prefix
     const defaultRepoPrefixed = new DockerImageAsset(this, 'DefaultRepoPrefixed', {
-      directory: './test-app',
+      directory: './fixtures/custom-dockerfile',
       imageTagPrefix: 'feature-',
     });
 
     // Test 6: Verify imageTag takes precedence over imageTagPrefix
     const precedenceTest = new DockerImageAsset(this, 'PrecedenceTest', {
-      directory: './test-app',
+      directory: './fixtures/custom-dockerfile',
       ecrRepository: customRepo,
       imageTag: 'explicit-wins',
       imageTagPrefix: 'ignored-',
@@ -78,4 +79,10 @@ export class CustomRepositoryTestStack extends Stack {
 }
 
 const app = new App();
-new CustomRepositoryTestStack(app, 'CustomRepositoryTestStack');
+const stack = new CustomRepositoryTestStack(app, 'CustomRepositoryTestStack');
+
+new IntegTest(app, 'CustomRepositoryIntegTest', {
+  testCases: [stack],
+  diffAssets: true,
+  stackUpdateWorkflow: true,
+});
