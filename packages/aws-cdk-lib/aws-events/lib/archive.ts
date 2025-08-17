@@ -3,6 +3,7 @@ import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
 import { CfnArchive } from './events.generated';
 import { renderEventPattern } from './util';
+import * as kms from '../../aws-kms';
 import { Duration, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -32,6 +33,13 @@ export interface BaseArchiveProps {
    * @default - Infinite
    */
   readonly retention?: Duration;
+
+  /**
+   * The customer managed key that encrypts this archive
+   *
+   * @default - Use an AWS managed key
+   */
+  readonly kmsKey?: kms.IKey;
 }
 
 /**
@@ -76,6 +84,7 @@ export class Archive extends Resource {
       eventPattern: renderEventPattern(props.eventPattern),
       retentionDays: props.retention?.toDays({ integral: true }) || 0,
       archiveName: this.physicalName,
+      kmsKeyIdentifier: props?.kmsKey?.keyArn,
     });
 
     this.archiveArn = archive.attrArn;

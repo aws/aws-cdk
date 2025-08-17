@@ -1,4 +1,8 @@
 import { Template } from '../../assertions';
+
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
+
 import { Duration, Stack } from '../../core';
 import { EventBus } from '../lib';
 import { Archive } from '../lib/archive';
@@ -92,5 +96,91 @@ describe('archive', () => {
     });
 
     expect(archive.node.defaultChild).toBe(archive.node.findChild('Archive'));
+  });
+
+  // Create archive with CMK
+  test('Archive with a customer managed key', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const key = new kms.Key(stack, 'Key');
+
+    // Add the EventBridge in all stages policy statement
+    key.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:ReEncrypt*'],
+      principals: [
+        new iam.ServicePrincipal('events.amazonaws.com'),
+        new iam.ServicePrincipal('events.aws.internal'),
+      ],
+      sid: 'Allow EventBridge in all stages',
+      effect: iam.Effect.ALLOW,
+    }));
+
+    // Add IAM User Permissions
+    key.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['kms:*'],
+      principals: [
+        new iam.AccountPrincipal(),
+      ],
+      sid: 'Enable IAM User Permissions',
+      effect: iam.Effect.ALLOW,
+    }));
+
+    // WHEN
+    const archive = new Archive(stack, 'Archive', {
+      kmsKey: key,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Archive', {
+      KmsKeyIdentifier: stack.resolve(key.keyArn),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          // Match IAM User permissions
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':iam::',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':root',
+                  ],
+                ],
+              },
+            },
+            Resource: '*',
+          },
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:GenerateDataKey',
+              'kms:DescribeKey',
+              'kms:ReEncrypt*',
+            ],
+            Effect: 'Allow',
+            Principal: {
+              Service: ['events.amazonaws.com', 'events.aws.internal'],
+            },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
   });
 });
