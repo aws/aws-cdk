@@ -336,7 +336,7 @@ To use a customer managed key for an archive, use the `kmsKey` attribute and ens
 
 ```ts
 import * as kms from 'aws-cdk-lib/aws-kms';
-import { Archive } from 'aws-cdk-lib/aws-events';
+import { Archive, EventBus } from 'aws-cdk-lib/aws-events';
 
 const stack = new Stack();
 
@@ -354,10 +354,14 @@ kmsKey.addToResourcePolicy(new iam.PolicyStatement({
   effect: iam.Effect.ALLOW,
 }));
 
+const eventBus = new EventBus(stack, 'Bus');
+
 const archive = new Archive(stack, 'Archive', {
   kmsKey: kmsKey,
-  sourceEventBus: 'default',
-  eventPattern: ['aws.ec2'],
+  sourceEventBus: eventBus,
+  eventPattern: {
+    source: ['aws.ec2']
+  },
 });
 ```
 
