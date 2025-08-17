@@ -99,10 +99,11 @@ describe('archive', () => {
   });
 
   // Create archive with CMK
-  test('Archive with a customer managed key', () => {
+  test('Archive with a customer managed key on an event bus', () => {
     // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'Stack');
+    const stack = new Stack();
+
+    const eventBus = new EventBus(stack, 'Bus');
     const key = new kms.Key(stack, 'Key');
 
     // Add the EventBridge in all stages policy statement
@@ -117,20 +118,13 @@ describe('archive', () => {
       effect: iam.Effect.ALLOW,
     }));
 
-    // Add IAM User Permissions
-    key.addToResourcePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['kms:*'],
-      principals: [
-        new iam.AccountPrincipal(),
-      ],
-      sid: 'Enable IAM User Permissions',
-      effect: iam.Effect.ALLOW,
-    }));
-
     // WHEN
     const archive = new Archive(stack, 'Archive', {
       kmsKey: key,
+      sourceEventBus: eventBus,
+      eventPattern: {
+        source: ['test'],
+      },
     });
 
     // THEN
@@ -141,7 +135,7 @@ describe('archive', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: [
-          // Match IAM User permissions
+          // Match IAM User permissions, should exist by default
           {
             Action: 'kms:*',
             Effect: 'Allow',
