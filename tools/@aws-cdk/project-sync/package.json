@@ -20,7 +20,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "exponential-backoff": "^3.1.2",
     "jest": "^29",
-    "ts-jest": "^29.4.0",
+    "ts-jest": "^29.4.1",
     "typescript": "~5.5.4"
   },
   "main": "bin/project-sync.js",
