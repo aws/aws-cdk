@@ -531,7 +531,7 @@ about allowing connections between resources backed by instances.
 ## Max Instance Lifetime
 
 To enable the max instance lifetime support, specify `maxInstanceLifetime` property
-for the `AutoscalingGroup` resource. The value must be between 7 and 365 days(inclusive).
+for the `AutoscalingGroup` resource. The value must be between 1 and 365 days(inclusive).
 To clear a previously set value, leave this property undefined.
 
 ## Instance Monitoring
