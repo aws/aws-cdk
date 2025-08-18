@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { IRole } from './role' ;
+import { IRole } from './role';
 import {
   Arn,
   CustomResource,
