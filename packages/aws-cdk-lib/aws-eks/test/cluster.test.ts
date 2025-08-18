@@ -2317,10 +2317,10 @@ describe('cluster', () => {
     test('if cluster name uses complex tokens (Fn.sub with SSM parameters), the creation role policy uses specific ARNs with proper token references', () => {
       // GIVEN
       const { stack } = testFixture();
-      
+
       // Create SSM parameter reference (simulates real-world Service Catalog scenario)
       const ssmParam = ssm.StringParameter.fromStringParameterName(
-        stack, 'ClusterParam', '/eks/cluster/suffix'
+        stack, 'ClusterParam', '/eks/cluster/suffix',
       );
 
       // Create hybrid cluster name using Fn.sub (this was causing [object Object] in ARNs)
