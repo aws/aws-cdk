@@ -2190,6 +2190,129 @@ describe('cluster', () => {
       });
     });
 
+    test('if cluster name is a CloudFormation parameter, the creation role policy uses specific ARNs with parameter reference', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const clusterNameParam = new cdk.CfnParameter(stack, 'ClusterName', {
+        type: 'String',
+        default: 'MyEKSCluster',
+      });
+
+      // WHEN
+      new eks.Cluster(stack, 'MyCluster', {
+        version: CLUSTER_VERSION,
+        prune: false,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        clusterName: clusterNameParam.valueAsString,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'iam:PassRole',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'MyClusterRoleBA20FE72',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: [
+                'eks:CreateCluster',
+                'eks:DescribeCluster',
+                'eks:DescribeUpdate',
+                'eks:DeleteCluster',
+                'eks:UpdateClusterVersion',
+                'eks:UpdateClusterConfig',
+                'eks:CreateFargateProfile',
+                'eks:TagResource',
+                'eks:UntagResource',
+              ],
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':eks:us-east-1:',
+                      { Ref: 'AWS::AccountId' },
+                      ':cluster/',
+                      { Ref: 'ClusterName' },
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':eks:us-east-1:',
+                      { Ref: 'AWS::AccountId' },
+                      ':cluster/',
+                      { Ref: 'ClusterName' },
+                      '/*',
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              Action: [
+                'eks:DescribeFargateProfile',
+                'eks:DeleteFargateProfile',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':eks:us-east-1:',
+                    { Ref: 'AWS::AccountId' },
+                    ':fargateprofile/',
+                    { Ref: 'ClusterName' },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: ['iam:GetRole', 'iam:listAttachedRolePolicies'],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: 'iam:CreateServiceLinkedRole',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: [
+                'ec2:DescribeInstances',
+                'ec2:DescribeNetworkInterfaces',
+                'ec2:DescribeSecurityGroups',
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+                'ec2:DescribeDhcpOptions',
+                'ec2:DescribeVpcs',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      });
+    });
+
     test('if helm charts are used, the provider role is allowed to assume the creation role', () => {
       // GIVEN
       const { stack } = testFixture();
