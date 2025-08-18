@@ -67,6 +67,7 @@ describe('Table', () => {
       }));
 
       expect(result.statementAdded).toBe(true);
+      expect(result.policyDependable).toBe(table.tablePolicy);
     });
   });
 
