@@ -259,13 +259,14 @@ describe('Table', () => {
       expect(table.node.id).toBe('ImportedTable');
     });
 
-    test('returns false from addToResourcePolicy', () => {
+    test('addToResourcePolicy does not add a policy', () => {
       const result = table.addToResourcePolicy(new iam.PolicyStatement({
         actions: ['s3tables:*'],
         resources: ['*'],
       }));
 
       expect(result.statementAdded).toEqual(false);
+      Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
     });
   });
 
