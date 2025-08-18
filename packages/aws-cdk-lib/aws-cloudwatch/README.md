@@ -1,6 +1,5 @@
 # Amazon CloudWatch Construct Library
 
-
 ## Metric objects
 
 Metric objects represent a metric that is emitted by AWS services or your own
@@ -72,6 +71,7 @@ const metric = new cloudwatch.Metric({
 The `id` must start with a lowercase letter and can only contain letters, numbers, and underscores.
 
 ### Metric Visible
+
 Metrics can be hidden from dashboard graphs using the `visible` property:
 
 ```ts
@@ -147,7 +147,6 @@ const errorRate = new cloudwatch.MathExpression({
 ### Search Expressions
 
 Search expressions allow you to dynamically discover and display metrics that match specific criteria, making them ideal for monitoring dynamic infrastructure where the exact metrics aren't known in advance. A single search expression can return up to 500 time series.
-
 
 #### Using SearchExpression Class
 
@@ -451,7 +450,7 @@ unless you have very specific requirements. Note that in any case, CloudWatch
 only supports filtering by `unit` for Alarms, not in Dashboard graphs.
 
 Please see the following GitHub issue for a discussion on real unit
-calculations in CDK: https://github.com/aws/aws-cdk/issues/5595
+calculations in CDK: <https://github.com/aws/aws-cdk/issues/5595>
 
 ## Anomaly Detection Alarms
 
@@ -702,19 +701,27 @@ dashboard.addWidgets(new cloudwatch.TableWidget({
 
 ### Gauge widget
 
-Gauge graph requires the max and min value of the left Y axis, if no value is informed the limits will be from 0 to 100.
+Gauge widgets automatically determine the optimal Y-axis range based on your data, providing better visualization for metrics outside the traditional 0-100 range.
 
 ```ts
 declare const dashboard: cloudwatch.Dashboard;
 declare const errorAlarm: cloudwatch.Alarm;
 declare const gaugeMetric: cloudwatch.Metric;
 
+// With explicit Y-axis limits (works with or without feature flag)
 dashboard.addWidgets(new cloudwatch.GaugeWidget({
   metrics: [gaugeMetric],
   leftYAxis: {
     min: 0,
     max: 1000,
   }
+}));
+
+// Auto-scaling behavior (requires feature flag)
+// Enable with: app.node.setContext('@aws-cdk/aws-cloudwatch:gaugeWidgetAutoScale', true)
+dashboard.addWidgets(new cloudwatch.GaugeWidget({
+  metrics: [gaugeMetric],
+  // No leftYAxis specified - CloudWatch will auto-scale when feature flag is enabled
 }));
 ```
 
@@ -748,7 +755,6 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
 ```
 
 Show as many digits as can fit, before rounding.
-
 
 ```ts
 declare const dashboard: cloudwatch.Dashboard;
@@ -967,6 +973,7 @@ different Lambda functions, Amazon EC2 instances, etc.
 You can learn more about Dashboard variables in the [Amazon Cloudwatch User Guide](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_dashboard_variables.html)
 
 There are two types of dashboard variables available: a property variable and a pattern variable.
+
 - Property variables can change any JSON property in the JSON source of a dashboard like `region`. It can also change the dimension name for a metric.
 - Pattern variables use a regular expression pattern to change all or part of a JSON property.
 
@@ -1044,12 +1051,12 @@ You can add a variable after object instantiation with the method `dashboard.add
 Both Log and Metric Widget objects support cross-account visibility by allowing you to specify the AWS Account ID that the data (logs or metrics) originates from.
 
 **Prerequisites:**
+
 1. The monitoring account must be set up as a monitoring account
 2. The source account must grant permissions to the monitoring account
 3. Appropriate IAM roles and policies must be configured
 
 For detailed setup instructions, see [Cross-Account Cross-Region CloudWatch Console](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html).
-
 
 To use this feature, you can set the `accountId` property on `LogQueryWidget`, `GraphWidget`, `AlarmWidget`, `SingleValueWidget`, and `GaugeWidget` constructs:
 

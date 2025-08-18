@@ -102,6 +102,7 @@ export const AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_P
 export const APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION = '@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier';
 export const CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME = '@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource';
 export const LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION = '@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction';
+export const CLOUDWATCH_GAUGE_WIDGET_AUTO_SCALE = '@aws-cdk/aws-cloudwatch:gaugeWidgetAutoScale';
 export const CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE = '@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse';
 export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2';
 export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
@@ -1055,6 +1056,23 @@ export const FLAGS: Record<string, FlagInfo> = {
       \`LambdaAction\`.
     `,
     introducedIn: { v2: '2.124.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CLOUDWATCH_GAUGE_WIDGET_AUTO_SCALE]: {
+    type: FlagType.BugFix,
+    summary: 'Enable CloudWatch GaugeWidget to auto-scale Y-axis values instead of forcing defaults.',
+    detailsMd: `
+      When this feature flag is enabled, GaugeWidget will let CloudWatch automatically determine
+      the minimum and maximum Y-axis values based on the data range, instead of forcing
+      \`min: 0\` and \`max: 100\` defaults. This matches CloudWatch's actual behavior and
+      provides better visualization for metrics that don't fit the 0-100 range.
+
+      When disabled, the widget will continue to force \`min: 0\` and \`max: 100\` for
+      backward compatibility.
+    `,
+    introducedIn: { v2: '2.174.0' },
     recommendedValue: true,
   },
 

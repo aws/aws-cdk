@@ -1,8 +1,10 @@
+import { IConstruct } from 'constructs';
 import { IAlarm } from './alarm-base';
 import { IMetric } from './metric-types';
 import { allMetricsGraphJson } from './private/rendering';
 import { ConcreteWidget } from './widget';
 import * as cdk from '../../core';
+import { CLOUDWATCH_GAUGE_WIDGET_AUTO_SCALE } from '../../cx-api';
 
 /**
  * Basic properties for widgets that display metrics
@@ -59,14 +61,16 @@ export interface YAxisProps {
   /**
    * The min value
    *
-   * @default 0
+   * @default - Auto (CloudWatch automatically determines the minimum value based on data range)
+   * Note: GaugeWidget defaults to 0 for backward compatibility
    */
   readonly min?: number;
 
   /**
    * The max value
    *
-   * @default - No maximum value
+   * @default - Auto (CloudWatch automatically determines the maximum value based on data range)
+   * Note: GaugeWidget defaults to 100 for backward compatibility
    */
   readonly max?: number;
 
@@ -250,6 +254,8 @@ export class GaugeWidget extends ConcreteWidget {
 
   private readonly metrics: IMetric[];
 
+  private _scope?: IConstruct;
+
   constructor(props: GaugeWidgetProps) {
     super(props.width || 6, props.height || 6);
     this.props = props;
@@ -271,13 +277,26 @@ export class GaugeWidget extends ConcreteWidget {
     this.copyMetricWarnings(metric);
   }
 
+  /**
+   * @internal
+   */
+  public _setScope(scope: IConstruct) {
+    this._scope = scope;
+  }
+
   public toJson(): any[] {
     const metrics = allMetricsGraphJson(this.metrics, []);
-    const leftYAxis = {
-      ...this.props.leftYAxis,
-      min: this.props.leftYAxis?.min ?? 0,
-      max: this.props.leftYAxis?.max ?? 100,
-    };
+
+    // Check feature flag if scope is available
+    const useAutoScale = this._scope && cdk.FeatureFlags.of(this._scope).isEnabled(CLOUDWATCH_GAUGE_WIDGET_AUTO_SCALE);
+
+    const leftYAxis = useAutoScale
+      ? this.props.leftYAxis // Let CloudWatch auto-scale (new behavior)
+      : {
+        ...this.props.leftYAxis,
+        min: this.props.leftYAxis?.min ?? 0,
+        max: this.props.leftYAxis?.max ?? 100,
+      }; // Force defaults (legacy behavior)
     return [{
       type: 'metric',
       width: this.width,
@@ -1171,7 +1190,7 @@ export class Color {
   /** red - hex #d62728 */
   public static readonly RED = '#d62728';
 
-  private constructor() {}
+  private constructor() { }
 }
 
 /**

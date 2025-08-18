@@ -194,6 +194,13 @@ export class Dashboard extends Resource {
       return;
     }
 
+    // Set construct scope on widgets that support it (for feature flag access)
+    allWidgetsDeep(widgets).forEach(widget => {
+      if ('_setScope' in widget && typeof widget._setScope === 'function') {
+        (widget as any)._setScope(this);
+      }
+    });
+
     const warnings = allWidgetsDeep(widgets).reduce((prev, curr) => {
       return {
         ...prev,

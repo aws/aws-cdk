@@ -4,6 +4,7 @@ import {
   AlarmWidget,
   Color,
   CustomWidget,
+  Dashboard,
   GaugeWidget,
   GraphWidget,
   GraphWidgetView,
@@ -920,13 +921,15 @@ describe('Graphs', () => {
     }]);
   });
 
-  test('add GaugeWidget', () => {
+  test('add GaugeWidget (legacy behavior - default)', () => {
     // GIVEN
     const stack = new Stack();
+    const dashboard = new Dashboard(stack, 'Dashboard');
     const widget = new GaugeWidget({
       metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
       accountId: '123456789012',
     });
+    dashboard.addWidgets(widget); // This sets the scope for feature flag checking
 
     // THEN
     expect(stack.resolve(widget.toJson())).toEqual([{
@@ -946,6 +949,65 @@ describe('Graphs', () => {
           },
         },
         accountId: '123456789012',
+      },
+    }]);
+  });
+
+  test('add GaugeWidget (auto-scale behavior with feature flag)', () => {
+    // GIVEN
+    const stack = new Stack();
+    stack.node.setContext('@aws-cdk/aws-cloudwatch:gaugeWidgetAutoScale', true);
+    const dashboard = new Dashboard(stack, 'Dashboard');
+    const widget = new GaugeWidget({
+      metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      accountId: '123456789012',
+    });
+    dashboard.addWidgets(widget); // This sets the scope for feature flag checking
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'gauge',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {
+          left: undefined,
+        },
+        accountId: '123456789012',
+      },
+    }]);
+  });
+
+  test('GaugeWidget with explicit Y-axis min value', () => {
+    // GIVEN
+    const stack = new Stack();
+    const widget = new GaugeWidget({
+      metrics: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      leftYAxis: { min: 10, max: 200 },
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'gauge',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {
+          left: {
+            min: 10,
+            max: 200,
+          },
+        },
       },
     }]);
   });
