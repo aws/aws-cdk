@@ -11,7 +11,6 @@ abstract class GrantTestBase extends core.Stack {
   public readonly table: s3tables.Table;
   public readonly tableBucket: s3tables.TableBucket;
   public readonly namespace: s3tables.Namespace;
-  abstract readonly tableName: string;
   abstract readonly actions: string[];
 
   constructor(scope: Construct, id: string, props?: core.StackProps) {
@@ -25,7 +24,7 @@ abstract class GrantTestBase extends core.Stack {
       namespaceName: 'test_namespace',
     });
     this.table = new s3tables.Table(this, 'Table', {
-      tableName: id.replace(/-/g, '_'),
+      tableName: this.getTableName(),
       namespace: this.namespace,
       openTableFormat: s3tables.OpenTableFormat.ICEBERG,
       removalPolicy: core.RemovalPolicy.DESTROY,
@@ -34,27 +33,34 @@ abstract class GrantTestBase extends core.Stack {
     this.grantAccess();
   }
   abstract grantAccess(): void;
+  abstract getTableName(): string;
 }
 
 class GrantReadTest extends GrantTestBase {
-  tableName = 'grant_read_table';
   actions = perms.TABLE_READ_ACCESS;
+  getTableName() {
+    return 'grant_read_table';
+  }
   grantAccess() {
     this.table.grantRead(new iam.ServicePrincipal(PRINCIPAL));
   }
 }
 
 class GrantWriteTest extends GrantTestBase {
-  tableName = 'grant_write_table';
   actions = perms.TABLE_WRITE_ACCESS;
+  getTableName() {
+    return 'grant_write_table';
+  }
   grantAccess() {
     this.table.grantWrite(new iam.ServicePrincipal(PRINCIPAL));
   }
 }
 
 class GrantReadWriteTest extends GrantTestBase {
-  tableName = 'grant_read_write_table';
   actions = perms.TABLE_READ_WRITE_ACCESS;
+  getTableName() {
+    return 'grant_read_write_table';
+  }
   grantAccess() {
     this.table.grantReadWrite(new iam.ServicePrincipal(PRINCIPAL));
   }
@@ -69,28 +75,37 @@ const testCases = [
 ];
 const integ = new IntegTest(app, 'TableWithGrantIntegTest', { testCases });
 
-testCases.forEach(testCase => {
-  const tablePolicy = integ.assertions.awsApiCall('@aws-sdk/client-s3tables', 'GetTablePolicyCommand', {
-    tableBucketARN: testCase.tableBucket.tableBucketArn,
-    namespace: testCase.namespace.namespaceName,
-    name: testCase.table.tableName,
-  });
+testCases.forEach((testCase) => {
+  const tablePolicy = integ.assertions.awsApiCall(
+    '@aws-sdk/client-s3tables',
+    'GetTablePolicyCommand',
+    {
+      tableBucketARN: testCase.tableBucket.tableBucketArn,
+      namespace: testCase.namespace.namespaceName,
+      name: testCase.table.tableName,
+    },
+  );
 
-  tablePolicy.expect(ExpectedResult.objectLike({
-    resourcePolicy: Match.serializedJson({
-      Version: '2012-10-17',
-      Statement: [
-        {
-          Effect: 'Allow',
-          Principal: {
-            Service: PRINCIPAL,
+  tablePolicy.expect(
+    ExpectedResult.objectLike({
+      resourcePolicy: Match.serializedJson({
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: {
+              Service: PRINCIPAL,
+            },
+            Action:
+              testCase.actions.length > 1
+                ? testCase.actions.sort()
+                : testCase.actions[0],
+            Resource: Match.stringLikeRegexp(testCase.table.tableArn),
           },
-          Action: testCase.actions.length > 1 ? testCase.actions.sort() : testCase.actions[0],
-          Resource: Match.stringLikeRegexp(testCase.table.tableArn),
-        },
-      ],
+        ],
+      }),
     }),
-  }));
+  );
 });
 
 app.synth();
