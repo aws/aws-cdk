@@ -16,7 +16,6 @@ describe('TablePolicy', () => {
   });
 
   describe('created with default properties', () => {
-    let tablePolicy: s3tables.TablePolicy;
     let table: s3tables.Table;
 
     beforeEach(() => {
@@ -32,7 +31,7 @@ describe('TablePolicy', () => {
         namespace,
         openTableFormat: s3tables.OpenTableFormat.ICEBERG,
       });
-      tablePolicy = new s3tables.TablePolicy(stack, 'ExampleTablePolicy', {
+      new s3tables.TablePolicy(stack, 'ExampleTablePolicy', {
         table,
         resourcePolicy: new iam.PolicyDocument({
           statements: [
@@ -46,7 +45,6 @@ describe('TablePolicy', () => {
     });
 
     test(`creates a ${TABLE_POLICY_CFN_RESOURCE} resource`, () => {
-      tablePolicy;
       Template.fromStack(stack).resourceCountIs(TABLE_POLICY_CFN_RESOURCE, 1);
     });
 
