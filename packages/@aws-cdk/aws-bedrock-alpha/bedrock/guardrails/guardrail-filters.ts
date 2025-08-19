@@ -1,5 +1,26 @@
 import { ValidationRule } from 'aws-cdk-lib/core/lib/helpers-internal';
 
+/**
+ * Guardrail action when a sensitive entity is detected.
+ */
+export enum GuardrailAction {
+  /**
+   * If sensitive information is detected in the prompt or response, the guardrail
+   * blocks all the content and returns a message that you configure.
+   */
+  BLOCK = 'BLOCK',
+  /**
+   * If sensitive information is detected in the model response, the guardrail masks
+   * it with an identifier, the sensitive information is masked and replaced with
+   * identifier tags (for example: [NAME-1], [NAME-2], [EMAIL-1], etc.).
+   */
+  ANONYMIZE = 'ANONYMIZE',
+  /**
+   * Do not take any action.
+   */
+  NONE = 'NONE',
+}
+
 /******************************************************************************
  *                             TIER CONFIG
 *****************************************************************************/
@@ -209,6 +230,10 @@ export class Topic {
       'How can I maximize my returns on investments?',
       'Is it a good time to buy real estate?',
     ],
+    inputAction: GuardrailAction.BLOCK,
+    inputEnabled: true,
+    outputAction: GuardrailAction.BLOCK,
+    outputEnabled: true,
   });
 
   /**
@@ -225,6 +250,10 @@ export class Topic {
       'What do you think about the new policy introduced by the president?',
       'Should I vote for this candidate?',
     ],
+    inputAction: GuardrailAction.BLOCK,
+    inputEnabled: true,
+    outputAction: GuardrailAction.BLOCK,
+    outputEnabled: true,
   });
 
   /**
@@ -241,6 +270,10 @@ export class Topic {
       'Is this drug effective for treating my illness?',
       "Do I need to see a doctor for this pain I'm experiencing?",
     ],
+    inputAction: GuardrailAction.BLOCK,
+    inputEnabled: true,
+    outputAction: GuardrailAction.BLOCK,
+    outputEnabled: true,
   });
 
   /**
@@ -257,6 +290,10 @@ export class Topic {
       'This service is as bad as [hate speech].',
       'Do you have any adult content or products?',
     ],
+    inputAction: GuardrailAction.BLOCK,
+    inputEnabled: true,
+    outputAction: GuardrailAction.BLOCK,
+    outputEnabled: true,
   });
 
   /**
@@ -273,6 +310,10 @@ export class Topic {
       'What should I do to file a legal complaint?',
       'Can you explain this law to me?',
     ],
+    inputAction: GuardrailAction.BLOCK,
+    inputEnabled: true,
+    outputAction: GuardrailAction.BLOCK,
+    outputEnabled: true,
   });
 
   /**
@@ -295,6 +336,26 @@ export class Topic {
    * Representative phrases that refer to the topic.
    */
   readonly examples?: string[];
+  /**
+   * The action to take when a topic is detected in the input.
+   * @default GuardrailAction.BLOCK
+   */
+  readonly inputAction?: GuardrailAction;
+  /**
+   * Whether the topic filter is enabled for input.
+   * @default true
+   */
+  readonly inputEnabled?: boolean;
+  /**
+   * The action to take when a topic is detected in the output.
+   * @default GuardrailAction.BLOCK
+   */
+  readonly outputAction?: GuardrailAction;
+  /**
+   * Whether the topic filter is enabled for output.
+   * @default true
+   */
+  readonly outputEnabled?: boolean;
 
   protected constructor(props: CustomTopicProps) {
     // Validate examples field constraints
@@ -320,6 +381,10 @@ export class Topic {
     this.name = props.name;
     this.definition = props.definition;
     this.examples = props.examples;
+    this.inputAction = props.inputAction;
+    this.inputEnabled = props.inputEnabled;
+    this.outputAction = props.outputAction;
+    this.outputEnabled = props.outputEnabled;
   }
 }
 
@@ -623,27 +688,6 @@ export class UKSpecificPIIType extends PIIType {
   public static readonly UK_UNIQUE_TAXPAYER_REFERENCE_NUMBER = new UKSpecificPIIType('UK_UNIQUE_TAXPAYER_REFERENCE_NUMBER');
 
   private constructor(value: string) { super(value); }
-}
-
-/**
- * Guardrail action when a sensitive entity is detected.
- */
-export enum GuardrailAction {
-  /**
-   * If sensitive information is detected in the prompt or response, the guardrail
-   * blocks all the content and returns a message that you configure.
-   */
-  BLOCK = 'BLOCK',
-  /**
-   * If sensitive information is detected in the model response, the guardrail masks
-   * it with an identifier, the sensitive information is masked and replaced with
-   * identifier tags (for example: [NAME-1], [NAME-2], [EMAIL-1], etc.).
-   */
-  ANONYMIZE = 'ANONYMIZE',
-  /**
-   * Do not take any action.
-   */
-  NONE = 'NONE',
 }
 
 /**

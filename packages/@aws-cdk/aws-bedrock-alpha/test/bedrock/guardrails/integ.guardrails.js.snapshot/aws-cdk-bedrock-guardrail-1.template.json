@@ -11,7 +11,11 @@
      },
      "FiltersConfig": [
       {
+       "InputAction": "BLOCK",
+       "InputEnabled": true,
        "InputStrength": "LOW",
+       "OutputAction": "BLOCK",
+       "OutputEnabled": true,
        "OutputStrength": "LOW",
        "Type": "MISCONDUCT"
       }
@@ -20,6 +24,8 @@
     "ContextualGroundingPolicyConfig": {
      "FiltersConfig": [
       {
+       "Action": "BLOCK",
+       "Enabled": true,
        "Threshold": 0.99,
        "Type": "GROUNDING"
       }
@@ -31,6 +37,10 @@
      "PiiEntitiesConfig": [
       {
        "Action": "ANONYMIZE",
+       "InputAction": "BLOCK",
+       "InputEnabled": true,
+       "OutputAction": "BLOCK",
+       "OutputEnabled": true,
        "Type": "ADDRESS"
       }
      ],
@@ -38,7 +48,11 @@
       {
        "Action": "ANONYMIZE",
        "Description": "This is a test regex filter",
+       "InputAction": "BLOCK",
+       "InputEnabled": true,
        "Name": "TestRegexFilter",
+       "OutputAction": "BLOCK",
+       "OutputEnabled": true,
        "Pattern": "/^[A-Z]{2}d{6}$/"
       }
      ]
@@ -54,7 +68,11 @@
         "How can I maximize my returns on investments?",
         "Is it a good time to buy real estate?"
        ],
+       "InputAction": "BLOCK",
+       "InputEnabled": true,
        "Name": "Financial_Advice",
+       "OutputAction": "BLOCK",
+       "OutputEnabled": true,
        "Type": "DENY"
       }
      ],
@@ -66,14 +84,18 @@
      "ManagedWordListsConfig": [
       {
        "InputAction": "BLOCK",
+       "InputEnabled": true,
        "OutputAction": "NONE",
+       "OutputEnabled": true,
        "Type": "PROFANITY"
       }
      ],
      "WordsConfig": [
       {
        "InputAction": "BLOCK",
+       "InputEnabled": true,
        "OutputAction": "NONE",
+       "OutputEnabled": true,
        "Text": "reggaeton"
       }
      ]

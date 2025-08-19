@@ -137,6 +137,158 @@ describe('CDK-Created-Guardrail', () => {
     });
   });
 
+  describe('Topic validation', () => {
+    test('validates inputAction is a valid GuardrailAction value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          deniedTopics: [
+            {
+              name: 'TestTopic',
+              definition: 'A test topic definition',
+              examples: ['Example 1'],
+              inputAction: 'INVALID_ACTION' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid Topic at index 0: inputAction must be a valid GuardrailAction value/);
+    });
+
+    test('validates outputAction is a valid GuardrailAction value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          deniedTopics: [
+            {
+              name: 'TestTopic',
+              definition: 'A test topic definition',
+              examples: ['Example 1'],
+              outputAction: 'INVALID_ACTION' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid Topic at index 0: outputAction must be a valid GuardrailAction value/);
+    });
+
+    test('validates inputEnabled is a boolean value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          deniedTopics: [
+            {
+              name: 'TestTopic',
+              definition: 'A test topic definition',
+              examples: ['Example 1'],
+              inputEnabled: 'not a boolean' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid Topic at index 0: inputEnabled must be a boolean value/);
+    });
+
+    test('validates outputEnabled is a boolean value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          deniedTopics: [
+            {
+              name: 'TestTopic',
+              definition: 'A test topic definition',
+              examples: ['Example 1'],
+              outputEnabled: 'not a boolean' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid Topic at index 0: outputEnabled must be a boolean value/);
+    });
+
+    test('accepts Topic with all optional properties', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          deniedTopics: [
+            {
+              name: 'TestTopic',
+              definition: 'A test topic definition',
+              examples: ['Example 1'],
+              inputAction: bedrock.GuardrailAction.BLOCK,
+              inputEnabled: true,
+              outputAction: bedrock.GuardrailAction.NONE,
+              outputEnabled: false,
+            },
+          ],
+        });
+      }).not.toThrow();
+    });
+
+    test('applies default values for optional Topic properties in CloudFormation', () => {
+      new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        deniedTopics: [
+          {
+            name: 'TestTopic',
+            definition: 'A test topic definition',
+            examples: ['Example 1'],
+            // Note: Not providing optional properties to test defaults
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+        Name: 'TestGuardrail',
+        TopicPolicyConfig: {
+          TopicsConfig: [
+            {
+              Name: 'TestTopic',
+              Definition: 'A test topic definition',
+              Examples: ['Example 1'],
+              Type: 'DENY',
+              InputAction: 'BLOCK',
+              InputEnabled: true,
+              OutputAction: 'BLOCK',
+              OutputEnabled: true,
+            },
+          ],
+        },
+      });
+    });
+
+    test('applies custom values for optional Topic properties in CloudFormation', () => {
+      new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        deniedTopics: [
+          {
+            name: 'TestTopic',
+            definition: 'A test topic definition',
+            examples: ['Example 1'],
+            inputAction: bedrock.GuardrailAction.NONE,
+            inputEnabled: false,
+            outputAction: bedrock.GuardrailAction.BLOCK,
+            outputEnabled: true,
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+        Name: 'TestGuardrail',
+        TopicPolicyConfig: {
+          TopicsConfig: [
+            {
+              Name: 'TestTopic',
+              Definition: 'A test topic definition',
+              Examples: ['Example 1'],
+              Type: 'DENY',
+              InputAction: 'NONE',
+              InputEnabled: false,
+              OutputAction: 'BLOCK',
+              OutputEnabled: true,
+            },
+          ],
+        },
+      });
+    });
+  });
+
   test('Content Filter - Props', () => {
     new bedrock.Guardrail(stack, 'TestGuardrail', {
       guardrailName: 'TestGuardrail',
@@ -192,6 +344,156 @@ describe('CDK-Created-Guardrail', () => {
     });
   });
 
+  describe('ContentFilter validation', () => {
+    test('validates inputAction is a valid GuardrailAction value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          contentFilters: [
+            {
+              type: bedrock.ContentFilterType.MISCONDUCT,
+              inputStrength: bedrock.ContentFilterStrength.LOW,
+              outputStrength: bedrock.ContentFilterStrength.LOW,
+              inputAction: 'INVALID_ACTION' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid ContentFilter at index 0: inputAction must be a valid GuardrailAction value/);
+    });
+
+    test('validates outputAction is a valid GuardrailAction value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          contentFilters: [
+            {
+              type: bedrock.ContentFilterType.MISCONDUCT,
+              inputStrength: bedrock.ContentFilterStrength.LOW,
+              outputStrength: bedrock.ContentFilterStrength.LOW,
+              outputAction: 'INVALID_ACTION' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid ContentFilter at index 0: outputAction must be a valid GuardrailAction value/);
+    });
+
+    test('validates inputEnabled is a boolean value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          contentFilters: [
+            {
+              type: bedrock.ContentFilterType.MISCONDUCT,
+              inputStrength: bedrock.ContentFilterStrength.LOW,
+              outputStrength: bedrock.ContentFilterStrength.LOW,
+              inputEnabled: 'not a boolean' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid ContentFilter at index 0: inputEnabled must be a boolean value/);
+    });
+
+    test('validates outputEnabled is a boolean value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          contentFilters: [
+            {
+              type: bedrock.ContentFilterType.MISCONDUCT,
+              inputStrength: bedrock.ContentFilterStrength.LOW,
+              outputStrength: bedrock.ContentFilterStrength.LOW,
+              outputEnabled: 'not a boolean' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid ContentFilter at index 0: outputEnabled must be a boolean value/);
+    });
+
+    test('accepts ContentFilter with all optional properties', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          contentFilters: [
+            {
+              type: bedrock.ContentFilterType.MISCONDUCT,
+              inputStrength: bedrock.ContentFilterStrength.LOW,
+              outputStrength: bedrock.ContentFilterStrength.LOW,
+              inputAction: bedrock.GuardrailAction.BLOCK,
+              inputEnabled: true,
+              outputAction: bedrock.GuardrailAction.NONE,
+              outputEnabled: false,
+            },
+          ],
+        });
+      }).not.toThrow();
+    });
+
+    test('applies default values for optional ContentFilter properties in CloudFormation', () => {
+      new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        contentFilters: [
+          {
+            type: bedrock.ContentFilterType.MISCONDUCT,
+            inputStrength: bedrock.ContentFilterStrength.LOW,
+            outputStrength: bedrock.ContentFilterStrength.LOW,
+            // Note: Not providing optional properties to test defaults
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+        Name: 'TestGuardrail',
+        ContentPolicyConfig: {
+          FiltersConfig: [
+            {
+              InputStrength: 'LOW',
+              OutputStrength: 'LOW',
+              Type: 'MISCONDUCT',
+              InputAction: 'BLOCK',
+              InputEnabled: true,
+              OutputAction: 'BLOCK',
+              OutputEnabled: true,
+            },
+          ],
+        },
+      });
+    });
+
+    test('applies custom values for optional ContentFilter properties in CloudFormation', () => {
+      new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        contentFilters: [
+          {
+            type: bedrock.ContentFilterType.MISCONDUCT,
+            inputStrength: bedrock.ContentFilterStrength.LOW,
+            outputStrength: bedrock.ContentFilterStrength.LOW,
+            inputAction: bedrock.GuardrailAction.NONE,
+            inputEnabled: false,
+            outputAction: bedrock.GuardrailAction.BLOCK,
+            outputEnabled: true,
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+        Name: 'TestGuardrail',
+        ContentPolicyConfig: {
+          FiltersConfig: [
+            {
+              InputStrength: 'LOW',
+              OutputStrength: 'LOW',
+              Type: 'MISCONDUCT',
+              InputAction: 'NONE',
+              InputEnabled: false,
+              OutputAction: 'BLOCK',
+              OutputEnabled: true,
+            },
+          ],
+        },
+      });
+    });
+  });
+
   test('Contextual Grounding Filter - Props', () => {
     new bedrock.Guardrail(stack, 'TestGuardrail', {
       guardrailName: 'TestGuardrail',
@@ -243,6 +545,109 @@ describe('CDK-Created-Guardrail', () => {
     });
   });
 
+  describe('ContextualGroundingFilter validation', () => {
+    test('validates action is a valid GuardrailAction value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          contextualGroundingFilters: [
+            {
+              type: bedrock.ContextualGroundingFilterType.GROUNDING,
+              threshold: 0.99,
+              action: 'INVALID_ACTION' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid ContextualGroundingFilter at index 0: action must be a valid GuardrailAction value/);
+    });
+
+    test('validates enabled is a boolean value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          contextualGroundingFilters: [
+            {
+              type: bedrock.ContextualGroundingFilterType.GROUNDING,
+              threshold: 0.99,
+              enabled: 'not a boolean' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid ContextualGroundingFilter at index 0: enabled must be a boolean value/);
+    });
+
+    test('accepts ContextualGroundingFilter with all optional properties', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          contextualGroundingFilters: [
+            {
+              type: bedrock.ContextualGroundingFilterType.GROUNDING,
+              threshold: 0.99,
+              action: bedrock.GuardrailAction.BLOCK,
+              enabled: true,
+            },
+          ],
+        });
+      }).not.toThrow();
+    });
+
+    test('applies default values for optional ContextualGroundingFilter properties in CloudFormation', () => {
+      new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        contextualGroundingFilters: [
+          {
+            type: bedrock.ContextualGroundingFilterType.GROUNDING,
+            threshold: 0.99,
+            // Note: Not providing optional properties to test defaults
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+        Name: 'TestGuardrail',
+        ContextualGroundingPolicyConfig: {
+          FiltersConfig: [
+            {
+              Threshold: 0.99,
+              Type: 'GROUNDING',
+              Action: 'BLOCK',
+              Enabled: true,
+            },
+          ],
+        },
+      });
+    });
+
+    test('applies custom values for optional ContextualGroundingFilter properties in CloudFormation', () => {
+      new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        contextualGroundingFilters: [
+          {
+            type: bedrock.ContextualGroundingFilterType.GROUNDING,
+            threshold: 0.99,
+            action: bedrock.GuardrailAction.NONE,
+            enabled: false,
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+        Name: 'TestGuardrail',
+        ContextualGroundingPolicyConfig: {
+          FiltersConfig: [
+            {
+              Threshold: 0.99,
+              Type: 'GROUNDING',
+              Action: 'NONE',
+              Enabled: false,
+            },
+          ],
+        },
+      });
+    });
+  });
+
   test('PII Filter - Props', () => {
     new bedrock.Guardrail(stack, 'TestGuardrail', {
       guardrailName: 'TestGuardrail',
@@ -291,6 +696,161 @@ describe('CDK-Created-Guardrail', () => {
           },
         ],
       },
+    });
+  });
+
+  describe('PIIFilter validation', () => {
+    test('validates action is a valid GuardrailAction value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          piiFilters: [
+            {
+              type: bedrock.GeneralPIIType.ADDRESS,
+              action: 'INVALID_ACTION' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid PIIFilter at index 0: action must be a valid GuardrailAction value/);
+    });
+
+    test('validates inputAction is a valid GuardrailAction value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          piiFilters: [
+            {
+              type: bedrock.GeneralPIIType.ADDRESS,
+              action: bedrock.GuardrailAction.ANONYMIZE,
+              inputAction: 'INVALID_ACTION' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid PIIFilter at index 0: inputAction must be a valid GuardrailAction value/);
+    });
+
+    test('validates outputAction is a valid GuardrailAction value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          piiFilters: [
+            {
+              type: bedrock.GeneralPIIType.ADDRESS,
+              action: bedrock.GuardrailAction.ANONYMIZE,
+              outputAction: 'INVALID_ACTION' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid PIIFilter at index 0: outputAction must be a valid GuardrailAction value/);
+    });
+
+    test('validates inputEnabled is a boolean value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          piiFilters: [
+            {
+              type: bedrock.GeneralPIIType.ADDRESS,
+              action: bedrock.GuardrailAction.ANONYMIZE,
+              inputEnabled: 'not a boolean' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid PIIFilter at index 0: inputEnabled must be a boolean value/);
+    });
+
+    test('validates outputEnabled is a boolean value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          piiFilters: [
+            {
+              type: bedrock.GeneralPIIType.ADDRESS,
+              action: bedrock.GuardrailAction.ANONYMIZE,
+              outputEnabled: 'not a boolean' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid PIIFilter at index 0: outputEnabled must be a boolean value/);
+    });
+
+    test('accepts PIIFilter with all optional properties', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          piiFilters: [
+            {
+              type: bedrock.GeneralPIIType.ADDRESS,
+              action: bedrock.GuardrailAction.ANONYMIZE,
+              inputAction: bedrock.GuardrailAction.BLOCK,
+              inputEnabled: true,
+              outputAction: bedrock.GuardrailAction.NONE,
+              outputEnabled: false,
+            },
+          ],
+        });
+      }).not.toThrow();
+    });
+
+    test('applies default values for optional PIIFilter properties in CloudFormation', () => {
+      new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        piiFilters: [
+          {
+            type: bedrock.GeneralPIIType.ADDRESS,
+            action: bedrock.GuardrailAction.ANONYMIZE,
+            // Note: Not providing optional properties to test defaults
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+        Name: 'TestGuardrail',
+        SensitiveInformationPolicyConfig: {
+          PiiEntitiesConfig: [
+            {
+              Action: 'ANONYMIZE',
+              Type: 'ADDRESS',
+              InputAction: 'BLOCK',
+              InputEnabled: true,
+              OutputAction: 'BLOCK',
+              OutputEnabled: true,
+            },
+          ],
+        },
+      });
+    });
+
+    test('applies custom values for optional PIIFilter properties in CloudFormation', () => {
+      new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        piiFilters: [
+          {
+            type: bedrock.GeneralPIIType.ADDRESS,
+            action: bedrock.GuardrailAction.ANONYMIZE,
+            inputAction: bedrock.GuardrailAction.NONE,
+            inputEnabled: false,
+            outputAction: bedrock.GuardrailAction.BLOCK,
+            outputEnabled: true,
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+        Name: 'TestGuardrail',
+        SensitiveInformationPolicyConfig: {
+          PiiEntitiesConfig: [
+            {
+              Action: 'ANONYMIZE',
+              Type: 'ADDRESS',
+              InputAction: 'NONE',
+              InputEnabled: false,
+              OutputAction: 'BLOCK',
+              OutputEnabled: true,
+            },
+          ],
+        },
+      });
     });
   });
 
@@ -460,6 +1020,170 @@ describe('CDK-Created-Guardrail', () => {
         });
       }).not.toThrow();
     });
+
+    test('validates action is a valid GuardrailAction value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          regexFilters: [
+            {
+              name: 'TestRegexFilter',
+              pattern: '/^[A-Z]{2}d{6}$/',
+              action: 'INVALID_ACTION' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid RegexFilter at index 0: action must be a valid GuardrailAction value/);
+    });
+
+    test('validates inputAction is a valid GuardrailAction value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          regexFilters: [
+            {
+              name: 'TestRegexFilter',
+              pattern: '/^[A-Z]{2}d{6}$/',
+              action: bedrock.GuardrailAction.ANONYMIZE,
+              inputAction: 'INVALID_ACTION' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid RegexFilter at index 0: inputAction must be a valid GuardrailAction value/);
+    });
+
+    test('validates outputAction is a valid GuardrailAction value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          regexFilters: [
+            {
+              name: 'TestRegexFilter',
+              pattern: '/^[A-Z]{2}d{6}$/',
+              action: bedrock.GuardrailAction.ANONYMIZE,
+              outputAction: 'INVALID_ACTION' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid RegexFilter at index 0: outputAction must be a valid GuardrailAction value/);
+    });
+
+    test('validates inputEnabled is a boolean value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          regexFilters: [
+            {
+              name: 'TestRegexFilter',
+              pattern: '/^[A-Z]{2}d{6}$/',
+              action: bedrock.GuardrailAction.ANONYMIZE,
+              inputEnabled: 'not a boolean' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid RegexFilter at index 0: inputEnabled must be a boolean value/);
+    });
+
+    test('validates outputEnabled is a boolean value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          regexFilters: [
+            {
+              name: 'TestRegexFilter',
+              pattern: '/^[A-Z]{2}d{6}$/',
+              action: bedrock.GuardrailAction.ANONYMIZE,
+              outputEnabled: 'not a boolean' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid RegexFilter at index 0: outputEnabled must be a boolean value/);
+    });
+
+    test('accepts RegexFilter with all optional properties', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          regexFilters: [
+            {
+              name: 'TestRegexFilter',
+              description: 'A valid description',
+              pattern: '/^[A-Z]{2}d{6}$/',
+              action: bedrock.GuardrailAction.ANONYMIZE,
+              inputAction: bedrock.GuardrailAction.BLOCK,
+              inputEnabled: true,
+              outputAction: bedrock.GuardrailAction.NONE,
+              outputEnabled: false,
+            },
+          ],
+        });
+      }).not.toThrow();
+    });
+
+    test('applies default values for optional RegexFilter properties in CloudFormation', () => {
+      new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        regexFilters: [
+          {
+            name: 'TestRegexFilter',
+            pattern: '/^[A-Z]{2}d{6}$/',
+            action: bedrock.GuardrailAction.ANONYMIZE,
+            // Note: Not providing optional properties to test defaults
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+        Name: 'TestGuardrail',
+        SensitiveInformationPolicyConfig: {
+          RegexesConfig: [
+            {
+              Action: 'ANONYMIZE',
+              Name: 'TestRegexFilter',
+              Pattern: '/^[A-Z]{2}d{6}$/',
+              InputAction: 'BLOCK',
+              InputEnabled: true,
+              OutputAction: 'BLOCK',
+              OutputEnabled: true,
+            },
+          ],
+        },
+      });
+    });
+
+    test('applies custom values for optional RegexFilter properties in CloudFormation', () => {
+      new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        regexFilters: [
+          {
+            name: 'TestRegexFilter',
+            pattern: '/^[A-Z]{2}d{6}$/',
+            action: bedrock.GuardrailAction.ANONYMIZE,
+            inputAction: bedrock.GuardrailAction.NONE,
+            inputEnabled: false,
+            outputAction: bedrock.GuardrailAction.BLOCK,
+            outputEnabled: true,
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+        Name: 'TestGuardrail',
+        SensitiveInformationPolicyConfig: {
+          RegexesConfig: [
+            {
+              Action: 'ANONYMIZE',
+              Name: 'TestRegexFilter',
+              Pattern: '/^[A-Z]{2}d{6}$/',
+              InputAction: 'NONE',
+              InputEnabled: false,
+              OutputAction: 'BLOCK',
+              OutputEnabled: true,
+            },
+          ],
+        },
+      });
+    });
   });
 
   test('Word Filter - Props', () => {
@@ -521,6 +1245,138 @@ describe('CDK-Created-Guardrail', () => {
     });
   });
 
+  describe('WordFilter validation', () => {
+    test('validates inputAction is a valid GuardrailAction value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          wordFilters: [
+            {
+              text: 'test',
+              inputAction: 'INVALID_ACTION' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid WordFilter at index 0: inputAction must be a valid GuardrailAction value/);
+    });
+
+    test('validates outputAction is a valid GuardrailAction value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          wordFilters: [
+            {
+              text: 'test',
+              outputAction: 'INVALID_ACTION' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid WordFilter at index 0: outputAction must be a valid GuardrailAction value/);
+    });
+
+    test('validates inputEnabled is a boolean value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          wordFilters: [
+            {
+              text: 'test',
+              inputEnabled: 'not a boolean' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid WordFilter at index 0: inputEnabled must be a boolean value/);
+    });
+
+    test('validates outputEnabled is a boolean value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          wordFilters: [
+            {
+              text: 'test',
+              outputEnabled: 'not a boolean' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid WordFilter at index 0: outputEnabled must be a boolean value/);
+    });
+
+    test('accepts WordFilter with all optional properties', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          wordFilters: [
+            {
+              text: 'test',
+              inputAction: bedrock.GuardrailAction.BLOCK,
+              inputEnabled: true,
+              outputAction: bedrock.GuardrailAction.NONE,
+              outputEnabled: false,
+            },
+          ],
+        });
+      }).not.toThrow();
+    });
+
+    test('applies default values for optional WordFilter properties in CloudFormation', () => {
+      new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        wordFilters: [
+          {
+            text: 'test',
+            // Note: Not providing optional properties to test defaults
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+        Name: 'TestGuardrail',
+        WordPolicyConfig: {
+          WordsConfig: [
+            {
+              Text: 'test',
+              InputAction: 'BLOCK',
+              InputEnabled: true,
+              OutputAction: 'BLOCK',
+              OutputEnabled: true,
+            },
+          ],
+        },
+      });
+    });
+
+    test('applies custom values for optional WordFilter properties in CloudFormation', () => {
+      new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        wordFilters: [
+          {
+            text: 'test',
+            inputAction: bedrock.GuardrailAction.NONE,
+            inputEnabled: false,
+            outputAction: bedrock.GuardrailAction.BLOCK,
+            outputEnabled: true,
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+        Name: 'TestGuardrail',
+        WordPolicyConfig: {
+          WordsConfig: [
+            {
+              Text: 'test',
+              InputAction: 'NONE',
+              InputEnabled: false,
+              OutputAction: 'BLOCK',
+              OutputEnabled: true,
+            },
+          ],
+        },
+      });
+    });
+  });
+
   test('Managed Word Filter - Props', () => {
     new bedrock.Guardrail(stack, 'TestGuardrail', {
       guardrailName: 'TestGuardrail',
@@ -565,6 +1421,146 @@ describe('CDK-Created-Guardrail', () => {
           },
         ],
       },
+    });
+  });
+
+  describe('ManagedWordFilter validation', () => {
+    test('validates type is a valid ManagedWordFilterType value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          managedWordListFilters: [
+            {
+              type: 'INVALID_TYPE' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid ManagedWordFilter at index 0: type must be a valid ManagedWordFilterType value/);
+    });
+
+    test('validates inputAction is a valid GuardrailAction value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          managedWordListFilters: [
+            {
+              inputAction: 'INVALID_ACTION' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid ManagedWordFilter at index 0: inputAction must be a valid GuardrailAction value/);
+    });
+
+    test('validates outputAction is a valid GuardrailAction value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          managedWordListFilters: [
+            {
+              outputAction: 'INVALID_ACTION' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid ManagedWordFilter at index 0: outputAction must be a valid GuardrailAction value/);
+    });
+
+    test('validates inputEnabled is a boolean value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          managedWordListFilters: [
+            {
+              inputEnabled: 'not a boolean' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid ManagedWordFilter at index 0: inputEnabled must be a boolean value/);
+    });
+
+    test('validates outputEnabled is a boolean value', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          managedWordListFilters: [
+            {
+              outputEnabled: 'not a boolean' as any,
+            },
+          ],
+        });
+      }).toThrow(/Invalid ManagedWordFilter at index 0: outputEnabled must be a boolean value/);
+    });
+
+    test('accepts ManagedWordFilter with all optional properties', () => {
+      expect(() => {
+        new bedrock.Guardrail(stack, 'TestGuardrail', {
+          guardrailName: 'TestGuardrail',
+          managedWordListFilters: [
+            {
+              type: bedrock.ManagedWordFilterType.PROFANITY,
+              inputAction: bedrock.GuardrailAction.BLOCK,
+              inputEnabled: true,
+              outputAction: bedrock.GuardrailAction.NONE,
+              outputEnabled: false,
+            },
+          ],
+        });
+      }).not.toThrow();
+    });
+
+    test('applies default values for optional ManagedWordFilter properties in CloudFormation', () => {
+      new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        managedWordListFilters: [
+          {
+            // Note: Not providing optional properties to test defaults
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+        Name: 'TestGuardrail',
+        WordPolicyConfig: {
+          ManagedWordListsConfig: [
+            {
+              Type: 'PROFANITY',
+              InputAction: 'BLOCK',
+              InputEnabled: true,
+              OutputAction: 'BLOCK',
+              OutputEnabled: true,
+            },
+          ],
+        },
+      });
+    });
+
+    test('applies custom values for optional ManagedWordFilter properties in CloudFormation', () => {
+      new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        managedWordListFilters: [
+          {
+            type: bedrock.ManagedWordFilterType.PROFANITY,
+            inputAction: bedrock.GuardrailAction.NONE,
+            inputEnabled: false,
+            outputAction: bedrock.GuardrailAction.BLOCK,
+            outputEnabled: true,
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Guardrail', {
+        Name: 'TestGuardrail',
+        WordPolicyConfig: {
+          ManagedWordListsConfig: [
+            {
+              Type: 'PROFANITY',
+              InputAction: 'NONE',
+              InputEnabled: false,
+              OutputAction: 'BLOCK',
+              OutputEnabled: true,
+            },
+          ],
+        },
+      });
     });
   });
 

@@ -11,7 +11,11 @@
      },
      "FiltersConfig": [
       {
+       "InputAction": "BLOCK",
+       "InputEnabled": true,
        "InputStrength": "HIGH",
+       "OutputAction": "BLOCK",
+       "OutputEnabled": true,
        "OutputStrength": "MEDIUM",
        "Type": "SEXUAL"
       }

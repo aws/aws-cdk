@@ -751,6 +751,10 @@ export class Guardrail extends GuardrailBase {
                 name: topic.name,
                 examples: topic.examples,
                 type: 'DENY',
+                inputAction: topic.inputAction,
+                inputEnabled: topic.inputEnabled,
+                outputAction: topic.outputAction,
+                outputEnabled: topic.outputEnabled,
               } as bedrock.CfnGuardrail.TopicConfigProperty;
             }),
             ...(this.topicsTierConfig && {
@@ -781,6 +785,8 @@ export class Guardrail extends GuardrailBase {
               return {
                 type: filter.type,
                 threshold: filter.threshold,
+                action: filter.action,
+                enabled: filter.enabled,
               } as bedrock.CfnGuardrail.ContextualGroundingFilterConfigProperty;
             }),
           };
@@ -892,6 +898,10 @@ export class Guardrail extends GuardrailBase {
               description: regex.description,
               pattern: regex.pattern,
               action: regex.action,
+              inputAction: regex.inputAction,
+              inputEnabled: regex.inputEnabled,
+              outputAction: regex.outputAction,
+              outputEnabled: regex.outputEnabled,
             } as bedrock.CfnGuardrail.RegexConfigProperty;
           });
         },
@@ -943,7 +953,7 @@ export class Guardrail extends GuardrailBase {
   }
 
   /**
-   * Validates a RegexFilter object.
+   * Validates a RegexFilter object and applies default values for optional properties.
    * @param filter The regex filter to validate.
    * @param index Optional index for error messages when validating arrays.
    */
@@ -975,6 +985,53 @@ export class Guardrail extends GuardrailBase {
       if (filter.pattern.length < 1) {
         throw new ValidationError(`${prefix}: The field pattern is ${filter.pattern.length} characters long but must be at least 1 characters`, this);
       }
+    }
+
+    // Validate action: must be a valid GuardrailAction value
+    if (filter.action !== undefined && !Token.isUnresolved(filter.action) && !Object.values(filters.GuardrailAction).includes(filter.action)) {
+      throw new ValidationError(`${prefix}: action must be a valid GuardrailAction value`, this);
+    }
+
+    // Validate inputAction: must be a valid GuardrailAction value (if provided)
+    if (filter.inputAction !== undefined &&
+        !Token.isUnresolved(filter.inputAction) &&
+        !Object.values(filters.GuardrailAction).includes(filter.inputAction)) {
+      throw new ValidationError(`${prefix}: inputAction must be a valid GuardrailAction value`, this);
+    }
+
+    // Validate outputAction: must be a valid GuardrailAction value (if provided)
+    if (filter.outputAction !== undefined &&
+        !Token.isUnresolved(filter.outputAction) &&
+        !Object.values(filters.GuardrailAction).includes(filter.outputAction)) {
+      throw new ValidationError(`${prefix}: outputAction must be a valid GuardrailAction value`, this);
+    }
+
+    // Validate inputEnabled: must be a boolean (if provided)
+    if (filter.inputEnabled !== undefined &&
+        !Token.isUnresolved(filter.inputEnabled) &&
+        typeof filter.inputEnabled !== 'boolean') {
+      throw new ValidationError(`${prefix}: inputEnabled must be a boolean value`, this);
+    }
+
+    // Validate outputEnabled: must be a boolean (if provided)
+    if (filter.outputEnabled !== undefined &&
+        !Token.isUnresolved(filter.outputEnabled) &&
+        typeof filter.outputEnabled !== 'boolean') {
+      throw new ValidationError(`${prefix}: outputEnabled must be a boolean value`, this);
+    }
+
+    // Apply default values for optional properties if not provided
+    if (filter.inputAction === undefined) {
+      (filter as any).inputAction = filters.GuardrailAction.BLOCK;
+    }
+    if (filter.inputEnabled === undefined) {
+      (filter as any).inputEnabled = true;
+    }
+    if (filter.outputAction === undefined) {
+      (filter as any).outputAction = filters.GuardrailAction.BLOCK;
+    }
+    if (filter.outputEnabled === undefined) {
+      (filter as any).outputEnabled = true;
     }
   }
 
@@ -1023,7 +1080,7 @@ export class Guardrail extends GuardrailBase {
   }
 
   /**
-   * Validates content filters array.
+   * Validates content filters array and applies default values for optional properties.
    * @param contentFilters The content filters to validate.
    */
   private validateContentFilters(contentFilters?: filters.ContentFilter[]): void {
@@ -1068,11 +1125,53 @@ export class Guardrail extends GuardrailBase {
           }
         });
       }
+
+      // Validate inputAction: must be a valid GuardrailAction value (if provided)
+      if (filter.inputAction !== undefined &&
+          !Token.isUnresolved(filter.inputAction) &&
+          !Object.values(filters.GuardrailAction).includes(filter.inputAction)) {
+        throw new ValidationError(`${prefix}: inputAction must be a valid GuardrailAction value`, this);
+      }
+
+      // Validate outputAction: must be a valid GuardrailAction value (if provided)
+      if (filter.outputAction !== undefined &&
+          !Token.isUnresolved(filter.outputAction) &&
+          !Object.values(filters.GuardrailAction).includes(filter.outputAction)) {
+        throw new ValidationError(`${prefix}: outputAction must be a valid GuardrailAction value`, this);
+      }
+
+      // Validate inputEnabled: must be a boolean (if provided)
+      if (filter.inputEnabled !== undefined &&
+          !Token.isUnresolved(filter.inputEnabled) &&
+          typeof filter.inputEnabled !== 'boolean') {
+        throw new ValidationError(`${prefix}: inputEnabled must be a boolean value`, this);
+      }
+
+      // Validate outputEnabled: must be a boolean (if provided)
+      if (filter.outputEnabled !== undefined &&
+          !Token.isUnresolved(filter.outputEnabled) &&
+          typeof filter.outputEnabled !== 'boolean') {
+        throw new ValidationError(`${prefix}: outputEnabled must be a boolean value`, this);
+      }
+
+      // Apply default values for optional properties if not provided
+      if (filter.inputAction === undefined) {
+        (filter as any).inputAction = filters.GuardrailAction.BLOCK;
+      }
+      if (filter.inputEnabled === undefined) {
+        (filter as any).inputEnabled = true;
+      }
+      if (filter.outputAction === undefined) {
+        (filter as any).outputAction = filters.GuardrailAction.BLOCK;
+      }
+      if (filter.outputEnabled === undefined) {
+        (filter as any).outputEnabled = true;
+      }
     });
   }
 
   /**
-   * Validates PII filters array.
+   * Validates PII filters array and applies default values for optional properties.
    * @param piiFilters The PII filters to validate.
    */
   private validatePiiFilters(piiFilters?: filters.PIIFilter[]): void {
@@ -1095,12 +1194,44 @@ export class Guardrail extends GuardrailBase {
         throw new ValidationError(`${prefix}: action must be a valid GuardrailAction value`, this);
       }
 
-      if (filter.inputAction && !Token.isUnresolved(filter.inputAction) && !Object.values(filters.GuardrailAction).includes(filter.inputAction)) {
+      if (filter.inputAction &&
+          !Token.isUnresolved(filter.inputAction) &&
+          !Object.values(filters.GuardrailAction).includes(filter.inputAction)) {
         throw new ValidationError(`${prefix}: inputAction must be a valid GuardrailAction value`, this);
       }
 
-      if (filter.outputAction && !Token.isUnresolved(filter.outputAction) && !Object.values(filters.GuardrailAction).includes(filter.outputAction)) {
+      if (filter.outputAction &&
+          !Token.isUnresolved(filter.outputAction) &&
+          !Object.values(filters.GuardrailAction).includes(filter.outputAction)) {
         throw new ValidationError(`${prefix}: outputAction must be a valid GuardrailAction value`, this);
+      }
+
+      // Validate inputEnabled: must be a boolean (if provided)
+      if (filter.inputEnabled !== undefined &&
+          !Token.isUnresolved(filter.inputEnabled) &&
+          typeof filter.inputEnabled !== 'boolean') {
+        throw new ValidationError(`${prefix}: inputEnabled must be a boolean value`, this);
+      }
+
+      // Validate outputEnabled: must be a boolean (if provided)
+      if (filter.outputEnabled !== undefined &&
+          !Token.isUnresolved(filter.outputEnabled) &&
+          typeof filter.outputEnabled !== 'boolean') {
+        throw new ValidationError(`${prefix}: outputEnabled must be a boolean value`, this);
+      }
+
+      // Apply default values for optional properties if not provided
+      if (filter.inputAction === undefined) {
+        (filter as any).inputAction = filters.GuardrailAction.BLOCK;
+      }
+      if (filter.inputEnabled === undefined) {
+        (filter as any).inputEnabled = true;
+      }
+      if (filter.outputAction === undefined) {
+        (filter as any).outputAction = filters.GuardrailAction.BLOCK;
+      }
+      if (filter.outputEnabled === undefined) {
+        (filter as any).outputEnabled = true;
       }
     });
   }
@@ -1118,7 +1249,7 @@ export class Guardrail extends GuardrailBase {
   }
 
   /**
-   * Validates denied topics array.
+   * Validates denied topics array and applies default values for optional properties.
    * @param deniedTopics The denied topics to validate.
    */
   private validateDeniedTopics(deniedTopics?: filters.Topic[]): void {
@@ -1158,11 +1289,53 @@ export class Guardrail extends GuardrailBase {
           }
         });
       }
+
+      // Validate inputAction: must be a valid GuardrailAction value (if provided)
+      if (topic.inputAction !== undefined &&
+          !Token.isUnresolved(topic.inputAction) &&
+          !Object.values(filters.GuardrailAction).includes(topic.inputAction)) {
+        throw new ValidationError(`${prefix}: inputAction must be a valid GuardrailAction value`, this);
+      }
+
+      // Validate outputAction: must be a valid GuardrailAction value (if provided)
+      if (topic.outputAction !== undefined &&
+          !Token.isUnresolved(topic.outputAction) &&
+          !Object.values(filters.GuardrailAction).includes(topic.outputAction)) {
+        throw new ValidationError(`${prefix}: outputAction must be a valid GuardrailAction value`, this);
+      }
+
+      // Validate inputEnabled: must be a boolean (if provided)
+      if (topic.inputEnabled !== undefined &&
+          !Token.isUnresolved(topic.inputEnabled) &&
+          typeof topic.inputEnabled !== 'boolean') {
+        throw new ValidationError(`${prefix}: inputEnabled must be a boolean value`, this);
+      }
+
+      // Validate outputEnabled: must be a boolean (if provided)
+      if (topic.outputEnabled !== undefined &&
+          !Token.isUnresolved(topic.outputEnabled) &&
+          typeof topic.outputEnabled !== 'boolean') {
+        throw new ValidationError(`${prefix}: outputEnabled must be a boolean value`, this);
+      }
+
+      // Apply default values for optional properties if not provided
+      if (topic.inputAction === undefined) {
+        (topic as any).inputAction = filters.GuardrailAction.BLOCK;
+      }
+      if (topic.inputEnabled === undefined) {
+        (topic as any).inputEnabled = true;
+      }
+      if (topic.outputAction === undefined) {
+        (topic as any).outputAction = filters.GuardrailAction.BLOCK;
+      }
+      if (topic.outputEnabled === undefined) {
+        (topic as any).outputEnabled = true;
+      }
     });
   }
 
   /**
-   * Validates contextual grounding filters array.
+   * Validates contextual grounding filters array and applies default values for optional properties.
    * @param contextualGroundingFilters The contextual grounding filters to validate.
    */
   private validateContextualGroundingFilters(contextualGroundingFilters?: filters.ContextualGroundingFilter[]): void {
@@ -1192,15 +1365,32 @@ export class Guardrail extends GuardrailBase {
         }
       }
 
-      // Validate action if provided
-      if (filter.action && !Token.isUnresolved(filter.action) && !Object.values(filters.GuardrailAction).includes(filter.action)) {
+      // Validate action: must be a valid GuardrailAction value (if provided)
+      if (filter.action !== undefined &&
+          !Token.isUnresolved(filter.action) &&
+          !Object.values(filters.GuardrailAction).includes(filter.action)) {
         throw new ValidationError(`${prefix}: action must be a valid GuardrailAction value`, this);
+      }
+
+      // Validate enabled: must be a boolean (if provided)
+      if (filter.enabled !== undefined &&
+          !Token.isUnresolved(filter.enabled) &&
+          typeof filter.enabled !== 'boolean') {
+        throw new ValidationError(`${prefix}: enabled must be a boolean value`, this);
+      }
+
+      // Apply default values for optional properties if not provided
+      if (filter.action === undefined) {
+        (filter as any).action = filters.GuardrailAction.BLOCK;
+      }
+      if (filter.enabled === undefined) {
+        (filter as any).enabled = true;
       }
     });
   }
 
   /**
-   * Validates word filters array.
+   * Validates word filters array and applies default values for optional properties.
    * @param wordFilters The word filters to validate.
    */
   private validateWordFilters(wordFilters?: filters.WordFilter[]): void {
@@ -1219,19 +1409,52 @@ export class Guardrail extends GuardrailBase {
         throw new ValidationError(`${prefix}: text must be 100 characters or less`, this);
       }
 
-      // Validate action values
-      if (filter.inputAction && !Token.isUnresolved(filter.inputAction) && !Object.values(filters.GuardrailAction).includes(filter.inputAction)) {
+      // Validate inputAction: must be a valid GuardrailAction value (if provided)
+      if (filter.inputAction !== undefined &&
+          !Token.isUnresolved(filter.inputAction) &&
+          !Object.values(filters.GuardrailAction).includes(filter.inputAction)) {
         throw new ValidationError(`${prefix}: inputAction must be a valid GuardrailAction value`, this);
       }
 
-      if (filter.outputAction && !Token.isUnresolved(filter.outputAction) && !Object.values(filters.GuardrailAction).includes(filter.outputAction)) {
+      // Validate outputAction: must be a valid GuardrailAction value (if provided)
+      if (filter.outputAction !== undefined &&
+          !Token.isUnresolved(filter.outputAction) &&
+          !Object.values(filters.GuardrailAction).includes(filter.outputAction)) {
         throw new ValidationError(`${prefix}: outputAction must be a valid GuardrailAction value`, this);
+      }
+
+      // Validate inputEnabled: must be a boolean (if provided)
+      if (filter.inputEnabled !== undefined &&
+          !Token.isUnresolved(filter.inputEnabled) &&
+          typeof filter.inputEnabled !== 'boolean') {
+        throw new ValidationError(`${prefix}: inputEnabled must be a boolean value`, this);
+      }
+
+      // Validate outputEnabled: must be a boolean (if provided)
+      if (filter.outputEnabled !== undefined &&
+          !Token.isUnresolved(filter.outputEnabled) &&
+          typeof filter.outputEnabled !== 'boolean') {
+        throw new ValidationError(`${prefix}: outputEnabled must be a boolean value`, this);
+      }
+
+      // Apply default values for optional properties if not provided
+      if (filter.inputAction === undefined) {
+        (filter as any).inputAction = filters.GuardrailAction.BLOCK;
+      }
+      if (filter.inputEnabled === undefined) {
+        (filter as any).inputEnabled = true;
+      }
+      if (filter.outputAction === undefined) {
+        (filter as any).outputAction = filters.GuardrailAction.BLOCK;
+      }
+      if (filter.outputEnabled === undefined) {
+        (filter as any).outputEnabled = true;
       }
     });
   }
 
   /**
-   * Validates managed word list filters array.
+   * Validates managed word list filters array and applies default values for optional properties.
    * @param managedWordListFilters The managed word list filters to validate.
    */
   private validateManagedWordListFilters(managedWordListFilters?: filters.ManagedWordFilter[]): void {
@@ -1240,20 +1463,55 @@ export class Guardrail extends GuardrailBase {
     managedWordListFilters.forEach((filter, index) => {
       const prefix = `Invalid ManagedWordFilter at index ${index}`;
 
-      // Validate type if provided
-      if (filter.type && !Object.values(filters.ManagedWordFilterType).includes(filter.type)) {
+      // Validate type: must be a valid ManagedWordFilterType value (if provided)
+      if (filter.type !== undefined && !Object.values(filters.ManagedWordFilterType).includes(filter.type)) {
         throw new ValidationError(`${prefix}: type must be a valid ManagedWordFilterType value`, this);
       }
 
-      // Validate action values
-      if (filter.inputAction && !Token.isUnresolved(filter.inputAction) && !Object.values(filters.GuardrailAction).includes(filter.inputAction)) {
+      // Validate inputAction: must be a valid GuardrailAction value (if provided)
+      if (filter.inputAction !== undefined &&
+          !Token.isUnresolved(filter.inputAction) &&
+          !Object.values(filters.GuardrailAction).includes(filter.inputAction)) {
         throw new ValidationError(`${prefix}: inputAction must be a valid GuardrailAction value`, this);
       }
 
-      if (filter.outputAction && !Token.isUnresolved(filter.outputAction) && !Object.values(filters.GuardrailAction).includes(filter.outputAction)) {
+      // Validate outputAction: must be a valid GuardrailAction value (if provided)
+      if (filter.outputAction !== undefined &&
+          !Token.isUnresolved(filter.outputAction) &&
+          !Object.values(filters.GuardrailAction).includes(filter.outputAction)) {
         throw new ValidationError(`${prefix}: outputAction must be a valid GuardrailAction value`, this);
+      }
+
+      // Validate inputEnabled: must be a boolean (if provided)
+      if (filter.inputEnabled !== undefined &&
+          !Token.isUnresolved(filter.inputEnabled) &&
+          typeof filter.inputEnabled !== 'boolean') {
+        throw new ValidationError(`${prefix}: inputEnabled must be a boolean value`, this);
+      }
+
+      // Validate outputEnabled: must be a boolean (if provided)
+      if (filter.outputEnabled !== undefined &&
+          !Token.isUnresolved(filter.outputEnabled) &&
+          typeof filter.outputEnabled !== 'boolean') {
+        throw new ValidationError(`${prefix}: outputEnabled must be a boolean value`, this);
+      }
+
+      // Apply default values for optional properties if not provided
+      if (filter.type === undefined) {
+        (filter as any).type = filters.ManagedWordFilterType.PROFANITY;
+      }
+      if (filter.inputAction === undefined) {
+        (filter as any).inputAction = filters.GuardrailAction.BLOCK;
+      }
+      if (filter.inputEnabled === undefined) {
+        (filter as any).inputEnabled = true;
+      }
+      if (filter.outputAction === undefined) {
+        (filter as any).outputAction = filters.GuardrailAction.BLOCK;
+      }
+      if (filter.outputEnabled === undefined) {
+        (filter as any).outputEnabled = true;
       }
     });
   }
 }
-
