@@ -101,7 +101,7 @@ describe('OpenIdConnectProvider resource', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Role: { 'Fn::GetAtt': ['MyRole', 'Arn'] },
+      Role: stack.resolve(role.roleArn),
     });
   });
 });

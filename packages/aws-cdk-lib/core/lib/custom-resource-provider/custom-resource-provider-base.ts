@@ -2,7 +2,6 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { CustomResourceProviderOptions, INLINE_CUSTOM_RESOURCE_CONTEXT } from './shared';
-import { PolicyStatement } from '../../../aws-iam';
 import * as cxapi from '../../../cx-api';
 import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
@@ -53,6 +52,7 @@ export abstract class CustomResourceProviderBase extends Construct {
   private _codeHash?: string;
   private policyStatements?: any[];
   private role?: CfnResource;
+  private customRole?: any;
 
   /**
    * The ARN of the provider's AWS Lambda function which should be used as the `serviceToken` when defining a custom
@@ -78,11 +78,7 @@ export abstract class CustomResourceProviderBase extends Construct {
     const { code, codeHandler, metadata } = this.createCodePropAndMetadata(props, stack);
 
     if (props.role) {
-      if (props.policyStatements) {
-        for (const statement of props.policyStatements) {
-          props.role.addToPrincipalPolicy(PolicyStatement.fromJson(statement));
-        }
-      }
+      this.customRole = props.role;
       this.roleArn = props.role.roleArn;
     } else {
       if (props.policyStatements) {
@@ -183,6 +179,9 @@ export abstract class CustomResourceProviderBase extends Construct {
    * });
    */
   public addToRolePolicy(statement: any): void {
+    if (this.customRole) {
+      throw new ValidationError('Cannot call addToRolePolicy() when using a custom role. Add the required policies to your role directly.', this);
+    }
     if (!this.policyStatements) {
       this.policyStatements = [];
     }

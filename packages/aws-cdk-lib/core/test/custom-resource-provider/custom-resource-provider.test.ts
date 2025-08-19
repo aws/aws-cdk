@@ -388,6 +388,54 @@ describe('custom resource provider', () => {
     }]);
   });
 
+  test('custom role can be provided', () => {
+    // GIVEN
+    const stack = new Stack();
+    const customRole = {
+      roleArn: 'arn:aws:iam::123456789012:role/MyCustomRole',
+    };
+
+    // WHEN
+    const provider = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
+      codeDirectory: TEST_HANDLER,
+      runtime: DEFAULT_PROVIDER_RUNTIME,
+      role: customRole,
+    });
+
+    // THEN
+    expect(provider.roleArn).toEqual('arn:aws:iam::123456789012:role/MyCustomRole');
+
+    const template = toCloudFormation(stack);
+
+    // No IAM role should be created
+    const resourceTypes = Object.values(template.Resources).map((r: any) => r.Type);
+    expect(resourceTypes).not.toContain('AWS::IAM::Role');
+
+    // Lambda should use the custom role ARN
+    const lambda = template.Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A;
+    expect(lambda.Properties.Role).toEqual('arn:aws:iam::123456789012:role/MyCustomRole');
+  });
+
+  test('addToRolePolicy throws error when custom role is provided', () => {
+    // GIVEN
+    const stack = new Stack();
+    const customRole = {
+      roleArn: 'arn:aws:iam::123456789012:role/MyCustomRole',
+    };
+
+    // WHEN
+    const provider = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
+      codeDirectory: TEST_HANDLER,
+      runtime: DEFAULT_PROVIDER_RUNTIME,
+      role: customRole,
+    });
+
+    // THEN
+    expect(() => {
+      provider.addToRolePolicy({ statement3: 456 });
+    }).toThrow('Cannot call addToRolePolicy() when using a custom role. Add the required policies to your role directly.');
+  });
+
   test('memorySize, timeout and description', () => {
     // GIVEN
     const stack = new Stack();
