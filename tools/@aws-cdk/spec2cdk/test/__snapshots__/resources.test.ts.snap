@@ -415,7 +415,7 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
   public get somethingRef(): SomethingRef {
     return {
       "somethingId": this.ref,
-      "attrSomethingArn": this.attrSomethingArn
+      "somethingArn": this.attrSomethingArn
     };
   }
 
@@ -464,14 +464,7 @@ export interface SomethingRef {
   /**
    * The ARN of the Something resource.
    */
-  readonly attrSomethingArn: string;
-
-  /**
-   * The arn for something
-   *
-   * @cloudformationAttribute SomethingArn
-   */
-  readonly attrSomethingArn: string;
+  readonly somethingArn: string;
 }
 
 /**
@@ -597,7 +590,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   public get resourceRef(): ResourceRef {
     return {
       "resourceId": this.ref,
-      "attrArn": this.attrArn
+      "resourceArn": this.attrArn
     };
   }
 
@@ -646,14 +639,7 @@ export interface ResourceRef {
   /**
    * The ARN of the Resource resource.
    */
-  readonly attrArn: string;
-
-  /**
-   * The arn for the resource
-   *
-   * @cloudformationAttribute Arn
-   */
-  readonly attrArn: string;
+  readonly resourceArn: string;
 }
 
 /**
@@ -948,8 +934,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   public get resourceRef(): ResourceRef {
     return {
-      "resourceArn": this.ref,
-      "attrArn": this.attrArn
+      "resourceArn": this.ref
     };
   }
 
@@ -994,18 +979,6 @@ export interface ResourceRef {
    * The Arn of the Resource resource.
    */
   readonly resourceArn: string;
-
-  /**
-   * The ARN of the Resource resource.
-   */
-  readonly attrArn: string;
-
-  /**
-   * The arn of the resource
-   *
-   * @cloudformationAttribute Arn
-   */
-  readonly attrArn: string;
 }
 
 /**
