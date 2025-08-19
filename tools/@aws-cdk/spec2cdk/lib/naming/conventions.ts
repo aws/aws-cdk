@@ -95,6 +95,10 @@ export function attributePropertyName(attrName: string) {
  * Make sure the resource name is included in the property
  */
 export function referencePropertyName(propName: string, resourceName: string) {
+  // Some primaryIdentifier components are structurally deep, like AWS::QuickSight::RefreshSchedule's
+  // 'schedule/scheduleId', or AWS::S3::StorageLens's `configuration/id`. Only return the last part.
+  propName = propName.split('/').pop() ?? propName;
+
   if (['arn', 'id', 'name', 'url'].includes(propName.toLowerCase())) {
     return `${camelcase(resourceName)}${propName.charAt(0).toUpperCase()}${propName.slice(1)}`;
   }
