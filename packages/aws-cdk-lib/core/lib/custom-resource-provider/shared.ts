@@ -74,7 +74,10 @@ export interface CustomResourceProviderOptions {
   /**
    * An optional user provided IAM role to be used for the provider's lambda function.
    *
-   * @default - No role, will be created automatically.
+   * **Important**: When providing a custom role, you must ensure it has all the
+   * necessary permissions for the custom resource provider to function correctly.
+   *
+   * @default - No role, will be created automatically with the required permissions.
    */
   readonly role?: any;
 }
