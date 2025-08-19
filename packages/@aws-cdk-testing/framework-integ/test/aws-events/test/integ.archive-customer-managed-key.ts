@@ -15,7 +15,6 @@ const kmsKey = new kms.Key(stack, 'KmsKey', {
       actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:ReEncrypt*'],
       principals: [
         new iam.ServicePrincipal('events.amazonaws.com'),
-        new iam.ServicePrincipal('events.aws.internal'),
       ],
       sid: 'Allow EventBridge in all stages',
       effect: iam.Effect.ALLOW,

@@ -112,7 +112,6 @@ describe('archive', () => {
       actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:ReEncrypt*'],
       principals: [
         new iam.ServicePrincipal('events.amazonaws.com'),
-        new iam.ServicePrincipal('events.aws.internal'),
       ],
       sid: 'Allow EventBridge in all stages',
       effect: iam.Effect.ALLOW,
@@ -168,13 +167,35 @@ describe('archive', () => {
             ],
             Effect: 'Allow',
             Principal: {
-              Service: ['events.amazonaws.com', 'events.aws.internal'],
+              Service: 'events.amazonaws.com',
             },
             Resource: '*',
           },
         ],
         Version: '2012-10-17',
       },
+    });
+  });
+
+  // Create archive with CMK as the empty string
+  test('Archive with passing an empty string as the CMK identifier on an event bus', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const eventBus = new EventBus(stack, 'Bus');
+
+    // WHEN
+    const archive = new Archive(stack, 'Archive', {
+      kmsKey: '',
+      sourceEventBus: eventBus,
+      eventPattern: {
+        source: ['test'],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Archive', {
+      KmsKeyIdentifier: '',
     });
   });
 });

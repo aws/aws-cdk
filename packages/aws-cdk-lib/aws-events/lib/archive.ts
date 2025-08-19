@@ -36,10 +36,13 @@ export interface BaseArchiveProps {
 
   /**
    * The customer managed key that encrypts this archive
+   * Can be either a string that represents the Key ARN directly or a kms.IKey
+   * This can potentially be a string because if it is an empty string,
+   * and it is used to update the archive, then Archive reverts back to using an AWS owned key
    *
    * @default - Use an AWS managed key
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKey | string;
 }
 
 /**
@@ -84,7 +87,7 @@ export class Archive extends Resource {
       eventPattern: renderEventPattern(props.eventPattern),
       retentionDays: props.retention?.toDays({ integral: true }) || 0,
       archiveName: this.physicalName,
-      kmsKeyIdentifier: props?.kmsKey?.keyArn,
+      kmsKeyIdentifier: typeof props.kmsKey === 'string' ? props.kmsKey : props?.kmsKey?.keyArn,
     });
 
     this.archiveArn = archive.attrArn;

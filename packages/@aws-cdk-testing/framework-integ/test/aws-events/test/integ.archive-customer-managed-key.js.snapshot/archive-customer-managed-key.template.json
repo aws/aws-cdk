@@ -14,10 +14,7 @@
        ],
        "Effect": "Allow",
        "Principal": {
-        "Service": [
-         "events.amazonaws.com",
-         "events.aws.internal"
-        ]
+        "Service": "events.amazonaws.com"
        },
        "Resource": "*",
        "Sid": "Allow EventBridge in all stages"
