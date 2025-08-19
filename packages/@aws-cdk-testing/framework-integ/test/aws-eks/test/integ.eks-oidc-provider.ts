@@ -6,8 +6,6 @@ import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
-    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
-    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 const stack = new Stack(app, 'aws-eks-oidc-provider-test');
