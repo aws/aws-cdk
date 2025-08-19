@@ -777,7 +777,41 @@ const provider = new iam.OpenIdConnectProvider(this, 'MyProvider', {
   clientIds: [ 'myclient1', 'myclient2' ],
 });
 const principal = new iam.OpenIdConnectPrincipal(provider);
+
 ```
+### Custom Lambda Role for OIDC Providers
+
+By default, the `OpenIdConnectProvider` creates its own IAM role for the underlying Lambda function with the required permissions. You can optionally provide your own role:
+
+```ts
+const customRole = new iam.Role(this, 'CustomOidcRole', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+// You must add the required permissions manually
+customRole.addToPrincipalPolicy(new iam.PolicyStatement({
+  effect: iam.Effect.ALLOW,
+  resources: ['*'],
+  actions: [
+    'iam:CreateOpenIDConnectProvider',
+    'iam:DeleteOpenIDConnectProvider',
+    'iam:UpdateOpenIDConnectProviderThumbprint',
+    'iam:AddClientIDToOpenIDConnectProvider',
+    'iam:RemoveClientIDFromOpenIDConnectProvider',
+  ],
+}));
+
+const provider = new iam.OpenIdConnectProvider(this, 'MyProvider', {
+  url: 'https://openid/connect',
+  clientIds: ['myclient1', 'myclient2'],
+  role: customRole,
+});
+
+```
+**Important**: When providing a custom role, you are responsible for ensuring it has all the necessary permissions for the OIDC provider to function correctly.
+
+**Note**: This only applies to `OpenIdConnectProvider`. The newer `OidcProviderNative` uses native CloudFormation and does not create a Lambda function.
+
 
 ## SAML provider
 
