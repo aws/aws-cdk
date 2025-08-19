@@ -45,14 +45,14 @@ jobs:
     steps:
       - name: Checkout using User Token (+ download lfs dependencies)
         if: needs.check-secret.outputs.ok == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
           token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
 
       - name: Checkout using GitHub Actions permissions (+ download lfs dependencies)
         if: needs.check-secret.outputs.ok == 'false'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
       
