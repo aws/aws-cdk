@@ -1,5 +1,5 @@
 import { Construct, DependencyGroup, IConstruct, IDependable } from 'constructs';
-import { Protocol, TargetType } from './enums';
+import { Protocol, StickinessType, TargetGroupAttribute, TargetGroupLoadBalancingAlgorithmType, TargetType } from './enums';
 import { Attributes, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
@@ -87,8 +87,43 @@ export interface BaseTargetGroupProps {
    * @default undefined - ELB defaults to IPv4
    */
   readonly ipAddressType?: TargetGroupIpAddressType;
-}
 
+  /**
+   * The minimum number of targets that must be healthy.
+   * If the number of healthy targets is below this value, mark the zone as unhealthy in DNS, so that traffic is routed only to healthy zones.
+   * The possible values are off or an integer from 1 to the maximum number of targets.
+   *
+   * @default - 1
+   */
+  readonly dnsFailoverMinimumHealthyTargetCount?: number | string;
+
+  /**
+   * The minimum percentage of targets that must be healthy.
+   * If the percentage of healthy targets is below this value, mark the zone as unhealthy in DNS, so that traffic is routed only to healthy zones.
+   * The possible values are off or an integer from 1 to 100.
+   *
+   * @default - off
+   */
+  readonly dnsFailoverMinimumHealthyTargetPercentage?: number | string;
+
+  /**
+   * The minimum number of targets that must be healthy.
+   * If the number of healthy targets is below this value, send traffic to all targets, including unhealthy targets.
+   * The possible values are 1 to the maximum number of targets.
+   *
+   * @default - 1
+   */
+  readonly unhealthyStateRoutingMinimumHealthyTargetCount?: number;
+
+  /**
+   * The minimum percentage of targets that must be healthy.
+   * If the percentage of healthy targets is below this value, send traffic to all targets, including unhealthy targets.
+   * The possible values are off or an integer from 1 to 100.
+   *
+   * @default - off
+   */
+  readonly unhealthyStateRoutingMinimumHealthyTargetPercentage?: number | string;
+}
 /**
  * Properties for configuring a health check
  */
@@ -274,6 +309,34 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       this.setAttribute('load_balancing.cross_zone.enabled', baseProps.crossZoneEnabled === true ? 'true' : 'false');
     }
 
+    if (baseProps.dnsFailoverMinimumHealthyTargetCount !== undefined) {
+      this.setAttribute(
+        TargetGroupAttribute.TARGET_GROUP_HEALTH_DNS_FAILOVER_MIN_HEALTHY_COUNT,
+        baseProps.dnsFailoverMinimumHealthyTargetCount.toString(),
+      );
+    }
+
+    if (baseProps.dnsFailoverMinimumHealthyTargetPercentage !== undefined) {
+      this.setAttribute(
+        TargetGroupAttribute.TARGET_GROUP_HEALTH_DNS_FAILOVER_MIN_HEALTHY_PERCENTAGE,
+        baseProps.dnsFailoverMinimumHealthyTargetPercentage.toString(),
+      );
+    }
+
+    if (baseProps.unhealthyStateRoutingMinimumHealthyTargetCount !== undefined) {
+      this.setAttribute(
+        TargetGroupAttribute.TARGET_GROUP_HEALTH_UNHEALTHY_ROUTING_MIN_HEALTHY_COUNT,
+        baseProps.unhealthyStateRoutingMinimumHealthyTargetCount.toString(),
+      );
+    }
+
+    if (baseProps.unhealthyStateRoutingMinimumHealthyTargetPercentage !== undefined) {
+      this.setAttribute(
+        TargetGroupAttribute.TARGET_GROUP_HEALTH_UNHEALTHY_ROUTING_MIN_HEALTHY_PERCENTAGE,
+        baseProps.unhealthyStateRoutingMinimumHealthyTargetPercentage.toString(),
+      );
+    }
+
     this.healthCheck = baseProps.healthCheck || {};
     this.vpc = baseProps.vpc;
     this.targetType = baseProps.targetType;
@@ -340,6 +403,68 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-attributes
    */
   public setAttribute(key: string, value: string | undefined) {
+    if (value !== undefined) {
+      switch (key) {
+        case TargetGroupAttribute.TARGET_GROUP_HEALTH_DNS_FAILOVER_MIN_HEALTHY_COUNT:
+          if ((!Number.isInteger(+value) || +value < 1) && value !== 'off') {
+            throw new ValidationError(`${key} must be an integer greater than 0 or 'off'. Received: ${value}`, this);
+          }
+          break;
+        case TargetGroupAttribute.TARGET_GROUP_HEALTH_UNHEALTHY_ROUTING_MIN_HEALTHY_COUNT:
+          if (!Number.isInteger(+value) || +value < 1) {
+            throw new ValidationError(`${key} must be an integer greater than 0. Received: ${value}`, this);
+          }
+          break;
+        case TargetGroupAttribute.TARGET_GROUP_HEALTH_DNS_FAILOVER_MIN_HEALTHY_PERCENTAGE:
+        case TargetGroupAttribute.TARGET_GROUP_HEALTH_UNHEALTHY_ROUTING_MIN_HEALTHY_PERCENTAGE:
+          if ((!Number.isInteger(+value) || +value < 1 || +value > 100) && value !== 'off') {
+            throw new ValidationError(`${key} must be an integer from 1 to 100 or 'off'. Received: ${value}`, this);
+          }
+          break;
+        case TargetGroupAttribute.DEREGISTRATION_DELAY_TIMEOUT:
+          if (!Number.isInteger(+value) || +value < 0 || +value > 3600) {
+            throw new ValidationError(`${key} must be an integer from 0 to 3600. Received: ${value}`, this);
+          }
+          break;
+        case TargetGroupAttribute.LOAD_BALANCING_ALGORITHM_TYPE:
+          if (!Object.values(TargetGroupLoadBalancingAlgorithmType).includes(value as TargetGroupLoadBalancingAlgorithmType)) {
+            throw new ValidationError(
+              `${key} must be one of ${Object.values(TargetGroupLoadBalancingAlgorithmType).join(', ')}. Received: ${value}`,
+              this,
+            );
+          }
+          break;
+        case TargetGroupAttribute.SLOW_START_DURATION_SECONDS:
+          if (!Number.isInteger(+value) || ((+value < 30 || +value > 900) && +value !== 0)) {
+            throw new ValidationError(`${key} must be an integer from 30 to 900 or 0. Received: ${value}`, this);
+          }
+          break;
+        case TargetGroupAttribute.STICKINESS_TYPE:
+          if (!Object.values(StickinessType).includes(value as StickinessType)) {
+            throw new ValidationError(
+              `${key} must be one of ${Object.values(StickinessType).join(', ')}. Received: ${value}`,
+              this,
+            );
+          }
+          break;
+        case TargetGroupAttribute.STICKINESS_APP_COOKIE_DURATION_SECONDS:
+        case TargetGroupAttribute.STICKINESS_LB_COOKIE_DURATION_SECONDS:
+          if (!Number.isInteger(+value) || +value < 1 || +value > 604800) {
+            throw new ValidationError(`${key} must be an integer from 1 to 604800. Received: ${value}`, this);
+          }
+          break;
+        case TargetGroupAttribute.STICKINESS_ENABLED:
+        case TargetGroupAttribute.LOAD_BALANCING_CROSS_ZONE_ENABLED:
+        case TargetGroupAttribute.LAMBDA_MULTI_VALUE_HEADERS_ENABLED:
+          if (value !== 'true' && value !== 'false') {
+            throw new ValidationError(`${key} must be 'true' or 'false'. Received: ${value}`, this);
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
     this.attributes[key] = value;
   }
 

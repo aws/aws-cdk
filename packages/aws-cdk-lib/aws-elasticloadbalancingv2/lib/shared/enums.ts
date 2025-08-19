@@ -333,3 +333,108 @@ export enum DesyncMitigationMode {
    */
   STRICTEST = 'strictest',
 }
+
+/**
+ * Enum representing AWS Load Balancer Target Group Attributes
+ *
+ * These attributes can be used to configure target group behavior for ELBs.
+ * Reference: https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-elasticloadbalancingv2-targetgroup-targetgroupattribute.html
+ */
+export enum TargetGroupAttribute {
+  /**
+   * Deregistration delay timeout in seconds (0–3600, default: 300)
+   */
+  DEREGISTRATION_DELAY_TIMEOUT = 'deregistration_delay.timeout_seconds',
+
+  /**
+   * Load balancing algorithm type (round_robin, least_outstanding_requests, weighted_random)
+   */
+  LOAD_BALANCING_ALGORITHM_TYPE = 'load_balancing.algorithm.type',
+
+  /**
+   * Anomaly mitigation for weighted_random algorithm (on, off)
+   */
+  LOAD_BALANCING_ALGORITHM_ANOMALY_MITIGATION = 'load_balancing.algorithm.anomaly_mitigation',
+
+  /**
+   * Cross-zone load balancing (true, false, use_load_balancer_configuration)
+   */
+  LOAD_BALANCING_CROSS_ZONE_ENABLED = 'load_balancing.cross_zone.enabled',
+
+  /**
+   * Slow start duration in seconds (30–900, default: 0)
+   */
+  SLOW_START_DURATION_SECONDS = 'slow_start.duration_seconds',
+
+  /**
+   * Stickiness enabled flag (true, false)
+   */
+  STICKINESS_ENABLED = 'stickiness.enabled',
+
+  /**
+   * Application cookie name
+   */
+  STICKINESS_APP_COOKIE_NAME = 'stickiness.app_cookie.cookie_name',
+
+  /**
+   * Application cookie duration in seconds (1–604800, default: 86400)
+   */
+  STICKINESS_APP_COOKIE_DURATION_SECONDS = 'stickiness.app_cookie.duration_seconds',
+
+  /**
+   * Load balancer cookie duration in seconds (1–604800, default: 86400)
+   */
+  STICKINESS_LB_COOKIE_DURATION_SECONDS = 'stickiness.lb_cookie.duration_seconds',
+
+  /**
+   * Stickiness type (lb_cookie, app_cookie, source_ip)
+   */
+  STICKINESS_TYPE = 'stickiness.type',
+
+  /**
+   * Minimum healthy targets count for DNS failover (off, 1–max targets, default: 1)
+   */
+  TARGET_GROUP_HEALTH_DNS_FAILOVER_MIN_HEALTHY_COUNT = 'target_group_health.dns_failover.minimum_healthy_targets.count',
+
+  /**
+   * Minimum healthy targets percentage for DNS failover (off, 1–100, default: off)
+   */
+  TARGET_GROUP_HEALTH_DNS_FAILOVER_MIN_HEALTHY_PERCENTAGE = 'target_group_health.dns_failover.minimum_healthy_targets.percentage',
+
+  /**
+   * Minimum healthy targets count for unhealthy state routing (1–max targets, default: 1)
+   */
+  TARGET_GROUP_HEALTH_UNHEALTHY_ROUTING_MIN_HEALTHY_COUNT = 'target_group_health.unhealthy_state_routing.minimum_healthy_targets.count',
+
+  /**
+   * Minimum healthy targets percentage for unhealthy state routing (off, 1–100, default: off)
+   */
+  TARGET_GROUP_HEALTH_UNHEALTHY_ROUTING_MIN_HEALTHY_PERCENTAGE = 'target_group_health.unhealthy_state_routing.minimum_healthy_targets.percentage',
+
+  /**
+   * Lambda multi-value headers enabled flag (true, false, default: false)
+   */
+  LAMBDA_MULTI_VALUE_HEADERS_ENABLED = 'lambda.multi_value_headers.enabled',
+}
+
+/**
+ * Stickiness type for load balancers
+ *
+ * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#stickiness
+ */
+export enum StickinessType {
+  /**
+   * Load balancer cookie stickiness
+   */
+  LB_COOKIE = 'lb_cookie',
+
+  /**
+   * Application cookie stickiness
+   */
+  APP_COOKIE = 'app_cookie',
+
+  /**
+   * Source IP stickiness
+   */
+  SOURCE_IP = 'source_ip',
+}
