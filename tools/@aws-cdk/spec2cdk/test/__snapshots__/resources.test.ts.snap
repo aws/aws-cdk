@@ -8,18 +8,13 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Reference to an instance of Resource.
- *
- * @stability external
+ * Indicates that this resource can be referenced as a Resource.
  */
 export interface IResourceRef {
   /**
-   * The identifier of the resource.
-   * This property gets determined after the resource is created.
-   *
-   * @cloudformationAttribute Ref
+   * A reference to a Resource resource.
    */
-  readonly attrId: string;
+  readonly resourceRef: ResourceRef;
 }
 
 /**
@@ -59,14 +54,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   /**
    * The identifier of the resource.
-   * This property gets determined after the resource is created.
-   *
-   * @cloudformationAttribute Ref
-   */
-  public readonly attrId: string;
-
-  /**
-   * The identifier of the resource.
    */
   public id?: string;
 
@@ -81,8 +68,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       "properties": props
     });
 
-    this.attrId = cdk.Token.asString(this.ref);
     this.id = props.id;
+  }
+
+  public get resourceRef(): ResourceRef {
+    return {
+      "resourceId": this.ref
+    };
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -120,6 +112,19 @@ export interface CfnResourceProps {
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html#cfn-some-resource-id
    */
   readonly id?: string;
+}
+
+/**
+ * A reference to a Resource resource.
+ *
+ * @struct
+ * @stability external
+ */
+export interface ResourceRef {
+  /**
+   * The Id of the Resource resource.
+   */
+  readonly resourceId: string;
 }
 
 /**
@@ -173,17 +178,13 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Reference to an instance of Resource.
- *
- * @stability external
+ * Indicates that this resource can be referenced as a Resource.
  */
 export interface IResourceRef {
   /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
+   * A reference to a Resource resource.
    */
-  readonly attrId: string;
+  readonly resourceRef: ResourceRef;
 }
 
 /**
@@ -242,6 +243,12 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
+  public get resourceRef(): ResourceRef {
+    return {
+      "resourceId": this.ref
+    };
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {};
   }
@@ -270,6 +277,19 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
  */
 export interface CfnResourceProps {
 
+}
+
+/**
+ * A reference to a Resource resource.
+ *
+ * @struct
+ * @stability external
+ */
+export interface ResourceRef {
+  /**
+   * The Id of the Resource resource.
+   */
+  readonly resourceId: string;
 }
 
 /**
@@ -319,24 +339,13 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Reference to an instance of Something.
- *
- * @stability external
+ * Indicates that this resource can be referenced as a Something.
  */
 export interface ISomethingRef {
   /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
+   * A reference to a Something resource.
    */
-  readonly attrId: string;
-
-  /**
-   * The arn for something
-   *
-   * @cloudformationAttribute SomethingArn
-   */
-  readonly attrSomethingArn: string;
+  readonly somethingRef: SomethingRef;
 }
 
 /**
@@ -403,6 +412,13 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
     this.attrSomethingArn = cdk.Token.asString(this.getAtt("SomethingArn", cdk.ResolutionTypeHint.STRING));
   }
 
+  public get somethingRef(): SomethingRef {
+    return {
+      "somethingId": this.ref,
+      "attrSomethingArn": this.attrSomethingArn
+    };
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {};
   }
@@ -431,6 +447,31 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
  */
 export interface CfnSomethingProps {
 
+}
+
+/**
+ * A reference to a Something resource.
+ *
+ * @struct
+ * @stability external
+ */
+export interface SomethingRef {
+  /**
+   * The Id of the Something resource.
+   */
+  readonly somethingId: string;
+
+  /**
+   * The ARN of the Something resource.
+   */
+  readonly attrSomethingArn: string;
+
+  /**
+   * The arn for something
+   *
+   * @cloudformationAttribute SomethingArn
+   */
+  readonly attrSomethingArn: string;
 }
 
 /**
@@ -480,24 +521,13 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Reference to an instance of Resource.
- *
- * @stability external
+ * Indicates that this resource can be referenced as a Resource.
  */
 export interface IResourceRef {
   /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
+   * A reference to a Resource resource.
    */
-  readonly attrId: string;
-
-  /**
-   * The arn for the resource
-   *
-   * @cloudformationAttribute Arn
-   */
-  readonly attrArn: string;
+  readonly resourceRef: ResourceRef;
 }
 
 /**
@@ -564,6 +594,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
+  public get resourceRef(): ResourceRef {
+    return {
+      "resourceId": this.ref,
+      "attrArn": this.attrArn
+    };
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {};
   }
@@ -592,6 +629,31 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
  */
 export interface CfnResourceProps {
 
+}
+
+/**
+ * A reference to a Resource resource.
+ *
+ * @struct
+ * @stability external
+ */
+export interface ResourceRef {
+  /**
+   * The Id of the Resource resource.
+   */
+  readonly resourceId: string;
+
+  /**
+   * The ARN of the Resource resource.
+   */
+  readonly attrArn: string;
+
+  /**
+   * The arn for the resource
+   *
+   * @cloudformationAttribute Arn
+   */
+  readonly attrArn: string;
 }
 
 /**
@@ -641,17 +703,13 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Reference to an instance of Resource.
- *
- * @stability external
+ * Indicates that this resource can be referenced as a Resource.
  */
 export interface IResourceRef {
   /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
+   * A reference to a Resource resource.
    */
-  readonly attrId: string;
+  readonly resourceRef: ResourceRef;
 }
 
 /**
@@ -716,6 +774,12 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     this.arn = props.arn;
   }
 
+  public get resourceRef(): ResourceRef {
+    return {
+      "resourceId": this.ref
+    };
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
       "arn": this.arn
@@ -751,6 +815,19 @@ export interface CfnResourceProps {
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html#cfn-some-resource-arn
    */
   readonly arn?: string;
+}
+
+/**
+ * A reference to a Resource resource.
+ *
+ * @struct
+ * @stability external
+ */
+export interface ResourceRef {
+  /**
+   * The Id of the Resource resource.
+   */
+  readonly resourceId: string;
 }
 
 /**
@@ -804,17 +881,13 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Reference to an instance of Resource.
- *
- * @stability external
+ * Indicates that this resource can be referenced as a Resource.
  */
 export interface IResourceRef {
   /**
-   * The arn of the resource
-   *
-   * @cloudformationAttribute Arn
+   * A reference to a Resource resource.
    */
-  readonly attrArn: string;
+  readonly resourceRef: ResourceRef;
 }
 
 /**
@@ -873,6 +946,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     this.attrArn = cdk.Token.asString(this.getAtt("Arn", cdk.ResolutionTypeHint.STRING));
   }
 
+  public get resourceRef(): ResourceRef {
+    return {
+      "resourceArn": this.ref,
+      "attrArn": this.attrArn
+    };
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {};
   }
@@ -901,6 +981,31 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
  */
 export interface CfnResourceProps {
 
+}
+
+/**
+ * A reference to a Resource resource.
+ *
+ * @struct
+ * @stability external
+ */
+export interface ResourceRef {
+  /**
+   * The Arn of the Resource resource.
+   */
+  readonly resourceArn: string;
+
+  /**
+   * The ARN of the Resource resource.
+   */
+  readonly attrArn: string;
+
+  /**
+   * The arn of the resource
+   *
+   * @cloudformationAttribute Arn
+   */
+  readonly attrArn: string;
 }
 
 /**
@@ -950,24 +1055,13 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Reference to an instance of Resource.
- *
- * @stability external
+ * Indicates that this resource can be referenced as a Resource.
  */
 export interface IResourceRef {
   /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
+   * A reference to a Resource resource.
    */
-  readonly attrId: string;
-
-  /**
-   * Another identifier of the resource
-   *
-   * @cloudformationAttribute Another
-   */
-  readonly attrAnother: string;
+  readonly resourceRef: ResourceRef;
 }
 
 /**
@@ -1034,6 +1128,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
+  public get resourceRef(): ResourceRef {
+    return {
+      "resourceId": cdk.Fn.select(0, cdk.Fn.split("|", this.ref)),
+      "another": cdk.Fn.select(1, cdk.Fn.split("|", this.ref))
+    };
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {};
   }
@@ -1062,6 +1163,24 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
  */
 export interface CfnResourceProps {
 
+}
+
+/**
+ * A reference to a Resource resource.
+ *
+ * @struct
+ * @stability external
+ */
+export interface ResourceRef {
+  /**
+   * The Id of the Resource resource.
+   */
+  readonly resourceId: string;
+
+  /**
+   * The Another of the Resource resource.
+   */
+  readonly another: string;
 }
 
 /**
@@ -1111,12 +1230,13 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Reference to an instance of Resource.
- *
- * @stability external
+ * Indicates that this resource can be referenced as a Resource.
  */
 export interface IResourceRef {
-
+  /**
+   * A reference to a Resource resource.
+   */
+  readonly resourceRef: ResourceRef;
 }
 
 /**
@@ -1179,6 +1299,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     this.id = props.id;
   }
 
+  public get resourceRef(): ResourceRef {
+    return {
+      "resourceId": cdk.Fn.select(0, cdk.Fn.split("|", this.ref)),
+      "anotherId": cdk.Fn.select(1, cdk.Fn.split("|", this.ref))
+    };
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
       "anotherId": this.anotherId,
@@ -1222,6 +1349,24 @@ export interface CfnResourceProps {
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html#cfn-some-resource-id
    */
   readonly id?: string;
+}
+
+/**
+ * A reference to a Resource resource.
+ *
+ * @struct
+ * @stability external
+ */
+export interface ResourceRef {
+  /**
+   * The Id of the Resource resource.
+   */
+  readonly resourceId: string;
+
+  /**
+   * The AnotherId of the Resource resource.
+   */
+  readonly anotherId: string;
 }
 
 /**
@@ -1278,18 +1423,13 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
- * Reference to an instance of Resource.
- *
- * @stability external
+ * Indicates that this resource can be referenced as a Resource.
  */
 export interface IResourceRef {
   /**
-   * The identifier of the resource.
-   * This property gets determined after the resource is created.
-   *
-   * @cloudformationAttribute Ref
+   * A reference to a Resource resource.
    */
-  readonly attrId: string;
+  readonly resourceRef: ResourceRef;
 }
 
 /**
@@ -1329,14 +1469,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   /**
    * The identifier of the resource.
-   * This property gets determined after the resource is created.
-   *
-   * @cloudformationAttribute Ref
-   */
-  public readonly attrId: string;
-
-  /**
-   * The identifier of the resource.
    */
   public id?: string;
 
@@ -1351,8 +1483,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       "properties": props
     });
 
-    this.attrId = cdk.Token.asString(this.ref);
     this.id = props.id;
+  }
+
+  public get resourceRef(): ResourceRef {
+    return {
+      "resourceId": this.ref
+    };
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -1390,6 +1527,19 @@ export interface CfnResourceProps {
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html#cfn-some-resource-id
    */
   readonly id?: string;
+}
+
+/**
+ * A reference to a Resource resource.
+ *
+ * @struct
+ * @stability external
+ */
+export interface ResourceRef {
+  /**
+   * The Id of the Resource resource.
+   */
+  readonly resourceId: string;
 }
 
 /**

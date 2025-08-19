@@ -4,11 +4,16 @@ import { CDK_CORE } from './cdk';
 import { PropertyMapping } from './cloudformation-mapping';
 import { NON_RESOLVABLE_PROPERTY_NAMES, TaggabilityStyle, resourceTaggabilityStyle } from './tagging';
 import { TypeConverter } from './type-converter';
-import { attributePropertyName, cloudFormationDocLink, propertyNameFromCloudFormation } from '../naming';
+import { attributePropertyName, cloudFormationDocLink, propertyNameFromCloudFormation, referencePropertyName } from '../naming';
 import { splitDocumentation } from '../util';
 
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
+
+interface ReferenceProp {
+  readonly declaration: PropertySpec;
+  readonly cfnValue: Expression;
+}
 
 /**
  * Decide how properties get mapped between model types, Typescript types, and CloudFormation
@@ -29,18 +34,20 @@ export class ResourceDecider {
    * The arn returned by the resource, if applicable.
    */
   public readonly arnProperty?: PropertySpec;
-  public readonly primaryIdentifierProps = new Array<PropertySpec>();
+  public readonly referenceProps = new Array<ReferenceProp>();
   public readonly propsProperties = new Array<PropsProperty>();
   public readonly classProperties = new Array<ClassProperty>();
   public readonly classAttributeProperties = new Array<ClassAttributeProperty>();
+  public readonly camelResourceName: string;
 
   constructor(private readonly resource: Resource, private readonly converter: TypeConverter) {
+    this.camelResourceName = this.resource.name.charAt(0).toLowerCase() + this.resource.name.slice(1);
     this.taggability = resourceTaggabilityStyle(this.resource);
 
     this.convertProperties();
     this.convertAttributes();
 
-    this.convertPrimaryIdentifier();
+    this.convertReferenceProps();
     this.arnProperty = this.findArn();
 
     this.propsProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
@@ -79,73 +86,51 @@ export class ResourceDecider {
     return;
   }
 
-  private convertPrimaryIdentifier() {
-    if (this.resource.primaryIdentifier === undefined) { return; }
-    for (let i = 0; i < (this.resource.primaryIdentifier).length; i++) {
-      const cfnName = this.resource.primaryIdentifier[i];
-      const att = this.findAttributeByName(attributePropertyName(cfnName));
-      const prop = this.findPropertyByName(propertyNameFromCloudFormation(cfnName));
-      if (att) {
-        this.primaryIdentifierProps.push(att);
-      } else if (prop) {
-        const propSpec = prop.propertySpec;
-
-        // Build an attribute out of the property we're getting
-        // Create initializer for new attribute, if possible
-        let initializer: Expression | undefined = undefined;
-        if (propSpec.type === Type.STRING) { // handling only this case for now.
-          // The fact that a property is part of a primary identifier does not necessarily imply that it can be read.
-          // Example: AWS::ApiGateway::RequestValidator has a primary identifier composed of
-          // [ "/properties/RestApiId", "/properties/RequestValidatorId" ]. But Ref only returns the validator ID.
-          // Handling only the case where the primary identifier is a single property, which is the most common case.
-          if (this.resource.primaryIdentifier!.length === 1) {
-            initializer = CDK_CORE.tokenAsString($this.ref);
-          }
-        }
-
-        // If we cannot come up with an initializer, we're dropping this property on the floor
-        if (!initializer) { continue; }
-
-        // Build an attribute spec out of the property spec
-        const attrPropertySpec = this.convertPropertySpecToRefAttribute(propSpec);
-
-        // Add the new attribute to the relevant places
-        this.classAttributeProperties.push({
-          propertySpec: attrPropertySpec,
-          initializer,
+  private convertReferenceProps() {
+    // Primary identifier. We assume all parts are strings.
+    const primaryIdentifier = this.resource.primaryIdentifier ?? [];
+    if (primaryIdentifier.length === 1) {
+      this.referenceProps.push({
+        declaration: {
+          name: referencePropertyName(primaryIdentifier[0], this.resource.name),
+          type: Type.STRING,
+          immutable: true,
+          docs: {
+            summary: `The ${primaryIdentifier[0]} of the ${this.resource.name} resource.`,
+          },
+        },
+        cfnValue: $this.ref,
+      });
+    } else if (primaryIdentifier.length > 1) {
+      for (const [i, cfnName] of enumerate(primaryIdentifier)) {
+        this.referenceProps.push({
+          declaration: {
+            name: referencePropertyName(cfnName, this.resource.name),
+            type: Type.STRING,
+            immutable: true,
+            docs: {
+              summary: `The ${cfnName} of the ${this.resource.name} resource.`,
+            },
+          },
+          cfnValue: splitSelect('|', i, $this.ref),
         });
-
-        this.primaryIdentifierProps.push(attrPropertySpec);
       }
     }
-  }
 
-  private convertPropertySpecToRefAttribute(propSpec: PropertySpec): PropertySpec {
-    return {
-      ...propSpec,
-      name: attributePropertyName(propSpec.name[0].toUpperCase() + propSpec.name.slice(1)),
-      docs: {
-        ...propSpec.docs,
-        summary: (propSpec.docs?.summary ?? '').concat('\nThis property gets determined after the resource is created.'),
-        remarks: (propSpec.docs?.remarks ?? '').concat('@cloudformationAttribute Ref'),
-      },
-      immutable: true,
-      optional: false,
-    };
-  }
-
-  private findPropertyByName(name: string): ClassProperty | undefined {
-    const props = this.classProperties.filter((prop) => prop.propertySpec.name === name);
-    // there's no way we have multiple properties with the same name
-    if (props.length > 0) { return props[0]; }
-    return;
-  }
-
-  private findAttributeByName(name: string): PropertySpec | undefined {
-    const atts = this.classAttributeProperties.filter((att) => att.propertySpec.name === name);
-    // there's no way we have multiple attributes with the same name
-    if (atts.length > 0) { return atts[0].propertySpec; }
-    return;
+    const arnProp = this.findArn();
+    if (arnProp) {
+      this.referenceProps.push({
+        declaration: {
+          name: referencePropertyName(arnProp.name, this.resource.name),
+          type: Type.STRING,
+          immutable: true,
+          docs: {
+            summary: `The ARN of the ${this.resource.name} resource.`,
+          },
+        },
+        cfnValue: $this[arnProp.name],
+      });
+    }
   }
 
   /**
@@ -418,10 +403,18 @@ export class ResourceDecider {
         return CDK_CORE.TagType.AUTOSCALING_GROUP;
       case 'map':
         return CDK_CORE.TagType.MAP;
+      default:
+        assertNever(variant);
     }
-
-    throw new Error(`Unknown variant: ${this.resource.tagInformation?.variant}`);
   }
+}
+
+/**
+ * Utility function to ensure exhaustive checks for never type.
+ */
+function assertNever(x: never): never {
+  // eslint-disable-next-line @cdklabs/no-throw-default-error
+  throw new Error(`Unexpected object: ${x}`);
 }
 
 export interface PropsProperty {
@@ -460,4 +453,12 @@ export function deprecationMessage(property: Property): string | undefined {
   }
 
   return undefined;
+}
+
+function splitSelect(sep: string, n: number, base: Expression) {
+  return CDK_CORE.Fn.select(expr.lit(n), CDK_CORE.Fn.split(expr.lit(sep), base));
+}
+
+function enumerate<A>(xs: A[]): Array<[number, A]> {
+  return xs.map((x, i) => [i, x]);
 }

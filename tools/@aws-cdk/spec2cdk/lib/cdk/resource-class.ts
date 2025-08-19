@@ -46,7 +46,7 @@ const $this = $E(expr.this_());
 
 export class ResourceClass extends ClassType {
   private readonly propsType: StructType;
-  private readonly resourceInterface: InterfaceType;
+  private readonly refInterface: InterfaceType;
   private readonly decider: ResourceDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
@@ -57,12 +57,12 @@ export class ResourceClass extends ClassType {
     private readonly resource: Resource,
     private readonly suffix?: string,
   ) {
-    const resourceInterface = new InterfaceType(scope, {
+    // IBucketRef { bucketRef: BucketRef }
+    const refInterface = new InterfaceType(scope, {
       export: true,
       name: `I${resource.name}${suffix ?? ''}Ref`,
       docs: {
-        summary: `Reference to an instance of ${resource.name}.`,
-        stability: Stability.External,
+        summary: `Indicates that this resource can be referenced as a ${resource.name}.`,
       },
     });
 
@@ -78,10 +78,10 @@ export class ResourceClass extends ClassType {
         }),
       },
       extends: CDK_CORE.CfnResource,
-      implements: [CDK_CORE.IInspectable, resourceInterface.type, ...ResourceDecider.taggabilityInterfaces(resource)],
+      implements: [CDK_CORE.IInspectable, refInterface.type, ...ResourceDecider.taggabilityInterfaces(resource)],
     });
 
-    this.resourceInterface = resourceInterface;
+    this.refInterface = refInterface;
     this.module = Module.of(this);
 
     this.propsType = new StructType(this.scope, {
@@ -117,21 +117,7 @@ export class ResourceClass extends ClassType {
       cfnMapping.add(prop.cfnMapping);
     }
 
-    // Build the shared interface
-    for (const identifier of this.decider.primaryIdentifierProps ?? []) {
-      this.resourceInterface.addProperty({
-        ...identifier,
-        immutable: true,
-      });
-    }
-
-    // Add the arn too, unless it is duplicated in the resourceIdentifier already
-    if (this.decider.arnProperty && this.resourceInterface.properties.every((p) => p.name !== this.decider.arnProperty!.name)) {
-      this.resourceInterface.addProperty({
-        ...this.decider.arnProperty,
-        immutable: true,
-      });
-    }
+    this.buildReferenceInterface();
 
     // Build the members of this class
     this.addProperty({
@@ -179,6 +165,51 @@ export class ResourceClass extends ClassType {
     cfnMapping.makeCfnParser(this.module, this.propsType);
 
     this.makeMustRenderStructs();
+  }
+
+  /**
+   * Build the reference interface for this resource
+   */
+  private buildReferenceInterface() {
+    // BucketRef { bucketName, bucketArn }
+    const refPropsStruct = new StructType(this.scope, {
+      export: true,
+      name: `${this.resource.name}${this.suffix ?? ''}Ref`,
+      docs: {
+        summary: `A reference to a ${this.resource.name} resource.`,
+        stability: Stability.External,
+      },
+    });
+
+    // Build the shared interface
+    for (const { declaration } of this.decider.referenceProps ?? []) {
+      refPropsStruct.addProperty(declaration);
+    }
+
+    // Add the arn too, unless it is duplicated in the resourceIdentifier already
+    if (this.decider.arnProperty && this.refInterface.properties.every((p) => p.name !== this.decider.arnProperty!.name)) {
+      refPropsStruct.addProperty({
+        ...this.decider.arnProperty,
+      });
+    }
+
+    const refProperty = this.refInterface.addProperty({
+      name: `${this.decider.camelResourceName}Ref`,
+      type: refPropsStruct.type,
+      immutable: true,
+      docs: {
+        summary: `A reference to a ${this.resource.name} resource.`,
+      },
+    });
+
+    this.addProperty({
+      name: refProperty.name,
+      type: refProperty.type,
+      getterBody: Block.with(
+        stmt.ret(expr.object(Object.fromEntries(this.decider.referenceProps.map(({ declaration, cfnValue }) => [declaration.name, cfnValue])))),
+      ),
+      immutable: true,
+    });
   }
 
   private makeFromCloudFormationFactory() {

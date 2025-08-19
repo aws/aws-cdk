@@ -92,6 +92,17 @@ export function attributePropertyName(attrName: string) {
 }
 
 /**
+ * Make sure the resource name is included in the property
+ */
+export function referencePropertyName(propName: string, resourceName: string) {
+  if (['arn', 'id', 'name', 'url'].includes(propName.toLowerCase())) {
+    return `${camelcase(resourceName)}${propName.charAt(0).toUpperCase()}${propName.slice(1)}`;
+  }
+
+  return camelcase(propName);
+}
+
+/**
  * Generate a name for the given declaration so that we can generate helper symbols for it that won't class
  *
  * We assume that the helpers get generated at module level, so we add in the names of the
