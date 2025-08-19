@@ -8,7 +8,9 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
+import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
+import { Token } from '../../core';
 import { UnscopedValidationError } from '../../core/lib/errors';
 import * as cxapi from '../../cx-api';
 import * as s3deploy from '../lib';
@@ -1392,6 +1394,7 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
     sub: {
       hello: bucket.bucketArn,
     },
+    [bucket.bucketName]: 'Token can be a key as well!',
   };
 
   new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
@@ -1400,18 +1403,58 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
   });
 
   const result = app.synth();
-  const obj = JSON.parse(readDataFile(result, 'app-config.json'));
-  expect(obj).toStrictEqual({
-    foo: 'bar',
-    sub: {
-      hello: '<<marker:0xbaba:0>>',
-    },
-  });
+  expect(readDataFile(result, 'app-config.json')).toBe('{"foo":"bar","sub":{"hello":<<marker:0xbaba:0>>},"<<marker:0xbaba:1>>":"Token can be a key as well!"}');
 
   // verify marker is mapped to the bucket ARN in the resource props
   Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
     SourceMarkers: [
-      { '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] } },
+      {
+        '<<marker:0xbaba:0>>': {
+          'Fn::Join': ['', ['"',
+            { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
+            '"']],
+        },
+        '<<marker:0xbaba:1>>': {
+          Ref: 'Bucket83908E77',
+        },
+      },
+    ],
+  });
+});
+
+test('Source.jsonData() can be used with list tokens', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  const readParam = ssm.StringListParameter.fromStringListParameterName(
+    stack,
+    'ReadParam',
+    '/repro/subnets',
+  );
+
+  const config = {
+    foo: 'bar',
+    sub: {
+      hello: readParam.stringListValue,
+    },
+  };
+
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [s3deploy.Source.jsonData('app-config.json', config)],
+    destinationBucket: bucket,
+  });
+
+  const result = app.synth();
+  expect(readDataFile(result, 'app-config.json')).toBe('{"foo":"bar","sub":{"hello":<<marker:0xbaba:0>>}}');
+
+  // verify marker is mapped to the bucket ARN in the resource props
+  Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceMarkers: [
+      {
+        '<<marker:0xbaba:0>>': {
+          'Fn::GetAtt': ['CdkJsonStringifyFnSplitresolvessmreprosubnets67ED8B00', 'Value'],
+        },
+      },
     ],
   });
 });
