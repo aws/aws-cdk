@@ -24,7 +24,7 @@ import {
 } from '@cdklabs/typewriter';
 import { CDK_CORE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
-import { ResourceDecider } from './resource-decider';
+import { ResourceDecider, shouldBuildReferenceInterface } from './resource-decider';
 import { TypeConverter } from './type-converter';
 import {
   classNameFromResource,
@@ -46,7 +46,7 @@ const $this = $E(expr.this_());
 
 export class ResourceClass extends ClassType {
   private readonly propsType: StructType;
-  private readonly refInterface: InterfaceType;
+  private readonly refInterface?: InterfaceType;
   private readonly decider: ResourceDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
@@ -57,14 +57,17 @@ export class ResourceClass extends ClassType {
     private readonly resource: Resource,
     private readonly suffix?: string,
   ) {
-    // IBucketRef { bucketRef: BucketRef }
-    const refInterface = new InterfaceType(scope, {
-      export: true,
-      name: `I${resource.name}${suffix ?? ''}Ref`,
-      docs: {
-        summary: `Indicates that this resource can be referenced as a ${resource.name}.`,
-      },
-    });
+    let refInterface: InterfaceType | undefined;
+    if (shouldBuildReferenceInterface(resource)) {
+      // IBucketRef { bucketRef: BucketRef }
+      refInterface = new InterfaceType(scope, {
+        export: true,
+        name: `I${resource.name}${suffix ?? ''}Ref`,
+        docs: {
+          summary: `Indicates that this resource can be referenced as a ${resource.name}.`,
+        },
+      });
+    }
 
     super(scope, {
       export: true,
@@ -78,7 +81,7 @@ export class ResourceClass extends ClassType {
         }),
       },
       extends: CDK_CORE.CfnResource,
-      implements: [CDK_CORE.IInspectable, refInterface.type, ...ResourceDecider.taggabilityInterfaces(resource)],
+      implements: [CDK_CORE.IInspectable, refInterface?.type, ...ResourceDecider.taggabilityInterfaces(resource)].filter(isDefined),
     });
 
     this.refInterface = refInterface;
@@ -171,6 +174,10 @@ export class ResourceClass extends ClassType {
    * Build the reference interface for this resource
    */
   private buildReferenceInterface() {
+    if (!shouldBuildReferenceInterface(this.resource)) {
+      return;
+    }
+
     // BucketRef { bucketName, bucketArn }
     const refPropsStruct = new StructType(this.scope, {
       export: true,
@@ -186,14 +193,7 @@ export class ResourceClass extends ClassType {
       refPropsStruct.addProperty(declaration);
     }
 
-    // Add the arn too, unless it is duplicated in the resourceIdentifier already
-    if (this.decider.arnProperty && this.refInterface.properties.every((p) => p.name !== this.decider.arnProperty!.name)) {
-      refPropsStruct.addProperty({
-        ...this.decider.arnProperty,
-      });
-    }
-
-    const refProperty = this.refInterface.addProperty({
+    const refProperty = this.refInterface!.addProperty({
       name: `${this.decider.camelResourceName}Ref`,
       type: refPropsStruct.type,
       immutable: true,
@@ -447,4 +447,11 @@ export class ResourceClass extends ClassType {
       this.converter.convertTypeDefinitionType(typeDef);
     }
   }
+}
+
+/**
+ * Type guard to filter out undefined values.
+ */
+function isDefined<T>(x: T | undefined): x is T {
+  return x !== undefined;
 }

@@ -15,6 +15,17 @@ interface ReferenceProp {
   readonly cfnValue: Expression;
 }
 
+// We temporarily only do this for a few services, to experiment
+const REFERENCE_PROP_SERVICES = [
+  'iam',
+  'apigateway',
+  'ec2',
+  'cloudfront',
+  'kms',
+  's3',
+  'lambda',
+];
+
 /**
  * Decide how properties get mapped between model types, Typescript types, and CloudFormation
  */
@@ -30,10 +41,6 @@ export class ResourceDecider {
 
   private readonly taggability?: TaggabilityStyle;
 
-  /**
-   * The arn returned by the resource, if applicable.
-   */
-  public readonly arnProperty?: PropertySpec;
   public readonly referenceProps = new Array<ReferenceProp>();
   public readonly propsProperties = new Array<PropsProperty>();
   public readonly classProperties = new Array<ClassProperty>();
@@ -48,7 +55,6 @@ export class ResourceDecider {
     this.convertAttributes();
 
     this.convertReferenceProps();
-    this.arnProperty = this.findArn();
 
     this.propsProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
     this.classProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
@@ -74,16 +80,21 @@ export class ResourceDecider {
     }
   }
 
-  private findArn() {
-    // A list of possible names for the arn, in order of importance.
-    // This is relevant because some resources, like AWS::VpcLattice::AccessLogSubscription
-    // has both `Arn` and `ResourceArn`, and we want to select the `Arn` property.
+  /**
+   * Find an ARN property for this resource
+   *
+   * Returns `undefined` if no ARN property is found, or if the ARN property is already
+   * included in the primary identifier.
+   */
+  private findArnProperty() {
     const possibleArnNames = ['Arn', `${this.resource.name}Arn`];
-    for (const arn of possibleArnNames) {
-      const att = this.classAttributeProperties.find((a) => a.propertySpec.name === attributePropertyName(arn));
-      if (att) { return att.propertySpec; }
+    for (const name of possibleArnNames) {
+      const prop = this.resource.attributes[name];
+      if (prop && !this.resource.primaryIdentifier?.includes(name)) {
+        return name;
+      }
     }
-    return;
+    return undefined;
   }
 
   private convertReferenceProps() {
@@ -117,18 +128,18 @@ export class ResourceDecider {
       }
     }
 
-    const arnProp = this.findArn();
+    const arnProp = this.findArnProperty();
     if (arnProp) {
       this.referenceProps.push({
         declaration: {
-          name: referencePropertyName(arnProp.name, this.resource.name),
+          name: referencePropertyName(arnProp, this.resource.name),
           type: Type.STRING,
           immutable: true,
           docs: {
             summary: `The ARN of the ${this.resource.name} resource.`,
           },
         },
-        cfnValue: $this[arnProp.name],
+        cfnValue: $this[attributePropertyName(arnProp)],
       });
     }
   }
@@ -461,4 +472,8 @@ function splitSelect(sep: string, n: number, base: Expression) {
 
 function enumerate<A>(xs: A[]): Array<[number, A]> {
   return xs.map((x, i) => [i, x]);
+}
+
+export function shouldBuildReferenceInterface(resource: Resource) {
+  return true || REFERENCE_PROP_SERVICES.some(s => resource.cloudFormationType.toLowerCase().startsWith(`aws::${s}::`));
 }
