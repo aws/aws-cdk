@@ -621,7 +621,7 @@ export class Guardrail extends GuardrailBase {
    * @param filter The content filter to add.
    */
   public addContentFilter(filter: filters.ContentFilter): void {
-    this.validateContentFilters([filter]);
+    this.validateSingleContentFilter(filter);
     this.contentFilters.push(filter);
   }
 
@@ -630,7 +630,7 @@ export class Guardrail extends GuardrailBase {
    * @param filter The PII filter to add.
    */
   public addPIIFilter(filter: filters.PIIFilter): void {
-    this.validatePiiFilters([filter]);
+    this.validateSinglePiiFilter(filter);
     this.piiFilters.push(filter);
   }
 
@@ -639,7 +639,7 @@ export class Guardrail extends GuardrailBase {
    * @param filter The regex filter to add.
    */
   public addRegexFilter(filter: filters.RegexFilter): void {
-    this.validateRegexFilters([filter]);
+    this.validateSingleRegexFilter(filter);
     this.regexFilters.push(filter);
   }
 
@@ -648,7 +648,7 @@ export class Guardrail extends GuardrailBase {
    * @param filter The denied topic filter to add.
    */
   public addDeniedTopicFilter(filter: filters.Topic): void {
-    this.validateDeniedTopics([filter]);
+    this.validateSingleDeniedTopic(filter);
     this.deniedTopics.push(filter);
   }
 
@@ -657,7 +657,7 @@ export class Guardrail extends GuardrailBase {
    * @param filter The contextual grounding filter to add.
    */
   public addContextualGroundingFilter(filter: filters.ContextualGroundingFilter): void {
-    this.validateContextualGroundingFilters([filter]);
+    this.validateSingleContextualGroundingFilter(filter);
     this.contextualGroundingFilters.push(filter);
   }
 
@@ -666,7 +666,7 @@ export class Guardrail extends GuardrailBase {
    * @param filter The word filter to add.
    */
   public addWordFilter(filter: filters.WordFilter): void {
-    this.validateWordFilters([filter]);
+    this.validateSingleWordFilter(filter);
     this.wordFilters.push(filter);
   }
 
@@ -689,7 +689,7 @@ export class Guardrail extends GuardrailBase {
    * @param filter The managed word list filter to add.
    */
   public addManagedWordListFilter(filter: filters.ManagedWordFilter): void {
-    this.validateManagedWordListFilters([filter]);
+    this.validateSingleManagedWordListFilter(filter);
     this.managedWordListFilters.push(filter);
   }
 
@@ -1513,5 +1513,131 @@ export class Guardrail extends GuardrailBase {
         (filter as any).outputEnabled = true;
       }
     });
+  }
+
+  /**
+   * Validates a single content filter and applies default values for optional properties.
+   * @param filter The content filter to validate.
+   */
+  private validateSingleContentFilter(filter: filters.ContentFilter): void {
+    // Use the existing validation logic but catch and re-throw with a clearer error message
+    try {
+      this.validateContentFilters([filter]);
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        // Replace "at index 0" with a clearer message for single filter validation
+        const message = error.message.replace(' at index 0', '');
+        throw new ValidationError(message, this);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Validates a single PII filter and applies default values for optional properties.
+   * @param filter The PII filter to validate.
+   */
+  private validateSinglePiiFilter(filter: filters.PIIFilter): void {
+    // Use the existing validation logic but catch and re-throw with a clearer error message
+    try {
+      this.validatePiiFilters([filter]);
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        // Replace "at index 0" with a clearer message for single filter validation
+        const message = error.message.replace(' at index 0', '');
+        throw new ValidationError(message, this);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Validates a single regex filter and applies default values for optional properties.
+   * @param filter The regex filter to validate.
+   */
+  private validateSingleRegexFilter(filter: filters.RegexFilter): void {
+    // Use the existing validation logic but catch and re-throw with a clearer error message
+    try {
+      this.validateRegexFilters([filter]);
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        // Replace "at index 0" with a clearer message for single filter validation
+        const message = error.message.replace(' at index 0', '');
+        throw new ValidationError(message, this);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Validates a single denied topic and applies default values for optional properties.
+   * @param filter The denied topic to validate.
+   */
+  private validateSingleDeniedTopic(filter: filters.Topic): void {
+    // Use the existing validation logic but catch and re-throw with a clearer error message
+    try {
+      this.validateDeniedTopics([filter]);
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        // Replace "at index 0" with a clearer message for single filter validation
+        const message = error.message.replace(' at index 0', '');
+        throw new ValidationError(message, this);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Validates a single contextual grounding filter and applies default values for optional properties.
+   * @param filter The contextual grounding filter to validate.
+   */
+  private validateSingleContextualGroundingFilter(filter: filters.ContextualGroundingFilter): void {
+    // Use the existing validation logic but catch and re-throw with a clearer error message
+    try {
+      this.validateContextualGroundingFilters([filter]);
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        // Replace "at index 0" with a clearer message for single filter validation
+        const message = error.message.replace(' at index 0', '');
+        throw new ValidationError(message, this);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Validates a single word filter and applies default values for optional properties.
+   * @param filter The word filter to validate.
+   */
+  private validateSingleWordFilter(filter: filters.WordFilter): void {
+    // Use the existing validation logic but catch and re-throw with a clearer error message
+    try {
+      this.validateWordFilters([filter]);
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        // Replace "at index 0" with a clearer message for single filter validation
+        const message = error.message.replace(' at index 0', '');
+        throw new ValidationError(message, this);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Validates a single managed word list filter and applies default values for optional properties.
+   * @param filter The managed word list filter to validate.
+   */
+  private validateSingleManagedWordListFilter(filter: filters.ManagedWordFilter): void {
+    // Use the existing validation logic but catch and re-throw with a clearer error message
+    try {
+      this.validateManagedWordListFilters([filter]);
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        // Replace "at index 0" with a clearer message for single filter validation
+        const message = error.message.replace(' at index 0', '');
+        throw new ValidationError(message, this);
+      }
+      throw error;
+    }
   }
 }

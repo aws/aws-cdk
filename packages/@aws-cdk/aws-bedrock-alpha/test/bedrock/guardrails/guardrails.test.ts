@@ -492,6 +492,61 @@ describe('CDK-Created-Guardrail', () => {
         },
       });
     });
+
+    test('validates addContentFilter with clear error message', () => {
+      const guardrail = new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+      });
+
+      expect(() => {
+        guardrail.addContentFilter({
+          type: bedrock.ContentFilterType.MISCONDUCT,
+          inputStrength: bedrock.ContentFilterStrength.LOW,
+          outputStrength: bedrock.ContentFilterStrength.LOW,
+          inputAction: 'INVALID_ACTION' as any,
+        });
+      }).toThrow(/Invalid ContentFilter: inputAction must be a valid GuardrailAction value/);
+    });
+
+    test('validates all add filter methods with clear error messages', () => {
+      const guardrail = new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+      });
+
+      // Test addPIIFilter
+      expect(() => {
+        guardrail.addPIIFilter({
+          type: bedrock.GeneralPIIType.ADDRESS,
+          action: bedrock.GuardrailAction.BLOCK,
+          inputAction: 'INVALID_ACTION' as any,
+        });
+      }).toThrow(/Invalid PIIFilter: inputAction must be a valid GuardrailAction value/);
+
+      // Test addRegexFilter
+      expect(() => {
+        guardrail.addRegexFilter({
+          name: 'test',
+          pattern: 'test',
+          action: bedrock.GuardrailAction.BLOCK,
+          inputAction: 'INVALID_ACTION' as any,
+        });
+      }).toThrow(/Invalid RegexFilter: inputAction must be a valid GuardrailAction value/);
+
+      // Test addWordFilter
+      expect(() => {
+        guardrail.addWordFilter({
+          text: 'test',
+          inputAction: 'INVALID_ACTION' as any,
+        });
+      }).toThrow(/Invalid WordFilter: inputAction must be a valid GuardrailAction value/);
+
+      // Test addManagedWordListFilter
+      expect(() => {
+        guardrail.addManagedWordListFilter({
+          inputAction: 'INVALID_ACTION' as any,
+        });
+      }).toThrow(/Invalid ManagedWordFilter: inputAction must be a valid GuardrailAction value/);
+    });
   });
 
   test('Contextual Grounding Filter - Props', () => {
@@ -1002,7 +1057,7 @@ describe('CDK-Created-Guardrail', () => {
           pattern: '/^[A-Z]{2}d{6}$/',
           action: bedrock.GuardrailAction.ANONYMIZE,
         });
-      }).toThrow(/Invalid RegexFilter at index 0: The field name is 0 characters long but must be at least 1 characters/);
+      }).toThrow(/Invalid RegexFilter: The field name is 0 characters long but must be at least 1 characters/);
     });
 
     test('accepts valid RegexFilter', () => {
