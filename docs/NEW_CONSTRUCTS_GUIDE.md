@@ -59,3 +59,4 @@ Whether publishing your own package or making a PR against aws-cdk-lib immediate
 1. Publish: publish your new constructs as an alpha module
 1. Iterate: respond to issues from users, fix bugs and optimize usage patterns
 1. Stabilize: settle on the api and create a new PR migrating all constructs stability to "stable"
+**NOTE : Alpha modules do not go through an extensive security review**
