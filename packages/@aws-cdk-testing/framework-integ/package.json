@@ -30,7 +30,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.188.3",
+    "@aws-cdk/integ-runner": "^2.189.3",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-sdk/client-acm": "3.632.0",
     "@aws-sdk/client-rds": "3.632.0",
@@ -49,7 +49,7 @@
     "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "aws-cdk-lib": "0.0.0",
-    "cdk8s": "2.69.76",
+    "cdk8s": "2.70.7",
     "cdk8s-plus-27": "2.9.5",
     "constructs": "^10.0.0"
   },
@@ -64,7 +64,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 14.15.0"
+    "node": ">= 18.0.0"
   },
   "stability": "experimental",
   "maturity": "experimental",

@@ -761,6 +761,7 @@ _cdk.json_
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true
   }
 }
+```
 
 * `@aws-cdk/aws-efs:defaultAllowClientMount`
 
@@ -769,13 +770,32 @@ accessing the filesystem via mount target by default. Without this flag, only wr
 
 This resolves an issue where clients could have permission to write to the filesystem but were unable to properly mount it, leading to access problems.
 By automatically including the read-only permission alongside the existing write and root access permissions, clients can fully interact with the EFS resources as expected.
+```json
+{
+  "context": {
+    "@aws-cdk/aws-efs:defaultAllowClientMount": true
+  }
+}
+```
+
+* `@aws-cdk/aws-signer:signingProfileNamePassedToCfn`
+
+When this feature flag is enabled, the `signingProfileName` property is passed to the L1 `CfnSigningProfile` construct,
+which ensures that the AWS Signer profile is created with the specified name.
+
+When this feature flag is disabled, the `signingProfileName` is not passed to CloudFormation, maintaining backward
+compatibility with existing deployments where CloudFormation auto-generated profile names.
+
+This feature flag is needed because enabling it can cause existing signing profiles to be
+replaced during deployment if a `signingProfileName` was specified but not previously used
+in the CloudFormation template.
 
 _cdk.json_
 
 ```json
 {
   "context": {
-    "@aws-cdk/aws-efs:defaultAllowClientMount": true
+    "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": true
   }
 }
 ```

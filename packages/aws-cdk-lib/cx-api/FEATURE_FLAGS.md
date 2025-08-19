@@ -106,6 +106,7 @@ Flags come in three types:
 | [@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal](#aws-cdkaws-kmsapplyimportedaliaspermissionstoprincipal) | Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition | 2.202.0 | fix |
 | [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | 2.205.0 | new default |
 | [@aws-cdk/aws-efs:defaultAllowClientMount](#aws-cdkaws-efsdefaultallowclientmount) | When enabled, EFS will allow clients to mount and access the filesystem by default | V2NEXT | fix |
+| [@aws-cdk/aws-signer:signingProfileNamePassedToCfn](#aws-cdkaws-signersigningprofilenamepassedtocfn) | Pass signingProfileName to CfnSigningProfile | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -117,6 +118,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
 ```json
 {
   "context": {
+    "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": true,
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,
     "@aws-cdk/core:target-partitions": [
@@ -2239,6 +2241,22 @@ permissions are granted.
 This resolves an issue where clients could have permission to write to the filesystem but were unable to
 properly mount it, leading to access problems. By automatically including the read-only permission alongside
 the existing write and root access permissions, clients can fully interact with the EFS resources as expected.
+
+### @aws-cdk/aws-signer:signingProfileNamePassedToCfn
+
+*Pass signingProfileName to CfnSigningProfile*
+
+Flag type: Backwards incompatible bugfix
+
+When enabled, the `signingProfileName` property is passed to the L1 `CfnSigningProfile` construct,
+which ensures that the AWS Signer profile is created with the specified name.
+
+When disabled, the `signingProfileName` is not passed to CloudFormation, maintaining backward
+compatibility with existing deployments where CloudFormation auto-generated profile names.
+
+This feature flag is needed because enabling it can cause existing signing profiles to be
+replaced during deployment if a `signingProfileName` was specified but not previously used
+in the CloudFormation template.
 
 
 | Since | Unset behaves like | Recommended value |
