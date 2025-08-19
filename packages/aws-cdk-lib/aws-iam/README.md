@@ -806,8 +806,8 @@ const provider = new iam.OpenIdConnectProvider(this, 'MyProvider', {
   clientIds: ['myclient1', 'myclient2'],
   role: customRole,
 });
-
 ```
+
 **Important**: When providing a custom role, you are responsible for ensuring it has all the necessary permissions for the OIDC provider to function correctly.
 
 **Note**: This only applies to `OpenIdConnectProvider`. The newer `OidcProviderNative` uses native CloudFormation and does not create a Lambda function.
