@@ -31,6 +31,7 @@ Amazon CloudWatch RUM is a real-user monitoring service that collects client-sid
 You can use the `AppMonitor` construct to create a RUM app monitor:
 
 ```ts
+import * as rum from '@aws-cdk/aws-rum-alpha';
 const appMonitor = new rum.AppMonitor(this, 'MyAppMonitor', {
   appMonitorName: 'my-web-app',
   domain: 'example.com',
