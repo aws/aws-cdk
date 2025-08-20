@@ -25995,6 +25995,48 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ]
     },
+    'ApiKey': {
+      'customerId': '*',
+      'enabled': 'boolean',
+      'generateDistinctId': 'boolean',
+      'apiKeyName': '*',
+      'value': '*',
+      'description': '*'
+    },
+    'RateLimitedApiKey': {
+      'apiStages': {
+        'api': {
+          'apiId': '*',
+          'apiEndpoint': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'stage': {
+          'callbackUrl': '*',
+          'stageName': '*',
+          'url': '*'
+        }
+      },
+      'quota': {
+        'limit': '*',
+        'offset': '*',
+        'period': 'Period'
+      },
+      'throttle': {
+        'rateLimit': '*',
+        'burstLimit': '*'
+      },
+      'customerId': '*',
+      'enabled': 'boolean',
+      'generateDistinctId': 'boolean',
+      'apiKeyName': '*',
+      'value': '*',
+      'description': '*'
+    },
     'WebSocketApi': {
       'addRoute': [
         '*',
@@ -26138,6 +26180,55 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'assumeRoleAction': '*',
             'policyFragment': '*',
             'principalAccount': '*'
+          }
+        }
+      ]
+    },
+    'UsagePlan': {
+      'apiStages': {
+        'api': {
+          'apiId': '*',
+          'apiEndpoint': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'stage': {
+          'callbackUrl': '*',
+          'stageName': '*',
+          'url': '*'
+        }
+      },
+      'description': '*',
+      'quota': {
+        'limit': '*',
+        'offset': '*',
+        'period': 'Period'
+      },
+      'throttle': {
+        'rateLimit': '*',
+        'burstLimit': '*'
+      },
+      'usagePlanName': '*',
+      'addApiStage': [
+        {
+          'api': {
+            'apiId': '*',
+            'apiEndpoint': '*',
+            'stack': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            },
+            'node': '*'
+          },
+          'stage': {
+            'callbackUrl': '*',
+            'stageName': '*',
+            'url': '*'
           }
         }
       ]
