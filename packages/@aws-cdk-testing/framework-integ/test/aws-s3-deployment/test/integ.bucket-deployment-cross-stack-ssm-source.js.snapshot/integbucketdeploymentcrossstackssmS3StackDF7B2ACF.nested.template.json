@@ -173,7 +173,7 @@
      }
     ],
     "SourceObjectKeys": [
-     "dfeb282ce92f4a01a1ddd25f34c16a08faf30129f1ece373d138e16d8926c7f9.zip"
+     "a03379cb1c18c3195a119b640be370e0cfc34cfb5449546154c645b6ea415d18.zip"
     ],
     "SourceMarkers": [
      {
@@ -191,6 +191,7 @@
     "DestinationBucketName": {
      "Ref": "ReproBucketB02973C7"
     },
+    "WaitForDistributionInvalidation": true,
     "Prune": true,
     "OutputObjectKeys": true
    },
@@ -329,7 +330,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
+     "S3Key": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip"
     },
     "Environment": {
      "Variables": {
