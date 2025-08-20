@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "48.0.0",
   "testCases": {
     "aws-apigateway-stepfunctions-startexecution-without-default-method-responses/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "awsapigatewaystepfunctionsstartexecutionwithoutdefaultmethodresponsesDefaultTestDeployAssert8B46AA47"
     }
   },
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1023.0"
 }

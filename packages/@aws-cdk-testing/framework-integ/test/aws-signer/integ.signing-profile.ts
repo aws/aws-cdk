@@ -16,6 +16,11 @@ new signer.SigningProfile(stack, 'SigningProfileOCI', {
   signatureValidity: cdk.Duration.days(60),
 });
 
+new signer.SigningProfile(stack, 'SigningProfileWithName', {
+  platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA,
+  signingProfileName: 'test-signing-profile-name',
+});
+
 new IntegTest(app, 'cdk-integ-signer-signing-profile', {
   testCases: [stack],
 });

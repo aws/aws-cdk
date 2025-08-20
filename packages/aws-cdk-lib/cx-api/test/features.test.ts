@@ -49,6 +49,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.LOG_USER_POOL_CLIENT_SECRET_VALUE]: false,
     [feats.USE_RESOURCEID_FOR_VPCV2_MIGRATION]: false,
     [feats.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: false,
+    [feats.SIGNER_PROFILE_NAME_PASSED_TO_CFN]: false,
 
   });
 });

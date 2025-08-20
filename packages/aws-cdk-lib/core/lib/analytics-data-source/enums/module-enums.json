@@ -1122,6 +1122,16 @@
       "WHEN_NO_TEMPLATES"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/usage-plan.ts": {
+    "Period": [
+      "DAY",
+      "WEEK",
+      "MONTH"
+    ],
+    "UsagePlanKeyType": [
+      "API_KEY"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/application.ts": {
     "Platform": [
       "x86-64",
