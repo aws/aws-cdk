@@ -2273,7 +2273,7 @@ describe('cluster', () => {
             'Fn::Join': ['', [
               'arn:',
               { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
+              ':iam::aws:policy/AmazonEC2ContainerRegistryPullOnly',
             ]],
           },
           {
@@ -2582,7 +2582,7 @@ describe('cluster', () => {
             'Fn::Join': ['', [
               'arn:',
               { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
+              ':iam::aws:policy/AmazonEC2ContainerRegistryPullOnly',
             ]],
           },
           {
