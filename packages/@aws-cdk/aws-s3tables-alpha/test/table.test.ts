@@ -267,6 +267,7 @@ describe('Table', () => {
       }));
 
       expect(result.statementAdded).toEqual(false);
+      expect(result.policyDependable).toBeUndefined();
       Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
     });
   });
