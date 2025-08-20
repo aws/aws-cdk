@@ -1,4 +1,5 @@
 import { Template } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as core from 'aws-cdk-lib/core';
 import * as s3tables from '../lib';
 
@@ -7,6 +8,7 @@ import * as s3tables from '../lib';
 
 describe('Table', () => {
   const TABLE_CFN_RESOURCE = 'AWS::S3Tables::Table';
+  const TABLE_POLICY_CFN_RESOURCE = 'AWS::S3Tables::TablePolicy';
 
   let stack: core.Stack;
   let namespace: s3tables.Namespace;
@@ -56,6 +58,16 @@ describe('Table', () => {
       Template.fromStack(stack).hasResource(TABLE_CFN_RESOURCE, {
         'DeletionPolicy': 'Retain',
       });
+    });
+
+    test('returns true from addToResourcePolicy', () => {
+      const result = table.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3tables:*'],
+        resources: ['*'],
+      }));
+
+      expect(result.statementAdded).toBe(true);
+      expect(result.policyDependable).toBe(table.tablePolicy);
     });
   });
 
@@ -160,6 +172,62 @@ describe('Table', () => {
     });
   });
 
+  describe('defined with resource policy', () => {
+    const DEFAULT_PROPS: s3tables.TableProps = {
+      tableName: 'example_table',
+      namespace: {} as s3tables.Namespace,
+      openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+    };
+    let table: s3tables.Table;
+
+    beforeEach(() => {
+      const props = { ...DEFAULT_PROPS, namespace };
+      table = new s3tables.Table(stack, 'ExampleTable', props);
+      table.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3tables:*'],
+        resources: ['*'],
+      }));
+    });
+
+    test('resourcePolicy contains statement', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_POLICY_CFN_RESOURCE, {
+        'ResourcePolicy': {
+          'Statement': [
+            {
+              'Action': 's3tables:*',
+              'Effect': 'Allow',
+              'Resource': '*',
+            },
+          ],
+        },
+      });
+    });
+
+    test('calling multiple times appends statements', () => {
+      table.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3:*'],
+        effect: iam.Effect.DENY,
+        resources: ['*'],
+      }));
+      Template.fromStack(stack).hasResourceProperties(TABLE_POLICY_CFN_RESOURCE, {
+        'ResourcePolicy': {
+          'Statement': [
+            {
+              'Action': 's3tables:*',
+              'Effect': 'Allow',
+              'Resource': '*',
+            },
+            {
+              'Action': 's3:*',
+              'Effect': 'Deny',
+              'Resource': '*',
+            },
+          ],
+        },
+      });
+    });
+  });
+
   describe('import existing table with attributes', () => {
     const TABLE_ATTRS = {
       tableName: 'example_table',
@@ -190,6 +258,17 @@ describe('Table', () => {
 
     test('creates resource with correct physical name', () => {
       expect(table.node.id).toBe('ImportedTable');
+    });
+
+    test('addToResourcePolicy does not add a policy', () => {
+      const result = table.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3tables:*'],
+        resources: ['*'],
+      }));
+
+      expect(result.statementAdded).toEqual(false);
+      expect(result.policyDependable).toBeUndefined();
+      Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
     });
   });
 
