@@ -4,16 +4,22 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-s3-bucket-object-lock');
+const stackWithRetention = new cdk.Stack(app, 'aws-cdk-s3-bucket-object-lock-with-retention');
 
-new s3.Bucket(stack, 'ObjectLockBucket', {
-  objectLockEnabled: true,
-});
-
-new s3.Bucket(stack, 'ObjectLockWithRetentionBucket', {
+new s3.Bucket(stackWithRetention, 'ObjectLockRetentionTransitionBucket', {
   objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(2)),
 });
 
+const stackWithoutRetention = new cdk.Stack(app, 'aws-cdk-s3-bucket-object-lock-no-retention');
+
+new s3.Bucket(stackWithoutRetention, 'ObjectLockWithoutRetentionBucket', {
+  objectLockEnabled: true,
+});
+
+new s3.Bucket(stackWithoutRetention, 'ObjectLockRetentionTransitionBucket', {
+  objectLockEnabled: true,
+});
+
 new integ.IntegTest(app, 'ServerAccessLogsImportTest', {
-  testCases: [stack],
+  testCases: [stackWithRetention, stackWithoutRetention],
 });

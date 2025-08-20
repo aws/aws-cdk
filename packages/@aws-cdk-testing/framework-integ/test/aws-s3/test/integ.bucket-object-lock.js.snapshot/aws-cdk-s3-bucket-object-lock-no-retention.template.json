@@ -1,27 +1,12 @@
 {
  "Resources": {
-  "ObjectLockBucketA9F4F5AC": {
+  "ObjectLockWithoutRetentionBucketB2A28B6B": {
    "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "ObjectLockEnabled": true
-   },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "ObjectLockWithRetentionBucket31ED9B51": {
+  "ObjectLockRetentionTransitionBucketE56C0687": {
    "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "ObjectLockConfiguration": {
-     "ObjectLockEnabled": "Enabled",
-     "Rule": {
-      "DefaultRetention": {
-       "Days": 2,
-       "Mode": "GOVERNANCE"
-      }
-     }
-    },
-    "ObjectLockEnabled": true
-   },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   }

@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "b9ee7b79bc7c588fc3461ca633e9fda7097526e064db32c3882cdbfdc59609ab": {
+      "displayName": "aws-cdk-s3-bucket-object-lock-no-retention Template",
+      "source": {
+        "path": "aws-cdk-s3-bucket-object-lock-no-retention.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-356477c4": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b9ee7b79bc7c588fc3461ca633e9fda7097526e064db32c3882cdbfdc59609ab.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
