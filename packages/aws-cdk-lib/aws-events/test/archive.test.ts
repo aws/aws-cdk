@@ -106,17 +106,6 @@ describe('archive', () => {
     const eventBus = new EventBus(stack, 'Bus');
     const key = new kms.Key(stack, 'Key');
 
-    // Add the EventBridge in all stages policy statement
-    key.addToResourcePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:ReEncrypt*'],
-      principals: [
-        new iam.ServicePrincipal('events.amazonaws.com'),
-      ],
-      sid: 'Allow EventBridge in all stages',
-      effect: iam.Effect.ALLOW,
-    }));
-
     // WHEN
     const archive = new Archive(stack, 'Archive', {
       kmsKey: key,
@@ -177,8 +166,8 @@ describe('archive', () => {
     });
   });
 
-  // Create archive with CMK as the empty string
-  test('Archive with passing an empty string as the CMK identifier on an event bus', () => {
+  // Create archive without supplying CMK, verify that the template contains the empty key identifier
+  test('Archive without passing a key has an empty key identifier', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -186,7 +175,6 @@ describe('archive', () => {
 
     // WHEN
     const archive = new Archive(stack, 'Archive', {
-      kmsKey: '',
       sourceEventBus: eventBus,
       eventPattern: {
         source: ['test'],

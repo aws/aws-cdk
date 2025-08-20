@@ -10,24 +10,17 @@ const stack = new Stack(app, 'archive-customer-managed-key');
 const kmsKey = new kms.Key(stack, 'KmsKey', {
   removalPolicy: RemovalPolicy.DESTROY,
   policy: new iam.PolicyDocument({
-    statements: [new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:ReEncrypt*'],
-      principals: [
-        new iam.ServicePrincipal('events.amazonaws.com'),
-      ],
-      sid: 'Allow EventBridge in all stages',
-      effect: iam.Effect.ALLOW,
-    }),
-    new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['kms:*'],
-      principals: [
-        new iam.AccountPrincipal(stack.account),
-      ],
-      sid: 'Allow IAM User to modify the key',
-      effect: iam.Effect.ALLOW,
-    })],
+    statements: [
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['kms:*'],
+        principals: [
+          new iam.AccountPrincipal(stack.account),
+        ],
+        sid: 'Allow IAM User to modify the key',
+        effect: iam.Effect.ALLOW,
+      }),
+    ],
   }),
 });
 

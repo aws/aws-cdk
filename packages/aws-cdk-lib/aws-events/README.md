@@ -332,7 +332,9 @@ new events.EventBus(this, 'Bus', {
 });
 ```
 
-To use a customer managed key for an archive, use the `kmsKey` attribute and ensure that your key has the necessary policy statement attached.
+To use a customer managed key for an archive, use the `kmsKey` attribute. 
+
+Note: When you attach a customer managed key to either an EventBus or an Archive, a policy that allows EventBridge to interact with your resource will be added. 
 
 ```ts
 import * as kms from 'aws-cdk-lib/aws-kms';
@@ -341,17 +343,6 @@ import { Archive, EventBus } from 'aws-cdk-lib/aws-events';
 const stack = new Stack();
 
 declare const kmsKey: kms.IKey;
-
-// Add the EventBridge in all stages policy statement
-kmsKey.addToResourcePolicy(new iam.PolicyStatement({
-  resources: ['*'],
-  actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:ReEncrypt*'],
-  principals: [
-    new iam.ServicePrincipal('events.amazonaws.com'),
-  ],
-  sid: 'Allow EventBridge in all stages',
-  effect: iam.Effect.ALLOW,
-}));
 
 const eventBus = new EventBus(stack, 'Bus');
 

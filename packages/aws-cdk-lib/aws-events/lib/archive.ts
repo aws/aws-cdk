@@ -3,6 +3,7 @@ import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
 import { CfnArchive } from './events.generated';
 import { renderEventPattern } from './util';
+import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Duration, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -36,13 +37,10 @@ export interface BaseArchiveProps {
 
   /**
    * The customer managed key that encrypts this archive
-   * Can be either a string that represents the Key ARN directly or a kms.IKey
-   * This can potentially be a string because if it is an empty string,
-   * and it is used to update the archive, then Archive reverts back to using an AWS owned key
    *
    * @default - Use an AWS managed key
    */
-  readonly kmsKey?: kms.IKey | string;
+  readonly kmsKey?: kms.IKey;
 }
 
 /**
@@ -81,13 +79,33 @@ export class Archive extends Resource {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    // Add the EventBridge in all stages policy statement if a customer key is supplied
+    if (props?.kmsKey) {
+      props?.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:ReEncrypt*'],
+        principals: [
+          new iam.ServicePrincipal('events.amazonaws.com'),
+        ],
+        sid: 'Allow EventBridge in all stages',
+        effect: iam.Effect.ALLOW,
+        conditions: {
+          ArnLike: {
+            'kms:EncryptionContext:aws:events:event-bus:arn': props.sourceEventBus.eventBusArn,
+          },
+        },
+      }));
+    }
+
+    // When an empty string is supplied to the L1 template, it means to use an AWS managed key
+    // This empty string is necessary as the definitions in the L1 requires an empty string to enforce an update that removes any previously used CMK
     let archive = new CfnArchive(this, 'Archive', {
       sourceArn: props.sourceEventBus.eventBusArn,
       description: props.description,
       eventPattern: renderEventPattern(props.eventPattern),
       retentionDays: props.retention?.toDays({ integral: true }) || 0,
       archiveName: this.physicalName,
-      kmsKeyIdentifier: typeof props.kmsKey === 'string' ? props.kmsKey : props?.kmsKey?.keyArn,
+      kmsKeyIdentifier: props?.kmsKey?.keyArn || '',
     });
 
     this.archiveArn = archive.attrArn;
