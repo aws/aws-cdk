@@ -88,6 +88,19 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     this.node.defaultChild = this._edgeFunction;
   }
 
+  public get versionRef(): lambda.VersionRef {
+    return {
+      functionArn: this.functionArn,
+    };
+  }
+
+  public get functionRef(): lambda.FunctionRef {
+    return {
+      functionArn: this.functionArn,
+      functionName: this.functionName,
+    };
+  }
+
   public get lambda(): lambda.IFunction {
     return this._edgeFunction;
   }
