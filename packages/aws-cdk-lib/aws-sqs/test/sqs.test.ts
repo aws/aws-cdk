@@ -124,6 +124,62 @@ test('message retention period can be provided as a parameter', () => {
   });
 });
 
+test('maxMessageSizeBytes validation enforces correct limits', () => {
+  const stack = new Stack();
+
+  // Test minimum boundary - should fail
+  expect(() => new sqs.Queue(stack, 'TooSmall', {
+    maxMessageSizeBytes: 1023,
+  })).toThrow('Queue initialization failed due to the following validation error(s):\n- maximum message size must be between 1,024 and 1,048,576 bytes, but 1023 was provided');
+
+  // Test maximum boundary - should fail
+  expect(() => new sqs.Queue(stack, 'TooLarge', {
+    maxMessageSizeBytes: 1048577,
+  })).toThrow('Queue initialization failed due to the following validation error(s):\n- maximum message size must be between 1,024 and 1,048,576 bytes, but 1048577 was provided');
+
+  // Test valid minimum boundary - should succeed
+  expect(() => new sqs.Queue(stack, 'MinValid', {
+    maxMessageSizeBytes: 1024,
+  })).not.toThrow();
+
+  // Test valid maximum boundary - should succeed
+  expect(() => new sqs.Queue(stack, 'MaxValid', {
+    maxMessageSizeBytes: 1048576,
+  })).not.toThrow();
+});
+
+test('maxMessageSizeBytes works with CDK tokens', () => {
+  const stack = new Stack();
+  const parameter = new CfnParameter(stack, 'MessageSize', { type: 'Number' });
+
+  // Should not throw for tokens (validation skipped)
+  expect(() => new sqs.Queue(stack, 'TokenQueue', {
+    maxMessageSizeBytes: parameter.valueAsNumber,
+  })).not.toThrow();
+});
+
+test('multiple validation errors include maxMessageSizeBytes', () => {
+  const stack = new Stack();
+
+  expect(() => new sqs.Queue(stack, 'MultiError', {
+    maxMessageSizeBytes: 2000000,
+    retentionPeriod: Duration.seconds(30),
+  })).toThrow(/maximum message size must be between 1,024 and 1,048,576 bytes.*message retention period must be between 60 and 1,209,600 seconds/s);
+});
+
+test('maxMessageSizeBytes synthesizes correct CloudFormation', () => {
+  const stack = new Stack();
+
+  new sqs.Queue(stack, 'LargeMessageQueue', {
+    maxMessageSizeBytes: 1048576,
+  });
+
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::SQS::Queue', {
+    MaximumMessageSize: 1048576,
+  });
+});
+
 test('addToPolicy will automatically create a policy for this queue', () => {
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue');
