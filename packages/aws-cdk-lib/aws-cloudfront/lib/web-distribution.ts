@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnDistribution } from './cloudfront.generated';
+import { CfnDistribution, DistributionRef } from './cloudfront.generated';
 import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
@@ -760,6 +760,9 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       public readonly domainName: string;
       public readonly distributionDomainName: string;
       public readonly distributionId: string;
+      public readonly distributionRef = {
+        distributionId: attrs.distributionId,
+      };
 
       constructor() {
         super(scope, id);
@@ -806,6 +809,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
    * The distribution ID for this distribution.
    */
   public readonly distributionId: string;
+
+  public readonly distributionRef: DistributionRef;
 
   /**
    * Maps our methods to the string arrays they are
@@ -1001,6 +1006,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig });
+    this.distributionRef = distribution.distributionRef;
     this.node.defaultChild = distribution;
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;

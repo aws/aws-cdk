@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { Construct } from 'constructs';
-import { CfnFunction } from './cloudfront.generated';
+import { CfnFunction, FunctionRef, IFunctionRef } from './cloudfront.generated';
 import { IKeyValueStore } from './key-value-store';
 import { IResource, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -73,7 +73,7 @@ class FileCode extends FunctionCode {
 /**
  * Represents a CloudFront Function
  */
-export interface IFunction extends IResource {
+export interface IFunction extends IResource, IFunctionRef {
   /**
    * The name of the function.
    * @attribute
@@ -170,6 +170,9 @@ export class Function extends Resource implements IFunction {
       public readonly functionName = attrs.functionName;
       public readonly functionArn = attrs.functionArn;
       public readonly functionRuntime = attrs.functionRuntime ?? FunctionRuntime.JS_1_0.value;
+      public readonly functionRef = {
+        functionArn: attrs.functionArn,
+      };
     }(scope, id);
   }
 
@@ -193,6 +196,8 @@ export class Function extends Resource implements IFunction {
    * @attribute
    */
   public readonly functionRuntime: string;
+
+  public readonly functionRef: FunctionRef;
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id);
@@ -219,6 +224,7 @@ export class Function extends Resource implements IFunction {
       name: this.functionName,
     });
 
+    this.functionRef = resource.functionRef;
     this.functionArn = resource.attrFunctionArn;
     this.functionStage = resource.attrStage;
   }

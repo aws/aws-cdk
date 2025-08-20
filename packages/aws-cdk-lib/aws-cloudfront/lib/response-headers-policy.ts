@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnResponseHeadersPolicy } from './cloudfront.generated';
+import { CfnResponseHeadersPolicy, IResponseHeadersPolicyRef, ResponseHeadersPolicyRef } from './cloudfront.generated';
 import { Duration, Names, Resource, Token, ValidationError, withResolved } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -7,7 +7,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a response headers policy.
  */
-export interface IResponseHeadersPolicy {
+export interface IResponseHeadersPolicy extends IResponseHeadersPolicyRef {
   /**
    * The ID of the response headers policy
    * @attribute
@@ -97,6 +97,9 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
   public static fromResponseHeadersPolicyId(scope: Construct, id: string, responseHeadersPolicyId: string): IResponseHeadersPolicy {
     class Import extends Resource implements IResponseHeadersPolicy {
       public readonly responseHeadersPolicyId = responseHeadersPolicyId;
+      public readonly responseHeadersPolicyRef = {
+        responseHeadersPolicyId: responseHeadersPolicyId,
+      };
     }
     return new Import(scope, id);
   }
@@ -104,10 +107,14 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
   private static fromManagedResponseHeadersPolicy(managedResponseHeadersPolicyId: string): IResponseHeadersPolicy {
     return new class implements IResponseHeadersPolicy {
       public readonly responseHeadersPolicyId = managedResponseHeadersPolicyId;
+      public readonly responseHeadersPolicyRef = {
+        responseHeadersPolicyId: managedResponseHeadersPolicyId,
+      };
     };
   }
 
   public readonly responseHeadersPolicyId: string;
+  public readonly responseHeadersPolicyRef: ResponseHeadersPolicyRef;
 
   constructor(scope: Construct, id: string, props: ResponseHeadersPolicyProps = {}) {
     super(scope, id, {
@@ -132,6 +139,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
       },
     });
 
+    this.responseHeadersPolicyRef = resource.responseHeadersPolicyRef;
     this.responseHeadersPolicyId = resource.ref;
   }
 

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnCachePolicy } from './cloudfront.generated';
+import { CachePolicyRef, CfnCachePolicy, ICachePolicyRef } from './cloudfront.generated';
 import { Duration, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError, withResolved } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -7,7 +7,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a Cache Policy
  */
-export interface ICachePolicy {
+export interface ICachePolicy extends ICachePolicyRef {
   /**
    * The ID of the cache policy
    * @attribute
@@ -130,6 +130,9 @@ export class CachePolicy extends Resource implements ICachePolicy {
   public static fromCachePolicyId(scope: Construct, id: string, cachePolicyId: string): ICachePolicy {
     return new class extends Resource implements ICachePolicy {
       public readonly cachePolicyId = cachePolicyId;
+      public readonly cachePolicyRef = {
+        cachePolicyId: cachePolicyId,
+      };
     }(scope, id);
   }
 
@@ -137,10 +140,15 @@ export class CachePolicy extends Resource implements ICachePolicy {
   private static fromManagedCachePolicy(managedCachePolicyId: string): ICachePolicy {
     return new class implements ICachePolicy {
       public readonly cachePolicyId = managedCachePolicyId;
+      public readonly cachePolicyRef = {
+        cachePolicyId: managedCachePolicyId,
+      };
     }();
   }
 
   public readonly cachePolicyId: string;
+
+  public readonly cachePolicyRef: CachePolicyRef;
 
   constructor(scope: Construct, id: string, props: CachePolicyProps = {}) {
     super(scope, id, {
@@ -185,6 +193,7 @@ export class CachePolicy extends Resource implements ICachePolicy {
       },
     });
 
+    this.cachePolicyRef = resource.cachePolicyRef;
     this.cachePolicyId = resource.ref;
   }
 

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnOriginRequestPolicy } from './cloudfront.generated';
+import { CfnOriginRequestPolicy, IOriginRequestPolicyRef, OriginRequestPolicyRef } from './cloudfront.generated';
 import { Names, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -7,7 +7,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents a Origin Request Policy
  */
-export interface IOriginRequestPolicy {
+export interface IOriginRequestPolicy extends IOriginRequestPolicyRef {
   /**
    * The ID of the origin request policy
    * @attribute
@@ -79,6 +79,9 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
   public static fromOriginRequestPolicyId(scope: Construct, id: string, originRequestPolicyId: string): IOriginRequestPolicy {
     return new class extends Resource implements IOriginRequestPolicy {
       public readonly originRequestPolicyId = originRequestPolicyId;
+      public readonly originRequestPolicyRef = {
+        originRequestPolicyId: originRequestPolicyId,
+      };
     }(scope, id);
   }
 
@@ -86,10 +89,14 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
   private static fromManagedOriginRequestPolicy(managedOriginRequestPolicyId: string): IOriginRequestPolicy {
     return new class implements IOriginRequestPolicy {
       public readonly originRequestPolicyId = managedOriginRequestPolicyId;
+      public readonly originRequestPolicyRef = {
+        originRequestPolicyId: managedOriginRequestPolicyId,
+      };
     }();
   }
 
   public readonly originRequestPolicyId: string;
+  public readonly originRequestPolicyRef: OriginRequestPolicyRef;
 
   constructor(scope: Construct, id: string, props: OriginRequestPolicyProps = {}) {
     super(scope, id, {
@@ -126,6 +133,7 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
       },
     });
 
+    this.originRequestPolicyRef = resource.originRequestPolicyRef;
     this.originRequestPolicyId = resource.ref;
   }
 }

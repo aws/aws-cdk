@@ -5,7 +5,7 @@ import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
 import { LifecycleRule, StorageClass } from './rule';
-import { CfnBucket } from './s3.generated';
+import { BucketRef, CfnBucket, IBucketRef } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -38,7 +38,7 @@ import * as regionInformation from '../../region-info';
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
 
-export interface IBucket extends IResource {
+export interface IBucket extends IResource, IBucketRef {
   /**
    * The ARN of the bucket.
    * @attribute
@@ -1149,6 +1149,13 @@ export abstract class BucketBase extends Resource implements IBucket {
     }
 
     return ret;
+  }
+
+  public get bucketRef(): BucketRef {
+    return {
+      bucketArn: this.bucketArn,
+      bucketName: this.bucketName,
+    };
   }
 }
 
