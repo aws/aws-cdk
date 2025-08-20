@@ -478,6 +478,7 @@
     "DestinationBucketName": {
      "Ref": "Destination920A3C57"
     },
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "OutputObjectKeys": false
@@ -733,7 +734,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4536bfd06a420eea013ce39822f9662041c4405a30b914c8efebf8963a85ba7c.zip"
+     "S3Key": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip"
     },
     "Environment": {
      "Variables": {
