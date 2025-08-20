@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. See [standa
 ## [2.212.0](https://github.com/aws/aws-cdk/compare/v2.211.0...v2.212.0) (2025-08-20)
 
 
-### ⚠ BREAKING CHANGES
+### CHANGES TO L1 RESOURCES
 
 * L1 resources are automatically generated from public CloudFormation Resource Schemas. They are build to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
 * **aws-rds**: AWS::RDS::DBInstance:`StatusInfos` property is removed.
