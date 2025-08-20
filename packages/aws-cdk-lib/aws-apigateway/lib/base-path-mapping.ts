@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnBasePathMapping } from './apigateway.generated';
-import { IDomainName } from './domain-name';
+import { CfnBasePathMapping, IDomainNameRef } from './apigateway.generated';
 import { IRestApi, RestApiBase } from './restapi';
 import { Stage } from './stage';
 import { Resource, Token } from '../../core';
@@ -39,7 +38,7 @@ export interface BasePathMappingProps extends BasePathMappingOptions {
   /**
    * The DomainName to associate with this base path mapping.
    */
-  readonly domainName: IDomainName;
+  readonly domainName: IDomainNameRef;
 
   /**
    * The RestApi resource to target.
@@ -87,7 +86,7 @@ export class BasePathMapping extends Resource {
 
     new CfnBasePathMapping(this, 'Resource', {
       basePath: props.basePath,
-      domainName: props.domainName.domainName,
+      domainName: props.domainName.domainNameRef.domainName,
       restApiId: props.restApi.restApiId,
       stage: stage?.stageName,
     });
