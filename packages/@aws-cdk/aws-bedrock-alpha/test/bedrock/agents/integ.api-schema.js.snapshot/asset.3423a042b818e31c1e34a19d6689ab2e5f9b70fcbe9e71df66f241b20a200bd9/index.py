@@ -11,11 +11,18 @@ from uuid import uuid4
 from zipfile import ZipFile
 
 import boto3
+from botocore.config import Config
+from botocore.exceptions import WaiterError
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-cloudfront = boto3.client('cloudfront')
+cloudfront = boto3.client('cloudfront', config=Config(
+    retries = {
+        'max_attempts': 10,
+        'mode': 'standard',
+    }
+))
 s3 = boto3.client('s3')
 
 CFN_SUCCESS = "SUCCESS"
@@ -59,6 +66,7 @@ def handler(event, context):
             extract             = props.get('Extract', 'true') == 'true'
             retain_on_delete    = props.get('RetainOnDelete', "true") == "true"
             distribution_id     = props.get('DistributionId', '')
+            wait_for_distribution_invalidation = props.get('WaitForDistributionInvalidation', True)
             user_metadata       = props.get('UserMetadata', {})
             system_metadata     = props.get('SystemMetadata', {})
             prune               = props.get('Prune', 'true').lower() == 'true'
@@ -134,7 +142,7 @@ def handler(event, context):
             s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract, source_markers_config)
 
         if distribution_id:
-            cloudfront_invalidate(distribution_id, distribution_paths)
+            cloudfront_invalidate(distribution_id, distribution_paths, wait_for_distribution_invalidation)
 
         cfn_send(event, context, CFN_SUCCESS, physicalResourceId=physical_id, responseData={
             # Passing through the ARN sequences dependencees on the deployment
@@ -223,7 +231,7 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
 
 #---------------------------------------------------------------------------------------------------
 # invalidate files in the CloudFront distribution edge caches
-def cloudfront_invalidate(distribution_id, distribution_paths):
+def cloudfront_invalidate(distribution_id, distribution_paths, wait_for_invalidation):
     invalidation_resp = cloudfront.create_invalidation(
         DistributionId=distribution_id,
         InvalidationBatch={
@@ -233,10 +241,20 @@ def cloudfront_invalidate(distribution_id, distribution_paths):
             },
             'CallerReference': str(uuid4()),
         })
-    # by default, will wait up to 10 minutes
-    cloudfront.get_waiter('invalidation_completed').wait(
-        DistributionId=distribution_id,
-        Id=invalidation_resp['Invalidation']['Id'])
+    if wait_for_invalidation:
+        try:
+            # Wait for a maximum of 13 minutes for invalidation to complete.
+            cloudfront.get_waiter('invalidation_completed').wait(
+                DistributionId=distribution_id,
+                Id=invalidation_resp['Invalidation']['Id'],
+                WaiterConfig={
+                    'Delay': 20,
+                    'MaxAttempts': (13*60)//20,
+                }
+            )
+        except WaiterError as e:
+            raise RuntimeError(f"Unable to confirm that cache invalidation was successful. This may be a CloudFront regression as reported in https://github.com/aws/aws-cdk/issues/15891") from e
+
 
 #---------------------------------------------------------------------------------------------------
 # set metadata
