@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96": {
       "source": {
@@ -14,16 +14,16 @@
         }
       }
     },
-    "c60955466395aceee8a91a4cb8501eb9454f48898d6002774f3f8564fc7add1b": {
+    "ae2ba5ffe9c1ad9ee5b17bfae4edbffbd544a3185a1cd099947ee96f501b9d30": {
       "displayName": "integtestbucketdeploymentlargefileDefaultTestDeployAssert903EA848 Template",
       "source": {
         "path": "integtestbucketdeploymentlargefileDefaultTestDeployAssert903EA848.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-5ecb8374": {
+        "current_account-current_region-691101f4": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c60955466395aceee8a91a4cb8501eb9454f48898d6002774f3f8564fc7add1b.json",
+          "objectKey": "ae2ba5ffe9c1ad9ee5b17bfae4edbffbd544a3185a1cd099947ee96f501b9d30.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
