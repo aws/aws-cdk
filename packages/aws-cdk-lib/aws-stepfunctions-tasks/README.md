@@ -34,6 +34,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [SubmitJob](#submitjob)
   - [Bedrock](#bedrock)
     - [InvokeModel](#invokemodel)
+    - [Using Input Path for S3 URI](#using-input-path-for-s3-uri)
+    - [Using Input Path](#using-input-path)
     - [createModelCustomizationJob](#createmodelcustomizationjob)
   - [CodeBuild](#codebuild)
     - [StartBuild](#startbuild)
@@ -47,6 +49,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [RunTask](#runtask)
       - [EC2](#ec2)
       - [Fargate](#fargate)
+      - [Override CPU and Memory Parameter](#override-cpu-and-memory-parameter)
       - [ECS enable Exec](#ecs-enable-exec)
   - [EMR](#emr)
     - [Create Cluster](#create-cluster)
@@ -64,15 +67,18 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Call](#call)
   - [EventBridge](#eventbridge)
     - [Put Events](#put-events)
+  - [EventBridge Scheduler](#eventbridge-scheduler)
+    - [Create Scheduler](#create-scheduler)
   - [Glue](#glue)
     - [StartJobRun](#startjobrun)
     - [StartCrawlerRun](#startcrawlerrun)
   - [Glue DataBrew](#glue-databrew)
     - [Start Job Run](#start-job-run-1)
+  - [Invoke HTTP API](#invoke-http-api)
   - [Lambda](#lambda)
     - [Invoke](#invoke)
   - [MediaConvert](#mediaconvert)
-    - [Create Job](#create-job)
+    - [CreateJob](#createjob)
   - [SageMaker](#sagemaker)
     - [Create Training Job](#create-training-job)
     - [Create Transform Job](#create-transform-job)
@@ -1315,12 +1321,12 @@ The following code snippet includes a Task state that uses eks:call to list the 
 
 ```ts
 import * as eks from 'aws-cdk-lib/aws-eks';
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 
 const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
   version: eks.KubernetesVersion.V1_32,
   clusterName: 'myEksCluster',
-  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
+  kubectlLayer: new KubectlV33Layer(this, 'kubectl'),
 });
 
 new tasks.EksCall(this, 'Call a EKS Endpoint', {
