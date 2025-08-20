@@ -4,7 +4,7 @@ import { CDK_CORE } from './cdk';
 import { PropertyMapping } from './cloudformation-mapping';
 import { NON_RESOLVABLE_PROPERTY_NAMES, TaggabilityStyle, resourceTaggabilityStyle } from './tagging';
 import { TypeConverter } from './type-converter';
-import { attributePropertyName, cloudFormationDocLink, propertyNameFromCloudFormation, referencePropertyName } from '../naming';
+import { attributePropertyName, camelcasedResourceName, cloudFormationDocLink, propertyNameFromCloudFormation, referencePropertyName } from '../naming';
 import { splitDocumentation } from '../util';
 
 // This convenience typewriter builder is used all over the place
@@ -48,7 +48,7 @@ export class ResourceDecider {
   public readonly camelResourceName: string;
 
   constructor(private readonly resource: Resource, private readonly converter: TypeConverter) {
-    this.camelResourceName = this.resource.name.charAt(0).toLowerCase() + this.resource.name.slice(1);
+    this.camelResourceName = camelcasedResourceName(resource);
     this.taggability = resourceTaggabilityStyle(this.resource);
 
     this.convertProperties();

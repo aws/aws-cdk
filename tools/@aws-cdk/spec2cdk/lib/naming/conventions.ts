@@ -47,6 +47,10 @@ export function structNameFromTypeDefinition(def: TypeDefinition) {
   return `${def.name}Property`;
 }
 
+export function camelcasedResourceName(res: Resource, suffix?: string) {
+  return `${camelcase(res.name)}${suffix ?? ''}`;
+}
+
 export function classNameFromResource(res: Resource, suffix?: string) {
   return `Cfn${res.name}${suffix ?? ''}`;
 }
