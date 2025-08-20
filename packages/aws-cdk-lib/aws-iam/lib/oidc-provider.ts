@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { IOIDCProviderRef, OIDCProviderRef } from './iam.generated';
 import {
   Arn,
   CustomResource,
@@ -18,7 +19,7 @@ const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';
  * Represents an IAM OpenID Connect provider.
  *
  */
-export interface IOpenIdConnectProvider extends IResource {
+export interface IOpenIdConnectProvider extends IResource, IOIDCProviderRef {
   /**
    * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
    */
@@ -120,6 +121,11 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     class Import extends Resource implements IOpenIdConnectProvider {
       public readonly openIdConnectProviderArn = openIdConnectProviderArn;
       public readonly openIdConnectProviderIssuer = resourceName;
+      public get oidcProviderRef(): OIDCProviderRef {
+        return {
+          oidcProviderArn: this.openIdConnectProviderArn,
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -170,6 +176,12 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     this.openIdConnectProviderArn = Token.asString(resource.ref);
     this.openIdConnectProviderIssuer = Arn.extractResourceName(this.openIdConnectProviderArn, 'oidc-provider');
     this.openIdConnectProviderthumbprints = Token.asString(resource.getAtt('Thumbprints'));
+  }
+
+  public get oidcProviderRef(): OIDCProviderRef {
+    return {
+      oidcProviderArn: this.openIdConnectProviderArn,
+    };
   }
 
   private getOrCreateProvider() {

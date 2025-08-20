@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IGroup } from './group';
-import { CfnManagedPolicy } from './iam.generated';
+import { CfnManagedPolicy, IManagedPolicyRef, ManagedPolicyRef } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
@@ -15,7 +15,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A managed policy
  */
-export interface IManagedPolicy {
+export interface IManagedPolicy extends IManagedPolicyRef {
   /**
    * The ARN of the managed policy
    * @attribute
@@ -123,6 +123,11 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         resource: 'policy',
         resourceName: managedPolicyName,
       });
+      public get managedPolicyRef(): ManagedPolicyRef {
+        return {
+          policyArn: this.managedPolicyArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -149,6 +154,11 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   public static fromManagedPolicyArn(scope: Construct, id: string, managedPolicyArn: string): IManagedPolicy {
     class Import extends Resource implements IManagedPolicy {
       public readonly managedPolicyArn = managedPolicyArn;
+      public get managedPolicyRef(): ManagedPolicyRef {
+        return {
+          policyArn: this.managedPolicyArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -172,6 +182,11 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         resource: 'policy',
         resourceName: managedPolicyName,
       });
+      public get managedPolicyRef(): ManagedPolicyRef {
+        return {
+          policyArn: this.managedPolicyArn,
+        };
+      }
     }
     return new AwsManagedPolicy();
   }
@@ -277,6 +292,12 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
     this.grantPrincipal = new ManagedPolicyGrantPrincipal(this);
 
     this.node.addValidation({ validate: () => this.validateManagedPolicy() });
+  }
+
+  public get managedPolicyRef(): ManagedPolicyRef {
+    return {
+      policyArn: this.managedPolicyArn,
+    };
   }
 
   /**
