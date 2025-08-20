@@ -124,28 +124,21 @@ test('message retention period can be provided as a parameter', () => {
   });
 });
 
-test('maxMessageSizeBytes validation enforces correct limits', () => {
+test.each([
+  { size: 1023, valid: false, description: 'just below lower bound' },
+  { size: 1024, valid: true, description: 'at lower bound' },
+  { size: 1048576, valid: true, description: 'at upper bound' },
+  { size: 1048577, valid: false, description: 'just above upper bound' },
+])('maxMessageSizeBytes validation for $size bytes ($description)', ({ size, valid }) => {
   const stack = new Stack();
+  const constructId = `QueueWithSize${size}`;
+  const action = () => new sqs.Queue(stack, constructId, { maxMessageSizeBytes: size });
 
-  // Test minimum boundary - should fail
-  expect(() => new sqs.Queue(stack, 'TooSmall', {
-    maxMessageSizeBytes: 1023,
-  })).toThrow('Queue initialization failed due to the following validation error(s):\n- maximum message size must be between 1,024 and 1,048,576 bytes, but 1023 was provided');
-
-  // Test maximum boundary - should fail
-  expect(() => new sqs.Queue(stack, 'TooLarge', {
-    maxMessageSizeBytes: 1048577,
-  })).toThrow('Queue initialization failed due to the following validation error(s):\n- maximum message size must be between 1,024 and 1,048,576 bytes, but 1048577 was provided');
-
-  // Test valid minimum boundary - should succeed
-  expect(() => new sqs.Queue(stack, 'MinValid', {
-    maxMessageSizeBytes: 1024,
-  })).not.toThrow();
-
-  // Test valid maximum boundary - should succeed
-  expect(() => new sqs.Queue(stack, 'MaxValid', {
-    maxMessageSizeBytes: 1048576,
-  })).not.toThrow();
+  if (valid) {
+    expect(action).not.toThrow();
+  } else {
+    expect(action).toThrow(`Queue initialization failed due to the following validation error(s):\n- maximum message size must be between 1,024 and 1,048,576 bytes, but ${size} was provided`);
+  }
 });
 
 test('maxMessageSizeBytes works with CDK tokens', () => {
