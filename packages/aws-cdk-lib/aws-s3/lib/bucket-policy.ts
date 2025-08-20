@@ -90,6 +90,7 @@ export class BucketPolicy extends Resource implements IBucketPolicyRef {
     });
 
     // mark the Bucket as having this Policy
+    bucket.policy = ret;
     return ret;
   }
 
