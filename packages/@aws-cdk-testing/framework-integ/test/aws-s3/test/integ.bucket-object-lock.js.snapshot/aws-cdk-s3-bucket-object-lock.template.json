@@ -2,9 +2,6 @@
  "Resources": {
   "ObjectLockBucketA9F4F5AC": {
    "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "ObjectLockEnabled": true
-   },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },

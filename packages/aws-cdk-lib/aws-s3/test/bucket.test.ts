@@ -797,13 +797,14 @@ describe('bucket', () => {
     });
   });
 
-  test('bucket with object lock enabled but no retention', () => {
+  test('bucket with object lock enabled but no retention omits object', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'Bucket', {
+      // objectLockDefaultRetention not provided: should omit ObjectLockEnabled
       objectLockEnabled: true,
     });
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      ObjectLockEnabled: true,
+      ObjectLockEnabled: Match.absent(),
       ObjectLockConfiguration: Match.absent(),
     });
   });
