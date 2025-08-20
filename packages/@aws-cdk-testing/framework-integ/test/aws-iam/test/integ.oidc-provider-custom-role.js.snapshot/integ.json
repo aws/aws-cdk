@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "oicd-provider-custom-role-test/DefaultTest": {
+      "stacks": [
+        "oidc-provider-custom-role-integ-test"
+      ],
+      "assertionStack": "oicd-provider-custom-role-test/DefaultTest/DeployAssert",
+      "assertionStackName": "oicdprovidercustomroletestDefaultTestDeployAssert52B0E2C9"
+    }
+  },
+  "minimumCliVersion": "2.1025.0"
+}
