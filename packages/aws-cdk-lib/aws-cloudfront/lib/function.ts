@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import { Construct } from 'constructs';
-import { CfnFunction, FunctionRef, IFunctionRef } from './cloudfront.generated';
-import { IKeyValueStore } from './key-value-store';
+import { CfnFunction, FunctionRef, IFunctionRef, IKeyValueStoreRef } from './cloudfront.generated';
 import { IResource, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -144,7 +143,7 @@ export interface FunctionProps {
    *
    * @default - no key value store is associated
    */
-  readonly keyValueStore?: IKeyValueStore;
+  readonly keyValueStore?: IKeyValueStoreRef;
 
   /**
    * A flag that determines whether to automatically publish the function to the LIVE stage when it’s created.
@@ -219,7 +218,7 @@ export class Function extends Resource implements IFunction {
       functionConfig: {
         comment: props.comment ?? this.functionName,
         runtime: this.functionRuntime,
-        keyValueStoreAssociations: props.keyValueStore ? [{ keyValueStoreArn: props.keyValueStore.keyValueStoreArn }] : undefined,
+        keyValueStoreAssociations: props.keyValueStore ? [{ keyValueStoreArn: props.keyValueStore.keyValueStoreRef.keyValueStoreArn }] : undefined,
       },
       name: this.functionName,
     });
@@ -268,7 +267,7 @@ export interface FunctionAssociation {
   /**
    * The CloudFront function that will be invoked.
    */
-  readonly function: IFunction;
+  readonly function: IFunctionRef;
 
   /** The type of event which should invoke the function. */
   readonly eventType: FunctionEventType;
