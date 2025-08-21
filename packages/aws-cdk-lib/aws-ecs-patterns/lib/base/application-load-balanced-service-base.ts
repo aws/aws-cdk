@@ -506,11 +506,12 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       protocolVersion: props.protocolVersion,
     };
 
-    // Smart default for openListener: if feature flag is enabled and custom security groups are provided
-    // on the load balancer, default to false for security. Otherwise, maintain backward compatibility with true.
+    // Smart default for openListener: if feature flag is enabled and a custom load balancer is provided
+    // (indicating the user has configured their own security groups), default to false for security.
+    // Otherwise, maintain backward compatibility with true.
     const smartDefaultEnabled = FeatureFlags.of(this).isEnabled(ECS_PATTERNS_SMART_DEFAULT_OPEN_LISTENER);
-    const hasCustomSecurityGroups = smartDefaultEnabled && loadBalancer.connections.securityGroups.length > 1;
-    const defaultOpenListener = hasCustomSecurityGroups ? false : true;
+    const hasCustomLoadBalancer = smartDefaultEnabled && props.loadBalancer !== undefined;
+    const defaultOpenListener = hasCustomLoadBalancer ? false : true;
 
     this.listener = loadBalancer.addListener('PublicListener', {
       protocol,
