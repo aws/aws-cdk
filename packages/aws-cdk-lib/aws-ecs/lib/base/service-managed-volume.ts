@@ -127,6 +127,16 @@ export interface ServiceManagedEBSVolumeConfiguration {
    * @default - No tags are specified.
    */
   readonly tagSpecifications?: EBSTagSpecification[];
+
+  /**
+   * Specifies the Amazon EBS Provisioned Rate for Volume Initialization (volume initialization rate),
+   * at which to download the snapshot blocks from Amazon S3 to the volume.
+   *
+   * Valid range is between 100 and 300 MiB/s.
+   *
+   * @default undefined - The volume initialization rate is not set.
+   */
+  readonly volumeInitializationRate?: Size;
 }
 
 /**
@@ -247,7 +257,16 @@ export class ServiceManagedVolume extends Construct {
   private validateEbsVolumeConfiguration(volumeConfig?: ServiceManagedEBSVolumeConfiguration) {
     if (!volumeConfig) return;
 
-    const { volumeType = ec2.EbsDeviceVolumeType.GP2, iops, size, throughput, snapShotId } = volumeConfig;
+    const { volumeType = ec2.EbsDeviceVolumeType.GP2, iops, size, throughput, snapShotId, volumeInitializationRate } = volumeConfig;
+
+    if (volumeInitializationRate !== undefined && !Token.isUnresolved(volumeInitializationRate)) {
+      if (snapShotId === undefined) {
+        throw new ValidationError('\'volumeInitializationRate\' can only be specified when \'snapShotId\' is provided.', this);
+      }
+      if (volumeInitializationRate.toMebibytes() < 100 || volumeInitializationRate.toMebibytes() > 300) {
+        throw new ValidationError(`'volumeInitializationRate' must be between 100 and 300 MiB/s, got ${volumeInitializationRate.toMebibytes()} MiB/s.`, this);
+      }
+    }
 
     // Validate if both size and snapShotId are not specified.
     if (size === undefined && snapShotId === undefined) {
