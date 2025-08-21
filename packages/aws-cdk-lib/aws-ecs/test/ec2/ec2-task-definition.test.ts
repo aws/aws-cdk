@@ -21,6 +21,7 @@ describe('ec2 task definition', () => {
         Family: 'Ec2TaskDef',
         NetworkMode: ecs.NetworkMode.BRIDGE,
         RequiresCompatibilities: ['EC2'],
+        InferenceAccelerators: Match.absent(),
       });
 
       // test error if no container defs?
@@ -784,10 +785,10 @@ describe('ec2 task definition', () => {
       container.addContainerDependencies({
         container: dependency1,
       },
-      {
-        container: dependency2,
-        condition: ecs.ContainerDependencyCondition.SUCCESS,
-      });
+        {
+          container: dependency2,
+          condition: ecs.ContainerDependencyCondition.SUCCESS,
+        });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
