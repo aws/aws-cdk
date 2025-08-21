@@ -1,4 +1,4 @@
-// import { IRole } from '../../../aws-iam';
+import { IRole } from '../../../aws-iam';
 import { Duration } from '../duration';
 import { Size } from '../size';
 
@@ -79,5 +79,5 @@ export interface CustomResourceProviderOptions {
    *
    * @default - No role, will be created automatically with the required permissions.
    */
-  readonly role?: any;
+  readonly role?: IRole;
 }
