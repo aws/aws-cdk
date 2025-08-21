@@ -77,6 +77,73 @@ describe('tests', () => {
     expect(() => app.synth()).toThrow(/port\/protocol should not be specified for Lambda targets/);
   });
 
+  test('ApplicationTargetGroup requires protocol when no targets added', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN - Create ApplicationTargetGroup without protocol or port
+    new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      vpc,
+      // protocol and port are both missing
+    });
+
+    // THEN
+    expect(() => app.synth()).toThrow(/Protocol is required for ApplicationTargetGroup/);
+  });
+
+  test('ApplicationTargetGroup with protocol should not throw validation error', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN - Create ApplicationTargetGroup with protocol
+    new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      vpc,
+      port: 80,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+    });
+
+    // THEN - Should not throw
+    expect(() => app.synth()).not.toThrow();
+  });
+
+  test('ApplicationTargetGroup with Lambda target does not require protocol', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN - Create ApplicationTargetGroup for Lambda without protocol
+    new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      targetType: elbv2.TargetType.LAMBDA,
+      // protocol is missing but should be allowed for Lambda
+    });
+
+    // THEN - Should not throw
+    expect(() => app.synth()).not.toThrow();
+  });
+
+  test('ApplicationTargetGroup requires protocol even when targets added later', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN - Create ApplicationTargetGroup without protocol or port, then add non-Lambda target
+    const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      vpc,
+      // protocol and port are both missing
+    });
+
+    // Add a non-Lambda target
+    tg.addTarget(new elbv2.InstanceTarget('i-1234'));
+
+    // THEN - Should still require protocol
+    expect(() => app.synth()).toThrow(/Protocol is required for ApplicationTargetGroup/);
+  });
+
   test('Can add self-registering target to imported TargetGroup', () => {
     // GIVEN
     const app = new cdk.App();
@@ -157,6 +224,7 @@ describe('tests', () => {
     new elbv2.ApplicationTargetGroup(stack, 'Group', {
       vpc,
       ipAddressType,
+      protocol: elbv2.ApplicationProtocol.HTTP,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
@@ -174,6 +242,7 @@ describe('tests', () => {
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       stickinessCookieDuration: cdk.Duration.minutes(5),
       vpc,
+      protocol: elbv2.ApplicationProtocol.HTTP,
     });
 
     // THEN
@@ -206,6 +275,7 @@ describe('tests', () => {
       stickinessCookieDuration: cdk.Duration.minutes(5),
       stickinessCookieName: 'MyDeliciousCookie',
       vpc,
+      protocol: elbv2.ApplicationProtocol.HTTP,
     });
 
     // THEN
@@ -241,6 +311,7 @@ describe('tests', () => {
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.LEAST_OUTSTANDING_REQUESTS,
       vpc,
+      protocol: elbv2.ApplicationProtocol.HTTP,
     });
 
     // THEN
@@ -267,6 +338,7 @@ describe('tests', () => {
     // WHEN
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       vpc,
+      protocol: elbv2.ApplicationProtocol.HTTP,
       protocolVersion: elbv2.ApplicationProtocolVersion.GRPC,
       healthCheck: {
         enabled: true,
@@ -370,6 +442,7 @@ describe('tests', () => {
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       slowStart: cdk.Duration.seconds(0),
       vpc,
+      protocol: elbv2.ApplicationProtocol.HTTP,
     });
 
     // THEN
@@ -442,6 +515,7 @@ describe('tests', () => {
       // WHEN
       new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
         vpc,
+        protocol: elbv2.ApplicationProtocol.HTTP,
         healthCheck: {
           protocol: protocol,
         },
@@ -462,6 +536,7 @@ describe('tests', () => {
       const vpc = new ec2.Vpc(stack, 'VPC', {});
       const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
         vpc,
+        protocol: elbv2.ApplicationProtocol.HTTP,
       });
 
       // WHEN
@@ -737,6 +812,7 @@ describe('tests', () => {
       new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
         loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
         vpc,
+        protocol: elbv2.ApplicationProtocol.HTTP,
         enableAnomalyMitigation: true,
       });
 
@@ -769,6 +845,7 @@ describe('tests', () => {
       new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
         loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
         vpc,
+        protocol: elbv2.ApplicationProtocol.HTTP,
         enableAnomalyMitigation: false,
       });
 
@@ -831,7 +908,7 @@ describe('tests', () => {
       const vpc = new ec2.Vpc(stack, 'VPC', {});
 
       // WHEN
-      new elbv2.ApplicationTargetGroup(stack, 'LB', { crossZoneEnabled, vpc });
+      new elbv2.ApplicationTargetGroup(stack, 'LB', { crossZoneEnabled, vpc, protocol: elbv2.ApplicationProtocol.HTTP });
 
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
         TargetGroupAttributes: [

@@ -614,9 +614,18 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   protected validateTargetGroup(): string[] {
     const ret = super.validateTargetGroup();
 
+    // Check if this is a Lambda target group (either explicitly set or will be set to Lambda)
+    const isLambdaTarget = this.targetType === TargetType.LAMBDA;
+
+    // For non-Lambda target groups, protocol is required
+    if (!isLambdaTarget && this.protocol === undefined) {
+      ret.push('Protocol is required for ApplicationTargetGroup');
+    }
+
+    // Port validation for when targets are added (existing logic for non-Lambda)
     if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
-      && (this.protocol === undefined || this.port === undefined)) {
-      ret.push('At least one of \'port\' or \'protocol\' is required for a non-Lambda TargetGroup');
+      && this.port === undefined) {
+      ret.push('Port is required for non-Lambda TargetGroup');
     }
 
     if (this.healthCheck) {
