@@ -14,7 +14,8 @@ import {
 import { IRole } from '../../../aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
-import { CfnOutput, Duration, Stack, Token, ValidationError } from '../../../core';
+import { CfnOutput, Duration, FeatureFlags, Stack, Token, ValidationError } from '../../../core';
+import { ECS_PATTERNS_SMART_DEFAULT_OPEN_LISTENER } from '../../../cx-api';
 
 /**
  * Describes the type of DNS record the service should create
@@ -505,10 +506,16 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       protocolVersion: props.protocolVersion,
     };
 
+    // Smart default for openListener: if feature flag is enabled and custom security groups are provided
+    // on the load balancer, default to false for security. Otherwise, maintain backward compatibility with true.
+    const smartDefaultEnabled = FeatureFlags.of(this).isEnabled(ECS_PATTERNS_SMART_DEFAULT_OPEN_LISTENER);
+    const hasCustomSecurityGroups = smartDefaultEnabled && loadBalancer.connections.securityGroups.length > 1;
+    const defaultOpenListener = hasCustomSecurityGroups ? false : true;
+
     this.listener = loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
-      open: props.openListener ?? true,
+      open: props.openListener ?? defaultOpenListener,
       sslPolicy: props.sslPolicy,
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
@@ -534,7 +541,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       this.redirectListener = loadBalancer.addListener('PublicRedirectListener', {
         protocol: ApplicationProtocol.HTTP,
         port: 80,
-        open: props.openListener ?? true,
+        open: props.openListener ?? defaultOpenListener,
         defaultAction: ListenerAction.redirect({
           port: props.listenerPort?.toString() || '443',
           protocol: ApplicationProtocol.HTTPS,
