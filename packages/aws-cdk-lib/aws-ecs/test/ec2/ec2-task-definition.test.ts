@@ -785,10 +785,10 @@ describe('ec2 task definition', () => {
       container.addContainerDependencies({
         container: dependency1,
       },
-        {
-          container: dependency2,
-          condition: ecs.ContainerDependencyCondition.SUCCESS,
-        });
+      {
+        container: dependency2,
+        condition: ecs.ContainerDependencyCondition.SUCCESS,
+      });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
