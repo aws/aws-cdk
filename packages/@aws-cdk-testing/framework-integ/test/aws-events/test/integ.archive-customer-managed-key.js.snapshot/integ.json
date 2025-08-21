@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "archive-customer-managed-key-test/DefaultTest": {
+      "stacks": [
+        "archive-customer-managed-key"
+      ],
+      "assertionStack": "archive-customer-managed-key-test/DefaultTest/DeployAssert",
+      "assertionStackName": "archivecustomermanagedkeytestDefaultTestDeployAssert6D51069C"
+    }
+  },
+  "minimumCliVersion": "2.1024.0"
+}
