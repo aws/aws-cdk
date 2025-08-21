@@ -21,6 +21,7 @@ describe('ec2 task definition', () => {
         Family: 'Ec2TaskDef',
         NetworkMode: ecs.NetworkMode.BRIDGE,
         RequiresCompatibilities: ['EC2'],
+        InferenceAccelerators: Match.absent(),
       });
 
       // test error if no container defs?
