@@ -418,7 +418,7 @@ export class BucketDeployment extends Construct {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
-        SourceBucketNames: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.bucket.bucketName) }),
+        SourceBucketNames: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.bucket.bucketRef.bucketName) }),
         SourceObjectKeys: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.zipObjectKey) }),
         SourceMarkers: cdk.Lazy.uncachedAny({
           produce: () => {
@@ -945,8 +945,9 @@ export interface UserDefinedObjectMetadata {
 }
 
 function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
+  const resolveName = (config: SourceConfig) => JSON.stringify(stack.resolve(config.bucket.bucketRef.bucketName));
   return (
-    JSON.stringify(stack.resolve(a.bucket.bucketName)) === JSON.stringify(stack.resolve(b.bucket.bucketName))
+    resolveName(a) === resolveName(b)
     && a.zipObjectKey === b.zipObjectKey
     && a.markers === undefined && b.markers === undefined);
 }

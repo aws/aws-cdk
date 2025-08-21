@@ -1,5 +1,5 @@
 import { CfnRecordingConfiguration } from 'aws-cdk-lib/aws-ivs';
-import { IBucket } from 'aws-cdk-lib/aws-s3';
+import { IBucketRef } from 'aws-cdk-lib/aws-s3';
 import { Duration, Fn, IResource, Resource, Stack, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { RenditionConfiguration } from './rendition-configuration';
@@ -14,7 +14,7 @@ export interface RecordingConfigurationProps {
   /**
    * S3 bucket where recorded videos will be stored.
    */
-  readonly bucket: IBucket;
+  readonly bucket: IBucketRef;
 
   /**
    * The name of the Recording configuration.
@@ -146,7 +146,7 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
     const resource = new CfnRecordingConfiguration(this, 'Resource', {
       destinationConfiguration: {
         s3: {
-          bucketName: this.props.bucket.bucketName,
+          bucketName: this.props.bucket.bucketRef.bucketName,
         },
       },
       name: this.props.recordingConfigurationName,
