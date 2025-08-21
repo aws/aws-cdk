@@ -71,10 +71,12 @@ class ElbV2AsgAtgStack extends cdk.Stack {
 
     const atg1 = new elbv2.ApplicationTargetGroup(this, 'ATG1', {
       port: 443,
+      protocol: elbv2.ApplicationProtocol.HTTPS,
       vpc,
     });
     const atg2 = new elbv2.ApplicationTargetGroup(this, 'ATG2', {
       port: 443,
+      protocol: elbv2.ApplicationProtocol.HTTPS,
       vpc,
     });
 

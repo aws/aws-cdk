@@ -617,12 +617,17 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     // Check if this is a Lambda target group (either explicitly set or will be set to Lambda)
     const isLambdaTarget = this.targetType === TargetType.LAMBDA;
 
-    // For non-Lambda target groups, protocol is required
+    // For non-Lambda target groups, protocol is required at synthesis time
+    // This prevents deployment failures when protocol is missing (fixes issue #35295)
     if (!isLambdaTarget && this.protocol === undefined) {
       ret.push('Protocol is required for ApplicationTargetGroup');
     }
 
-    // Port validation for when targets are added (existing logic for non-Lambda)
+    // Port validation only when targets are added (existing logic for non-Lambda)
+    // Note: This validation logic is intentionally different from protocol validation above.
+    // Port can be inferred from listener configuration or other contexts, so it's not
+    // required at synthesis time like protocol is. The original validation logic is preserved
+    // to maintain backward compatibility with existing valid use cases.
     if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
       && this.port === undefined) {
       ret.push('Port is required for non-Lambda TargetGroup');
