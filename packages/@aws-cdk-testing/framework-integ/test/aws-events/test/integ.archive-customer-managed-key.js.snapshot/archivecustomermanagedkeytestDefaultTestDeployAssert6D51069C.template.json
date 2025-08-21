@@ -1,32 +1,4 @@
 {
- "Resources": {
-  "EventBridgeF6D0CF9D": {
-   "Type": "AWS::Events::EventBus",
-   "Properties": {
-    "Name": "IntegStackEventBridgeF828A2C9"
-   }
-  },
-  "MyCustomArchive": {
-   "Type": "AWS::Events::Archive",
-   "Properties": {
-    "EventPattern": {
-     "account": [
-      {
-       "Ref": "AWS::AccountId"
-      }
-     ]
-    },
-    "KmsKeyIdentifier": "",
-    "RetentionDays": 0,
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "EventBridgeF6D0CF9D",
-      "Arn"
-     ]
-    }
-   }
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
