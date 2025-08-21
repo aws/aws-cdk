@@ -94,6 +94,14 @@ export interface WebSocketApiProps {
    * @default undefined - AWS default is IPV4
    */
   readonly ipAddressType?: IpAddressType;
+
+  /**
+   * Avoid validating models when creating a deployment.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-apigatewayv2-api.html
+   *
+   * @default false
+   */
+  readonly disableSchemaValidation?: boolean;
 }
 
 /**
@@ -162,6 +170,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
       description: props?.description,
       routeSelectionExpression: props?.routeSelectionExpression ?? '$request.body.action',
       ipAddressType: props?.ipAddressType,
+      disableSchemaValidation: props?.disableSchemaValidation,
     });
     this.apiId = resource.ref;
     this.apiEndpoint = resource.attrApiEndpoint;
