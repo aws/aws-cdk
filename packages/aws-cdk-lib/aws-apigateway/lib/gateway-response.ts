@@ -67,7 +67,7 @@ export class GatewayResponse extends Resource implements IGatewayResponse {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.GatewayResponse';
 
   /**
-   * Import a gateway response using its ID.
+   * Reference an existing GatewayResponse given a gateway response ID.
    */
   public static fromGatewayResponseId(scope: Construct, id: string, gatewayResponseId: string): IGatewayResponse {
     class Import extends Resource implements IGatewayResponse {

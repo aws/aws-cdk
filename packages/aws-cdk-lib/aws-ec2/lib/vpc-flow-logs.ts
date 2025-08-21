@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnFlowLog } from './ec2.generated';
+import { CfnFlowLog, FlowLogRef, IFlowLogRef } from './ec2.generated';
 import { ISubnet, IVpc } from './vpc';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
@@ -17,7 +17,7 @@ const NAME_TAG: string = 'Name';
 /**
  * A FlowLog
  */
-export interface IFlowLog extends IResource {
+export interface IFlowLog extends IResource, IFlowLogRef {
   /**
    * The Id of the VPC Flow Log
    *
@@ -804,6 +804,12 @@ abstract class FlowLogBase extends Resource implements IFlowLog {
    * @attribute
    */
   public abstract readonly flowLogId: string;
+
+  public get flowLogRef(): FlowLogRef {
+    return {
+      flowLogId: this.flowLogId,
+    };
+  }
 }
 
 /**
