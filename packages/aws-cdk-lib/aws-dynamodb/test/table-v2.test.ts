@@ -3421,7 +3421,7 @@ test('Contributor Insights Specification - tableV2', () => {
     sortKey: { name: 'sortKey', type: AttributeType.NUMBER },
     contributorInsightsSpecification: {
       enabled: true,
-      contributorInsightsMode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+      mode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
     },
   });
 
@@ -3442,7 +3442,7 @@ test('Contributor Insights Specification - tableV2', () => {
           },
           ContributorInsightsSpecification: {
             Enabled: true,
-            ContributorInsightsMode: 'ACCESSED_AND_THROTTLED_KEYS',
+            Mode: 'ACCESSED_AND_THROTTLED_KEYS',
           },
         },
       ],
@@ -3499,7 +3499,7 @@ test('Contributor Insights Specification - index', () => {
     ],
     contributorInsightsSpecification: {
       enabled: true,
-      contributorInsightsMode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+      mode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
     },
     replicas: [
       {
@@ -3511,7 +3511,7 @@ test('Contributor Insights Specification - index', () => {
           gsi1: {
             contributorInsightsSpecification: {
               enabled: true,
-              contributorInsightsMode: ContributorInsightsMode.THROTTLED_KEYS,
+              mode: ContributorInsightsMode.THROTTLED_KEYS,
             },
           },
         },
@@ -3532,7 +3532,7 @@ test('Contributor Insights Specification - index', () => {
               IndexName: 'gsi1',
               ContributorInsightsSpecification: {
                 Enabled: true,
-                ContributorInsightsMode: 'THROTTLED_KEYS',
+                Mode: 'THROTTLED_KEYS',
               },
             }),
           ]),
@@ -3541,14 +3541,14 @@ test('Contributor Insights Specification - index', () => {
           Region: 'eu-west-1',
           ContributorInsightsSpecification: {
             Enabled: true,
-            ContributorInsightsMode: 'ACCESSED_AND_THROTTLED_KEYS',
+            Mode: 'ACCESSED_AND_THROTTLED_KEYS',
           },
           GlobalSecondaryIndexes: Match.arrayWith([
             Match.objectLike({
               IndexName: 'gsi1',
               ContributorInsightsSpecification: {
                 Enabled: true,
-                ContributorInsightsMode: 'ACCESSED_AND_THROTTLED_KEYS',
+                Mode: 'ACCESSED_AND_THROTTLED_KEYS',
               },
             }),
           ]),
@@ -3568,7 +3568,7 @@ test('ContributorInsightsSpecification && ContributorInsights - v2', () => {
       contributorInsights: true,
       contributorInsightsSpecification: {
         enabled: true,
-        contributorInsightsMode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+        mode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
       },
     });
 

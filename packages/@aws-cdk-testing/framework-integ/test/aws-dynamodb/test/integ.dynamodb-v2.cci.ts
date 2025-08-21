@@ -20,7 +20,7 @@ class TestStack extends Stack {
       ],
       contributorInsightsSpecification: {
         enabled: true,
-        contributorInsightsMode: dynamodb.ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+        mode: dynamodb.ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
       },
       replicas: [
         {
@@ -32,7 +32,7 @@ class TestStack extends Stack {
             gsi: {
               contributorInsightsSpecification: {
                 enabled: true,
-                contributorInsightsMode: dynamodb.ContributorInsightsMode.THROTTLED_KEYS,
+                mode: dynamodb.ContributorInsightsMode.THROTTLED_KEYS,
               },
             },
           },

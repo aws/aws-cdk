@@ -4129,7 +4129,7 @@ test('Contributor Insights Specification - table', () => {
     sortKey: TABLE_SORT_KEY,
     contributorInsightsSpecification: {
       enabled: true,
-      contributorInsightsMode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+      mode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
     },
   });
 
@@ -4146,7 +4146,7 @@ test('Contributor Insights Specification - table', () => {
       ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       ContributorInsightsSpecification: {
         Enabled: true,
-        ContributorInsightsMode: 'ACCESSED_AND_THROTTLED_KEYS',
+        Mode: 'ACCESSED_AND_THROTTLED_KEYS',
       },
     },
   );
@@ -4189,7 +4189,7 @@ test('Contributor Insights Specification - index', () => {
     sortKey: TABLE_SORT_KEY,
     contributorInsightsSpecification: {
       enabled: true,
-      contributorInsightsMode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+      mode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
     },
   });
 
@@ -4198,7 +4198,7 @@ test('Contributor Insights Specification - index', () => {
     partitionKey: GSI_PARTITION_KEY,
     contributorInsightsSpecification: {
       enabled: true,
-      contributorInsightsMode: ContributorInsightsMode.THROTTLED_KEYS,
+      mode: ContributorInsightsMode.THROTTLED_KEYS,
     },
   });
 
@@ -4216,7 +4216,7 @@ test('Contributor Insights Specification - index', () => {
       ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       ContributorInsightsSpecification: {
         Enabled: true,
-        ContributorInsightsMode: 'ACCESSED_AND_THROTTLED_KEYS',
+        Mode: 'ACCESSED_AND_THROTTLED_KEYS',
       },
       GlobalSecondaryIndexes: [
         {
@@ -4226,7 +4226,7 @@ test('Contributor Insights Specification - index', () => {
           ],
           ContributorInsightsSpecification: {
             Enabled: true,
-            ContributorInsightsMode: 'THROTTLED_KEYS',
+            Mode: 'THROTTLED_KEYS',
           },
         },
       ],
@@ -4244,7 +4244,7 @@ test('ContributorInsightsSpecification && ContributorInsightsEnabled', () => {
       contributorInsightsEnabled: true,
       contributorInsightsSpecification: {
         enabled: true,
-        contributorInsightsMode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+        mode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
       },
     });
   }).toThrow('`contributorInsightsSpecification` and `contributorInsightsEnabled` are set. Use `contributorInsightsSpecification` only.');

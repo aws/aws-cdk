@@ -186,7 +186,7 @@ export interface ContributorInsightsSpecification {
    * Indicates the type of metrics captured by contributor insights.
    * @default ACCESSED_AND_THROTTLED_KEYS
    */
-  readonly contributorInsightsMode?: ContributorInsightsMode;
+  readonly mode?: ContributorInsightsMode;
 }
 
 /**
