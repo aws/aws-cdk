@@ -9,12 +9,6 @@
   "MyCustomArchive": {
    "Type": "AWS::Events::Archive",
    "Properties": {
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "EventBridgeF6D0CF9D",
-      "Arn"
-     ]
-    },
     "EventPattern": {
      "account": [
       {
@@ -22,7 +16,14 @@
       }
      ]
     },
-    "RetentionDays": 0
+    "KmsKeyIdentifier": "",
+    "RetentionDays": 0,
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "EventBridgeF6D0CF9D",
+      "Arn"
+     ]
+    }
    }
   }
  },
