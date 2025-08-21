@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "IntegStack.assets": {
+    "archive-customer-managed-key.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "IntegStack.assets.json",
+        "file": "archive-customer-managed-key.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "IntegStack": {
+    "archive-customer-managed-key": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "IntegStack.template.json",
+        "templateFile": "archive-customer-managed-key.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7cced44170f966b1c7de209a1cfbb878b2d097955a19b8552ef34912b499e805.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e7599e5cd072fa4c29bc76762e846f9df90e6c747d44a3518b959121dce15d69.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "IntegStack.assets"
+          "archive-customer-managed-key.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,66 +31,74 @@
         }
       },
       "dependencies": [
-        "IntegStack.assets"
+        "archive-customer-managed-key.assets"
       ],
       "metadata": {
-        "/IntegStack/EventBridge": [
+        "/archive-customer-managed-key/KmsKey": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/archive-customer-managed-key/KmsKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KmsKey46693ADD"
+          }
+        ],
+        "/archive-customer-managed-key/DefaultEventBus": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/IntegStack/EventBridge/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventBridgeF6D0CF9D"
-          }
-        ],
-        "/IntegStack/Archive": [
+        "/archive-customer-managed-key/Archive": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "sourceEventBus": "*",
               "eventPattern": {
-                "account": "*"
+                "source": "*"
               }
             }
           }
         ],
-        "/IntegStack/Archive/Archive": [
+        "/archive-customer-managed-key/Archive/Archive": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyCustomArchive"
+            "data": "Archive4DBC1EC9"
           }
         ],
-        "/IntegStack/BootstrapVersion": [
+        "/archive-customer-managed-key/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/IntegStack/CheckBootstrapVersion": [
+        "/archive-customer-managed-key/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "IntegStack"
+      "displayName": "archive-customer-managed-key"
     },
-    "ArchiveTestDefaultTestDeployAssert3405726A.assets": {
+    "archivecustomermanagedkeytestDefaultTestDeployAssert6D51069C.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "ArchiveTestDefaultTestDeployAssert3405726A.assets.json",
+        "file": "archivecustomermanagedkeytestDefaultTestDeployAssert6D51069C.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "ArchiveTestDefaultTestDeployAssert3405726A": {
+    "archivecustomermanagedkeytestDefaultTestDeployAssert6D51069C": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "ArchiveTestDefaultTestDeployAssert3405726A.template.json",
+        "templateFile": "archivecustomermanagedkeytestDefaultTestDeployAssert6D51069C.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -99,7 +107,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "ArchiveTestDefaultTestDeployAssert3405726A.assets"
+          "archivecustomermanagedkeytestDefaultTestDeployAssert6D51069C.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -108,23 +116,23 @@
         }
       },
       "dependencies": [
-        "ArchiveTestDefaultTestDeployAssert3405726A.assets"
+        "archivecustomermanagedkeytestDefaultTestDeployAssert6D51069C.assets"
       ],
       "metadata": {
-        "/ArchiveTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/archive-customer-managed-key-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/ArchiveTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/archive-customer-managed-key-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "ArchiveTest/DefaultTest/DeployAssert"
+      "displayName": "archive-customer-managed-key-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
