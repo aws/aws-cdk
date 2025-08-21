@@ -2,9 +2,9 @@
   "version": "48.0.0",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-      "displayName": "ArchiveTestDefaultTestDeployAssert3405726A Template",
+      "displayName": "archivecustomermanagedkeytestDefaultTestDeployAssert6D51069C Template",
       "source": {
-        "path": "ArchiveTestDefaultTestDeployAssert3405726A.template.json",
+        "path": "archivecustomermanagedkeytestDefaultTestDeployAssert6D51069C.template.json",
         "packaging": "file"
       },
       "destinations": {
