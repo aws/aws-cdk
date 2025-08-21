@@ -618,10 +618,10 @@ const table = new dynamodb.TableV2(this, 'Table', {
 Enabling `contributorInsightSpecification` for `TableV2` will provide information about the most accessed and throttled or throttled only items in a table or `globalSecondaryIndex`. DynamoDB delivers this information to you via CloudWatch Contributor Insights rules, reports, and graphs of report data.
 
 By default, Contributor Insights for DynamoDB monitors all requests, including both the most accessed and most throttled items.  
-To limit the scope to only the most accessed or only the most throttled items, use the optional `contributorInsightsMode` parameter.
+To limit the scope to only the most accessed or only the most throttled items, use the optional `mode` parameter.
 
-- To monitor all traffic on a table or index, set `contributorInsightsMode` to `ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS`.
-- To monitor only throttled traffic on a table or index, set `contributorInsightsMode` to `ContributorInsightsMode.THROTTLED_KEYS`. 
+- To monitor all traffic on a table or index, set `mode` to `ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS`.
+- To monitor only throttled traffic on a table or index, set `mode` to `ContributorInsightsMode.THROTTLED_KEYS`. 
 
 
 ```ts
@@ -629,7 +629,7 @@ const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
   contributorInsightsSpecification: {
     enabled: true,
-    contributorInsightsMode: dynamodb.ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+    mode: dynamodb.ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
   },
 });
 ```
@@ -641,7 +641,7 @@ const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
   contributorInsightsSpecification: { // for a table
     enabled: true,
-    contributorInsightsMode: dynamodb.ContributorInsightsMode.THROTTLED_KEYS, // only emit throttling events
+    mode: dynamodb.ContributorInsightsMode.THROTTLED_KEYS, // only emit throttling events
   },
 });
 
