@@ -151,7 +151,6 @@ describe('archive', () => {
             Action: [
               'kms:Decrypt',
               'kms:GenerateDataKey',
-              'kms:DescribeKey',
               'kms:ReEncrypt*',
             ],
             Effect: 'Allow',
@@ -159,6 +158,26 @@ describe('archive', () => {
               Service: 'events.amazonaws.com',
             },
             Resource: '*',
+            Sid: 'Allow EventBridge to use kms operations',
+            Condition: {
+              StringEquals: {
+                'kms:EncryptionContext:aws:events:event-bus:arn': {
+                  'Fn::GetAtt': [
+                    'BusEA82B648',
+                    'Arn',
+                  ],
+                },
+              },
+            },
+          },
+          {
+            Action: 'kms:DescribeKey',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'events.amazonaws.com',
+            },
+            Resource: '*',
+            Sid: 'Allow EventBridge to call kms:DescribeKey',
           },
         ],
         Version: '2012-10-17',

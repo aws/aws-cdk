@@ -83,17 +83,27 @@ export class Archive extends Resource {
     if (props?.kmsKey) {
       props?.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
         resources: ['*'],
-        actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:ReEncrypt*'],
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:ReEncrypt*'],
         principals: [
           new iam.ServicePrincipal('events.amazonaws.com'),
         ],
-        sid: 'Allow EventBridge in all stages',
+        sid: 'Allow EventBridge to use kms operations',
         effect: iam.Effect.ALLOW,
         conditions: {
-          ArnLike: {
+          StringEquals: {
             'kms:EncryptionContext:aws:events:event-bus:arn': props.sourceEventBus.eventBusArn,
           },
         },
+      }));
+
+      props?.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['kms:DescribeKey'],
+        principals: [
+          new iam.ServicePrincipal('events.amazonaws.com'),
+        ],
+        sid: 'Allow EventBridge to call kms:DescribeKey',
+        effect: iam.Effect.ALLOW,
       }));
     }
 

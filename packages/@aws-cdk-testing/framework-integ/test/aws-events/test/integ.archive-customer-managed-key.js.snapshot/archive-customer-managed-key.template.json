@@ -26,18 +26,16 @@
          ]
         }
        },
-       "Resource": "*",
-       "Sid": "Allow IAM User to modify the key"
+       "Resource": "*"
       },
       {
        "Action": [
         "kms:Decrypt",
-        "kms:DescribeKey",
         "kms:GenerateDataKey",
         "kms:ReEncrypt*"
        ],
        "Condition": {
-        "ArnLike": {
+        "StringEquals": {
          "kms:EncryptionContext:aws:events:event-bus:arn": {
           "Fn::Join": [
            "",
@@ -65,7 +63,16 @@
         "Service": "events.amazonaws.com"
        },
        "Resource": "*",
-       "Sid": "Allow EventBridge in all stages"
+       "Sid": "Allow EventBridge to use kms operations"
+      },
+      {
+       "Action": "kms:DescribeKey",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": "*",
+       "Sid": "Allow EventBridge to call kms:DescribeKey"
       }
      ],
      "Version": "2012-10-17"
