@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "e7599e5cd072fa4c29bc76762e846f9df90e6c747d44a3518b959121dce15d69": {
+      "displayName": "archive-customer-managed-key Template",
+      "source": {
+        "path": "archive-customer-managed-key.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-1bdc7af2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e7599e5cd072fa4c29bc76762e846f9df90e6c747d44a3518b959121dce15d69.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
