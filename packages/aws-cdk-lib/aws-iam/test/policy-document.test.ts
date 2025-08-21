@@ -94,9 +94,9 @@ describe('IAM policy document', () => {
       Version: '2012-10-17',
       Statement:
         [{ Effect: 'Allow', Action: 'sqs:SendMessage', NotResource: 'arn:aws:sqs:us-east-1:123456789012:forbidden_queue' },
-        { Effect: 'Deny', Action: 'cloudformation:CreateStack' },
-        { Effect: 'Allow', NotAction: 'cloudformation:UpdateTerminationProtection' },
-        { Effect: 'Deny', NotPrincipal: { CanonicalUser: 'OnlyAuthorizedUser' } }],
+          { Effect: 'Deny', Action: 'cloudformation:CreateStack' },
+          { Effect: 'Allow', NotAction: 'cloudformation:UpdateTerminationProtection' },
+          { Effect: 'Deny', NotPrincipal: { CanonicalUser: 'OnlyAuthorizedUser' } }],
     });
   });
 
@@ -703,21 +703,21 @@ describe('IAM policy document', () => {
 
     test('values passed to `withConditions` overwrite values from the wrapped principal ' +
       'when keys conflict within an operator', () => {
-        const p = new FederatedPrincipal('fed', {
-          Operator: { key: 'p-val' },
-        }).withConditions({
-          Operator: { key: 'with-val' },
-        });
-        const statement = new PolicyStatement();
-        statement.addPrincipals(p);
-        expect(statement.toStatementJson()).toEqual({
-          Effect: 'Allow',
-          Principal: { Federated: 'fed' },
-          Condition: {
-            Operator: { key: 'with-val' },
-          },
-        });
+      const p = new FederatedPrincipal('fed', {
+        Operator: { key: 'p-val' },
+      }).withConditions({
+        Operator: { key: 'with-val' },
       });
+      const statement = new PolicyStatement();
+      statement.addPrincipals(p);
+      expect(statement.toStatementJson()).toEqual({
+        Effect: 'Allow',
+        Principal: { Federated: 'fed' },
+        Condition: {
+          Operator: { key: 'with-val' },
+        },
+      });
+    });
   });
 
   describe('duplicate statements', () => {
