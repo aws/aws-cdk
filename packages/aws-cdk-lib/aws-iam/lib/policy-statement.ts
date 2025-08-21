@@ -547,6 +547,25 @@ export class PolicyStatement {
     if (this._principals.length === 0 && this._notPrincipals.length === 0) {
       errors.push('A PolicyStatement used in a resource-based policy must specify at least one IAM principal.');
     }
+    if (this._resource.length === 0 && this._notResource.length === 0) {
+      errors.push('A PolicyStatement used in a resource-based policy must specify at least one resource.');
+    }
+    return errors;
+  }
+
+  /**
+   * Validate that the policy statement satisfies all requirements for a trust policy (assume role policy).
+   *
+   * Trust policies are a special type of resource-based policy where the resource is implicit (the role itself).
+   *
+   * @returns An array of validation error messages, or an empty array if the statement is valid.
+   */
+  public validateForTrustPolicy(): string[] {
+    const errors = this.validateForAnyPolicy();
+    if (this._principals.length === 0 && this._notPrincipals.length === 0) {
+      errors.push('A PolicyStatement used in a trust policy must specify at least one IAM principal.');
+    }
+    // Note: Trust policies do not require resources because the resource is implicit (the role itself)
     return errors;
   }
 

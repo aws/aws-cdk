@@ -168,6 +168,24 @@ export class PolicyDocument implements cdk.IResolvable {
 
   /**
    * Validate that all policy statements in the policy document satisfies the
+   * requirements for a trust policy (assume role policy).
+   *
+   * Trust policies are a special type of resource-based policy where the resource is implicit (the role itself).
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html
+   *
+   * @returns An array of validation error messages, or an empty array if the document is valid.
+   */
+  public validateForTrustPolicy(): string[] {
+    const errors = new Array<string>();
+    for (const statement of this.statements) {
+      errors.push(...statement.validateForTrustPolicy());
+    }
+    return errors;
+  }
+
+  /**
+   * Validate that all policy statements in the policy document satisfies the
    * requirements for an identity-based policy.
    *
    * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json
