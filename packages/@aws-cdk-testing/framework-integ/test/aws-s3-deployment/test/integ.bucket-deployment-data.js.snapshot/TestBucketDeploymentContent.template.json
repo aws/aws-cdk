@@ -128,15 +128,7 @@
       "Arn"
      ]
     },
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs22.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -230,10 +222,10 @@
     "SourceObjectKeys": [
      "d09271be89b6cb0398f793b40c1531fd9b076aa92ba80b5e436914b1808fe18d.zip",
      "0f14dedeaf4386031c978375cbda0f65d7b52b29452cabb8873eb8f0d0fa936b.zip",
-     "27eff729291aea0a2b33592996b9a764c233dc3387bd9cfd58c6f064073f177f.zip",
+     "ef45f69fe7c715abf58a9bda311a5bf7751d8a483d42506d6942dfa8bd3750a0.zip",
      "939a4ab8b51f1a1cccb59d97f04c318ad41c1d404e666c158ca2810894bc5f5f.zip",
-     "4050143e044258715dc77e0d45e38dfaaba94cba5339fe6f76f1c067fa45020d.zip",
-     "1175d01d4ddecbd7be39bdc306dabe248b6ada0281089ae680473c5ca7e13e67.zip",
+     "4ba8cfb53da242e91a423f3333c95db70ac0b5c2481a2d7e5c51142e5738403f.zip",
+     "4458891c23c9754723db261b607985ee4fce5a087343fca93e9608fb49e083ba.zip",
      "c3f91ed893cc759513d80ebd56bcaae5061b08bff3dd8ad10daeb62558bac52e.zip"
     ],
     "SourceMarkers": [
@@ -245,51 +237,96 @@
      },
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::GetAtt": [
-        "Bucket83908E77",
-        "WebsiteURL"
+       "Fn::Join": [
+        "",
+        [
+         "\"",
+         {
+          "Fn::GetAtt": [
+           "Bucket83908E77",
+           "WebsiteURL"
+          ]
+         },
+         "\""
+        ]
        ]
       }
      },
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::GetAtt": [
-        "Bucket83908E77",
-        "WebsiteURL"
+       "Fn::Join": [
+        "",
+        [
+         "\"",
+         {
+          "Fn::GetAtt": [
+           "Bucket83908E77",
+           "WebsiteURL"
+          ]
+         },
+         "\""
+        ]
        ]
       }
      },
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::Select": [
-        2,
-        {
-         "Fn::Split": [
-          "/",
-          {
-           "Fn::GetAtt": [
-            "Bucket83908E77",
-            "WebsiteURL"
-           ]
-          }
-         ]
-        }
+       "Fn::Join": [
+        "",
+        [
+         "\"",
+         {
+          "Fn::Select": [
+           2,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::GetAtt": [
+               "Bucket83908E77",
+               "WebsiteURL"
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         "\""
+        ]
        ]
       }
      },
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::GetAtt": [
-        "SecretParam0C31D215",
-        "Value"
+       "Fn::Join": [
+        "",
+        [
+         "\"",
+         {
+          "Fn::GetAtt": [
+           "SecretParam0C31D215",
+           "Value"
+          ]
+         },
+         "\""
+        ]
        ]
       }
      },
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::GetAtt": [
-        "SecretParam0C31D215",
-        "Value"
+       "Fn::Join": [
+        "",
+        [
+         "\"",
+         {
+          "Fn::GetAtt": [
+           "SecretParam0C31D215",
+           "Value"
+          ]
+         },
+         "\""
+        ]
        ]
       }
      }
@@ -309,6 +346,7 @@
      "Ref": "Bucket83908E77"
     },
     "DestinationBucketKeyPrefix": "deploy/here/",
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "OutputObjectKeys": true
@@ -448,7 +486,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
+     "S3Key": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip"
     },
     "Environment": {
      "Variables": {
@@ -474,142 +512,6 @@
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
    ]
-  }
- },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-6": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs22.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs22.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs18.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs22.x"
-   },
-   "eusc-de-east-1": {
-    "value": "nodejs22.x"
-   },
-   "il-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-south-1": {
-    "value": "nodejs22.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs22.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-2": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-2": {
-    "value": "nodejs22.x"
-   }
   }
  },
  "Outputs": {

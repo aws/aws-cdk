@@ -121,10 +121,10 @@
   "dependencies": {
     "@aws-cdk/asset-awscli-v1": "2.2.242",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.0",
-    "@aws-cdk/cloud-assembly-schema": "^48.2.0",
+    "@aws-cdk/cloud-assembly-schema": "^48.4.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
-    "fs-extra": "^11.3.0",
+    "fs-extra": "^11.3.1",
     "ignore": "^5.3.2",
     "jsonschema": "^1.5.0",
     "minimatch": "^3.1.2",
@@ -136,7 +136,7 @@
   },
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
-    "@aws-cdk/aws-service-spec": "^0.1.89",
+    "@aws-cdk/aws-service-spec": "^0.1.92",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -169,10 +169,10 @@
     "@aws-cdk/lazify": "0.0.0",
     "aws-sdk-client-mock": "4.1.0",
     "aws-sdk-client-mock-jest": "4.1.0",
-    "cdk8s": "2.70.3",
+    "cdk8s": "2.70.9",
     "constructs": "^10.0.0",
     "delay": "5.0.0",
-    "esbuild": "^0.25.8",
+    "esbuild": "^0.25.9",
     "fast-check": "^3.23.2",
     "jest": "^29.7.0",
     "jest-each": "^29.7.0",
@@ -237,6 +237,7 @@
     "./aws-appsync": "./aws-appsync/index.js",
     "./aws-apptest": "./aws-apptest/index.js",
     "./aws-aps": "./aws-aps/index.js",
+    "./aws-arcregionswitch": "./aws-arcregionswitch/index.js",
     "./aws-arczonalshift": "./aws-arczonalshift/index.js",
     "./aws-athena": "./aws-athena/index.js",
     "./aws-auditmanager": "./aws-auditmanager/index.js",
@@ -412,6 +413,7 @@
     "./aws-notifications": "./aws-notifications/index.js",
     "./aws-notificationscontacts": "./aws-notificationscontacts/index.js",
     "./aws-oam": "./aws-oam/index.js",
+    "./aws-observabilityadmin": "./aws-observabilityadmin/index.js",
     "./aws-odb": "./aws-odb/index.js",
     "./aws-omics": "./aws-omics/index.js",
     "./aws-opensearchserverless": "./aws-opensearchserverless/index.js",
@@ -535,7 +537,8 @@
   "jsiiRosetta": {
     "exampleDependencies": {
       "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.0",
-      "cdk8s-plus-25": "^2.7.0"
+      "cdk8s-plus-25": "^2.7.0",
+      "@aws-cdk/aws-glue-alpha": "^0.0.0"
     }
   }
 }
