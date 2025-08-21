@@ -6,10 +6,12 @@ import {
   Token,
 } from 'aws-cdk-lib/core';
 import { INamespace } from './namespace';
-import { CfnTable } from 'aws-cdk-lib/aws-s3tables';
+import { CfnTable, CfnTablePolicy } from 'aws-cdk-lib/aws-s3tables';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as perms from './permissions';
 import { EOL } from 'os';
 
 /**
@@ -39,6 +41,58 @@ export interface ITable extends IResource {
    * @attribute
    */
   readonly region?: string;
+
+  /**
+   * Adds a statement to the resource policy for a principal (i.e.
+   * account/role/service) to perform actions on this table.
+   *
+   * Note that the policy statement may or may not be added to the policy.
+   * For example, when an `ITable` is created from an existing table,
+   * it's not possible to tell whether the table already has a policy
+   * attached, let alone to re-use that policy to add more statements to it.
+   * So it's safest to do nothing in these cases.
+   *
+   * @param statement the policy statement to be added to the table's
+   * policy.
+   * @returns metadata about the execution of this method. If the policy
+   * was not added, the value of `statementAdded` will be `false`. You
+   * should always check this value to make sure that the operation was
+   * actually carried out. Otherwise, synthesis and deploy will terminate
+   * silently, which may be confusing.
+   */
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
+
+  /**
+   * Grant read permissions for this table to an IAM principal (Role/Group/User).
+   *
+   * If the parent TableBucket of this table has encryption,
+   * you should grant kms:Decrypt permission to use this key to the same principal.
+   *
+   * @param identity The principal to allow read permissions to
+   */
+  grantRead(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant write permissions for this table to an IAM principal (Role/Group/User).
+   *
+   * If the parent TableBucket of this table has encryption,
+   * you should grant kms:GenerateDataKey and kms:Decrypt permission
+   * to use this key to the same principal.
+   *
+   * @param identity The principal to allow write permissions to
+   */
+  grantWrite(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant read and write permissions for this table to an IAM principal (Role/Group/User).
+   *
+   * If the parent TableBucket of this table has encryption,
+   * you should grant kms:GenerateDataKey and kms:Decrypt permission
+   * to use this key to the same principal.
+   *
+   * @param identity The principal to allow read and write permissions to
+   */
+  grantReadWrite(identity: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -47,6 +101,83 @@ export interface ITable extends IResource {
 abstract class TableBase extends Resource implements ITable {
   public abstract readonly tableName: string;
   public abstract readonly tableArn: string;
+
+  /**
+   * The resource policy associated with this table.
+   *
+   * If `autoCreatePolicy` is true, a `TablePolicy` will be created upon the
+   * first call to addToResourcePolicy(s).
+   */
+  public abstract tablePolicy?: CfnTablePolicy;
+
+  /**
+   * Indicates if a table resource policy should automatically created upon
+   * the first call to `addToResourcePolicy`.
+   */
+  protected abstract autoCreatePolicy: boolean;
+
+  public addToResourcePolicy(
+    statement: iam.PolicyStatement,
+  ): iam.AddToResourcePolicyResult {
+    if (!this.tablePolicy && this.autoCreatePolicy) {
+      this.tablePolicy = new CfnTablePolicy(this, 'DefaultPolicy', {
+        tableArn: this.tableArn,
+        resourcePolicy: new iam.PolicyDocument({}),
+      });
+    }
+
+    if (this.tablePolicy) {
+      this.tablePolicy.resourcePolicy.addStatements(statement);
+      return { statementAdded: true, policyDependable: this.tablePolicy };
+    }
+
+    return { statementAdded: false };
+  }
+
+  public grantRead(identity: iam.IGrantable) {
+    return this.grant(
+      identity,
+      perms.TABLE_READ_ACCESS,
+      this.tableArn,
+    );
+  }
+
+  public grantWrite(identity: iam.IGrantable) {
+    return this.grant(
+      identity,
+      perms.TABLE_WRITE_ACCESS,
+      this.tableArn,
+    );
+  }
+
+  public grantReadWrite(identity: iam.IGrantable) {
+    return this.grant(
+      identity,
+      perms.TABLE_READ_WRITE_ACCESS,
+      this.tableArn,
+    );
+  }
+
+  /**
+   * Grants the given s3tables permissions to the provided principal
+   * @returns Grant object
+   */
+  private grant(
+    grantee: iam.IGrantable,
+    tableActions: string[],
+    resourceArn: string,
+    ...otherResourceArns: (string | undefined)[]) {
+    const resources = [resourceArn, ...otherResourceArns].filter(arn => arn != undefined);
+
+    const grant = iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions: tableActions,
+      resourceArns: resources,
+      resource: this,
+    });
+
+    return grant;
+  }
 }
 
 /**
@@ -260,6 +391,7 @@ export class Table extends TableBase {
     class Import extends TableBase {
       public readonly tableName = attrs.tableName;
       public readonly tableArn = tableArn;
+      public readonly tablePolicy?: CfnTablePolicy;
       protected autoCreatePolicy: boolean = false;
 
       /**
@@ -349,6 +481,13 @@ export class Table extends TableBase {
    * The namespace containing this table
    */
   public readonly namespace: INamespace;
+
+  /**
+   * The resource policy for this table.
+   */
+  public readonly tablePolicy?: CfnTablePolicy;
+
+  protected autoCreatePolicy: boolean = true;
 
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {});
