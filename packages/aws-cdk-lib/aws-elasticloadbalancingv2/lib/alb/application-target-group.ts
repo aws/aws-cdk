@@ -409,7 +409,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     if (props.protocol === undefined && this.targetType !== TargetType.LAMBDA) {
       Annotations.of(this).addWarningV2(
         '@aws-cdk/aws-elbv2:target-group-protocol-default',
-        'ApplicationTargetGroup protocol not specified. Please specify protocol explicitly (e.g., ApplicationProtocol.HTTP or ApplicationProtocol.HTTPS).',
+        'ApplicationTargetGroup protocol not specified. Please specify protocol explicitly (e.g., ApplicationProtocol.HTTP or ApplicationProtocol.HTTPS). Note: Missing protocol will cause deployment failures.',
       );
     }
   }
@@ -622,10 +622,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   protected validateTargetGroup(): string[] {
     const ret = super.validateTargetGroup();
 
-    // For non-Lambda target groups, protocol is now required
-    if (this.targetType !== TargetType.LAMBDA && this.protocol === undefined) {
-      ret.push('Protocol is required for ApplicationTargetGroup. Please specify protocol explicitly (e.g., ApplicationProtocol.HTTP or ApplicationProtocol.HTTPS).');
-    }
+    // Warning is already provided in constructor for missing protocol
 
     // Port is still required for non-Lambda targets when targetType is defined
     if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA

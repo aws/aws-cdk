@@ -77,20 +77,24 @@ describe('tests', () => {
     expect(() => app.synth()).toThrow(/port\/protocol should not be specified for Lambda targets/);
   });
 
-  test('ApplicationTargetGroup requires protocol when no targets added', () => {
+  test('ApplicationTargetGroup shows warning when protocol not specified', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
-    // WHEN - Create ApplicationTargetGroup without protocol or port
+    // WHEN - Create ApplicationTargetGroup without protocol but with port
     new elbv2.ApplicationTargetGroup(stack, 'TG', {
       vpc,
-      // protocol and port are both missing
+      port: 80, // Port is required for non-Lambda targets
+      // protocol is missing - this should generate a warning
     });
 
-    // THEN
-    expect(() => app.synth()).toThrow(/Protocol is required for ApplicationTargetGroup/);
+    // THEN - Should synthesize successfully but show warning
+    const assembly = app.synth();
+    const stackArtifact = assembly.getStackByName(stack.stackName);
+    const warnings = stackArtifact.messages.filter(m => m.level === 'warning');
+    expect(warnings.some(w => w.entry.data.includes('ApplicationTargetGroup protocol not specified'))).toBe(true);
   });
 
   test('ApplicationTargetGroup with protocol should not throw validation error', () => {
@@ -131,17 +135,21 @@ describe('tests', () => {
     const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
-    // WHEN - Create ApplicationTargetGroup without protocol or port, then add non-Lambda target
+    // WHEN - Create ApplicationTargetGroup without protocol but with port, then add non-Lambda target
     const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', {
       vpc,
-      // protocol and port are both missing
+      port: 80, // Port is required for non-Lambda targets
+      // protocol is missing - this should generate a warning
     });
 
     // Add a non-Lambda target
     tg.addTarget(new elbv2.InstanceTarget('i-1234'));
 
-    // THEN - Should still require protocol
-    expect(() => app.synth()).toThrow(/Protocol is required for ApplicationTargetGroup/);
+    // THEN - Should synthesize successfully but show warning
+    const assembly = app.synth();
+    const stackArtifact = assembly.getStackByName(stack.stackName);
+    const warnings = stackArtifact.messages.filter(m => m.level === 'warning');
+    expect(warnings.some(w => w.entry.data.includes('ApplicationTargetGroup protocol not specified'))).toBe(true);
   });
 
   test('Can add self-registering target to imported TargetGroup', () => {
