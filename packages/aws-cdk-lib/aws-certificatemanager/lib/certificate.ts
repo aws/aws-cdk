@@ -318,7 +318,16 @@ export class Certificate extends CertificateBase implements ICertificate {
     }
 
     // AWS Certificate Manager domain name regex pattern
-    const DOMAIN_NAME_REGEX = /^(\*\.)?(((?!-)[A-Za-z0-9-]{0,62}[A-Za-z0-9])\.)+(((?!-)[A-Za-z0-9-]{1,62}[A-Za-z0-9]))$/;
+    // Based on AWS Route 53 domain name format requirements:
+    // https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/DomainNameFormat.html#domain-name-format-hosted-zones
+    //
+    // Key requirements enforced:
+    // - Each label must be 1-63 characters long
+    // - Labels must start and end with alphanumeric characters (a-z, A-Z, 0-9)
+    // - Labels can contain hyphens in the middle but not at start or end
+    // - Optional wildcard prefix (*.) is allowed for subdomains
+    // - Domain must have at least one dot (subdomain + TLD structure)
+    const DOMAIN_NAME_REGEX = /^(\*\.)?([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/;
 
     // check if domain name format is valid
     if (!Token.isUnresolved(props.domainName) && !DOMAIN_NAME_REGEX.test(props.domainName)) {

@@ -146,6 +146,36 @@ test('accepts valid domain names', () => {
     domainName: 'deep.sub.example.com',
   });
 
+  // Test single character labels
+  new Certificate(stack, 'Certificate5', {
+    domainName: 'a.b.com',
+  });
+
+  // Test numeric labels
+  new Certificate(stack, 'Certificate6', {
+    domainName: '123.example.com',
+  });
+
+  // Test mixed alphanumeric
+  new Certificate(stack, 'Certificate7', {
+    domainName: 'test123.example456.com',
+  });
+
+  // Test hyphens in middle of labels
+  new Certificate(stack, 'Certificate8', {
+    domainName: 'test-sub.example-domain.com',
+  });
+
+  // Test maximum label length (63 characters) - but keep total under 64
+  new Certificate(stack, 'Certificate9', {
+    domainName: 'a'.repeat(50) + '.example.com',
+  });
+
+  // Test wildcard with multi-level subdomain
+  new Certificate(stack, 'Certificate10', {
+    domainName: '*.deep.sub.example.com',
+  });
+
   // Should not throw for any of these valid domains
 });
 
@@ -166,24 +196,132 @@ test('throws when domain name format is invalid', () => {
     });
   }).toThrow(/Domain name format is invalid/);
 
-  // Test domain with consecutive dots
+  // Test label starting with hyphen
   expect(() => {
     new Certificate(stack, 'Certificate3', {
+      domainName: 'sub.-example.com',
+    });
+  }).toThrow(/Domain name format is invalid/);
+
+  // Test label ending with hyphen
+  expect(() => {
+    new Certificate(stack, 'Certificate4', {
+      domainName: 'sub.example-.com',
+    });
+  }).toThrow(/Domain name format is invalid/);
+
+  // Test domain with consecutive dots
+  expect(() => {
+    new Certificate(stack, 'Certificate5', {
       domainName: 'example..com',
     });
   }).toThrow(/Domain name format is invalid/);
 
   // Test domain ending with dot
   expect(() => {
-    new Certificate(stack, 'Certificate4', {
+    new Certificate(stack, 'Certificate6', {
       domainName: 'example.com.',
     });
   }).toThrow(/Domain name format is invalid/);
 
   // Test invalid wildcard (not at start)
   expect(() => {
-    new Certificate(stack, 'Certificate5', {
+    new Certificate(stack, 'Certificate7', {
       domainName: 'sub.*.example.com',
+    });
+  }).toThrow(/Domain name format is invalid/);
+
+  // Test empty label
+  expect(() => {
+    new Certificate(stack, 'Certificate8', {
+      domainName: '.example.com',
+    });
+  }).toThrow(/Domain name format is invalid/);
+
+  // Test single character domain (no TLD)
+  expect(() => {
+    new Certificate(stack, 'Certificate9', {
+      domainName: 'a',
+    });
+  }).toThrow(/Domain name format is invalid/);
+
+  // Test total domain length too long (over 64 characters)
+  expect(() => {
+    new Certificate(stack, 'Certificate10', {
+      domainName: 'a'.repeat(60) + '.example.com', // 72 characters total
+    });
+  }).toThrow(/Domain name must be 64 characters or less/);
+});
+
+test('validates domain name format with regex within length limits', () => {
+  const stack = new Stack();
+
+  // Test valid domain with exactly 63-character label (within 64 total limit)
+  new Certificate(stack, 'ValidCert', {
+    domainName: 'a'.repeat(59) + '.com', // 63 characters total
+  });
+
+  // Test invalid: label with hyphen at start (within length limit)
+  expect(() => {
+    new Certificate(stack, 'InvalidCert1', {
+      domainName: '-test.com',
+    });
+  }).toThrow(/Domain name format is invalid/);
+
+  // Test invalid: label with hyphen at end (within length limit)
+  expect(() => {
+    new Certificate(stack, 'InvalidCert2', {
+      domainName: 'test-.com',
+    });
+  }).toThrow(/Domain name format is invalid/);
+
+  // Test invalid: empty label (within length limit)
+  expect(() => {
+    new Certificate(stack, 'InvalidCert3', {
+      domainName: '.com',
+    });
+  }).toThrow(/Domain name format is invalid/);
+
+  // Test invalid: no TLD structure
+  expect(() => {
+    new Certificate(stack, 'InvalidCert4', {
+      domainName: 'example',
+    });
+  }).toThrow(/Domain name format is invalid/);
+
+  // Test valid: wildcard with valid subdomain
+  new Certificate(stack, 'ValidWildcard', {
+    domainName: '*.test.com',
+  });
+
+  // Test invalid: wildcard not at beginning
+  expect(() => {
+    new Certificate(stack, 'InvalidCert5', {
+      domainName: 'test.*.com',
+    });
+  }).toThrow(/Domain name format is invalid/);
+
+  // Test valid: numbers in domain
+  new Certificate(stack, 'ValidNumbers', {
+    domainName: '123.test456.com',
+  });
+
+  // Test valid: hyphens in middle of labels
+  new Certificate(stack, 'ValidHyphens', {
+    domainName: 'test-1.sub-domain.com',
+  });
+
+  // Test invalid: consecutive dots
+  expect(() => {
+    new Certificate(stack, 'InvalidCert6', {
+      domainName: 'test..com',
+    });
+  }).toThrow(/Domain name format is invalid/);
+
+  // Test invalid: ending with dot
+  expect(() => {
+    new Certificate(stack, 'InvalidCert7', {
+      domainName: 'test.com.',
     });
   }).toThrow(/Domain name format is invalid/);
 });
