@@ -1477,7 +1477,7 @@ describe('tests', () => {
     const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
     const group1 = new elbv2.ApplicationTargetGroup(stack, 'Group1', { vpc, port: 80 });
-    const group2 = new elbv2.ApplicationTargetGroup(stack, 'Group2', { vpc, port: 81 });
+    const group2 = new elbv2.ApplicationTargetGroup(stack, 'Group2', { vpc, port: 81, protocol: elbv2.ApplicationProtocol.HTTP });
 
     // WHEN
     const listener = lb.addListener('Listener', {
