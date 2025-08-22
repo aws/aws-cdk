@@ -338,7 +338,6 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   constructor(scope: Construct, id: string, props: ApplicationTargetGroupProps = {}) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
     const { protocolVersion } = props;
-
     super(scope, id, { ...props }, {
       protocol,
       protocolVersion,
