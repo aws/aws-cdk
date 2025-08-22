@@ -1430,12 +1430,11 @@ describe('tests', () => {
     const listener = lb.addListener('Listener', {
       port: 443,
       certificates: [importedCertificate(stack, 'cert1'), importedCertificate(stack, 'cert2')],
-      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80, protocol: elbv2.ApplicationProtocol.HTTP })],
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
     });
 
     listener.addTargets('Target1', {
       priority: 10,
-      protocol: elbv2.ApplicationProtocol.HTTP,
       conditions: [elbv2.ListenerCondition.pathPatterns(['/test/path/1', '/test/path/2'])],
     });
 
