@@ -609,7 +609,6 @@ declare const vpc: ec2.Vpc;
 const tg1 = new elbv2.ApplicationTargetGroup(this, 'TG1', {
   targetType: elbv2.TargetType.INSTANCE,
   port: 80,
-  protocol: elbv2.ApplicationProtocol.HTTP,
   stickinessCookieDuration: Duration.minutes(5),
   vpc,
 });
@@ -618,7 +617,6 @@ const tg1 = new elbv2.ApplicationTargetGroup(this, 'TG1', {
 const tg2 = new elbv2.ApplicationTargetGroup(this, 'TG2', {
   targetType: elbv2.TargetType.INSTANCE,
   port: 80,
-  protocol: elbv2.ApplicationProtocol.HTTP,
   stickinessCookieDuration: Duration.minutes(5),
   stickinessCookieName: 'MyDeliciousCookie',
   vpc,
@@ -641,7 +639,6 @@ const tg = new elbv2.ApplicationTargetGroup(this, 'TG', {
   targetType: elbv2.TargetType.INSTANCE,
   slowStart: Duration.seconds(60),
   port: 80,
-  protocol: elbv2.ApplicationProtocol.HTTP,
   vpc,
 });
 ```
@@ -683,7 +680,6 @@ declare const vpc: ec2.Vpc;
 
 const tg = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
   vpc,
-  protocol: elbv2.ApplicationProtocol.HTTP,
   loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
   enableAnomalyMitigation: true,
 });
@@ -703,7 +699,6 @@ declare const vpc: ec2.Vpc;
 const targetGroup = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
   vpc,
   port: 80,
-  protocol: elbv2.ApplicationProtocol.HTTP,
   targetType: elbv2.TargetType.INSTANCE,
 
   // Whether cross zone load balancing is enabled.
@@ -725,7 +720,6 @@ declare const vpc: ec2.Vpc;
 const ipv4ApplicationTargetGroup = new elbv2.ApplicationTargetGroup(this, 'IPv4ApplicationTargetGroup', {
   vpc,
   port: 80,
-  protocol: elbv2.ApplicationProtocol.HTTP,
   targetType: elbv2.TargetType.INSTANCE,
   ipAddressType: elbv2.TargetGroupIpAddressType.IPV4,
 });
@@ -733,7 +727,6 @@ const ipv4ApplicationTargetGroup = new elbv2.ApplicationTargetGroup(this, 'IPv4A
 const ipv6ApplicationTargetGroup = new elbv2.ApplicationTargetGroup(this, 'Ipv6ApplicationTargetGroup', {
   vpc,
   port: 80,
-  protocol: elbv2.ApplicationProtocol.HTTP,
   targetType: elbv2.TargetType.INSTANCE,
   ipAddressType: elbv2.TargetGroupIpAddressType.IPV6,
 });
