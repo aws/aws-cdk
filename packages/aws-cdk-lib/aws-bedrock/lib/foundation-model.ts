@@ -236,6 +236,9 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-3-5-haiku-20241022-v1:0" */
   public static readonly ANTHROPIC_CLAUDE_3_5_HAIKU_20241022_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-5-haiku-20241022-v1:0');
 
+  /** Base model "anthropic.claude-3-5-haiku-20241022-v1:0:200k". */
+  public static readonly ANTHROPIC_CLAUDE_3_5_HAIKU_20241022_V1_0_200K = new FoundationModelIdentifier('anthropic.claude-3-5-haiku-20241022-v1:0:200k');
+
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0:200k" */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_200K = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0:200k');
 
@@ -286,6 +289,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "cohere.command-r-v1:0". */
   public static readonly COHERE_COMMAND_R_PLUS_V1 = new FoundationModelIdentifier('cohere.command-r-plus-v1:0');
+
+  /** Base model "cohere.command-r-plus-v1:0:128k". */
+  public static readonly COHERE_COMMAND_R_PLUS_V1_0_128K = new FoundationModelIdentifier('cohere.command-r-plus-v1:0:128k');
 
   /** Base model "cohere.rerank-v3-5:0". */
   public static readonly COHERE_RERANK_V3_5 = new FoundationModelIdentifier('cohere.rerank-v3-5:0');
