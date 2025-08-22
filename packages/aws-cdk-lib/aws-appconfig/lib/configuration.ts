@@ -14,7 +14,7 @@ import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as sm from '../../aws-secretsmanager';
 import * as ssm from '../../aws-ssm';
-import { PhysicalName, Stack, ArnFormat, Names, RemovalPolicy } from '../../core';
+import { PhysicalName, Stack, ArnFormat, Names, RemovalPolicy, ValidationError } from '../../core';
 import * as mimeTypes from 'mime-types';
 import { DeletionProtectionCheck } from './util';
 
@@ -523,7 +523,7 @@ export interface SourcedConfigurationOptions extends ConfigurationOptions {
    *
    * @default - A role is generated.
    */
-  readonly retrievalRole?: iam.IRole;
+  readonly retrievalRole?: iam.IRoleRef;
 }
 
 /**
@@ -548,7 +548,7 @@ export interface SourcedConfigurationProps extends ConfigurationProps {
    *
    * @default - Auto generated if location type is not ConfigurationSourceType.CODE_PIPELINE otherwise no role specified.
    */
-  readonly retrievalRole?: iam.IRole;
+  readonly retrievalRole?: iam.IRoleRef;
 }
 
 /**
@@ -565,11 +565,6 @@ export class SourcedConfiguration extends ConfigurationBase {
    * The version number of the configuration to deploy.
    */
   public readonly versionNumber?: string;
-
-  /**
-   * The IAM role to retrieve the configuration.
-   */
-  public readonly retrievalRole?: iam.IRole;
 
   /**
    * The key to decrypt the configuration if applicable. This key
@@ -590,6 +585,7 @@ export class SourcedConfiguration extends ConfigurationBase {
 
   private readonly locationUri: string;
   private readonly _cfnConfigurationProfile: CfnConfigurationProfile;
+  private readonly _retrievalRole?: iam.IRoleRef;
 
   constructor (scope: Construct, id: string, props: SourcedConfigurationProps) {
     super(scope, id, props);
@@ -598,7 +594,7 @@ export class SourcedConfiguration extends ConfigurationBase {
     this.locationUri = this.location.locationUri;
     this.versionNumber = props.versionNumber;
     this.sourceKey = this.location.key;
-    this.retrievalRole = props.retrievalRole ?? this.getRetrievalRole();
+    this._retrievalRole = props.retrievalRole ?? this.getRetrievalRole();
     this._cfnConfigurationProfile = new CfnConfigurationProfile(this, 'Resource', {
       applicationId: this.applicationId,
       locationUri: this.locationUri,
@@ -620,6 +616,19 @@ export class SourcedConfiguration extends ConfigurationBase {
 
     this.addExistingEnvironmentsToApplication();
     this.deployConfigToEnvironments();
+  }
+
+  /**
+   * The IAM role to retrieve the configuration.
+   */
+  public get retrievalRole(): iam.IRole | undefined {
+    if (!this._retrievalRole) {
+      return undefined;
+    }
+    if ('grant' in this._retrievalRole) {
+      return this._retrievalRole as iam.IRole;
+    }
+    throw new ValidationError(`Retrieval role does not implement IRole: ${this._retrievalRole.constructor.name}`, this);
   }
 
   private getRetrievalRole(): iam.Role | undefined {

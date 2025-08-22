@@ -9,7 +9,7 @@ import { UserPoolEmail, UserPoolEmailConfig } from './user-pool-email';
 import { UserPoolGroup, UserPoolGroupOptions } from './user-pool-group';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
 import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
-import { Grant, IGrantable, IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import { Grant, IGrantable, IRoleRef, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
@@ -707,7 +707,7 @@ export interface UserPoolProps {
    *
    * @default - a new IAM role is created.
    */
-  readonly smsRole?: IRole;
+  readonly smsRole?: IRoleRef;
 
   /**
    * The 'ExternalId' that Cognito service must be using when assuming the `smsRole`, if the role is restricted with an 'sts:ExternalId' conditional.
@@ -1436,7 +1436,7 @@ export class UserPool extends UserPoolBase {
 
     if (props.smsRole) {
       return {
-        snsCallerArn: props.smsRole.roleArn,
+        snsCallerArn: props.smsRole.roleRef.roleArn,
         externalId: props.smsRoleExternalId,
         snsRegion: props.snsRegion,
       };
@@ -1478,7 +1478,7 @@ export class UserPool extends UserPoolBase {
     });
     return {
       externalId: smsRoleExternalId,
-      snsCallerArn: smsRole.roleArn,
+      snsCallerArn: smsRole.roleRef.roleArn,
       snsRegion: props.snsRegion,
     };
   }

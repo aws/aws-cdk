@@ -29,14 +29,14 @@ export interface InstanceEngineBindOptions {
    *
    * @default - none
    */
-  readonly s3ImportRole?: iam.IRole;
+  readonly s3ImportRole?: iam.IRoleRef;
 
   /**
    * The role used for S3 exporting.
    *
    * @default - none
    */
-  readonly s3ExportRole?: iam.IRole;
+  readonly s3ExportRole?: iam.IRoleRef;
 
   /**
    * The option group of the database
@@ -3029,7 +3029,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
       // https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.SQLServer.Options.BackupRestore.html
       optionGroup.addConfiguration({
         name: 'SQLSERVER_BACKUP_RESTORE',
-        settings: { IAM_ROLE_ARN: s3Role.roleArn },
+        settings: { IAM_ROLE_ARN: s3Role.roleRef.roleArn },
       });
     }
 

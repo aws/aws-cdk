@@ -597,7 +597,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - A role is automatically created for you
    */
-  readonly monitoringRole?: iam.IRole;
+  readonly monitoringRole?: iam.IRoleRef;
 
   /**
    * Whether to enable Performance Insights for the DB instance.
@@ -709,7 +709,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - The role will be created for you if `DatabaseInstanceNewProps#domain` is specified
    */
-  readonly domainRole?: iam.IRole;
+  readonly domainRole?: iam.IRoleRef;
 
   /**
    * Existing subnet group for the instance.
@@ -863,7 +863,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   private readonly cloudwatchLogsRetentionRole?: iam.IRole;
 
   private readonly domainId?: string;
-  private readonly domainRole?: iam.IRole;
+  private readonly domainRole?: iam.IRoleRef;
 
   protected enableIamAuthentication?: boolean;
 
@@ -976,7 +976,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set,
       iops,
       monitoringInterval: props.monitoringInterval?.toSeconds(),
-      monitoringRoleArn: monitoringRole?.roleArn,
+      monitoringRoleArn: monitoringRole?.roleRef.roleArn,
       multiAz: props.multiAz,
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       optionGroupName: props.optionGroup?.optionGroupName,
@@ -995,7 +995,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
       maxAllocatedStorage: props.maxAllocatedStorage,
       domain: this.domainId,
-      domainIamRoleName: this.domainRole?.roleName,
+      domainIamRoleName: this.domainRole?.roleRef.roleName,
       networkType: props.networkType,
       caCertificateIdentifier: props.caCertificate ? props.caCertificate.toString() : undefined,
       applyImmediately: props.applyImmediately,

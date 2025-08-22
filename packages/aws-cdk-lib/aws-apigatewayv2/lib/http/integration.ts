@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
 import { CfnIntegration } from '.././index';
-import { IRole } from '../../../aws-iam';
+import { IRoleRef } from '../../../aws-iam';
 import { Aws, Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
@@ -100,8 +100,8 @@ export abstract class IntegrationCredentials {
   /**
    * Use the specified role for integration requests
    */
-  public static fromRole(role: IRole): IntegrationCredentials {
-    return { credentialsArn: role.roleArn };
+  public static fromRole(role: IRoleRef): IntegrationCredentials {
+    return { credentialsArn: role.roleRef.roleArn };
   }
 
   /** Use the calling user's identity to call the integration */

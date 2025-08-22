@@ -38,7 +38,7 @@ export interface LogSubscriptionDestinationConfig {
    *
    * @default No role assumed
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRoleRef;
 }
 
 /**
@@ -80,7 +80,7 @@ export class SubscriptionFilter extends Resource {
     new CfnSubscriptionFilter(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
       destinationArn: destProps.arn,
-      roleArn: destProps.role && destProps.role.roleArn,
+      roleArn: destProps.role?.roleRef.roleArn,
       filterPattern: props.filterPattern.logPatternString,
       filterName: this.physicalName,
       distribution: props.distribution,

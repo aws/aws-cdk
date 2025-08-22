@@ -276,7 +276,7 @@ export interface CognitoOptions {
    *
    * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cognito-auth.html#cognito-auth-prereq
    */
-  readonly role: iam.IRole;
+  readonly role: iam.IRoleRef;
 
   /**
    * The Amazon Cognito user pool ID that you want Amazon OpenSearch Service to use for OpenSearch Dashboards authentication.
@@ -1996,7 +1996,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       cognitoOptions: props.cognitoDashboardsAuth ? {
         enabled: true,
         identityPoolId: props.cognitoDashboardsAuth?.identityPoolId,
-        roleArn: props.cognitoDashboardsAuth?.role.roleArn,
+        roleArn: props.cognitoDashboardsAuth?.role.roleRef.roleArn,
         userPoolId: props.cognitoDashboardsAuth?.userPoolId,
       } : undefined,
       vpcOptions: cfnVpcOptions,
