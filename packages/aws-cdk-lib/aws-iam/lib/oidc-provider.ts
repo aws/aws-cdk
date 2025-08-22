@@ -90,21 +90,15 @@ export interface OpenIdConnectProviderProps {
 }
 
 /**
- * IAM OIDC identity providers are entities in IAM that describe an external
- * identity provider (IdP) service that supports the OpenID Connect (OIDC)
- * standard, such as Google or Salesforce. You use an IAM OIDC identity provider
- * when you want to establish trust between an OIDC-compatible IdP and your AWS
- * account. This is useful when creating a mobile app or web application that
- * requires access to AWS resources, but you don't want to create custom sign-in
- * code or manage your own user identities.
+ * Internal implementation of OpenIdConnectProvider.
  *
- * @see http://openid.net/connect
- * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
+ * This class contains the actual implementation and is used internally by EKS, for backwards compatibility.
+ * It should not be used directly.
  *
- * @resource AWS::CloudFormation::CustomResource
+ * @internal
  */
 @propertyInjectable
-export class OpenIdConnectProvider extends Resource implements IOpenIdConnectProvider {
+class OpenIdConnectProviderInternal extends Resource implements IOpenIdConnectProvider {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.OpenIdConnectProvider';
 
@@ -190,3 +184,30 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     });
   }
 }
+
+/**
+ * IAM OIDC identity providers are entities in IAM that describe an external
+ * identity provider (IdP) service that supports the OpenID Connect (OIDC)
+ * standard, such as Google or Salesforce. You use an IAM OIDC identity provider
+ * when you want to establish trust between an OIDC-compatible IdP and your AWS
+ * account. This is useful when creating a mobile app or web application that
+ * requires access to AWS resources, but you don't want to create custom sign-in
+ * code or manage your own user identities.
+ *
+ * @see http://openid.net/connect
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
+ *
+ * @resource AWS::CloudFormation::CustomResource
+ * @deprecated Use `OidcProviderNative` instead
+ */
+export class OpenIdConnectProvider extends OpenIdConnectProviderInternal {
+  // This class is intentionally empty - all functionality is in OpenIdConnectProviderInternal
+}
+
+/**
+ * Export the internal implementation for use by other AWS CDK modules (like EKS).
+ * This allows internal AWS services to use the implementation without the deprecation warnings.
+ *
+ * @internal
+ */
+export { OpenIdConnectProviderInternal };

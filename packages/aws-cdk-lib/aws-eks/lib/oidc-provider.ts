@@ -36,7 +36,7 @@ export interface OpenIdConnectProviderProps {
  * @resource AWS::CloudFormation::CustomResource
  */
 @propertyInjectable
-export class OpenIdConnectProvider extends iam.OpenIdConnectProvider {
+export class OpenIdConnectProvider extends iam.OpenIdConnectProviderInternal {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.OpenIdConnectProvider';
 
