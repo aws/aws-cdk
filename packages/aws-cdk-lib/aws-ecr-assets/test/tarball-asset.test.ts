@@ -4,7 +4,7 @@ import * as path from 'path';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
-import { App, Stack, DefaultStackSynthesizer } from '../../core';
+import { App, Stage, Stack, DefaultStackSynthesizer } from '../../core';
 import * as cxapi from '../../cx-api';
 import { TarballImageAsset, DOCKER_LOAD_OUTPUT_REGEX } from '../lib';
 
@@ -49,6 +49,33 @@ describe('image asset', () => {
 
     // AssetStaging in TarballImageAsset uses `this` as scope'
     expect(asset.node.tryFindChild('Staging')).toBeDefined();
+  });
+
+  test('test instantiating Asset Image in a Stage', () => {
+    // GIVEN
+    const app = new App();
+    const stage = new Stage(app, 'Stage1');
+    const stack = new Stack(stage);
+    const asset = new TarballImageAsset(stack, 'Image', {
+      tarballFile,
+    });
+
+    // WHEN
+    const asm = stage.synth();
+
+    // THEN
+    const manifestArtifact = getAssetManifest(asm);
+    const manifest = readAssetManifest(manifestArtifact);
+
+    expect(manifest.dockerImages?.[asset.assetHash]?.source).toStrictEqual(
+      {
+        executable: [
+          'sh',
+          '-c',
+          `docker load -i ../asset.${asset.assetHash}.tar | tail -n 1 | sed "${DOCKER_LOAD_OUTPUT_REGEX}"`,
+        ],
+      },
+    );
   });
 
   test('asset.repository.grantPull can be used to grant a principal permissions to use the image', () => {
