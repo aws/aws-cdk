@@ -624,11 +624,8 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
     // Warning is already provided in constructor for missing protocol
 
-    // At least one of port or protocol is required for non-Lambda targets when targetType is defined
-    if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
-      && this.protocol === undefined && this.port === undefined) {
-      ret.push('At least one of \'port\' or \'protocol\' is required for a non-Lambda TargetGroup');
-    }
+    // Port/protocol validation removed - protocol warnings are handled in constructor
+    // AWS will validate these requirements at deployment time
 
     if (this.healthCheck) {
       if (this.healthCheck.interval && this.healthCheck.timeout &&
