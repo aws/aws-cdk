@@ -86,7 +86,7 @@ describe('tests', () => {
     // WHEN - Create ApplicationTargetGroup without protocol but with port
     new elbv2.ApplicationTargetGroup(stack, 'TG', {
       vpc,
-      port: 80, // Port is required for non-Lambda targets
+      port: 80, // Providing port satisfies the "at least one of port or protocol" requirement
       // protocol is missing - this should generate a warning
     });
 
@@ -138,7 +138,7 @@ describe('tests', () => {
     // WHEN - Create ApplicationTargetGroup without protocol but with port, then add non-Lambda target
     const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', {
       vpc,
-      port: 80, // Port is required for non-Lambda targets
+      port: 80, // Providing port satisfies the "at least one of port or protocol" requirement
       // protocol is missing - this should generate a warning
     });
 

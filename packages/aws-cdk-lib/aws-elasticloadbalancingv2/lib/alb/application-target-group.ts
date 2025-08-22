@@ -624,10 +624,10 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
     // Warning is already provided in constructor for missing protocol
 
-    // Port is still required for non-Lambda targets when targetType is defined
+    // At least one of port or protocol is required for non-Lambda targets when targetType is defined
     if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
-      && this.port === undefined) {
-      ret.push('Port is required for non-Lambda TargetGroup');
+      && this.protocol === undefined && this.port === undefined) {
+      ret.push('At least one of \'port\' or \'protocol\' is required for a non-Lambda TargetGroup');
     }
 
     if (this.healthCheck) {
