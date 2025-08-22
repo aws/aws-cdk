@@ -338,6 +338,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   constructor(scope: Construct, id: string, props: ApplicationTargetGroupProps = {}) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
     const { protocolVersion } = props;
+
     super(scope, id, { ...props }, {
       protocol,
       protocolVersion,
@@ -403,6 +404,14 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
         }
         this.setAttribute('load_balancing.algorithm.anomaly_mitigation', props.enableAnomalyMitigation ? 'on' : 'off');
       }
+    }
+
+    // Add a warning if protocol wasn't explicitly specified for non-Lambda targets
+    if (props.protocol === undefined && this.targetType !== TargetType.LAMBDA) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-elbv2:target-group-protocol-default',
+        'ApplicationTargetGroup protocol not specified. Please specify protocol explicitly (e.g., ApplicationProtocol.HTTP or ApplicationProtocol.HTTPS).',
+      );
     }
   }
 
@@ -614,13 +623,13 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   protected validateTargetGroup(): string[] {
     const ret = super.validateTargetGroup();
 
-    // Check if this is a Lambda target group (either explicitly set or will be set to Lambda)
+    // For non-Lambda target groups, protocol is required when the target group will be used
+    // This provides better error messages while maintaining backward compatibility
     const isLambdaTarget = this.targetType === TargetType.LAMBDA;
-
-    // For non-Lambda target groups, protocol is required at synthesis time
-    // This prevents deployment failures when protocol is missing (fixes issue #35295)
-    if (!isLambdaTarget && this.protocol === undefined) {
-      ret.push('Protocol is required for ApplicationTargetGroup');
+    const willBeUsed = this.listeners.length > 0 || this.targetType !== undefined;
+    
+    if (!isLambdaTarget && willBeUsed && this.protocol === undefined) {
+      ret.push('Protocol is required for ApplicationTargetGroup. Please specify protocol explicitly (e.g., ApplicationProtocol.HTTP or ApplicationProtocol.HTTPS).');
     }
 
     // Port validation only when targets are added (existing logic for non-Lambda)
