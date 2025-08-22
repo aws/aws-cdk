@@ -61,7 +61,7 @@ Whether publishing your own package or making a PR against aws-cdk-lib immediate
 1. Stabilize: settle on the api and create a new PR migrating all constructs stability to "stable"
 ### Alpha modules security stance
 
-**Alpha modules do NOT go throw a security review**
+**Alpha modules do NOT go through a security review**
 
 A Developer preview or GA module do go through these extensive security review
 
