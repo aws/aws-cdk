@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "testCases": {
     "appsync-eventapi-lambda-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "appsync-eventapi-lambda-test/DefaultTest/DeployAssert",
       "assertionStackName": "appsynceventapilambdatestDefaultTestDeployAssert3741562F"
     }
-  }
+  },
+  "minimumCliVersion": "2.1024.0"
 }

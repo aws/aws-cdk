@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "files": {
     "ee4f2770d66e2083d2c70f98fbbc5f8edd4b73556d5328051dfffda320b1ee20": {
       "displayName": "CrossAccountStepFunctionStack Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "234567890123-test-region": {
+        "234567890123-test-region-5ed8963c": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
           "objectKey": "ee4f2770d66e2083d2c70f98fbbc5f8edd4b73556d5328051dfffda320b1ee20.json",
           "region": "test-region",

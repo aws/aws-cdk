@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "testCases": {
     "SfnTasksEcsEc2RunTaskTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "SfnTasksEcsEc2RunTaskTest/DefaultTest/DeployAssert",
       "assertionStackName": "SfnTasksEcsEc2RunTaskTestDefaultTestDeployAssert2569343D"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }

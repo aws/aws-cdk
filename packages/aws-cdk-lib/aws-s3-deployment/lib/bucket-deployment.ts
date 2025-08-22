@@ -117,6 +117,17 @@ export interface BucketDeploymentProps {
   readonly distributionPaths?: string[];
 
   /**
+   * In case of using a cloudfront distribtuion, if this property is set to false then the custom resource
+   * will not wait and verify for Cloudfront invalidation to complete. This may speed up deployment and avoid
+   * intermittent Cloudfront issues. However, this is risky and not recommended as cache invalidation
+   * can silently fail.
+   *
+   * @see https://github.com/aws/aws-cdk/issues/15891
+   * @default true
+   */
+  readonly waitForDistributionInvalidation?: boolean;
+
+  /**
    * The number of days that the lambda function's log events are kept in CloudWatch Logs.
    *
    * This is a legacy API and we strongly recommend you migrate to `logGroup` if you can.
@@ -448,6 +459,7 @@ export class BucketDeployment extends Construct {
         }, { omitEmptyArray: true }),
         DestinationBucketName: this.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
+        WaitForDistributionInvalidation: props.waitForDistributionInvalidation ?? true,
         RetainOnDelete: props.retainOnDelete,
         Extract: props.extract,
         Prune: props.prune ?? true,
