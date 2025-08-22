@@ -514,7 +514,7 @@ class ApplicationListenerConfig extends ListenerConfig {
     const protocol = props.protocol;
     const port = props.port ?? (protocol === elbv2.ApplicationProtocol.HTTPS ? 443 : 80);
     this.listener.addTargets(id, {
-      ... props,
+      ...props,
       targets: [
         service.loadBalancerTarget({
           ...target,
@@ -838,7 +838,7 @@ export abstract class BaseService extends Resource
         enable: true,
         rollback: props.deploymentAlarms.behavior !== AlarmBehavior.FAIL_ON_ALARM,
       };
-    // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
+      // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
     } else if (this.isEcsDeploymentController && this.deploymentAlarmsAvailableInRegion()) {
       // Only set default deployment alarms settings when feature flag is not enabled.
       if (!FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM)) {
@@ -919,6 +919,7 @@ export abstract class BaseService extends Resource
           volumeType: spec.config.volumeType,
           snapshotId: spec.config.snapShotId,
           sizeInGiB: spec.config.size?.toGibibytes(),
+          volumeInitializationRate: spec.config.volumeInitializationRate?.toMebibytes(),
           tagSpecifications: tagSpecifications,
         },
       };
@@ -942,7 +943,7 @@ export abstract class BaseService extends Resource
    *
    */
   public enableDeploymentAlarms(alarmNames: string[], options?: DeploymentAlarmOptions) {
-    if (alarmNames.length === 0 ) {
+    if (alarmNames.length === 0) {
       throw new ValidationError('at least one alarm name is required when calling enableDeploymentAlarms(), received empty array', this);
     }
 
@@ -1135,7 +1136,7 @@ export abstract class BaseService extends Resource
       return props.deploymentController;
     }
     const disableCircuitBreakerEcsDeploymentControllerFeatureFlag =
-        FeatureFlags.of(this).isEnabled(cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER);
+      FeatureFlags.of(this).isEnabled(cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER);
 
     if (!disableCircuitBreakerEcsDeploymentControllerFeatureFlag && props.circuitBreaker) {
       // This is undesirable behavior (the controller is implicitly ECS anyway when left
@@ -1277,8 +1278,8 @@ export abstract class BaseService extends Resource
    *   })],
    * });
    */
-  public loadBalancerTarget(options: LoadBalancerTargetOptions, alternateOptions?: IAlternateTarget): IEcsLoadBalancerTarget {
-    if (alternateOptions && !this.isEcsDeploymentController) {
+  public loadBalancerTarget(options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
+    if (options.alternateTarget && !this.isEcsDeploymentController) {
       throw new ValidationError('Deployment lifecycle hooks requires the ECS deployment controller.', this);
     }
 
@@ -1288,10 +1289,10 @@ export abstract class BaseService extends Resource
     return {
       attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
         targetGroup.registerConnectable(self, self.taskDefinition._portRangeFromPortMapping(target.portMapping));
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, alternateOptions);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget);
       },
       attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, alternateOptions);
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget);
       },
       connections,
       attachToClassicLB(loadBalancer: elb.LoadBalancer): void {

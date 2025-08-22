@@ -91,6 +91,19 @@
       "KNOWLEDGE_BASE_RESPONSE_GENERATION"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/cross-region-inference-profile.ts": {
+    "CrossRegionInferenceProfileRegion": [
+      "eu",
+      "us",
+      "apac"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/inference-profile.ts": {
+    "InferenceProfileType": [
+      "SYSTEM_DEFINED",
+      "APPLICATION"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts": {
     "VectorType": [
       "FLOAT32",
@@ -844,6 +857,15 @@
       "AES256"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts": {
+    "OpenTableFormat": [
+      "ICEBERG"
+    ],
+    "Status": [
+      "enabled",
+      "disabled"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts": {
     "InvocationHttpResponseCode": [
       "Invocation4XXErrors",
@@ -1098,6 +1120,16 @@
       "WHEN_NO_MATCH",
       "NEVER",
       "WHEN_NO_TEMPLATES"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/usage-plan.ts": {
+    "Period": [
+      "DAY",
+      "WEEK",
+      "MONTH"
+    ],
+    "UsagePlanKeyType": [
+      "API_KEY"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/application.ts": {
@@ -2396,6 +2428,10 @@
       "STANDARD",
       "STANDARD_INFREQUENT_ACCESS"
     ],
+    "MultiRegionConsistency": [
+      "EVENTUAL",
+      "STRONG"
+    ],
     "TableEncryption": [
       "AWS_OWNED",
       "CUSTOMER_MANAGED",
@@ -3614,6 +3650,10 @@
       "CODE_DEPLOY",
       "EXTERNAL"
     ],
+    "DeploymentStrategy": [
+      "ROLLING",
+      "BLUE_GREEN"
+    ],
     "PropagatedTagSource": [
       "SERVICE",
       "TASK_DEFINITION",
@@ -3707,6 +3747,17 @@
     "VersionConsistency": [
       "enabled",
       "disabled"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/deployment-lifecycle-hook-target.ts": {
+    "DeploymentLifecycleStage": [
+      "RECONCILE_SERVICE",
+      "PRE_SCALE_UP",
+      "POST_SCALE_UP",
+      "TEST_TRAFFIC_SHIFT",
+      "POST_TEST_TRAFFIC_SHIFT",
+      "PRODUCTION_TRAFFIC_SHIFT",
+      "POST_PRODUCTION_TRAFFIC_SHIFT"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/environment-file.ts": {
@@ -4282,7 +4333,10 @@
       "HMAC_256",
       "HMAC_384",
       "HMAC_512",
-      "SM2"
+      "SM2",
+      "ML_DSA_44",
+      "ML_DSA_65",
+      "ML_DSA_87"
     ],
     "KeyUsage": [
       "ENCRYPT_DECRYPT",
