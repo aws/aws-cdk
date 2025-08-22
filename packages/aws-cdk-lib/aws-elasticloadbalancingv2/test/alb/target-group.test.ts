@@ -224,7 +224,6 @@ describe('tests', () => {
     new elbv2.ApplicationTargetGroup(stack, 'Group', {
       vpc,
       ipAddressType,
-      protocol: elbv2.ApplicationProtocol.HTTP,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
@@ -242,7 +241,6 @@ describe('tests', () => {
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       stickinessCookieDuration: cdk.Duration.minutes(5),
       vpc,
-      protocol: elbv2.ApplicationProtocol.HTTP,
     });
 
     // THEN
@@ -275,7 +273,6 @@ describe('tests', () => {
       stickinessCookieDuration: cdk.Duration.minutes(5),
       stickinessCookieName: 'MyDeliciousCookie',
       vpc,
-      protocol: elbv2.ApplicationProtocol.HTTP,
     });
 
     // THEN
@@ -311,7 +308,6 @@ describe('tests', () => {
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.LEAST_OUTSTANDING_REQUESTS,
       vpc,
-      protocol: elbv2.ApplicationProtocol.HTTP,
     });
 
     // THEN
@@ -338,7 +334,6 @@ describe('tests', () => {
     // WHEN
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       vpc,
-      protocol: elbv2.ApplicationProtocol.HTTP,
       protocolVersion: elbv2.ApplicationProtocolVersion.GRPC,
       healthCheck: {
         enabled: true,
@@ -442,7 +437,6 @@ describe('tests', () => {
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       slowStart: cdk.Duration.seconds(0),
       vpc,
-      protocol: elbv2.ApplicationProtocol.HTTP,
     });
 
     // THEN
@@ -515,7 +509,6 @@ describe('tests', () => {
       // WHEN
       new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
         vpc,
-        protocol: elbv2.ApplicationProtocol.HTTP,
         healthCheck: {
           protocol: protocol,
         },
@@ -536,7 +529,6 @@ describe('tests', () => {
       const vpc = new ec2.Vpc(stack, 'VPC', {});
       const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
         vpc,
-        protocol: elbv2.ApplicationProtocol.HTTP,
       });
 
       // WHEN
@@ -812,7 +804,6 @@ describe('tests', () => {
       new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
         loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
         vpc,
-        protocol: elbv2.ApplicationProtocol.HTTP,
         enableAnomalyMitigation: true,
       });
 
@@ -845,7 +836,6 @@ describe('tests', () => {
       new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
         loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
         vpc,
-        protocol: elbv2.ApplicationProtocol.HTTP,
         enableAnomalyMitigation: false,
       });
 
@@ -908,7 +898,7 @@ describe('tests', () => {
       const vpc = new ec2.Vpc(stack, 'VPC', {});
 
       // WHEN
-      new elbv2.ApplicationTargetGroup(stack, 'LB', { crossZoneEnabled, vpc, protocol: elbv2.ApplicationProtocol.HTTP });
+      new elbv2.ApplicationTargetGroup(stack, 'LB', { crossZoneEnabled, vpc });
 
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
         TargetGroupAttributes: [

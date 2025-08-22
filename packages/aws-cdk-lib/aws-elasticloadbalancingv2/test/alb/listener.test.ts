@@ -1430,13 +1430,11 @@ describe('tests', () => {
     const listener = lb.addListener('Listener', {
       port: 443,
       certificates: [importedCertificate(stack, 'cert1'), importedCertificate(stack, 'cert2')],
-      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80, protocol: elbv2.ApplicationProtocol.HTTP })],
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
     });
 
     listener.addTargets('Target1', {
       priority: 10,
-      port: 80,
-      protocol: elbv2.ApplicationProtocol.HTTP,
       conditions: [elbv2.ListenerCondition.pathPatterns(['/test/path/1', '/test/path/2'])],
     });
 
@@ -1478,8 +1476,8 @@ describe('tests', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
-    const group1 = new elbv2.ApplicationTargetGroup(stack, 'Group1', { vpc, port: 80, protocol: elbv2.ApplicationProtocol.HTTP });
-    const group2 = new elbv2.ApplicationTargetGroup(stack, 'Group2', { vpc, port: 81, protocol: elbv2.ApplicationProtocol.HTTP });
+    const group1 = new elbv2.ApplicationTargetGroup(stack, 'Group1', { vpc, port: 80 });
+    const group2 = new elbv2.ApplicationTargetGroup(stack, 'Group2', { vpc, port: 81 });
 
     // WHEN
     const listener = lb.addListener('Listener', {
