@@ -332,7 +332,7 @@ export class Certificate extends CertificateBase implements ICertificate {
     // check if domain name format is valid
     if (!Token.isUnresolved(props.domainName) && !DOMAIN_NAME_REGEX.test(props.domainName)) {
       throw new ValidationError(
-        `Domain name format is invalid: "${props.domainName}". Domain names must match AWS Certificate Manager requirements. ` +
+        'Domain name format is invalid. Domain names must match AWS Certificate Manager requirements. ' +
         'Valid examples: "example.com", "*.example.com", "sub.example.com". ' +
         'Domain labels cannot start or end with hyphens and must be 1-63 characters each.',
         this,
@@ -346,7 +346,7 @@ export class Certificate extends CertificateBase implements ICertificate {
           throw new ValidationError(
             `Subject alternative name "${altName}" format is invalid. Domain names must match AWS Certificate Manager requirements. ` +
             'Valid examples: "example.com", "*.example.com", "sub.example.com". ' +
-            'Domain labels cannot start or end with hyphens and must be 1-63 characters each.',
+            'Domain labels cannot start or end with hyphens and must be 1-62 characters each.',
             this,
           );
         }
