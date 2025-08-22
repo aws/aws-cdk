@@ -317,6 +317,33 @@ export class Certificate extends CertificateBase implements ICertificate {
       throw new ValidationError('Domain name must be 64 characters or less', this);
     }
 
+    // AWS Certificate Manager domain name regex pattern
+    const DOMAIN_NAME_REGEX = /^(\*\.)?(((?!-)[A-Za-z0-9-]{0,62}[A-Za-z0-9])\.)+(((?!-)[A-Za-z0-9-]{1,62}[A-Za-z0-9]))$/;
+
+    // check if domain name format is valid
+    if (!Token.isUnresolved(props.domainName) && !DOMAIN_NAME_REGEX.test(props.domainName)) {
+      throw new ValidationError(
+        'Domain name format is invalid. Domain names must match AWS Certificate Manager requirements. ' +
+        'Valid examples: "example.com", "*.example.com", "sub.example.com". ' +
+        'Domain labels cannot start or end with hyphens and must be 1-62 characters each.',
+        this,
+      );
+    }
+
+    // check subject alternative names format if provided
+    if (props.subjectAlternativeNames) {
+      for (const altName of props.subjectAlternativeNames) {
+        if (!Token.isUnresolved(altName) && !DOMAIN_NAME_REGEX.test(altName)) {
+          throw new ValidationError(
+            `Subject alternative name "${altName}" format is invalid. Domain names must match AWS Certificate Manager requirements. ` +
+            'Valid examples: "example.com", "*.example.com", "sub.example.com". ' +
+            'Domain labels cannot start or end with hyphens and must be 1-62 characters each.',
+            this,
+          );
+        }
+      }
+    }
+
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 
     let certificateTransparencyLoggingPreference: string | undefined;

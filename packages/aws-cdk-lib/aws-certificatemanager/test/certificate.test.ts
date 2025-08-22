@@ -123,6 +123,96 @@ test('does not throw when domain name is longer than 64 characters with tokens',
   });
 });
 
+test('accepts valid domain names', () => {
+  const stack = new Stack();
+
+  // Test standard domain
+  new Certificate(stack, 'Certificate1', {
+    domainName: 'example.com',
+  });
+
+  // Test subdomain
+  new Certificate(stack, 'Certificate2', {
+    domainName: 'sub.example.com',
+  });
+
+  // Test wildcard domain
+  new Certificate(stack, 'Certificate3', {
+    domainName: '*.example.com',
+  });
+
+  // Test multi-level subdomain
+  new Certificate(stack, 'Certificate4', {
+    domainName: 'deep.sub.example.com',
+  });
+
+  // Should not throw for any of these valid domains
+});
+
+test('throws when domain name format is invalid', () => {
+  const stack = new Stack();
+
+  // Test domain starting with hyphen
+  expect(() => {
+    new Certificate(stack, 'Certificate1', {
+      domainName: '-example.com',
+    });
+  }).toThrow(/Domain name format is invalid/);
+
+  // Test domain ending with hyphen
+  expect(() => {
+    new Certificate(stack, 'Certificate2', {
+      domainName: 'example-.com',
+    });
+  }).toThrow(/Domain name format is invalid/);
+
+  // Test domain with consecutive dots
+  expect(() => {
+    new Certificate(stack, 'Certificate3', {
+      domainName: 'example..com',
+    });
+  }).toThrow(/Domain name format is invalid/);
+
+  // Test domain ending with dot
+  expect(() => {
+    new Certificate(stack, 'Certificate4', {
+      domainName: 'example.com.',
+    });
+  }).toThrow(/Domain name format is invalid/);
+
+  // Test invalid wildcard (not at start)
+  expect(() => {
+    new Certificate(stack, 'Certificate5', {
+      domainName: 'sub.*.example.com',
+    });
+  }).toThrow(/Domain name format is invalid/);
+});
+
+test('throws when subject alternative name format is invalid', () => {
+  const stack = new Stack();
+
+  expect(() => {
+    new Certificate(stack, 'Certificate', {
+      domainName: 'example.com',
+      subjectAlternativeNames: ['valid.com', '-invalid.com'],
+    });
+  }).toThrow(/Subject alternative name "-invalid.com" format is invalid/);
+});
+
+test('does not throw when domain name format validation is bypassed with tokens', () => {
+  const stack = new Stack();
+  const tokenDomain = Lazy.string({ produce: () => '-invalid.com' });
+
+  new Certificate(stack, 'Certificate', {
+    domainName: tokenDomain,
+    validation: CertificateValidation.fromEmail({
+      [tokenDomain]: 'example.com',
+    }),
+  });
+
+  // Should not throw because tokens bypass validation
+});
+
 test('needs validation domain supplied if domain contains a token', () => {
   const stack = new Stack();
 
@@ -432,7 +522,7 @@ describe('Certificate Name setting', () => {
   });
 });
 
-function hasTags(expectedTags: Array<{Key: string; Value: string}>) {
+function hasTags(expectedTags: Array<{Key: string, Value: string}>) {
   return {
     Properties: {
       Tags: Match.arrayWith(expectedTags),
