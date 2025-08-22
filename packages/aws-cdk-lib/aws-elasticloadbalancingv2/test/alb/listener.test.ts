@@ -269,7 +269,7 @@ describe('tests', () => {
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
     });
 
-    Annotations.fromStack(stack).hasWarning('/' + listener.node.path, Match.stringLikeRegexp('Certificates cannot be specified for HTTP listeners. Use HTTPS instead.'));
+    Annotations.fromStack(stack).hasWarning('/'+listener.node.path, Match.stringLikeRegexp('Certificates cannot be specified for HTTP listeners. Use HTTPS instead.'));
   });
 
   test('Can configure targetType on TargetGroups', () => {
@@ -755,9 +755,9 @@ describe('tests', () => {
             ['',
               [{ 'Fn::Select': [1, { 'Fn::Split': ['/', loadBalancerArn] }] },
                 '/',
-              { 'Fn::Select': [2, { 'Fn::Split': ['/', loadBalancerArn] }] },
+                { 'Fn::Select': [2, { 'Fn::Split': ['/', loadBalancerArn] }] },
                 '/',
-              { 'Fn::Select': [3, { 'Fn::Split': ['/', loadBalancerArn] }] }]],
+                { 'Fn::Select': [3, { 'Fn::Split': ['/', loadBalancerArn] }] }]],
         },
       });
     }
