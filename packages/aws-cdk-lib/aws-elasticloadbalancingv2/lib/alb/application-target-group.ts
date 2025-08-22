@@ -627,7 +627,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     // This provides better error messages while maintaining backward compatibility
     const isLambdaTarget = this.targetType === TargetType.LAMBDA;
     const willBeUsed = this.listeners.length > 0 || this.targetType !== undefined;
-    
+
     if (!isLambdaTarget && willBeUsed && this.protocol === undefined) {
       ret.push('Protocol is required for ApplicationTargetGroup. Please specify protocol explicitly (e.g., ApplicationProtocol.HTTP or ApplicationProtocol.HTTPS).');
     }
