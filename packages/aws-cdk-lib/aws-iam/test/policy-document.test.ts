@@ -943,4 +943,27 @@ describe('IAM policy document', () => {
     const validationErrors: string[] = policyStatement.validateForTrustPolicy();
     expect(validationErrors).toEqual([]);
   });
+
+  test('validation passes for resource-based policy with skipResourceValidation option', () => {
+    const policyStatement = new PolicyStatement({
+      actions: ['ecr:GetDownloadUrlForLayer'],
+      principals: [new AnyPrincipal()],
+      // Missing: resources (but validation is skipped)
+    });
+
+    // THEN
+    const validationErrors: string[] = policyStatement.validateForResourcePolicy({ skipResourceValidation: true });
+    expect(validationErrors).toEqual([]);
+  });
+
+  test('validation still requires principals even with skipResourceValidation', () => {
+    const policyStatement = new PolicyStatement({
+      actions: ['ecr:GetDownloadUrlForLayer'],
+      // Missing: both principals and resources
+    });
+
+    // THEN
+    const validationErrors: string[] = policyStatement.validateForResourcePolicy({ skipResourceValidation: true });
+    expect(validationErrors).toEqual(['A PolicyStatement used in a resource-based policy must specify at least one IAM principal.']);
+  });
 });

@@ -540,14 +540,16 @@ export class PolicyStatement {
   /**
    * Validate that the policy statement satisfies all requirements for a resource-based policy.
    *
+   * @param options Optional validation options
    * @returns An array of validation error messages, or an empty array if the statement is valid.
    */
-  public validateForResourcePolicy(): string[] {
+  public validateForResourcePolicy(options?: { skipResourceValidation?: boolean }): string[] {
     const errors = this.validateForAnyPolicy();
     if (this._principals.length === 0 && this._notPrincipals.length === 0) {
       errors.push('A PolicyStatement used in a resource-based policy must specify at least one IAM principal.');
     }
-    if (this._resource.length === 0 && this._notResource.length === 0) {
+    // Only validate resources if not explicitly skipped (for services like ECR where resources are implicit)
+    if (!options?.skipResourceValidation && this._resource.length === 0 && this._notResource.length === 0) {
       errors.push('A PolicyStatement used in a resource-based policy must specify at least one resource.');
     }
     return errors;

@@ -156,12 +156,13 @@ export class PolicyDocument implements cdk.IResolvable {
    *
    * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json
    *
+   * @param options Optional validation options
    * @returns An array of validation error messages, or an empty array if the document is valid.
    */
-  public validateForResourcePolicy(): string[] {
+  public validateForResourcePolicy(options?: { skipResourceValidation?: boolean }): string[] {
     const errors = new Array<string>();
     for (const statement of this.statements) {
-      errors.push(...statement.validateForResourcePolicy());
+      errors.push(...statement.validateForResourcePolicy(options));
     }
     return errors;
   }
