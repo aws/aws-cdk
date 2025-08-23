@@ -377,21 +377,19 @@ In some cases, you may need to provide a custom IAM policy statement, especially
 ```ts
 import * as iam from 'aws-cdk-lib/aws-iam';
 
-const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(Duration.hours(1)),
-});
+declare const rule: events.Rule;
+declare const bucket: s3.Bucket;
 
-// Custom policy for specific resource ARN
 rule.addTarget(new targets.AwsApi({
-  service: 'RDS',
-  action: 'createDBSnapshot',
+  service: 's3',
+  action: 'GetBucketEncryption',
   parameters: {
-    DBInstanceIdentifier: 'my-database',
-    DBSnapshotIdentifier: 'my-snapshot',
+    Bucket: bucket.bucketName,
   },
   policyStatement: new iam.PolicyStatement({
-    actions: ['rds:CreateDBSnapshot'],
-    resources: ['arn:aws:rds:*:*:db:my-database'],
+    effect: iam.Effect.ALLOW,
+    actions: ['s3:GetEncryptionConfiguration'],
+    resources: [bucket.bucketArn],
   }),
 }));
 ```
