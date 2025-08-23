@@ -294,7 +294,7 @@ describe('virtual gateway', () => {
       });
 
       const cert = new acm.Certificate(stack, 'cert', {
-        domainName: '',
+        domainName: 'example.com',
       });
 
       new appmesh.VirtualGateway(stack, 'testGateway', {
