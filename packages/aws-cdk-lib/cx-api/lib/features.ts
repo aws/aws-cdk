@@ -161,7 +161,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       This feature flag is needed because enabling it can cause existing signing profiles to be
       replaced during deployment if a \`signingProfileName\` was specified but not previously used
       in the CloudFormation template.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.212.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
   },
