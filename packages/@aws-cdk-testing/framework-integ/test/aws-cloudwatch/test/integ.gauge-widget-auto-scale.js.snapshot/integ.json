@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "GaugeWidgetAutoScaleTest/DefaultTest": {
+      "stacks": [
+        "gauge-widget-auto-scale"
+      ],
+      "assertionStack": "GaugeWidgetAutoScaleTest/DefaultTest/DeployAssert",
+      "assertionStackName": "GaugeWidgetAutoScaleTestDefaultTestDeployAssert46F046A7"
+    }
+  },
+  "minimumCliVersion": "2.1025.0"
+}
