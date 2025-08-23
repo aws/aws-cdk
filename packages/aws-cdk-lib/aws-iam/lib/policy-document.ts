@@ -1,5 +1,5 @@
 import { IConstruct } from 'constructs';
-import { PolicyStatement, deriveEstimateSizeOptions } from './policy-statement';
+import { PolicyStatement, deriveEstimateSizeOptions, ResourcePolicyValidationOptions } from './policy-statement';
 import { mergeStatements } from './private/merge-statements';
 import { PostProcessPolicyDocument } from './private/postprocess-policy-document';
 import * as cdk from '../../core';
@@ -159,7 +159,7 @@ export class PolicyDocument implements cdk.IResolvable {
    * @param options Optional validation options
    * @returns An array of validation error messages, or an empty array if the document is valid.
    */
-  public validateForResourcePolicy(options?: { skipResourceValidation?: boolean }): string[] {
+  public validateForResourcePolicy(options?: ResourcePolicyValidationOptions): string[] {
     const errors = new Array<string>();
     for (const statement of this.statements) {
       errors.push(...statement.validateForResourcePolicy(options));
