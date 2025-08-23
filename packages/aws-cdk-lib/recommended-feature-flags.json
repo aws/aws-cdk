@@ -44,6 +44,7 @@
   "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true,
   "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
   "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
+  "@aws-cdk/aws-cloudwatch:gaugeWidgetAutoScale": true,
   "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": true,
   "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": true,
   "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true,

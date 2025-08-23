@@ -7,11 +7,11 @@
      "Fn::Join": [
       "",
       [
-       "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"gauge\",\"title\":\"Auto-scaling gauge widget\",\"region\":\"",
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"gauge\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
-       "\",\"metrics\":[[\"AWS/ApplicationELB\",\"TargetResponseTime\",\"LoadBalancer\",\"app/my-load-balancer/50dc6c495c0c9188\"]],\"yAxis\":{\"left\":{\"min\":0,\"max\":100}},\"period\":300,\"stat\":\"Average\"}}]}"
+       "\",\"yAxis\":{\"left\":{\"min\":0,\"max\":100}},\"title\":\"Auto-scaling gauge widget\",\"metrics\":[[\"AWS/ApplicationELB\",\"TargetResponseTime\",\"LoadBalancer\",\"app/my-load-balancer/50dc6c495c0c9188\"]],\"period\":300,\"stat\":\"Average\"}}]}"
       ]
      ]
     }

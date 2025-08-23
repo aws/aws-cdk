@@ -976,7 +976,10 @@ describe('Graphs', () => {
           ['CDK', 'Test'],
         ],
         yAxis: {
-          left: undefined,
+          left: {
+            min: 0,
+            max: 100,
+          },
         },
         accountId: '123456789012',
       },

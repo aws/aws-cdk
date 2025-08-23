@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "7d99f2808887e9d8d76e54b8322f56d959cb61787bfc497a905ba64d425d2687": {
+    "29be926453db557c23eb71907fca7b6f83a0b10c8036d0c297825d558d5f5679": {
       "displayName": "gauge-widget-auto-scale Template",
       "source": {
         "path": "gauge-widget-auto-scale.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-0ec37ee8": {
+        "current_account-current_region-d7fb558a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7d99f2808887e9d8d76e54b8322f56d959cb61787bfc497a905ba64d425d2687.json",
+          "objectKey": "29be926453db557c23eb71907fca7b6f83a0b10c8036d0c297825d558d5f5679.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

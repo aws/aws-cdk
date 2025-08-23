@@ -22,7 +22,11 @@ const widget = new cloudwatch.GaugeWidget({
     },
     statistic: 'Average',
   })],
-  // No leftYAxis specified - should auto-scale with feature flag enabled
+  // Specify appropriate range for response time metric (0-5 seconds)
+  leftYAxis: {
+    min: 0,
+    max: 5,
+  },
   statistic: 'Average',
   period: cdk.Duration.minutes(5),
 });

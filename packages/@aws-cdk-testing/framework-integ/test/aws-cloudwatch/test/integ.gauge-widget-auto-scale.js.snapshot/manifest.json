@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7d99f2808887e9d8d76e54b8322f56d959cb61787bfc497a905ba64d425d2687.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/29be926453db557c23eb71907fca7b6f83a0b10c8036d0c297825d558d5f5679.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -385,6 +385,10 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, the logical ID of a Lambda permission for a Lambda action includes an alarm ID."
+          },
+          "@aws-cdk/aws-cloudwatch:gaugeWidgetAutoScale": {
+            "recommendedValue": true,
+            "explanation": "Enable CloudWatch GaugeWidget to auto-scale Y-axis values instead of forcing defaults."
           },
           "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": {
             "userValue": true,

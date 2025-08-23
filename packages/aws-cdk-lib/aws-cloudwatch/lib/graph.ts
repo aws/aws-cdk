@@ -290,37 +290,59 @@ export class GaugeWidget extends ConcreteWidget {
     // Check feature flag if scope is available
     const useAutoScale = this._scope && cdk.FeatureFlags.of(this._scope).isEnabled(CLOUDWATCH_GAUGE_WIDGET_AUTO_SCALE);
 
-    const leftYAxis = useAutoScale
-      ? this.props.leftYAxis // Let CloudWatch auto-scale (new behavior)
-      : {
-        ...this.props.leftYAxis,
-        min: this.props.leftYAxis?.min ?? 0,
-        max: this.props.leftYAxis?.max ?? 100,
-      }; // Force defaults (legacy behavior)
+    // Build yAxis configuration
+    // Note: AWS CloudWatch always requires min/max for gauge widgets, so we cannot truly omit yAxis
+    let yAxisConfig: any;
+
+    if (useAutoScale) {
+      // New behavior: Use user-provided values or reasonable auto-scaling defaults
+      yAxisConfig = {
+        left: {
+          min: this.props.leftYAxis?.min ?? 0,
+          max: this.props.leftYAxis?.max ?? 100,
+          ...this.props.leftYAxis, // Allow user overrides
+        },
+      };
+    } else {
+      // Legacy behavior: Force default range of 0-100, but allow user overrides
+      yAxisConfig = {
+        left: {
+          min: this.props.leftYAxis?.min ?? 0,
+          max: this.props.leftYAxis?.max ?? 100,
+          ...this.props.leftYAxis,
+        },
+      };
+    }
+
+    // Build properties object, filtering out undefined values
+    const properties: any = {
+      view: 'gauge',
+      region: this.props.region || cdk.Aws.REGION,
+    };
+
+    // Always include yAxis for gauge widgets (AWS requirement)
+    properties.yAxis = yAxisConfig;
+
+    // Add optional properties only if they have values
+    if (this.props.title) properties.title = this.props.title;
+    if (metrics.length > 0) properties.metrics = metrics;
+    if ((this.props.annotations ?? []).length > 0) properties.annotations = { horizontal: this.props.annotations };
+    if (this.props.legendPosition !== undefined) properties.legend = { position: this.props.legendPosition };
+    if (this.props.liveData !== undefined) properties.liveData = this.props.liveData;
+    if (this.props.setPeriodToTimeRange !== undefined) properties.setPeriodToTimeRange = this.props.setPeriodToTimeRange;
+    if (this.props.period !== undefined) properties.period = this.props.period.toSeconds();
+    if (this.props.statistic !== undefined) properties.stat = this.props.statistic;
+    if (this.props.start !== undefined) properties.start = this.props.start;
+    if (this.props.end !== undefined) properties.end = this.props.end;
+    if (this.props.accountId !== undefined) properties.accountId = this.props.accountId;
+
     return [{
       type: 'metric',
       width: this.width,
       height: this.height,
       x: this.x,
       y: this.y,
-      properties: {
-        view: 'gauge',
-        title: this.props.title,
-        region: this.props.region || cdk.Aws.REGION,
-        metrics: metrics.length > 0 ? metrics : undefined,
-        annotations: (this.props.annotations ?? []).length > 0 ? { horizontal: this.props.annotations } : undefined,
-        yAxis: {
-          left: leftYAxis ?? undefined,
-        },
-        legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
-        liveData: this.props.liveData,
-        setPeriodToTimeRange: this.props.setPeriodToTimeRange,
-        period: this.props.period?.toSeconds(),
-        stat: this.props.statistic,
-        start: this.props.start,
-        end: this.props.end,
-        accountId: this.props.accountId,
-      },
+      properties,
     }];
   }
 }
