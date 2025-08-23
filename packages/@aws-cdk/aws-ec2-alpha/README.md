@@ -75,6 +75,10 @@ SubnetV2 supports two ways to specify the availability zone:
 **Important**: AZ IDs are account-specific. The same AZ ID (e.g., 'use1-az1') may not exist in all accounts.
 
 ```ts
+const myVpc = new VpcV2(this, 'MyVpc', {
+  primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
+});
+
 // Using AZ ID for cross-account consistency
 new SubnetV2(this, 'CrossAccountSubnet', {
   vpc: myVpc,
