@@ -1,11 +1,11 @@
 /**
- * Integration test for the smart default openListener behavior in ApplicationLoadBalancedFargateService.
+ * Integration test for the conditional openListener behavior in ApplicationLoadBalancedFargateService.
  *
  * This test validates the security feature that automatically sets openListener to false when custom
  * security groups are detected on the load balancer, preventing unintended internet exposure.
  *
  * Test scenarios:
- * 1. SmartDefaultService: No custom security groups provided
+ * 1. DefaultService: No custom security groups provided
  *    - Expected: openListener defaults to true, creates 0.0.0.0/0 ingress rules
  *    - Validates: Default behavior when CDK manages all security groups
  *
@@ -17,9 +17,9 @@
  *    - Expected: Does NOT create 0.0.0.0/0 ingress rules
  *    - Validates: Explicit closed listener prevents internet access
  *
- * 4. SmartDefaultWithCustomSG: Custom security groups + no explicit openListener
- *    - Expected: Smart default kicks in, openListener defaults to false
- *    - Validates: Core smart default feature - prevents 0.0.0.0/0 rules when custom SGs detected
+ * 4. ConditionalWithCustomSG: Custom security groups + no explicit openListener
+ *    - Expected: Conditional behavior kicks in, openListener defaults to false
+ *    - Validates: Core feature - prevents 0.0.0.0/0 rules when custom SGs detected
  *
  * The test uses AWS SDK calls to verify actual security group configurations in deployed resources,
  * ensuring the feature works correctly in real AWS environments.
@@ -34,8 +34,8 @@ import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patte
 
 const app = new App({
   postCliContext: {
-    // Enable the smart default feature flag for this test
-    '@aws-cdk/aws-ecs-patterns:smartDefaultOpenListener': true,
+    // Enable the feature flag for this test
+    '@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener': true,
   },
 });
 
@@ -43,7 +43,7 @@ const stack = new Stack(app, 'aws-ecs-integ-alb-fg-smart-defaults');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1, restrictDefaultSecurityGroup: false });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 
-// Test case 1: Service with smart default (no openListener specified)
+// Test case 1: Service with conditional default (no openListener specified)
 // CDK creates load balancer, should default to openListener: true (no custom security groups)
 new ApplicationLoadBalancedFargateService(stack, 'SmartDefaultService', {
   cluster,
@@ -76,7 +76,7 @@ new ApplicationLoadBalancedFargateService(stack, 'ExplicitClosedService', {
   listenerPort: 9090,
 });
 
-// Test case 4: Service with custom security groups (smart default should apply)
+// Test case 4: Service with custom security groups (conditional default should apply)
 const customSecurityGroup = new SecurityGroup(stack, 'CustomSecurityGroup', {
   vpc,
   description: 'Custom security group for load balancer',
@@ -95,7 +95,7 @@ const customLoadBalancer = new ApplicationLoadBalancer(stack, 'CustomLoadBalance
   securityGroup: customSecurityGroup,
 });
 
-// This should use smart default (openListener: false) because custom security groups are detected
+// This should use conditional default (openListener: false) because custom security groups are detected
 new ApplicationLoadBalancedFargateService(stack, 'SmartDefaultWithCustomSG', {
   cluster,
   memoryLimitMiB: 512,
@@ -110,11 +110,11 @@ const integTest = new integ.IntegTest(app, 'albFargateServiceSmartDefaultsTest',
   testCases: [stack],
 });
 
-// Validate the core smart default behavior by checking the custom security group
-// This confirms that when custom security groups are provided, the smart default prevents
+// Validate the core conditional behavior by checking the custom security group
+// This confirms that when custom security groups are provided, the conditional default prevents
 // creating overly permissive 0.0.0.0/0 ingress rules
 // Assert that the custom security group only contains self-referencing rules (no 0.0.0.0/0)
-// This validates the smart default feature prevents unintended internet exposure
+// This validates the feature prevents unintended internet exposure
 integTest.assertions.awsApiCall('EC2', 'describeSecurityGroups', {
   GroupIds: [customSecurityGroup.securityGroupId],
 }).expect(integ.ExpectedResult.objectLike({

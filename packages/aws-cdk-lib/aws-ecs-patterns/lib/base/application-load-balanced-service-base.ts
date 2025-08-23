@@ -15,7 +15,7 @@ import { IRole } from '../../../aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
 import { CfnOutput, Duration, FeatureFlags, Stack, Token, ValidationError } from '../../../core';
-import { ECS_PATTERNS_SMART_DEFAULT_OPEN_LISTENER } from '../../../cx-api';
+import { ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER } from '../../../cx-api';
 
 /**
  * Describes the type of DNS record the service should create
@@ -506,11 +506,11 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       protocolVersion: props.protocolVersion,
     };
 
-    // Smart default for openListener: if feature flag is enabled and a custom load balancer is provided
+    // When feature flag is enabled and a custom load balancer is provided
     // (indicating the user has configured their own security groups), default to false for security.
     // Otherwise, maintain backward compatibility with true.
-    const smartDefaultEnabled = FeatureFlags.of(this).isEnabled(ECS_PATTERNS_SMART_DEFAULT_OPEN_LISTENER);
-    const hasCustomLoadBalancer = smartDefaultEnabled && props.loadBalancer !== undefined;
+    const featureFlagEnabled = FeatureFlags.of(this).isEnabled(ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER);
+    const hasCustomLoadBalancer = featureFlagEnabled && props.loadBalancer !== undefined;
     const defaultOpenListener = hasCustomLoadBalancer ? false : true;
 
     this.listener = loadBalancer.addListener('PublicListener', {

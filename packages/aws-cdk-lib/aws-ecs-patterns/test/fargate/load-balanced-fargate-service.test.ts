@@ -1602,11 +1602,11 @@ describe('ApplicationLoadBalancedFargateService', () => {
     }).toThrow('containerMemoryLimitMiB must be a positive integer; received 0');
   });
 
-  test('smart default: openListener defaults to false when custom security groups are provided', () => {
+  test('openListener defaults to false when custom security groups are provided', () => {
     // GIVEN
     const app = new cdk.App({
       context: {
-        '@aws-cdk/aws-ecs-patterns:smartDefaultOpenListener': true,
+        '@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener': true,
       },
     });
     const stack = new cdk.Stack(app, 'Stack');
@@ -1633,11 +1633,11 @@ describe('ApplicationLoadBalancedFargateService', () => {
     });
   });
 
-  test('smart default: openListener defaults to true when no custom security groups are provided', () => {
+  test('openListener defaults to true when no custom security groups are provided', () => {
     // GIVEN
     const app = new cdk.App({
       context: {
-        '@aws-cdk/aws-ecs-patterns:smartDefaultOpenListener': true,
+        '@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener': true,
       },
     });
     const stack = new cdk.Stack(app, 'Stack');
@@ -1663,11 +1663,11 @@ describe('ApplicationLoadBalancedFargateService', () => {
     });
   });
 
-  test('explicit openListener: true overrides smart default with custom security groups', () => {
+  test('explicit openListener: true overrides default with custom security groups', () => {
     // GIVEN
     const app = new cdk.App({
       context: {
-        '@aws-cdk/aws-ecs-patterns:smartDefaultOpenListener': true,
+        '@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener': true,
       },
     });
     const stack = new cdk.Stack(app, 'Stack');
@@ -1700,11 +1700,11 @@ describe('ApplicationLoadBalancedFargateService', () => {
     });
   });
 
-  test('smart default with redirectHTTP: redirect listener also uses smart default', () => {
+  test('redirectHTTP: redirect listener also uses conditional default', () => {
     // GIVEN
     const app = new cdk.App({
       context: {
-        '@aws-cdk/aws-ecs-patterns:smartDefaultOpenListener': true,
+        '@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener': true,
       },
     });
     const stack = new cdk.Stack(app, 'Stack');
