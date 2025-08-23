@@ -18,12 +18,6 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-```ts nofixture
-import * as rum from '@aws-cdk/aws-rum-alpha';
-import * as logs from 'aws-cdk-lib/aws-logs';
-import { LambdaDestination } from 'aws-cdk-lib/aws-logs-destinations';
-```
-
 ## App Monitor
 
 Amazon CloudWatch RUM is a real-user monitoring service that collects client-side data about your web application performance from actual user sessions in real time. The data that RUM collects includes page load times, client-side errors, and user behavior.
@@ -32,7 +26,8 @@ You can use the `AppMonitor` construct to create a RUM app monitor:
 
 ```ts
 import * as rum from '@aws-cdk/aws-rum-alpha';
-const appMonitor = new rum.AppMonitor(this, 'MyAppMonitor', {
+
+new rum.AppMonitor(this, 'MyAppMonitor', {
   appMonitorName: 'my-web-app',
   domain: 'example.com',
 });
@@ -43,24 +38,22 @@ const appMonitor = new rum.AppMonitor(this, 'MyAppMonitor', {
 You can configure various aspects of the app monitor:
 
 ```ts
-const appMonitor = new rum.AppMonitor(this, 'MyAppMonitor', {
+new rum.AppMonitor(this, 'MyAppMonitor', {
   appMonitorName: 'my-web-app',
   domain: 'example.com',
   cwLogEnabled: true,
   appMonitorConfiguration: {
     allowCookies: true,
     enableXRay: true,
-    sessionSampleRate: 0.5, // Sample 50% of sessions
+    sessionSampleRate: 0.5,
   },
-  customEvents: {
-    enabled: true,
-  },
+  customEvents: { enabled: true },
 });
 ```
 
 ### CloudWatch Logs Integration
 
-When `cwLogEnabled` is set to `true`, RUM sends a copy of the telemetry data to CloudWatch Logs. You can access the log group through the `logGroup` property to configure additional processing, monitoring, or alerting:
+When `cwLogEnabled` is set to `true`, RUM sends a copy of the telemetry data to CloudWatch Logs. You can access the log group through the `logGroup` property:
 
 ```ts
 const appMonitor = new rum.AppMonitor(this, 'MyAppMonitor', {
@@ -69,38 +62,25 @@ const appMonitor = new rum.AppMonitor(this, 'MyAppMonitor', {
   cwLogEnabled: true,
 });
 
-// Access the log group for further configuration
-const logGroup = appMonitor.logGroup;
-if (logGroup) {
-  // Add subscription filters, set retention, etc.
-  new logs.SubscriptionFilter(this, 'MySubscription', {
-    logGroup,
-    destination: new LambdaDestination(myFunction),
-    filterPattern: logs.FilterPattern.allEvents(),
-  });
-  
-  // Set log retention policy
-  logGroup.addRetentionPolicy(logs.RetentionDays.ONE_MONTH);
-}
+// Access the log group
+appMonitor.logGroup?.addRetentionPolicy(logs.RetentionDays.ONE_MONTH);
 ```
 
 #### Processing RUM Events with Lambda
 
-A common use case is to process RUM events in real-time using Lambda functions. This is useful for alerting, custom analytics, or triggering actions based on application performance data:
+You can process RUM events in real-time using Lambda functions:
 
 ```ts
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { LambdaDestination } from 'aws-cdk-lib/aws-logs-destinations';
 
-// Create a Lambda function to process RUM events
 const rumProcessor = new lambda.Function(this, 'RUMProcessor', {
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {
-      // Process CloudWatch Logs events from RUM
-      const logs = event.awslogs.data;
-      // Decode and process RUM telemetry data
-      // Implement custom alerting, analytics, etc.
+      // Process RUM telemetry data
+      console.log(event.awslogs.data);
     };
   `),
 });
@@ -111,15 +91,11 @@ const appMonitor = new rum.AppMonitor(this, 'MyAppMonitor', {
   cwLogEnabled: true,
 });
 
-// Connect RUM logs to Lambda for real-time processing
-const logGroup = appMonitor.logGroup;
-if (logGroup) {
-  new logs.SubscriptionFilter(this, 'RUMLogProcessor', {
-    logGroup,
-    destination: new LambdaDestination(rumProcessor),
-    filterPattern: logs.FilterPattern.allEvents(),
-  });
-}
+new logs.SubscriptionFilter(this, 'RUMLogProcessor', {
+  logGroup: appMonitor.logGroup!,
+  destination: new LambdaDestination(rumProcessor),
+  filterPattern: logs.FilterPattern.allEvents(),
+});
 ```
 
 ### JavaScript Source Maps
@@ -127,7 +103,7 @@ if (logGroup) {
 You can configure JavaScript source maps for better error stack trace deobfuscation:
 
 ```ts
-const appMonitor = new rum.AppMonitor(this, 'MyAppMonitor', {
+new rum.AppMonitor(this, 'MyAppMonitor', {
   appMonitorName: 'my-web-app',
   domain: 'example.com',
   deobfuscationConfiguration: {
@@ -144,7 +120,7 @@ const appMonitor = new rum.AppMonitor(this, 'MyAppMonitor', {
 You can import an existing app monitor using the `fromAppMonitorAttributes` method:
 
 ```ts
-const importedAppMonitor = rum.AppMonitor.fromAppMonitorAttributes(this, 'ImportedAppMonitor', {
+rum.AppMonitor.fromAppMonitorAttributes(this, 'ImportedAppMonitor', {
   appMonitorId: 'existing-monitor-id',
   appMonitorName: 'existing-monitor-name',
   cwLogEnabled: true,
@@ -166,17 +142,9 @@ const appMonitor = new rum.AppMonitor(this, 'MyAppMonitor', {
   cwLogEnabled: true,
 });
 
-// Use the attributes
-console.log('App Monitor ID:', appMonitor.appMonitorId);
-console.log('App Monitor Name:', appMonitor.appMonitorName);
-
-// Access the log group for additional configuration
-const logGroup = appMonitor.logGroup;
-if (logGroup) {
-  console.log('Log Group Name:', logGroup.logGroupName);
-  // The log group follows the pattern: RUMService_${appMonitorName}${appMonitorId.slice(0,8)}
-  // CDK handles the dynamic name construction automatically
-}
+// Access attributes
+console.log(appMonitor.appMonitorId);
+console.log(appMonitor.logGroup?.logGroupName);
 ```
 
 ## Properties
