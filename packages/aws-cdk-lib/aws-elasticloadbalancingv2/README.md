@@ -165,6 +165,8 @@ new elbv2.ApplicationListenerRule(this, 'MyRule', {
 });
 ```
 
+**Important**: Auto-priority assignment is deterministic but can change if you modify your construct structure. Adding, removing, or reordering rules may cause auto-assigned priorities to shift. For rules that must maintain specific priority values, use explicit priority assignment.
+
 ### Convenience methods and more complex Actions
 
 Routing traffic from a Load Balancer to a Target involves the following steps:
