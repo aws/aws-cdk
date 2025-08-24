@@ -642,7 +642,10 @@ export class AnomalyDetectionAlarm extends Alarm {
     super(scope, id, {
       ...props,
       comparisonOperator: props.comparisonOperator ?? ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
-      metric: Metric.anomalyDetectionFor(props),
+      metric: Metric.anomalyDetectionFor({
+        ...props,
+        period: metricPeriod(props.metric),
+      }),
       threshold: Alarm.ANOMALY_DETECTION_NO_THRESHOLD,
     });
     // Enhanced CDK Analytics Telemetry
