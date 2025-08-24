@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "alb-auto-priority-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-elbv2-auto-priority-integ"
+      ],
+      "assertionStack": "alb-auto-priority-test/DefaultTest/DeployAssert",
+      "assertionStackName": "albautoprioritytestDefaultTestDeployAssert89CBFEC9"
+    }
+  },
+  "minimumCliVersion": "2.1025.0"
+}

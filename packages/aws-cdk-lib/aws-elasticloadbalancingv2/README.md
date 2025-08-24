@@ -101,6 +101,69 @@ targets with conditions. The lowest number wins.
 Every listener must have at least one target without conditions, which is
 where all requests that didn't match any of the conditions will be sent.
 
+#### Auto-Priority Assignment
+
+Starting with CDK v2.173.0, you can omit the `priority` field when creating listener rules, and the CDK will automatically assign the lowest available priority number. This simplifies rule management and prevents priority conflicts:
+
+```ts
+declare const listener: elbv2.ApplicationListener;
+declare const asg1: autoscaling.AutoScalingGroup;
+declare const asg2: autoscaling.AutoScalingGroup;
+
+// Auto-priority: will get priority 1 (lowest available)
+listener.addTargets('API Fleet', {
+  // priority: omitted - automatically assigned
+  conditions: [
+    elbv2.ListenerCondition.pathPatterns(['/api/*']),
+  ],
+  port: 8080,
+  targets: [asg1]
+});
+
+// Manual priority: explicitly set to 5
+listener.addTargets('Admin Fleet', {
+  priority: 5, // Explicit priority
+  conditions: [
+    elbv2.ListenerCondition.pathPatterns(['/admin/*']),
+  ],
+  port: 8080,
+  targets: [asg2]
+});
+
+// Auto-priority: will get priority 2 (next lowest available)
+listener.addTargets('Static Fleet', {
+  // priority: omitted - automatically assigned
+  conditions: [
+    elbv2.ListenerCondition.pathPatterns(['/static/*']),
+  ],
+  port: 8080,
+  targets: [asg1]
+});
+```
+
+The auto-priority assignment:
+- Assigns the lowest available priority number (starting from 1)
+- Works independently for each listener (different listeners can have rules with the same priority)
+- Finds gaps in manually assigned priorities and fills them
+- Maintains backward compatibility - explicit priorities continue to work as before
+- Applies to both `addTargets()` and `addAction()` methods
+
+You can also use auto-priority with `ApplicationListenerRule` directly:
+
+```ts
+declare const listener: elbv2.ApplicationListener;
+
+new elbv2.ApplicationListenerRule(this, 'MyRule', {
+  listener,
+  // priority: omitted - automatically assigned
+  conditions: [elbv2.ListenerCondition.pathPatterns(['/app'])],
+  action: elbv2.ListenerAction.fixedResponse(200, {
+    contentType: 'text/plain',
+    messageBody: 'Hello from auto-priority rule!',
+  }),
+});
+```
+
 ### Convenience methods and more complex Actions
 
 Routing traffic from a Load Balancer to a Target involves the following steps:

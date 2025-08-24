@@ -9,7 +9,7 @@ import { ITrustStore } from './trust-store';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Annotations, Duration, FeatureFlags, Lazy, Resource, Token } from '../../../core';
-import { ValidationError } from '../../../core/lib/errors';
+import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
@@ -264,6 +264,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    */
   private readonly protocol: ApplicationProtocol;
 
+  /**
+   * Priority manager for auto-priority assignment
+   */
+  private readonly _priorityManager = new AutoPriorityManager();
+
   constructor(scope: Construct, id: string, props: ApplicationListenerProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
     if (protocol === undefined || port === undefined) {
@@ -394,13 +399,16 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   public addAction(id: string, props: AddApplicationActionProps): void {
     checkAddRuleProps(this, props);
 
-    if (props.priority !== undefined) {
-      // New rule
+    const hasAnyConditions = (props.conditions?.length || 0) !== 0 ||
+      props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined;
+
+    if (props.priority !== undefined || hasAnyConditions) {
+      // New rule (with explicit priority or auto-priority when conditions are present)
       //
       // TargetGroup.registerListener is called inside ApplicationListenerRule.
       new ApplicationListenerRule(this, id + 'Rule', {
         listener: this,
-        priority: props.priority,
+        priority: props.priority, // Can be undefined for auto-priority
         ...props,
       });
     } else {
@@ -423,13 +431,16 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   public addTargetGroups(id: string, props: AddApplicationTargetGroupsProps): void {
     checkAddRuleProps(this, props);
 
-    if (props.priority !== undefined) {
-      // New rule
+    const hasAnyConditions = (props.conditions?.length || 0) !== 0 ||
+      props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined;
+
+    if (props.priority !== undefined || hasAnyConditions) {
+      // New rule (with explicit priority or auto-priority when conditions are present)
       //
       // TargetGroup.registerListener is called inside ApplicationListenerRule.
       new ApplicationListenerRule(this, id + 'Rule', {
         listener: this,
-        priority: props.priority,
+        priority: props.priority, // Can be undefined for auto-priority
         ...props,
       });
     } else {
@@ -575,6 +586,22 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   }
 
   /**
+   * Allocate the next available auto-priority for a listener rule
+   * @internal
+   */
+  public _allocateAutoPriority(): number {
+    return this._priorityManager.allocateNextPriority();
+  }
+
+  /**
+   * Reserve an explicit priority to avoid conflicts with auto-assigned priorities
+   * @internal
+   */
+  public _reservePriority(priority: number): void {
+    this._priorityManager.reservePriority(priority);
+  }
+
+  /**
    * Validate this listener.
    */
   protected validateListener(): string[] {
@@ -651,6 +678,18 @@ export interface IApplicationListener extends IListener, ec2.IConnectable {
    * must be provided.
    */
   addAction(id: string, props: AddApplicationActionProps): void;
+
+  /**
+   * Allocate the next available auto-priority for a listener rule
+   * @internal
+   */
+  _allocateAutoPriority?(): number;
+
+  /**
+   * Reserve an explicit priority to avoid conflicts with auto-assigned priorities
+   * @internal
+   */
+  _reservePriority?(priority: number): void;
 }
 
 /**
@@ -696,6 +735,8 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    */
   public abstract readonly listenerArn: string;
 
+  private _importedListenerPriorityCounter?: number;
+
   constructor(scope: Construct, id: string) {
     super(scope, id);
   }
@@ -736,11 +777,14 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
   public addTargetGroups(id: string, props: AddApplicationTargetGroupsProps): void {
     checkAddRuleProps(this, props);
 
-    if (props.priority !== undefined) {
-      // New rule
+    const hasAnyConditions = (props.conditions?.length || 0) !== 0 ||
+      props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined;
+
+    if (props.priority !== undefined || hasAnyConditions) {
+      // New rule (with explicit priority or auto-priority when conditions are present)
       new ApplicationListenerRule(this, id, {
         listener: this,
-        priority: props.priority,
+        priority: props.priority, // Can be undefined for auto-priority
         ...props,
       });
     } else {
@@ -785,19 +829,45 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
   public addAction(id: string, props: AddApplicationActionProps): void {
     checkAddRuleProps(this, props);
 
-    if (props.priority !== undefined) {
+    const hasAnyConditions = (props.conditions?.length || 0) !== 0 ||
+      props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined;
+
+    if (props.priority !== undefined || hasAnyConditions) {
       const ruleId = props.removeSuffix ? id : id + 'Rule';
-      // New rule
+      // New rule (with explicit priority or auto-priority when conditions are present)
       //
       // TargetGroup.registerListener is called inside ApplicationListenerRule.
       new ApplicationListenerRule(this, ruleId, {
         listener: this,
-        priority: props.priority,
+        priority: props.priority, // Can be undefined for auto-priority
         ...props,
       });
     } else {
       throw new ValidationError('priority must be set for actions added to an imported listener', this);
     }
+  }
+
+  /**
+   * Allocate the next available auto-priority for a listener rule
+   * For imported listeners, we use a simple counter since we can't inspect existing rules
+   * @internal
+   */
+  public _allocateAutoPriority(): number {
+    // For imported listeners, we can't inspect existing rules, so we use a simple counter
+    // This is a limitation - users should prefer explicit priorities for imported listeners
+    if (!this._importedListenerPriorityCounter) {
+      this._importedListenerPriorityCounter = 1;
+    }
+    return this._importedListenerPriorityCounter++;
+  }
+
+  /**
+   * Reserve an explicit priority to avoid conflicts with auto-assigned priorities
+   * For imported listeners, this is a no-op since we can't inspect existing rules
+   * @internal
+   */
+  public _reservePriority(_priority: number): void {
+    // No-op for imported listeners since we can't inspect existing rules
   }
 }
 
@@ -1087,8 +1157,11 @@ function checkAddRuleProps(scope: Construct, props: AddRuleProps) {
   const hasAnyConditions = conditionsCount !== 0 ||
     props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined;
   const hasPriority = props.priority !== undefined;
-  if (hasAnyConditions !== hasPriority) {
-    throw new ValidationError('Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa', scope);
+
+  // With auto-priority support, conditions can be specified without explicit priority
+  // However, if priority is specified without conditions, that's still an error
+  if (hasPriority && !hasAnyConditions) {
+    throw new ValidationError('Setting \'priority\' requires at least one condition (\'conditions\', \'pathPattern\', or \'hostHeader\')', scope);
   }
 }
 
@@ -1117,5 +1190,45 @@ function validateMutualAuthentication(scope: Construct, mutualAuthentication?: M
     if (mutualAuthentication.advertiseTrustStoreCaNames !== undefined) {
       throw new ValidationError(`You cannot set 'advertiseTrustStoreCaNames' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`, scope);
     }
+  }
+}
+
+/**
+ * Manages automatic priority assignment for listener rules
+ * @internal
+ */
+class AutoPriorityManager {
+  private nextPriority = 1;
+  private usedPriorities = new Set<number>();
+
+  /**
+   * Reserve an explicit priority to avoid conflicts with auto-assigned priorities
+   */
+  public reservePriority(priority: number): void {
+    this.usedPriorities.add(priority);
+    // Ensure nextPriority doesn't conflict with reserved priorities
+    while (this.usedPriorities.has(this.nextPriority) && this.nextPriority <= 50000) {
+      this.nextPriority++;
+    }
+  }
+
+  /**
+   * Allocate the next available priority
+   */
+  public allocateNextPriority(): number {
+    // Find next available priority
+    while (this.usedPriorities.has(this.nextPriority) && this.nextPriority <= 50000) {
+      this.nextPriority++;
+    }
+
+    if (this.nextPriority > 50000) {
+      throw new UnscopedValidationError('No available priority slots (1-50000) for listener rule. All priorities are in use.');
+    }
+
+    const priority = this.nextPriority;
+    this.usedPriorities.add(priority);
+    this.nextPriority++;
+
+    return priority;
   }
 }

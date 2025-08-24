@@ -18,8 +18,13 @@ export interface BaseApplicationListenerRuleProps {
    * The rule with the lowest priority will be used for every request.
    *
    * Priorities must be unique.
+   *
+   * If not specified, the priority will be automatically assigned based on the order
+   * of rule creation, starting from 1 and incrementing for each new rule.
+   *
+   * @default - Automatically assigned priority
    */
-  readonly priority: number;
+  readonly priority?: number;
 
   /**
    * Target groups to forward requests to.
@@ -226,15 +231,20 @@ export class ApplicationListenerRule extends Construct {
       throw new ValidationError(`'${providedActions}' specified together, specify only one`, this);
     }
 
-    if (!cdk.Token.isUnresolved(props.priority) && props.priority <= 0) {
+    if (props.priority !== undefined && !cdk.Token.isUnresolved(props.priority) && props.priority <= 0) {
       throw new ValidationError('Priority must have value greater than or equal to 1', this);
     }
 
     this.listener = props.listener;
 
+    // Reserve explicit priority to avoid conflicts with auto-assigned priorities
+    if (props.priority !== undefined && !cdk.Token.isUnresolved(props.priority)) {
+      (this.listener as any)._reservePriority?.(props.priority);
+    }
+
     const resource = new CfnListenerRule(this, 'Resource', {
       listenerArn: props.listener.listenerArn,
-      priority: props.priority,
+      priority: props.priority ?? cdk.Lazy.number({ produce: () => this.calculateAutoPriority() }),
       conditions: cdk.Lazy.any({ produce: () => this.renderConditions() }),
       actions: cdk.Lazy.any({ produce: () => this.action ? this.action.renderRuleActions() : [] }),
     });
@@ -369,6 +379,14 @@ export class ApplicationListenerRule extends Construct {
     }
 
     return [];
+  }
+
+  /**
+   * Calculate an automatic priority for this rule
+   */
+  private calculateAutoPriority(): number {
+    // Use the listener's priority manager to get the next available priority
+    return (this.listener as any)._allocateAutoPriority();
   }
 
   /**

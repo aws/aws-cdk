@@ -269,7 +269,7 @@ describe('tests', () => {
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
     });
 
-    Annotations.fromStack(stack).hasWarning('/'+listener.node.path, Match.stringLikeRegexp('Certificates cannot be specified for HTTP listeners. Use HTTPS instead.'));
+    Annotations.fromStack(stack).hasWarning('/' + listener.node.path, Match.stringLikeRegexp('Certificates cannot be specified for HTTP listeners. Use HTTPS instead.'));
   });
 
   test('Can configure targetType on TargetGroups', () => {
@@ -755,9 +755,9 @@ describe('tests', () => {
             ['',
               [{ 'Fn::Select': [1, { 'Fn::Split': ['/', loadBalancerArn] }] },
                 '/',
-                { 'Fn::Select': [2, { 'Fn::Split': ['/', loadBalancerArn] }] },
+              { 'Fn::Select': [2, { 'Fn::Split': ['/', loadBalancerArn] }] },
                 '/',
-                { 'Fn::Select': [3, { 'Fn::Split': ['/', loadBalancerArn] }] }]],
+              { 'Fn::Select': [3, { 'Fn::Split': ['/', loadBalancerArn] }] }]],
         },
       });
     }
@@ -2234,6 +2234,425 @@ class ResourceWithLBDependency extends cdk.CfnResource {
     this.node.addDependency(targetGroup.loadBalancerAttached);
   }
 }
+
+describe('Auto-priority for ApplicationListenerRule', () => {
+  /**
+   * Test: Basic auto-priority assignment
+   * 
+   * This test verifies that when no priority is specified, the system automatically
+   * assigns priority 1 (the lowest/highest precedence priority).
+   * 
+   * Priority Assignment:
+   * ┌─────────────────┐
+   * │ Listener        │
+   * │ ┌─────────────┐ │
+   * │ │ Rule (auto) │ │ ← Should get priority 1
+   * │ │ /hello      │ │
+   * │ └─────────────┘ │
+   * └─────────────────┘
+   */
+  test('ApplicationListenerRule with auto-priority assigns priority 1', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.fixedResponse(404),
+    });
+
+    // WHEN - Create a rule without specifying priority (should auto-assign)
+    new elbv2.ApplicationListenerRule(stack, 'Rule', {
+      listener,
+      // priority: omitted - should auto-assign to 1
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
+      action: elbv2.ListenerAction.fixedResponse(200),
+    });
+
+    // THEN - Verify the rule gets priority 1
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 1,
+      Conditions: [
+        {
+          Field: 'path-pattern',
+          PathPatternConfig: {
+            Values: ['/hello'],
+          },
+        },
+      ],
+    });
+  });
+
+  /**
+   * Test: Mixed manual and auto-priority assignment
+   * 
+   * This test verifies that auto-priority assignment works correctly when mixed
+   * with manually assigned priorities. The auto-assigned rule should get the
+   * lowest available priority (1) even when higher priorities are manually assigned.
+   * 
+   * Priority Assignment:
+   * ┌─────────────────────┐
+   * │ Listener            │
+   * │ ┌─────────────────┐ │
+   * │ │ AutoRule (auto) │ │ ← Should get priority 1 (lowest available)
+   * │ │ /auto           │ │
+   * │ └─────────────────┘ │
+   * │ ┌─────────────────┐ │
+   * │ │ ManualRule (5)  │ │ ← Explicitly set to priority 5
+   * │ │ /manual         │ │
+   * │ └─────────────────┘ │
+   * └─────────────────────┘
+   */
+  test('ApplicationListenerRule with mixed manual and auto priorities', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.fixedResponse(404),
+    });
+
+    // WHEN - Create one rule with manual priority and one with auto-priority
+    new elbv2.ApplicationListenerRule(stack, 'ManualRule', {
+      listener,
+      priority: 5, // Manual priority
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/manual'])],
+      action: elbv2.ListenerAction.fixedResponse(200),
+    });
+
+    new elbv2.ApplicationListenerRule(stack, 'AutoRule', {
+      listener,
+      // priority: omitted - should auto-assign to 1 (lowest available)
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/auto'])],
+      action: elbv2.ListenerAction.fixedResponse(200),
+    });
+
+    // THEN - Verify manual rule keeps its priority and auto rule gets priority 1
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 5,
+      Conditions: [
+        {
+          Field: 'path-pattern',
+          PathPatternConfig: {
+            Values: ['/manual'],
+          },
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 1,
+      Conditions: [
+        {
+          Field: 'path-pattern',
+          PathPatternConfig: {
+            Values: ['/auto'],
+          },
+        },
+      ],
+    });
+  });
+
+  /**
+   * Test: Auto-priority finds next available slot
+   * 
+   * This test verifies that the auto-priority assignment algorithm correctly
+   * identifies gaps in the priority sequence and assigns the lowest available
+   * priority number. When priorities 1, 2, and 4 are taken, the next rule
+   * should get priority 3.
+   * 
+   * Priority Assignment (before auto rule):
+   * ┌─────────────────────┐
+   * │ Listener            │
+   * │ ┌─────────────────┐ │
+   * │ │ Rule1 (1)       │ │ ← Priority 1 taken
+   * │ │ /one            │ │
+   * │ └─────────────────┘ │
+   * │ ┌─────────────────┐ │
+   * │ │ Rule2 (2)       │ │ ← Priority 2 taken
+   * │ │ /two            │ │
+   * │ └─────────────────┘ │
+   * │ ┌─────────────────┐ │
+   * │ │ Rule4 (4)       │ │ ← Priority 4 taken (gap at 3)
+   * │ │ /four           │ │
+   * │ └─────────────────┘ │
+   * │ ┌─────────────────┐ │
+   * │ │ AutoRule (auto) │ │ ← Should get priority 3 (fills gap)
+   * │ │ /auto           │ │
+   * │ └─────────────────┘ │
+   * └─────────────────────┘
+   */
+  test('ApplicationListenerRule auto-priority finds next available slot', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.fixedResponse(404),
+    });
+
+    // WHEN - Create rules with priorities 1, 2, 4 (leaving 3 available)
+    new elbv2.ApplicationListenerRule(stack, 'Rule1', {
+      listener,
+      priority: 1,
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/one'])],
+      action: elbv2.ListenerAction.fixedResponse(200),
+    });
+
+    new elbv2.ApplicationListenerRule(stack, 'Rule2', {
+      listener,
+      priority: 2,
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/two'])],
+      action: elbv2.ListenerAction.fixedResponse(200),
+    });
+
+    new elbv2.ApplicationListenerRule(stack, 'Rule4', {
+      listener,
+      priority: 4,
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/four'])],
+      action: elbv2.ListenerAction.fixedResponse(200),
+    });
+
+    // Add auto-priority rule - should fill the gap at priority 3
+    new elbv2.ApplicationListenerRule(stack, 'AutoRule', {
+      listener,
+      // priority: omitted - should auto-assign to 3 (next available)
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/auto'])],
+      action: elbv2.ListenerAction.fixedResponse(200),
+    });
+
+    // THEN - Verify the auto rule gets priority 3 (fills the gap)
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 3,
+      Conditions: [
+        {
+          Field: 'path-pattern',
+          PathPatternConfig: {
+            Values: ['/auto'],
+          },
+        },
+      ],
+    });
+  });
+
+  /**
+   * Test: Backward compatibility - explicit priority still works
+   * 
+   * This test ensures that the existing behavior of explicitly setting priorities
+   * continues to work unchanged. This is crucial for backward compatibility.
+   * Users should be able to continue using explicit priorities without any changes
+   * to their existing code.
+   * 
+   * Priority Assignment:
+   * ┌─────────────────┐
+   * │ Listener        │
+   * │ ┌─────────────┐ │
+   * │ │ Rule (42)   │ │ ← Explicitly set to priority 42
+   * │ │ /hello      │ │
+   * │ └─────────────┘ │
+   * └─────────────────┘
+   */
+  test('ApplicationListenerRule explicit priority still works as before', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.fixedResponse(404),
+    });
+
+    // WHEN - Use explicit priority (backward compatibility test)
+    new elbv2.ApplicationListenerRule(stack, 'Rule', {
+      listener,
+      priority: 42, // Explicit priority - should be respected exactly
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
+      action: elbv2.ListenerAction.fixedResponse(200),
+    });
+
+    // THEN - Verify the explicit priority is used exactly as specified
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 42,
+      Conditions: [
+        {
+          Field: 'path-pattern',
+          PathPatternConfig: {
+            Values: ['/hello'],
+          },
+        },
+      ],
+    });
+  });
+
+  /**
+   * Test: Validation still works for invalid explicit priorities
+   * 
+   * This test ensures that existing validation logic for explicit priorities
+   * continues to work. Even with auto-priority functionality, users should
+   * still get clear error messages when they provide invalid explicit priorities.
+   * 
+   * AWS ALB rules require priorities to be >= 1, so priority 0 should be rejected.
+   */
+  test('ApplicationListenerRule validation still works for explicit priority 0', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.fixedResponse(404),
+    });
+
+    // THEN - Should still throw for invalid explicit priority (priority 0 is not allowed)
+    expect(() => new elbv2.ApplicationListenerRule(stack, 'Rule', {
+      listener,
+      priority: 0, // Invalid explicit priority - AWS requires >= 1
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
+      action: elbv2.ListenerAction.fixedResponse(200),
+    })).toThrow('Priority must have value greater than or equal to 1');
+  });
+
+  /**
+   * Test: Auto-priority works independently across different listeners
+   * 
+   * This test verifies that auto-priority assignment is scoped per listener.
+   * Rules on different listeners should be able to have the same priority
+   * since they don't conflict with each other. Each listener maintains its
+   * own priority space.
+   * 
+   * Priority Assignment (independent per listener):
+   * ┌─────────────────────┐  ┌─────────────────────┐
+   * │ Listener1 (port 80) │  │ Listener2 (port 8080)│
+   * │ ┌─────────────────┐ │  │ ┌─────────────────┐ │
+   * │ │ Rule1 (auto)    │ │  │ │ Rule2 (auto)    │ │
+   * │ │ /listener1      │ │  │ │ /listener2      │ │
+   * │ │ Priority: 1     │ │  │ │ Priority: 1     │ │ ← Both can be 1
+   * │ └─────────────────┘ │  │ └─────────────────┘ │
+   * └─────────────────────┘  └─────────────────────┘
+   */
+  test('ApplicationListenerRule auto-priority works across different listeners', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener1 = lb.addListener('Listener1', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.fixedResponse(404),
+    });
+    const listener2 = lb.addListener('Listener2', {
+      port: 8080,
+      defaultAction: elbv2.ListenerAction.fixedResponse(404),
+    });
+
+    // WHEN - Create auto-priority rules on different listeners
+    new elbv2.ApplicationListenerRule(stack, 'Rule1', {
+      listener: listener1,
+      // priority: omitted - should auto-assign to 1
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/listener1'])],
+      action: elbv2.ListenerAction.fixedResponse(200),
+    });
+
+    new elbv2.ApplicationListenerRule(stack, 'Rule2', {
+      listener: listener2,
+      // priority: omitted - should auto-assign to 1 (independent of listener1)
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/listener2'])],
+      action: elbv2.ListenerAction.fixedResponse(200),
+    });
+
+    // THEN - Both should get priority 1 since they're on different listeners
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::ElasticLoadBalancingV2::ListenerRule', 2);
+
+    // Both rules should have priority 1 since they're on different listeners
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 1,
+      Conditions: [
+        {
+          Field: 'path-pattern',
+          PathPatternConfig: {
+            Values: ['/listener1'],
+          },
+        },
+      ],
+    });
+
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 1,
+      Conditions: [
+        {
+          Field: 'path-pattern',
+          PathPatternConfig: {
+            Values: ['/listener2'],
+          },
+        },
+      ],
+    });
+  });
+
+  /**
+   * Test: Auto-priority works with complex conditions
+   * 
+   * This test verifies that auto-priority assignment works correctly when
+   * rules have multiple conditions. The priority assignment logic should
+   * work regardless of the complexity of the rule conditions.
+   * 
+   * This ensures that the auto-priority feature doesn't interfere with
+   * the existing condition validation and processing logic.
+   * 
+   * Rule Configuration:
+   * ┌─────────────────────────────────┐
+   * │ Rule (auto-priority)            │
+   * │ ┌─────────────────────────────┐ │
+   * │ │ Conditions:                 │ │
+   * │ │ • Path: /api/*              │ │
+   * │ │ • Host: api.example.com     │ │
+   * │ └─────────────────────────────┘ │
+   * │ Priority: 1 (auto-assigned)     │
+   * └─────────────────────────────────┘
+   */
+  test('ApplicationListenerRule auto-priority with conditions parameter still works', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.fixedResponse(404),
+    });
+
+    // WHEN - Create rule without priority but with multiple conditions
+    new elbv2.ApplicationListenerRule(stack, 'Rule', {
+      listener,
+      // priority: omitted - should auto-assign to 1
+      conditions: [
+        elbv2.ListenerCondition.pathPatterns(['/api/*']),
+        elbv2.ListenerCondition.hostHeaders(['api.example.com']),
+      ],
+      action: elbv2.ListenerAction.fixedResponse(200),
+    });
+
+    // THEN - Should work without validation errors and get auto-assigned priority
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Priority: 1,
+      Conditions: [
+        {
+          Field: 'path-pattern',
+          PathPatternConfig: {
+            Values: ['/api/*'],
+          },
+        },
+        {
+          Field: 'host-header',
+          HostHeaderConfig: {
+            Values: ['api.example.com'],
+          },
+        },
+      ],
+    });
+  });
+});
 
 function importedCertificate(stack: cdk.Stack,
   certificateArn = 'arn:aws:certificatemanager:123456789012:testregion:certificate/fd0b8392-3c0e-4704-81b6-8edf8612c852') {

@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "574c8c7f51e288cf704bd11eeabf1984c8f953eb2e8fd30092a8c7866406e8b3": {
+      "displayName": "aws-cdk-elbv2-auto-priority-integ Template",
+      "source": {
+        "path": "aws-cdk-elbv2-auto-priority-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-220f7726": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "574c8c7f51e288cf704bd11eeabf1984c8f953eb2e8fd30092a8c7866406e8b3.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
