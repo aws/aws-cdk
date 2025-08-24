@@ -72,6 +72,7 @@ You can process RUM events in real-time using Lambda functions:
 
 ```ts
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as logs from 'aws-cdk-lib/aws-logs';
 import { LambdaDestination } from 'aws-cdk-lib/aws-logs-destinations';
 
 const rumProcessor = new lambda.Function(this, 'RUMProcessor', {
@@ -114,59 +115,3 @@ new rum.AppMonitor(this, 'MyAppMonitor', {
   },
 });
 ```
-
-### Importing Existing App Monitors
-
-You can import an existing app monitor using the `fromAppMonitorAttributes` method:
-
-```ts
-rum.AppMonitor.fromAppMonitorAttributes(this, 'ImportedAppMonitor', {
-  appMonitorId: 'existing-monitor-id',
-  appMonitorName: 'existing-monitor-name',
-  cwLogEnabled: true,
-});
-```
-
-## Attributes
-
-The `AppMonitor` construct exposes the following attributes:
-
-- `appMonitorId` - The unique ID of the app monitor
-- `appMonitorName` - The name of the app monitor
-- `logGroup` - The CloudWatch log group (only available when `cwLogEnabled` is true)
-
-```ts
-const appMonitor = new rum.AppMonitor(this, 'MyAppMonitor', {
-  appMonitorName: 'my-web-app',
-  domain: 'example.com',
-  cwLogEnabled: true,
-});
-
-// Access attributes
-console.log(appMonitor.appMonitorId);
-console.log(appMonitor.logGroup?.logGroupName);
-```
-
-## Properties
-
-### AppMonitorConfiguration
-
-The `appMonitorConfiguration` property accepts the following options:
-
-- `allowCookies` - Whether to allow cookies for tracking user sessions (default: false)
-- `enableXRay` - Whether to enable X-Ray tracing (default: false)
-- `sessionSampleRate` - Portion of user sessions to sample (0 to 1, default: 0.1)
-
-### CustomEventsConfig
-
-The `customEvents` property accepts:
-
-- `enabled` - Whether custom events are enabled (default: false)
-
-### DeobfuscationConfig
-
-The `deobfuscationConfiguration` property accepts:
-
-- `javaScriptSourceMaps` - Configuration for JavaScript source maps
-  - `enabled` - Whether source maps are enabled
-  - `s3Uri` - S3 URI where source map files are stored (required when enabled is true)
