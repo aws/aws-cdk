@@ -146,6 +146,7 @@ The auto-priority assignment:
 - Works independently for each listener (different listeners can have rules with the same priority)
 - Finds gaps in manually assigned priorities and fills them
 - Maintains backward compatibility - explicit priorities continue to work as before
+- Supports hybrid usage - you can mix auto-priority and manual priority rules within the same listener
 - Applies to both `addTargets()` and `addAction()` methods
 
 You can also use auto-priority with `ApplicationListenerRule` directly:
