@@ -97,7 +97,6 @@ export interface WebSocketApiProps {
 
   /**
    * Avoid validating models when creating a deployment.
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-apigatewayv2-api.html
    *
    * @default false
    */
