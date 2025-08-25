@@ -1,5 +1,5 @@
 import * as iam from '../../../../aws-iam';
-import { IBucketRef } from '../../../../aws-s3';
+import { IBucket } from '../../../../aws-s3';
 import { Arn, ArnFormat, Aws } from '../../../../core';
 import { FieldUtils } from '../../fields';
 import { QueryLanguage } from '../../types';
@@ -12,7 +12,7 @@ export interface ResultWriterProps {
   /**
    * S3 Bucket in which to save Map Run results
    */
-  readonly bucket: IBucketRef;
+  readonly bucket: IBucket;
 
   /**
    * S3 prefix in which to save Map Run results
@@ -30,7 +30,7 @@ export interface ResultWriterV2Props {
    * S3 Bucket in which to save Map Run results
    * @default - specify a bucket
    */
-  readonly bucket?: IBucketRef;
+  readonly bucket?: IBucket;
 
   /**
    * S3 bucket name in which to save Map Run results, as JsonPath
@@ -174,7 +174,7 @@ export class ResultWriter {
   /**
    * S3 Bucket in which to save Map Run results
    */
-  readonly bucket: IBucketRef;
+  readonly bucket: IBucket;
 
   /**
    * S3 prefix in which to save Map Run results
@@ -226,7 +226,7 @@ export class ResultWriterV2 {
   /**
    * S3 Bucket in which to save Map Run results
    */
-  readonly bucket?: IBucketRef;
+  readonly bucket?: IBucket;
 
   /**
    * S3 bucket name in which to save Map Run results, as JsonPath
@@ -284,12 +284,12 @@ export class ResultWriterV2 {
    * Compile policy statements to provide relevent permissions to the state machine
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
-    if (!this.bucket?.bucketRef.bucketName && !this.bucketNamePath) {
+    if (!this.bucket?.bucketName && !this.bucketNamePath) {
       return [];
     } else if (this.bucketNamePath) {
       return buildS3PutObjectPolicyStatements();
     }
-    return buildS3PutObjectPolicyStatements(this.bucket?.bucketRef.bucketName);
+    return buildS3PutObjectPolicyStatements(this.bucket?.bucketName);
   }
 
   /**
