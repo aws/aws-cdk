@@ -49,6 +49,36 @@ export enum WorkerType {
    * Z.2X Worker Type
    */
   Z_2X = 'Z.2X',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  G_12X = 'G.12X',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  G_16X = 'G.16X',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  R_1X = 'R.1X',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  R_2X = 'R.2X',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  R_4X = 'R.4X',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  R_8X = 'R.8X',
 }
 
 /**
