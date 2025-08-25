@@ -168,7 +168,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
     // For OCI helm chart authorization.
     this.handlerRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPullOnly'),
     );
 
     /**
