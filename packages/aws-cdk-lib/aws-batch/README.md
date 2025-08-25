@@ -532,6 +532,42 @@ const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
 });
 ```
 
+### Enable Execute Command (ECS Exec)
+
+You can enable ECS Exec for interactive debugging and troubleshooting by setting `enableExecuteCommand` to `true`.
+When enabled, you'll be able to execute commands interactively in running containers.
+
+**Security Warning**: ECS Exec allows direct access to your containers. Use with caution in production environments.
+
+```ts
+const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
+  container: new batch.EcsEc2ContainerDefinition(this, 'myContainer', {
+    image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+    enableExecuteCommand: true, // Enable ECS Exec
+  }),
+});
+```
+
+The same functionality is available for Fargate containers:
+
+```ts
+const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
+  container: new batch.EcsFargateContainerDefinition(this, 'myFargateContainer', {
+    image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+    enableExecuteCommand: true, // Enable ECS Exec for Fargate
+  }),
+});
+```
+
+When `enableExecuteCommand` is set to `true`:
+- If no `jobRole` is provided, a new IAM role will be automatically created with the required SSM permissions
+- If a `jobRole` is already provided, the necessary SSM permissions will be added to the existing role
+- The required permissions include: `ssmmessages:CreateControlChannel`, `ssmmessages:CreateDataChannel`, `ssmmessages:OpenControlChannel`, and `ssmmessages:OpenDataChannel`
+
 ### Secrets
 
 You can expose SecretsManager Secret ARNs or SSM Parameters to your container as environment variables.
