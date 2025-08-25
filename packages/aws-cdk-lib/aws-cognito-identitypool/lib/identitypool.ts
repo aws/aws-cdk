@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IUserPoolAuthenticationProvider } from './identitypool-user-pool-authentication-provider';
 import { CfnIdentityPool, CfnIdentityPoolRoleAttachment, IUserPool, IUserPoolClient } from '../../aws-cognito';
-import { IOpenIdConnectProvider, ISamlProvider, Role, FederatedPrincipal, IRole, IRoleRef } from '../../aws-iam';
+import { Role, FederatedPrincipal, IRole, IRoleRef, IOIDCProviderRef, ISAMLProviderRef } from '../../aws-iam';
 import { Resource, IResource, Stack, ArnFormat, Lazy, Token, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -253,13 +253,13 @@ export interface IdentityPoolAuthenticationProviders {
    * The OpenIdConnect Provider associated with this Identity Pool
    * @default - no OpenIdConnectProvider
    */
-  readonly openIdConnectProviders?: IOpenIdConnectProvider[];
+  readonly openIdConnectProviders?: IOIDCProviderRef[];
 
   /**
    * The Security Assertion Markup Language provider associated with this Identity Pool
    * @default - no SamlProvider
    */
-  readonly samlProviders?: ISamlProvider[];
+  readonly samlProviders?: ISAMLProviderRef[];
 
   /**
    * The developer provider name to associate with this Identity Pool
@@ -463,11 +463,11 @@ export class IdentityPool extends Resource implements IIdentityPool {
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
     const openIdConnectProviderArns = authProviders.openIdConnectProviders ?
       authProviders.openIdConnectProviders.map(openIdProvider =>
-        openIdProvider.openIdConnectProviderArn,
+        openIdProvider.oidcProviderRef.oidcProviderArn,
       ) : undefined;
     const samlProviderArns = authProviders.samlProviders ?
       authProviders.samlProviders.map(samlProvider =>
-        samlProvider.samlProviderArn,
+        samlProvider.samlProviderRef.samlProviderArn,
       ) : undefined;
 
     let supportedLoginProviders:any = {};
