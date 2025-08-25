@@ -1,10 +1,9 @@
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
-import { CfnLaunchTemplate, ILaunchTemplateRef, LaunchTemplateRef } from './ec2.generated';
+import { CfnLaunchTemplate, ILaunchTemplateRef, IPlacementGroupRef, LaunchTemplateRef } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
-import { IPlacementGroup } from './placement-group';
 import { launchTemplateBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup } from './security-group';
 import { UserData } from './user-data';
@@ -450,7 +449,7 @@ export interface LaunchTemplateProps {
    *
    * @default - no placement group will be used for this launch template.
    */
-  readonly placementGroup?: IPlacementGroup;
+  readonly placementGroup?: IPlacementGroupRef;
 }
 
 /**
@@ -810,7 +809,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         metadataOptions: this.renderMetadataOptions(props),
         networkInterfaces,
         placement: props.placementGroup ? {
-          groupName: props.placementGroup.placementGroupName,
+          groupName: props.placementGroup.placementGroupRef.groupName,
         } : undefined,
 
         // Fields not yet implemented:

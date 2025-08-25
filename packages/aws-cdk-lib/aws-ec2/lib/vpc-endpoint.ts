@@ -15,7 +15,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A VPC endpoint.
  */
-export interface IVpcEndpoint extends IResource, IVPCEndpointRef {
+export interface IVpcEndpointRef extends IResource, IVPCEndpointRef {
   /**
    * The VPC endpoint identifier.
    * @attribute
@@ -23,7 +23,7 @@ export interface IVpcEndpoint extends IResource, IVPCEndpointRef {
   readonly vpcEndpointId: string;
 }
 
-export abstract class VpcEndpoint extends Resource implements IVpcEndpoint {
+export abstract class VpcEndpoint extends Resource implements IVpcEndpointRef {
   public abstract readonly vpcEndpointId: string;
 
   protected policyDocument?: iam.PolicyDocument;
@@ -59,7 +59,7 @@ export abstract class VpcEndpoint extends Resource implements IVpcEndpoint {
 /**
  * A gateway VPC endpoint.
  */
-export interface IGatewayVpcEndpoint extends IVpcEndpoint {
+export interface IGatewayVpcEndpoint extends IVpcEndpointRef {
 }
 
 /**
@@ -959,7 +959,7 @@ export interface InterfaceVpcEndpointProps extends InterfaceVpcEndpointOptions {
 /**
  * An interface VPC endpoint.
  */
-export interface IInterfaceVpcEndpoint extends IVpcEndpoint, IConnectable {
+export interface IInterfaceVpcEndpoint extends IVpcEndpointRef, IConnectable {
 }
 
 /**

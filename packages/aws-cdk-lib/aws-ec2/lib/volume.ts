@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnVolume, IVolumeRef, VolumeRef } from './ec2.generated';
-import { IInstance } from './instance';
+import { CfnVolume, IInstanceRef, IVolumeRef, VolumeRef } from './ec2.generated';
 import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
 import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy, FeatureFlags, UnscopedValidationError, ValidationError } from '../../core';
@@ -297,7 +296,7 @@ export interface IVolume extends IResource, IVolumeRef {
    *                 volume to. If not specified, then permission is granted to attach
    *                 to all instances in this account.
    */
-  grantAttachVolume(grantee: IGrantable, instances?: IInstance[]): Grant;
+  grantAttachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant;
 
   /**
    * Grants permission to attach the Volume by a ResourceTag condition. If you are looking to
@@ -328,7 +327,7 @@ export interface IVolume extends IResource, IVolumeRef {
    *                 volume from. If not specified, then permission is granted to detach
    *                 from all instances in this account.
    */
-  grantDetachVolume(grantee: IGrantable, instances?: IInstance[]): Grant;
+  grantDetachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant;
 
   /**
    * Grants permission to detach the Volume by a ResourceTag condition.
@@ -520,7 +519,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     };
   }
 
-  public grantAttachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
+  public grantAttachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
       actions: ['ec2:AttachVolume'],
@@ -566,7 +565,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
-  public grantDetachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
+  public grantDetachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
       actions: ['ec2:DetachVolume'],
@@ -595,14 +594,14 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
-  private collectGrantResourceArns(instances?: IInstance[]): string[] {
+  private collectGrantResourceArns(instances?: IInstanceRef[]): string[] {
     const stack = Stack.of(this);
     const resourceArns: string[] = [
       `arn:${stack.partition}:ec2:${stack.region}:${stack.account}:volume/${this.volumeId}`,
     ];
     const instanceArnPrefix = `arn:${stack.partition}:ec2:${stack.region}:${stack.account}:instance`;
     if (instances) {
-      instances.forEach(instance => resourceArns.push(`${instanceArnPrefix}/${instance?.instanceId}`));
+      instances.forEach(instance => resourceArns.push(`${instanceArnPrefix}/${instance?.instanceRef.instanceId}`));
     } else {
       resourceArns.push(`${instanceArnPrefix}/*`);
     }

@@ -404,7 +404,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
 
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
-  private _allowedVpcEndpoints: Set<ec2.IVpcEndpoint> = new Set();
+  private _allowedVpcEndpoints: Set<ec2.IVPCEndpointRef> = new Set();
 
   protected resourcePolicy?: iam.PolicyDocument;
   protected cloudWatchAccount?: CfnAccount;
@@ -501,12 +501,12 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
    *
    * @param vpcEndpoints the interface VPC endpoints to grant access to
    */
-  public grantInvokeFromVpcEndpointsOnly(vpcEndpoints: ec2.IVpcEndpoint[]): void {
+  public grantInvokeFromVpcEndpointsOnly(vpcEndpoints: ec2.IVpcEndpointRef[]): void {
     vpcEndpoints.forEach(endpoint => this._allowedVpcEndpoints.add(endpoint));
 
     const endpoints = Lazy.list({
       produce: () => {
-        return Array.from(this._allowedVpcEndpoints).map(endpoint => endpoint.vpcEndpointId);
+        return Array.from(this._allowedVpcEndpoints).map(endpoint => endpoint.vpcEndpointRef.vpcEndpointId);
       },
     });
 
@@ -1086,7 +1086,7 @@ export interface EndpointConfiguration {
    *
    * @default - no ALIASes are created for the endpoint.
    */
-  readonly vpcEndpoints?: ec2.IVpcEndpoint[];
+  readonly vpcEndpoints?: ec2.IVpcEndpointRef[];
 
   /**
    * The IP address types that can invoke the API.
