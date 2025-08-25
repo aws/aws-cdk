@@ -417,3 +417,43 @@ test('when owner contact exceeds 256 characters, it throws an error', () => {
 
   expect(() => buildWithOwnerContact()).toThrow('You must specify `ownerContact` as a string of 256 characters or less.');
 });
+
+test('GraphqlApi with attach enhanced metrics', () => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'minimal-enhanced-metrics', {
+    name: 'enhanced-metrics',
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    enhancedMetricsConfig: {},
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+    EnhancedMetricsConfig: {
+      DataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.PER_DATA_SOURCE_METRICS,
+      OperationLevelMetricsConfig: 'DISABLED',
+      ResolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS,
+    },
+  });
+});
+
+test('GraphqlApi with attach enhanced metrics to all data sources', () => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'full-enhanced-metrics', {
+    name: 'enhanced-metrics',
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    enhancedMetricsConfig: {
+      dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS,
+      operationLevelMetricsEnabled: true,
+      resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+    EnhancedMetricsConfig: {
+      DataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS,
+      OperationLevelMetricsConfig: 'ENABLED',
+      ResolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS,
+    },
+  });
+});
