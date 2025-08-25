@@ -3838,6 +3838,26 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     }
   },
   '@aws-cdk.aws-s3tables-alpha': {
+    'Namespace': {
+      'namespaceName': '*',
+      'tableBucket': {
+        'tableBucketArn': '*',
+        'tableBucketName': '*',
+        'account': '*',
+        'region': '*',
+        'encryptionKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        }
+      },
+      'removalPolicy': 'RemovalPolicy'
+    },
     'TableBucketPolicy': {
       'tableBucket': {
         'tableBucketArn': '*',
@@ -3879,6 +3899,49 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'node': '*'
       },
       'removalPolicy': 'RemovalPolicy'
+    },
+    'Table': {
+      'tableName': '*',
+      'namespace': {
+        'namespaceName': '*',
+        'tableBucket': {
+          'tableBucketArn': '*',
+          'tableBucketName': '*',
+          'account': '*',
+          'region': '*',
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            },
+            'node': '*'
+          }
+        }
+      },
+      'openTableFormat': 'OpenTableFormat',
+      'compaction': {
+        'status': 'Status',
+        'targetFileSizeMb': '*'
+      },
+      'icebergMetadata': {
+        'icebergSchema': {
+          'schemaFieldList': {
+            'name': '*',
+            'required': 'boolean',
+            'type': '*'
+          }
+        }
+      },
+      'snapshotManagement': {
+        'maxSnapshotAgeHours': '*',
+        'minSnapshotsToKeep': '*',
+        'status': 'Status'
+      },
+      'removalPolicy': 'RemovalPolicy',
+      'withoutMetadata': 'boolean'
     }
   },
   '@aws-cdk.aws-sagemaker-alpha': {
@@ -8968,6 +9031,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'migrateToLaunchTemplate': 'boolean',
       'mixedInstancesPolicy': {
         'instancesDistribution': {
           'onDemandAllocationStrategy': 'OnDemandAllocationStrategy',
@@ -12881,6 +12945,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'resourcePolicy': '*'
       },
+      'witnessRegion': '*',
+      'multiRegionConsistency': 'MultiRegionConsistency',
       'globalSecondaryIndexes': {
         'partitionKey': {
           'name': '*',
@@ -14060,7 +14126,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'lookupSupportedAzs': 'boolean',
       'ipAddressType': 'VpcEndpointIpAddressType',
       'dnsRecordIpType': 'VpcEndpointDnsRecordIpType',
-      'privateDnsOnlyForInboundResolverEndpoint': 'VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint'
+      'privateDnsOnlyForInboundResolverEndpoint': 'VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint',
+      'serviceRegion': '*'
     },
     'FlowLog': {
       'flowLogName': '*',
@@ -19307,6 +19374,20 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'filterName': '*',
       'distribution': 'Distribution'
+    },
+    'Transformer': {
+      'transformerName': '*',
+      'logGroup': {
+        'logGroupArn': '*',
+        'logGroupName': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'transformerConfig': '*'
     }
   },
   'aws-cdk-lib.aws-opensearchservice': {
@@ -20537,6 +20618,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'databaseInsightsMode': 'DatabaseInsightsMode',
       'cloudwatchLogsExports': '*',
       'cloudwatchLogsRetention': 'RetentionDays',
       'cloudwatchLogsRetentionRole': {
@@ -20839,6 +20921,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'databaseInsightsMode': 'DatabaseInsightsMode',
       'cloudwatchLogsExports': '*',
       'cloudwatchLogsRetention': 'RetentionDays',
       'cloudwatchLogsRetentionRole': {
@@ -21159,6 +21242,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'databaseInsightsMode': 'DatabaseInsightsMode',
       'cloudwatchLogsExports': '*',
       'cloudwatchLogsRetention': 'RetentionDays',
       'cloudwatchLogsRetentionRole': {
@@ -24030,6 +24114,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'timeToLive': '*',
       'schedule': '*',
+      'maxRetries': '*',
       'startAfterCreation': 'boolean',
       'successRetentionPeriod': '*',
       'failureRetentionPeriod': '*',
@@ -24129,6 +24214,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'node': '*'
       },
       'dryRunAndUpdate': 'boolean',
+      'resourcesToReplicateTags': 'ResourceToReplicateTags',
       'metricDuration': [
         {
           'period': '*',
@@ -24541,6 +24627,76 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'addActionGroups': [
         '*'
       ]
+    },
+    'ApplicationInferenceProfile': {
+      'applicationInferenceProfileName': '*',
+      'description': '*',
+      'modelSource': {
+        'invokableArn': '*'
+      },
+      'tags': '*',
+      'grantInvoke': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ],
+      'grantProfileUsage': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ]
+    },
+    'Prompt': {
+      'promptName': '*',
+      'description': '*',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'defaultVariant': {
+        'name': '*',
+        'templateType': 'PromptTemplateType',
+        'inferenceConfiguration': '*',
+        'modelId': '*',
+        'templateConfiguration': '*',
+        'genAiResource': '*'
+      },
+      'variants': {
+        'name': '*',
+        'templateType': 'PromptTemplateType',
+        'inferenceConfiguration': '*',
+        'modelId': '*',
+        'templateConfiguration': '*',
+        'genAiResource': '*'
+      },
+      'tags': '*',
+      'createVersion': [
+        '*'
+      ],
+      'addVariant': [
+        {
+          'name': '*',
+          'templateType': 'PromptTemplateType',
+          'inferenceConfiguration': '*',
+          'modelId': '*',
+          'templateConfiguration': '*',
+          'genAiResource': '*'
+        }
+      ]
     }
   },
   'aws-glue-alpha.lib': {
@@ -24575,6 +24731,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24671,6 +24829,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24767,6 +24927,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24904,6 +25066,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'RayJob': {
       'runtime': 'Runtime',
       'jobRunQueuingEnabled': 'boolean',
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -25000,6 +25164,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -25096,6 +25262,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -25192,6 +25360,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -25825,6 +25995,48 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ]
     },
+    'ApiKey': {
+      'customerId': '*',
+      'enabled': 'boolean',
+      'generateDistinctId': 'boolean',
+      'apiKeyName': '*',
+      'value': '*',
+      'description': '*'
+    },
+    'RateLimitedApiKey': {
+      'apiStages': {
+        'api': {
+          'apiId': '*',
+          'apiEndpoint': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'stage': {
+          'callbackUrl': '*',
+          'stageName': '*',
+          'url': '*'
+        }
+      },
+      'quota': {
+        'limit': '*',
+        'offset': '*',
+        'period': 'Period'
+      },
+      'throttle': {
+        'rateLimit': '*',
+        'burstLimit': '*'
+      },
+      'customerId': '*',
+      'enabled': 'boolean',
+      'generateDistinctId': 'boolean',
+      'apiKeyName': '*',
+      'value': '*',
+      'description': '*'
+    },
     'WebSocketApi': {
       'addRoute': [
         '*',
@@ -25968,6 +26180,55 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'assumeRoleAction': '*',
             'policyFragment': '*',
             'principalAccount': '*'
+          }
+        }
+      ]
+    },
+    'UsagePlan': {
+      'apiStages': {
+        'api': {
+          'apiId': '*',
+          'apiEndpoint': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'stage': {
+          'callbackUrl': '*',
+          'stageName': '*',
+          'url': '*'
+        }
+      },
+      'description': '*',
+      'quota': {
+        'limit': '*',
+        'offset': '*',
+        'period': 'Period'
+      },
+      'throttle': {
+        'rateLimit': '*',
+        'burstLimit': '*'
+      },
+      'usagePlanName': '*',
+      'addApiStage': [
+        {
+          'api': {
+            'apiId': '*',
+            'apiEndpoint': '*',
+            'stack': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            },
+            'node': '*'
+          },
+          'stage': {
+            'callbackUrl': '*',
+            'stageName': '*',
+            'url': '*'
           }
         }
       ]
@@ -27364,7 +27625,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         {
           'containerName': '*',
           'containerPort': '*',
-          'protocol': 'Protocol'
+          'protocol': 'Protocol',
+          'alternateTarget': '*'
         }
       ],
       '_portRangeFromPortMapping': [
@@ -27778,6 +28040,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
+      'deploymentStrategy': 'DeploymentStrategy',
+      'bakeTime': '*',
+      'lifecycleHooks': '*',
       'addPlacementStrategies': [
         '*'
       ],
@@ -28030,6 +28295,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
+      'deploymentStrategy': 'DeploymentStrategy',
+      'bakeTime': '*',
+      'lifecycleHooks': '*',
       'attachToApplicationTargetGroup': [
         {
           'metrics': '*',
@@ -28044,7 +28312,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         {
           'containerName': '*',
           'containerPort': '*',
-          'protocol': 'Protocol'
+          'protocol': 'Protocol',
+          'alternateTarget': '*'
         }
       ],
       'registerLoadBalancerTargets': [
@@ -28390,6 +28659,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
+      'deploymentStrategy': 'DeploymentStrategy',
+      'bakeTime': '*',
+      'lifecycleHooks': '*',
       'attachToClassicLB': [
         '*'
       ]

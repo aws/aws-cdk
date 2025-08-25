@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "45.0.0",
   "files": {
     "1bf478116a59c3d8e069e12fe42948c11b5d5233fca90d2f2b3ec9fcd695025b": {
       "source": {
@@ -7,23 +7,23 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-07367361": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "1bf478116a59c3d8e069e12fe42948c11b5d5233fca90d2f2b3ec9fcd695025b.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "921a982680feda52cf8233c6b587f0ae9587931a4370fd2143f6b64b8f617b9e": {
+    "8aa6d66e01968100161a06fe0da23d95cba75becb55b15eb10e1ceeb33b59396": {
       "displayName": "appsynceventapirdstestDefaultTestDeployAssert2036D8B2 Template",
       "source": {
         "path": "appsynceventapirdstestDefaultTestDeployAssert2036D8B2.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-b86b39c2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "921a982680feda52cf8233c6b587f0ae9587931a4370fd2143f6b64b8f617b9e.json",
+          "objectKey": "8aa6d66e01968100161a06fe0da23d95cba75becb55b15eb10e1ceeb33b59396.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

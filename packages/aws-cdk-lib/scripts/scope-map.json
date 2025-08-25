@@ -62,6 +62,9 @@
   "aws-aps": [
     "AWS::APS"
   ],
+  "aws-arcregionswitch": [
+    "AWS::ARCRegionSwitch"
+  ],
   "aws-arczonalshift": [
     "AWS::ARCZonalShift"
   ],
@@ -94,6 +97,9 @@
   ],
   "aws-bedrock": [
     "AWS::Bedrock"
+  ],
+  "aws-billing": [
+    "AWS::Billing"
   ],
   "aws-billingconductor": [
     "AWS::BillingConductor"
@@ -530,6 +536,12 @@
   ],
   "aws-oam": [
     "AWS::Oam"
+  ],
+  "aws-observabilityadmin": [
+    "AWS::ObservabilityAdmin"
+  ],
+  "aws-odb": [
+    "AWS::ODB"
   ],
   "aws-omics": [
     "AWS::Omics"
