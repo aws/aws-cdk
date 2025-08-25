@@ -347,7 +347,7 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    *
    * @default - no placement group
    */
-  readonly placementGroup?: ec2.IPlacementGroupRef;
+  readonly placementGroup?: ec2.IPlacementGroup;
 
   /**
    * Add an instance type to this compute environment

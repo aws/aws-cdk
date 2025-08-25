@@ -184,7 +184,7 @@ export interface INetworkAclEntry extends IResource, INetworkAclEntryRef {
   /**
    * The network ACL.
    */
-  readonly networkAcl: INetworkAclRef;
+  readonly networkAcl: INetworkAcl;
 }
 
 /**
@@ -392,7 +392,7 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
   private readonly _subnet: ISubnetRef;
 
   private association: CfnSubnetNetworkAclAssociation;
-  public readonly _networkAcl: INetworkAclRef;
+  private readonly _networkAcl: INetworkAclRef;
 
   constructor(scope: Construct, id: string, props: SubnetNetworkAclAssociationProps) {
     super(scope, id, {
