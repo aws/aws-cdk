@@ -371,6 +371,38 @@ test('IAM policy for mediapackagevod', () => {
   });
 });
 
+test('IAM policy for bedrockagent', () => {
+  // WHEN
+  const task = new tasks.CallAwsService(stack, 'StartIngestionJob', {
+    service: 'bedrockagent',
+    action: 'startIngestionJob',
+    parameters: {
+      DataSourceId: 'test-datasource-id',
+      KnowledgeBaseId: 'test-kb-id',
+    },
+    resultPath: sfn.JsonPath.DISCARD,
+    iamResources: ['*'],
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'bedrock:startIngestionJob',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
 test('IAM policy for mwaa', () => {
   // WHEN
   const task = new tasks.CallAwsService(stack, 'ListMWAAEnvironments', {
