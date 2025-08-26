@@ -186,6 +186,9 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
           policyArn: this.managedPolicyArn,
         };
       }
+      public get node(): Node {
+        throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
+      }
     }
     return new AwsManagedPolicy();
   }

@@ -106,6 +106,10 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
 
   private static fromManagedResponseHeadersPolicy(managedResponseHeadersPolicyId: string): IResponseHeadersPolicy {
     return new class implements IResponseHeadersPolicy {
+      public get node(): Node {
+        throw new UnscopedValidationError('The result of fromManagedResponseHeadersPolicy can not be used in this API');
+      }
+
       public readonly responseHeadersPolicyId = managedResponseHeadersPolicyId;
       public readonly responseHeadersPolicyRef = {
         responseHeadersPolicyId: managedResponseHeadersPolicyId,

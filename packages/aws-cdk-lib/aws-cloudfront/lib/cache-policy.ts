@@ -139,6 +139,10 @@ export class CachePolicy extends Resource implements ICachePolicy {
   /** Use an existing managed cache policy. */
   private static fromManagedCachePolicy(managedCachePolicyId: string): ICachePolicy {
     return new class implements ICachePolicy {
+      public get node(): Node {
+        throw new UnscopedValidationError('The result of fromManagedCachePolicy can not be used in this API');
+      }
+
       public readonly cachePolicyId = managedCachePolicyId;
       public readonly cachePolicyRef = {
         cachePolicyId: managedCachePolicyId,
