@@ -14,7 +14,7 @@ on:
 
   # Triggered from a separate job when a review is added
   workflow_run:
-    workflows: [PR Linter Trigger]
+    workflows: ["PR Linter Trigger", "Codebuild PR Build"]
     types:
       - completed
 
