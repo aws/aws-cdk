@@ -1,58 +1,11 @@
 {
  "Resources": {
-  "MyEventBridgeBucket1ABD5C2A": {
+  "Bucket12520700A": {
    "Type": "AWS::S3::Bucket",
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MyEventBridgeBucketPolicy8F5346E3": {
-   "Type": "AWS::S3::BucketPolicy",
-   "Properties": {
-    "Bucket": {
-     "Ref": "MyEventBridgeBucket1ABD5C2A"
-    },
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "s3:*",
-       "Condition": {
-        "Bool": {
-         "aws:SecureTransport": "false"
-        }
-       },
-       "Effect": "Deny",
-       "Principal": {
-        "AWS": "*"
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "MyEventBridgeBucket1ABD5C2A",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "MyEventBridgeBucket1ABD5C2A",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "MyEventBridgeBucketNotifications19C0453F": {
+  "Bucket1NotificationsBC5D9A45": {
    "Type": "Custom::S3BucketNotifications",
    "Properties": {
     "ServiceToken": {
@@ -62,17 +15,124 @@
      ]
     },
     "BucketName": {
-     "Ref": "MyEventBridgeBucket1ABD5C2A"
+     "Ref": "Bucket12520700A"
     },
     "NotificationConfiguration": {
-     "EventBridgeConfiguration": {}
+     "TopicConfigurations": [
+      {
+       "Events": [
+        "s3:ObjectCreated:*"
+       ],
+       "TopicArn": {
+        "Ref": "TopicBFC7AF6E"
+       }
+      }
+     ]
     },
     "Managed": true,
     "SkipDestinationValidation": false
    },
    "DependsOn": [
-    "MyEventBridgeBucketPolicy8F5346E3"
+    "TopicPolicyA1747468",
+    "TopicBFC7AF6E"
    ]
+  },
+  "Bucket25524B414": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Bucket2NotificationsD9BA2A77": {
+   "Type": "Custom::S3BucketNotifications",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "Bucket25524B414"
+    },
+    "NotificationConfiguration": {
+     "TopicConfigurations": [
+      {
+       "Events": [
+        "s3:ObjectRemoved:*"
+       ],
+       "TopicArn": {
+        "Ref": "TopicBFC7AF6E"
+       }
+      }
+     ]
+    },
+    "Managed": true,
+    "SkipDestinationValidation": false
+   },
+   "DependsOn": [
+    "TopicPolicyA1747468",
+    "TopicBFC7AF6E"
+   ]
+  },
+  "TopicBFC7AF6E": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "TopicPolicyA1747468": {
+   "Type": "AWS::SNS::TopicPolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "Bucket12520700A",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       },
+       "Resource": {
+        "Ref": "TopicBFC7AF6E"
+       },
+       "Sid": "0"
+      },
+      {
+       "Action": "sns:Publish",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "Bucket25524B414",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       },
+       "Resource": {
+        "Ref": "TopicBFC7AF6E"
+       },
+       "Sid": "1"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Topics": [
+     {
+      "Ref": "TopicBFC7AF6E"
+     }
+    ]
+   }
   },
   "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {
    "Type": "AWS::IAM::Role",
@@ -113,12 +173,20 @@
       {
        "Action": "s3:PutBucketNotification",
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "MyEventBridgeBucket1ABD5C2A",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Bucket12520700A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "Bucket25524B414",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"

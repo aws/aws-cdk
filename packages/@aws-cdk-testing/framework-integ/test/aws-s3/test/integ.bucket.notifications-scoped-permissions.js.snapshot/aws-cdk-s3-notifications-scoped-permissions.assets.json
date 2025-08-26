@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-      "displayName": "NotificationTestDefaultTestDeployAssertBFB81666 Template",
+    "579a9044c8572e075599fc33ac1b5d14638d1df7a1d8a0db00a0fc0540f65b53": {
+      "displayName": "aws-cdk-s3-notifications-scoped-permissions Template",
       "source": {
-        "path": "NotificationTestDefaultTestDeployAssertBFB81666.template.json",
+        "path": "aws-cdk-s3-notifications-scoped-permissions.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d8d86b35": {
+        "current_account-current_region-f41c0ded": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "579a9044c8572e075599fc33ac1b5d14638d1df7a1d8a0db00a0fc0540f65b53.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

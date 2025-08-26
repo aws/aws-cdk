@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ScopedPermissionsTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-s3-notifications-scoped-permissions"
+      ],
+      "assertionStack": "ScopedPermissionsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ScopedPermissionsTestDefaultTestDeployAssert9637B750"
+    }
+  },
+  "minimumCliVersion": "2.1025.0"
+}
