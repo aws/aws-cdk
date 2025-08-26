@@ -35,6 +35,20 @@ This construct library facilitates the deployment of Bedrock Agents, enabling yo
   - [Agent Collaboration](#agent-collaboration)
   - [Custom Orchestration](#custom-orchestration)
   - [Agent Alias](#agent-alias)
+- [Guardrails](#guardrails)
+  - [Guardrail Properties](#guardrail-properties)
+  - [Filter Types](#filter-types)
+    - [Content Filters](#content-filters)
+    - [Denied Topics](#denied-topics)
+    - [Word Filters](#word-filters)
+    - [PII Filters](#pii-filters)
+    - [Regex Filters](#regex-filters)
+    - [Contextual Grounding Filters](#contextual-grounding-filters)
+  - [Guardrail Methods](#guardrail-methods)
+  - [Guardrail Permissions](#guardrail-permissions)
+  - [Guardrail Metrics](#guardrail-metrics)
+  - [Importing Guardrails](#importing-guardrails)
+  - [Guardrail Versioning](#guardrail-versioning)
 - [Prompts](#prompts)
   - [Prompt Variants](#prompt-variants)
   - [Basic Text Prompt](#basic-text-prompt)
@@ -66,6 +80,29 @@ const agent = new bedrock.Agent(this, 'Agent', {
 });
 ```
 
+You can also create an agent with a guardrail:
+
+```ts fixture=default
+// Create a guardrail to filter inappropriate content
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+  description: 'Legal ethical guardrails.',
+});
+
+guardrail.addContentFilter({
+  type: bedrock.ContentFilterType.SEXUAL,
+  inputStrength: bedrock.ContentFilterStrength.HIGH,
+  outputStrength: bedrock.ContentFilterStrength.MEDIUM,
+});
+
+// Create an agent with the guardrail
+const agentWithGuardrail = new bedrock.Agent(this, 'AgentWithGuardrail', {
+  foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_HAIKU_V1_0,
+  instruction: 'You are a helpful and friendly agent that answers questions about literature.',
+  guardrail: guardrail,
+});
+```
+
 ### Agent Properties
 
 The Bedrock Agent class supports the following properties.
@@ -81,6 +118,8 @@ The Bedrock Agent class supports the following properties.
 | kmsKey | kms.IKey | No | The KMS key of the agent if custom encryption is configured. Defaults to AWS managed key |
 | description | string | No | A description of the agent. Defaults to no description |
 | actionGroups | AgentActionGroup[] | No | The Action Groups associated with the agent |
+| guardrail | IGuardrail | No | The guardrail that will be associated with the agent. Defaults to no guardrail |
+| memory | Memory | No | The type and configuration of the memory to maintain context across multiple sessions and recall past interactions. Defaults to no memory |
 | promptOverrideConfiguration | PromptOverrideConfiguration | No | Overrides some prompt templates in different parts of an agent sequence configuration |
 | userInputEnabled | boolean | No | Select whether the agent can prompt additional information from the user when it lacks enough information. Defaults to false |
 | codeInterpreterEnabled | boolean | No | Select whether the agent can generate, run, and troubleshoot code when trying to complete a task. Defaults to false |
@@ -619,6 +658,507 @@ const agentAlias = new bedrock.AgentAlias(this, 'myAlias', {
   agent: agent,
   description: `Production version of my agent. Created at ${agent.lastUpdated}` // ensure the version update
 });
+```
+
+## Guardrails
+
+Amazon Bedrock's Guardrails feature enables you to implement robust governance and control mechanisms for your generative AI applications, ensuring alignment with your specific use cases and responsible AI policies. Guardrails empowers you to create multiple tailored policy configurations, each designed to address the unique requirements and constraints of different use cases. These policy configurations can then be seamlessly applied across multiple foundation models (FMs) and Agents, ensuring a consistent user experience and standardizing safety, security, and privacy controls throughout your generative AI ecosystem.
+
+With Guardrails, you can define and enforce granular, customizable policies to precisely govern the behavior of your generative AI applications. You can configure the following policies in a guardrail to avoid undesirable and harmful content and remove sensitive information for privacy protection.
+
+Content filters – Adjust filter strengths to block input prompts or model responses containing harmful content.
+Denied topics – Define a set of topics that are undesirable in the context of your application. These topics will be blocked if detected in user queries or model responses.
+Word filters – Configure filters to block undesirable words, phrases, and profanity. Such words can include offensive terms, competitor names etc.
+Sensitive information filters – Block or mask sensitive information such as personally identifiable information (PII) or custom regex in user inputs and model responses.
+You can create a Guardrail with a minimum blockedInputMessaging, blockedOutputsMessaging and default content filter policy.
+
+### Basic Guardrail Creation
+
+#### TypeScript
+
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+  description: 'Legal ethical guardrails.',
+});
+
+// add at least one policy for the guardrail
+```
+
+### Guardrail Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| guardrailName | string | Yes | The name of the guardrail |
+| description | string | No | The description of the guardrail |
+| blockedInputMessaging | string | No | The message to return when the guardrail blocks a prompt. Default: "Sorry, your query violates our usage policy." |
+| blockedOutputsMessaging | string | No | The message to return when the guardrail blocks a model response. Default: "Sorry, I am unable to answer your question because of our usage policy." |
+| kmsKey | IKey | No | A custom KMS key to use for encrypting data. Default: Your data is encrypted by default with a key that AWS owns and manages for you. |
+| crossRegionConfig | GuardrailCrossRegionConfigProperty | No | The cross-region configuration for the guardrail. This enables cross-region inference for enhanced language support and filtering capabilities. Default: No cross-region configuration |
+| contentFilters | ContentFilter[] | No | The content filters to apply to the guardrail |
+| contentFiltersTierConfig | TierConfig | No | The tier configuration to apply to content filters. Default: TierConfig.CLASSIC |
+| deniedTopics | Topic[] | No | Up to 30 denied topics to block user inputs or model responses associated with the topic |
+| topicsTierConfig | TierConfig | No | The tier configuration to apply to topic filters. Default: TierConfig.CLASSIC |
+| wordFilters | string[] | No | The word filters to apply to the guardrail |
+| managedWordListFilters | ManagedWordFilterType[] | No | The managed word filters to apply to the guardrail |
+| piiFilters | PIIFilter[] | No | The PII filters to apply to the guardrail |
+| regexFilters | RegexFilter[] | No | The regular expression (regex) filters to apply to the guardrail |
+| contextualGroundingFilters | ContextualGroundingFilter[] | No | The contextual grounding filters to apply to the guardrail |
+
+### Filter Types
+
+#### Content Filters
+
+Content filters allow you to block input prompts or model responses containing harmful content. You can adjust the filter strength and configure separate actions for input and output.
+
+##### Content Filter Configuration
+
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+  // Configure tier for content filters (optional)
+  contentFiltersTierConfig: bedrock.TierConfig.STANDARD,
+});
+
+guardrail.addContentFilter({
+  type: bedrock.ContentFilterType.SEXUAL,
+  inputStrength: bedrock.ContentFilterStrength.HIGH,
+  outputStrength: bedrock.ContentFilterStrength.MEDIUM,
+  // props below are optional
+  inputAction: bedrock.GuardrailAction.BLOCK,
+  inputEnabled: true,
+  outputAction: bedrock.GuardrailAction.NONE,
+  outputEnabled: true,
+  inputModalities: [bedrock.ModalityType.TEXT, bedrock.ModalityType.IMAGE],
+  outputModalities: [bedrock.ModalityType.TEXT],
+});
+```
+
+Available content filter types:
+
+- `SEXUAL`: Describes input prompts and model responses that indicates sexual interest, activity, or arousal
+- `VIOLENCE`: Describes input prompts and model responses that includes glorification of or threats to inflict physical pain
+- `HATE`: Describes input prompts and model responses that discriminate, criticize, insult, denounce, or dehumanize a person or group
+- `INSULTS`: Describes input prompts and model responses that includes demeaning, humiliating, mocking, insulting, or belittling language
+- `MISCONDUCT`: Describes input prompts and model responses that seeks or provides information about engaging in misconduct activity
+- `PROMPT_ATTACK`: Enable to detect and block user inputs attempting to override system instructions
+
+Available content filter strengths:
+
+- `NONE`: No filtering
+- `LOW`: Light filtering
+- `MEDIUM`: Moderate filtering
+- `HIGH`: Strict filtering
+
+Available guardrail actions:
+
+- `BLOCK`: Blocks the content from being processed
+- `ANONYMIZE`: Masks the content with an identifier tag
+- `NONE`: Takes no action
+
+> Warning: the ANONYMIZE action is not available in all configurations. Please refer to the documentation of each filter to see which ones
+> support 
+
+Available modality types:
+
+- `TEXT`: Text modality for content filters
+- `IMAGE`: Image modality for content filters
+
+#### Tier Configuration
+
+Guardrails support tier configurations that determine the level of language support and robustness for content and topic filters. You can configure separate tier settings for content filters and topic filters.
+
+##### Tier Configuration Options
+
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+  // Configure tier for content filters
+  contentFiltersTierConfig: bedrock.TierConfig.STANDARD,
+  // Configure tier for topic filters
+  topicsTierConfig: bedrock.TierConfig.CLASSIC,
+});
+```
+
+Available tier configurations:
+
+- `CLASSIC`: Provides established guardrails functionality supporting English, French, and Spanish languages
+- `STANDARD`: Provides a more robust solution than the CLASSIC tier and has more comprehensive language support. This tier requires that your guardrail use cross-Region inference
+
+> Note: The STANDARD tier provides enhanced language support and more comprehensive filtering capabilities, but requires cross-Region inference to be enabled for your guardrail.
+
+#### Cross-Region Configuration
+
+You can configure a system-defined guardrail profile to use with your guardrail. Guardrail profiles define the destination AWS Regions where guardrail inference requests can be automatically routed. Using guardrail profiles helps maintain guardrail performance and reliability when demand increases.
+
+##### Cross-Region Configuration Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| guardrailProfileArn | string | Yes | The ARN of the system-defined guardrail profile that defines the destination AWS Regions where guardrail inference requests can be automatically routed |
+
+##### Cross-Region Configuration Example
+
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+  description: 'Guardrail with cross-region configuration for enhanced language support',
+  crossRegionConfig: {
+    guardrailProfileArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail-profile/my-profile',
+  },
+  // Use STANDARD tier for enhanced capabilities
+  contentFiltersTierConfig: bedrock.TierConfig.STANDARD,
+  topicsTierConfig: bedrock.TierConfig.STANDARD,
+});
+```
+
+> Note: Cross-region configuration is required when using the STANDARD tier for content and topic filters. It helps maintain guardrail performance and reliability when demand increases by automatically routing inference requests to appropriate regions.
+
+You will need to provide the necessary permissions for cross region: https://docs.aws.amazon.com/bedrock/latest/userguide/guardrail-profiles-permissions.html .
+
+#### Denied Topics
+
+Denied topics allow you to define a set of topics that are undesirable in the context of your application. These topics will be blocked if detected in user queries or model responses. You can configure separate actions for input and output.
+
+##### Denied Topic Configuration
+
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+  // Configure tier for topic filters (optional)
+  topicsTierConfig: bedrock.TierConfig.STANDARD,
+});
+
+// Use a predefined topic
+guardrail.addDeniedTopicFilter(bedrock.Topic.FINANCIAL_ADVICE);
+
+// Create a custom topic with input/output actions
+guardrail.addDeniedTopicFilter(
+  bedrock.Topic.custom({
+    name: 'Legal_Advice',
+    definition: 'Offering guidance or suggestions on legal matters, legal actions, interpretation of laws, or legal rights and responsibilities.',
+    examples: [
+      'Can I sue someone for this?',
+      'What are my legal rights in this situation?',
+      'Is this action against the law?',
+      'What should I do to file a legal complaint?',
+      'Can you explain this law to me?',
+    ],
+    // props below are optional
+    inputAction: bedrock.GuardrailAction.BLOCK,
+    inputEnabled: true,
+    outputAction: bedrock.GuardrailAction.NONE,
+    outputEnabled: true,
+  })
+);
+```
+
+#### Word Filters
+
+Word filters allow you to block specific words, phrases, or profanity in user inputs and model responses. You can configure separate actions for input and output.
+
+##### Word Filter Configuration
+
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+});
+
+// Add managed word list with input/output actions
+guardrail.addManagedWordListFilter({
+  type: bedrock.ManagedWordFilterType.PROFANITY,
+  inputAction: bedrock.GuardrailAction.BLOCK,
+  inputEnabled: true,
+  outputAction: bedrock.GuardrailAction.NONE,
+  outputEnabled: true,
+});
+
+// Add individual words
+guardrail.addWordFilter({text: 'drugs'});
+guardrail.addWordFilter({text: 'competitor'});
+
+// Add words from a file
+guardrail.addWordFilterFromFile('./scripts/wordsPolicy.csv');
+```
+
+#### PII Filters
+
+PII filters allow you to detect and handle personally identifiable information in user inputs and model responses. You can configure separate actions for input and output.
+
+The PII types are organized into enum-like classes for better type safety and transpilation compatibility:
+
+- **GeneralPIIType**: General PII types like addresses, emails, names, phone numbers
+- **FinancePIIType**: Financial information like credit card numbers, PINs, SWIFT codes
+- **InformationTechnologyPIIType**: IT-related data like URLs, IP addresses, AWS keys
+- **USASpecificPIIType**: US-specific identifiers like SSNs, passport numbers
+- **CanadaSpecificPIIType**: Canada-specific identifiers like health numbers, SINs
+- **UKSpecificPIIType**: UK-specific identifiers like NHS numbers, NI numbers
+
+##### PII Filter Configuration
+
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+});
+
+// Add PII filter for addresses with input/output actions
+guardrail.addPIIFilter({
+  type: bedrock.GeneralPIIType.ADDRESS,
+  action: bedrock.GuardrailAction.BLOCK,
+  // below props are optional
+  inputAction: bedrock.GuardrailAction.BLOCK,
+  inputEnabled: true,
+  outputAction: bedrock.GuardrailAction.ANONYMIZE,
+  outputEnabled: true,
+});
+
+// Add PII filter for credit card numbers with input/output actions
+guardrail.addPIIFilter({
+  type: bedrock.FinancePIIType.CREDIT_DEBIT_CARD_NUMBER,
+  action: bedrock.GuardrailAction.BLOCK,
+  // below props are optional
+  inputAction: bedrock.GuardrailAction.BLOCK,
+  inputEnabled: true,
+  outputAction: bedrock.GuardrailAction.ANONYMIZE,
+  outputEnabled: true,
+});
+
+// Add PII filter for email addresses
+guardrail.addPIIFilter({
+  type: bedrock.GeneralPIIType.EMAIL,
+  action: bedrock.GuardrailAction.ANONYMIZE,
+});
+
+// Add PII filter for US Social Security Numbers
+guardrail.addPIIFilter({
+  type: bedrock.USASpecificPIIType.US_SOCIAL_SECURITY_NUMBER,
+  action: bedrock.GuardrailAction.BLOCK,
+});
+
+// Add PII filter for IP addresses
+guardrail.addPIIFilter({
+  type: bedrock.InformationTechnologyPIIType.IP_ADDRESS,
+  action: bedrock.GuardrailAction.ANONYMIZE,
+});
+```
+
+##### Available PII Types
+
+**GeneralPIIType:**
+
+- `ADDRESS`: Physical addresses
+- `AGE`: Individual's age
+- `DRIVER_ID`: Driver's license numbers
+- `EMAIL`: Email addresses
+- `LICENSE_PLATE`: Vehicle license plates
+- `NAME`: Individual names
+- `PASSWORD`: Passwords
+- `PHONE`: Phone numbers
+- `USERNAME`: User account names
+- `VEHICLE_IDENTIFICATION_NUMBER`: Vehicle VINs
+
+**FinancePIIType:**
+
+- `CREDIT_DEBIT_CARD_CVV`: Card verification codes
+- `CREDIT_DEBIT_CARD_EXPIRY`: Card expiration dates
+- `CREDIT_DEBIT_CARD_NUMBER`: Credit/debit card numbers
+- `PIN`: Personal identification numbers
+- `SWIFT_CODE`: Bank SWIFT codes
+- `INTERNATIONAL_BANK_ACCOUNT_NUMBER`: IBAN numbers
+
+**InformationTechnologyPIIType:**
+
+- `URL`: Web addresses
+- `IP_ADDRESS`: IPv4 addresses
+- `MAC_ADDRESS`: Network interface MAC addresses
+- `AWS_ACCESS_KEY`: AWS access key IDs
+- `AWS_SECRET_KEY`: AWS secret access keys
+
+**USASpecificPIIType:**
+
+- `US_BANK_ACCOUNT_NUMBER`: US bank account numbers
+- `US_BANK_ROUTING_NUMBER`: US bank routing numbers
+- `US_INDIVIDUAL_TAX_IDENTIFICATION_NUMBER`: US ITINs
+- `US_PASSPORT_NUMBER`: US passport numbers
+- `US_SOCIAL_SECURITY_NUMBER`: US Social Security Numbers
+
+**CanadaSpecificPIIType:**
+
+- `CA_HEALTH_NUMBER`: Canadian Health Service Numbers
+- `CA_SOCIAL_INSURANCE_NUMBER`: Canadian Social Insurance Numbers
+
+**UKSpecificPIIType:**
+
+- `UK_NATIONAL_HEALTH_SERVICE_NUMBER`: UK NHS numbers
+- `UK_NATIONAL_INSURANCE_NUMBER`: UK National Insurance numbers
+- `UK_UNIQUE_TAXPAYER_REFERENCE_NUMBER`: UK UTR numbers
+
+#### Regex Filters
+
+Regex filters allow you to detect and handle custom patterns in user inputs and model responses. You can configure separate actions for input and output.
+
+##### Regex Filter Configuration
+
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+});
+// Add regex filter with input/output actions
+guardrail.addRegexFilter({
+  name: 'TestRegexFilter',
+  pattern: 'test-pattern',
+  action: bedrock.GuardrailAction.ANONYMIZE,
+  // below props are optional
+  description: 'This is a test regex filter',
+  inputAction: bedrock.GuardrailAction.BLOCK,
+  inputEnabled: true,
+  outputAction: bedrock.GuardrailAction.ANONYMIZE,
+  outputEnabled: true,
+});
+```
+
+#### Contextual Grounding Filters
+
+Contextual grounding filters allow you to ensure that model responses are factually correct and relevant to the user's query. You can configure the action and enable/disable the filter.
+
+##### Contextual Grounding Filter Configuration
+
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+});
+// Add contextual grounding filter with action and enabled flag
+guardrail.addContextualGroundingFilter({
+  type: bedrock.ContextualGroundingFilterType.GROUNDING,
+  threshold: 0.8,
+  // the properties below are optional
+  action: bedrock.GuardrailAction.BLOCK,
+  enabled: true,
+});
+```
+
+### Guardrail Methods
+
+| Method | Description |
+|--------|-------------|
+| `addContentFilter()` | Adds a content filter to the guardrail |
+| `addDeniedTopicFilter()` | Adds a denied topic filter to the guardrail |
+| `addWordFilter()` | Adds a word filter to the guardrail |
+| `addManagedWordListFilter()` | Adds a managed word list filter to the guardrail |
+| `addWordFilterFromFile()` | Adds word filters from a file to the guardrail |
+| `addPIIFilter()` | Adds a PII filter to the guardrail |
+| `addRegexFilter()` | Adds a regex filter to the guardrail |
+| `addContextualGroundingFilter()` | Adds a contextual grounding filter to the guardrail |
+| `createVersion()` | Creates a new version of the guardrail |
+
+### Guardrail Permissions
+
+Guardrails provide methods to grant permissions to other resources that need to interact with the guardrail.
+
+#### Permission Methods
+
+| Method | Description | Parameters |
+|--------|-------------|------------|
+| `grant(grantee, ...actions)` | Grants the given principal identity permissions to perform actions on this guardrail | `grantee`: The principal to grant permissions to<br>`actions`: The actions to grant (e.g., `bedrock:GetGuardrail`, `bedrock:ListGuardrails`) |
+| `grantApply(grantee)` | Grants the given identity permissions to apply the guardrail | `grantee`: The principal to grant permissions to |
+
+#### Permission Examples
+
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+});
+
+const lambdaFunction = new lambda.Function(this, 'testLambda', {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, '../lambda/my-code')),
+});
+
+// Grant specific permissions to a Lambda function
+guardrail.grant(lambdaFunction, 'bedrock:GetGuardrail', 'bedrock:ListGuardrails');
+
+// Grant permissions to apply the guardrail
+guardrail.grantApply(lambdaFunction);
+```
+
+### Guardrail Metrics
+
+Amazon Bedrock provides metrics for your guardrails, allowing you to monitor their effectiveness and usage. These metrics are available in CloudWatch and can be used to create dashboards and alarms.
+
+#### Metrics Examples
+
+```ts fixture=default
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+});
+// Get a specific metric for this guardrail
+const invocationsMetric = guardrail.metricInvocations({
+  statistic: 'Sum',
+  period: Duration.minutes(5),
+});
+
+// Create a CloudWatch alarm for high invocation latency
+new cloudwatch.Alarm(this, 'HighLatencyAlarm', {
+  metric: guardrail.metricInvocationLatency(),
+  threshold: 1000, // 1 second
+  evaluationPeriods: 3,
+});
+
+// Get metrics for all guardrails
+const allInvocationsMetric = bedrock.Guardrail.metricAllInvocations();
+```
+
+### Importing Guardrails
+
+You can import existing guardrails using the `fromGuardrailAttributes` or `fromCfnGuardrail` methods.
+
+#### Import Configuration
+
+```ts fixture=default
+declare const stack: Stack;
+const cmk = new kms.Key(this, 'cmk', {});
+// Import an existing guardrail by ARN
+const importedGuardrail = bedrock.Guardrail.fromGuardrailAttributes(stack, 'TestGuardrail', {
+  guardrailArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail/oygh3o8g7rtl',
+  guardrailVersion: '1', //optional
+  kmsKey: cmk, //optional
+});
+```
+
+```ts fixture=default
+import * as bedrockl1 from 'aws-cdk-lib/aws-bedrock';
+// Import a guardrail created through the L1 CDK CfnGuardrail construct
+const l1guardrail = new bedrockl1.CfnGuardrail(this, 'MyCfnGuardrail', {
+  blockedInputMessaging: 'blockedInputMessaging',
+  blockedOutputsMessaging: 'blockedOutputsMessaging',
+  name: 'namemycfnguardrails',
+  wordPolicyConfig: {
+    wordsConfig: [
+      {
+        text: 'drugs',
+      },
+    ],
+  },
+});
+
+const importedGuardrail = bedrock.Guardrail.fromCfnGuardrail(l1guardrail);
+```
+
+### Guardrail Versioning
+
+Guardrails support versioning, allowing you to track changes and maintain multiple versions of your guardrail configurations.
+
+#### Version Configuration
+
+```ts fixture=default
+const guardrail = new bedrock.Guardrail(this, 'bedrockGuardrails', {
+  guardrailName: 'my-BedrockGuardrails',
+});
+// Create a new version of the guardrail
+guardrail.createVersion('testversion');
 ```
 
 ## Prompts
