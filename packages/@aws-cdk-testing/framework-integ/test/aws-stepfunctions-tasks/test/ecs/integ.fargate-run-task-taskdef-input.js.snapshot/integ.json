@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "SfnTasksEcsFargateRunTaskTest/DefaultTest": {
+      "stacks": [
+        "aws-sfn-tasks-ecs-fargate-run-tasktask-def"
+      ],
+      "assertionStack": "SfnTasksEcsFargateRunTaskTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SfnTasksEcsFargateRunTaskTestDefaultTestDeployAssert9D97FD2B"
+    }
+  },
+  "minimumCliVersion": "2.1025.0"
+}
