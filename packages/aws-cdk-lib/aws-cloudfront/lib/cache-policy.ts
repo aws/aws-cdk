@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { CachePolicyRef, CfnCachePolicy, ICachePolicyRef } from './cloudfront.generated';
 import { Duration, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError, withResolved } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -143,6 +143,9 @@ export class CachePolicy extends Resource implements ICachePolicy {
       public readonly cachePolicyRef = {
         cachePolicyId: managedCachePolicyId,
       };
+      public get node(): Node {
+        throw new UnscopedValidationError('This cache policy was created using only the managed policy name, and therefore does not have a node.');
+      }
     }();
   }
 

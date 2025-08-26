@@ -22,7 +22,7 @@ export function defaultSubnetName(type: SubnetType) {
  *
  * All subnet names look like NAME <> "Subnet" <> INDEX
  */
-export function subnetGroupNameFromConstructId(subnet: ISubnet) {
+export function subnetGroupNameFromConstructId(subnet: ISubnetRef) {
   return subnet.node.id.replace(/Subnet\d+$/, '');
 }
 

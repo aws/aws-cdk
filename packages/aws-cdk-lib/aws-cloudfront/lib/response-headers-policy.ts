@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { CfnResponseHeadersPolicy, IResponseHeadersPolicyRef, ResponseHeadersPolicyRef } from './cloudfront.generated';
-import { Duration, Names, Resource, Token, ValidationError, withResolved } from '../../core';
+import { Duration, Names, Resource, Token, UnscopedValidationError, ValidationError, withResolved } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
-import { Aws } from '../../../core';
+import { Aws, UnscopedValidationError } from '../../../core';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 

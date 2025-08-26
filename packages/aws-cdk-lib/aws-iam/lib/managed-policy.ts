@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { CfnManagedPolicy, IGroupRef, IManagedPolicyRef, IUserRef, ManagedPolicyRef } from './iam.generated';
+import { Construct, Node } from 'constructs';
+import { CfnManagedPolicy, IGroupRef, IManagedPolicyRef, IRoleRef, IUserRef, ManagedPolicyRef } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
@@ -225,7 +225,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
 
   public readonly grantPrincipal: IPrincipal;
 
-  private readonly roles = new Array<IRole>();
+  private readonly roles = new Array<IRoleRef>();
   private readonly users = new Array<IUserRef>();
   private readonly groups = new Array<IGroupRef>();
   private readonly _precreatedPolicy?: IManagedPolicy;
@@ -257,7 +257,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         managedPolicyName: this.physicalName,
         description: this.description,
         path: this.path,
-        roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
+        roles: undefinedIfEmpty(() => this.roles.map(r => r.roleRef.roleName)),
         users: undefinedIfEmpty(() => this.users.map(u => u.userRef.userName)),
         groups: undefinedIfEmpty(() => this.groups.map(g => g.groupRef.groupName)),
       });
@@ -321,7 +321,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    */
   @MethodMetadata()
   public attachToRole(role: IRole) {
-    if (this.roles.find(r => r.roleArn === role.roleArn)) { return; }
+    if (this.roles.find(r => r.roleRef.roleArn === role.roleArn)) { return; }
     this.roles.push(role);
   }
 
