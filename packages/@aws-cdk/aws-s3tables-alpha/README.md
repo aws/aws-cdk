@@ -39,6 +39,59 @@ const sampleTableBucket = new TableBucket(scope, 'ExampleTableBucket', {
 });
 ```
 
+### Define an S3 Tables Namespace
+
+```ts
+// Build a namespace
+const sampleNamespace = new Namespace(scope, 'ExampleNamespace', {
+    namespaceName: 'example-namespace-1',
+    tableBucket: tableBucket,
+});
+```
+
+### Define an S3 Table
+
+```ts
+// Build a table
+const sampleTable = new Table(scope, 'ExampleTable', {
+    tableName: 'example_table',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    withoutMetadata: true,
+});
+
+// Build a table with an Iceberg Schema
+const sampleTableWithSchema = new Table(scope, 'ExampleSchemaTable', {
+    tableName: 'example_table_with_schema',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    icebergMetadata: {
+        icebergSchema: {
+            schemaFieldList: [
+            {
+                name: 'id',
+                type: 'int',
+                required: true,
+            },
+            {
+                name: 'name',
+                type: 'string',
+            },
+            ],
+        },
+    },
+    compaction: {
+        status: Status.ENABLED,
+        targetFileSizeMb: 128,
+    },
+    snapshotManagement: {
+        status: Status.ENABLED,
+        maxSnapshotAgeHours: 48,
+        minSnapshotsToKeep: 5,
+    },
+});
+```
+
 Learn more about table buckets maintenance operations and default behavior from the [S3 Tables User Guide](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-table-buckets-maintenance.html)
 
 ### Controlling Table Bucket Permissions
@@ -106,9 +159,36 @@ const encryptedBucketAuto = new TableBucket(scope, 'EncryptedTableBucketAuto', {
 });
 ```
 
+### Controlling Table Permissions
+
+```ts
+// Grant the principal read permissions to the table
+const accountId = '123456789012'
+table.grantRead(new iam.AccountPrincipal(accountId));
+
+// Grant the role write permissions to the table
+const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('sample') });
+table.grantWrite(role);
+
+// Grant the user read and write permissions to the table 
+table.grantReadWrite(new iam.User(stack, 'MyUser'));
+
+// Grant an account permissions to the table
+table.grantReadWrite(new iam.AccountPrincipal(accountId));
+
+// Add custom resource policy statements
+const permissions = new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    actions: ['s3tables:*'],
+    principals: [ new iam.ServicePrincipal('example.aws.internal') ],
+    resources: ['*']
+});
+
+table.addToResourcePolicy(permissions);
+```
+
 ## Coming Soon
 
 L2 Construct support for:
 
-- Namespaces
-- Tables
+- KMS encryption support for Tables

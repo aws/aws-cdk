@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Stack } from 'aws-cdk-lib';
-import { TableBucket, UnreferencedFileRemovalStatus, TableBucketEncryption } from '@aws-cdk/aws-s3tables-alpha';
+import { TableBucket, UnreferencedFileRemovalStatus, TableBucketEncryption, Namespace, Table, Status, OpenTableFormat } from '@aws-cdk/aws-s3tables-alpha';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 
@@ -10,6 +10,16 @@ class Fixture extends Stack {
     const tableBucket = new TableBucket(scope, 'ExampleTableBucket', {
       tableBucketName: 'example-bucket-1'
     });
+    const namespace = new Namespace(scope, 'ExampleNamespace', {
+      tableBucket: tableBucket,
+      namespaceName: 'example_namespace_1',
+    });
+    const table = new Table(scope, 'ExampleTable', {
+      tableName: 'example_table',
+      namespace,
+      openTableFormat: OpenTableFormat.ICEBERG,
+    });
+
     const stack = this;
     /// here
   }

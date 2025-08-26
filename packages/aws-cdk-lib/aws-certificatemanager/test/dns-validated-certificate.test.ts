@@ -41,15 +41,7 @@ testDeprecated('creates CloudFormation Custom Resource @aws-cdk/aws-lambda:creat
   });
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.certificateRequestHandler',
-    Runtime: {
-      'Fn::FindInMap': [
-        'LatestNodeRuntimeMap',
-        {
-          Ref: 'AWS::Region',
-        },
-        'value',
-      ],
-    },
+    Runtime: 'nodejs22.x',
     Timeout: 900,
   });
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -144,15 +136,7 @@ testDeprecated('creates CloudFormation Custom Resource @aws-cdk/aws-lambda:creat
   });
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.certificateRequestHandler',
-    Runtime: {
-      'Fn::FindInMap': [
-        'LatestNodeRuntimeMap',
-        {
-          Ref: 'AWS::Region',
-        },
-        'value',
-      ],
-    },
+    Runtime: 'nodejs22.x',
     Timeout: 900,
   });
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
