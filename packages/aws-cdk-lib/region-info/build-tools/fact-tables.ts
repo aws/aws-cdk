@@ -83,6 +83,7 @@ enum Partition {
   UsIsoB = 'aws-iso-b',
   UsIsoF = 'aws-iso-f',
   EuIsoE = 'aws-iso-e',
+  Eusc = 'aws-eusc',
 }
 
 interface Region { partition: Partition; domainSuffix: string }
@@ -95,6 +96,7 @@ export const PARTITION_MAP: { [region: string]: Region } = {
   'us-isob-': { partition: Partition.UsIsoB, domainSuffix: 'sc2s.sgov.gov' },
   'us-isof-': { partition: Partition.UsIsoF, domainSuffix: 'csp.hci.ic.gov' },
   'eu-isoe-': { partition: Partition.EuIsoE, domainSuffix: 'cloud.adc-e.uk' },
+  'eusc-de-': { partition: Partition.Eusc, domainSuffix: 'amazonaws.eu' },
 };
 
 export const PARTITION_SAML_SIGN_ON_URL: Partial<Record<Partition, string>> = {
@@ -115,10 +117,11 @@ export const LATEST_NODE_RUNTIME_MAP: Record<Partition, string> = {
   [Partition.Default]: Runtime.NODE_22,
   [Partition.Cn]: Runtime.NODE_22,
   [Partition.UsGov]: Runtime.NODE_22,
-  [Partition.UsIso]: Runtime.NODE_18,
-  [Partition.UsIsoB]: Runtime.NODE_18,
-  [Partition.UsIsoF]: Runtime.NODE_18,
-  [Partition.EuIsoE]: Runtime.NODE_18,
+  [Partition.UsIso]: Runtime.NODE_22,
+  [Partition.UsIsoB]: Runtime.NODE_22,
+  [Partition.UsIsoF]: Runtime.NODE_22,
+  [Partition.EuIsoE]: Runtime.NODE_22,
+  [Partition.Eusc]: Runtime.NODE_22,
 };
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
@@ -168,6 +171,7 @@ export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
   'ap-southeast-2': '763104351884',
   'ap-southeast-3': '907027046896',
   'ap-southeast-4': '457447274322',
+  'ap-southeast-6': '633930458069',
   'ca-central-1': '763104351884',
   'cn-north-1': '727897471807',
   'cn-northwest-1': '727897471807',
@@ -187,6 +191,7 @@ export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
   'us-west-1': '763104351884',
   'us-west-2': '763104351884',
   'ap-east-2': '975050140332',
+  'eusc-de-east-1': '204133271717',
 };
 
 // https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
@@ -201,6 +206,7 @@ export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
   'ap-southeast-1': '840364872350',
   'ap-southeast-2': '840364872350',
   'ap-southeast-3': '909464085924',
+  'ap-southeast-6': '637423513210',
   'ca-central-1': '840364872350',
   'cn-north-1': '919366029133',
   'cn-northwest-1': '919830735681',
@@ -488,6 +494,74 @@ export const APPCONFIG_LAMBDA_LAYER_ARNS: { [key: string]: any } = {
 
 // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versions.html
 export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS: { [key: string]: any } = {
+  '1.0.404.0': {
+    arm64: {
+      'us-east-1': 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension-Arm64:23',
+      'us-east-2': 'arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension-Arm64:25',
+      'us-west-1': 'arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension-Arm64:21',
+      'us-west-2': 'arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension-Arm64:23',
+      'af-south-1': 'arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension-Arm64:21',
+      'ap-east-1': 'arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension-Arm64:21',
+      'ap-south-2': 'arn:aws:lambda:ap-south-2:891564319516:layer:LambdaInsightsExtension-Arm64:9',
+      'ap-southeast-3': 'arn:aws:lambda:ap-southeast-3:439286490199:layer:LambdaInsightsExtension-Arm64:21',
+      'ap-south-1': 'arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension-Arm64:25',
+      'ap-northeast-3': 'arn:aws:lambda:ap-northeast-3:194566237122:layer:LambdaInsightsExtension-Arm64:20',
+      'ap-northeast-2': 'arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension-Arm64:22',
+      'ap-southeast-1': 'arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:23',
+      'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension-Arm64:23',
+      'ap-northeast-1': 'arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:34',
+      'ca-central-1': 'arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension-Arm64:21',
+      'eu-central-1': 'arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension-Arm64:23',
+      'eu-west-1': 'arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension-Arm64:23',
+      'eu-west-2': 'arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension-Arm64:23',
+      'eu-south-1': 'arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension-Arm64:21',
+      'eu-west-3': 'arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension-Arm64:21',
+      'eu-south-2': 'arn:aws:lambda:eu-south-2:352183217350:layer:LambdaInsightsExtension-Arm64:9',
+      'eu-north-1': 'arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension-Arm64:21',
+      'me-south-1': 'arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension-Arm64:21',
+      'sa-east-1': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension-Arm64:21',
+      'us-gov-east-1': 'arn:aws-us-gov:lambda:us-gov-east-1:122132214140:layer:LambdaInsightsExtension-Arm64:6',
+      'us-gov-west-1': 'arn:aws-us-gov:lambda:us-gov-west-1:751350123760:layer:LambdaInsightsExtension-Arm64:6',
+    },
+    x86_64: {
+      'us-east-1': 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:56',
+      'us-east-2': 'arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:56',
+      'us-west-1': 'arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:56',
+      'us-west-2': 'arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:56',
+      'af-south-1': 'arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:47',
+      'ap-southeast-7': 'arn:aws:lambda:ap-southeast-7:761018874580:layer:LambdaInsightsExtension:3',
+      'ap-east-1': 'arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension:47',
+      'ap-south-2': 'arn:aws:lambda:ap-south-2:891564319516:layer:LambdaInsightsExtension:29',
+      'ap-southeast-3': 'arn:aws:lambda:ap-southeast-3:439286490199:layer:LambdaInsightsExtension:33',
+      'ap-southeast-5': 'arn:aws:lambda:ap-southeast-5:590183865173:layer:LambdaInsightsExtension:4',
+      'ap-southeast-4': 'arn:aws:lambda:ap-southeast-4:158895979263:layer:LambdaInsightsExtension:24',
+      'ap-south-1': 'arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:54',
+      'ap-northeast-3': 'arn:aws:lambda:ap-northeast-3:194566237122:layer:LambdaInsightsExtension:37',
+      'ap-northeast-2': 'arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:55',
+      'ap-southeast-1': 'arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:56',
+      'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:56',
+      'ap-northeast-1': 'arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:83',
+      'ca-central-1': 'arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:55',
+      'ca-west-1': 'arn:aws:lambda:ca-west-1:946466191631:layer:LambdaInsightsExtension:16',
+      'cn-north-1': 'arn:aws-cn:lambda:cn-north-1:488211338238:layer:LambdaInsightsExtension:46',
+      'cn-northwest-1': 'arn:aws-cn:lambda:cn-northwest-1:488211338238:layer:LambdaInsightsExtension:46',
+      'eu-central-1': 'arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:56',
+      'eu-west-1': 'arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:56',
+      'eu-west-2': 'arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:56',
+      'eu-south-1': 'arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension:47',
+      'eu-west-3': 'arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:55',
+      'eu-south-2': 'arn:aws:lambda:eu-south-2:352183217350:layer:LambdaInsightsExtension:31',
+      'eu-north-1': 'arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:53',
+      'eu-central-2': 'arn:aws:lambda:eu-central-2:033019950311:layer:LambdaInsightsExtension:30',
+      'il-central-1': 'arn:aws:lambda:il-central-1:459530977127:layer:LambdaInsightsExtension:23',
+      'mx-central-1': 'arn:aws:lambda:mx-central-1:879381266642:layer:LambdaInsightsExtension:3',
+      'me-south-1': 'arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:47',
+      'me-central-1': 'arn:aws:lambda:me-central-1:732604637566:layer:LambdaInsightsExtension:30',
+      'sa-east-1': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:55',
+      'us-gov-east-1': 'arn:aws-us-gov:lambda:us-gov-east-1:122132214140:layer:LambdaInsightsExtension:24',
+      'us-gov-west-1': 'arn:aws-us-gov:lambda:us-gov-west-1:751350123760:layer:LambdaInsightsExtension:24',
+    },
+  },
   '1.0.391.0': {
     arm64: {
       'us-east-1': 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension-Arm64:22',
@@ -1152,6 +1226,7 @@ export const CLOUDWATCH_LAMBDA_INSIGHTS_ARNS: { [key: string]: any } = {
 export const FIREHOSE_CIDR_BLOCKS: { [region: string]: string } = {
   'af-south-1': '13.244.121.224',
   'ap-east-1': '18.162.221.32',
+  'ap-east-2': '43.212.53.160',
   'ap-northeast-1': '13.113.196.224',
   'ap-northeast-2': '13.209.1.64',
   'ap-northeast-3': '13.208.177.192',

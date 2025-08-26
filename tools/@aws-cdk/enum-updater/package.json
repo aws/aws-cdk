@@ -16,7 +16,6 @@
     "watch": "tsc --build -w tsconfig.json"
   },
   "devDependencies": {
-    "@types/axios": "^0.14.4",
     "@types/jest": "^29.5.14",
     "@types/node": "^16",
     "@types/tmp": "^0.2.6",
@@ -27,10 +26,10 @@
     "typescript": "~5.5.4"
   },
   "dependencies": {
-    "axios": "^1.8.3",
-    "esbuild": "^0.25.0",
+    "axios": "^1.11.0",
+    "esbuild": "^0.25.8",
     "extract-zip": "^2.0.1",
-    "tmp": "^0.2.1",
+    "tmp": "^0.2.5",
     "ts-morph": "~24.0.0"
   },
   "main": "lib/index.js",

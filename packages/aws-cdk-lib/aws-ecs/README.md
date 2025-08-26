@@ -1970,6 +1970,9 @@ const volumeFromSnapshot = new ecs.ServiceManagedVolume(this, 'EBSVolume', {
     snapShotId: 'snap-066877671789bd71b',
     volumeType: ec2.EbsDeviceVolumeType.GP3,
     fileSystemType: ecs.FileSystemType.XFS,
+    // Specifies the Amazon EBS Provisioned Rate for Volume Initialization.
+    // Valid range is between 100 and 300 MiB/s.
+    volumeInitializationRate: Size.mebibytes(200),
   },
 });
 
@@ -2070,7 +2073,46 @@ const service = new ecs.FargateService(this, 'FargateService', {
 });
 ```
 
-## Daemon scheduling strategy
+## ECS Native Blue/Green Deployment
+
+Amazon ECS supports native blue/green deployments that allow you to deploy new versions of your services with zero downtime. This deployment strategy creates a new set of tasks (green) alongside the existing tasks (blue), then shifts traffic from the old version to the new version.
+
+[Amazon ECS blue/green deployments](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-blue-green.html)
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const lambdaHook: lambda.Function;
+declare const blueTargetGroup: elbv2.ApplicationTargetGroup;
+declare const greenTargetGroup: elbv2.ApplicationTargetGroup;
+declare const prodListenerRule: elbv2.ApplicationListenerRule;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  deploymentStrategy: ecs.DeploymentStrategy.BLUE_GREEN,
+});
+
+service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaHook, 'PreScaleHook', {
+  lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+}));
+
+const target = service.loadBalancerTarget({
+  containerName: 'nginx',
+  containerPort: 80,
+  protocol: ecs.Protocol.TCP,
+  alternateTarget: new ecs.AlternateTarget('AlternateTarget', {
+    alternateTargetGroup: greenTargetGroup,
+    productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(prodListenerRule),
+  }),
+});
+
+target.attachToApplicationTargetGroup(blueTargetGroup);
+```
+
+## Daemon Scheduling Strategy
 You can specify whether service use Daemon scheduling strategy by specifying `daemon` option in Service constructs. See [differences between Daemon and Replica scheduling strategy](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html)
 
 ```ts

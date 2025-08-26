@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "displayName": "BucketReplicationMultipleSourcesTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
@@ -8,23 +8,23 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-094cbf39": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "4909f1e48875b02a4af447c1d142bfd264aff33b791d9475d10f655cedecde7e": {
+    "ec332e15f91a23c7c7ef46ca9a09fe0447c55fbab854f41b13aa29ac9f3dc2ad": {
       "displayName": "BucketReplicationMultipleSourcesTestStack Template",
       "source": {
         "path": "BucketReplicationMultipleSourcesTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-aae5bf21": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4909f1e48875b02a4af447c1d142bfd264aff33b791d9475d10f655cedecde7e.json",
+          "objectKey": "ec332e15f91a23c7c7ef46ca9a09fe0447c55fbab854f41b13aa29ac9f3dc2ad.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

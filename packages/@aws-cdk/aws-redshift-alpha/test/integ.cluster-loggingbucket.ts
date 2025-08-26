@@ -29,10 +29,22 @@ class RedshiftEnv extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  context: {
+    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+  },
+});
+const stack = new Stack(app, 'aws-cdk-redshift-cluster-database', {
+  env: {
+    account: '123456789012',
+    region: 'us-east-1',
+  },
+});
+
+new RedshiftEnv(stack, 'redshift-loggingbucket-integ');
 
 new integ.IntegTest(app, 'LoggingBucketInteg', {
-  testCases: [new RedshiftEnv(app, 'redshift-loggingbucket-integ')],
+  testCases: [stack],
 });
 
 app.synth();
