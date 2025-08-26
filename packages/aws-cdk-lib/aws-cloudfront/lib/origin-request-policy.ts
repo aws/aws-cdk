@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { CfnOriginRequestPolicy, IOriginRequestPolicyRef, OriginRequestPolicyRef } from './cloudfront.generated';
 import { Names, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -88,6 +88,10 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
   /** Use an existing managed origin request policy. */
   private static fromManagedOriginRequestPolicy(managedOriginRequestPolicyId: string): IOriginRequestPolicy {
     return new class implements IOriginRequestPolicy {
+      public get node(): Node {
+        throw new UnscopedValidationError('The result of fromManagedOriginRequestPolicy can not be used in this API');
+      }
+
       public readonly originRequestPolicyId = managedOriginRequestPolicyId;
       public readonly originRequestPolicyRef = {
         originRequestPolicyId: managedOriginRequestPolicyId,

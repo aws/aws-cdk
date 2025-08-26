@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { CachePolicyRef, CfnCachePolicy, ICachePolicyRef } from './cloudfront.generated';
 import { Duration, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError, withResolved } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -139,6 +139,10 @@ export class CachePolicy extends Resource implements ICachePolicy {
   /** Use an existing managed cache policy. */
   private static fromManagedCachePolicy(managedCachePolicyId: string): ICachePolicy {
     return new class implements ICachePolicy {
+      public get node(): Node {
+        throw new UnscopedValidationError('The result of fromManagedCachePolicy can not be used in this API');
+      }
+
       public readonly cachePolicyId = managedCachePolicyId;
       public readonly cachePolicyRef = {
         cachePolicyId: managedCachePolicyId,

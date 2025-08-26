@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { IGroup } from './group';
 import { CfnManagedPolicy, IManagedPolicyRef, ManagedPolicyRef } from './iam.generated';
 import { PolicyDocument } from './policy-document';
@@ -186,6 +186,9 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         return {
           policyArn: this.managedPolicyArn,
         };
+      }
+      public get node(): Node {
+        throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
       }
     }
     return new AwsManagedPolicy();
