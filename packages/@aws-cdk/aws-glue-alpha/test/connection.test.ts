@@ -517,7 +517,7 @@ describe('SaaS connector connection types', () => {
   test('PIPEDIVE connection type', () => {
     const stack = new cdk.Stack();
     new glue.Connection(stack, 'Connection', {
-      type: glue.ConnectionType.PIPEDIVE,
+      type: glue.ConnectionType.PIPEDRIVE,
       properties: {
         CONNECTION_URL: 'https://api.pipedrive.com',
         API_TOKEN: 'api-token',
