@@ -68,7 +68,7 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
         environmentId: this.environmentId,
         configurationVersion: configuration.versionNumber!,
         description: configuration.description,
-        kmsKeyIdentifier: configuration.deploymentKey?.keyRef.keyArn,
+        kmsKeyIdentifier: configuration.deploymentKey?.keyArn,
       }),
     );
 

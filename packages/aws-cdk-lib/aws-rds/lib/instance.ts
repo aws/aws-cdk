@@ -620,7 +620,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - default master key
    */
-  readonly performanceInsightEncryptionKey?: kms.IKey;
+  readonly performanceInsightEncryptionKey?: kms.IKeyRef;
 
   /**
    * The database insights mode.
@@ -980,7 +980,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       multiAz: props.multiAz,
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       optionGroupName: props.optionGroup?.optionGroupName,
-      performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
+      performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyRef.keyArn,
       performanceInsightsRetentionPeriod: enablePerformanceInsights
         ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
         : undefined,
@@ -1269,7 +1269,7 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
    *
    * @default - default master key if storageEncrypted is true, no key otherwise
    */
-  readonly storageEncryptionKey?: kms.IKey;
+  readonly storageEncryptionKey?: kms.IKeyRef;
 }
 
 /**
@@ -1305,7 +1305,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       characterSetName: props.characterSetName,
-      kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
+      kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyRef.keyArn,
       masterUsername: credentials.username,
       masterUserPassword: credentials.password?.unsafeUnwrap(),
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
@@ -1478,7 +1478,7 @@ export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewPro
    *
    * @default - default master key if storageEncrypted is true, no key otherwise
    */
-  readonly storageEncryptionKey?: kms.IKey;
+  readonly storageEncryptionKey?: kms.IKeyRef;
   /**
    * The allocated storage size, specified in gibibytes (GiB).
    *
@@ -1539,7 +1539,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       ...this.newCfnProps,
       // this must be ARN, not ID, because of https://github.com/terraform-providers/terraform-provider-aws/issues/528#issuecomment-391169012
       sourceDbInstanceIdentifier: props.sourceDatabaseInstance.instanceArn,
-      kmsKeyId: props.storageEncryptionKey?.keyArn,
+      kmsKeyId: props.storageEncryptionKey?.keyRef.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
       engine: shouldPassEngine ? engineType : undefined,
       allocatedStorage: props.allocatedStorage?.toString(),

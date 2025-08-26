@@ -4,8 +4,8 @@ import * as iam from '../../aws-iam';
 import { ArnPrincipal, PolicyStatement } from '../../aws-iam';
 import { App, Arn, Aws, CfnOutput, Stack } from '../../core';
 import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL } from '../../cx-api';
+import { IKeyRef, Key } from '../lib';
 import { Alias } from '../lib/alias';
-import { IKey, Key } from '../lib/key';
 
 test('default alias', () => {
   const app = new App();
@@ -912,14 +912,14 @@ test('aliasArn should be a valid ARN', () => {
 });
 
 class AliasOutputsConstruct extends Construct {
-  constructor(scope: Construct, id: string, key: IKey) {
+  constructor(scope: Construct, id: string, key: IKeyRef) {
     super(scope, id);
 
     new CfnOutput(scope, 'OutId', {
-      value: key.keyId,
+      value: key.keyRef.keyId,
     });
     new CfnOutput(scope, 'OutArn', {
-      value: key.keyArn,
+      value: key.keyRef.keyArn,
     });
   }
 }

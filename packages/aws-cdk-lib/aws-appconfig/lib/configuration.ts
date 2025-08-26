@@ -144,7 +144,7 @@ export interface IConfiguration extends IConstruct {
   /**
    * The deployment key for the configuration.
    */
-  readonly deploymentKey?: kms.IKeyRef;
+  readonly deploymentKey?: kms.IKey;
 
   /**
    * The ID of the configuration profile.

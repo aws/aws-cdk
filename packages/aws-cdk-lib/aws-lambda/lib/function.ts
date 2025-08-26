@@ -523,7 +523,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - AWS Lambda creates and uses an AWS managed customer master key (CMK).
    */
-  readonly environmentEncryption?: kms.IKey;
+  readonly environmentEncryption?: kms.IKeyRef;
 
   /**
    * Code signing config associated with this function
@@ -1089,7 +1089,7 @@ export class Function extends FunctionBase {
         entryPoint: code.image?.entrypoint,
         workingDirectory: code.image?.workingDirectory,
       }),
-      kmsKeyArn: props.environmentEncryption?.keyArn,
+      kmsKeyArn: props.environmentEncryption?.keyRef.keyArn,
       fileSystemConfigs,
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigRef.codeSigningConfigArn,
       architectures: this._architecture ? [this._architecture.name] : undefined,
