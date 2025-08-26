@@ -10,6 +10,7 @@ import {
   Attribute, BillingMode, ProjectionType, ITable, SecondaryIndexProps, TableClass,
   LocalSecondaryIndexProps, TableEncryption, StreamViewType, WarmThroughput, PointInTimeRecoverySpecification,
   ContributorInsightsSpecification,
+  validateContributorInsights,
 } from './shared';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -1620,15 +1621,8 @@ export class Table extends TableBase {
         : undefined);
   }
 
-  private validateCCI (props: IContributorInsightsConfigurable): ContributorInsightsSpecification | undefined {
-    if (props.contributorInsightsSpecification !==undefined && props.contributorInsightsEnabled !== undefined) {
-      throw new ValidationError('`contributorInsightsSpecification` and `contributorInsightsEnabled` are set. Use `contributorInsightsSpecification` only.', this);
-    }
-
-    return props.contributorInsightsSpecification ??
-      (props.contributorInsightsEnabled !== undefined
-        ? { enabled: props.contributorInsightsEnabled }
-        : undefined);
+  private validateCCI(props: IContributorInsightsConfigurable): ContributorInsightsSpecification | undefined {
+    return validateContributorInsights(props.contributorInsightsEnabled, props.contributorInsightsSpecification, 'contributorInsightsEnabled', this);
   }
 
   private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): CfnTable.KeySchemaProperty[] {

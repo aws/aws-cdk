@@ -17,6 +17,7 @@ import {
   WarmThroughput,
   MultiRegionConsistency,
   ContributorInsightsSpecification,
+  validateContributorInsights,
 } from './shared';
 import { ITableV2, TableBaseV2 } from './table-v2-base';
 import { PolicyDocument } from '../../aws-iam';
@@ -1165,19 +1166,10 @@ export class TableV2 extends TableBaseV2 {
     }
   }
 
-  private validateCCI (props: IContributorInsightsConfigurable): ContributorInsightsSpecification | undefined {
-    const contributorInsights =
-    props?.contributorInsights ?? this.tableOptions?.contributorInsights;
-
+  private validateCCI(props: IContributorInsightsConfigurable): ContributorInsightsSpecification | undefined {
+    const contributorInsights = props?.contributorInsights ?? this.tableOptions?.contributorInsights;
     const contributorInsightsSpecification = props?.contributorInsightsSpecification || this.tableOptions?.contributorInsightsSpecification;
 
-    if (contributorInsightsSpecification !== undefined && contributorInsights !== undefined) {
-      throw new ValidationError('`contributorInsightsSpecification` and `contributorInsights` are set. Use `contributorInsightsSpecification` only.', this);
-    }
-
-    return contributorInsightsSpecification ??
-      (contributorInsights !== undefined
-        ? { enabled: contributorInsights }
-        : undefined);
+    return validateContributorInsights(contributorInsights, contributorInsightsSpecification, 'contributorInsights', this);
   }
 }

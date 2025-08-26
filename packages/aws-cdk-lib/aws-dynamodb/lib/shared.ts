@@ -1,7 +1,8 @@
+import { Construct } from 'constructs';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { IResource } from '../../core';
+import { IResource, ValidationError } from '../../core';
 
 /**
  * Supported DynamoDB table operations.
@@ -526,4 +527,18 @@ export interface ITable extends IResource {
    *
    */
   metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+}
+
+export function validateContributorInsights(
+  contributorInsights: boolean | undefined,
+  contributorInsightsSpecification: ContributorInsightsSpecification | undefined,
+  deprecatedPropertyName: string,
+  construct: Construct,
+): ContributorInsightsSpecification | undefined {
+  if (contributorInsightsSpecification !== undefined && contributorInsights !== undefined) {
+    throw new ValidationError(`\`contributorInsightsSpecification\` and \`${deprecatedPropertyName}\` are set. Use \`contributorInsightsSpecification\` only.`, construct);
+  }
+
+  return contributorInsightsSpecification ??
+    (contributorInsights !== undefined ? { enabled: contributorInsights } : undefined);
 }
