@@ -193,6 +193,7 @@
     "DestinationBucketName": {
      "Ref": "Destination920A3C57"
     },
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "OutputObjectKeys": true
@@ -432,7 +433,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
+     "S3Key": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip"
     },
     "Environment": {
      "Variables": {
@@ -908,6 +909,7 @@
      "Ref": "Destination920A3C57"
     },
     "DestinationBucketKeyPrefix": "efs/",
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "OutputObjectKeys": true
@@ -1328,7 +1330,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
+     "S3Key": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip"
     },
     "Environment": {
      "Variables": {
@@ -1530,6 +1532,7 @@
      "Ref": "Destination281A09BDF"
     },
     "DestinationBucketKeyPrefix": "deploy/here/",
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "OutputObjectKeys": true
@@ -1657,6 +1660,7 @@
     "DestinationBucketName": {
      "Ref": "Destination3E3DC043D"
     },
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "UserMetadata": {
@@ -1705,6 +1709,7 @@
     "DestinationBucketName": {
      "Ref": "Destination920A3C57"
     },
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": false,
     "OutputObjectKeys": true
@@ -1744,6 +1749,7 @@
     "DestinationBucketName": {
      "Ref": "Destination920A3C57"
     },
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "Exclude": [
@@ -1874,6 +1880,7 @@
     "DestinationBucketName": {
      "Ref": "Destination4368A3649"
     },
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Extract": false,
     "Prune": true,
@@ -2014,6 +2021,7 @@
     "DestinationBucketName": {
      "Ref": "Destination52A57FAA3"
     },
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "OutputObjectKeys": true
@@ -2141,6 +2149,7 @@
     "DestinationBucketName": {
      "Ref": "Destination6420F2C8E"
     },
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "OutputObjectKeys": false

@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "44.0.0",
   "testCases": {
     "SNS Subscriptions/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "SNS Subscriptions/DefaultTest/DeployAssert",
       "assertionStackName": "SNSSubscriptionsDefaultTestDeployAssertD77125EB"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
