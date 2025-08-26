@@ -187,6 +187,7 @@ export class Alarm extends AlarmBase {
     class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = alarmArn;
       public readonly alarmName = Stack.of(scope).splitArn(alarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
+      public readonly isCompositeAlarm? = false;
     }
     return new Import(scope, id);
   }
@@ -204,6 +205,11 @@ export class Alarm extends AlarmBase {
    * @attribute
    */
   public readonly alarmName: string;
+
+  /**
+   * Indicates whether this alarm is a composite alarm
+   */
+  public readonly isCompositeAlarm? = false;
 
   /**
    * The metric object this alarm was based on
