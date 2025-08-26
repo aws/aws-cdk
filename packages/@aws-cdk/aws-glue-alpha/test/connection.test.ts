@@ -156,3 +156,29 @@ test('fromConnectionArn', () => {
   expect(connection.connectionName).toEqual('name');
   expect(connection.connectionArn).toEqual(connectionArn);
 });
+
+test('SNOWFLAKE connection type', () => {
+  const stack = new cdk.Stack();
+  new glue.Connection(stack, 'Connection', {
+    type: glue.ConnectionType.SNOWFLAKE,
+    properties: {
+      JDBC_CONNECTION_URL: 'jdbc:snowflake://account.snowflakecomputing.com',
+      USERNAME: 'username',
+      PASSWORD: 'password',
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
+    CatalogId: {
+      Ref: 'AWS::AccountId',
+    },
+    ConnectionInput: {
+      ConnectionType: 'SNOWFLAKE',
+      ConnectionProperties: {
+        JDBC_CONNECTION_URL: 'jdbc:snowflake://account.snowflakecomputing.com',
+        USERNAME: 'username',
+        PASSWORD: 'password',
+      },
+    },
+  });
+});

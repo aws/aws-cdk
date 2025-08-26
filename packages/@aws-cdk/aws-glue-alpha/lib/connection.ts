@@ -137,6 +137,11 @@ export class ConnectionType {
   public static readonly SLACK = new ConnectionType('SLACK');
 
   /**
+   * Designates a connection to Snowflake.
+   */
+  public static readonly SNOWFLAKE = new ConnectionType('SNOWFLAKE');
+
+  /**
    * Designates a connection to Snapchat Ads.
    */
   public static readonly SNAPCHATADS = new ConnectionType('SNAPCHATADS');
