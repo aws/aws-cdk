@@ -21,8 +21,9 @@ export interface BaseApplicationListenerRuleProps {
    *
    * If not specified, the priority will be automatically assigned based on the order
    * of rule creation, starting from 1 and incrementing for each new rule.
+   * Auto-assigned priorities fill gaps in manually assigned priority sequences.
    *
-   * @default - Automatically assigned priority
+   * @default - Automatically assigned priority (starts from 1)
    */
   readonly priority?: number;
 
@@ -383,10 +384,18 @@ export class ApplicationListenerRule extends Construct {
 
   /**
    * Calculate an automatic priority for this rule
+   * 
+   * This method is called during synthesis to determine the priority for rules
+   * that don't have an explicit priority set. It uses the listener's priority
+   * manager to find the next available priority slot.
    */
   private calculateAutoPriority(): number {
     // Use the listener's priority manager to get the next available priority
-    return (this.listener as any)._allocateAutoPriority();
+    const allocatedPriority = (this.listener as any)._allocateAutoPriority();
+    if (!allocatedPriority) {
+      throw new ValidationError('Failed to allocate auto-priority. Listener may not support auto-priority assignment.', this);
+    }
+    return allocatedPriority;
   }
 
   /**

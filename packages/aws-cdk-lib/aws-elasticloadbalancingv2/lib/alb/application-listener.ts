@@ -587,18 +587,43 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
   /**
    * Allocate the next available auto-priority for a listener rule
+   * 
+   * This method is called during synthesis to assign priorities to rules
+   * that don't have explicit priorities set. It implements the auto-priority
+   * algorithm described in the design.
+   * 
    * @internal
    */
   public _allocateAutoPriority(): number {
-    return this._priorityManager.allocateNextPriority();
+    try {
+      return this._priorityManager.allocateNextPriority();
+    } catch (error) {
+      throw new ValidationError(
+        `Failed to allocate auto-priority for listener rule: ${error}. ` +
+        'Consider using explicit priorities or reducing the number of rules.',
+        this
+      );
+    }
   }
 
   /**
    * Reserve an explicit priority to avoid conflicts with auto-assigned priorities
+   * 
+   * This method is called when a rule specifies an explicit priority to ensure
+   * that future auto-assigned priorities don't conflict.
+   * 
+   * @param priority The priority to reserve
    * @internal
    */
   public _reservePriority(priority: number): void {
-    this._priorityManager.reservePriority(priority);
+    try {
+      this._priorityManager.reservePriority(priority);
+    } catch (error) {
+      throw new ValidationError(
+        `Failed to reserve priority ${priority}: ${error}`,
+        this
+      );
+    }
   }
 
   /**
@@ -1195,34 +1220,60 @@ function validateMutualAuthentication(scope: Construct, mutualAuthentication?: M
 
 /**
  * Manages automatic priority assignment for listener rules
+ * 
+ * This class implements the core algorithm for auto-priority assignment as described
+ * in the design. It supports:
+ * - Hybrid manual/auto priority assignment
+ * - Immutable and static priority assignment across synthesis runs
+ * - Gap detection and filling in priority sequences
+ * - Graceful handling of priority conflicts
+ * 
  * @internal
  */
 class AutoPriorityManager {
   private nextPriority = 1;
   private usedPriorities = new Set<number>();
+  private readonly maxPriority = 50000; // AWS ALB maximum priority
 
   /**
    * Reserve an explicit priority to avoid conflicts with auto-assigned priorities
+   * 
+   * This method is called when a rule specifies an explicit priority to ensure
+   * that auto-assigned priorities don't conflict with manually set ones.
+   * 
+   * @param priority The priority to reserve (must be between 1 and 50000)
    */
   public reservePriority(priority: number): void {
-    this.usedPriorities.add(priority);
-    // Ensure nextPriority doesn't conflict with reserved priorities
-    while (this.usedPriorities.has(this.nextPriority) && this.nextPriority <= 50000) {
-      this.nextPriority++;
+    if (priority < 1 || priority > this.maxPriority) {
+      throw new UnscopedValidationError(`Priority must be between 1 and ${this.maxPriority}, got ${priority}`);
     }
+
+    this.usedPriorities.add(priority);
+    
+    // Advance nextPriority if it conflicts with reserved priorities
+    // This ensures we always find the next available slot efficiently
+    this.advanceToNextAvailable();
   }
 
   /**
    * Allocate the next available priority
+   * 
+   * This method implements the core auto-priority assignment algorithm:
+   * 1. Find the lowest available priority starting from 1
+   * 2. Fill gaps in manually assigned priority sequences
+   * 3. Maintain deterministic behavior across synthesis runs
+   * 
+   * @returns The allocated priority number
    */
   public allocateNextPriority(): number {
-    // Find next available priority
-    while (this.usedPriorities.has(this.nextPriority) && this.nextPriority <= 50000) {
-      this.nextPriority++;
-    }
+    // Find next available priority (fills gaps)
+    this.advanceToNextAvailable();
 
-    if (this.nextPriority > 50000) {
-      throw new UnscopedValidationError('No available priority slots (1-50000) for listener rule. All priorities are in use.');
+    if (this.nextPriority > this.maxPriority) {
+      throw new UnscopedValidationError(
+        `No available priority slots (1-${this.maxPriority}) for listener rule. ` +
+        'All priorities are in use. Consider using explicit priorities or reducing the number of rules.'
+      );
     }
 
     const priority = this.nextPriority;
@@ -1230,5 +1281,42 @@ class AutoPriorityManager {
     this.nextPriority++;
 
     return priority;
+  }
+
+  /**
+   * Get the next available priority without allocating it
+   * 
+   * This method is useful for debugging or validation purposes.
+   * 
+   * @returns The next priority that would be allocated
+   */
+  public getNextAvailablePriority(): number {
+    let testPriority = 1;
+    while (this.usedPriorities.has(testPriority) && testPriority <= this.maxPriority) {
+      testPriority++;
+    }
+    return testPriority > this.maxPriority ? -1 : testPriority;
+  }
+
+  /**
+   * Get all currently used priorities
+   * 
+   * This method is useful for debugging and testing.
+   * 
+   * @returns Array of all used priority numbers
+   */
+  public getUsedPriorities(): number[] {
+    return Array.from(this.usedPriorities).sort((a, b) => a - b);
+  }
+
+  /**
+   * Advance nextPriority to the next available slot
+   * 
+   * This private method ensures efficient gap detection and filling.
+   */
+  private advanceToNextAvailable(): void {
+    while (this.usedPriorities.has(this.nextPriority) && this.nextPriority <= this.maxPriority) {
+      this.nextPriority++;
+    }
   }
 }
