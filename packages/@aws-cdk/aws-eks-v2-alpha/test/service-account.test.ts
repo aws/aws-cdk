@@ -404,7 +404,7 @@ describe('service account', () => {
         Namespace: 'default',
         RoleArn: { 'Fn::GetAtt': ['MyServiceAccountRoleB41709FF', 'Arn'] },
         ServiceAccount: 'stackmyserviceaccount58b9529e',
-        TargetRoleArn: { 'Fn::GetAtt': ['TargetRole7F4E2D38', 'Arn'] },
+        TargetRoleArn: { 'Fn::GetAtt': ['TargetRole7662179D', 'Arn'] },
       });
     });
 
