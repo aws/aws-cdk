@@ -2,6 +2,7 @@ import { Duration, Stack } from '../../core';
 import {
   Alarm,
   AlarmRule,
+  AlarmState,
   AlarmWidget,
   Color,
   CompositeAlarm,
@@ -819,7 +820,7 @@ describe('Graphs', () => {
     });
 
     const compositeAlarm = new CompositeAlarm(stack, 'CompositeAlarm', {
-      alarmRule: AlarmRule.fromAlarm(regularAlarm, AlarmRule.ALARM),
+      alarmRule: AlarmRule.fromAlarm(regularAlarm, AlarmState.ALARM),
     });
 
     // WHEN
@@ -863,7 +864,7 @@ describe('Graphs', () => {
     expect(regularJson.height).toBe(8);
     expect(regularJson.properties.title).toBe('Regular Alarm');
     expect(regularJson.properties.region).toBe('eu-west-1');
-    expect(regularJson.properties.accountId).toBe('987654321098');
+    expect(regularJson.properties.accountId).toBe('123456789012');
     expect(regularJson.properties.yAxis.left).toEqual({
       min: 0,
       max: 100,
@@ -877,7 +878,7 @@ describe('Graphs', () => {
     expect(compositeJson.height).toBe(8);
     expect(compositeJson.properties.title).toBe('Composite Alarm');
     expect(compositeJson.properties.region).toBe('eu-west-1');
-    expect(compositeJson.properties.accountId).toBe('987654321098');
+    expect(compositeJson.properties.accountId).toBe('123456789012');
     expect(compositeJson.properties.yAxis.left).toEqual({
       min: 0,
       max: 100,
