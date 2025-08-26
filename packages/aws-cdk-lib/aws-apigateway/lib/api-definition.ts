@@ -1,6 +1,5 @@
 import { Construct, Node } from 'constructs';
 import { CfnRestApi, IRestApiRef } from './apigateway.generated';
-import { IRestApi } from './restapi';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
@@ -89,7 +88,7 @@ export abstract class ApiDefinition {
    * Definition to bind to it. Specifically it's required to allow assets to add
    * metadata for tooling like SAM CLI to be able to find their origins.
    */
-  public bindAfterCreate(_scope: Construct, _restApi: IRestApi) {
+  public bindAfterCreate(_scope: Construct, _restApi: IRestApiRef) {
     return;
   }
 }

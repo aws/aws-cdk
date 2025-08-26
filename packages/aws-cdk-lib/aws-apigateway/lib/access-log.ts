@@ -1,8 +1,7 @@
-import { IStage } from './stage';
+import { IStageRef } from './apigateway.generated';
 import * as firehose from '../../aws-kinesisfirehose';
 import { ILogGroup } from '../../aws-logs';
 import { ValidationError } from '../../core/lib/errors';
-import { IStageRef } from "./apigateway.generated";
 
 /**
  * Access log destination for a RestApi Stage.
@@ -11,7 +10,7 @@ export interface IAccessLogDestination {
   /**
    * Binds this destination to the RestApi Stage.
    */
-  bind(stage: IStage): AccessLogDestinationConfig;
+  bind(stage: IStageRef): AccessLogDestinationConfig;
 }
 
 /**
@@ -34,7 +33,7 @@ export class LogGroupLogDestination implements IAccessLogDestination {
   /**
    * Binds this destination to the CloudWatch Logs.
    */
-  public bind(_stage: IStage): AccessLogDestinationConfig {
+  public bind(_stage: IStageRef): AccessLogDestinationConfig {
     return {
       destinationArn: this.logGroup.logGroupArn,
     };

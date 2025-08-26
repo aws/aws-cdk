@@ -174,7 +174,7 @@ export interface IUsagePlan extends IResource, IUsagePlanRef {
    * @param apiKey the api key to associate with this usage plan
    * @param options options that control the behaviour of this method
    */
-  addApiKey(apiKey: IApiKey, options?: AddApiKeyOptions): void;
+  addApiKey(apiKey: IApiKeyRef, options?: AddApiKeyOptions): void;
 
 }
 
