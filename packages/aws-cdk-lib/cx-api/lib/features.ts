@@ -1736,8 +1736,9 @@ export const FLAGS: Record<string, FlagInfo> = {
       are moved or refactored, causing CloudFormation to attempt updating the immutable
       callerReference field and failing.
 
-      When enabled, the PublicKey will use a stable reference based on the construct's
-      physical name, ensuring consistent deployments.
+      When enabled, the PublicKey will use a stable reference based on the stack name,
+      construct ID, and account/region, ensuring consistent deployments even when the
+      construct is moved within the construct tree.
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,

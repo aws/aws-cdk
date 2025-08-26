@@ -221,44 +221,268 @@ describe('PublicKey', () => {
       }
     });
 
-    test('feature flag works with construct tree changes', () => {
-      // Create a new app with the feature flag enabled
-      const flagApp = new App();
-      flagApp.node.setContext(cxapi.CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE, true);
-
-      // Create a stack with nested constructs
-      const newStack = new Stack(flagApp, 'TestStack', {
-        env: { account: '123456789012', region: 'testregion' },
+    test('stable caller reference remains same when construct is moved in tree', () => {
+      // This test specifically addresses the reviewer's concern about construct tree changes
+      
+      // Test 1: PublicKey directly in stack
+      const flagApp1 = new App();
+      flagApp1.node.setContext(cxapi.CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE, true);
+      const stack1 = new Stack(flagApp1, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
       });
 
-      // Simulate moving a PublicKey between different construct trees
-      // This would normally cause the node.addr to change
-      class BaseConstruct extends Construct {
-        constructor(scope: Construct, id: string) {
-          super(scope, id);
-        }
-      }
-
-      class SubConstruct extends Construct {
-        constructor(scope: Construct, id: string) {
-          super(scope, id);
-        }
-      }
-
-      const baseConstruct = new BaseConstruct(newStack, 'BaseConstruct');
-      const subConstruct = new SubConstruct(baseConstruct, 'SubConstruct');
-
-      new PublicKey(subConstruct, 'TestPublicKey', {
+      new PublicKey(stack1, 'MyPublicKey', {
         encodedKey: publicKey,
       });
 
-      const template = Template.fromStack(newStack);
-      template.hasResourceProperties('AWS::CloudFront::PublicKey', {
-        PublicKeyConfig: {
-          CallerReference: Match.stringLikeRegexp(/.*TestStack.*TestPublicKey.*/), // Should still be stable
-          EncodedKey: publicKey,
-        },
+      const template1 = Template.fromStack(stack1);
+      const resources1 = template1.findResources('AWS::CloudFront::PublicKey');
+      const callerRef1 = Object.values(resources1)[0] as any;
+      const callerReference1 = callerRef1.Properties.PublicKeyConfig.CallerReference;
+
+      // Test 2: Same PublicKey moved to nested construct (same construct ID)
+      const flagApp2 = new App();
+      flagApp2.node.setContext(cxapi.CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE, true);
+      const stack2 = new Stack(flagApp2, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
       });
+
+      class WrapperConstruct extends Construct {
+        constructor(scope: Construct, id: string) {
+          super(scope, id);
+        }
+      }
+
+      class DeepWrapper extends Construct {
+        constructor(scope: Construct, id: string) {
+          super(scope, id);
+        }
+      }
+
+      const wrapper = new WrapperConstruct(stack2, 'Wrapper');
+      const deepWrapper = new DeepWrapper(wrapper, 'DeepWrapper');
+      
+      new PublicKey(deepWrapper, 'MyPublicKey', {
+        encodedKey: publicKey,
+      });
+
+      const template2 = Template.fromStack(stack2);
+      const resources2 = template2.findResources('AWS::CloudFront::PublicKey');
+      const callerRef2 = Object.values(resources2)[0] as any;
+      const callerReference2 = callerRef2.Properties.PublicKeyConfig.CallerReference;
+
+      // The caller reference should be identical despite different tree positions
+      expect(callerReference1).toEqual(callerReference2);
+      
+      // Both should follow the stable pattern with stack name and construct ID
+      expect(callerReference1).toMatch(/TestStack-MyPublicKey-[a-f0-9]{8}/);
+      expect(callerReference2).toMatch(/TestStack-MyPublicKey-[a-f0-9]{8}/);
+    });
+
+    test('stable caller reference is unique across different stacks', () => {
+      // Test uniqueness across different stack names
+      const flagApp1 = new App();
+      flagApp1.node.setContext(cxapi.CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE, true);
+      const stack1 = new Stack(flagApp1, 'Stack1', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      new PublicKey(stack1, 'MyPublicKey', {
+        encodedKey: publicKey,
+      });
+
+      const flagApp2 = new App();
+      flagApp2.node.setContext(cxapi.CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE, true);
+      const stack2 = new Stack(flagApp2, 'Stack2', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      new PublicKey(stack2, 'MyPublicKey', {
+        encodedKey: publicKey,
+      });
+
+      const template1 = Template.fromStack(stack1);
+      const template2 = Template.fromStack(stack2);
+
+      const resources1 = template1.findResources('AWS::CloudFront::PublicKey');
+      const resources2 = template2.findResources('AWS::CloudFront::PublicKey');
+
+      const callerRef1 = Object.values(resources1)[0] as any;
+      const callerRef2 = Object.values(resources2)[0] as any;
+
+      const callerReference1 = callerRef1.Properties.PublicKeyConfig.CallerReference;
+      const callerReference2 = callerRef2.Properties.PublicKeyConfig.CallerReference;
+
+      // Should be different due to different stack names
+      expect(callerReference1).not.toEqual(callerReference2);
+      
+      // Should include respective stack names
+      expect(callerReference1).toMatch(/Stack1-MyPublicKey-[a-f0-9]{8}/);
+      expect(callerReference2).toMatch(/Stack2-MyPublicKey-[a-f0-9]{8}/);
+    });
+
+    test('stable caller reference is unique across different environments', () => {
+      // Test uniqueness across different accounts/regions
+      const flagApp1 = new App();
+      flagApp1.node.setContext(cxapi.CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE, true);
+      const stack1 = new Stack(flagApp1, 'TestStack', {
+        env: { account: '111111111111', region: 'us-east-1' },
+      });
+
+      new PublicKey(stack1, 'MyPublicKey', {
+        encodedKey: publicKey,
+      });
+
+      const flagApp2 = new App();
+      flagApp2.node.setContext(cxapi.CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE, true);
+      const stack2 = new Stack(flagApp2, 'TestStack', {
+        env: { account: '222222222222', region: 'us-west-2' },
+      });
+
+      new PublicKey(stack2, 'MyPublicKey', {
+        encodedKey: publicKey,
+      });
+
+      const template1 = Template.fromStack(stack1);
+      const template2 = Template.fromStack(stack2);
+
+      const resources1 = template1.findResources('AWS::CloudFront::PublicKey');
+      const resources2 = template2.findResources('AWS::CloudFront::PublicKey');
+
+      const callerRef1 = Object.values(resources1)[0] as any;
+      const callerRef2 = Object.values(resources2)[0] as any;
+
+      const callerReference1 = callerRef1.Properties.PublicKeyConfig.CallerReference;
+      const callerReference2 = callerRef2.Properties.PublicKeyConfig.CallerReference;
+
+      // Should be different due to different account/region
+      expect(callerReference1).not.toEqual(callerReference2);
+      
+      // Both should still follow the pattern but with different hashes
+      expect(callerReference1).toMatch(/TestStack-MyPublicKey-[a-f0-9]{8}/);
+      expect(callerReference2).toMatch(/TestStack-MyPublicKey-[a-f0-9]{8}/);
+    });
+
+    test('node.addr changes but stable caller reference does not when construct is moved', () => {
+      // This test demonstrates the problem with node.addr and how stable caller reference solves it
+      
+      // Test 1: Direct placement
+      const flagApp1 = new App();
+      flagApp1.node.setContext(cxapi.CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE, true);
+      const stack1 = new Stack(flagApp1, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      const publicKey1 = new PublicKey(stack1, 'MyPublicKey', {
+        encodedKey: publicKey,
+      });
+
+      // Test 2: Nested placement
+      const flagApp2 = new App();
+      flagApp2.node.setContext(cxapi.CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE, true);
+      const stack2 = new Stack(flagApp2, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      class WrapperConstruct extends Construct {
+        constructor(scope: Construct, id: string) {
+          super(scope, id);
+        }
+      }
+
+      const wrapper = new WrapperConstruct(stack2, 'Wrapper');
+      const publicKey2 = new PublicKey(wrapper, 'MyPublicKey', {
+        encodedKey: publicKey,
+      });
+
+      // Verify that node.addr is different (this would cause the old problem)
+      expect(publicKey1.node.addr).not.toEqual(publicKey2.node.addr);
+      
+      // But verify that node.id is the same (this is what makes stable caller reference work)
+      expect(publicKey1.node.id).toEqual(publicKey2.node.id);
+
+      // Get the actual caller references from the templates
+      const template1 = Template.fromStack(stack1);
+      const template2 = Template.fromStack(stack2);
+
+      const resources1 = template1.findResources('AWS::CloudFront::PublicKey');
+      const resources2 = template2.findResources('AWS::CloudFront::PublicKey');
+
+      const callerRef1 = Object.values(resources1)[0] as any;
+      const callerRef2 = Object.values(resources2)[0] as any;
+
+      const stableCallerReference1 = callerRef1.Properties.PublicKeyConfig.CallerReference;
+      const stableCallerReference2 = callerRef2.Properties.PublicKeyConfig.CallerReference;
+
+      // The stable caller reference should be identical despite different node.addr values
+      expect(stableCallerReference1).toEqual(stableCallerReference2);
+    });
+
+    test('demonstrates the original issue #15301 is fixed', () => {
+      // This test demonstrates that the original issue where CloudFormation would fail
+      // with "Invalid request provided: AWS::CloudFront::PublicKey" is now fixed
+      
+      // Simulate the scenario from issue #15301:
+      // 1. Deploy a PublicKey
+      // 2. Refactor code (move construct in tree)
+      // 3. Deploy again - should use same caller reference
+      
+      const flagApp = new App();
+      flagApp.node.setContext(cxapi.CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE, true);
+      
+      // Original deployment structure
+      const originalStack = new Stack(flagApp, 'MyStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+      
+      const originalPublicKey = new PublicKey(originalStack, 'cloudfront-public-key', {
+        encodedKey: publicKey,
+      });
+      
+      // After refactoring - moved to a nested construct (common refactoring scenario)
+      const refactoredApp = new App();
+      refactoredApp.node.setContext(cxapi.CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE, true);
+      
+      const refactoredStack = new Stack(refactoredApp, 'MyStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+      
+      class CloudFrontResources extends Construct {
+        constructor(scope: Construct, id: string) {
+          super(scope, id);
+        }
+      }
+      
+      const cloudFrontResources = new CloudFrontResources(refactoredStack, 'CloudFrontResources');
+      const refactoredPublicKey = new PublicKey(cloudFrontResources, 'cloudfront-public-key', {
+        encodedKey: publicKey,
+      });
+      
+      // Get caller references from both scenarios
+      const originalTemplate = Template.fromStack(originalStack);
+      const refactoredTemplate = Template.fromStack(refactoredStack);
+      
+      const originalResources = originalTemplate.findResources('AWS::CloudFront::PublicKey');
+      const refactoredResources = refactoredTemplate.findResources('AWS::CloudFront::PublicKey');
+      
+      const originalCallerRef = Object.values(originalResources)[0] as any;
+      const refactoredCallerRef = Object.values(refactoredResources)[0] as any;
+      
+      const originalCallerReference = originalCallerRef.Properties.PublicKeyConfig.CallerReference;
+      const refactoredCallerReference = refactoredCallerRef.Properties.PublicKeyConfig.CallerReference;
+      
+      // This is the key fix: caller reference should be identical
+      // This prevents CloudFormation from trying to update the immutable callerReference field
+      expect(originalCallerReference).toEqual(refactoredCallerReference);
+      
+      // Verify the pattern includes stack name and construct ID
+      expect(originalCallerReference).toMatch(/MyStack-cloudfront-public-key-[a-f0-9]{8}/);
+      
+      // Demonstrate that node.addr would have been different (the old problem)
+      expect(originalPublicKey.node.addr).not.toEqual(refactoredPublicKey.node.addr);
+      
+      // But node.id is the same (the basis for our stable solution)
+      expect(originalPublicKey.node.id).toEqual(refactoredPublicKey.node.id);
     });
 
     test('feature flag disabled vs enabled produces different caller references', () => {
