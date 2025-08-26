@@ -939,7 +939,7 @@ Enables and controls the enhanced metrics feature. Enhanced metrics emit granula
 
 ```ts
 const schema = new appsync.SchemaFile({ filePath: 'mySchemaFile' })
-new appsync.GraphqlApi(stack, 'api', {
+new appsync.GraphqlApi(this, 'api', {
   name: 'myApi',
   definition: appsync.Definition.fromSchema(schema),
   enhancedMetricsConfig: {
