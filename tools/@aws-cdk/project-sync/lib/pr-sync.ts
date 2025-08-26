@@ -1,6 +1,6 @@
 import { Github } from './github.js';
 import { PROJECT_NUMBER, REPOSITORY } from './config.js';
-import { projectIds, getPriorityFromLabels } from './utils.js';
+import { projectIds, getPriorityFromLabels, isBotLogin } from './utils.js';
 
 export const syncPr = async (pr: string) => {
   const github = Github.default();
@@ -49,7 +49,8 @@ export const syncPrData = async (prDetails: any) => {
 
   for (let index = 0; index < timelineItems.length; index++) {
     const item = timelineItems[timelineItems.length-index-1];
-    if (item?.createdAt !== undefined && item.author?.login !== 'github-actions' && item.actor?.login !== 'github-actions' && item.commit?.author?.user?.login !== 'github-actions') {
+    if (item?.createdAt !== undefined && !isBotLogin(item.author?.login)
+      && !isBotLogin(item.actor?.login) && !isBotLogin(item.commit?.author?.user?.login) ) {
       updateDate = new Date(item.createdAt ?? item.commit.committedDate);
       break;
     }
