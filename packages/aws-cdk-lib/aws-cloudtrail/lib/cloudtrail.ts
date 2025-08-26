@@ -85,7 +85,7 @@ export interface TrailProps {
    * @default - No encryption.
    * @deprecated - use encryptionKey instead.
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    *
@@ -345,7 +345,7 @@ export class Trail extends Resource {
       isMultiRegionTrail: props.isMultiRegionTrail == null ? true : props.isMultiRegionTrail,
       includeGlobalServiceEvents: props.includeGlobalServiceEvents == null ? true : props.includeGlobalServiceEvents,
       trailName: this.physicalName,
-      kmsKeyId: props.encryptionKey?.keyArn ?? props.kmsKey?.keyArn,
+      kmsKeyId: props.encryptionKey?.keyArn ?? props.kmsKey?.keyRef.keyArn,
       s3BucketName: this.s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
       cloudWatchLogsLogGroupArn: this.logGroup?.logGroupArn,

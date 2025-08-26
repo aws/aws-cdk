@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnVolume, IInstanceRef, IVolumeRef, VolumeRef } from './ec2.generated';
 import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
-import { IKey, ViaServicePrincipal } from '../../aws-kms';
+import { IKey, IKeyRef, ViaServicePrincipal } from '../../aws-kms';
 import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy, FeatureFlags, UnscopedValidationError, ValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -110,7 +110,7 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
    *
    * @default - If encrypted is true, the default aws/ebs KMS key will be used.
    */
-  readonly kmsKey?: IKey;
+  readonly kmsKey?: IKeyRef;
 }
 
 /**

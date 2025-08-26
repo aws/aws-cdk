@@ -10,7 +10,7 @@ import { UserPoolGroup, UserPoolGroupOptions } from './user-pool-group';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
 import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
 import { Grant, IGrantable, IRoleRef, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { IKey } from '../../aws-kms';
+import { IKeyRef } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -898,7 +898,7 @@ export interface UserPoolProps {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sender-triggers.html
    * @default - no key ID configured
    */
-  readonly customSenderKmsKey?: IKey;
+  readonly customSenderKmsKey?: IKeyRef;
 
   /**
    * The user pool's Advanced Security Mode
@@ -1141,7 +1141,7 @@ export class UserPool extends UserPoolBase {
 
     if (props.customSenderKmsKey) {
       const kmsKey = props.customSenderKmsKey;
-      (this.triggers as any).kmsKeyId = kmsKey.keyArn;
+      (this.triggers as any).kmsKeyId = kmsKey.keyRef.keyArn;
     }
 
     if (props.lambdaTriggers) {

@@ -283,7 +283,7 @@ export interface ServiceConnectTlsConfiguration {
    *
    * @default - none
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 
   /**
    * The IAM role that's associated with the Service Connect TLS.
@@ -914,7 +914,7 @@ export abstract class BaseService extends Resource
           encrypted: spec.config.encrypted,
           filesystemType: spec.config.fileSystemType,
           iops: spec.config.iops,
-          kmsKeyId: spec.config.kmsKeyId?.keyId,
+          kmsKeyId: spec.config.kmsKeyId?.keyRef.keyId,
           throughput: spec.config.throughput,
           volumeType: spec.config.volumeType,
           snapshotId: spec.config.snapShotId,
@@ -1022,7 +1022,7 @@ export abstract class BaseService extends Resource
         issuerCertificateAuthority: {
           awsPcaAuthorityArn: svc.tls.awsPcaAuthorityArn,
         },
-        kmsKey: svc.tls.kmsKey?.keyArn,
+        kmsKey: svc.tls.kmsKey?.keyRef.keyArn,
         roleArn: svc.tls.role?.roleArn,
       } : undefined;
 

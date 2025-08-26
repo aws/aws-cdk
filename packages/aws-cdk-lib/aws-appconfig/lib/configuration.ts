@@ -144,7 +144,7 @@ export interface IConfiguration extends IConstruct {
   /**
    * The deployment key for the configuration.
    */
-  readonly deploymentKey?: kms.IKey;
+  readonly deploymentKey?: kms.IKeyRef;
 
   /**
    * The ID of the configuration profile.
@@ -403,7 +403,7 @@ export interface HostedConfigurationProps extends ConfigurationProps {
    *
    * @default None
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
@@ -464,7 +464,7 @@ export class HostedConfiguration extends ConfigurationBase {
       type: this.type,
       validators: this.validators,
       deletionProtectionCheck: this.deletionProtectionCheck,
-      kmsKeyIdentifier: props.kmsKey?.keyArn,
+      kmsKeyIdentifier: props.kmsKey?.keyRef.keyArn,
     });
     this.configurationProfileId = this._cfnConfigurationProfile.ref;
     this.configurationProfileArn = Stack.of(this).formatArn({
@@ -571,7 +571,7 @@ export class SourcedConfiguration extends ConfigurationBase {
    * can be used when storing configuration in AWS Secrets Manager, Systems Manager Parameter Store,
    * or Amazon S3.
    */
-  public readonly sourceKey?: kms.IKey;
+  public readonly sourceKey?: kms.IKeyRef;
 
   /**
    * The ID of the configuration profile.
@@ -715,7 +715,7 @@ export class SourcedConfiguration extends ConfigurationBase {
       const keyPolicy = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['kms:Decrypt'],
-        resources: [this.sourceKey.keyArn],
+        resources: [this.sourceKey.keyRef.keyArn],
       });
       document.addStatements(keyPolicy);
     }
