@@ -10,7 +10,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 /**
  * Indicates that this resource can be referenced as a Resource.
  */
-export interface IResourceRef {
+export interface IResourceRef extends constructs.IConstruct {
   /**
    * A reference to a Resource resource.
    */
@@ -180,7 +180,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 /**
  * Indicates that this resource can be referenced as a Resource.
  */
-export interface IResourceRef {
+export interface IResourceRef extends constructs.IConstruct {
   /**
    * A reference to a Resource resource.
    */
@@ -341,7 +341,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 /**
  * Indicates that this resource can be referenced as a Something.
  */
-export interface ISomethingRef {
+export interface ISomethingRef extends constructs.IConstruct {
   /**
    * A reference to a Something resource.
    */
@@ -516,7 +516,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 /**
  * Indicates that this resource can be referenced as a Resource.
  */
-export interface IResourceRef {
+export interface IResourceRef extends constructs.IConstruct {
   /**
    * A reference to a Resource resource.
    */
@@ -691,7 +691,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 /**
  * Indicates that this resource can be referenced as a Resource.
  */
-export interface IResourceRef {
+export interface IResourceRef extends constructs.IConstruct {
   /**
    * A reference to a Resource resource.
    */
@@ -869,7 +869,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 /**
  * Indicates that this resource can be referenced as a Resource.
  */
-export interface IResourceRef {
+export interface IResourceRef extends constructs.IConstruct {
   /**
    * A reference to a Resource resource.
    */
@@ -1030,7 +1030,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 /**
  * Indicates that this resource can be referenced as a Resource.
  */
-export interface IResourceRef {
+export interface IResourceRef extends constructs.IConstruct {
   /**
    * A reference to a Resource resource.
    */
@@ -1205,7 +1205,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 /**
  * Indicates that this resource can be referenced as a Resource.
  */
-export interface IResourceRef {
+export interface IResourceRef extends constructs.IConstruct {
   /**
    * A reference to a Resource resource.
    */
@@ -1398,7 +1398,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 /**
  * Indicates that this resource can be referenced as a Resource.
  */
-export interface IResourceRef {
+export interface IResourceRef extends constructs.IConstruct {
   /**
    * A reference to a Resource resource.
    */
