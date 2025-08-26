@@ -56,6 +56,22 @@ export class NotificationsResourceHandler extends Construct {
    */
   public readonly role: iam.IRole;
 
+  /**
+   * Set of bucket ARNs that this handler will manage notifications for.
+   * Used to create scoped IAM policies instead of wildcard permissions.
+   */
+  private readonly bucketArns = new Set<string>();
+
+  /**
+   * Set of bucket ARNs for unmanaged buckets that require GetBucketNotification permissions.
+   */
+  private readonly unmanagedBucketArns = new Set<string>();
+
+  /**
+   * Flag to track if policies have been created to avoid duplication.
+   */
+  private policiesCreated = false;
+
   constructor(scope: Construct, id: string, props: NotificationsResourceHandlerProps = {}) {
     super(scope, id);
 
@@ -66,10 +82,8 @@ export class NotificationsResourceHandler extends Construct {
     this.role.addManagedPolicy(
       iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
     );
-    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:PutBucketNotification'],
-      resources: ['*'],
-    }));
+
+    // Defer policy creation until synthesis time when all bucket ARNs are collected
 
     const resourceType = 'AWS::Lambda::Function';
     class InLineLambda extends cdk.CfnResource {
@@ -110,5 +124,54 @@ export class NotificationsResourceHandler extends Construct {
 
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
+  }
+
+  /**
+   * Register a bucket ARN that this handler will manage notifications for.
+   * This allows creating scoped IAM policies instead of wildcard permissions.
+   *
+   * @param bucketArn The ARN of the bucket to register
+   * @param isUnmanaged Whether this is an unmanaged (imported) bucket that needs GetBucketNotification permissions
+   */
+  public registerBucket(bucketArn: string, isUnmanaged: boolean = false) {
+    this.bucketArns.add(bucketArn);
+    if (isUnmanaged) {
+      this.unmanagedBucketArns.add(bucketArn);
+    }
+
+    // Create policies only once, using a synthesis hook to ensure all buckets are registered first
+    if (!this.policiesCreated) {
+      // Use a synthesis hook to create policies after all buckets are registered
+      cdk.Aspects.of(this).add({
+        visit: (node) => {
+          if (node === this) {
+            this.createConsolidatedPolicies();
+          }
+        },
+      });
+      this.policiesCreated = true;
+    }
+  }
+
+  /**
+   * Create consolidated IAM policies with all registered bucket ARNs.
+   * This is called during synthesis after all buckets have been registered.
+   */
+  private createConsolidatedPolicies() {
+    if (this.bucketArns.size > 0) {
+      // Add PutBucketNotification permission for all registered buckets
+      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['s3:PutBucketNotification'],
+        resources: Array.from(this.bucketArns),
+      }));
+
+      // Add GetBucketNotification permission for unmanaged buckets only
+      if (this.unmanagedBucketArns.size > 0) {
+        this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+          actions: ['s3:GetBucketNotification'],
+          resources: Array.from(this.unmanagedBucketArns),
+        }));
+      }
+    }
   }
 }

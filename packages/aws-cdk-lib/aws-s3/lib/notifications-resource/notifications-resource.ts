@@ -135,12 +135,8 @@ export class BucketNotifications extends Construct {
         managed = false;
       }
 
-      if (!managed) {
-        handler.addToRolePolicy(new iam.PolicyStatement({
-          actions: ['s3:GetBucketNotification'],
-          resources: ['*'],
-        }));
-      }
+      // Register this bucket with the handler for scoped IAM permissions
+      handler.registerBucket(this.bucket.bucketArn, !managed);
 
       this.resource = new cdk.CfnResource(this, 'Resource', {
         type: 'Custom::S3BucketNotifications',
