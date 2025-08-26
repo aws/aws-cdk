@@ -57,9 +57,64 @@ export class ConnectionType {
   public static readonly CUSTOM = new ConnectionType('CUSTOM');
 
   /**
+   * Designates a connection to Adobe Analytics.
+   */
+  public static readonly ADOBEANALYTICS = new ConnectionType('ADOBEANALYTICS');
+
+  /**
+   * Designates a connection to Asana.
+   */
+  public static readonly ASANA = new ConnectionType('ASANA');
+
+  /**
+   * Designates a connection to Blackbaud Raiser's Edge NXT.
+   */
+  public static readonly BLACKBAUDRAISEREDGENXT = new ConnectionType('BLACKBAUDRAISEREDGENXT');
+
+  /**
+   * Designates a connection to CircleCI.
+   */
+  public static readonly CIRCLECI = new ConnectionType('CIRCLECI');
+
+  /**
+   * Designates a connection to Datadog.
+   */
+  public static readonly DATADOG = new ConnectionType('DATADOG');
+
+  /**
+   * Designates a connection to DocuSign Monitor.
+   */
+  public static readonly DOCUSIGNMONITOR = new ConnectionType('DOCUSIGNMONITOR');
+
+  /**
+   * Designates a connection to Dynatrace.
+   */
+  public static readonly DYNATRACE = new ConnectionType('DYNATRACE');
+
+  /**
    * Designates a connection to Facebook Ads.
    */
   public static readonly FACEBOOKADS = new ConnectionType('FACEBOOKADS');
+
+  /**
+   * Designates a connection to Facebook Page Insights.
+   */
+  public static readonly FACEBOOKPAGEINSIGHTS = new ConnectionType('FACEBOOKPAGEINSIGHTS');
+
+  /**
+   * Designates a connection to Freshdesk.
+   */
+  public static readonly FRESHDESK = new ConnectionType('FRESHDESK');
+
+  /**
+   * Designates a connection to Freshsales.
+   */
+  public static readonly FRESHSALES = new ConnectionType('FRESHSALES');
+
+  /**
+   * Designates a connection to GitLab.
+   */
+  public static readonly GITLAB = new ConnectionType('GITLAB');
 
   /**
    * Designates a connection to Google Ads.
@@ -67,14 +122,19 @@ export class ConnectionType {
   public static readonly GOOGLEADS = new ConnectionType('GOOGLEADS');
 
   /**
-   * Designates a connection to Google Sheets.
-   */
-  public static readonly GOOGLESHEETS = new ConnectionType('GOOGLESHEETS');
-
-  /**
    * Designates a connection to Google Analytics 4.
    */
   public static readonly GOOGLEANALYTICS4 = new ConnectionType('GOOGLEANALYTICS4');
+
+  /**
+   * Designates a connection to Google Search Console.
+   */
+  public static readonly GOOGLESEARCHCONSOLE = new ConnectionType('GOOGLESEARCHCONSOLE');
+
+  /**
+   * Designates a connection to Google Sheets.
+   */
+  public static readonly GOOGLESHEETS = new ConnectionType('GOOGLESHEETS');
 
   /**
    * Designates a connection to HubSpot.
@@ -97,9 +157,34 @@ export class ConnectionType {
   public static readonly JIRACLOUD = new ConnectionType('JIRACLOUD');
 
   /**
+   * Designates a connection to LinkedIn.
+   */
+  public static readonly LINKEDIN = new ConnectionType('LINKEDIN');
+
+  /**
+   * Designates a connection to Mailchimp.
+   */
+  public static readonly MAILCHIMP = new ConnectionType('MAILCHIMP');
+
+  /**
    * Designates a connection to Adobe Marketo Engage.
    */
   public static readonly MARKETO = new ConnectionType('MARKETO');
+
+  /**
+   * Designates a connection to Microsoft Dynamics 365 Finance and Operations.
+   */
+  public static readonly MICROSOFTDYNAMIC365FINANCEANDOPS = new ConnectionType('MICROSOFTDYNAMIC365FINANCEANDOPS');
+
+  /**
+   * Designates a connection to Microsoft Teams.
+   */
+  public static readonly MICROSOFTTEAMS = new ConnectionType('MICROSOFTTEAMS');
+
+  /**
+   * Designates a connection to Mixpanel.
+   */
+  public static readonly MIXPANEL = new ConnectionType('MIXPANEL');
 
   /**
    * Designates a connection to Oracle NetSuite.
@@ -107,9 +192,39 @@ export class ConnectionType {
   public static readonly NETSUITEERP = new ConnectionType('NETSUITEERP');
 
   /**
+   * Designates a connection to PayPal.
+   */
+  public static readonly PAYPAL = new ConnectionType('PAYPAL');
+
+  /**
+   * Designates a connection to Pendo.
+   */
+  public static readonly PENDO = new ConnectionType('PENDO');
+
+  /**
+   * Designates a connection to Pipedrive.
+   */
+  public static readonly PIPEDIVE = new ConnectionType('PIPEDIVE');
+
+  /**
+   * Designates a connection to Productboard.
+   */
+  public static readonly PRODUCTBOARD = new ConnectionType('PRODUCTBOARD');
+
+  /**
+   * Designates a connection to QuickBooks.
+   */
+  public static readonly QUICKBOOKS = new ConnectionType('QUICKBOOKS');
+
+  /**
    * Designates a connection to Salesforce using OAuth authentication.
    */
   public static readonly SALESFORCE = new ConnectionType('SALESFORCE');
+
+  /**
+   * Designates a connection to Salesforce Commerce Cloud.
+   */
+  public static readonly SALESFORCECOMMERCECLOUD = new ConnectionType('SALESFORCECOMMERCECLOUD');
 
   /**
    * Designates a connection to Salesforce Marketing Cloud.
@@ -122,9 +237,19 @@ export class ConnectionType {
   public static readonly SALESFORCEPARDOT = new ConnectionType('SALESFORCEPARDOT');
 
   /**
+   * Designates a connection to SAP Concur.
+   */
+  public static readonly SAPCONCUR = new ConnectionType('SAPCONCUR');
+
+  /**
    * Designates a connection to SAP OData.
    */
   public static readonly SAPODATA = new ConnectionType('SAPODATA');
+
+  /**
+   * Designates a connection to SendGrid.
+   */
+  public static readonly SENDGRID = new ConnectionType('SENDGRID');
 
   /**
    * Designates a connection to ServiceNow.
@@ -135,6 +260,11 @@ export class ConnectionType {
    * Designates a connection to Slack.
    */
   public static readonly SLACK = new ConnectionType('SLACK');
+
+  /**
+   * Designates a connection to Smartsheet.
+   */
+  public static readonly SMARTSHEET = new ConnectionType('SMARTSHEET');
 
   /**
    * Designates a connection to Snowflake.
@@ -152,6 +282,16 @@ export class ConnectionType {
   public static readonly STRIPE = new ConnectionType('STRIPE');
 
   /**
+   * Designates a connection to Twilio.
+   */
+  public static readonly TWILIO = new ConnectionType('TWILIO');
+
+  /**
+   * Designates a connection to WooCommerce.
+   */
+  public static readonly WOOCOMMERCE = new ConnectionType('WOOCOMMERCE');
+
+  /**
    * Designates a connection to Zendesk.
    */
   public static readonly ZENDESK = new ConnectionType('ZENDESK');
@@ -160,6 +300,11 @@ export class ConnectionType {
    * Designates a connection to Zoho CRM.
    */
   public static readonly ZOHOCRM = new ConnectionType('ZOHOCRM');
+
+  /**
+   * Designates a connection to Zoom.
+   */
+  public static readonly ZOOM = new ConnectionType('ZOOM');
 
   /**
    * The name of this ConnectionType, as expected by Connection resource.
