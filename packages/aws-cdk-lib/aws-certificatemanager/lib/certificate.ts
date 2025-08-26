@@ -328,10 +328,7 @@ export class Certificate extends CertificateBase implements ICertificate {
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 
-    let certificateExport: string | undefined;
-    if (props.certificateExportEnabled !== undefined) {
-      certificateExport = props.certificateExportEnabled ? 'ENABLED' : 'DISABLED';
-    }
+    const certificateExport = (props.certificateExportEnabled === true) ? 'ENABLED' : undefined
 
     let certificateTransparencyLoggingPreference: string | undefined;
     if (props.transparencyLoggingEnabled !== undefined) {
