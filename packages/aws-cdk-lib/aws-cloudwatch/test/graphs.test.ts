@@ -706,7 +706,7 @@ describe('Graphs', () => {
   test('composite alarm widget generates alarm-type widget', () => {
     // CloudWatch console requires 'alarm' type for composite alarms to render properly
     // and 'metric' type for regular alarms. This test verifies the correct widget type is used.
-    
+
     // GIVEN
     const stack = new Stack();
 
