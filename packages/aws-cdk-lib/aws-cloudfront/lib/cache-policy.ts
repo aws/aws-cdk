@@ -147,9 +147,6 @@ export class CachePolicy extends Resource implements ICachePolicy {
       public readonly cachePolicyRef = {
         cachePolicyId: managedCachePolicyId,
       };
-      public get node(): Node {
-        throw new UnscopedValidationError('This cache policy was created using only the managed policy name, and therefore does not have a node.');
-      }
     }();
   }
 
