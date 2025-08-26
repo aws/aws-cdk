@@ -514,7 +514,7 @@ describe('SaaS connector connection types', () => {
     });
   });
 
-  test('PIPEDIVE connection type', () => {
+  test('PIPEDRIVE connection type', () => {
     const stack = new cdk.Stack();
     new glue.Connection(stack, 'Connection', {
       type: glue.ConnectionType.PIPEDRIVE,
@@ -526,7 +526,7 @@ describe('SaaS connector connection types', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
       ConnectionInput: {
-        ConnectionType: 'PIPEDIVE',
+        ConnectionType: 'PIPEDRIVE',
       },
     });
   });
