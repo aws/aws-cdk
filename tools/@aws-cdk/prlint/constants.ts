@@ -1,7 +1,7 @@
 
 export const DEFAULT_LINTER_LOGIN = 'aws-cdk-automation';
 
-export const CODE_BUILD_CONTEXT = 'AWS CodeBuild us-east-1 (AutoBuildv2Project1C6BFA3F-wQm2hXv2jqQv)';
+export const CODE_BUILD_WORKFLOW_FILE = 'codebuild-pr-build.yml';
 
 /**
  * Types of exemption labels in aws-cdk project.
