@@ -1,32 +1,39 @@
 {
  "Resources": {
-  "queue": {
-   "Type": "AWS::SQS::Queue"
-  },
-  "DashCCD7F836": {
-   "Type": "AWS::CloudWatch::Dashboard",
+  "TableV26B253703": {
+   "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "DashboardBody": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"widgets\":[{\"type\":\"metric\",\"width\":24,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"gauge\",\"region\":\"",
-       {
-        "Ref": "AWS::Region"
-       },
-       "\",\"metrics\":[[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
-       {
-        "Fn::GetAtt": [
-         "queue",
-         "QueueName"
-        ]
-       },
-       "\"]],\"yAxis\":{\"left\":{\"min\":0,\"max\":500}}}}]}"
-      ]
-     ]
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "hashKey",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "sortKey",
+      "AttributeType": "N"
+     }
+    ],
+    "ContributorInsightsSpecification": {
+     "Enabled": true,
+     "Mode": "ACCESSED_AND_THROTTLED_KEYS"
     },
-    "DashboardName": "MyCustomGaugeAlarm"
-   }
+    "KeySchema": [
+     {
+      "AttributeName": "hashKey",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sortKey",
+      "KeyType": "RANGE"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Parameters": {

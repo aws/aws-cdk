@@ -1,7 +1,8 @@
 {
-  "version": "38.0.1",
+  "version": "44.0.0",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+      "displayName": "awscdkglobaltableintegDefaultTestDeployAssertA2A9E81F Template",
       "source": {
         "path": "awscdkglobaltableintegDefaultTestDeployAssertA2A9E81F.template.json",
         "packaging": "file"

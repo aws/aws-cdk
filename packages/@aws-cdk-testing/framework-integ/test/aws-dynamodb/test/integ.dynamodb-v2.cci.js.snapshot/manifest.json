@@ -1,100 +1,87 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "gauge-alarm.assets": {
+    "CCI-Integ-Test.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "gauge-alarm.assets.json",
+        "file": "CCI-Integ-Test.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "gauge-alarm": {
+    "CCI-Integ-Test": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
+      "environment": "aws://unknown-account/eu-west-1",
       "properties": {
-        "templateFile": "gauge-alarm.template.json",
+        "templateFile": "CCI-Integ-Test.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/31a11372efe507963d903ca1895c7c79413006b732b701aecb68df137871d7ad.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-west-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-west-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/7f9710fa9aec7f69afe9933a284d4f49af3532b86617d16428e4a76db826605f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "gauge-alarm.assets"
+          "CCI-Integ-Test.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-eu-west-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },
       "dependencies": [
-        "gauge-alarm.assets"
+        "CCI-Integ-Test.assets"
       ],
       "metadata": {
-        "/gauge-alarm/queue": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "queue"
-          }
-        ],
-        "/gauge-alarm/Dash": [
+        "/CCI-Integ-Test/TableV2": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "dashboardName": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "warnings": "*",
-                  "warningsV2": "*",
-                  "width": "*",
-                  "height": "*"
-                }
-              ]
-            }
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
-        "/gauge-alarm/Dash/Resource": [
+        "/CCI-Integ-Test/TableV2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DashCCD7F836"
+            "data": "TableV26B253703"
           }
         ],
-        "/gauge-alarm/BootstrapVersion": [
+        "/CCI-Integ-Test/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/gauge-alarm/CheckBootstrapVersion": [
+        "/CCI-Integ-Test/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "gauge-alarm"
+      "displayName": "CCI-Integ-Test"
     },
-    "GaugeAlarmIntegrationTestDefaultTestDeployAssertF43E2A2D.assets": {
+    "tablev2CCItestDefaultTestDeployAssertAA263ACC.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "GaugeAlarmIntegrationTestDefaultTestDeployAssertF43E2A2D.assets.json",
+        "file": "tablev2CCItestDefaultTestDeployAssertAA263ACC.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "GaugeAlarmIntegrationTestDefaultTestDeployAssertF43E2A2D": {
+    "tablev2CCItestDefaultTestDeployAssertAA263ACC": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "GaugeAlarmIntegrationTestDefaultTestDeployAssertF43E2A2D.template.json",
+        "templateFile": "tablev2CCItestDefaultTestDeployAssertAA263ACC.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -103,7 +90,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "GaugeAlarmIntegrationTestDefaultTestDeployAssertF43E2A2D.assets"
+          "tablev2CCItestDefaultTestDeployAssertAA263ACC.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -112,23 +99,23 @@
         }
       },
       "dependencies": [
-        "GaugeAlarmIntegrationTestDefaultTestDeployAssertF43E2A2D.assets"
+        "tablev2CCItestDefaultTestDeployAssertAA263ACC.assets"
       ],
       "metadata": {
-        "/GaugeAlarmIntegrationTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/table-v2-CCI-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/GaugeAlarmIntegrationTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/table-v2-CCI-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "GaugeAlarmIntegrationTest/DefaultTest/DeployAssert"
+      "displayName": "table-v2-CCI-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -158,10 +145,6 @@
             "unconfiguredBehavesLike": {
               "v2": true
             }
-          },
-          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
-            "recommendedValue": true,
-            "explanation": "Disable implicit openListener when custom security groups are provided"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
