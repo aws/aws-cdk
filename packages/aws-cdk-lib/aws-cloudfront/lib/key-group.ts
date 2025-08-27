@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnKeyGroup, IKeyGroupRef, KeyGroupRef } from './cloudfront.generated';
-import { IPublicKey } from './public-key';
+import { CfnKeyGroup, IKeyGroupRef, IPublicKeyRef, KeyGroupRef } from './cloudfront.generated';
 import { IResource, Names, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -35,7 +34,7 @@ export interface KeyGroupProps {
   /**
    * A list of public keys to add to the key group.
    */
-  readonly items: IPublicKey[];
+  readonly items: IPublicKeyRef[];
 }
 
 /**
@@ -70,7 +69,7 @@ export class KeyGroup extends Resource implements IKeyGroup {
       keyGroupConfig: {
         name: props.keyGroupName ?? this.generateName(),
         comment: props.comment,
-        items: props.items.map(key => key.publicKeyId),
+        items: props.items.map(key => key.publicKeyRef.publicKeyId),
       },
     });
 

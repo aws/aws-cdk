@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
-import { IClientVpnEndpoint } from './client-vpn-endpoint-types';
-import { CfnClientVpnAuthorizationRule } from './ec2.generated';
+import { CfnClientVpnAuthorizationRule, IClientVpnEndpointRef } from './ec2.generated';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -39,14 +38,14 @@ export interface ClientVpnAuthorizationRuleProps extends ClientVpnAuthorizationR
    * The client VPN endpoint to which to add the rule.
    * @default clientVpnEndpoint is required
    */
-  readonly clientVpnEndpoint?: IClientVpnEndpoint;
+  readonly clientVpnEndpoint?: IClientVpnEndpointRef;
 
   /**
    * The client VPN endpoint to which to add the rule.
    * @deprecated Use `clientVpnEndpoint` instead
    * @default clientVpnEndpoint is required
    */
-  readonly clientVpnEndoint?: IClientVpnEndpoint;
+  readonly clientVpnEndoint?: IClientVpnEndpointRef;
 }
 
 /**
@@ -76,7 +75,7 @@ export class ClientVpnAuthorizationRule extends Resource {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
     new CfnClientVpnAuthorizationRule(this, 'Resource', {
-      clientVpnEndpointId: clientVpnEndpoint!.endpointId,
+      clientVpnEndpointId: clientVpnEndpoint!.clientVpnEndpointRef.clientVpnEndpointId,
       targetNetworkCidr: props.cidr,
       accessGroupId: props.groupId,
       authorizeAllGroups: !props.groupId,

@@ -215,7 +215,7 @@ export class User extends Resource implements IIdentity, IUser {
 
       public addToGroup(group: IGroup): void {
         new CfnUserToGroupAddition(Stack.of(group), `${this.userName}Group${this.groupId}`, {
-          groupName: group.groupName,
+          groupName: group.groupRef.groupName,
           users: [this.userName],
         });
         this.groupId += 1;

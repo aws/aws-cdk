@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { ApiKeyRef, CfnApiKey, IApiKeyRef } from './apigateway.generated';
+import { ApiKeyRef, CfnApiKey, IApiKeyRef, IStageRef } from './apigateway.generated';
 import { ResourceOptions } from './resource';
 import { IRestApi } from './restapi';
 import { IStage } from './stage';
@@ -207,7 +207,7 @@ export class ApiKey extends ApiKeyBase {
     });
   }
 
-  private renderStageKeys(resources?: IRestApi[], stages?: IStage[]): CfnApiKey.StageKeyProperty[] | undefined {
+  private renderStageKeys(resources?: IRestApi[], stages?: IStageRef[]): CfnApiKey.StageKeyProperty[] | undefined {
     if (!resources && !stages) {
       return undefined;
     }
@@ -228,7 +228,7 @@ export class ApiKey extends ApiKeyBase {
         return { restApiId, stageName };
       })
       : stages ? stages.map((stage => {
-        return { restApiId: stage.restApi.restApiId, stageName: stage.stageName };
+        return { restApiId: stage.stageRef.restApiId, stageName: stage.stageRef.stageName };
       })) : undefined;
   }
 }

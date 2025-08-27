@@ -3,12 +3,11 @@ import { Construct } from 'constructs';
 import { InstanceRequireImdsv2Aspect } from './aspects';
 import { CloudFormationInit } from './cfn-init';
 import { Connections, IConnectable } from './connections';
-import { CfnInstance, IInstanceRef, InstanceRef } from './ec2.generated';
+import { CfnInstance, IInstanceRef, InstanceRef, IPlacementGroupRef } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { CpuCredits, InstanceInitiatedShutdownBehavior } from './launch-template';
 import { IMachineImage, OperatingSystemType } from './machine-image';
-import { IPlacementGroup } from './placement-group';
 import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
@@ -361,7 +360,7 @@ export interface InstanceProps {
    *
    * @default - no placement group will be used for this instance.
    */
-  readonly placementGroup?: IPlacementGroup;
+  readonly placementGroup?: IPlacementGroupRef;
 
   /**
    * Whether the instance is enabled for AWS Nitro Enclaves.
@@ -609,7 +608,7 @@ export class Instance extends Resource implements IInstance {
       ebsOptimized: props.ebsOptimized,
       disableApiTermination: props.disableApiTermination,
       instanceInitiatedShutdownBehavior: props.instanceInitiatedShutdownBehavior,
-      placementGroupName: props.placementGroup?.placementGroupName,
+      placementGroupName: props.placementGroup?.placementGroupRef.groupName,
       enclaveOptions: props.enclaveEnabled !== undefined ? { enabled: props.enclaveEnabled } : undefined,
       hibernationOptions: props.hibernationEnabled !== undefined ? { configured: props.hibernationEnabled } : undefined,
       ipv6AddressCount: props.ipv6AddressCount,

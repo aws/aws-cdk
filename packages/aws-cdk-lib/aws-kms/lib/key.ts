@@ -791,8 +791,8 @@ export class Key extends KeyBase {
    * This method can only be used if the `returnDummyKeyOnMissing` option
    * is set to `true` in the `options` for the `Key.fromLookup()` method.
    */
-  public static isLookupDummy(key: IKey): boolean {
-    return key.keyId === Key.DEFAULT_DUMMY_KEY_ID;
+  public static isLookupDummy(key: IKeyRef): boolean {
+    return key.keyRef.keyId === Key.DEFAULT_DUMMY_KEY_ID;
   }
 
   public readonly keyArn: string;

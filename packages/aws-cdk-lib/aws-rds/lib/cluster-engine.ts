@@ -16,14 +16,14 @@ export interface ClusterEngineBindOptions {
    *
    * @default - none
    */
-  readonly s3ImportRole?: iam.IRole;
+  readonly s3ImportRole?: iam.IRoleRef;
 
   /**
    * The role used for S3 exporting.
    *
    *  @default - none
    */
-  readonly s3ExportRole?: iam.IRole;
+  readonly s3ExportRole?: iam.IRoleRef;
 
   /**
    * The customer-provided ParameterGroup.
@@ -203,13 +203,13 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
       const s3ImportParam = this.combineImportAndExportRoles
         ? 'aws_default_s3_role'
         : 'aurora_load_from_s3_role';
-      parameterGroup?.addParameter(s3ImportParam, options.s3ImportRole.roleArn);
+      parameterGroup?.addParameter(s3ImportParam, options.s3ImportRole.roleRef.roleArn);
     }
     if (options.s3ExportRole) {
       const s3ExportParam = this.combineImportAndExportRoles
         ? 'aws_default_s3_role'
         : 'aurora_select_into_s3_role';
-      parameterGroup?.addParameter(s3ExportParam, options.s3ExportRole.roleArn);
+      parameterGroup?.addParameter(s3ExportParam, options.s3ExportRole.roleRef.roleArn);
     }
 
     return {

@@ -404,7 +404,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
 
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
-  private _allowedVpcEndpoints: Set<ec2.IVpcEndpoint> = new Set();
+  private _allowedVpcEndpoints: Set<ec2.IVPCEndpointRef> = new Set();
 
   protected resourcePolicy?: iam.PolicyDocument;
   protected cloudWatchAccount?: CfnAccount;
@@ -506,7 +506,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
 
     const endpoints = Lazy.list({
       produce: () => {
-        return Array.from(this._allowedVpcEndpoints).map(endpoint => endpoint.vpcEndpointId);
+        return Array.from(this._allowedVpcEndpoints).map(endpoint => endpoint.vpcEndpointRef.vpcEndpointId);
       },
     });
 
