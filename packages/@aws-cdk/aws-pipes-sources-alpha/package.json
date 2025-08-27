@@ -115,6 +115,8 @@
     ]
   },
   "jsiiRosetta": {
-    "exampleDependencies": {}
+    "exampleDependencies": {
+      "@aws-cdk/aws-pipes-targets-alpha":  "^0.0.0"
+    }
   }
 }
