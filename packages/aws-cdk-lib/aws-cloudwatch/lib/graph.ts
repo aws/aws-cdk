@@ -59,14 +59,14 @@ export interface YAxisProps {
   /**
    * The min value
    *
-   * @default 0
+   * @default - Auto
    */
   readonly min?: number;
 
   /**
    * The max value
    *
-   * @default - No maximum value
+   * @default - Auto
    */
   readonly max?: number;
 
@@ -175,7 +175,7 @@ export interface GaugeWidgetProps extends MetricWidgetProps {
   /**
    * Left Y axis
    *
-   * @default - None
+   * @default {min:0,max:100}
    */
   readonly leftYAxis?: YAxisProps;
 
@@ -273,11 +273,6 @@ export class GaugeWidget extends ConcreteWidget {
 
   public toJson(): any[] {
     const metrics = allMetricsGraphJson(this.metrics, []);
-    const leftYAxis = {
-      ...this.props.leftYAxis,
-      min: this.props.leftYAxis?.min ?? 0,
-      max: this.props.leftYAxis?.max ?? 100,
-    };
     return [{
       type: 'metric',
       width: this.width,
@@ -291,7 +286,11 @@ export class GaugeWidget extends ConcreteWidget {
         metrics: metrics.length > 0 ? metrics : undefined,
         annotations: (this.props.annotations ?? []).length > 0 ? { horizontal: this.props.annotations } : undefined,
         yAxis: {
-          left: leftYAxis ?? undefined,
+          left: {
+            min: 0,
+            max: 100,
+            ...this.props.leftYAxis,
+          },
         },
         legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
         liveData: this.props.liveData,

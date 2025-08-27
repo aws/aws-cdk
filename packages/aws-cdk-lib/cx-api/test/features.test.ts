@@ -50,6 +50,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.USE_RESOURCEID_FOR_VPCV2_MIGRATION]: false,
     [feats.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: false,
     [feats.SIGNER_PROFILE_NAME_PASSED_TO_CFN]: false,
+    [feats.ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER]: false,
 
   });
 });

@@ -1,8 +1,5 @@
 /**
  * The type of predefined worker that is allocated when a job runs.
- *
- * If you need to use a WorkerType that doesn't exist as a static member, you
- * can instantiate a `WorkerType` object, e.g: `WorkerType.of('other type')`
  */
 export enum WorkerType {
   /**
@@ -40,6 +37,24 @@ export enum WorkerType {
   G_8X = 'G.8X',
 
   /**
+   * G.12X Worker Type
+   * 12 DPU (48 vCPU, 192 GB of memory, 768 GB disk), and provides 1 executor per worker.
+   * We recommend this worker type for jobs with very large and resource-intensive workloads
+   * that require significant compute capacity. This worker type is available only for
+   * AWS Glue version 3.0 or later jobs.
+   */
+  G_12X = 'G.12X',
+
+  /**
+   * G.16X Worker Type
+   * 16 DPU (64 vCPU, 256 GB of memory, 1024 GB disk), and provides 1 executor per worker.
+   * We recommend this worker type for jobs with the largest and most resource-intensive workloads
+   * that require maximum compute capacity. This worker type is available only for
+   * AWS Glue version 3.0 or later jobs.
+   */
+  G_16X = 'G.16X',
+
+  /**
    * G.025X Worker Type
    * 0.25 DPU (2 vCPU, 4 GB of memory, 64 GB disk), and provides 1 executor per worker. Suitable for low volume streaming jobs.
    */
@@ -49,6 +64,34 @@ export enum WorkerType {
    * Z.2X Worker Type
    */
   Z_2X = 'Z.2X',
+
+  /**
+   * R.1X Worker Type
+   * 1 M-DPU (4 vCPUs, 32 GB memory), We recommend this worker type for memory-intensive workloads
+   * that frequently encounter out-of-memory errors or require high memory-to-CPU ratios.
+   */
+  R_1X = 'R.1X',
+
+  /**
+   * R.2X Worker Type
+   * 2 M-DPU (8 vCPUs, 64 GB memory), We recommend this worker type for memory-intensive workloads
+   * that frequently encounter out-of-memory errors or require high memory-to-CPU ratios.
+   */
+  R_2X = 'R.2X',
+
+  /**
+   * R.4X Worker Type
+   * 4 M-DPU (16 vCPUs, 128 GB memory), We recommend this worker type for large memory-intensive workloads
+   * that frequently encounter out-of-memory errors or require high memory-to-CPU ratios.
+   */
+  R_4X = 'R.4X',
+
+  /**
+   * R.8X Worker Type
+   * 8 M-DPU (32 vCPUs, 256 GB memory), We recommend this worker type for very large memory-intensive workloads
+   * that frequently encounter out-of-memory errors or require high memory-to-CPU ratios.
+   */
+  R_8X = 'R.8X',
 }
 
 /**
@@ -223,9 +266,6 @@ export enum Runtime {
 
 /**
  * The job type.
- *
- * If you need to use a JobType that doesn't exist as a static member, you
- * can instantiate a `JobType` object, e.g: `JobType.of('other name')`.
  */
 export enum JobType {
   /**

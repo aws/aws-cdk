@@ -124,6 +124,55 @@ test('message retention period can be provided as a parameter', () => {
   });
 });
 
+test.each([
+  { size: 1023, valid: false, description: 'just below lower bound' },
+  { size: 1024, valid: true, description: 'at lower bound' },
+  { size: 1048576, valid: true, description: 'at upper bound' },
+  { size: 1048577, valid: false, description: 'just above upper bound' },
+])('maxMessageSizeBytes validation for $size bytes ($description)', ({ size, valid }) => {
+  const stack = new Stack();
+  const constructId = `QueueWithSize${size}`;
+  const action = () => new sqs.Queue(stack, constructId, { maxMessageSizeBytes: size });
+
+  if (valid) {
+    expect(action).not.toThrow();
+  } else {
+    expect(action).toThrow(`Queue initialization failed due to the following validation error(s):\n- maximum message size must be between 1,024 and 1,048,576 bytes, but ${size} was provided`);
+  }
+});
+
+test('maxMessageSizeBytes works with CDK tokens', () => {
+  const stack = new Stack();
+  const parameter = new CfnParameter(stack, 'MessageSize', { type: 'Number' });
+
+  // Should not throw for tokens (validation skipped)
+  expect(() => new sqs.Queue(stack, 'TokenQueue', {
+    maxMessageSizeBytes: parameter.valueAsNumber,
+  })).not.toThrow();
+});
+
+test('multiple validation errors include maxMessageSizeBytes', () => {
+  const stack = new Stack();
+
+  expect(() => new sqs.Queue(stack, 'MultiError', {
+    maxMessageSizeBytes: 2000000,
+    retentionPeriod: Duration.seconds(30),
+  })).toThrow(/maximum message size must be between 1,024 and 1,048,576 bytes.*message retention period must be between 60 and 1,209,600 seconds/s);
+});
+
+test('maxMessageSizeBytes synthesizes correct CloudFormation', () => {
+  const stack = new Stack();
+
+  new sqs.Queue(stack, 'LargeMessageQueue', {
+    maxMessageSizeBytes: 1048576,
+  });
+
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::SQS::Queue', {
+    MaximumMessageSize: 1048576,
+  });
+});
+
 test('addToPolicy will automatically create a policy for this queue', () => {
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue');

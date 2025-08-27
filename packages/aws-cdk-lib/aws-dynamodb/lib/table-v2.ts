@@ -16,6 +16,8 @@ import {
   TableClass,
   WarmThroughput,
   MultiRegionConsistency,
+  ContributorInsightsSpecification,
+  validateContributorInsights,
 } from './shared';
 import { ITableV2, TableBaseV2 } from './table-v2-base';
 import { PolicyDocument } from '../../aws-iam';
@@ -47,14 +49,21 @@ const MAX_NON_KEY_ATTRIBUTES = 100;
 /**
  * Options used to configure global secondary indexes on a replica table.
  */
-export interface ReplicaGlobalSecondaryIndexOptions {
+export interface ReplicaGlobalSecondaryIndexOptions extends IContributorInsightsConfigurable {
   /**
    * Whether CloudWatch contributor insights is enabled for a specific global secondary
    * index on a replica table.
-   *
+   * @deprecated use `contributorInsightsSpecification` instead
    * @default - inherited from the primary table
    */
   readonly contributorInsights?: boolean;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled and what mode is selected
+   * for a specific global secondary index on a replica table.
+   * @default - contributor insights is not enabled
+   */
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
 
   /**
    * The read capacity for a specific global secondary index on a replica table.
@@ -136,15 +145,38 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
 }
 
 /**
- * Options used to configure a DynamoDB table.
+ * Common interface for types that can configure contributor insights
+ * @internal
  */
-export interface TableOptionsV2 {
+interface IContributorInsightsConfigurable {
   /**
    * Whether CloudWatch contributor insights is enabled.
-   *
+   * @deprecated use `contributorInsightsSpecification` instead
+   */
+  readonly contributorInsights?: boolean;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled and what mode is selected
+   */
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
+}
+
+/**
+ * Options used to configure a DynamoDB table.
+ */
+export interface TableOptionsV2 extends IContributorInsightsConfigurable {
+  /**
+   * Whether CloudWatch contributor insights is enabled.
+   * @deprecated use `contributorInsightsSpecification` instead
    * @default false
    */
   readonly contributorInsights?: boolean;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled and what mode is selected
+   * @default - contributor insights is not enabled
+   */
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
 
   /**
    * Whether deletion protection is enabled.
@@ -752,7 +784,7 @@ export class TableV2 extends TableBaseV2 {
   }
 
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
-    const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
+    const contributorInsightsSpecification = this.validateCCI(props);
 
     // Determine if Point-In-Time Recovery (PITR) is enabled based on the provided property or table options (deprecated options).
     const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
@@ -796,9 +828,7 @@ export class TableV2 extends TableBaseV2 {
       kinesisStreamSpecification: props.kinesisStream
         ? { streamArn: props.kinesisStream.streamArn }
         : undefined,
-      contributorInsightsSpecification: contributorInsights !== undefined
-        ? { enabled: contributorInsights }
-        : undefined,
+      contributorInsightsSpecification: contributorInsightsSpecification,
       pointInTimeRecoverySpecification: pointInTimeRecoverySpecification,
       readProvisionedThroughputSettings: props.readCapacity
         ? props.readCapacity._renderReadCapacity()
@@ -875,13 +905,14 @@ export class TableV2 extends TableBaseV2 {
         ? { maxReadRequestUnits: maxReadRequestUnits }
         : undefined;
 
+      const contributorInsightsSpecification = this.validateCCI(options[indexName]) ||
+        (contributorInsights !== undefined ? { enabled: contributorInsights } as ContributorInsightsSpecification : undefined);
+
       replicaGlobalSecondaryIndexes.push({
         indexName,
         readProvisionedThroughputSettings,
         readOnDemandThroughputSettings,
-        contributorInsightsSpecification: contributorInsights !== undefined
-          ? { enabled: contributorInsights }
-          : undefined,
+        contributorInsightsSpecification: contributorInsightsSpecification,
       });
     }
 
@@ -1133,5 +1164,12 @@ export class TableV2 extends TableBaseV2 {
         throw new ValidationError(`MRSC global table without witness region must have exactly 3 replicas (including primary), but found ${totalReplicas}. Current configuration: primary region '${primaryRegion}', replica regions [${replicaRegions.join(', ')}]`, this);
       }
     }
+  }
+
+  private validateCCI(props: IContributorInsightsConfigurable): ContributorInsightsSpecification | undefined {
+    const contributorInsights = props?.contributorInsights ?? this.tableOptions?.contributorInsights;
+    const contributorInsightsSpecification = props?.contributorInsightsSpecification || this.tableOptions?.contributorInsightsSpecification;
+
+    return validateContributorInsights(contributorInsights, contributorInsightsSpecification, 'contributorInsights', this);
   }
 }

@@ -1004,6 +1004,17 @@ const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
 });
 ```
 
+[Refresh token rotation](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-refresh-token.html#using-the-refresh-token-rotation)
+can be configured to enable automatic rotation of refresh tokens. By default, refresh token rotation is disabled. When the refreshTokenRotationGracePeriod is 0, the grace period is disabled and a successful request immediately invalidates the submitted refresh token. 
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  // ...
+  refreshTokenRotationGracePeriod: Duration.seconds(40)
+});
+```
+
 See [Adding user device and session data to API requests](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-adaptive-authentication.html#user-pool-settings-adaptive-authentication-device-fingerprint) for more information.
 
 ### Resource Servers

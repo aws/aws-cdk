@@ -122,6 +122,7 @@ export class CallAwsService extends sfn.TaskStateBase {
     }
 
     const iamServiceMap: Record<string, string> = {
+      bedrockagent: 'bedrock',
       cloudwatchlogs: 'logs',
       efs: 'elasticfilesystem',
       elasticloadbalancingv2: 'elasticloadbalancing',
