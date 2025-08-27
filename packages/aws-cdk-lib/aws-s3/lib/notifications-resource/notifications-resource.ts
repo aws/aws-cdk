@@ -135,8 +135,8 @@ export class BucketNotifications extends Construct {
         managed = false;
       }
 
-      // Register this bucket with the handler for scoped IAM permissions
-      handler.registerBucket(this.bucket.bucketArn, !managed);
+      // Grant permissions for this bucket to the handler
+      handler.grantBucketNotifications(this.bucket.bucketArn, !managed);
 
       this.resource = new cdk.CfnResource(this, 'Resource', {
         type: 'Custom::S3BucketNotifications',
