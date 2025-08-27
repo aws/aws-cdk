@@ -236,7 +236,7 @@ describe('SaaS connector connection types', () => {
   test('ADOBEANALYTICS connection type', () => {
     const stack = new cdk.Stack();
     new glue.Connection(stack, 'Connection', {
-      type: glue.ConnectionType.ADOBEANALYTICS,
+      type: glue.ConnectionType.ADOBE_ANALYTICS,
       properties: {
         CONNECTION_URL: 'https://analytics.adobe.io',
         CLIENT_ID: 'client-id',
@@ -271,7 +271,7 @@ describe('SaaS connector connection types', () => {
   test('BLACKBAUDRAISEREDGENXT connection type', () => {
     const stack = new cdk.Stack();
     new glue.Connection(stack, 'Connection', {
-      type: glue.ConnectionType.BLACKBAUDRAISEREDGENXT,
+      type: glue.ConnectionType.BLACKBAUD_RAISERS_EDGE_NXT,
       properties: {
         CONNECTION_URL: 'https://api.blackbaud.com',
         CLIENT_ID: 'client-id',
@@ -289,7 +289,7 @@ describe('SaaS connector connection types', () => {
   test('CIRCLECI connection type', () => {
     const stack = new cdk.Stack();
     new glue.Connection(stack, 'Connection', {
-      type: glue.ConnectionType.CIRCLECI,
+      type: glue.ConnectionType.CIRCLE_CI,
       properties: {
         CONNECTION_URL: 'https://circleci.com/api',
         API_TOKEN: 'api-token',
@@ -324,7 +324,7 @@ describe('SaaS connector connection types', () => {
   test('DOCUSIGNMONITOR connection type', () => {
     const stack = new cdk.Stack();
     new glue.Connection(stack, 'Connection', {
-      type: glue.ConnectionType.DOCUSIGNMONITOR,
+      type: glue.ConnectionType.DOCUSIGN_MONITOR,
       properties: {
         CONNECTION_URL: 'https://monitor.docusign.com',
         USERNAME: 'username',
@@ -359,7 +359,7 @@ describe('SaaS connector connection types', () => {
   test('FACEBOOKPAGEINSIGHTS connection type', () => {
     const stack = new cdk.Stack();
     new glue.Connection(stack, 'Connection', {
-      type: glue.ConnectionType.FACEBOOKPAGEINSIGHTS,
+      type: glue.ConnectionType.FACEBOOK_PAGE_INSIGHTS,
       properties: {
         CONNECTION_URL: 'https://graph.facebook.com',
         ACCESS_TOKEN: 'access-token',
@@ -410,7 +410,7 @@ describe('SaaS connector connection types', () => {
   test('GOOGLESEARCHCONSOLE connection type', () => {
     const stack = new cdk.Stack();
     new glue.Connection(stack, 'Connection', {
-      type: glue.ConnectionType.GOOGLESEARCHCONSOLE,
+      type: glue.ConnectionType.GOOGLE_SEARCH_CONSOLE,
       properties: {
         CONNECTION_URL: 'https://searchconsole.googleapis.com',
         CLIENT_ID: 'client-id',
@@ -446,7 +446,7 @@ describe('SaaS connector connection types', () => {
   test('MICROSOFTDYNAMIC365FINANCEANDOPS connection type', () => {
     const stack = new cdk.Stack();
     new glue.Connection(stack, 'Connection', {
-      type: glue.ConnectionType.MICROSOFTDYNAMIC365FINANCEANDOPS,
+      type: glue.ConnectionType.MICROSOFT_DYNAMIC_365_FINANCE_AND_OPS,
       properties: {
         CONNECTION_URL: 'https://tenant.operations.dynamics.com',
         CLIENT_ID: 'client-id',
@@ -464,7 +464,7 @@ describe('SaaS connector connection types', () => {
   test('MICROSOFTTEAMS connection type', () => {
     const stack = new cdk.Stack();
     new glue.Connection(stack, 'Connection', {
-      type: glue.ConnectionType.MICROSOFTTEAMS,
+      type: glue.ConnectionType.MICROSOFT_TEAMS,
       properties: {
         CONNECTION_URL: 'https://graph.microsoft.com',
         CLIENT_ID: 'client-id',
@@ -569,7 +569,7 @@ describe('SaaS connector connection types', () => {
   test('SALESFORCECOMMERCECLOUD connection type', () => {
     const stack = new cdk.Stack();
     new glue.Connection(stack, 'Connection', {
-      type: glue.ConnectionType.SALESFORCECOMMERCECLOUD,
+      type: glue.ConnectionType.SALESFORCE_COMMERCE_CLOUD,
       properties: {
         CONNECTION_URL: 'https://instance.demandware.net',
         CLIENT_ID: 'client-id',
@@ -587,7 +587,7 @@ describe('SaaS connector connection types', () => {
   test('SAPCONCUR connection type', () => {
     const stack = new cdk.Stack();
     new glue.Connection(stack, 'Connection', {
-      type: glue.ConnectionType.SAPCONCUR,
+      type: glue.ConnectionType.SAP_CONCUR,
       properties: {
         CONNECTION_URL: 'https://us.api.concursolutions.com',
         CLIENT_ID: 'client-id',
@@ -657,7 +657,7 @@ describe('SaaS connector connection types', () => {
   test('WOOCOMMERCE connection type', () => {
     const stack = new cdk.Stack();
     new glue.Connection(stack, 'Connection', {
-      type: glue.ConnectionType.WOOCOMMERCE,
+      type: glue.ConnectionType.WOO_COMMERCE,
       properties: {
         CONNECTION_URL: 'https://yourstore.com/wp-json/wc/v3',
         CONSUMER_KEY: 'consumer-key',

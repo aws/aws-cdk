@@ -59,7 +59,7 @@ export class ConnectionType {
   /**
    * Designates a connection to Adobe Analytics.
    */
-  public static readonly ADOBEANALYTICS = new ConnectionType('ADOBEANALYTICS');
+  public static readonly ADOBE_ANALYTICS = new ConnectionType('ADOBEANALYTICS');
 
   /**
    * Designates a connection to Asana.
@@ -69,12 +69,12 @@ export class ConnectionType {
   /**
    * Designates a connection to Blackbaud Raiser's Edge NXT.
    */
-  public static readonly BLACKBAUDRAISEREDGENXT = new ConnectionType('BLACKBAUDRAISEREDGENXT');
+  public static readonly BLACKBAUD_RAISERS_EDGE_NXT = new ConnectionType('BLACKBAUDRAISEREDGENXT');
 
   /**
    * Designates a connection to CircleCI.
    */
-  public static readonly CIRCLECI = new ConnectionType('CIRCLECI');
+  public static readonly CIRCLE_CI = new ConnectionType('CIRCLECI');
 
   /**
    * Designates a connection to Datadog.
@@ -84,7 +84,7 @@ export class ConnectionType {
   /**
    * Designates a connection to DocuSign Monitor.
    */
-  public static readonly DOCUSIGNMONITOR = new ConnectionType('DOCUSIGNMONITOR');
+  public static readonly DOCUSIGN_MONITOR = new ConnectionType('DOCUSIGNMONITOR');
 
   /**
    * Designates a connection to Dynatrace.
@@ -94,12 +94,12 @@ export class ConnectionType {
   /**
    * Designates a connection to Facebook Ads.
    */
-  public static readonly FACEBOOKADS = new ConnectionType('FACEBOOKADS');
+  public static readonly FACEBOOK_ADS = new ConnectionType('FACEBOOKADS');
 
   /**
    * Designates a connection to Facebook Page Insights.
    */
-  public static readonly FACEBOOKPAGEINSIGHTS = new ConnectionType('FACEBOOKPAGEINSIGHTS');
+  public static readonly FACEBOOK_PAGE_INSIGHTS = new ConnectionType('FACEBOOKPAGEINSIGHTS');
 
   /**
    * Designates a connection to Freshdesk.
@@ -119,22 +119,22 @@ export class ConnectionType {
   /**
    * Designates a connection to Google Ads.
    */
-  public static readonly GOOGLEADS = new ConnectionType('GOOGLEADS');
+  public static readonly GOOGLE_ADS = new ConnectionType('GOOGLEADS');
 
   /**
    * Designates a connection to Google Analytics 4.
    */
-  public static readonly GOOGLEANALYTICS4 = new ConnectionType('GOOGLEANALYTICS4');
+  public static readonly GOOGLE_ANALYTICS_4 = new ConnectionType('GOOGLEANALYTICS4');
 
   /**
    * Designates a connection to Google Search Console.
    */
-  public static readonly GOOGLESEARCHCONSOLE = new ConnectionType('GOOGLESEARCHCONSOLE');
+  public static readonly GOOGLE_SEARCH_CONSOLE = new ConnectionType('GOOGLESEARCHCONSOLE');
 
   /**
    * Designates a connection to Google Sheets.
    */
-  public static readonly GOOGLESHEETS = new ConnectionType('GOOGLESHEETS');
+  public static readonly GOOGLE_SHEETS = new ConnectionType('GOOGLESHEETS');
 
   /**
    * Designates a connection to HubSpot.
@@ -144,7 +144,7 @@ export class ConnectionType {
   /**
    * Designates a connection to Instagram Ads.
    */
-  public static readonly INSTAGRAMADS = new ConnectionType('INSTAGRAMADS');
+  public static readonly INSTAGRAM_ADS = new ConnectionType('INSTAGRAMADS');
 
   /**
    * Designates a connection to Intercom.
@@ -154,7 +154,7 @@ export class ConnectionType {
   /**
    * Designates a connection to Jira Cloud.
    */
-  public static readonly JIRACLOUD = new ConnectionType('JIRACLOUD');
+  public static readonly JIRA_CLOUD = new ConnectionType('JIRACLOUD');
 
   /**
    * Designates a connection to LinkedIn.
@@ -174,12 +174,12 @@ export class ConnectionType {
   /**
    * Designates a connection to Microsoft Dynamics 365 Finance and Operations.
    */
-  public static readonly MICROSOFTDYNAMIC365FINANCEANDOPS = new ConnectionType('MICROSOFTDYNAMIC365FINANCEANDOPS');
+  public static readonly MICROSOFT_DYNAMIC_365_FINANCE_AND_OPS = new ConnectionType('MICROSOFTDYNAMIC365FINANCEANDOPS');
 
   /**
    * Designates a connection to Microsoft Teams.
    */
-  public static readonly MICROSOFTTEAMS = new ConnectionType('MICROSOFTTEAMS');
+  public static readonly MICROSOFT_TEAMS = new ConnectionType('MICROSOFTTEAMS');
 
   /**
    * Designates a connection to Mixpanel.
@@ -189,7 +189,7 @@ export class ConnectionType {
   /**
    * Designates a connection to Oracle NetSuite.
    */
-  public static readonly NETSUITEERP = new ConnectionType('NETSUITEERP');
+  public static readonly NETSUITE_ERP = new ConnectionType('NETSUITEERP');
 
   /**
    * Designates a connection to PayPal.
@@ -204,7 +204,7 @@ export class ConnectionType {
   /**
    * Designates a connection to Pipedrive.
    */
-  public static readonly PIPEDRIVE = new ConnectionType('PIPEDRIVE');
+  public static readonly PIPEDRIVE = new ConnectionType('PIPEDIVE');
 
   /**
    * Designates a connection to Productboard.
@@ -224,27 +224,27 @@ export class ConnectionType {
   /**
    * Designates a connection to Salesforce Commerce Cloud.
    */
-  public static readonly SALESFORCECOMMERCECLOUD = new ConnectionType('SALESFORCECOMMERCECLOUD');
+  public static readonly SALESFORCE_COMMERCE_CLOUD = new ConnectionType('SALESFORCECOMMERCECLOUD');
 
   /**
    * Designates a connection to Salesforce Marketing Cloud.
    */
-  public static readonly SALESFORCEMARKETINGCLOUD = new ConnectionType('SALESFORCEMARKETINGCLOUD');
+  public static readonly SALESFORCE_MARKETING_CLOUD = new ConnectionType('SALESFORCEMARKETINGCLOUD');
 
   /**
    * Designates a connection to Salesforce Marketing Cloud Account Engagement (MCAE).
    */
-  public static readonly SALESFORCEPARDOT = new ConnectionType('SALESFORCEPARDOT');
+  public static readonly SALESFORCE_PARDOT = new ConnectionType('SALESFORCEPARDOT');
 
   /**
    * Designates a connection to SAP Concur.
    */
-  public static readonly SAPCONCUR = new ConnectionType('SAPCONCUR');
+  public static readonly SAP_CONCUR = new ConnectionType('SAPCONCUR');
 
   /**
    * Designates a connection to SAP OData.
    */
-  public static readonly SAPODATA = new ConnectionType('SAPODATA');
+  public static readonly SAP_ODATA = new ConnectionType('SAPODATA');
 
   /**
    * Designates a connection to SendGrid.
@@ -274,7 +274,7 @@ export class ConnectionType {
   /**
    * Designates a connection to Snapchat Ads.
    */
-  public static readonly SNAPCHATADS = new ConnectionType('SNAPCHATADS');
+  public static readonly SNAPCHAT_ADS = new ConnectionType('SNAPCHATADS');
 
   /**
    * Designates a connection to Stripe.
@@ -289,7 +289,7 @@ export class ConnectionType {
   /**
    * Designates a connection to WooCommerce.
    */
-  public static readonly WOOCOMMERCE = new ConnectionType('WOOCOMMERCE');
+  public static readonly WOO_COMMERCE = new ConnectionType('WOOCOMMERCE');
 
   /**
    * Designates a connection to Zendesk.
@@ -299,7 +299,7 @@ export class ConnectionType {
   /**
    * Designates a connection to Zoho CRM.
    */
-  public static readonly ZOHOCRM = new ConnectionType('ZOHOCRM');
+  public static readonly ZOHO_CRM = new ConnectionType('ZOHOCRM');
 
   /**
    * Designates a connection to Zoom.
