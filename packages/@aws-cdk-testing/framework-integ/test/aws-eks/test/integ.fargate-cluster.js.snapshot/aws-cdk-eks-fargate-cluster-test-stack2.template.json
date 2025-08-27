@@ -61,7 +61,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+        ":iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
        ]
       ]
      },
@@ -477,7 +477,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/daa902d63d4bb2679f44724a545e6aee5ad8d21e5e656013653b62ec829d1d05.json"
+       "/19adb3b94b7003bce0609801013992a773cfd6d0bfd02cbc5d2bd3816cbd9fec.json"
       ]
      ]
     }
@@ -521,7 +521,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/2452c3e87eb4acee2b0d16dd5475208f06c7c940903d0ba61db67a44f9836742.json"
+       "/cc5bdf3ca6ab44986e6f7eb4b9a58697b8eb6d8f9b624ed351a69021f914b50c.json"
       ]
      ]
     }
