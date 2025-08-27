@@ -79,46 +79,71 @@ const integ = new IntegTest(app, 'EcsExecBatchTest', {
   testCases: [stack],
 });
 
-// Submit the job
-const submitJobResult = integ.assertions.awsApiCall('Batch', 'submitJob', {
-  jobName: 'test-ecs-exec-ec2-job',
-  jobQueue: stack.ec2JobQueue.jobQueueArn,
-  jobDefinition: stack.ec2JobDefinition.jobDefinitionArn,
-}).waitForAssertions();
-
-// Get the job ID from the submit response
-const jobId = submitJobResult.getAttString('jobId');
-
-// Wait for job to reach RUNNING state and have a task ARN
-const waitForJobRunning = integ.assertions.awsApiCall('Batch', 'describeJobs', {
-  jobs: [jobId],
-}).assertAtPath('jobs.0.status', ExpectedResult.stringLikeRegexp('RUNNING'))
-  .assertAtPath('jobs.0.container.taskArn', ExpectedResult.stringLikeRegexp('arn:aws:ecs:.*'))
-  .waitForAssertions({
-    totalTimeout: cdk.Duration.minutes(10),
-    interval: cdk.Duration.seconds(30),
+// Helper function to test ECS Exec for a job
+function testEcsExecForJob(
+  jobName: string,
+  jobQueue: batch.JobQueue,
+  jobDefinition: batch.EcsJobDefinition,
+  computeEnvironment: batch.IManagedComputeEnvironment,
+) {
+  // Get cluster ARN from compute environment
+  const describeComputeEnv = integ.assertions.awsApiCall('Batch', 'describeComputeEnvironments', {
+    computeEnvironments: [computeEnvironment.computeEnvironmentArn],
   });
 
-// Extract task ARN from job details
-const taskArn = waitForJobRunning.getAttString('jobs.0.container.taskArn');
+  const clusterArn = describeComputeEnv.getAttString('computeEnvironments.0.ecsClusterArn');
 
-// Extract cluster ARN from task ARN
-const describeTask = waitForJobRunning.next(
-  integ.assertions.awsApiCall('ECS', 'describeTasks', {
-    cluster: taskArn.split('/')[1], // Extract cluster name from task ARN
-    tasks: [taskArn],
-  }),
+  // Submit the job
+  const submitJobResult = describeComputeEnv.next(
+    integ.assertions.awsApiCall('Batch', 'submitJob', {
+      jobName,
+      jobQueue: jobQueue.jobQueueArn,
+      jobDefinition: jobDefinition.jobDefinitionArn,
+    }),
+  ).waitForAssertions();
+
+  // Get the job ID from the submit response
+  const jobId = submitJobResult.getAttString('jobId');
+
+  // Wait for job to reach RUNNING state and have a task ARN
+  const waitForJobRunning = integ.assertions.awsApiCall('Batch', 'describeJobs', {
+    jobs: [jobId],
+  }).assertAtPath('jobs.0.status', ExpectedResult.stringLikeRegexp('RUNNING'))
+    .waitForAssertions({
+      totalTimeout: cdk.Duration.minutes(10),
+      interval: cdk.Duration.seconds(30),
+    });
+
+  // Extract task ARN from job details
+  const taskArn = waitForJobRunning.getAttString('jobs.0.container.taskArn');
+
+  // Execute ECS command to verify ECS Exec is enabled
+  waitForJobRunning.next(
+    integ.assertions.awsApiCall('ECS', 'executeCommand', {
+      cluster: clusterArn,
+      task: taskArn,
+      container: 'default',
+      interactive: true,
+      command: '/bin/bash',
+    }).waitForAssertions({
+      totalTimeout: cdk.Duration.minutes(10),
+      interval: cdk.Duration.seconds(30),
+    }),
+  );
+}
+
+// Test EC2 job
+testEcsExecForJob(
+  'test-ecs-exec-ec2-job',
+  stack.ec2JobQueue,
+  stack.ec2JobDefinition,
+  stack.ec2ComputeEnvironment,
 );
 
-const clusterArn = describeTask.getAttString('tasks.0.clusterArn');
-
-// Execute ECS command to verify ECS Exec is enabled
-describeTask.next(
-  integ.assertions.awsApiCall('ECS', 'executeCommand', {
-    cluster: clusterArn,
-    task: taskArn,
-    container: 'Default',
-    interactive: false,
-    command: 'echo "ECS Exec test successful"',
-  }),
+// Test Fargate job
+testEcsExecForJob(
+  'test-ecs-exec-fargate-job',
+  stack.fargateJobQueue,
+  stack.fargateJobDefinition,
+  stack.fargateComputeEnvironment,
 );
