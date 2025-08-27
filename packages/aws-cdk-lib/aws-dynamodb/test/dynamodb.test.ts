@@ -26,6 +26,7 @@ import {
   InputCompressionType,
   InputFormat,
   ApproximateCreationDateTimePrecision,
+  ContributorInsightsMode,
 } from '../lib';
 import { ReplicaProvider } from '../lib/replica-provider';
 
@@ -4118,4 +4119,133 @@ test('Kinesis Stream - precision timestamp', () => {
       ApproximateCreationDateTimePrecision: 'MILLISECOND',
     },
   });
+});
+
+test('Contributor Insights Specification - table', () => {
+  const stack = new Stack();
+
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    partitionKey: TABLE_PARTITION_KEY,
+    sortKey: TABLE_SORT_KEY,
+    contributorInsightsSpecification: {
+      enabled: true,
+      mode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+        { AttributeName: 'sortKey', AttributeType: 'N' },
+      ],
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
+      ],
+      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      ContributorInsightsSpecification: {
+        Enabled: true,
+        Mode: 'ACCESSED_AND_THROTTLED_KEYS',
+      },
+    },
+  );
+});
+
+test('Contributor Insights Specification - table - without mode', () => {
+  const stack = new Stack();
+
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    partitionKey: TABLE_PARTITION_KEY,
+    sortKey: TABLE_SORT_KEY,
+    contributorInsightsSpecification: {
+      enabled: true,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+        { AttributeName: 'sortKey', AttributeType: 'N' },
+      ],
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
+      ],
+      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      ContributorInsightsSpecification: {
+        Enabled: true,
+      },
+    },
+  );
+});
+
+test('Contributor Insights Specification - index', () => {
+  const stack = new Stack();
+
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    partitionKey: TABLE_PARTITION_KEY,
+    sortKey: TABLE_SORT_KEY,
+    contributorInsightsSpecification: {
+      enabled: true,
+      mode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+    },
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: GSI_NAME,
+    partitionKey: GSI_PARTITION_KEY,
+    contributorInsightsSpecification: {
+      enabled: true,
+      mode: ContributorInsightsMode.THROTTLED_KEYS,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+        { AttributeName: 'sortKey', AttributeType: 'N' },
+        { AttributeName: 'gsiHashKey', AttributeType: 'S' },
+      ],
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
+      ],
+      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      ContributorInsightsSpecification: {
+        Enabled: true,
+        Mode: 'ACCESSED_AND_THROTTLED_KEYS',
+      },
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'MyGSI',
+          KeySchema: [
+            { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
+          ],
+          ContributorInsightsSpecification: {
+            Enabled: true,
+            Mode: 'THROTTLED_KEYS',
+          },
+        },
+      ],
+    },
+  );
+});
+
+test('ContributorInsightsSpecification && ContributorInsightsEnabled', () => {
+  const stack = new Stack();
+
+  expect(() => {
+    new Table(stack, 'Table', {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+      contributorInsightsEnabled: true,
+      contributorInsightsSpecification: {
+        enabled: true,
+        mode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+      },
+    });
+  }).toThrow('`contributorInsightsSpecification` and `contributorInsightsEnabled` are set. Use `contributorInsightsSpecification` only.');
 });

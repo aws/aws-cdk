@@ -1,34 +1,4 @@
 {
- "Resources": {
-  "queue": {
-   "Type": "AWS::SQS::Queue"
-  },
-  "DashCCD7F836": {
-   "Type": "AWS::CloudWatch::Dashboard",
-   "Properties": {
-    "DashboardBody": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"widgets\":[{\"type\":\"metric\",\"width\":24,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"gauge\",\"region\":\"",
-       {
-        "Ref": "AWS::Region"
-       },
-       "\",\"metrics\":[[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
-       {
-        "Fn::GetAtt": [
-         "queue",
-         "QueueName"
-        ]
-       },
-       "\"]],\"yAxis\":{\"left\":{\"min\":0,\"max\":500}}}}]}"
-      ]
-     ]
-    },
-    "DashboardName": "MyCustomGaugeAlarm"
-   }
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
