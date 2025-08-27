@@ -2278,7 +2278,7 @@ When this flag is disabled:
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.213.0 | `false` | `true` |
 
 
 <!-- END details -->
