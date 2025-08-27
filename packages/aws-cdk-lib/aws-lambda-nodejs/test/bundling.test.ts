@@ -60,6 +60,7 @@ test('esbuild bundling in Docker', () => {
       '.png': 'dataurl',
     },
     forceDockerBundling: true,
+    network: 'host',
   });
 
   // Correctly bundles with esbuild
@@ -82,6 +83,7 @@ test('esbuild bundling in Docker', () => {
       IMAGE: expect.stringMatching(/build-nodejs/),
     }),
     platform: 'linux/amd64',
+    network: 'host',
   }));
 });
 
