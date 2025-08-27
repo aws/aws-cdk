@@ -1,5 +1,8 @@
 import { Resource, Names, Lazy, Tags, Token, ValidationError, UnscopedValidationError } from 'aws-cdk-lib';
-import { CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import {
+  CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation,
+  SubnetRef, SubnetType,
+} from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
 import { CidrBlock, CidrBlockIpv6, defaultSubnetName } from './util';
@@ -194,6 +197,12 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
        */
       public readonly routeTable: IRouteTable = { routeTableId: attrs.routeTableId! };
 
+      public get subnetRef(): SubnetRef {
+        return {
+          subnetId: this.subnetId,
+        };
+      }
+
       /**
        * Associate a Network ACL with this subnet
        * Required here since it is implemented in the ISubnetV2
@@ -244,6 +253,12 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
    * The IPv6 CIDR Block for this subnet
    */
   public readonly ipv6CidrBlock?: string;
+
+  public get subnetRef(): SubnetRef {
+    return {
+      subnetId: this.subnetId,
+    };
+  }
 
   /**
    * The type of subnet (public or private) that this subnet represents.
