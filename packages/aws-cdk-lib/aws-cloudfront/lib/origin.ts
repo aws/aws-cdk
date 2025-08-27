@@ -52,6 +52,13 @@ export interface OriginBindConfig {
   readonly failoverConfig?: OriginFailoverConfig;
 
   /**
+   * The Origin ID, if this is an OriginGroup with an explicitly set ID.
+   *
+   * @default - nothing is returned
+   */
+  readonly originGroupId?: string;
+
+  /**
    * The selection criteria for how your origins are selected.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html#concept_origin_groups.creating
