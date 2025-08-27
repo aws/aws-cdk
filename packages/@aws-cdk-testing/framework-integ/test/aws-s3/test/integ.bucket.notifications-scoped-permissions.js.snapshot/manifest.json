@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/579a9044c8572e075599fc33ac1b5d14638d1df7a1d8a0db00a0fc0540f65b53.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/19ed43ce2b2e649cea6045804e9b17e30ece51dc5ac0ef94ae95a549bc2f7530.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -102,6 +102,36 @@
             "data": "TopicPolicyA1747468"
           }
         ],
+        "/aws-cdk-s3-notifications-scoped-permissions/Queue": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/aws-cdk-s3-notifications-scoped-permissions/Queue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Queue4A7E3555"
+          }
+        ],
+        "/aws-cdk-s3-notifications-scoped-permissions/Queue/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "queues": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-s3-notifications-scoped-permissions/Queue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueuePolicy25439813"
+          }
+        ],
         "/aws-cdk-s3-notifications-scoped-permissions/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -145,6 +175,14 @@
                 "*"
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-s3-notifications-scoped-permissions/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/ImportRole": [
@@ -177,6 +215,14 @@
             "data": {
               "attachToRole": [
                 "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
               ]
             }
           },

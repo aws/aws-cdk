@@ -18,10 +18,23 @@
      "Ref": "Bucket12520700A"
     },
     "NotificationConfiguration": {
+     "QueueConfigurations": [
+      {
+       "Events": [
+        "s3:ObjectCreated:Post"
+       ],
+       "QueueArn": {
+        "Fn::GetAtt": [
+         "Queue4A7E3555",
+         "Arn"
+        ]
+       }
+      }
+     ],
      "TopicConfigurations": [
       {
        "Events": [
-        "s3:ObjectCreated:*"
+        "s3:ObjectCreated:Put"
        ],
        "TopicArn": {
         "Ref": "TopicBFC7AF6E"
@@ -33,6 +46,8 @@
     "SkipDestinationValidation": false
    },
    "DependsOn": [
+    "QueuePolicy25439813",
+    "Queue4A7E3555",
     "TopicPolicyA1747468",
     "TopicBFC7AF6E"
    ]
@@ -58,7 +73,15 @@
      "TopicConfigurations": [
       {
        "Events": [
-        "s3:ObjectRemoved:*"
+        "s3:ObjectRemoved:Delete"
+       ],
+       "TopicArn": {
+        "Ref": "TopicBFC7AF6E"
+       }
+      },
+      {
+       "Events": [
+        "s3:ObjectRemoved:DeleteMarkerCreated"
        ],
        "TopicArn": {
         "Ref": "TopicBFC7AF6E"
@@ -130,6 +153,53 @@
     "Topics": [
      {
       "Ref": "TopicBFC7AF6E"
+     }
+    ]
+   }
+  },
+  "Queue4A7E3555": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "QueuePolicy25439813": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
+       ],
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "Bucket12520700A",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "Queue4A7E3555",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "Queue4A7E3555"
      }
     ]
    }
