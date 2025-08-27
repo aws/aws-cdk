@@ -12,8 +12,14 @@ class Fixture extends Stack {
     });
     const namespace = new Namespace(scope, 'ExampleNamespace', {
       tableBucket: tableBucket,
-      namespaceName: 'example-namespace-1',
+      namespaceName: 'example_namespace_1',
     });
+    const table = new Table(scope, 'ExampleTable', {
+      tableName: 'example_table',
+      namespace,
+      openTableFormat: OpenTableFormat.ICEBERG,
+    });
+
     const stack = this;
     /// here
   }
