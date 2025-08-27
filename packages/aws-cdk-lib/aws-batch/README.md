@@ -534,7 +534,7 @@ const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
 
 ### Enable Execute Command (ECS Exec)
 
-You can enable ECS Exec for interactive debugging and troubleshooting by setting `enableExecuteCommand` to `true`.
+You can enable [ECS Exec](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html) for interactive debugging and troubleshooting by setting `enableExecuteCommand` to `true`.
 When enabled, you'll be able to execute commands interactively in running containers.
 
 ```ts
