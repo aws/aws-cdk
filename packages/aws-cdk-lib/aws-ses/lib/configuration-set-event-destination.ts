@@ -260,7 +260,7 @@ export interface FirehoseDeliveryStreamDestination {
    *
    * @default - Create IAM Role for Amazon Data Firehose Delivery stream
    */
-  readonly role?: iam.IRoleRef;
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -306,7 +306,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
 
     let firehoseDeliveryStreamIamRoleArn = '';
     if (props.destination.stream?.role) {
-      firehoseDeliveryStreamIamRoleArn = props.destination.stream.role.roleRef.roleArn;
+      firehoseDeliveryStreamIamRoleArn = props.destination.stream.role.roleArn;
     } else if (props.destination.stream) {
       // As per https://docs.aws.amazon.com/ses/latest/dg/event-publishing-add-event-destination-firehose.html
       const firehoseDeliveryStreamIamRole = new iam.Role(this, 'FirehoseDeliveryStreamIamRole', {

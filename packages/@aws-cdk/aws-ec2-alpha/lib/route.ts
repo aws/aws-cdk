@@ -1,4 +1,4 @@
-import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnVPCPeeringConnection, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, IRouteTable, IVpcEndpointRef, RouterType } from 'aws-cdk-lib/aws-ec2';
+import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnVPCPeeringConnection, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, IDependable } from 'constructs';
 import { Annotations, Duration, FeatureFlags, IResource, Resource, Tags, ValidationError } from 'aws-cdk-lib/core';
 import { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
@@ -621,7 +621,7 @@ export interface RouteTargetProps {
    *
    * @default - target is not set to an endpoint, in this case a gateway is needed.
    */
-  readonly endpoint?: IVpcEndpointRef;
+  readonly endpoint?: IVpcEndpoint;
 }
 
 /**
@@ -642,7 +642,7 @@ export class RouteTargetType {
    *
    * @default - target is not set to an endpoint, in this case a gateway is needed.
    */
-  readonly endpoint?: IVpcEndpointRef;
+  readonly endpoint?: IVpcEndpoint;
 
   constructor(props: RouteTargetProps) {
     this.gateway = props.gateway;

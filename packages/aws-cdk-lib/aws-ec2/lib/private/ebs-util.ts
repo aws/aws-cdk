@@ -74,7 +74,7 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
         iops,
         throughput,
         volumeType,
-        kmsKeyId: kmsKey?.keyRef.keyArn,
+        kmsKeyId: kmsKey?.keyArn,
       };
     } else {
       finalEbs = undefined;

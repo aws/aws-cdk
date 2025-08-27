@@ -47,7 +47,7 @@ export interface ServiceManagedEBSVolumeConfiguration {
    * @default - When `encryption` is turned on and no `kmsKey` is specified,
    * the default AWS managed key for Amazon EBS volumes is used.
    */
-  readonly kmsKeyId?: kms.IKeyRef;
+  readonly kmsKeyId?: kms.IKey;
 
   /**
    * The volume type.

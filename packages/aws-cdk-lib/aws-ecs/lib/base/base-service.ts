@@ -914,7 +914,7 @@ export abstract class BaseService extends Resource
           encrypted: spec.config.encrypted,
           filesystemType: spec.config.fileSystemType,
           iops: spec.config.iops,
-          kmsKeyId: spec.config.kmsKeyId?.keyRef.keyId,
+          kmsKeyId: spec.config.kmsKeyId?.keyId,
           throughput: spec.config.throughput,
           volumeType: spec.config.volumeType,
           snapshotId: spec.config.snapShotId,

@@ -501,7 +501,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
    *
    * @param vpcEndpoints the interface VPC endpoints to grant access to
    */
-  public grantInvokeFromVpcEndpointsOnly(vpcEndpoints: ec2.IVpcEndpointRef[]): void {
+  public grantInvokeFromVpcEndpointsOnly(vpcEndpoints: ec2.IVpcEndpoint[]): void {
     vpcEndpoints.forEach(endpoint => this._allowedVpcEndpoints.add(endpoint));
 
     const endpoints = Lazy.list({
@@ -1086,7 +1086,7 @@ export interface EndpointConfiguration {
    *
    * @default - no ALIASes are created for the endpoint.
    */
-  readonly vpcEndpoints?: ec2.IVpcEndpointRef[];
+  readonly vpcEndpoints?: ec2.IVpcEndpoint[];
 
   /**
    * The IP address types that can invoke the API.

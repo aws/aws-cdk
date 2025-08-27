@@ -761,7 +761,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   /**
    * The AWS KMS key for encryption of Performance Insights data.
    */
-  public readonly performanceInsightEncryptionKey?: kms.IKeyRef;
+  public readonly performanceInsightEncryptionKey?: kms.IKey;
 
   /**
    * The database insights mode.
@@ -961,7 +961,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       domain: this.domainId,
       domainIamRoleName: this.domainRole?.roleName,
       performanceInsightsEnabled: this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
-      performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyRef.keyArn,
+      performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: this.performanceInsightRetention,
       databaseInsightsMode: this.databaseInsightsMode,
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
@@ -1855,7 +1855,7 @@ function validatePerformanceInsightsSettings(
   // If `performanceInsightEncryptionKey` is enabled on the cluster, the same parameter for each instance must be
   // undefined or the same as the value at cluster level.
   if (cluster.performanceInsightEncryptionKey && instance.performanceInsightEncryptionKey) {
-    const clusterKeyArn = cluster.performanceInsightEncryptionKey.keyRef.keyArn;
+    const clusterKeyArn = cluster.performanceInsightEncryptionKey.keyArn;
     const instanceKeyArn = instance.performanceInsightEncryptionKey.keyRef.keyArn;
     const compared = Token.compareStrings(clusterKeyArn, instanceKeyArn);
 

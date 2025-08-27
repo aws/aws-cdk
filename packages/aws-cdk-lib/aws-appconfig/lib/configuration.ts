@@ -571,7 +571,7 @@ export class SourcedConfiguration extends ConfigurationBase {
    * can be used when storing configuration in AWS Secrets Manager, Systems Manager Parameter Store,
    * or Amazon S3.
    */
-  public readonly sourceKey?: kms.IKeyRef;
+  public readonly sourceKey?: kms.IKey;
 
   /**
    * The ID of the configuration profile.
@@ -715,7 +715,7 @@ export class SourcedConfiguration extends ConfigurationBase {
       const keyPolicy = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['kms:Decrypt'],
-        resources: [this.sourceKey.keyRef.keyArn],
+        resources: [this.sourceKey.keyArn],
       });
       document.addStatements(keyPolicy);
     }

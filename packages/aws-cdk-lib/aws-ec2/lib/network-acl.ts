@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
-import { CfnNetworkAcl, CfnNetworkAclEntry, CfnSubnetNetworkAclAssociation, INetworkAclEntryRef, INetworkAclRef, ISubnetNetworkAclAssociationRef, ISubnetRef, NetworkAclEntryRef, NetworkAclRef, SubnetNetworkAclAssociationRef } from './ec2.generated';
+import { CfnNetworkAcl, CfnNetworkAclEntry, CfnSubnetNetworkAclAssociation, INetworkAclEntryRef, INetworkAclRef, ISubnetNetworkAclAssociationRef, NetworkAclEntryRef, NetworkAclRef, SubnetNetworkAclAssociationRef } from './ec2.generated';
 import { AclCidr, AclTraffic } from './network-acl-types';
-import { IVpc, SubnetSelection } from './vpc';
+import { ISubnet, IVpc, SubnetSelection } from './vpc';
 import { IResource, Resource, Tags } from '../../core';
 import { asNetworkAcl, asSubnet } from './private/conversions';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -351,7 +351,7 @@ export interface SubnetNetworkAclAssociationProps {
   /**
    * ID of the Subnet
    */
-  readonly subnet: ISubnetRef;
+  readonly subnet: ISubnet;
 }
 
 /**
@@ -389,7 +389,7 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
    */
   public readonly subnetNetworkAclAssociationAssociationId: string;
 
-  private readonly _subnet: ISubnetRef;
+  private readonly _subnet: ISubnet;
 
   private association: CfnSubnetNetworkAclAssociation;
   private readonly _networkAcl: INetworkAclRef;
@@ -414,7 +414,7 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
   /**
    * ID of the Subnet
    */
-  public get subnet(): ISubnetRef {
+  public get subnet(): ISubnet {
     return asSubnet(this._subnet, this);
   }
 
