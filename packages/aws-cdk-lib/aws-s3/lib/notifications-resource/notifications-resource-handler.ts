@@ -110,7 +110,7 @@ export class NotificationsResourceHandler extends Construct {
 
   /**
    * Grant permissions for managing bucket notifications.
-   * 
+   *
    * Grants scoped IAM permissions to the specific bucket ARN instead of using wildcard permissions.
    * This implements the principle of least privilege by limiting the handler's access to only
    * the buckets it needs to manage.
