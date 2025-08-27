@@ -114,7 +114,6 @@ function testEcsExecForJob(
       interval: cdk.Duration.seconds(30),
     });
 
-  // Extract task ARN from job details
   const taskArn = waitForJobRunning.getAttString('jobs.0.container.taskArn');
 
   // Execute ECS command to verify ECS Exec is enabled
