@@ -204,7 +204,7 @@ export class ConnectionType {
   /**
    * Designates a connection to Pipedrive.
    */
-  public static readonly PIPEDRIVE = new ConnectionType('PIPEDIVE');
+  public static readonly PIPEDRIVE = new ConnectionType('PIPEDRIVE');
 
   /**
    * Designates a connection to Productboard.
