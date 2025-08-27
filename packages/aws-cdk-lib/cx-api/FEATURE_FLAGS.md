@@ -106,6 +106,7 @@ Flags come in three types:
 | [@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal](#aws-cdkaws-kmsapplyimportedaliaspermissionstoprincipal) | Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition | 2.202.0 | fix |
 | [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | 2.205.0 | new default |
 | [@aws-cdk/aws-signer:signingProfileNamePassedToCfn](#aws-cdkaws-signersigningprofilenamepassedtocfn) | Pass signingProfileName to CfnSigningProfile | 2.212.0 | fix |
+| [@aws-cdk/aws-route53-targets:nlbUsePlainDnsName](#aws-cdkaws-route53-targetsnlbuseplaindnsname) | Use plain DNS names for Network Load Balancers in Route53 alias records | 2.213.0 | fix |
 
 <!-- END table -->
 
@@ -195,7 +196,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
-    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true
+    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
+    "@aws-cdk/aws-route53-targets:nlbUsePlainDnsName": true
   }
 }
 ```
@@ -2248,6 +2250,35 @@ in the CloudFormation template.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.212.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-route53-targets:nlbUsePlainDnsName
+
+*Use plain DNS names for Network Load Balancers in Route53 alias records*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, LoadBalancerTarget will use plain DNS names for 
+Network Load Balancers instead of adding the dualstack prefix, matching AWS Route53 
+console behavior.
+
+The previous behavior unconditionally added the dualstack prefix to all load balancer 
+DNS names, but AWS Route53 console shows that only ALBs and CLBs should use the 
+dualstack prefix, while NLBs should use plain DNS names.
+
+When this flag is enabled:
+- Network Load Balancers (NLB): Use plain DNS name (matches Route53 console behavior)
+- Application Load Balancers (ALB): Use dualstack prefix (existing correct behavior)
+- Classic Load Balancers (CLB): Use dualstack prefix (existing correct behavior)
+
+When this flag is disabled:
+- All load balancers get dualstack prefix added (legacy incorrect behavior for NLBs)
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
