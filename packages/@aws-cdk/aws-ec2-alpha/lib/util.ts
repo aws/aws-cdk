@@ -1,6 +1,6 @@
 /* eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
 
-import { ISubnet, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { ISubnet, ISubnetRef, SubnetType } from 'aws-cdk-lib/aws-ec2';
 
 /**
  * The default names for every subnet type
