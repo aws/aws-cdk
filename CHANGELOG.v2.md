@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.213.0](https://github.com/aws/aws-cdk/compare/v2.212.0...v2.213.0) (2025-08-27)
+
+
+### Features
+
+* **dynamodb:** adding ContributorInsightsMode feature ([#35332](https://github.com/aws/aws-cdk/issues/35332)) ([d2c93e4](https://github.com/aws/aws-cdk/commit/d2c93e4b75391aad38b0f472e78d2a7d8879e2b8))
+
 ## [2.212.0](https://github.com/aws/aws-cdk/compare/v2.211.0...v2.212.0) (2025-08-20)
 
 
