@@ -194,12 +194,45 @@
         "KNOWLEDGE_BASE_RESPONSE_GENERATION"
       ]
     },
+    "CrossRegionInferenceProfileRegion": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/cross-region-inference-profile.ts",
+      "enumLike": false,
+      "values": [
+        "eu",
+        "us",
+        "apac"
+      ]
+    },
+    "InferenceProfileType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/inference-profile.ts",
+      "enumLike": false,
+      "values": [
+        "SYSTEM_DEFINED",
+        "APPLICATION"
+      ]
+    },
     "VectorType": {
       "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts",
       "enumLike": false,
       "values": [
         "FLOAT32",
         "BINARY"
+      ]
+    },
+    "ChatMessageRole": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/chat-prompt-variant.ts",
+      "enumLike": false,
+      "values": [
+        "user",
+        "assistant"
+      ]
+    },
+    "PromptTemplateType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/prompt-variant.ts",
+      "enumLike": false,
+      "values": [
+        "TEXT",
+        "CHAT"
       ]
     },
     "ParentActionGroupSignature": {
@@ -222,6 +255,14 @@
       "enumLike": true,
       "values": [
         "SESSION_SUMMARY"
+      ]
+    },
+    "DefaultPromptRouterIdentifier": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/prompt-router.ts",
+      "enumLike": true,
+      "values": [
+        "ANTHROPIC_CLAUDE_V1",
+        "META_LLAMA_3_1"
       ]
     },
     "BedrockFoundationModel": {
@@ -268,6 +309,14 @@
         "MISTRAL_LARGE_2402_V1",
         "MISTRAL_LARGE_2407_V1",
         "MISTRAL_PIXTRAL_LARGE_2502_V1"
+      ]
+    },
+    "ToolChoice": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/tool-choice.ts",
+      "enumLike": true,
+      "values": [
+        "ANY",
+        "AUTO"
       ]
     },
     "FoundationModelIdentifier": {
@@ -396,7 +445,9 @@
         "STABILITY_STABLE_IMAGE_CORE_V1_0",
         "STABILITY_STABLE_IMAGE_CORE_V1_1",
         "WRITER_PALMYRA_X4_V1_0",
-        "WRITER_PALMYRA_X5_V1_0"
+        "WRITER_PALMYRA_X5_V1_0",
+        "TWELVELABS_MARENGO_EMBED_2_7_V1_0",
+        "TWELVELABS_PEGASUS_1_2_V1_0"
       ]
     }
   },
@@ -645,6 +696,8 @@
         "c6gn",
         "compute7-graviton3-high-network-bandwidth",
         "c7gn",
+        "compute8-graviton4-high-network-bandwidth",
+        "c8gn",
         "compute7-intel",
         "c7i",
         "compute7-intel-flex",
@@ -3491,6 +3544,21 @@
         "aws:kms",
         "AES256"
       ]
+    },
+    "OpenTableFormat": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts",
+      "enumLike": false,
+      "values": [
+        "ICEBERG"
+      ]
+    },
+    "Status": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts",
+      "enumLike": false,
+      "values": [
+        "enabled",
+        "disabled"
+      ]
     }
   },
   "sagemaker": {
@@ -5351,6 +5419,15 @@
         "pie"
       ]
     },
+    "LogQueryLanguage": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/log-query.ts",
+      "enumLike": false,
+      "values": [
+        "Logs",
+        "SQL",
+        "PPL"
+      ]
+    },
     "Statistic": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric-types.ts",
       "enumLike": false,
@@ -6858,6 +6935,7 @@
       "path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/amis.ts",
       "enumLike": false,
       "values": [
+        "2025",
         "2022",
         "2019",
         "2016"
@@ -7246,7 +7324,9 @@
         "WINDOWS_SERVER_2019_FULL",
         "WINDOWS_SERVER_2022_CORE",
         "WINDOWS_SERVER_2022_FULL",
-        "WINDOWS_SERVER_20H2_CORE"
+        "WINDOWS_SERVER_20H2_CORE",
+        "WINDOWS_SERVER_2025_FULL",
+        "WINDOWS_SERVER_2025_CORE"
       ]
     }
   },
@@ -8021,7 +8101,10 @@
         "HMAC_256",
         "HMAC_384",
         "HMAC_512",
-        "SM2"
+        "SM2",
+        "ML_DSA_44",
+        "ML_DSA_65",
+        "ML_DSA_87"
       ]
     },
     "KeyUsage": {
@@ -8380,7 +8463,9 @@
         "VERSION_1_0_275_0",
         "VERSION_1_0_295_0",
         "VERSION_1_0_317_0",
-        "VERSION_1_0_333_0"
+        "VERSION_1_0_333_0",
+        "VERSION_1_0_391_0",
+        "VERSION_1_0_404_0"
       ]
     },
     "RuntimeManagementMode": {
@@ -8518,6 +8603,133 @@
       "values": [
         "ByLogStream",
         "Random"
+      ]
+    },
+    "TypeConverterType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        "boolean",
+        "integer",
+        "double",
+        "string"
+      ]
+    },
+    "DateTimeFormat": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        "yyyy-MM-dd'T'HH:mm:ss'Z'",
+        "epoch",
+        "custom"
+      ]
+    },
+    "DelimiterCharacter": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        ",",
+        "\t",
+        " ",
+        ";",
+        "|"
+      ]
+    },
+    "QuoteCharacter": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        "\"",
+        "'"
+      ]
+    },
+    "KeyValuePairDelimiter": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        "&",
+        ";",
+        " ",
+        "\n"
+      ]
+    },
+    "KeyValueDelimiter": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        "=",
+        ":"
+      ]
+    },
+    "OCSFSourceType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        "CloudTrail",
+        "Route53Resolver",
+        "VPCFlow",
+        "EKSAudit",
+        "AWSWAF"
+      ]
+    },
+    "OCSFVersion": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        "V1.1"
+      ]
+    },
+    "ParserProcessorType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "VendedLogType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "StringMutatorType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "JsonMutatorType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "DataConverterType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts",
+      "enumLike": false,
+      "values": [
+        0,
+        1
       ]
     },
     "DataIdentifier": {
@@ -8732,7 +8944,7 @@
       ]
     },
     "DatabaseInsightsMode": {
-      "path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts",
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/database-insights-mode.ts",
       "enumLike": false,
       "values": [
         "standard",
@@ -8965,7 +9177,8 @@
         "VER_3_08_0",
         "VER_3_08_1",
         "VER_3_08_2",
-        "VER_3_09_0"
+        "VER_3_09_0",
+        "VER_3_10_0"
       ]
     },
     "AuroraPostgresEngineVersion": {
@@ -9083,7 +9296,8 @@
         "VER_16_8_LIMITLESS",
         "VER_17_1",
         "VER_17_2",
-        "VER_17_4"
+        "VER_17_4",
+        "VER_17_5"
       ]
     },
     "DatabaseClusterEngine": {
@@ -10876,6 +11090,13 @@
       "values": [
         "nothing",
         "lambda"
+      ]
+    },
+    "ResourceToReplicateTags": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
+      "enumLike": false,
+      "values": [
+        "lambda-function"
       ]
     },
     "ArtifactsEncryptionMode": {
