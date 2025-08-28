@@ -404,6 +404,14 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
         this.setAttribute('load_balancing.algorithm.anomaly_mitigation', props.enableAnomalyMitigation ? 'on' : 'off');
       }
     }
+
+    // Add a warning if protocol wasn't explicitly specified for non-Lambda targets
+    if (props.protocol === undefined && this.targetType !== TargetType.LAMBDA) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-elbv2:target-group-protocol-default',
+        'ApplicationTargetGroup protocol not specified. Please specify protocol explicitly (e.g., ApplicationProtocol.HTTP or ApplicationProtocol.HTTPS). Note: Missing protocol will cause deployment failures.',
+      );
+    }
   }
 
   public get metrics(): IApplicationTargetGroupMetrics {
