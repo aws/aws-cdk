@@ -7,7 +7,7 @@ FROM $IMAGE
 RUN npm install --global yarn@1.22.5
 
 # Install pnpm
-RUN npm install --global pnpm@7.30.5
+RUN npm install --global pnpm@7.33.7
 
 # Install bun
 RUN npm install --global bun@1.1.30

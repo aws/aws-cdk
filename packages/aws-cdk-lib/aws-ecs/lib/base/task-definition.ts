@@ -7,7 +7,7 @@ import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IAlternateTarget } from '../alternate-target-configuration';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
-import { CfnTaskDefinition } from '../ecs.generated';
+import { CfnTaskDefinition, CfnTaskDefinitionProps } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
 import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { PlacementConstraint } from '../placement';
@@ -506,7 +506,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     this._cpu = props.cpu;
     this._memory = props.memoryMiB;
 
-    const taskDef = new CfnTaskDefinition(this, 'Resource', {
+    let taskDefProps: CfnTaskDefinitionProps = {
       containerDefinitions: Lazy.any({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
       volumes: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
       executionRoleArn: Lazy.string({ produce: () => this.executionRole && this.executionRole.roleArn }),
@@ -527,10 +527,6 @@ export class TaskDefinition extends TaskDefinitionBase {
       memory: props.memoryMiB,
       ipcMode: props.ipcMode,
       pidMode: this.pidMode,
-      inferenceAccelerators: Lazy.any({
-        produce: () =>
-          !isFargateCompatible(this.compatibility) ? this.renderInferenceAccelerators() : undefined,
-      }, { omitEmptyArray: true }),
       ephemeralStorage: this.ephemeralStorageGiB ? {
         sizeInGiB: this.ephemeralStorageGiB,
       } : undefined,
@@ -539,7 +535,19 @@ export class TaskDefinition extends TaskDefinitionBase {
         operatingSystemFamily: this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
       } : undefined,
       enableFaultInjection: props.enableFaultInjection,
-    });
+    };
+
+    if (props.inferenceAccelerators) {
+      taskDefProps = {
+        ...taskDefProps,
+        inferenceAccelerators: Lazy.any({
+          produce: () =>
+            this.renderInferenceAccelerators(),
+        }),
+      };
+    }
+
+    const taskDef = new CfnTaskDefinition(this, 'Resource', taskDefProps);
 
     if (props.placementConstraints) {
       props.placementConstraints.forEach(pc => this.addPlacementConstraint(pc));

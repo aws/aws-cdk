@@ -105,6 +105,7 @@ export class Bundling implements CdkBundlingOptions {
         IMAGE: runtime.bundlingImage.image,
       },
       platform: architecture.dockerPlatform,
+      network: props.network,
     });
     this.command = props.command ?? ['bash', '-c', chain(bundlingCommands)];
     this.entrypoint = props.entrypoint;

@@ -31,7 +31,7 @@ beforeEach(() => {
     },
   });
   octomock.pulls.listReviews.mockReturnValue({ data: [] });
-  octomock.repos.listCommitStatusesForRef.mockReturnValue({ data: [] });
+  octomock.actions.listWorkflowRuns.mockReturnValue({ data: [] });
 });
 
 test('ignore if dismissing reviews throws a specific "already dismissed" error', async () => {

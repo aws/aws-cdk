@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "EBSVolumeInitializationRate/DefaultTest": {
+      "stacks": [
+        "integ-aws-ecs-ebs-volume-initialization-rate"
+      ],
+      "assertionStack": "EBSVolumeInitializationRate/DefaultTest/DeployAssert",
+      "assertionStackName": "EBSVolumeInitializationRateDefaultTestDeployAssertCB85F20D"
+    }
+  },
+  "minimumCliVersion": "2.1020.1"
+}
