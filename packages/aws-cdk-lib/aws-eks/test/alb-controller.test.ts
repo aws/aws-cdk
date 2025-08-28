@@ -59,7 +59,7 @@ test('all vended policies are valid', () => {
   }
 });
 
-test('SCOPED mode adds region conditions for read-only operations', () => {
+test('SCOPED mode adds region and account conditions for read-only operations', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack', {
@@ -102,7 +102,7 @@ test('SCOPED mode adds region conditions for read-only operations', () => {
 
   expect(albPolicyDocument).toBeDefined();
 
-  // Check that read-only statements with Resource: "*" have region conditions
+  // Check that read-only statements with Resource: "*" have region and account conditions
   const readOnlyStatements = albPolicyDocument.Statement.filter((stmt: any) =>
     stmt.Resource === '*' &&
     Array.isArray(stmt.Action) &&
@@ -115,11 +115,12 @@ test('SCOPED mode adds region conditions for read-only operations', () => {
 
   expect(readOnlyStatements.length).toBeGreaterThan(0);
 
-  // Verify that these statements have region conditions
+  // Verify that these statements have both region and account conditions
   readOnlyStatements.forEach((stmt: any) => {
     expect(stmt.Condition).toBeDefined();
     expect(stmt.Condition.StringEquals).toBeDefined();
     expect(stmt.Condition.StringEquals['aws:RequestedRegion']).toEqual('us-west-2');
+    expect(stmt.Condition.StringEquals['aws:ResourceAccount']).toEqual('123456789012');
   });
 });
 
@@ -178,11 +179,12 @@ test('COMPATIBLE mode does not add additional conditions', () => {
 
   expect(readOnlyStatements.length).toBeGreaterThan(0);
 
-  // Verify that these statements do NOT have additional region conditions
+  // Verify that these statements do NOT have additional region or account conditions
   // (they may have existing conditions from the original policy, but not our added ones)
   readOnlyStatements.forEach((stmt: any) => {
     if (stmt.Condition?.StringEquals) {
       expect(stmt.Condition.StringEquals['aws:RequestedRegion']).toBeUndefined();
+      expect(stmt.Condition.StringEquals['aws:ResourceAccount']).toBeUndefined();
     }
   });
 });
@@ -253,6 +255,67 @@ test('SCOPED mode applies partition-aware resource scoping', () => {
 
   // The main test is that SCOPED mode doesn't break the policy structure
   expect(albPolicyDocument.Statement.length).toBeGreaterThan(0);
+});
+
+test('SCOPED mode prevents cross-account resource enumeration', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    env: { region: 'eu-central-1', account: '987654321098' },
+  });
+  const cluster = new Cluster(stack, 'Cluster', {
+    version: KubernetesVersion.V1_23,
+    kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+  });
+
+  // WHEN
+  new AlbController(stack, 'AlbController', {
+    cluster,
+    version: AlbControllerVersion.V2_13_3,
+    securityMode: AlbControllerSecurityMode.SCOPED,
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+
+  // Find the ALB controller service account policy statements
+  const policies = template.findResources('AWS::IAM::Policy');
+  const policyKeys = Object.keys(policies);
+  expect(policyKeys.length).toBeGreaterThan(0);
+
+  // Find the policy that contains ALB controller permissions
+  let albPolicyDocument: any = null;
+  for (const policyKey of policyKeys) {
+    const policy = policies[policyKey];
+    const statements = policy.Properties.PolicyDocument.Statement;
+    const hasELBActions = statements.some((stmt: any) =>
+      Array.isArray(stmt.Action) &&
+      stmt.Action.some((action: string) => action.startsWith('elasticloadbalancing:')),
+    );
+    if (hasELBActions) {
+      albPolicyDocument = policy.Properties.PolicyDocument;
+      break;
+    }
+  }
+
+  expect(albPolicyDocument).toBeDefined();
+
+  // Find EC2 read-only statements that could enumerate cross-account resources
+  const ec2ReadOnlyStatements = albPolicyDocument.Statement.filter((stmt: any) =>
+    stmt.Resource === '*' &&
+    Array.isArray(stmt.Action) &&
+    stmt.Action.some((action: string) => action.startsWith('ec2:Describe')),
+  );
+
+  expect(ec2ReadOnlyStatements.length).toBeGreaterThan(0);
+
+  // Verify that EC2 read-only statements are scoped to the specific account
+  ec2ReadOnlyStatements.forEach((stmt: any) => {
+    expect(stmt.Condition).toBeDefined();
+    expect(stmt.Condition.StringEquals).toBeDefined();
+    expect(stmt.Condition.StringEquals['aws:ResourceAccount']).toEqual('987654321098');
+    expect(stmt.Condition.StringEquals['aws:RequestedRegion']).toEqual('eu-central-1');
+  });
 });
 
 test('SCOPED mode preserves existing conditions', () => {

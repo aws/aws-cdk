@@ -574,11 +574,12 @@ export class AlbController extends Construct {
 
   /**
    * Add additional scoping conditions for enhanced security in SCOPED mode.
-   * This method adds region-based conditions for read-only operations with Resource: "*".
+   * This method adds region and account-based conditions for read-only operations with Resource: "*".
    */
   private addScopingConditions(statement: any, cluster: Cluster): any {
     const stack = Stack.of(cluster);
     const region = stack.region;
+    const account = stack.account;
 
     // Only apply additional conditions to statements with Resource: "*"
     if (statement.Resource !== '*') {
@@ -587,7 +588,7 @@ export class AlbController extends Construct {
 
     const actions = Array.isArray(statement.Action) ? statement.Action : [statement.Action];
 
-    // Add region scoping for EC2 read-only operations
+    // Add region and account scoping for EC2 read-only operations
     if (this.hasEC2ReadOnlyActions(actions)) {
       return {
         ...statement,
@@ -596,12 +597,13 @@ export class AlbController extends Construct {
           StringEquals: {
             ...statement.Condition?.StringEquals,
             'aws:RequestedRegion': region,
+            'aws:ResourceAccount': account,
           },
         },
       };
     }
 
-    // Add region scoping for ELB read-only operations
+    // Add region and account scoping for ELB read-only operations
     if (this.hasELBReadOnlyActions(actions)) {
       return {
         ...statement,
@@ -610,12 +612,13 @@ export class AlbController extends Construct {
           StringEquals: {
             ...statement.Condition?.StringEquals,
             'aws:RequestedRegion': region,
+            'aws:ResourceAccount': account,
           },
         },
       };
     }
 
-    // Add region scoping for ACM operations (regional service)
+    // Add region and account scoping for ACM operations (regional service)
     if (this.hasACMActions(actions)) {
       return {
         ...statement,
@@ -624,6 +627,7 @@ export class AlbController extends Construct {
           StringEquals: {
             ...statement.Condition?.StringEquals,
             'aws:RequestedRegion': region,
+            'aws:ResourceAccount': account,
           },
         },
       };

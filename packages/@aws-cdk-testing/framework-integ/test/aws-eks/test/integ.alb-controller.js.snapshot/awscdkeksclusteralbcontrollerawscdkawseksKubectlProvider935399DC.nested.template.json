@@ -45,6 +45,12 @@
       }
      ]
     }
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource",
+    "aws:asset:path": "asset.d671460286b61f85906debbcec5341ea4edad148fbc432b0663593611866728e",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
    }
   },
   "AwsCliLayerF44AAF94": {
@@ -54,9 +60,15 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+     "S3Key": "4c0f7bf9173df1c120604820692548150b09e29f6fba95f38b11caa17c9696bb.zip"
     },
     "Description": "/opt/awscli/aws"
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Resource",
+    "aws:asset:path": "asset.4c0f7bf9173df1c120604820692548150b09e29f6fba95f38b11caa17c9696bb.zip",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Content"
    }
   },
   "ProviderframeworkonEventServiceRole9FF04296": {
@@ -100,6 +112,9 @@
       ]
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource"
    }
   },
   "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133": {
@@ -152,6 +167,9 @@
       "Ref": "ProviderframeworkonEventServiceRole9FF04296"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
    }
   },
   "ProviderframeworkonEvent83C1D0A7": {
@@ -161,7 +179,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
+     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider)",
     "Environment": {
@@ -206,6 +224,288 @@
    "DependsOn": [
     "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133",
     "ProviderframeworkonEventServiceRole9FF04296"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Resource",
+    "aws:asset:path": "asset.4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02PwarCMBBFv8X9dCz1C1R4m+dCKrgN03SejE0TyCQWKf13SVV4q3Pv4nK4NdZYb2jSyvZD5aTDmSY1Mw+Kv7ljm9w5hof0HMHR2PWE80/2NknwcPzz//OJnhyvHFWCX0B3hlQ5Ke4LQHd4yHbgdCBlEBpxboPjMlx5Dk7ss9R3WhZYh5dEN/G3j924IjE0qXWC+0mPTlYvtKwhR8tgs6Ywmvjpit8DC/jQM951+2gabMrxu4pUMfskI2P75guBvw/sEwEAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-3"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-4"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "us-west-2"
+     ]
+    }
    ]
   }
  },

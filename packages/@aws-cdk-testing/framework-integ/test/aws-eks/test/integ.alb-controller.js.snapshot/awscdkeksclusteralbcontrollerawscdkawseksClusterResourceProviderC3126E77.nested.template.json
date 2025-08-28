@@ -10,6 +10,12 @@
      "S3Key": "93d96d34e0d3cd20eb082652b91012b131bdc34fcf2bc16eb4170e04772fddb1.zip"
     },
     "Description": "/opt/nodejs/node_modules/proxy-agent"
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource",
+    "aws:asset:path": "asset.93d96d34e0d3cd20eb082652b91012b131bdc34fcf2bc16eb4170e04772fddb1.zip",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Content"
    }
   },
   "OnEventHandlerServiceRole15A26729": {
@@ -41,6 +47,9 @@
       ]
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource"
    }
   },
   "OnEventHandler42BEBAE0": {
@@ -50,7 +59,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "cade4507238b95610e5a629416679281cfe0402b01ec588c0c282945725c767c.zip"
+     "S3Key": "0dd0dd1ef89b3038f0deba816f45170e60083713fc97684a9ba1f076d529d46e.zip"
     },
     "Description": "onEvent handler for EKS cluster resource provider",
     "Environment": {
@@ -75,7 +84,13 @@
    },
    "DependsOn": [
     "OnEventHandlerServiceRole15A26729"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource",
+    "aws:asset:path": "asset.0dd0dd1ef89b3038f0deba816f45170e60083713fc97684a9ba1f076d529d46e",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
   },
   "IsCompleteHandlerServiceRole5810CC58": {
    "Type": "AWS::IAM::Role",
@@ -106,6 +121,9 @@
       ]
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource"
    }
   },
   "IsCompleteHandler7073F4DA": {
@@ -115,7 +133,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "cade4507238b95610e5a629416679281cfe0402b01ec588c0c282945725c767c.zip"
+     "S3Key": "0dd0dd1ef89b3038f0deba816f45170e60083713fc97684a9ba1f076d529d46e.zip"
     },
     "Description": "isComplete handler for EKS cluster resource provider",
     "Environment": {
@@ -140,7 +158,13 @@
    },
    "DependsOn": [
     "IsCompleteHandlerServiceRole5810CC58"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource",
+    "aws:asset:path": "asset.0dd0dd1ef89b3038f0deba816f45170e60083713fc97684a9ba1f076d529d46e",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
   },
   "ProviderframeworkonEventServiceRole9FF04296": {
    "Type": "AWS::IAM::Role",
@@ -171,6 +195,9 @@
       ]
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource"
    }
   },
   "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133": {
@@ -184,28 +211,8 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "IsCompleteHandler7073F4DA",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
           "OnEventHandler42BEBAE0",
           "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "IsCompleteHandler7073F4DA",
-             "Arn"
-            ]
-           },
-           ":*"
-          ]
          ]
         },
         {
@@ -227,6 +234,16 @@
       {
        "Action": "lambda:GetFunction",
        "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OnEventHandler42BEBAE0",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
        "Resource": [
         {
          "Fn::GetAtt": [
@@ -235,12 +252,30 @@
          ]
         },
         {
-         "Fn::GetAtt": [
-          "OnEventHandler42BEBAE0",
-          "Arn"
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "IsCompleteHandler7073F4DA",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "IsCompleteHandler7073F4DA",
+         "Arn"
+        ]
+       }
       },
       {
        "Action": "states:StartExecution",
@@ -258,6 +293,9 @@
       "Ref": "ProviderframeworkonEventServiceRole9FF04296"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
    }
   },
   "ProviderframeworkonEvent83C1D0A7": {
@@ -267,7 +305,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
+     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -306,7 +344,13 @@
    "DependsOn": [
     "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133",
     "ProviderframeworkonEventServiceRole9FF04296"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Resource",
+    "aws:asset:path": "asset.4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
   },
   "ProviderframeworkisCompleteServiceRoleB1087139": {
    "Type": "AWS::IAM::Role",
@@ -337,6 +381,9 @@
       ]
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource"
    }
   },
   "ProviderframeworkisCompleteServiceRoleDefaultPolicy2E7140AC": {
@@ -350,28 +397,8 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "IsCompleteHandler7073F4DA",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
           "OnEventHandler42BEBAE0",
           "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "IsCompleteHandler7073F4DA",
-             "Arn"
-            ]
-           },
-           ":*"
-          ]
          ]
         },
         {
@@ -393,6 +420,16 @@
       {
        "Action": "lambda:GetFunction",
        "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OnEventHandler42BEBAE0",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
        "Resource": [
         {
          "Fn::GetAtt": [
@@ -401,12 +438,30 @@
          ]
         },
         {
-         "Fn::GetAtt": [
-          "OnEventHandler42BEBAE0",
-          "Arn"
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "IsCompleteHandler7073F4DA",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "IsCompleteHandler7073F4DA",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -417,6 +472,9 @@
       "Ref": "ProviderframeworkisCompleteServiceRoleB1087139"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource"
    }
   },
   "ProviderframeworkisComplete26D7B0CB": {
@@ -426,7 +484,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
+     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -462,7 +520,13 @@
    "DependsOn": [
     "ProviderframeworkisCompleteServiceRoleDefaultPolicy2E7140AC",
     "ProviderframeworkisCompleteServiceRoleB1087139"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Resource",
+    "aws:asset:path": "asset.4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
   },
   "ProviderframeworkonTimeoutServiceRole28643D26": {
    "Type": "AWS::IAM::Role",
@@ -493,6 +557,9 @@
       ]
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource"
    }
   },
   "ProviderframeworkonTimeoutServiceRoleDefaultPolicy2688969F": {
@@ -506,28 +573,8 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "IsCompleteHandler7073F4DA",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
           "OnEventHandler42BEBAE0",
           "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "IsCompleteHandler7073F4DA",
-             "Arn"
-            ]
-           },
-           ":*"
-          ]
          ]
         },
         {
@@ -549,6 +596,16 @@
       {
        "Action": "lambda:GetFunction",
        "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OnEventHandler42BEBAE0",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
        "Resource": [
         {
          "Fn::GetAtt": [
@@ -557,12 +614,30 @@
          ]
         },
         {
-         "Fn::GetAtt": [
-          "OnEventHandler42BEBAE0",
-          "Arn"
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "IsCompleteHandler7073F4DA",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "IsCompleteHandler7073F4DA",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -573,6 +648,9 @@
       "Ref": "ProviderframeworkonTimeoutServiceRole28643D26"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource"
    }
   },
   "ProviderframeworkonTimeout0B47CA38": {
@@ -582,7 +660,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
+     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -618,7 +696,13 @@
    "DependsOn": [
     "ProviderframeworkonTimeoutServiceRoleDefaultPolicy2688969F",
     "ProviderframeworkonTimeoutServiceRole28643D26"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Resource",
+    "aws:asset:path": "asset.4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
   },
   "ProviderwaiterstatemachineRole0C7159F9": {
    "Type": "AWS::IAM::Role",
@@ -635,6 +719,9 @@
      ],
      "Version": "2012-10-17"
     }
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource"
    }
   },
   "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A": {
@@ -653,12 +740,6 @@
          ]
         },
         {
-         "Fn::GetAtt": [
-          "ProviderframeworkonTimeout0B47CA38",
-          "Arn"
-         ]
-        },
-        {
          "Fn::Join": [
           "",
           [
@@ -670,6 +751,18 @@
            },
            ":*"
           ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ProviderframeworkonTimeout0B47CA38",
+          "Arn"
          ]
         },
         {
@@ -697,6 +790,9 @@
       "Ref": "ProviderwaiterstatemachineRole0C7159F9"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource"
    }
   },
   "Providerwaiterstatemachine5D4A9DF0": {
@@ -734,6 +830,285 @@
    "DependsOn": [
     "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A",
     "ProviderwaiterstatemachineRole0C7159F9"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WQwW6DMAyGn2X34CH6BC3STluFQNqOkZsYlgJJFZt2CPHuUyg77PT/n+Xfsp1DDvkLPjgzts8Gd4HlTCxkG0HTqwHHi0U94ExR+2BJ32L4mTV25AXOwVKV+JjwPTUpfLBe+KCRmYThmETxAU6T6UlOyLQPhaVs/Zb5pMguePU2eSPJlK3/86tyOMJSh4FSedMqDM7MCZ9uVSx0a/cEQ9n6RlDoA82387SqbYlGsHO+UzVxmKIhZSaWMOq4M8NSxXB3lqL6QicU/w1ZVTofrvx6Lwoo0teu7FwWJy9uJKif+gtfXOK+UAEAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-3"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-4"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "us-west-2"
+     ]
+    }
    ]
   }
  },

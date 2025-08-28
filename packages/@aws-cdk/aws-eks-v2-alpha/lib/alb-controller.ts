@@ -187,6 +187,91 @@ export class AlbControllerVersion {
   public static readonly V2_8_2 = new AlbControllerVersion('v2.8.2', '1.8.2', false);
 
   /**
+   * v2.8.3
+   */
+  public static readonly V2_8_3 = new AlbControllerVersion('v2.8.3', '1.8.3', false);
+
+  /**
+   * v2.8.4
+   */
+  public static readonly V2_8_4 = new AlbControllerVersion('v2.8.4', '1.8.4', false);
+
+  /**
+   * v2.8.5
+   */
+  public static readonly V2_8_5 = new AlbControllerVersion('v2.8.5', '1.8.5', false);
+
+  /**
+   * v2.8.6
+   */
+  public static readonly V2_8_6 = new AlbControllerVersion('v2.8.6', '1.8.6', false);
+
+  /**
+   * v2.9.0
+   */
+  public static readonly V2_9_0 = new AlbControllerVersion('v2.9.0', '1.9.0', false);
+
+  /**
+   * v2.9.1
+   */
+  public static readonly V2_9_1 = new AlbControllerVersion('v2.9.1', '1.9.1', false);
+
+  /**
+   * v2.9.2
+   */
+  public static readonly V2_9_2 = new AlbControllerVersion('v2.9.2', '1.9.2', false);
+
+  /**
+   * v2.9.3
+   */
+  public static readonly V2_9_3 = new AlbControllerVersion('v2.9.3', '1.9.3', false);
+
+  /**
+   * v2.10.0
+   */
+  public static readonly V2_10_0 = new AlbControllerVersion('v2.10.0', '1.10.0', false);
+
+  /**
+   * v2.10.1
+   */
+  public static readonly V2_10_1 = new AlbControllerVersion('v2.10.1', '1.10.1', false);
+
+  /**
+   * v2.11.0
+   */
+  public static readonly V2_11_0 = new AlbControllerVersion('v2.11.0', '1.11.0', false);
+
+  /**
+   * v2.12.0
+   */
+  public static readonly V2_12_0 = new AlbControllerVersion('v2.12.0', '1.12.0', false);
+
+  /**
+   * v2.12.1
+   */
+  public static readonly V2_12_1 = new AlbControllerVersion('v2.12.1', '1.12.1', false);
+
+  /**
+   * v2.13.0
+   */
+  public static readonly V2_13_0 = new AlbControllerVersion('v2.13.0', '1.13.0', false);
+
+  /**
+   * v2.13.1
+   */
+  public static readonly V2_13_1 = new AlbControllerVersion('v2.13.1', '1.13.1', false);
+
+  /**
+   * v2.13.2
+   */
+  public static readonly V2_13_2 = new AlbControllerVersion('v2.13.2', '1.13.2', false);
+
+  /**
+   * v2.13.3
+   */
+  public static readonly V2_13_3 = new AlbControllerVersion('v2.13.3', '1.13.3', false);
+
+  /**
    * Specify a custom version and an associated helm chart version.
    * Use this if the version you need is not available in one of the predefined versions.
    * Note that in this case, you will also need to provide an IAM policy in the controller options.
@@ -239,6 +324,26 @@ export enum AlbScheme {
 }
 
 /**
+ * Security mode for ALB Controller IAM policies.
+ */
+export enum AlbControllerSecurityMode {
+  /**
+   * Compatible mode - uses the same IAM policy patterns as existing versions.
+   * This mode maintains backward compatibility but may have broader permissions.
+   *
+   * @default
+   */
+  COMPATIBLE = 'compatible',
+
+  /**
+   * Scoped mode - applies additional resource scoping to IAM policies where possible.
+   * This mode provides enhanced security by limiting resource access to the cluster's VPC and region,
+   * but may not be compatible with all use cases.
+   */
+  SCOPED = 'scoped',
+}
+
+/**
  * Options for `AlbController`.
  */
 export interface AlbControllerOptions {
@@ -270,6 +375,16 @@ export interface AlbControllerOptions {
    * @default - Corresponds to the predefined version.
    */
   readonly policy?: any;
+
+  /**
+   * Security mode for IAM policy resource scoping.
+   *
+   * - COMPATIBLE: Uses the same IAM policy patterns as existing versions (default)
+   * - SCOPED: Applies additional resource scoping where possible for enhanced security
+   *
+   * @default AlbControllerSecurityMode.COMPATIBLE
+   */
+  readonly securityMode?: AlbControllerSecurityMode;
 }
 
 /**
@@ -321,11 +436,19 @@ export class AlbController extends Construct {
     // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#iam-permissions
     const policy: any = props.policy ?? JSON.parse(fs.readFileSync(path.join(__dirname, 'addons', `alb-iam_policy-${props.version.version}.json`), 'utf8'));
 
+    const securityMode = props.securityMode ?? AlbControllerSecurityMode.COMPATIBLE;
+
     for (const statement of policy.Statement) {
-      const rewrittenStatement = {
+      let rewrittenStatement = {
         ...statement,
-        Resource: this.rewritePolicyResources(statement.Resource),
+        Resource: this.rewritePolicyResources(statement.Resource, statement.Action, securityMode, props.cluster),
       };
+
+      // In SCOPED mode, add additional conditions for enhanced security
+      if (securityMode === AlbControllerSecurityMode.SCOPED) {
+        rewrittenStatement = this.addScopingConditions(rewrittenStatement, props.cluster);
+      }
+
       serviceAccount.addToPrincipalPolicy(iam.PolicyStatement.fromJson(rewrittenStatement));
     }
 
@@ -360,12 +483,26 @@ export class AlbController extends Construct {
     chart.node.addDependency(props.cluster.openIdConnectProvider);
   }
 
-  private rewritePolicyResources(resources: string | string[] | undefined): string | string[] | undefined {
+  private rewritePolicyResources(
+    resources: string | string[] | undefined,
+    actions: string[],
+    securityMode: AlbControllerSecurityMode,
+    cluster: Cluster,
+  ): string | string[] | undefined {
     // This is safe to disable because we're actually replacing the literal partition with a reference to
     // the stack partition (which is hardcoded into the JSON files) to prevent issues such as
     // aws/aws-cdk#22520.
-    // eslint-disable-next-line @cdklabs/no-literal-partition
-    const rewriteResource = (s: string) => s.replace('arn:aws:', `arn:${Aws.PARTITION}:`);
+    const rewriteResource = (s: string) => {
+      // eslint-disable-next-line @cdklabs/no-literal-partition
+      let rewritten = s.replace('arn:aws:', `arn:${Aws.PARTITION}:`);
+
+      // Apply additional scoping for SCOPED mode
+      if (securityMode === AlbControllerSecurityMode.SCOPED) {
+        rewritten = this.applyScopedResources(rewritten, actions, cluster);
+      }
+
+      return rewritten;
+    };
 
     if (!resources) {
       return resources;
@@ -374,5 +511,156 @@ export class AlbController extends Construct {
       return rewriteResource(resources);
     }
     return resources.map(rewriteResource);
+  }
+
+  private applyScopedResources(resource: string, _actions: string[], cluster: Cluster): string {
+    const stack = Stack.of(this);
+    const region = stack.region;
+    const account = stack.account;
+
+    // For EC2 VPC resources, scope to the cluster's VPC
+    // eslint-disable-next-line @cdklabs/no-literal-partition
+    if (resource.includes(`arn:${Aws.PARTITION}:ec2:*:*:vpc/*`)) {
+      return `arn:${Aws.PARTITION}:ec2:${region}:${account}:vpc/${cluster.vpc.vpcId}`;
+    }
+
+    // For EC2 resources, apply region/account scoping
+    // eslint-disable-next-line @cdklabs/no-literal-partition
+    if (resource.includes(`arn:${Aws.PARTITION}:ec2:*:*:`)) {
+      return resource.replace(`arn:${Aws.PARTITION}:ec2:*:*:`, `arn:${Aws.PARTITION}:ec2:${region}:${account}:`);
+    }
+
+    // For ELB resources, apply region/account scoping
+    // eslint-disable-next-line @cdklabs/no-literal-partition
+    if (resource.includes(`arn:${Aws.PARTITION}:elasticloadbalancing:*:*:`)) {
+      return resource.replace(`arn:${Aws.PARTITION}:elasticloadbalancing:*:*:`, `arn:${Aws.PARTITION}:elasticloadbalancing:${region}:${account}:`);
+    }
+
+    return resource;
+  }
+
+  /**
+   * Add additional scoping conditions for enhanced security in SCOPED mode.
+   * This method adds region and account-based conditions for read-only operations with Resource: "*".
+   */
+  private addScopingConditions(statement: any, cluster: Cluster): any {
+    const stack = Stack.of(cluster);
+    const region = stack.region;
+    const account = stack.account;
+
+    // Only apply additional conditions to statements with Resource: "*"
+    if (statement.Resource !== '*') {
+      return statement;
+    }
+
+    const actions = Array.isArray(statement.Action) ? statement.Action : [statement.Action];
+
+    // Add region and account scoping for EC2 read-only operations
+    if (this.hasEC2ReadOnlyActions(actions)) {
+      return {
+        ...statement,
+        Condition: {
+          ...statement.Condition,
+          StringEquals: {
+            ...statement.Condition?.StringEquals,
+            'aws:RequestedRegion': region,
+            'aws:ResourceAccount': account,
+          },
+        },
+      };
+    }
+
+    // Add region and account scoping for ELB read-only operations
+    if (this.hasELBReadOnlyActions(actions)) {
+      return {
+        ...statement,
+        Condition: {
+          ...statement.Condition,
+          StringEquals: {
+            ...statement.Condition?.StringEquals,
+            'aws:RequestedRegion': region,
+            'aws:ResourceAccount': account,
+          },
+        },
+      };
+    }
+
+    // Add region and account scoping for ACM operations (regional service)
+    if (this.hasACMActions(actions)) {
+      return {
+        ...statement,
+        Condition: {
+          ...statement.Condition,
+          StringEquals: {
+            ...statement.Condition?.StringEquals,
+            'aws:RequestedRegion': region,
+            'aws:ResourceAccount': account,
+          },
+        },
+      };
+    }
+
+    return statement;
+  }
+
+  /**
+   * Check if the actions contain EC2 read-only operations that can be region-scoped.
+   */
+  private hasEC2ReadOnlyActions(actions: string[]): boolean {
+    const ec2ReadOnlyActions = [
+      'ec2:DescribeAccountAttributes',
+      'ec2:DescribeAddresses',
+      'ec2:DescribeAvailabilityZones',
+      'ec2:DescribeInternetGateways',
+      'ec2:DescribeVpcs',
+      'ec2:DescribeVpcPeeringConnections',
+      'ec2:DescribeSubnets',
+      'ec2:DescribeSecurityGroups',
+      'ec2:DescribeInstances',
+      'ec2:DescribeNetworkInterfaces',
+      'ec2:DescribeTags',
+      'ec2:GetCoipPoolUsage',
+      'ec2:DescribeCoipPools',
+      'ec2:GetSecurityGroupsForVpc',
+      'ec2:DescribeIpamPools',
+      'ec2:DescribeRouteTables',
+    ];
+
+    return actions.some(action => ec2ReadOnlyActions.includes(action));
+  }
+
+  /**
+   * Check if the actions contain ELB read-only operations that can be region-scoped.
+   */
+  private hasELBReadOnlyActions(actions: string[]): boolean {
+    const elbReadOnlyActions = [
+      'elasticloadbalancing:DescribeLoadBalancers',
+      'elasticloadbalancing:DescribeLoadBalancerAttributes',
+      'elasticloadbalancing:DescribeListeners',
+      'elasticloadbalancing:DescribeListenerCertificates',
+      'elasticloadbalancing:DescribeSSLPolicies',
+      'elasticloadbalancing:DescribeRules',
+      'elasticloadbalancing:DescribeTargetGroups',
+      'elasticloadbalancing:DescribeTargetGroupAttributes',
+      'elasticloadbalancing:DescribeTargetHealth',
+      'elasticloadbalancing:DescribeTags',
+      'elasticloadbalancing:DescribeTrustStores',
+      'elasticloadbalancing:DescribeListenerAttributes',
+      'elasticloadbalancing:DescribeCapacityReservation',
+    ];
+
+    return actions.some(action => elbReadOnlyActions.includes(action));
+  }
+
+  /**
+   * Check if the actions contain ACM operations that can be region-scoped.
+   */
+  private hasACMActions(actions: string[]): boolean {
+    const acmActions = [
+      'acm:ListCertificates',
+      'acm:DescribeCertificate',
+    ];
+
+    return actions.some(action => acmActions.includes(action));
   }
 }
