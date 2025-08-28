@@ -2363,7 +2363,7 @@ export class Bucket extends BucketBase {
       ownershipControls: Lazy.any({ produce: () => this.parseOwnershipControls() }),
       accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
       intelligentTieringConfigurations: this.parseTieringConfig(props),
-      objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
+      ...(objectLockConfiguration && { objectLockEnabled: true }),
       objectLockConfiguration: objectLockConfiguration,
       replicationConfiguration,
     });
