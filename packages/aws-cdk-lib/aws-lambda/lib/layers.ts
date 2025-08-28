@@ -208,7 +208,9 @@ export class LayerVersion extends LayerVersionBase {
     }
 
     const resource: CfnLayerVersion = new CfnLayerVersion(this, 'Resource', {
-      compatibleRuntimes: props.compatibleRuntimes && props.compatibleRuntimes.map(r => r.name),
+      compatibleRuntimes: (props.compatibleRuntimes === Runtime.ALL)
+        ? undefined
+        : props.compatibleRuntimes?.map(r => r.name),
       compatibleArchitectures: props.compatibleArchitectures?.map(a => a.name),
       content: {
         s3Bucket: code.s3Location.bucketName,
