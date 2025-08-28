@@ -539,7 +539,7 @@ When enabled, you'll be able to execute commands interactively in running contai
 
 ```ts
 const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
-  container: new batch.EcsEc2ContainerDefinition(this, 'myContainer', {
+  container: new batch.EcsEc2ContainerDefinition(this, 'Ec2Container', {
     image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
     memory: cdk.Size.mebibytes(2048),
     cpu: 256,
@@ -552,7 +552,7 @@ The same functionality is available for Fargate containers:
 
 ```ts
 const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
-  container: new batch.EcsFargateContainerDefinition(this, 'myFargateContainer', {
+  container: new batch.EcsFargateContainerDefinition(this, 'FargateContainer', {
     image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
     memory: cdk.Size.mebibytes(2048),
     cpu: 256,
