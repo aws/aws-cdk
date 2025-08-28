@@ -381,7 +381,7 @@ describe('Certificate export setting', () => {
 
     new Certificate(stack, 'Certificate', {
       domainName: 'test.example.com',
-      certificateExportEnabled: true,
+      allowExport: true,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
@@ -395,7 +395,7 @@ describe('Certificate export setting', () => {
 
     new Certificate(stack, 'Certificate', {
       domainName: 'test.example.com',
-      certificateExportEnabled: false,
+      allowExport: false,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {

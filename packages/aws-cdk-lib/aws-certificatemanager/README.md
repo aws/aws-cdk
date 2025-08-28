@@ -153,7 +153,7 @@ AWS Certificate Manager can issue an exportable public certificate. There is a c
 ```ts
 new acm.Certificate(this, 'Certificate', {
   domainName: 'test.example.com',
-  certificateExportEnabled: true,
+  allowExport: true,
 });
 ```
 

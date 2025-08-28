@@ -167,7 +167,7 @@ describe('Certificate export setting', () => {
 
     new PrivateCertificate(stack, 'Certificate', {
       domainName: 'test.example.com',
-      certificateExportEnabled: true,
+      allowExport: true,
       certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
         'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
     });
@@ -183,7 +183,7 @@ describe('Certificate export setting', () => {
 
     new PrivateCertificate(stack, 'Certificate', {
       domainName: 'test.example.com',
-      certificateExportEnabled: false,
+      allowExport: false,
       certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
         'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
     });

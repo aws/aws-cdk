@@ -47,10 +47,11 @@ export interface PrivateCertificateProps {
    * Enable or disable export of this certificate.
    *
    * If you issue an exportable public certificate, there is a charge at certificate issuance and again when the certificate renews.
+   * Ref: https://aws.amazon.com/certificate-manager/pricing
    *
    * @default false
    */
-  readonly certificateExportEnabled?: boolean;
+  readonly allowExport?: boolean;
 }
 
 /**
@@ -85,8 +86,8 @@ export class PrivateCertificate extends CertificateBase implements ICertificate 
     addConstructMetadata(this, props);
 
     let certificateExport: string | undefined;
-    if (props.certificateExportEnabled !== undefined) {
-      certificateExport = props.certificateExportEnabled ? 'ENABLED' : 'DISABLED';
+    if (props.allowExport !== undefined) {
+      certificateExport = props.allowExport ? 'ENABLED' : 'DISABLED';
     }
 
     const cert = new CfnCertificate(this, 'Resource', {

@@ -84,10 +84,11 @@ export interface CertificateProps {
    * Enable or disable export of this certificate.
    *
    * If you issue an exportable public certificate, there is a charge at certificate issuance and again when the certificate renews.
+   * Ref: https://aws.amazon.com/certificate-manager/pricing
    *
    * @default false
    */
-  readonly certificateExportEnabled?: boolean;
+  readonly allowExport?: boolean;
 
   /**
    * Enable or disable transparency logging for this certificate
@@ -328,7 +329,7 @@ export class Certificate extends CertificateBase implements ICertificate {
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 
-    const certificateExport = (props.certificateExportEnabled === true) ? 'ENABLED' : undefined
+    const certificateExport = (props.allowExport === true) ? 'ENABLED' : undefined
 
     let certificateTransparencyLoggingPreference: string | undefined;
     if (props.transparencyLoggingEnabled !== undefined) {
