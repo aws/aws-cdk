@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "cloudfront-vpc-origin-multi-region-test/DefaultTest": {
+      "stacks": [
+        "integ-cloudfront-vpc-origin-us-east-1",
+        "integ-cloudfront-vpc-origin-us-west-2"
+      ],
+      "assertionStack": "cloudfront-vpc-origin-multi-region-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cloudfrontvpcoriginmultiregiontestDefaultTestDeployAssertF258ED88"
+    }
+  },
+  "minimumCliVersion": "2.1025.0"
+}
