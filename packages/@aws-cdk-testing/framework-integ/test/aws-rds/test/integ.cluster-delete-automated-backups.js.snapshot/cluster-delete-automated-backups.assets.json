@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "1fac08261dcfdb44f280e90932346bbaedce68ccce9e293b4327819700c8392b": {
+      "displayName": "cluster-delete-automated-backups Template",
+      "source": {
+        "path": "cluster-delete-automated-backups.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-173b87cd": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1fac08261dcfdb44f280e90932346bbaedce68ccce9e293b4327819700c8392b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
