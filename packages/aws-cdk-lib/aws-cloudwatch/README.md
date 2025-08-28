@@ -479,7 +479,6 @@ const metric = new cloudwatch.Metric({
   namespace: 'AWS/EC2',
   metricName: 'CPUUtilization',
   statistic: 'Average',
-  period: Duration.minutes(5),
 });
 
 // Create an anomaly detection alarm
@@ -487,6 +486,8 @@ const alarm = new cloudwatch.AnomalyDetectionAlarm(this, 'AnomalyAlarm', {
   metric: metric,
   evaluationPeriods: 1,
 
+  // The period over which the anomaly detection band's statistics are applied (default: 5 minutes)
+  period: Duration.minutes(5),
   // Number of standard deviations for the band (default: 2)
   stdDevs: 2,
   // Alarm outside on either side of the band, or just below or above it (default: outside)
