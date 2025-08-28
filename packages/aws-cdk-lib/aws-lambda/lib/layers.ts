@@ -74,7 +74,7 @@ export interface ILayerVersion extends IResource {
   /**
    * The runtimes compatible with this Layer.
    *
-   * @default Runtime.All
+   * @default - All supported runtimes. Setting this to Runtime.ALL is equivalent to leaving it undefined.
    */
   readonly compatibleRuntimes?: Runtime[];
 
