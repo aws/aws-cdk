@@ -62,8 +62,21 @@ export interface SubnetV2Props {
 
   /**
    * Custom AZ for the subnet
+   *
+   * Either `availabilityZone` or `availabilityZoneId` must be specified, but not both.
+   *
+   * @default - No availability zone specified, must provide availabilityZoneId instead
    */
-  readonly availabilityZone: string;
+  readonly availabilityZone?: string;
+
+  /**
+   * The AZ ID of the subnet
+   *
+   * Either `availabilityZone` or `availabilityZoneId` must be specified, but not both.
+   *
+   * @default - No availability zone ID specified, must provide availabilityZone instead
+   */
+  readonly availabilityZoneId?: string;
 
   /**
    * Custom Route for subnet
@@ -270,6 +283,14 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    // Validate availability zone specification
+    if (!props.availabilityZone && !props.availabilityZoneId) {
+      throw new UnscopedValidationError('Either availabilityZone or availabilityZoneId must be specified');
+    }
+    if (props.availabilityZone && props.availabilityZoneId) {
+      throw new UnscopedValidationError('Cannot specify both availabilityZone and availabilityZoneId. Use either availabilityZone or availabilityZoneId');
+    }
+
     const ipv4CidrBlock = props.ipv4CidrBlock.cidr;
     const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
 
@@ -307,6 +328,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
       cidrBlock: ipv4CidrBlock,
       ipv6CidrBlock: ipv6CidrBlock,
       availabilityZone: props.availabilityZone,
+      availabilityZoneId: props.availabilityZoneId,
       assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation,
       mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
     });
@@ -315,7 +337,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     this.ipv4CidrBlock = props.ipv4CidrBlock.cidr;
     this.ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
     this.subnetId = subnet.ref;
-    this.availabilityZone = props.availabilityZone;
+    this.availabilityZone = props.availabilityZone || subnet.attrAvailabilityZone;
 
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
 
@@ -394,6 +416,13 @@ export interface SubnetV2Attributes {
    * @default - No AZ information, cannot use AZ selection features
    */
   readonly availabilityZone: string;
+
+  /**
+   * The AZ ID of the subnet
+   *
+   * @default - No AZ ID information
+   */
+  readonly availabilityZoneId?: string;
 
   /**
    * The IPv4 CIDR block associated with the subnet
