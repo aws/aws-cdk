@@ -400,7 +400,7 @@ describe('Certificate export setting', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
       DomainName: 'test.example.com',
-      CertificateExport: 'DISABLED',
+      CertificateExport: Match.absent(),
     });
   });
 });
