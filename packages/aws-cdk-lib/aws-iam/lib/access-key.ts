@@ -18,6 +18,11 @@ export enum AccessKeyStatus {
    * An inactive access key. An inactive key cannot be used to make API calls.
    */
   INACTIVE = 'Inactive',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  EXPIRED = 'Expired',
 }
 
 /**
