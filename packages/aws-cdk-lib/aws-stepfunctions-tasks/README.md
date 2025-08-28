@@ -879,6 +879,34 @@ const runTask = new tasks.EcsRunTask(this, 'Run', {
 });
 ```
 
+#### Providing the TaskDefinition as a JSONPath/JSONata expression
+
+For some step functions you may be required to run tasks using a dynamically generated task definition. These can be
+provided to the EcsRunTask task as either a JSONPath or JSONata expression via the `taskDefinitionInput` parameter.
+
+```ts
+const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
+  isDefault: true,
+});
+const cluster = new ecs.Cluster(this, 'ECSCluster', { vpc });
+const taskRole = new iam.Role(this, 'TaskRole', {
+  assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+});
+const taskExecutionRole = new iam.Role(this, 'ExecutionRole', {
+  assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+});
+
+const runTask = new tasks.EcsRunTask(this, 'Run', {
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  cluster,
+  taskDefinitionInput: sfn.TaskInput.fromText('{% $states.input.taskDefinitionArn %}'),
+  taskRole,
+  taskExecutionRole,
+  networkMode: ecs.NetworkMode.AWS_VPC,
+  launchTarget: new tasks.EcsFargateLaunchTarget(),
+});
+```
+
 ## EMR
 
 Step Functions supports Amazon EMR through the service integration pattern.
