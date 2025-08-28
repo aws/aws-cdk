@@ -5,6 +5,7 @@ export * from './endpoint-config';
 export * from './instance-type';
 export * from './model';
 export * from './model-data';
+export * from './pipeline';
 export * from './scalable-instance-count';
 
 // AWS::SageMaker CloudFormation Resources:
