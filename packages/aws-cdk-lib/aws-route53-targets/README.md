@@ -99,9 +99,15 @@ new route53.ARecord(this, 'AliasRecord', {
 });
 ```
 
-**Important:** Based on [AWS documentation](https://aws.amazon.com/de/premiumsupport/knowledge-center/alias-resource-record-set-route53-cli/), all alias record in Route 53 that points to a Elastic Load Balancer will always include _dualstack_ for the DNSName to resolve IPv4/IPv6 addresses (without _dualstack_ IPv6 will not resolve).
+**Important:** Based on [AWS documentation](https://aws.amazon.com/de/premiumsupport/knowledge-center/alias-resource-record-set-route53-cli/), alias records in Route 53 that point to Elastic Load Balancers use different DNS name formats depending on the load balancer type:
 
-For example, if the Amazon-provided DNS for the load balancer is `ALB-xxxxxxx.us-west-2.elb.amazonaws.com`, CDK will create alias target in Route 53 will be `dualstack.ALB-xxxxxxx.us-west-2.elb.amazonaws.com`.
+- **Application Load Balancers (ALB)** and **Classic Load Balancers (CLB)**: Always include _dualstack_ prefix for IPv4/IPv6 resolution
+- **Network Load Balancers (NLB)**: Use plain DNS names (no dualstack prefix) when the feature flag `@aws-cdk/aws-route53-targets:nlbUsePlainDnsName` is enabled
+
+For example:
+- ALB: `ALB-xxxxxxx.us-west-2.elb.amazonaws.com` → `dualstack.ALB-xxxxxxx.us-west-2.elb.amazonaws.com`
+- NLB (with feature flag): `NLB-xxxxxxx.us-west-2.elb.amazonaws.com` → `NLB-xxxxxxx.us-west-2.elb.amazonaws.com`
+- NLB (without feature flag): `NLB-xxxxxxx.us-west-2.elb.amazonaws.com` → `dualstack.NLB-xxxxxxx.us-west-2.elb.amazonaws.com` (legacy behavior)
 
 - GlobalAccelerator
 
