@@ -419,14 +419,14 @@ override it if you prefer for your trigger not to start on creation.
 Reference the workflow-triggers.test.ts unit tests for examples of creating
 workflows and triggers.
 
-1. **On-Demand Triggers**
+#### **1. On-Demand Triggers**
 
 On-demand triggers can start glue jobs or crawlers. This construct provides
 convenience functions to create on-demand crawler or job triggers. The constructor
 takes an optional description parameter, but abstracts the requirement of an
 actions list using the job or crawler objects using conditional types.
 
-2. **Scheduled Triggers**
+#### **2. Scheduled Triggers**
 
 You can create scheduled triggers using cron expressions. This construct
 provides daily, weekly, and monthly convenience functions,
@@ -436,7 +436,7 @@ without having to build your own cron expressions. The L2 extracts
 the expression that Glue requires from the Schedule object. The constructor
 takes an optional description and a list of jobs or crawlers as actions.
 
-3. **Notify  Event Triggers**
+#### **3. Notify  Event Triggers**
 
 There are two types of notify event triggers: batching and non-batching.
 For batching triggers, you must specify `BatchSize`. For non-batching
@@ -444,7 +444,7 @@ triggers, `BatchSize` defaults to 1. For both triggers, `BatchWindow`
 defaults to 900 seconds, but you can override the window to align with
 your workload's requirements.
 
-4. **Conditional Triggers**
+#### **4. Conditional Triggers**
 
 Conditional triggers have a predicate and actions associated with them.
 The trigger actions are executed when the predicateCondition is true.
