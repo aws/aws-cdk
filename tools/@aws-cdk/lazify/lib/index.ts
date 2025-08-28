@@ -160,6 +160,7 @@ export function transformFileContents(filename: string, contents: string, progre
 
         const file = require.resolve(requiredModule, { paths: [path.dirname(filename)] });
         // FIXME: Should probably do this in a subprocess
+        // FIXME: Maybe we should use the cjs-lexer
         const module = require(file);
         const entries = Object.keys(module);
 
