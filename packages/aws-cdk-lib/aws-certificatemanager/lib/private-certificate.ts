@@ -85,7 +85,7 @@ export class PrivateCertificate extends CertificateBase implements ICertificate 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-const certificateExport = (props.allowExport === true) ? 'ENABLED' : undefined
+    const certificateExport = (props.allowExport === true) ? 'ENABLED' : undefined;
 
     const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,
