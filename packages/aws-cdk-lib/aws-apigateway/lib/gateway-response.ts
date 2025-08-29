@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import {
   CfnGatewayResponse,
   CfnGatewayResponseProps,
-  GatewayResponseRef,
+  GatewayResponseReference,
   IGatewayResponseRef,
 } from './apigateway.generated';
 import { IRestApi } from './restapi';
@@ -78,7 +78,7 @@ export class GatewayResponse extends Resource implements IGatewayResponse {
     return new Import(scope, id);
   }
 
-  public readonly gatewayResponseRef: GatewayResponseRef;
+  public readonly gatewayResponseRef: GatewayResponseReference;
 
   constructor(scope: Construct, id: string, props: GatewayResponseProps) {
     super(scope, id);

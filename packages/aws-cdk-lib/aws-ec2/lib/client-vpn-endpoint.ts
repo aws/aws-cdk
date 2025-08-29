@@ -1,9 +1,18 @@
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { ClientVpnAuthorizationRule, ClientVpnAuthorizationRuleOptions } from './client-vpn-authorization-rule';
-import { IClientVpnConnectionHandler, IClientVpnEndpoint, TransportProtocol, VpnPort } from './client-vpn-endpoint-types';
+import {
+  IClientVpnConnectionHandler,
+  IClientVpnEndpoint,
+  TransportProtocol,
+  VpnPort,
+} from './client-vpn-endpoint-types';
 import { ClientVpnRoute, ClientVpnRouteOptions } from './client-vpn-route';
 import { Connections } from './connections';
-import { CfnClientVpnEndpoint, CfnClientVpnTargetNetworkAssociation, ClientVpnEndpointRef } from './ec2.generated';
+import {
+  CfnClientVpnEndpoint,
+  CfnClientVpnTargetNetworkAssociation,
+  ClientVpnEndpointReference,
+} from './ec2.generated';
 import { CidrBlock } from './network-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { IVpc, SubnetSelection } from './vpc';
@@ -307,7 +316,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       public readonly connections = new Connections({ securityGroups: attrs.securityGroups });
       public readonly targetNetworksAssociated: IDependable = new DependencyGroup();
 
-      public get clientVpnEndpointRef(): ClientVpnEndpointRef {
+      public get clientVpnEndpointRef(): ClientVpnEndpointReference {
         return {
           clientVpnEndpointId: this.endpointId,
         };
@@ -441,7 +450,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
     }
   }
 
-  public get clientVpnEndpointRef(): ClientVpnEndpointRef {
+  public get clientVpnEndpointRef(): ClientVpnEndpointReference {
     return {
       clientVpnEndpointId: this.endpointId,
     };

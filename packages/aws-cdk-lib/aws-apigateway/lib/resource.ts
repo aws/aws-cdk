@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
-import { CfnResource, CfnResourceProps, IResourceRef, ResourceRef } from './apigateway.generated';
+import { CfnResource, CfnResourceProps, IResourceRef, ResourceReference } from './apigateway.generated';
 import { Cors, CorsOptions } from './cors';
 import { Integration } from './integration';
 import { MockIntegration } from './integrations';
-import { Method, MethodOptions, AuthorizationType } from './method';
+import { AuthorizationType, Method, MethodOptions } from './method';
 import { IRestApi, RestApi } from './restapi';
 import { IResource as IResourceBase, Resource as ResourceConstruct } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -384,7 +384,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     return this.restApi.urlForPath(this.path);
   }
 
-  public get resourceRef(): ResourceRef {
+  public get resourceRef(): ResourceReference {
     return {
       resourceId: this.resourceId,
       restApiId: this.api.restApiId,

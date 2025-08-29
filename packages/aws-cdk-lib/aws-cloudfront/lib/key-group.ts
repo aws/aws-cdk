@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnKeyGroup, IKeyGroupRef, KeyGroupRef } from './cloudfront.generated';
+import { CfnKeyGroup, IKeyGroupRef, KeyGroupReference } from './cloudfront.generated';
 import { IPublicKey } from './public-key';
 import { IResource, Names, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -59,7 +59,7 @@ export class KeyGroup extends Resource implements IKeyGroup {
   }
   public readonly keyGroupId: string;
 
-  public readonly keyGroupRef: KeyGroupRef;
+  public readonly keyGroupRef: KeyGroupReference;
 
   constructor(scope: Construct, id: string, props: KeyGroupProps) {
     super(scope, id);

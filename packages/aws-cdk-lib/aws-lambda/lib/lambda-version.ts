@@ -5,7 +5,7 @@ import { Architecture } from './architecture';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
 import { IFunction, QualifiedFunctionBase } from './function-base';
-import { CfnVersion, IVersionRef, VersionRef } from './lambda.generated';
+import { CfnVersion, IVersionRef, VersionReference } from './lambda.generated';
 import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { Fn, Lazy, RemovalPolicy, Token } from '../../core';
@@ -155,7 +155,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
         return this.functionArn;
       }
 
-      public get versionRef(): VersionRef {
+      public get versionRef(): VersionReference {
         return {
           functionArn: this.functionArn,
         };
@@ -188,7 +188,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
         return this.functionArn;
       }
 
-      public get versionRef(): VersionRef {
+      public get versionRef(): VersionReference {
         return {
           functionArn: this.functionArn,
         };
@@ -243,7 +243,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     }
   }
 
-  public get versionRef(): VersionRef {
+  public get versionRef(): VersionReference {
     return {
       functionArn: this.functionArn,
     };

@@ -1,7 +1,13 @@
-import { Resource, Names, Lazy, Tags, Token, ValidationError, UnscopedValidationError } from 'aws-cdk-lib';
+import { Lazy, Names, Resource, Tags, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
 import {
-  CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation,
-  SubnetRef, SubnetType,
+  CfnSubnet,
+  CfnSubnetRouteTableAssociation,
+  INetworkAcl,
+  IRouteTable,
+  ISubnet,
+  NetworkAcl,
+  SubnetNetworkAclAssociation,
+  SubnetType,
 } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
@@ -9,6 +15,7 @@ import { CidrBlock, CidrBlockIpv6, defaultSubnetName } from './util';
 import { RouteTable } from './route';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { SubnetReference } from "aws-cdk-lib/aws-ec2/lib/ec2.generated";
 
 /**
  * Interface to define subnet CIDR
@@ -197,7 +204,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
        */
       public readonly routeTable: IRouteTable = { routeTableId: attrs.routeTableId! };
 
-      public get subnetRef(): SubnetRef {
+      public get subnetRef(): SubnetReference {
         return {
           subnetId: this.subnetId,
         };
@@ -254,7 +261,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
    */
   public readonly ipv6CidrBlock?: string;
 
-  public get subnetRef(): SubnetRef {
+  public get subnetRef(): SubnetReference {
     return {
       subnetId: this.subnetId,
     };

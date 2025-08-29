@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { ApiKeyRef, CfnApiKey, IApiKeyRef } from './apigateway.generated';
+import { ApiKeyReference, CfnApiKey, IApiKeyRef } from './apigateway.generated';
 import { ResourceOptions } from './resource';
 import { IRestApi } from './restapi';
 import { IStage } from './stage';
@@ -139,7 +139,7 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
     });
   }
 
-  public get apiKeyRef(): ApiKeyRef {
+  public get apiKeyRef(): ApiKeyReference {
     return {
       apiKeyId: this.keyId,
     };

@@ -3,7 +3,7 @@ import { Architecture } from './architecture';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { extractQualifierFromArn, IVersion } from './lambda-version';
-import { AliasRef, CfnAlias, IAliasRef } from './lambda.generated';
+import { AliasReference, CfnAlias, IAliasRef } from './lambda.generated';
 import { ScalableFunctionAttribute } from './private/scalable-function-attribute';
 import { AutoScalingOptions, IScalableFunctionAttribute } from './scalable-attribute-api';
 import * as appscaling from '../../aws-applicationautoscaling';
@@ -110,7 +110,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       protected readonly canCreatePermissions = this._isStackAccount();
       protected readonly qualifier = attrs.aliasName;
 
-      public get aliasRef(): AliasRef {
+      public get aliasRef(): AliasReference {
         return {
           aliasArn: this.functionArn,
         };
@@ -208,7 +208,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     this.functionName = `${this.stack.splitArn(this.functionArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!}:${this.aliasName}`;
   }
 
-  public get aliasRef(): AliasRef {
+  public get aliasRef(): AliasReference {
     return {
       aliasArn: this.functionArn,
     };

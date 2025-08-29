@@ -2,13 +2,13 @@ import * as path from 'path';
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { IManagedPolicy, ManagedPolicyReference } from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as deploy from 'aws-cdk-lib/aws-s3-deployment';
 import { App, Fn, RemovalPolicy, Stack, UnscopedValidationError } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Node } from 'constructs';
-import { IManagedPolicy, ManagedPolicyRef } from 'aws-cdk-lib/aws-iam';
 
 /**
  * To validate that the deployment actually succeeds, perform the following actions:
@@ -48,7 +48,7 @@ const artifact = new deploy.BucketDeployment(stack, 'DeployApp', {
 function makePolicy(arn: string): IManagedPolicy {
   return {
     managedPolicyArn: arn,
-    get managedPolicyRef(): ManagedPolicyRef {
+    get managedPolicyRef(): ManagedPolicyReference {
       return {
         policyArn: this.managedPolicyArn,
       };

@@ -5,18 +5,20 @@ import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
 import { LifecycleRule, StorageClass } from './rule';
-import { BucketRef, CfnBucket, IBucketRef } from './s3.generated';
+import { BucketReference, CfnBucket, IBucketRef } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import {
+  Annotations,
   CustomResource,
   Duration,
   FeatureFlags,
   Fn,
   IResource,
   Lazy,
+  PhysicalName,
   RemovalPolicy,
   Resource,
   ResourceProps,
@@ -24,14 +26,14 @@ import {
   Tags,
   Token,
   Tokenization,
-  Annotations,
-  PhysicalName,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
+import {
+  AutoDeleteObjectsProvider,
+} from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import * as cxapi from '../../cx-api';
 import * as regionInformation from '../../region-info';
 
@@ -1151,7 +1153,7 @@ export abstract class BucketBase extends Resource implements IBucket {
     return ret;
   }
 
-  public get bucketRef(): BucketRef {
+  public get bucketRef(): BucketReference {
     return {
       bucketArn: this.bucketArn,
       bucketName: this.bucketName,

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnVpcOrigin, IVpcOriginRef, VpcOriginRef } from './cloudfront.generated';
+import { CfnVpcOrigin, IVpcOriginRef, VpcOriginReference } from './cloudfront.generated';
 import { OriginProtocolPolicy, OriginSslPolicy } from '../';
 import { IInstance } from '../../aws-ec2';
 import { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
@@ -218,7 +218,7 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
    */
   readonly domainName?: string;
 
-  readonly vpcOriginRef: VpcOriginRef;
+  readonly vpcOriginRef: VpcOriginReference;
 
   readonly cdkTagManager: TagManager;
 

@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { Construct } from 'constructs';
-import { CfnSAMLProvider, ISAMLProviderRef, SAMLProviderRef } from './iam.generated';
+import { CfnSAMLProvider, ISAMLProviderRef, SAMLProviderReference } from './iam.generated';
 import { IResource, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -83,7 +83,7 @@ export class SamlProvider extends Resource implements ISamlProvider {
   public static fromSamlProviderArn(scope: Construct, id: string, samlProviderArn: string): ISamlProvider {
     class Import extends Resource implements ISamlProvider {
       public readonly samlProviderArn = samlProviderArn;
-      public samlProviderRef: SAMLProviderRef = { samlProviderArn };
+      public samlProviderRef: SAMLProviderReference = { samlProviderArn };
     }
     return new Import(scope, id);
   }
@@ -107,7 +107,7 @@ export class SamlProvider extends Resource implements ISamlProvider {
     this.samlProviderArn = samlProvider.ref;
   }
 
-  public get samlProviderRef(): SAMLProviderRef {
+  public get samlProviderRef(): SAMLProviderReference {
     return {
       samlProviderArn: this.samlProviderArn,
     };

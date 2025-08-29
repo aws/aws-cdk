@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { Alias } from './alias';
 import { KeyLookupOptions } from './key-lookup';
-import { CfnKey, IKeyRef, KeyRef } from './kms.generated';
+import { CfnKey, IKeyRef, KeyReference } from './kms.generated';
 import * as perms from './private/perms';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
@@ -141,7 +141,7 @@ abstract class KeyBase extends Resource implements IKey {
     this.node.addValidation({ validate: () => this.policy?.validateForResourcePolicy() ?? [] });
   }
 
-  public get keyRef(): KeyRef {
+  public get keyRef(): KeyReference {
     return {
       keyArn: this.keyArn,
       keyId: this.keyId,

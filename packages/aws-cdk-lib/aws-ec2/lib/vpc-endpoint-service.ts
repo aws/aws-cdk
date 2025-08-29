@@ -1,5 +1,10 @@
 import { Construct } from 'constructs';
-import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions, IVPCEndpointServiceRef, VPCEndpointServiceRef } from './ec2.generated';
+import {
+  CfnVPCEndpointService,
+  CfnVPCEndpointServicePermissions,
+  IVPCEndpointServiceRef,
+  VPCEndpointServiceReference,
+} from './ec2.generated';
 import { ArnPrincipal } from '../../aws-iam';
 import { Aws, Fn, IResource, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -173,7 +178,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     }
   }
 
-  public get vpcEndpointServiceRef(): VPCEndpointServiceRef {
+  public get vpcEndpointServiceRef(): VPCEndpointServiceReference {
     return this.endpointService.vpcEndpointServiceRef;
   }
 }

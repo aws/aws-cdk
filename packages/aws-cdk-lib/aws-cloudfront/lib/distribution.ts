@@ -1,6 +1,11 @@
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
-import { CfnDistribution, CfnMonitoringSubscription, DistributionRef, IDistributionRef } from './cloudfront.generated';
+import {
+  CfnDistribution,
+  CfnMonitoringSubscription,
+  DistributionReference,
+  IDistributionRef,
+} from './cloudfront.generated';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
@@ -15,7 +20,19 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations, ValidationError } from '../../core';
+import {
+  Annotations,
+  ArnFormat,
+  Duration,
+  FeatureFlags,
+  IResource,
+  Lazy,
+  Names,
+  Resource,
+  Stack,
+  Token,
+  ValidationError,
+} from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
@@ -323,7 +340,7 @@ export class Distribution extends Resource implements IDistribution {
   public readonly domainName: string;
   public readonly distributionDomainName: string;
   public readonly distributionId: string;
-  public readonly distributionRef: DistributionRef;
+  public readonly distributionRef: DistributionReference;
 
   private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;

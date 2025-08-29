@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IGroup } from './group';
-import { CfnUser, CfnUserToGroupAddition, IUserRef, UserRef } from './iam.generated';
+import { CfnUser, CfnUserToGroupAddition, IUserRef, UserReference } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
@@ -230,7 +230,7 @@ export class User extends Resource implements IIdentity, IUser {
         throw new ValidationError('Cannot add managed policy to imported User', this);
       }
 
-      public get userRef(): UserRef {
+      public get userRef(): UserReference {
         return {
           userName: this.userName,
           userArn: this.userArn,
@@ -304,7 +304,7 @@ export class User extends Resource implements IIdentity, IUser {
     }
   }
 
-  public get userRef(): UserRef {
+  public get userRef(): UserReference {
     return {
       userName: this.userName,
       userArn: this.userArn,

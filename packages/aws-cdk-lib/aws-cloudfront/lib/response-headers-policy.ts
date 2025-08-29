@@ -1,5 +1,9 @@
 import { Construct, Node } from 'constructs';
-import { CfnResponseHeadersPolicy, IResponseHeadersPolicyRef, ResponseHeadersPolicyRef } from './cloudfront.generated';
+import {
+  CfnResponseHeadersPolicy,
+  IResponseHeadersPolicyRef,
+  ResponseHeadersPolicyReference,
+} from './cloudfront.generated';
 import { Duration, Names, Resource, Token, UnscopedValidationError, ValidationError, withResolved } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -118,7 +122,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
   }
 
   public readonly responseHeadersPolicyId: string;
-  public readonly responseHeadersPolicyRef: ResponseHeadersPolicyRef;
+  public readonly responseHeadersPolicyRef: ResponseHeadersPolicyReference;
 
   constructor(scope: Construct, id: string, props: ResponseHeadersPolicyProps = {}) {
     super(scope, id, {

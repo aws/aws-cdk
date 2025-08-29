@@ -1,5 +1,5 @@
 import { Construct, Node } from 'constructs';
-import { CfnOriginRequestPolicy, IOriginRequestPolicyRef, OriginRequestPolicyRef } from './cloudfront.generated';
+import { CfnOriginRequestPolicy, IOriginRequestPolicyRef, OriginRequestPolicyReference } from './cloudfront.generated';
 import { Names, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -100,7 +100,7 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
   }
 
   public readonly originRequestPolicyId: string;
-  public readonly originRequestPolicyRef: OriginRequestPolicyRef;
+  public readonly originRequestPolicyRef: OriginRequestPolicyReference;
 
   constructor(scope: Construct, id: string, props: OriginRequestPolicyProps = {}) {
     super(scope, id, {

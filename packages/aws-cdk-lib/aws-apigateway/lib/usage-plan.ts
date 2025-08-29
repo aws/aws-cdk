@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IApiKey } from './api-key';
-import { CfnUsagePlan, CfnUsagePlanKey, IUsagePlanRef, UsagePlanRef } from './apigateway.generated';
+import { CfnUsagePlan, CfnUsagePlanKey, IUsagePlanRef, UsagePlanReference } from './apigateway.generated';
 import { Method } from './method';
 import { IRestApi } from './restapi';
 import { Stage } from './stage';
@@ -212,7 +212,7 @@ abstract class UsagePlanBase extends Resource implements IUsagePlan {
     }
   }
 
-  public get usagePlanRef(): UsagePlanRef {
+  public get usagePlanRef(): UsagePlanReference {
     return {
       usagePlanId: this.usagePlanId,
     };

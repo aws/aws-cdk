@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Bucket, IBucket } from './bucket';
-import { BucketPolicyRef, CfnBucket, CfnBucketPolicy, IBucketPolicyRef } from './s3.generated';
+import { BucketPolicyReference, CfnBucket, CfnBucketPolicy, IBucketPolicyRef } from './s3.generated';
 import { PolicyDocument } from '../../aws-iam';
 import { RemovalPolicy, Resource, Token, Tokenization } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -94,7 +94,7 @@ export class BucketPolicy extends Resource implements IBucketPolicyRef {
     return ret;
   }
 
-  public readonly bucketPolicyRef: BucketPolicyRef;
+  public readonly bucketPolicyRef: BucketPolicyReference;
 
   /**
    * A policy document containing permissions to add to the specified bucket.

@@ -1,10 +1,20 @@
 import { Construct } from 'constructs';
-import { CfnFlowLog, FlowLogRef, IFlowLogRef } from './ec2.generated';
+import { CfnFlowLog, FlowLogReference, IFlowLogRef } from './ec2.generated';
 import { ISubnet, IVpc } from './vpc';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
-import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, Tags, CfnResource, ValidationError } from '../../core';
+import {
+  CfnResource,
+  FeatureFlags,
+  IResource,
+  PhysicalName,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Tags,
+  ValidationError,
+} from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
@@ -805,7 +815,7 @@ abstract class FlowLogBase extends Resource implements IFlowLog {
    */
   public abstract readonly flowLogId: string;
 
-  public get flowLogRef(): FlowLogRef {
+  public get flowLogRef(): FlowLogReference {
     return {
       flowLogId: this.flowLogId,
     };

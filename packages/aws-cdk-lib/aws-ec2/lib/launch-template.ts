@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
-import { CfnLaunchTemplate, ILaunchTemplateRef, LaunchTemplateRef } from './ec2.generated';
+import { CfnLaunchTemplate, ILaunchTemplateRef, LaunchTemplateReference } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
@@ -14,15 +14,15 @@ import {
   Annotations,
   Duration,
   Expiration,
+  FeatureFlags,
   Fn,
   IResource,
   Lazy,
   Resource,
   TagManager,
-  TagType,
   Tags,
+  TagType,
   Token,
-  FeatureFlags,
   ValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -528,7 +528,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       public readonly launchTemplateId? = attrs.launchTemplateId;
       public readonly launchTemplateName? = attrs.launchTemplateName;
 
-      public get launchTemplateRef(): LaunchTemplateRef {
+      public get launchTemplateRef(): LaunchTemplateReference {
         if (!this.launchTemplateId) {
           throw new ValidationError('You must set launchTemplateId in LaunchTemplate.fromLaunchTemplateAttributes() in order to use the LaunchTemplate in this API', this);
         }
@@ -862,7 +862,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     this.versionNumber = Token.asString(resource.getAtt('LatestVersionNumber'));
   }
 
-  public get launchTemplateRef(): LaunchTemplateRef {
+  public get launchTemplateRef(): LaunchTemplateReference {
     return {
       launchTemplateId: this.launchTemplateId!,
     };

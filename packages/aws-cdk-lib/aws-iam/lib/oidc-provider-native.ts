@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnOIDCProvider, IOIDCProviderRef, OIDCProviderRef } from './iam.generated';
+import { CfnOIDCProvider, IOIDCProviderRef, OIDCProviderReference } from './iam.generated';
 import { Arn, IResource, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -135,7 +135,7 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
       public readonly oidcProviderArn = oidcProviderArn;
       public readonly oidcProviderIssuer = resourceName;
 
-      public get oidcProviderRef(): OIDCProviderRef {
+      public get oidcProviderRef(): OIDCProviderReference {
         return {
           oidcProviderArn: this.oidcProviderArn,
         };
@@ -234,7 +234,7 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
     this.oidcProviderThumbprints = Token.asString(props.thumbprints);
   }
 
-  public get oidcProviderRef(): OIDCProviderRef {
+  public get oidcProviderRef(): OIDCProviderReference {
     return {
       oidcProviderArn: this.oidcProviderArn,
     };

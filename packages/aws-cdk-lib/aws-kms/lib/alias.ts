@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IKey } from './key';
-import { AliasRef, CfnAlias, IAliasRef, KeyRef } from './kms.generated';
+import { AliasReference, CfnAlias, IAliasRef, KeyReference } from './kms.generated';
 import * as iam from '../../aws-iam';
 import * as perms from './private/perms';
 import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
@@ -62,13 +62,13 @@ abstract class AliasBase extends Resource implements IAlias {
 
   public abstract readonly aliasTargetKey: IKey;
 
-  public get aliasRef(): AliasRef {
+  public get aliasRef(): AliasReference {
     return {
       aliasName: this.aliasName,
     };
   }
 
-  public get keyRef(): KeyRef {
+  public get keyRef(): KeyReference {
     return this.aliasTargetKey.keyRef;
   }
 
@@ -219,7 +219,7 @@ export class Alias extends AliasBase {
         return { statementAdded: false };
       }
 
-      public get keyRef(): KeyRef {
+      public get keyRef(): KeyReference {
         return this.aliasTargetKey.keyRef;
       }
 
@@ -243,7 +243,7 @@ export class Alias extends AliasBase {
         });
       }
 
-      public get aliasRef(): AliasRef {
+      public get aliasRef(): AliasReference {
         return {
           aliasName: this.aliasName,
         };

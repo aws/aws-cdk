@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
-import { CfnVPCEndpoint, IVPCEndpointRef, VPCEndpointRef } from './ec2.generated';
+import { CfnVPCEndpoint, IVPCEndpointRef, VPCEndpointReference } from './ec2.generated';
 import { Peer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -28,7 +28,7 @@ export abstract class VpcEndpoint extends Resource implements IVpcEndpoint {
 
   protected policyDocument?: iam.PolicyDocument;
 
-  public get vpcEndpointRef(): VPCEndpointRef {
+  public get vpcEndpointRef(): VPCEndpointReference {
     return {
       vpcEndpointId: this.vpcEndpointId,
     };
@@ -987,7 +987,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
         defaultPort: Port.tcp(attrs.port),
         securityGroups,
       });
-      public get vpcEndpointRef(): VPCEndpointRef {
+      public get vpcEndpointRef(): VPCEndpointReference {
         return {
           vpcEndpointId: this.vpcEndpointId,
         };

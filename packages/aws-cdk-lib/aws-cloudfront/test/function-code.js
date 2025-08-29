@@ -1,3 +1,1 @@
-function handler(event) {
-  return event.request;
-}
+"use strict";function handler(event){return event.request}

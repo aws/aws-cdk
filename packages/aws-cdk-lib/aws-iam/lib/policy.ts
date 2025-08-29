@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IGroup } from './group';
-import { CfnPolicy, IPolicyRef, PolicyRef } from './iam.generated';
+import { CfnPolicy, IPolicyRef, PolicyReference } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
@@ -118,7 +118,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
     class Import extends Resource implements IPolicy {
       public readonly policyName = policyName;
 
-      public get policyRef(): PolicyRef {
+      public get policyRef(): PolicyReference {
         throw new ValidationError('Cannot use a Policy.fromPolicyName() here.', this);
       }
     }
@@ -132,7 +132,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
   public readonly document = new PolicyDocument();
 
   public readonly grantPrincipal: IPrincipal;
-  public readonly policyRef: PolicyRef;
+  public readonly policyRef: PolicyReference;
 
   private readonly _policyName: string;
   private readonly roles = new Array<IRole>();

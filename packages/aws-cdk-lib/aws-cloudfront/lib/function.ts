@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { Construct } from 'constructs';
-import { CfnFunction, FunctionRef, IFunctionRef } from './cloudfront.generated';
+import { CfnFunction, FunctionReference, IFunctionRef } from './cloudfront.generated';
 import { IKeyValueStore } from './key-value-store';
 import { IResource, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -197,7 +197,7 @@ export class Function extends Resource implements IFunction {
    */
   public readonly functionRuntime: string;
 
-  public readonly functionRef: FunctionRef;
+  public readonly functionRef: FunctionReference;
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id);

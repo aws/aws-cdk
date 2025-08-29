@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnPublicKey, IPublicKeyRef, PublicKeyRef } from './cloudfront.generated';
+import { CfnPublicKey, IPublicKeyRef, PublicKeyReference } from './cloudfront.generated';
 import { IResource, Names, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -61,7 +61,7 @@ export class PublicKey extends Resource implements IPublicKey {
   }
 
   public readonly publicKeyId: string;
-  public readonly publicKeyRef: PublicKeyRef;
+  public readonly publicKeyRef: PublicKeyReference;
 
   constructor(scope: Construct, id: string, props: PublicKeyProps) {
     super(scope, id);

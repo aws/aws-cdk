@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnPlacementGroup, IPlacementGroupRef, PlacementGroupRef } from './ec2.generated';
+import { CfnPlacementGroup, IPlacementGroupRef, PlacementGroupReference } from './ec2.generated';
 import { IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -160,7 +160,7 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
   public static fromPlacementGroupName(scope: Construct, id: string, placementGroupName: string): IPlacementGroup {
     class Import extends Resource implements IPlacementGroup {
       public readonly placementGroupName = placementGroupName;
-      public get placementGroupRef(): PlacementGroupRef {
+      public get placementGroupRef(): PlacementGroupReference {
         return {
           groupName: this.placementGroupName,
         };
@@ -217,7 +217,7 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
     });
   }
 
-  public get placementGroupRef(): PlacementGroupRef {
+  public get placementGroupRef(): PlacementGroupReference {
     return {
       groupName: this.placementGroupName,
     };

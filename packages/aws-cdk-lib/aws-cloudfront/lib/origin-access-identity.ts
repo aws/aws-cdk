@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import {
   CfnCloudFrontOriginAccessIdentity,
-  CloudFrontOriginAccessIdentityRef,
+  CloudFrontOriginAccessIdentityReference,
   ICloudFrontOriginAccessIdentityRef,
 } from './cloudfront.generated';
 import * as iam from '../../aws-iam';
@@ -156,7 +156,7 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
    */
   public readonly originAccessIdentityId: string;
 
-  public readonly cloudFrontOriginAccessIdentityRef: CloudFrontOriginAccessIdentityRef;
+  public readonly cloudFrontOriginAccessIdentityRef: CloudFrontOriginAccessIdentityReference;
 
   /**
    * CDK L1 resource

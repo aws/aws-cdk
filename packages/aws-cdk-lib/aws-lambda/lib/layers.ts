@@ -1,7 +1,12 @@
 import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { Code } from './code';
-import { CfnLayerVersion, CfnLayerVersionPermission, ILayerVersionRef, LayerVersionRef } from './lambda.generated';
+import {
+  CfnLayerVersion,
+  CfnLayerVersionPermission,
+  ILayerVersionRef,
+  LayerVersionReference,
+} from './lambda.generated';
 import { Runtime } from './runtime';
 import { IResource, RemovalPolicy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -99,7 +104,7 @@ abstract class LayerVersionBase extends Resource implements ILayerVersion {
   public abstract readonly layerVersionArn: string;
   public abstract readonly compatibleRuntimes?: Runtime[];
 
-  public get layerVersionRef(): LayerVersionRef {
+  public get layerVersionRef(): LayerVersionReference {
     return {
       layerVersionArn: this.layerVersionArn,
     };
