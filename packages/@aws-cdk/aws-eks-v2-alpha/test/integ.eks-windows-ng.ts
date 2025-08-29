@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as eks from '../lib';
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import { NodegroupAmiType, TaintEffect } from 'aws-cdk-lib/aws-eks';
 
 class EksClusterStack extends Stack {
@@ -27,15 +27,15 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 0,
-      version: eks.KubernetesVersion.V1_32,
+      version: eks.KubernetesVersion.V1_33,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),
       },
       defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
     });
 
     this.cluster.addNodegroupCapacity('LinuxNodegroup', {
-      amiType: NodegroupAmiType.AL2_X86_64,
+      amiType: NodegroupAmiType.AL2023_X86_64_STANDARD,
     });
     this.cluster.addNodegroupCapacity('WindowsNodegroup', {
       amiType: NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
@@ -63,4 +63,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-cluster-windows-ng', {
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
-app.synth();
