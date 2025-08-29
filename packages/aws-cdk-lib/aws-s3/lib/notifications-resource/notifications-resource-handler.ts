@@ -107,6 +107,4 @@ export class NotificationsResourceHandler extends Construct {
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
   }
-
-
 }

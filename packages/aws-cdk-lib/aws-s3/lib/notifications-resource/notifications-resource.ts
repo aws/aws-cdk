@@ -169,11 +169,11 @@ export class BucketNotifications extends Construct {
 
   /**
    * Add scoped permissions for managing bucket notifications to the handler's role.
-   * 
+   *
    * Grants specific IAM permissions to the bucket ARN instead of using wildcard permissions.
    * This implements the principle of least privilege by limiting the handler's access to only
    * the buckets it needs to manage.
-   * 
+   *
    * @param handler The notifications resource handler
    * @param managed Whether this is a managed (CDK-created) bucket
    */
