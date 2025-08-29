@@ -1940,11 +1940,16 @@ new ec2.Instance(this, 'Instance', {
   machineImage,
 
   metadataOptions: {
-    httpEndpoint: true,                                    // Enable the metadata endpoint
-    httpProtocolIpv6: false,                              // Disable IPv6 endpoint
-    httpPutResponseHopLimit: 2,                           // Allow 2 hops for metadata requests
-    httpTokens: ec2.LaunchTemplateHttpTokens.REQUIRED,    // Require IMDSv2 tokens
-    instanceMetadataTags: true,                           // Enable access to instance tags
+    // Enable the metadata endpoint
+    httpEndpoint: true,
+    // Disable IPv6 endpoint for metadata service
+    httpProtocolIpv6: false,
+    // Allow 2 hops for metadata requests
+    httpPutResponseHopLimit: 2,
+    // Require IMDSv2 tokens (secure)
+    httpTokens: ec2.LaunchTemplateHttpTokens.REQUIRED,
+    // Enable access to instance tags from metadata
+    instanceMetadataTags: true,
   },
 });
 
@@ -1955,9 +1960,12 @@ new ec2.Instance(this, 'LegacyInstance', {
   machineImage,
 
   metadataOptions: {
-    httpEndpoint: true,                                    // Enable the metadata endpoint
-    httpTokens: ec2.LaunchTemplateHttpTokens.OPTIONAL,    // Allow both IMDSv1 and IMDSv2
-    httpPutResponseHopLimit: 1,                           // Default hop limit
+    // Enable the metadata endpoint
+    httpEndpoint: true,
+    // Allow both IMDSv1 and IMDSv2 (backward compatible)
+    httpTokens: ec2.LaunchTemplateHttpTokens.OPTIONAL,
+    // Default hop limit
+    httpPutResponseHopLimit: 1,
   },
 });
 ```
