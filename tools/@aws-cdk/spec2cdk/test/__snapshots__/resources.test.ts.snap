@@ -14,7 +14,7 @@ export interface IResourceRef extends constructs.IConstruct {
   /**
    * A reference to a Resource resource.
    */
-  readonly resourceRef: ResourceRef;
+  readonly resourceRef: ResourceReference;
 }
 
 /**
@@ -71,7 +71,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     this.id = props.id;
   }
 
-  public get resourceRef(): ResourceRef {
+  public get resourceRef(): ResourceReference {
     return {
       "resourceId": this.ref
     };
@@ -120,7 +120,7 @@ export interface CfnResourceProps {
  * @struct
  * @stability external
  */
-export interface ResourceRef {
+export interface ResourceReference {
   /**
    * The Id of the Resource resource.
    */
@@ -184,7 +184,7 @@ export interface IResourceRef extends constructs.IConstruct {
   /**
    * A reference to a Resource resource.
    */
-  readonly resourceRef: ResourceRef;
+  readonly resourceRef: ResourceReference;
 }
 
 /**
@@ -243,7 +243,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
-  public get resourceRef(): ResourceRef {
+  public get resourceRef(): ResourceReference {
     return {
       "resourceId": this.ref
     };
@@ -285,7 +285,7 @@ export interface CfnResourceProps {
  * @struct
  * @stability external
  */
-export interface ResourceRef {
+export interface ResourceReference {
   /**
    * The Id of the Resource resource.
    */
@@ -345,7 +345,7 @@ export interface ISomethingRef extends constructs.IConstruct {
   /**
    * A reference to a Something resource.
    */
-  readonly somethingRef: SomethingRef;
+  readonly somethingRef: SomethingReference;
 }
 
 /**
@@ -412,7 +412,7 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
     this.attrSomethingArn = cdk.Token.asString(this.getAtt("SomethingArn", cdk.ResolutionTypeHint.STRING));
   }
 
-  public get somethingRef(): SomethingRef {
+  public get somethingRef(): SomethingReference {
     return {
       "somethingId": this.ref,
       "somethingArn": this.attrSomethingArn
@@ -455,7 +455,7 @@ export interface CfnSomethingProps {
  * @struct
  * @stability external
  */
-export interface SomethingRef {
+export interface SomethingReference {
   /**
    * The Id of the Something resource.
    */
@@ -520,7 +520,7 @@ export interface IResourceRef extends constructs.IConstruct {
   /**
    * A reference to a Resource resource.
    */
-  readonly resourceRef: ResourceRef;
+  readonly resourceRef: ResourceReference;
 }
 
 /**
@@ -587,7 +587,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
-  public get resourceRef(): ResourceRef {
+  public get resourceRef(): ResourceReference {
     return {
       "resourceId": this.ref,
       "resourceArn": this.attrArn
@@ -630,7 +630,7 @@ export interface CfnResourceProps {
  * @struct
  * @stability external
  */
-export interface ResourceRef {
+export interface ResourceReference {
   /**
    * The Id of the Resource resource.
    */
@@ -695,7 +695,7 @@ export interface IResourceRef extends constructs.IConstruct {
   /**
    * A reference to a Resource resource.
    */
-  readonly resourceRef: ResourceRef;
+  readonly resourceRef: ResourceReference;
 }
 
 /**
@@ -760,7 +760,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     this.arn = props.arn;
   }
 
-  public get resourceRef(): ResourceRef {
+  public get resourceRef(): ResourceReference {
     return {
       "resourceId": this.ref
     };
@@ -809,7 +809,7 @@ export interface CfnResourceProps {
  * @struct
  * @stability external
  */
-export interface ResourceRef {
+export interface ResourceReference {
   /**
    * The Id of the Resource resource.
    */
@@ -873,7 +873,7 @@ export interface IResourceRef extends constructs.IConstruct {
   /**
    * A reference to a Resource resource.
    */
-  readonly resourceRef: ResourceRef;
+  readonly resourceRef: ResourceReference;
 }
 
 /**
@@ -932,7 +932,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     this.attrArn = cdk.Token.asString(this.getAtt("Arn", cdk.ResolutionTypeHint.STRING));
   }
 
-  public get resourceRef(): ResourceRef {
+  public get resourceRef(): ResourceReference {
     return {
       "resourceArn": this.ref
     };
@@ -974,7 +974,7 @@ export interface CfnResourceProps {
  * @struct
  * @stability external
  */
-export interface ResourceRef {
+export interface ResourceReference {
   /**
    * The Arn of the Resource resource.
    */
@@ -1034,7 +1034,7 @@ export interface IResourceRef extends constructs.IConstruct {
   /**
    * A reference to a Resource resource.
    */
-  readonly resourceRef: ResourceRef;
+  readonly resourceRef: ResourceReference;
 }
 
 /**
@@ -1101,7 +1101,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
-  public get resourceRef(): ResourceRef {
+  public get resourceRef(): ResourceReference {
     return {
       "resourceId": cdk.Fn.select(0, cdk.Fn.split("|", this.ref)),
       "another": cdk.Fn.select(1, cdk.Fn.split("|", this.ref))
@@ -1144,7 +1144,7 @@ export interface CfnResourceProps {
  * @struct
  * @stability external
  */
-export interface ResourceRef {
+export interface ResourceReference {
   /**
    * The Id of the Resource resource.
    */
@@ -1209,7 +1209,7 @@ export interface IResourceRef extends constructs.IConstruct {
   /**
    * A reference to a Resource resource.
    */
-  readonly resourceRef: ResourceRef;
+  readonly resourceRef: ResourceReference;
 }
 
 /**
@@ -1272,7 +1272,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     this.id = props.id;
   }
 
-  public get resourceRef(): ResourceRef {
+  public get resourceRef(): ResourceReference {
     return {
       "resourceId": cdk.Fn.select(0, cdk.Fn.split("|", this.ref)),
       "anotherId": cdk.Fn.select(1, cdk.Fn.split("|", this.ref))
@@ -1330,7 +1330,7 @@ export interface CfnResourceProps {
  * @struct
  * @stability external
  */
-export interface ResourceRef {
+export interface ResourceReference {
   /**
    * The Id of the Resource resource.
    */
@@ -1402,7 +1402,7 @@ export interface IResourceRef extends constructs.IConstruct {
   /**
    * A reference to a Resource resource.
    */
-  readonly resourceRef: ResourceRef;
+  readonly resourceRef: ResourceReference;
 }
 
 /**
@@ -1459,7 +1459,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     this.id = props.id;
   }
 
-  public get resourceRef(): ResourceRef {
+  public get resourceRef(): ResourceReference {
     return {
       "resourceId": this.ref
     };
@@ -1508,7 +1508,7 @@ export interface CfnResourceProps {
  * @struct
  * @stability external
  */
-export interface ResourceRef {
+export interface ResourceReference {
   /**
    * The Id of the Resource resource.
    */
