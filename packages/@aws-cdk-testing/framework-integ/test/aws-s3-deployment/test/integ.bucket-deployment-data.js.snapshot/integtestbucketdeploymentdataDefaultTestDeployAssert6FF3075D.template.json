@@ -28,7 +28,7 @@
      "Key": "\"deploy/here/my-json/secret-config.json\""
     },
     "flattenResponse": "false",
-    "salt": "1755623030390"
+    "salt": "1756329323656"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -131,7 +131,7 @@
      "Key": "\"deploy/here/my-yaml/secret-config.yaml\""
     },
     "flattenResponse": "false",
-    "salt": "1755623030391"
+    "salt": "1756329323656"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

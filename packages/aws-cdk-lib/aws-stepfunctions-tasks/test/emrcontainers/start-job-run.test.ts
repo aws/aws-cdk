@@ -1125,7 +1125,7 @@ describe('Custom resource is created that has correct EKS namespace, environment
         },
       ],
       MemorySize: 256,
-      Runtime: 'python3.11',
+      Runtime: 'python3.13',
       Timeout: 30,
     });
   });
@@ -1217,7 +1217,7 @@ describe('Custom resource is created that has correct EKS namespace, environment
         },
       ],
       MemorySize: 256,
-      Runtime: 'python3.11',
+      Runtime: 'python3.13',
       Timeout: 30,
     });
   });
