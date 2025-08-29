@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnOIDCProvider } from './iam.generated';
+import { CfnOIDCProvider, IOIDCProviderRef, OIDCProviderReference } from './iam.generated';
 import { Arn, IResource, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -8,7 +8,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  * Represents an IAM OpenID Connect provider.
  *
  */
-export interface IOidcProvider extends IResource {
+export interface IOidcProvider extends IResource, IOIDCProviderRef {
   /**
    * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
    *
@@ -134,6 +134,12 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
     class Import extends Resource implements IOidcProvider {
       public readonly oidcProviderArn = oidcProviderArn;
       public readonly oidcProviderIssuer = resourceName;
+
+      public get oidcProviderRef(): OIDCProviderReference {
+        return {
+          oidcProviderArn: this.oidcProviderArn,
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -226,5 +232,11 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
     );
 
     this.oidcProviderThumbprints = Token.asString(props.thumbprints);
+  }
+
+  public get oidcProviderRef(): OIDCProviderReference {
+    return {
+      oidcProviderArn: this.oidcProviderArn,
+    };
   }
 }

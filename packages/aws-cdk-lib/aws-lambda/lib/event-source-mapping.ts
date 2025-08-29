@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
-import { CfnEventSourceMapping } from './lambda.generated';
+import { CfnEventSourceMapping, EventSourceMappingReference, IEventSourceMappingRef } from './lambda.generated';
 import { ISchemaRegistry } from './schema-registry';
 import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
@@ -352,7 +352,7 @@ export interface EventSourceMappingProps extends EventSourceMappingOptions {
  * Represents an event source mapping for a lambda function.
  * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventsourcemapping.html
  */
-export interface IEventSourceMapping extends cdk.IResource {
+export interface IEventSourceMapping extends cdk.IResource, IEventSourceMappingRef {
   /**
    * The identifier for this EventSourceMapping
    * @attribute
@@ -401,6 +401,13 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     class Import extends cdk.Resource implements IEventSourceMapping {
       public readonly eventSourceMappingId = eventSourceMappingId;
       public readonly eventSourceMappingArn = eventSourceMappingArn;
+
+      public get eventSourceMappingRef(): EventSourceMappingReference {
+        return {
+          eventSourceMappingId,
+          eventSourceMappingArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -568,6 +575,13 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
     this.eventSourceMappingArn = EventSourceMapping.formatArn(this, this.eventSourceMappingId);
+  }
+
+  public get eventSourceMappingRef(): EventSourceMappingReference {
+    return {
+      eventSourceMappingId: this.eventSourceMappingId,
+      eventSourceMappingArn: this.eventSourceMappingArn,
+    };
   }
 
   private validateKafkaConsumerGroupIdOrThrow(kafkaConsumerGroupId: string) {

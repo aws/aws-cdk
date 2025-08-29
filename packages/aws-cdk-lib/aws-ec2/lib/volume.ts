@@ -1,9 +1,22 @@
 import { Construct } from 'constructs';
-import { CfnVolume } from './ec2.generated';
+import { CfnVolume, IVolumeRef, VolumeReference } from './ec2.generated';
 import { IInstance } from './instance';
 import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
-import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy, FeatureFlags, UnscopedValidationError, ValidationError } from '../../core';
+import {
+  FeatureFlags,
+  IResource,
+  Names,
+  RemovalPolicy,
+  Resource,
+  Size,
+  SizeRoundingBehavior,
+  Stack,
+  Tags,
+  Token,
+  UnscopedValidationError,
+  ValidationError,
+} from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -265,7 +278,7 @@ export enum EbsDeviceVolumeType {
 /**
  * An EBS Volume in AWS EC2.
  */
-export interface IVolume extends IResource {
+export interface IVolume extends IResource, IVolumeRef {
   /**
    * The EBS Volume's ID
    *
@@ -513,6 +526,12 @@ abstract class VolumeBase extends Resource implements IVolume {
   public abstract readonly volumeId: string;
   public abstract readonly availabilityZone: string;
   public abstract readonly encryptionKey?: IKey;
+
+  public get volumeRef(): VolumeReference {
+    return {
+      volumeId: this.volumeId,
+    };
+  }
 
   public grantAttachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
     const result = Grant.addToPrincipal({
