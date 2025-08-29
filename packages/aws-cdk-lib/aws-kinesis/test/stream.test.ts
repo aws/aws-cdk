@@ -2,9 +2,72 @@ import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { App, Duration, Stack, CfnParameter, RemovalPolicy, CfnDeletionPolicy } from '../../core';
-import { Stream, StreamEncryption, StreamMode } from '../lib';
+import { ShardLevelMetrics, Stream, StreamEncryption, StreamMode } from '../lib';
 
 describe('Kinesis data streams', () => {
+  describe('shard level metrics', () => {
+    test('configure all shard level metrics', () => {
+      const stack = new Stack();
+      new Stream(stack, 'MyStream', {
+        shardLevelMetrics: [ShardLevelMetrics.ALL],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Kinesis::Stream', {
+        DesiredShardLevelMetrics: [
+          'ALL',
+        ],
+      });
+    });
+
+    test('configure explicit shard level metrics', () => {
+      const stack = new Stack();
+      new Stream(stack, 'MyStream', {
+        shardLevelMetrics: [
+          ShardLevelMetrics.INCOMING_BYTES,
+          ShardLevelMetrics.INCOMING_RECORDS,
+          ShardLevelMetrics.ITERATOR_AGE_MILLISECONDS,
+          ShardLevelMetrics.OUTGOING_BYTES,
+          ShardLevelMetrics.OUTGOING_RECORDS,
+          ShardLevelMetrics.WRITE_PROVISIONED_THROUGHPUT_EXCEEDED,
+          ShardLevelMetrics.READ_PROVISIONED_THROUGHPUT_EXCEEDED,
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Kinesis::Stream', {
+        DesiredShardLevelMetrics: [
+          'IncomingBytes',
+          'IncomingRecords',
+          'IteratorAgeMilliseconds',
+          'OutgoingBytes',
+          'OutgoingRecords',
+          'WriteProvisionedThroughputExceeded',
+          'ReadProvisionedThroughputExceeded',
+        ],
+      });
+    });
+
+    test('throw error for configuring both ALL and explicit metrics', () => {
+      const stack = new Stack();
+      expect(() => {
+        new Stream(stack, 'MyStream', {
+          shardLevelMetrics: [ShardLevelMetrics.ALL, ShardLevelMetrics.INCOMING_BYTES],
+        });
+      }).toThrow('shardLevelMetrics cannot include `ShardLevelMetrics.ALL` and other metrics at the same time.');
+    });
+
+    test('throw error for configuring duplicate metrics', () => {
+      const stack = new Stack();
+      expect(() => {
+        new Stream(stack, 'MyStream', {
+          shardLevelMetrics: [
+            ShardLevelMetrics.INCOMING_BYTES,
+            ShardLevelMetrics.INCOMING_BYTES,
+          ],
+        });
+      }).toThrow('shardLevelMetrics cannot contain duplicate items.');
+    });
+  });
+
   test('default stream', () => {
     const stack = new Stack();
     new Stream(stack, 'MyStream');
