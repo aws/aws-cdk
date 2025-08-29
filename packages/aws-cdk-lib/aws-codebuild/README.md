@@ -576,6 +576,61 @@ const fleet = new codebuild.Fleet(this, 'MyFleet', {
 });
 ```
 
+### Custom instance types
+You can use [specific EC2 instance
+types](https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment-reserved-capacity.instance-types)
+for your fleet by setting the `computeType` to `CUSTOM_INSTANCE_TYPE`.  This
+allows you to specify the `instanceType` in `computeConfiguration`. Only certain
+EC2 instance types are supported; see the linked documentation for details.
+
+```ts
+import { Size } from 'aws-cdk-lib';
+
+const fleet = new codebuild.Fleet(this, 'MyFleet', {
+  baseCapacity: 1,
+  computeType: codebuild.FleetComputeType.CUSTOM_INSTANCE_TYPE,
+  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  computeConfiguration: {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+    // By default, 64 GiB of disk space is included. Any value optionally
+    // specified here is _incremental_ on top of the included disk space.
+    disk: Size.gibibytes(10),
+  },
+});
+```
+
+### VPCs
+The same considerations that apply to [Project
+VPCs](#definition-of-vpc-configuration-in-codebuild-project) apply to Fleets.
+When using a Fleet in a CodeBuild Project, it is an error to configure a VPC on
+the Project. Configure a VPC on the fleet instead.
+
+```ts
+declare const loadBalancer: elbv2.ApplicationLoadBalancer;
+
+const vpc = new ec2.Vpc(this, 'MyVPC');
+const fleet = new codebuild.Fleet(this, 'MyProject', {
+  computeType: codebuild.FleetComputeType.MEDIUM,
+  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  baseCapacity: 1,
+  vpc,
+});
+
+fleet.connections.allowTo(loadBalancer, ec2.Port.tcp(443));
+
+const project = new codebuild.Project(this, 'MyProject', {
+  environment: {
+    fleet,
+  },
+  buildSpec: codebuild.BuildSpec.fromObject({
+    // ...
+  }),
+  // Trying to configure a project-level VPC is an error, because this project
+  // runs on the Fleet created above.
+  // vpc,
+});
+```
+
 ## Logs
 
 CodeBuild lets you specify an S3 Bucket, CloudWatch Log Group or both to receive logs from your projects.
