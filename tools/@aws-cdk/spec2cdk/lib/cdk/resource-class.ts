@@ -182,7 +182,7 @@ export class ResourceClass extends ClassType {
     // BucketRef { bucketName, bucketArn }
     const refPropsStruct = new StructType(this.scope, {
       export: true,
-      name: `${this.resource.name}${this.suffix ?? ''}Ref`,
+      name: `${this.resource.name}${this.suffix ?? ''}Reference`,
       docs: {
         summary: `A reference to a ${this.resource.name} resource.`,
         stability: Stability.External,
