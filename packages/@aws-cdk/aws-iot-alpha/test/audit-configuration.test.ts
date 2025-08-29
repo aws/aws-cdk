@@ -147,7 +147,7 @@ test('throw error for configuring duration without enabling deviceCertificateAge
 
 test.each([
   cdk.Duration.days(29),
-  cdk.Duration.days(3653),
+  cdk.Duration.days(3651),
 ])('throw error for invalid duration %s', (duration) => {
   const stack = new cdk.Stack();
   expect(() => new iot.AccountAuditConfiguration(stack, 'AccountAuditConfiguration', {
