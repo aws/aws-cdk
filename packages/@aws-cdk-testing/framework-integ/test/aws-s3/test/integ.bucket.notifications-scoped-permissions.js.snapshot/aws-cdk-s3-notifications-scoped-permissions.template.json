@@ -1,11 +1,168 @@
 {
  "Resources": {
-  "MyQueueE6CA6235": {
+  "Bucket12520700A": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Bucket1NotificationsBC5D9A45": {
+   "Type": "Custom::S3BucketNotifications",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "Bucket12520700A"
+    },
+    "NotificationConfiguration": {
+     "QueueConfigurations": [
+      {
+       "Events": [
+        "s3:ObjectCreated:Post"
+       ],
+       "QueueArn": {
+        "Fn::GetAtt": [
+         "Queue4A7E3555",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "TopicConfigurations": [
+      {
+       "Events": [
+        "s3:ObjectCreated:Put"
+       ],
+       "TopicArn": {
+        "Ref": "TopicBFC7AF6E"
+       }
+      }
+     ]
+    },
+    "Managed": true,
+    "SkipDestinationValidation": false
+   },
+   "DependsOn": [
+    "QueuePolicy25439813",
+    "Queue4A7E3555",
+    "TopicPolicyA1747468",
+    "TopicBFC7AF6E"
+   ]
+  },
+  "Bucket25524B414": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Bucket2NotificationsD9BA2A77": {
+   "Type": "Custom::S3BucketNotifications",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "Bucket25524B414"
+    },
+    "NotificationConfiguration": {
+     "TopicConfigurations": [
+      {
+       "Events": [
+        "s3:ObjectRemoved:Delete"
+       ],
+       "TopicArn": {
+        "Ref": "TopicBFC7AF6E"
+       }
+      },
+      {
+       "Events": [
+        "s3:ObjectRemoved:DeleteMarkerCreated"
+       ],
+       "TopicArn": {
+        "Ref": "TopicBFC7AF6E"
+       }
+      }
+     ]
+    },
+    "Managed": true,
+    "SkipDestinationValidation": false
+   },
+   "DependsOn": [
+    "TopicPolicyA1747468",
+    "TopicBFC7AF6E"
+   ]
+  },
+  "TopicBFC7AF6E": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "TopicPolicyA1747468": {
+   "Type": "AWS::SNS::TopicPolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "Bucket12520700A",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       },
+       "Resource": {
+        "Ref": "TopicBFC7AF6E"
+       },
+       "Sid": "0"
+      },
+      {
+       "Action": "sns:Publish",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "Bucket25524B414",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       },
+       "Resource": {
+        "Ref": "TopicBFC7AF6E"
+       },
+       "Sid": "1"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Topics": [
+     {
+      "Ref": "TopicBFC7AF6E"
+     }
+    ]
+   }
+  },
+  "Queue4A7E3555": {
    "Type": "AWS::SQS::Queue",
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MyQueuePolicy6BBEDDAC": {
+  "QueuePolicy25439813": {
    "Type": "AWS::SQS::QueuePolicy",
    "Properties": {
     "PolicyDocument": {
@@ -20,7 +177,7 @@
         "ArnLike": {
          "aws:SourceArn": {
           "Fn::GetAtt": [
-           "MyBucketF68F3FF0",
+           "Bucket12520700A",
            "Arn"
           ]
          }
@@ -32,7 +189,7 @@
        },
        "Resource": {
         "Fn::GetAtt": [
-         "MyQueueE6CA6235",
+         "Queue4A7E3555",
          "Arn"
         ]
        }
@@ -42,64 +199,10 @@
     },
     "Queues": [
      {
-      "Ref": "MyQueueE6CA6235"
+      "Ref": "Queue4A7E3555"
      }
     ]
    }
-  },
-  "MyBucketF68F3FF0": {
-   "Type": "AWS::S3::Bucket",
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "MyBucketNotifications46AC0CD2": {
-   "Type": "Custom::S3BucketNotifications",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
-      "Arn"
-     ]
-    },
-    "BucketName": {
-     "Ref": "MyBucketF68F3FF0"
-    },
-    "NotificationConfiguration": {
-     "QueueConfigurations": [
-      {
-       "Events": [
-        "s3:ObjectCreated:Put"
-       ],
-       "Filter": {
-        "Key": {
-         "FilterRules": [
-          {
-           "Name": "suffix",
-           "Value": "bar/"
-          },
-          {
-           "Name": "prefix",
-           "Value": "foo/"
-          }
-         ]
-        }
-       },
-       "QueueArn": {
-        "Fn::GetAtt": [
-         "MyQueueE6CA6235",
-         "Arn"
-        ]
-       }
-      }
-     ]
-    },
-    "Managed": true,
-    "SkipDestinationValidation": false
-   },
-   "DependsOn": [
-    "MyQueuePolicy6BBEDDAC",
-    "MyQueueE6CA6235"
-   ]
   },
   "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {
    "Type": "AWS::IAM::Role",
@@ -140,12 +243,20 @@
       {
        "Action": "s3:PutBucketNotification",
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "MyBucketF68F3FF0",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Bucket12520700A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "Bucket25524B414",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
