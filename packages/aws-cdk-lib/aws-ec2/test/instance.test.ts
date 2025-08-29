@@ -18,6 +18,7 @@ import {
   InstanceSize,
   InstanceType,
   LaunchTemplate,
+  LaunchTemplateHttpTokens,
   UserData,
   Vpc,
   SubnetType,
@@ -1285,5 +1286,250 @@ test('resourceSignalTimeout and initOptions.timeout are both set, sum timeout an
         Timeout: 'PT20M',
       },
     },
+  });
+});
+
+describe('metadataOptions', () => {
+  test('can set all metadata options', () => {
+    // WHEN
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+      metadataOptions: {
+        httpEndpoint: true,
+        httpProtocolIpv6: false,
+        httpPutResponseHopLimit: 2,
+        httpTokens: LaunchTemplateHttpTokens.REQUIRED,
+        instanceMetadataTags: true,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      MetadataOptions: {
+        HttpEndpoint: 'enabled',
+        HttpProtocolIpv6: 'disabled',
+        HttpPutResponseHopLimit: 2,
+        HttpTokens: 'required',
+        InstanceMetadataTags: 'enabled',
+      },
+    });
+  });
+
+  test.each([
+    [true, 'enabled'],
+    [false, 'disabled'],
+  ])('httpEndpoint %s maps to %s', (input, expected) => {
+    // WHEN
+    new Instance(stack, `Instance${input}`, {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+      metadataOptions: {
+        httpEndpoint: input,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      MetadataOptions: {
+        HttpEndpoint: expected,
+      },
+    });
+  });
+
+  test.each([
+    [true, 'enabled'],
+    [false, 'disabled'],
+  ])('httpProtocolIpv6 %s maps to %s', (input, expected) => {
+    // WHEN
+    new Instance(stack, `Instance${input}`, {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+      metadataOptions: {
+        httpProtocolIpv6: input,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      MetadataOptions: {
+        HttpProtocolIpv6: expected,
+      },
+    });
+  });
+
+  test.each([
+    [true, 'enabled'],
+    [false, 'disabled'],
+  ])('instanceMetadataTags %s maps to %s', (input, expected) => {
+    // WHEN
+    new Instance(stack, `Instance${input}`, {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+      metadataOptions: {
+        instanceMetadataTags: input,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      MetadataOptions: {
+        InstanceMetadataTags: expected,
+      },
+    });
+  });
+
+  test.each([
+    [LaunchTemplateHttpTokens.OPTIONAL, 'optional'],
+    [LaunchTemplateHttpTokens.REQUIRED, 'required'],
+  ])('httpTokens %s maps to %s', (input, expected) => {
+    // WHEN
+    new Instance(stack, `Instance${expected}`, {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+      metadataOptions: {
+        httpTokens: input,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      MetadataOptions: {
+        HttpTokens: expected,
+      },
+    });
+  });
+
+  test.each([1, 32, 64])('httpPutResponseHopLimit %d is valid', (hopLimit) => {
+    // WHEN
+    new Instance(stack, `Instance${hopLimit}`, {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+      metadataOptions: {
+        httpPutResponseHopLimit: hopLimit,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      MetadataOptions: {
+        HttpPutResponseHopLimit: hopLimit,
+      },
+    });
+  });
+
+  test.each([0, 65, -1, 100])('httpPutResponseHopLimit %d throws validation error', (hopLimit) => {
+    // WHEN/THEN
+    expect(() => {
+      new Instance(stack, `Instance${hopLimit}`, {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+        metadataOptions: {
+          httpPutResponseHopLimit: hopLimit,
+        },
+      });
+    }).toThrow('httpPutResponseHopLimit must be between 1 and 64');
+  });
+
+  test('no metadata options renders undefined', () => {
+    // WHEN
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      InstanceType: 't3.large',
+    });
+
+    // Ensure MetadataOptions is not present
+    const template = Template.fromStack(stack);
+    const instances = template.findResources('AWS::EC2::Instance');
+    const instanceProps = Object.values(instances)[0].Properties;
+    expect(instanceProps.MetadataOptions).toBeUndefined();
+  });
+
+  test('empty metadata options renders undefined', () => {
+    // WHEN
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+      metadataOptions: {},
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    const instances = template.findResources('AWS::EC2::Instance');
+    const instanceProps = Object.values(instances)[0].Properties;
+    expect(instanceProps.MetadataOptions).toBeUndefined();
+  });
+
+  test('partial metadata options only render specified properties', () => {
+    // WHEN
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+      metadataOptions: {
+        httpTokens: LaunchTemplateHttpTokens.REQUIRED,
+        httpPutResponseHopLimit: 10,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      MetadataOptions: {
+        HttpTokens: 'required',
+        HttpPutResponseHopLimit: 10,
+      },
+    });
+
+    // Ensure other properties are not present
+    const template = Template.fromStack(stack);
+    const instances = template.findResources('AWS::EC2::Instance');
+    const metadataOptions = Object.values(instances)[0].Properties.MetadataOptions;
+    expect(metadataOptions.HttpEndpoint).toBeUndefined();
+    expect(metadataOptions.HttpProtocolIpv6).toBeUndefined();
+    expect(metadataOptions.InstanceMetadataTags).toBeUndefined();
+  });
+
+  test('metadataOptions works alongside existing requireImdsv2', () => {
+    // WHEN
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+      requireImdsv2: true,
+      metadataOptions: {
+        httpEndpoint: true,
+        instanceMetadataTags: true,
+      },
+    });
+
+    // Force stack synth so the InstanceRequireImdsv2Aspect is applied
+    Template.fromStack(stack);
+
+    // THEN - Both should work: direct metadataOptions and requireImdsv2 aspect
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      MetadataOptions: {
+        HttpEndpoint: 'enabled',
+        InstanceMetadataTags: 'enabled',
+      },
+    });
+
+    // The requireImdsv2 aspect should still create a LaunchTemplate
+    const instance = stack.node.findChild('Instance') as Instance;
+    const launchTemplate = instance.node.tryFindChild('LaunchTemplate') as LaunchTemplate;
+    expect(launchTemplate).toBeDefined();
   });
 });

@@ -6,7 +6,7 @@ import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
-import { CpuCredits, InstanceInitiatedShutdownBehavior } from './launch-template';
+import { CpuCredits, InstanceInitiatedShutdownBehavior, LaunchTemplateHttpTokens } from './launch-template';
 import { IMachineImage, OperatingSystemType } from './machine-image';
 import { IPlacementGroup } from './placement-group';
 import { instanceBlockDeviceMappings } from './private/ebs-util';
@@ -72,6 +72,56 @@ export interface IInstance extends IResource, IConnectable, iam.IGrantable {
    * @attribute
    */
   readonly instancePublicIp: string;
+}
+
+/**
+ * Interface for the Metadata Options of an EC2 Instance.
+ */
+export interface InstanceMetadataOptions {
+  /**
+   * Enables or disables the HTTP metadata endpoint on your instances.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-httpendpoint
+   *
+   * @default true
+   */
+  readonly httpEndpoint?: boolean;
+
+  /**
+   * Enables or disables the IPv6 endpoint for the instance metadata service.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-httpprotocolipv6
+   *
+   * @default true
+   */
+  readonly httpProtocolIpv6?: boolean;
+
+  /**
+   * The desired HTTP PUT response hop limit for instance metadata requests. The larger the number, the further instance metadata requests can travel.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-httpputresponsehoplimit
+   *
+   * @default 1
+   */
+  readonly httpPutResponseHopLimit?: number;
+
+  /**
+   * The state of token usage for your instance metadata requests.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-httptokens
+   *
+   * @default LaunchTemplateHttpTokens.OPTIONAL
+   */
+  readonly httpTokens?: LaunchTemplateHttpTokens;
+
+  /**
+   * Set to enabled to allow access to instance tags from the instance metadata. Set to disabled to turn off access to instance tags from the instance metadata.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-instancemetadatatags
+   *
+   * @default false
+   */
+  readonly instanceMetadataTags?: boolean;
 }
 
 /**
@@ -278,6 +328,13 @@ export interface InstanceProps {
    * @default - false
    */
   readonly requireImdsv2?: boolean;
+
+  /**
+   * The metadata options for the instance.
+   *
+   * @default - no metadata options
+   */
+  readonly metadataOptions?: InstanceMetadataOptions;
 
   /**
    * Whether "Detailed Monitoring" is enabled for this instance
@@ -613,6 +670,7 @@ export class Instance extends Resource implements IInstance {
       enclaveOptions: props.enclaveEnabled !== undefined ? { enabled: props.enclaveEnabled } : undefined,
       hibernationOptions: props.hibernationEnabled !== undefined ? { configured: props.hibernationEnabled } : undefined,
       ipv6AddressCount: props.ipv6AddressCount,
+      metadataOptions: this.renderMetadataOptions(props),
     });
     this.instance.node.addDependency(this.role);
 
@@ -771,6 +829,41 @@ export class Instance extends Resource implements IInstance {
         },
       };
     }
+  }
+
+  /**
+   * Render the metadata options for the instance
+   */
+  private renderMetadataOptions(props: InstanceProps): CfnInstance.MetadataOptionsProperty | undefined {
+    const metadataOptions = props.metadataOptions;
+
+    // Check if any metadata options are specified
+    if (!metadataOptions || (
+      metadataOptions.httpEndpoint === undefined &&
+      metadataOptions.httpProtocolIpv6 === undefined &&
+      metadataOptions.httpPutResponseHopLimit === undefined &&
+      metadataOptions.httpTokens === undefined &&
+      metadataOptions.instanceMetadataTags === undefined
+    )) {
+      return undefined;
+    }
+
+    // Validate httpPutResponseHopLimit range
+    if (metadataOptions.httpPutResponseHopLimit !== undefined &&
+        (metadataOptions.httpPutResponseHopLimit < 1 || metadataOptions.httpPutResponseHopLimit > 64)) {
+      throw new ValidationError('httpPutResponseHopLimit must be between 1 and 64', this);
+    }
+
+    return {
+      httpEndpoint: metadataOptions.httpEndpoint === true ? 'enabled' :
+        metadataOptions.httpEndpoint === false ? 'disabled' : undefined,
+      httpProtocolIpv6: metadataOptions.httpProtocolIpv6 === true ? 'enabled' :
+        metadataOptions.httpProtocolIpv6 === false ? 'disabled' : undefined,
+      httpPutResponseHopLimit: metadataOptions.httpPutResponseHopLimit,
+      httpTokens: metadataOptions.httpTokens,
+      instanceMetadataTags: metadataOptions.instanceMetadataTags === true ? 'enabled' :
+        metadataOptions.instanceMetadataTags === false ? 'disabled' : undefined,
+    };
   }
 }
 
