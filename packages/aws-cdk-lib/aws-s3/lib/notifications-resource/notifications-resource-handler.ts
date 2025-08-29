@@ -108,31 +108,5 @@ export class NotificationsResourceHandler extends Construct {
     this.role.addToPrincipalPolicy(statement);
   }
 
-  /**
-   * Grant permissions for managing bucket notifications.
-   *
-   * Grants scoped IAM permissions to the specific bucket ARN instead of using wildcard permissions.
-   * This implements the principle of least privilege by limiting the handler's access to only
-   * the buckets it needs to manage.
-   *
-   * @param bucketArn The ARN of the bucket to grant permissions for
-   * @param isUnmanaged Whether this is an unmanaged (imported) bucket that needs GetBucketNotification permissions
-   */
-  public grantBucketNotifications(bucketArn: string, isUnmanaged: boolean = false) {
-    // All buckets need PutBucketNotification to set/update notification configurations
-    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:PutBucketNotification'],
-      resources: [bucketArn],
-    }));
 
-    // Unmanaged (imported) buckets need GetBucketNotification to read existing configurations
-    // before merging with new notifications. Managed buckets don't need this since CDK
-    // controls their complete notification state from creation.
-    if (isUnmanaged) {
-      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['s3:GetBucketNotification'],
-        resources: [bucketArn],
-      }));
-    }
-  }
 }
