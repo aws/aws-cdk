@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "1b584e1d6c8445c83d3086866dd69428c5dd2b029374328975e186f06e0e7e60": {
+      "displayName": "integ-ec2-instance-metadata-options Template",
+      "source": {
+        "path": "integ-ec2-instance-metadata-options.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-b9d6339a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1b584e1d6c8445c83d3086866dd69428c5dd2b029374328975e186f06e0e7e60.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
