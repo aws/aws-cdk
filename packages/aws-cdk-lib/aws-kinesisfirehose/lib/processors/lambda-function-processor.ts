@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
-import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from './processor';
-import * as lambda from '../../aws-lambda';
+import * as lambda from '../../../aws-lambda';
+import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
 
 /**
  * Use an AWS Lambda function to transform records.
@@ -20,10 +20,7 @@ export class LambdaFunctionProcessor implements IDataProcessor {
 
     return {
       processorType: 'Lambda',
-      processorIdentifier: {
-        parameterName: 'LambdaArn',
-        parameterValue: this.lambdaFunction.functionArn,
-      },
+      processorIdentifier: { parameterName: 'LambdaArn', parameterValue: this.lambdaFunction.functionArn },
     };
   }
 }
