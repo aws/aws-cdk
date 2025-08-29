@@ -1297,14 +1297,14 @@ export class Table extends TableBase {
       kinesisStreamSpecification: kinesisStreamSpecification,
       deletionProtectionEnabled: props.deletionProtection,
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
-      resourcePolicy: props.resourcePolicy
-        ? { policyDocument: props.resourcePolicy }
-        : undefined,
+      resourcePolicy: Lazy.any({ produce: () => this.resourcePolicy ? { policyDocument: this.resourcePolicy } : undefined }),
       warmThroughput: props.warmThroughput?? undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
     this.encryptionKey = encryptionKey;
+
+    this.resourcePolicy = props.resourcePolicy;
 
     this.tableArn = this.getResourceArnAttribute(this.table.attrArn, {
       service: 'dynamodb',
@@ -1731,8 +1731,22 @@ export class Table extends TableBase {
     const isCompleteHandlerPolicy = new SourceTableAttachedPolicy(this, provider.isCompleteHandler.role!);
 
     // Permissions in the source region
-    this.grant(onEventHandlerPolicy, 'dynamodb:*');
-    this.grant(isCompleteHandlerPolicy, 'dynamodb:DescribeTable');
+    iam.Grant.addToPrincipal({
+      grantee: onEventHandlerPolicy,
+      actions: ['dynamodb:*'],
+      resourceArns: [
+        this.tableArn,
+        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+      ],
+    });
+    iam.Grant.addToPrincipal({
+      grantee: isCompleteHandlerPolicy,
+      actions: ['dynamodb:DescribeTable'],
+      resourceArns: [
+        this.tableArn,
+        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+      ],
+    });
 
     let previousRegion: CustomResource | undefined;
     let previousRegionCondition: CfnCondition | undefined;

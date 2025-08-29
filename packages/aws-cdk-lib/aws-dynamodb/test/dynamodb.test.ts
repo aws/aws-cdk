@@ -3951,6 +3951,55 @@ test('Resource policy test', () => {
   });
 });
 
+test('Resource policy can be modified after table creation', () => {
+  // GIVEN
+  const stack = new Stack();
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+  });
+
+  // WHEN
+  table.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['dynamodb:PutItem'],
+    principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+    resources: ['*'],
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    'ResourcePolicy': {
+      'PolicyDocument': {
+        'Version': '2012-10-17',
+        'Statement': [
+          {
+            'Principal': {
+              'AWS': 'arn:aws:iam::111122223333:user/foobar',
+            },
+            'Effect': 'Allow',
+            'Action': 'dynamodb:PutItem',
+            'Resource': '*',
+          },
+        ],
+      },
+    },
+  });
+});
+
+test('Resource policy is omitted when not set', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new Table(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    ResourcePolicy: Match.absent(),
+  });
+});
+
 test('Warm Throughput test on-demand', () => {
   // GIVEN
   const app = new App();

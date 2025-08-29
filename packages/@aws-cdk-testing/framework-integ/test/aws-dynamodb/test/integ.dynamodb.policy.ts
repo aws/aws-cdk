@@ -11,14 +11,14 @@ export class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    const statement = new iam.PolicyStatement({
+      actions: ['dynamodb:*'],
+      principals: [new iam.AccountRootPrincipal()],
+      resources: ['*'],
+    })
+
     const doc = new iam.PolicyDocument({
-      statements: [
-        new iam.PolicyStatement({
-          actions: ['dynamodb:*'],
-          principals: [new iam.AccountRootPrincipal()],
-          resources: ['*'],
-        }),
-      ],
+      statements: [statement],
     });
 
     this.table = new dynamodb.Table(this, 'TableTest1', {
@@ -39,6 +39,7 @@ export class TestStack extends Stack {
     });
 
     this.tableTwo.grantReadData(new iam.AccountPrincipal('123456789012'));
+    this.tableTwo.addToResourcePolicy(statement)
   }
 }
 
