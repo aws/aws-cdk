@@ -1933,18 +1933,31 @@ declare const vpc: ec2.Vpc;
 declare const instanceType: ec2.InstanceType;
 declare const machineImage: ec2.IMachineImage;
 
+// Example 1: Enforce IMDSv2 with comprehensive options
 new ec2.Instance(this, 'Instance', {
   vpc,
   instanceType,
   machineImage,
 
-  // Configure comprehensive metadata options
   metadataOptions: {
     httpEndpoint: true,                                    // Enable the metadata endpoint
     httpProtocolIpv6: false,                              // Disable IPv6 endpoint
     httpPutResponseHopLimit: 2,                           // Allow 2 hops for metadata requests
     httpTokens: ec2.LaunchTemplateHttpTokens.REQUIRED,    // Require IMDSv2 tokens
     instanceMetadataTags: true,                           // Enable access to instance tags
+  },
+});
+
+// Example 2: Allow both IMDSv1 and IMDSv2 (less secure, but backward compatible)
+new ec2.Instance(this, 'LegacyInstance', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  metadataOptions: {
+    httpEndpoint: true,                                    // Enable the metadata endpoint
+    httpTokens: ec2.LaunchTemplateHttpTokens.OPTIONAL,    // Allow both IMDSv1 and IMDSv2
+    httpPutResponseHopLimit: 1,                           // Default hop limit
   },
 });
 ```
