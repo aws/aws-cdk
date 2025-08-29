@@ -1924,13 +1924,9 @@ The `volumeInitializationRate` must be:
 
 ### Configuring Instance Metadata Service (IMDS)
 
-#### Toggling IMDSv1
+#### Comprehensive Metadata Options
 
-You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options to either
-allow both IMDSv1 and IMDSv2 or enforce IMDSv2 when interacting with the IMDS.
-
-To do this for a single `Instance`, you can use the `requireImdsv2` property.
-The example below demonstrates IMDSv2 being required on a single `Instance`:
+You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options using the `metadataOptions` property. This provides comprehensive control over all metadata service settings:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1942,11 +1938,37 @@ new ec2.Instance(this, 'Instance', {
   instanceType,
   machineImage,
 
-  // ...
+  // Configure comprehensive metadata options
+  metadataOptions: {
+    httpEndpoint: true,                                    // Enable the metadata endpoint
+    httpProtocolIpv6: false,                              // Disable IPv6 endpoint
+    httpPutResponseHopLimit: 2,                           // Allow 2 hops for metadata requests
+    httpTokens: ec2.LaunchTemplateHttpTokens.REQUIRED,    // Require IMDSv2 tokens
+    instanceMetadataTags: true,                           // Enable access to instance tags
+  },
+});
+```
 
+#### Simple IMDSv2 Enforcement
+
+For simple IMDSv2 enforcement without additional configuration, you can use the `requireImdsv2` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // Simple IMDSv2 enforcement
   requireImdsv2: true,
 });
 ```
+
+#### Applying to Multiple Instances
 
 You can also use the either the `InstanceRequireImdsv2Aspect` for EC2 instances or the `LaunchTemplateRequireImdsv2Aspect` for EC2 launch templates
 to apply the operation to multiple instances or launch templates, respectively.
