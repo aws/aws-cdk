@@ -1,0 +1,14 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "AwsCustomResourceExternalIdIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-custom-resource-external-id-test"
+      ],
+      "diffAssets": true,
+      "assertionStack": "AwsCustomResourceExternalIdIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsCustomResourceExternalIdIntegTestDefaultTestDeployAssert"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

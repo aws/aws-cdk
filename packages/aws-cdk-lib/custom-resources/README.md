@@ -831,6 +831,61 @@ new cr.AwsCustomResource(this, 'CrossAccount', {
 });
 ```
 
+#### Using External IDs for Enhanced Security
+
+For enhanced security when assuming cross-account roles, you can specify an external ID to prevent "confused deputy" attacks. The external ID is a secret value that both you and the role owner must know:
+
+```ts
+const crossAccountRoleArn = 'arn:aws:iam::OTHERACCOUNT:role/CrossAccountRoleName';
+const secretExternalId = 'unique-secret-value-12345'; // This should be a secret known only to you and the role owner
+
+new cr.AwsCustomResource(this, 'SecureCrossAccount', {
+  onCreate: {
+    assumedRoleArn: crossAccountRoleArn,
+    externalId: secretExternalId, // Prevents confused deputy attacks
+    service: 'sts',
+    action: 'GetCallerIdentity',
+    physicalResourceId: cr.PhysicalResourceId.of('id'),
+  },
+  policy: cr.AwsCustomResourcePolicy.fromStatements([iam.PolicyStatement.fromJson({
+    Effect: "Allow",
+    Action: "sts:AssumeRole",
+    Resource: crossAccountRoleArn,
+  })]),
+});
+```
+
+The external ID can also be different for each lifecycle operation:
+
+```ts
+declare const createRoleArn: string;
+declare const updateRoleArn: string;
+
+new cr.AwsCustomResource(this, 'MultiRoleSecure', {
+  onCreate: {
+    assumedRoleArn: createRoleArn,
+    externalId: 'create-secret-123',
+    service: 'ec2',
+    action: 'DescribeInstances',
+    physicalResourceId: cr.PhysicalResourceId.of('id'),
+  },
+  onUpdate: {
+    assumedRoleArn: updateRoleArn,
+    externalId: 'update-secret-456',
+    service: 'ec2',
+    action: 'DescribeInstances',
+  },
+  policy: cr.AwsCustomResourcePolicy.fromStatements([
+    new iam.PolicyStatement({
+      actions: ['sts:AssumeRole'],
+      resources: [createRoleArn, updateRoleArn],
+    }),
+  ]),
+});
+```
+
+For more information on external IDs and preventing confused deputy attacks, see the [AWS IAM User Guide](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html).
+
 #### Custom Resource Config
 
 **This feature is currently experimental**
