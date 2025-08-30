@@ -37,6 +37,14 @@ export interface DataSourceOptions {
    * @default - No description
    */
   readonly description?: string;
+
+  /**
+   * The whether to enable enhanced metrics of the data source
+   * Value will be ignored, if `enhancedMetricsConfig.dataSourceLevelMetricsBehavior` on AppSync GraphqlApi construct is set to `FULL_REQUEST_DATA_SOURCE_METRICS`
+   *
+   * @default - Enhance metrics are disabled
+   */
+  readonly enhancedMetricsEnabled?: boolean;
 }
 
 /**
@@ -377,6 +385,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       api: this,
       name: options?.name,
       description: options?.description,
+      enhancedMetricsEnabled: options?.enhancedMetricsEnabled,
     });
   }
 
@@ -393,6 +402,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       table,
       name: options?.name,
       description: options?.description,
+      enhancedMetricsEnabled: options?.enhancedMetricsEnabled,
     });
   }
 
@@ -409,6 +419,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       endpoint,
       name: options?.name,
       description: options?.description,
+      enhancedMetricsEnabled: options?.enhancedMetricsEnabled,
       authorizationConfig: options?.authorizationConfig,
     });
   }
@@ -426,6 +437,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       lambdaFunction,
       name: options?.name,
       description: options?.description,
+      enhancedMetricsEnabled: options?.enhancedMetricsEnabled,
     });
   }
 
@@ -448,6 +460,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       api: this,
       name: options?.name,
       description: options?.description,
+      enhancedMetricsEnabled: options?.enhancedMetricsEnabled,
       serverlessCluster,
       secretStore,
       databaseName,
@@ -473,6 +486,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       api: this,
       name: options?.name,
       description: options?.description,
+      enhancedMetricsEnabled: options?.enhancedMetricsEnabled,
       serverlessCluster,
       secretStore,
       databaseName,
@@ -492,6 +506,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       api: this,
       name: options?.name,
       description: options?.description,
+      enhancedMetricsEnabled: options?.enhancedMetricsEnabled,
       domain,
     });
   }
@@ -508,6 +523,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       eventBus,
       name: options?.name,
       description: options?.description,
+      enhancedMetricsEnabled: options?.enhancedMetricsEnabled,
     });
   }
 
@@ -523,6 +539,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       api: this,
       name: options?.name,
       description: options?.description,
+      enhancedMetricsEnabled: options?.enhancedMetricsEnabled,
       domain,
     });
   }
