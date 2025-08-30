@@ -244,7 +244,7 @@
        {
         "Ref": "Bucket83908E77"
        },
-       "\",\"Key\":\"my-key.csv\"}}}}}"
+       "\",\"Key\":\"my-key.csv\"}},\"Label\":\"myLabel\"}}}"
       ]
      ]
     },
@@ -318,76 +318,40 @@
       {
        "Action": "states:RedriveExecution",
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":states:",
-           {
-            "Ref": "AWS::Region"
-           },
-           ":",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":execution:",
-           {
-            "Fn::Select": [
-             6,
-             {
-              "Fn::Split": [
-               ":",
-               {
-                "Ref": "StateMachine2E01A3A5"
-               }
-              ]
-             }
-            ]
-           },
-           "/*:*"
-          ]
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":states:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":execution:",
+          {
+           "Fn::Select": [
+            6,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Ref": "StateMachine2E01A3A5"
+              }
+             ]
+            }
+           ]
+          },
+          "/myLabel:*"
          ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":states:",
-           {
-            "Ref": "AWS::Region"
-           },
-           ":",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":execution:",
-           {
-            "Fn::Select": [
-             6,
-             {
-              "Fn::Split": [
-               ":",
-               {
-                "Ref": "StateMachine2E01A3A5"
-               }
-              ]
-             }
-            ]
-           },
-           ":*"
-          ]
-         ]
-        }
-       ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -543,7 +507,7 @@
     "Ref": "StateMachine2E01A3A5"
    },
    "Export": {
-    "Name": "aws-stepfunctions-distributed-map-redrive-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+    "Name": "LabeledDistributedMapRedrive:ExportsOutputRefStateMachine2E01A3A5BA46F753"
    }
   },
   "ExportsOutputRefBucket83908E7781C90AC0": {
@@ -551,7 +515,7 @@
     "Ref": "Bucket83908E77"
    },
    "Export": {
-    "Name": "aws-stepfunctions-distributed-map-redrive-integ:ExportsOutputRefBucket83908E7781C90AC0"
+    "Name": "LabeledDistributedMapRedrive:ExportsOutputRefBucket83908E7781C90AC0"
    }
   }
  },

@@ -307,76 +307,40 @@
       {
        "Action": "states:RedriveExecution",
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":states:",
-           {
-            "Ref": "AWS::Region"
-           },
-           ":",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":execution:",
-           {
-            "Fn::Select": [
-             6,
-             {
-              "Fn::Split": [
-               ":",
-               {
-                "Ref": "S3ObjectsItemReaderTestStateMachineDynamicA0EE584C"
-               }
-              ]
-             }
-            ]
-           },
-           "/*:*"
-          ]
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":states:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":execution:",
+          {
+           "Fn::Select": [
+            6,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Ref": "S3ObjectsItemReaderTestStateMachineDynamicA0EE584C"
+              }
+             ]
+            }
+           ]
+          },
+          "/*:*"
          ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":states:",
-           {
-            "Ref": "AWS::Region"
-           },
-           ":",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":execution:",
-           {
-            "Fn::Select": [
-             6,
-             {
-              "Fn::Split": [
-               ":",
-               {
-                "Ref": "S3ObjectsItemReaderTestStateMachineDynamicA0EE584C"
-               }
-              ]
-             }
-            ]
-           },
-           ":*"
-          ]
-         ]
-        }
-       ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -540,76 +504,40 @@
       {
        "Action": "states:RedriveExecution",
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":states:",
-           {
-            "Ref": "AWS::Region"
-           },
-           ":",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":execution:",
-           {
-            "Fn::Select": [
-             6,
-             {
-              "Fn::Split": [
-               ":",
-               {
-                "Ref": "S3ObjectsItemReaderTestStateMachineStaticA6D1B6C2"
-               }
-              ]
-             }
-            ]
-           },
-           "/*:*"
-          ]
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":states:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":execution:",
+          {
+           "Fn::Select": [
+            6,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Ref": "S3ObjectsItemReaderTestStateMachineStaticA6D1B6C2"
+              }
+             ]
+            }
+           ]
+          },
+          "/*:*"
          ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":states:",
-           {
-            "Ref": "AWS::Region"
-           },
-           ":",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":execution:",
-           {
-            "Fn::Select": [
-             6,
-             {
-              "Fn::Split": [
-               ":",
-               {
-                "Ref": "S3ObjectsItemReaderTestStateMachineStaticA6D1B6C2"
-               }
-              ]
-             }
-            ]
-           },
-           ":*"
-          ]
-         ]
-        }
-       ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"

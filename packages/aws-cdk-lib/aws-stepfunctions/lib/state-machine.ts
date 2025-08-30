@@ -306,10 +306,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     return iam.Grant.addToPrincipal({
       grantee: identity,
       actions: ['states:RedriveExecution'],
-      resourceArns: [
-        `${executionArn}:*`,
-        `${executionArn}/*:*`,
-      ],
+      resourceArns: [`${executionArn}:*`],
     });
   }
 

@@ -3,7 +3,8 @@
   "testCases": {
     "DistributedMap/DefaultTest": {
       "stacks": [
-        "aws-stepfunctions-distributed-map-redrive-integ"
+        "UnlabeledDistributedMapRedrive",
+        "LabeledDistributedMapRedrive"
       ],
       "assertionStack": "DistributedMap/DefaultTest/DeployAssert",
       "assertionStackName": "DistributedMapDefaultTestDeployAssertFD6CBCC4"
