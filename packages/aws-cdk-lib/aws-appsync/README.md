@@ -943,10 +943,36 @@ new appsync.GraphqlApi(this, 'api', {
   name: 'myApi',
   definition: appsync.Definition.fromSchema(schema),
   enhancedMetricsConfig: {
+    dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS,
+    operationLevelMetricsEnabled: true,
+    resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.    dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS,
+,
+  },
+});
+```
+
+If you wish to enable enhanced monitoring only for subset of data sources or resolvers you are use following configuration
+
+```ts
+const schema = new appsync.SchemaFile({ filePath: 'mySchemaFile' })
+new appsync.GraphqlApi(this, 'api', {
+  name: 'myApi',
+  definition: appsync.Definition.fromSchema(schema),
+  enhancedMetricsConfig: {
     dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.PER_DATA_SOURCE_METRICS,
     operationLevelMetricsEnabled: true,
     resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS,
   },
+});
+
+const noneDS = api.addNoneDataSource('none', {
+  enhancedMetricsEnabled: true,
+});
+
+noneDS.createResolver('noneResolver', {
+  typeName: 'Mutation',
+  fieldName: 'addDemoMetricsConfig',
+  enhancedMetricsEnabled: true,
 });
 ```
 

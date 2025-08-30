@@ -34,6 +34,14 @@ export interface BaseDataSourceProps {
    * @default - None
    */
   readonly description?: string;
+
+  /**
+   * the whether to enable enhanced metrics of the data source
+   * Value will be ignored, if `enhancedMetricsConfig.dataSourceLevelMetricsBehavior` on AppSync GraphqlApi construct is set to `FULL_REQUEST_DATA_SOURCE_METRICS`
+   *
+   * @default - Enhance metrics are disabled
+   */
+  readonly enhancedMetricsEnabled?: boolean;
 }
 
 /**
@@ -128,11 +136,14 @@ export abstract class BaseDataSource extends Construct {
     // Replace unsupported characters from DataSource name. The only allowed pattern is: {[_A-Za-z][_0-9A-Za-z]*}
     const name = (props.name ?? id);
     const supportedName = Token.isUnresolved(name) ? name : name.replace(/[\W]+/g, '');
+    const metricsConfig = props.enhancedMetricsEnabled === undefined ? undefined
+      : (props.enhancedMetricsEnabled ? 'ENABLED': 'DISABLED');
     this.ds = new CfnDataSource(this, 'Resource', {
       apiId: props.api.apiId,
       name: supportedName,
       description: props.description,
       serviceRoleArn: this.serviceRole?.roleArn,
+      metricsConfig: metricsConfig,
       ...extended,
     });
     this.name = supportedName;

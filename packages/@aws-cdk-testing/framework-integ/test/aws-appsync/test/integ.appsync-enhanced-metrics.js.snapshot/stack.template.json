@@ -38,7 +38,7 @@
     "EnhancedMetricsSchema3325364E"
    ]
   },
-  "EnhancedMetricsNoneDS6C39D5BE": {
+  "EnhancedMetricsnoneEB4FD168": {
    "Type": "AWS::AppSync::DataSource",
    "Properties": {
     "ApiId": {
@@ -47,9 +47,30 @@
       "ApiId"
      ]
     },
-    "Name": "NoneDS",
+    "Name": "None",
     "Type": "NONE"
    }
+  },
+  "EnhancedMetricsQuerygetServiceVersionD7E03714": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "EnhancedMetricsBBD0CBEA",
+      "ApiId"
+     ]
+    },
+    "DataSourceName": "None",
+    "FieldName": "getTests",
+    "Kind": "UNIT",
+    "RequestMappingTemplate": "{\"version\":\"2017-02-28\"}",
+    "ResponseMappingTemplate": "{\"version\":\"v1\"}",
+    "TypeName": "Query"
+   },
+   "DependsOn": [
+    "EnhancedMetricsnoneEB4FD168",
+    "EnhancedMetricsSchema3325364E"
+   ]
   }
  },
  "Parameters": {

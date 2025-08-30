@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as sfn from '../../aws-stepfunctions';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
@@ -54,6 +54,23 @@ describe('Http Data Source configuration', () => {
       Type: 'HTTP',
       Name: 'custom',
       Description: 'custom description',
+    });
+  });
+
+  test.each([
+    [true, 'ENABLED'],
+    [false, 'DISABLED'],
+    [undefined, Match.absent()],
+  ])('appsync configures metrics config correctly to set %s', (enhancedMetricsEnabled, metricsConfig) => {
+    // WHEN
+    api.addHttpDataSource('ds', endpoint, {
+      enhancedMetricsEnabled: enhancedMetricsEnabled,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'HTTP',
+      MetricsConfig: metricsConfig,
     });
   });
 

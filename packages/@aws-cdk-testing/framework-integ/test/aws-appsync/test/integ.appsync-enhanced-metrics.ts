@@ -1,4 +1,4 @@
-import * as path from 'path';
+import { join } from 'path';
 import * as cdk from 'aws-cdk-lib';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
@@ -8,7 +8,7 @@ const stack = new cdk.Stack(app, 'stack');
 
 const api = new appsync.GraphqlApi(stack, 'EnhancedMetrics', {
   name: 'EnhancedMetrics',
-  definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+  definition: appsync.Definition.fromFile(join(__dirname, 'appsync.test.graphql')),
   enhancedMetricsConfig: {
     dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.PER_DATA_SOURCE_METRICS,
     operationLevelMetricsEnabled: true,
@@ -16,8 +16,21 @@ const api = new appsync.GraphqlApi(stack, 'EnhancedMetrics', {
   },
 });
 
-api.addNoneDataSource('NoneDS', {
-  name: cdk.Lazy.string({ produce(): string { return 'NoneDS'; } }),
+const noneDS = api.addNoneDataSource('none', {
+  name: 'None',
+  enhancedMetricsEnabled: true,
+});
+
+noneDS.createResolver('QuerygetServiceVersion', {
+  typeName: 'Query',
+  fieldName: 'getTests',
+  requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+    version: '2017-02-28',
+  })),
+  responseMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+    version: 'v1',
+  })),
+  enhancedMetricsEnabled: true,
 });
 
 new IntegTest(app, 'api', {

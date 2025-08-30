@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dcebf8892de07983a0e383bd381452a822e4453edb077ae3d15377bbf500eba9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8eb4abc8096ed37cd509e7653e9f03d0bb4918ccc02aa3812bfe7729eafb67fc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,7 +37,18 @@
         "/stack/EnhancedMetrics": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "name": "*",
+              "schema": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addSchemaDependency": [
+                "*"
+              ]
+            }
           }
         ],
         "/stack/EnhancedMetrics/Resource": [
@@ -58,10 +69,16 @@
             "data": "EnhancedMetricsDefaultApiKey7D8F4837"
           }
         ],
-        "/stack/EnhancedMetrics/NoneDS/Resource": [
+        "/stack/EnhancedMetrics/none/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EnhancedMetricsNoneDS6C39D5BE"
+            "data": "EnhancedMetricsnoneEB4FD168"
+          }
+        ],
+        "/stack/EnhancedMetrics/QuerygetServiceVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnhancedMetricsQuerygetServiceVersionD7E03714"
           }
         ],
         "/stack/BootstrapVersion": [
@@ -74,6 +91,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "EnhancedMetricsNoneDS6C39D5BE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnhancedMetricsNoneDS6C39D5BE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
