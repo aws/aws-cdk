@@ -104,3 +104,10 @@ export const getPriorityFromLabels = (labels: any[], priorityField: { options: R
   }
   return undefined;
 };
+
+const botLogins = new Set([
+  'github-actions',
+  'related-issues-bot-for-aws',
+]);
+
+export const isBotLogin = (login: string) => botLogins.has(login);
