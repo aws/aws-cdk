@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as db from '../../aws-dynamodb';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
@@ -68,6 +68,23 @@ describe('DynamoDb Data Source configuration', () => {
       Type: 'AMAZON_DYNAMODB',
       Name: 'custom',
       Description: 'custom description',
+    });
+  });
+
+  test.each([
+    [true, 'ENABLED'],
+    [false, 'DISABLED'],
+    [undefined, Match.absent()],
+  ])('appsync configures metrics config correctly to set %s', (enhancedMetricsEnabled, metricsConfig) => {
+    // WHEN
+    api.addDynamoDbDataSource('ds', table, {
+      enhancedMetricsEnabled: enhancedMetricsEnabled,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'AMAZON_DYNAMODB',
+      MetricsConfig: metricsConfig,
     });
   });
 

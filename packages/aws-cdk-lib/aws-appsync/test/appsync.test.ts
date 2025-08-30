@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { Certificate } from '../../aws-certificatemanager';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
@@ -93,6 +93,24 @@ test('appsync should configure resolver as unit when pipelineConfig is empty arr
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
     Kind: 'UNIT',
+  });
+});
+
+test.each([
+  [true, 'ENABLED'],
+  [false, 'DISABLED'],
+  [undefined, Match.absent()],
+])('appsync resolver has MetricConfig set to %s', (enhancedMetricsEnabled, metricsConfig) => {
+  // WHEN
+  api.createResolver('Resolver', {
+    typeName: 'test',
+    fieldName: 'test2',
+    enhancedMetricsEnabled: enhancedMetricsEnabled,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
+    MetricsConfig: metricsConfig,
   });
 });
 
