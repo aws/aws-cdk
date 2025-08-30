@@ -391,6 +391,7 @@
         "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_28K",
         "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_200K",
         "ANTHROPIC_CLAUDE_OPUS_4_20250514_V1_0",
+        "ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0",
         "ANTHROPIC_CLAUDE_INSTANT_V1",
         "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
         "COHERE_COMMAND_V14",
@@ -405,6 +406,8 @@
         "COHERE_EMBED_MULTILINGUAL_V3",
         "COHERE_EMBED_MULTILINGUAL_V3_0_512",
         "DEEP_SEEK_R1_V1_0",
+        "OPENAI_GPT_OSS_120B_1",
+        "OPENAI_GPT_OSS_20B_1",
         "LUMA_RAY_V2_0",
         "META_LLAMA_2_13B_V1",
         "META_LLAMA_2_13B_V1_0_4K",
@@ -4099,6 +4102,22 @@
         "WHEN_NO_TEMPLATES"
       ]
     },
+    "Period": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/usage-plan.ts",
+      "enumLike": false,
+      "values": [
+        "DAY",
+        "WEEK",
+        "MONTH"
+      ]
+    },
+    "UsagePlanKeyType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/usage-plan.ts",
+      "enumLike": false,
+      "values": [
+        "API_KEY"
+      ]
+    },
     "PayloadFormatVersion": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.ts",
       "enumLike": true,
@@ -6827,6 +6846,14 @@
         "STANDARD_INFREQUENT_ACCESS"
       ]
     },
+    "MultiRegionConsistency": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts",
+      "enumLike": false,
+      "values": [
+        "EVENTUAL",
+        "STRONG"
+      ]
+    },
     "TableEncryption": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts",
       "enumLike": false,
@@ -6985,6 +7012,14 @@
         "EXTERNAL"
       ]
     },
+    "DeploymentStrategy": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts",
+      "enumLike": false,
+      "values": [
+        "ROLLING",
+        "BLUE_GREEN"
+      ]
+    },
     "PropagatedTagSource": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts",
       "enumLike": false,
@@ -7129,6 +7164,19 @@
       "values": [
         "enabled",
         "disabled"
+      ]
+    },
+    "DeploymentLifecycleStage": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/deployment-lifecycle-hook-target.ts",
+      "enumLike": false,
+      "values": [
+        "RECONCILE_SERVICE",
+        "PRE_SCALE_UP",
+        "POST_SCALE_UP",
+        "TEST_TRAFFIC_SHIFT",
+        "POST_TEST_TRAFFIC_SHIFT",
+        "PRODUCTION_TRAFFIC_SHIFT",
+        "POST_PRODUCTION_TRAFFIC_SHIFT"
       ]
     },
     "EnvironmentFileType": {

@@ -194,6 +194,15 @@
       "JSON_SCHEMA",
       "LAMBDA"
     ],
+    "State": [
+      "BAKING",
+      "VALIDATING",
+      "DEPLOYING",
+      "COMPLETE",
+      "ROLLING_BACK",
+      "ROLLED_BACK",
+      "REVERTED"
+    ],
     "GrowthType": [
       "EXPONENTIAL",
       "LINEAR"
@@ -633,7 +642,12 @@
       "NO_OP"
     ]
   },
-  "appintegrations": {},
+  "appintegrations": {
+    "Scope": [
+      "CROSS_CONTACTS",
+      "PER_CONTACT"
+    ]
+  },
   "applicationautoscaling": {
     "ScalableDimension": [
       "appstream:fleet:DesiredCapacity",
@@ -1703,6 +1717,10 @@
       "ENABLED",
       "DISABLED"
     ],
+    "ElementRequirement": [
+      "OPTIONAL",
+      "MANDATORY"
+    ],
     "FileFormat": [
       "XML",
       "JSON",
@@ -2673,6 +2691,11 @@
       503,
       504
     ],
+    "IpAddressType": [
+      "ipv4",
+      "ipv6",
+      "dualstack"
+    ],
     "OriginSSLProtocols": [
       "SSLv3",
       "TLSv1",
@@ -2969,6 +2992,7 @@
       "TLSv1.2_2018",
       "TLSv1.2_2019",
       "TLSv1.2_2021",
+      "TLSv1.3_2025",
       "TLSv1_2016"
     ],
     "SslSupportMethod": [
@@ -3196,6 +3220,7 @@
   },
   "codeconnections": {
     "ProviderType": [
+      "AzureDevOps",
       "Bitbucket",
       "GitHub",
       "GitHubEnterpriseServer",
@@ -4352,6 +4377,39 @@
     "EntityType": [
       "DOMAIN_UNIT"
     ],
+    "DomainUnitDesignation": [
+      "OWNER"
+    ],
+    "ManagedPolicyType": [
+      "ADD_TO_PROJECT_MEMBER_POOL",
+      "CREATE_ASSET_TYPE",
+      "CREATE_DOMAIN_UNIT",
+      "CREATE_ENVIRONMENT",
+      "CREATE_ENVIRONMENT_FROM_BLUEPRINT",
+      "CREATE_ENVIRONMENT_PROFILE",
+      "CREATE_FORM_TYPE",
+      "CREATE_GLOSSARY",
+      "CREATE_PROJECT",
+      "CREATE_PROJECT_FROM_PROJECT_PROFILE",
+      "DELEGATE_CREATE_ENVIRONMENT_PROFILE",
+      "OVERRIDE_DOMAIN_UNIT_OWNERS",
+      "OVERRIDE_PROJECT_OWNERS",
+      "USE_ASSET_TYPE"
+    ],
+    "ProjectDesignation": [
+      "OWNER",
+      "CONTRIBUTOR",
+      "PROJECT_CATALOG_STEWARD"
+    ],
+    "TargetEntityType": [
+      "DomainUnit",
+      "EnvironmentBlueprintConfiguration",
+      "EnvironmentProfile",
+      "DOMAIN_UNIT",
+      "ENVIRONMENT_BLUEPRINT_CONFIGURATION",
+      "ENVIRONMENT_PROFILE",
+      "ASSET_TYPE"
+    ],
     "OverallDeploymentStatus": [
       "PENDING_DEPLOYMENT",
       "IN_PROGRESS",
@@ -4428,14 +4486,16 @@
     ],
     "Ec2MarketType": [
       "on-demand",
-      "spot"
+      "spot",
+      "wait-and-save"
     ],
     "FleetStatus": [
       "ACTIVE",
       "CREATE_IN_PROGRESS",
       "UPDATE_IN_PROGRESS",
       "CREATE_FAILED",
-      "UPDATE_FAILED"
+      "UPDATE_FAILED",
+      "SUSPENDED"
     ],
     "ServiceManagedFleetOperatingSystemFamily": [
       "LINUX",
@@ -4597,6 +4657,10 @@
       "B",
       "N",
       "S"
+    ],
+    "Mode": [
+      "ACCESSED_AND_THROTTLED_KEYS",
+      "THROTTLED_KEYS"
     ],
     "ApproximateCreationDateTimePrecision": [
       "MICROSECOND",
@@ -6043,6 +6107,10 @@
       "AllResolvers",
       "NotSpecified"
     ],
+    "PreSharedKeyStorage": [
+      "Standard",
+      "SecretsManager"
+    ],
     "LogOutputFormat": [
       "json",
       "text"
@@ -6480,6 +6548,9 @@
     ]
   },
   "entityresolution": {
+    "IncrementalRunType": [
+      "IMMEDIATE"
+    ],
     "AttributeMatchingModel": [
       "ONE_TO_ONE",
       "MANY_TO_MANY"
@@ -6499,9 +6570,6 @@
     "Type": [
       "SOURCE",
       "TARGET"
-    ],
-    "IncrementalRunType": [
-      "IMMEDIATE"
     ],
     "ResolutionType": [
       "RULE_MATCHING",
@@ -7286,12 +7354,13 @@
       "S3_DATA_EVENTS"
     ],
     "Status": [
-      "Created",
-      "Disabled",
-      "Enabled",
-      "Invited",
-      "Removed",
-      "Resigned"
+      "INACTIVE",
+      "ACTIVATING",
+      "ACTIVE",
+      "DEACTIVATING",
+      "ERROR",
+      "DELETE_PENDING",
+      "DELETED"
     ],
     "Action": [
       "ARCHIVE",
@@ -7434,6 +7503,38 @@
       "SAT",
       "SUN"
     ],
+    "IntegrationStatus": [
+      "PENDING",
+      "IN_PROGRESS",
+      "ACTIVE",
+      "INACTIVE",
+      "DISABLING"
+    ],
+    "IntegrationType": [
+      "GITLAB_SELF_MANAGED",
+      "GITHUB"
+    ],
+    "ConfigurationLevel": [
+      "ORGANIZATION",
+      "ACCOUNT"
+    ],
+    "ContinuousIntegrationScanEvent": [
+      "PULL_REQUEST",
+      "PUSH"
+    ],
+    "PeriodicScanFrequency": [
+      "WEEKLY",
+      "MONTHLY",
+      "NEVER"
+    ],
+    "ProjectSelectionScope": [
+      "ALL"
+    ],
+    "RuleSetCategory": [
+      "SAST",
+      "IAC",
+      "SCA"
+    ],
     "FilterAction": [
       "NONE",
       "SUPPRESS"
@@ -7534,6 +7635,14 @@
     "ServerCertificateStatus": [
       "INVALID",
       "VALID"
+    ],
+    "ConfigurationStatus": [
+      "HEALTHY",
+      "UNHEALTHY"
+    ],
+    "EncryptionType": [
+      "CUSTOMER_MANAGED_KMS_KEY",
+      "AWS_OWNED_KMS_KEY"
     ],
     "Unit": [
       "Bits",
@@ -7845,7 +7954,8 @@
     ],
     "AssetModelType": [
       "ASSET_MODEL",
-      "COMPONENT_MODEL"
+      "COMPONENT_MODEL",
+      "INTERFACE"
     ],
     "DataType": [
       "STRING",
@@ -8276,6 +8386,10 @@
     "CodeContentType": [
       "PLAINTEXT",
       "ZIPFILE"
+    ],
+    "KeyType": [
+      "AWS_OWNED_KEY",
+      "CUSTOMER_MANAGED_KEY"
     ],
     "ApplicationRestoreType": [
       "SKIP_RESTORE_FROM_SNAPSHOT",
@@ -9749,6 +9863,11 @@
       "ALERT",
       "REJECT"
     ],
+    "SummaryRuleOption": [
+      "SID",
+      "MSG",
+      "METADATA"
+    ],
     "TCPFlag": [
       "FIN",
       "SYN",
@@ -9827,6 +9946,17 @@
       "AWS::InternetMonitor::Monitor",
       "AWS::ApplicationSignals::Service",
       "AWS::ApplicationSignals::ServiceLevelObjective"
+    ]
+  },
+  "observabilityadmin": {
+    "DestinationType": [
+      "cloud-watch-logs"
+    ],
+    "ResourceType": [
+      "AWS::EC2::VPC"
+    ],
+    "TelemetryType": [
+      "Logs"
     ]
   },
   "odb": {
@@ -10310,6 +10440,10 @@
     ]
   },
   "pcs": {
+    "NetworkType": [
+      "IPV4",
+      "IPV6"
+    ],
     "Type": [
       "SLURMCTLD",
       "SLURMDBD"
@@ -11130,6 +11264,7 @@
       "UPDATE_IN_PROGRESS",
       "UPDATE_SUCCESSFUL",
       "UPDATE_FAILED",
+      "PENDING_UPDATE",
       "DELETED"
     ],
     "SectionPageBreakStatus": [
@@ -11899,6 +12034,7 @@
     ],
     "ClientPasswordAuthType": [
       "MYSQL_NATIVE_PASSWORD",
+      "MYSQL_CACHING_SHA2_PASSWORD",
       "POSTGRES_SCRAM_SHA_256",
       "POSTGRES_MD5",
       "SQL_SERVER_AUTHENTICATION"
@@ -12611,6 +12747,9 @@
       "RollingBack",
       "SystemUpdating",
       "Updating"
+    ],
+    "NodeProvisioningMode": [
+      "Continuous"
     ],
     "NodeRecovery": [
       "Automatic",
@@ -14142,6 +14281,9 @@
       "AUTOMATIC",
       "OFF"
     ],
+    "Type": [
+      "LambdaLayer"
+    ],
     "ResourceToTag": [
       "lambda-function"
     ],
@@ -15207,6 +15349,33 @@
     ],
     "RendererType": [
       "AppStream"
+    ],
+    "Event": [
+      "WebsiteInteract",
+      "FileDownloadFromSecureBrowserToRemoteDisk",
+      "FileTransferFromRemoteToLocalDisk",
+      "FileTransferFromLocalToRemoteDisk",
+      "FileUploadFromRemoteDiskToSecureBrowser",
+      "ContentPasteToWebsite",
+      "ContentTransferFromLocalToRemoteClipboard",
+      "ContentCopyFromWebsite",
+      "UrlLoad",
+      "TabOpen",
+      "TabClose",
+      "PrintJobSubmit",
+      "SessionConnect",
+      "SessionStart",
+      "SessionDisconnect",
+      "SessionEnd",
+      "UrlBlockByContentFilter"
+    ],
+    "FolderStructure": [
+      "Flat",
+      "NestedByDate"
+    ],
+    "LogFileFormat": [
+      "JSONLines",
+      "Json"
     ],
     "EnabledType": [
       "Disabled",
