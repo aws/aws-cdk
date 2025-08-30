@@ -273,10 +273,71 @@
         "Fn::Join": [
          "",
          [
+          "arn:",
           {
-           "Ref": "S3ObjectsItemReaderTestStateMachineDynamicA0EE584C"
+           "Ref": "AWS::Partition"
+          },
+          ":states:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":execution:",
+          {
+           "Fn::Select": [
+            6,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Ref": "S3ObjectsItemReaderTestStateMachineDynamicA0EE584C"
+              }
+             ]
+            }
+           ]
           },
           ":*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "states:RedriveExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":states:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":execution:",
+          {
+           "Fn::Select": [
+            6,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Ref": "S3ObjectsItemReaderTestStateMachineDynamicA0EE584C"
+              }
+             ]
+            }
+           ]
+          },
+          "/*:*"
          ]
         ]
        }
@@ -409,10 +470,71 @@
         "Fn::Join": [
          "",
          [
+          "arn:",
           {
-           "Ref": "S3ObjectsItemReaderTestStateMachineStaticA6D1B6C2"
+           "Ref": "AWS::Partition"
+          },
+          ":states:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":execution:",
+          {
+           "Fn::Select": [
+            6,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Ref": "S3ObjectsItemReaderTestStateMachineStaticA6D1B6C2"
+              }
+             ]
+            }
+           ]
           },
           ":*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "states:RedriveExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":states:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":execution:",
+          {
+           "Fn::Select": [
+            6,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Ref": "S3ObjectsItemReaderTestStateMachineStaticA6D1B6C2"
+              }
+             ]
+            }
+           ]
+          },
+          "/*:*"
          ]
         ]
        }

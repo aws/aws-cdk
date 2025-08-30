@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96": {
       "source": {
@@ -14,16 +14,16 @@
         }
       }
     },
-    "0a351a946c73a87b48c24e660b4176cfa5fe3b2dda66fcd8a2e2bad20e90bc3b": {
+    "f09fde35b043d649735e56f721a3e2e7c79caafe21db0fa4907fb9f3d619ae1c": {
       "displayName": "DistributedMapResultWriterwithWriterConfigDefaultTestDeployAssert6B4CFE00 Template",
       "source": {
         "path": "DistributedMapResultWriterwithWriterConfigDefaultTestDeployAssert6B4CFE00.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-51e6444c": {
+        "current_account-current_region-1fda71d3": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0a351a946c73a87b48c24e660b4176cfa5fe3b2dda66fcd8a2e2bad20e90bc3b.json",
+          "objectKey": "f09fde35b043d649735e56f721a3e2e7c79caafe21db0fa4907fb9f3d619ae1c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
