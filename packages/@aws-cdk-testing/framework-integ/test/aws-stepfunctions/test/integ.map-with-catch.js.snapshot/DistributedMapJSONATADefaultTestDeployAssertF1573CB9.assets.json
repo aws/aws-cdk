@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96": {
       "source": {
@@ -14,16 +14,16 @@
         }
       }
     },
-    "1eb092583bd6c43226e9b34d4d669afe5c9767f2bcd1798a0c8d43a6c6adbba6": {
+    "31c60f7045c3287315f2dcfe02f190dbe00a8c48e08de32486009e4d5c8d49e7": {
       "displayName": "DistributedMapJSONATADefaultTestDeployAssertF1573CB9 Template",
       "source": {
         "path": "DistributedMapJSONATADefaultTestDeployAssertF1573CB9.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-8f2c78b4": {
+        "current_account-current_region-d8081663": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1eb092583bd6c43226e9b34d4d669afe5c9767f2bcd1798a0c8d43a6c6adbba6.json",
+          "objectKey": "31c60f7045c3287315f2dcfe02f190dbe00a8c48e08de32486009e4d5c8d49e7.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -30,7 +30,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756544580921"
+    "salt": "1756548462325"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -367,15 +367,7 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs22.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
@@ -481,15 +473,7 @@
   "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs22.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
@@ -531,15 +515,7 @@
   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs22.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
@@ -584,7 +560,7 @@
      "Body": "\"a,b,c\\n1,2,3\\n4,5,6\""
     },
     "flattenResponse": "false",
-    "salt": "1756544580925"
+    "salt": "1756548462327"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa",
@@ -625,7 +601,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1756544580925"
+    "salt": "1756548462327"
    },
    "DependsOn": [
     "AwsApiCallS3putObject9f7ed865afc47100b3c2a9fea2cf51ee"
@@ -666,7 +642,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756544580925"
+    "salt": "1756548462327"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa"
@@ -829,7 +805,7 @@
      "Body": "\"\""
     },
     "flattenResponse": "false",
-    "salt": "1756544580926"
+    "salt": "1756548462327"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868",
@@ -870,7 +846,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756544580926"
+    "salt": "1756548462327"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectd9ccc438e1c22709962ae68cdce8fc4f"
@@ -911,7 +887,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756544580926"
+    "salt": "1756548462327"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsredriveExecution7e7cfa5e3c60aef760b5fbff9448d868"
@@ -1076,7 +1052,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756544580927"
+    "salt": "1756548462328"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1226,7 +1202,7 @@
      "Body": "\"a,b,c\\n1,2,3\\n4,5,6\""
     },
     "flattenResponse": "false",
-    "salt": "1756544580927"
+    "salt": "1756548462328"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa1",
@@ -1267,7 +1243,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1756544580927"
+    "salt": "1756548462328"
    },
    "DependsOn": [
     "AwsApiCallS3putObject9f7ed865afc47100b3c2a9fea2cf51ee1"
@@ -1308,7 +1284,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756544580928"
+    "salt": "1756548462328"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa1"
@@ -1471,7 +1447,7 @@
      "Body": "\"\""
     },
     "flattenResponse": "false",
-    "salt": "1756544580928"
+    "salt": "1756548462328"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsdescribeExecutionee869597c94116ebec1f72c1bdc4d33c",
@@ -1512,7 +1488,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756544580928"
+    "salt": "1756548462329"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectd9ccc438e1c22709962ae68cdce8fc4f1"
@@ -1553,7 +1529,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756544580928"
+    "salt": "1756548462329"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsredriveExecutionee869597c94116ebec1f72c1bdc4d33c"
@@ -1736,142 +1712,6 @@
      "AwsApiCallStepFunctionsdescribeExecutionee869597c94116ebec1f72c1bdc4d33c1",
      "assertion"
     ]
-   }
-  }
- },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-6": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs22.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs22.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs18.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs22.x"
-   },
-   "eusc-de-east-1": {
-    "value": "nodejs22.x"
-   },
-   "il-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-south-1": {
-    "value": "nodejs22.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs22.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-2": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-2": {
-    "value": "nodejs22.x"
    }
   }
  },
