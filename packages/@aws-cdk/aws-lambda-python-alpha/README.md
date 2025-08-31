@@ -210,12 +210,12 @@ new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: {
-      network: 'host',
-      securityOpt: 'no-new-privileges',
-      user: 'user:group',
-      volumesFrom: ['777f7dc92da7'],
-      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
-   },
+    network: 'host',
+    securityOpt: 'no-new-privileges',
+    user: 'user:group',
+    volumesFrom: ['777f7dc92da7'],
+    volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+  },
 });
 ```
 
