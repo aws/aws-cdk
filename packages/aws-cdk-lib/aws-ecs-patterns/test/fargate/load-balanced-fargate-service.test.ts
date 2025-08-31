@@ -1601,6 +1601,169 @@ describe('ApplicationLoadBalancedFargateService', () => {
       });
     }).toThrow('containerMemoryLimitMiB must be a positive integer; received 0');
   });
+
+  test('openListener defaults to false when custom security groups are provided', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        '@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener': true,
+      },
+    });
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const customSg = new ec2.SecurityGroup(stack, 'CustomSG', { vpc });
+    const alb = new ApplicationLoadBalancer(stack, 'ALB', {
+      vpc,
+      securityGroup: customSg,
+    });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      loadBalancer: alb,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+    });
+
+    // THEN - No SecurityGroupIngress rules should be created (openListener defaults to false)
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: Match.absent(),
+    });
+  });
+
+  test('openListener defaults to true when no custom security groups are provided', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        '@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener': true,
+      },
+    });
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN - Using default load balancer (no custom security groups)
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+    });
+
+    // THEN - SecurityGroupIngress rules should be created (openListener defaults to true)
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [Match.objectLike({
+        CidrIp: '0.0.0.0/0',
+        FromPort: 80,
+        IpProtocol: 'tcp',
+        ToPort: 80,
+      })],
+    });
+  });
+
+  test('explicit openListener: true overrides default with custom security groups', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        '@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener': true,
+      },
+    });
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const customSg = new ec2.SecurityGroup(stack, 'CustomSG', { vpc });
+    const alb = new ApplicationLoadBalancer(stack, 'ALB', {
+      vpc,
+      securityGroup: customSg,
+    });
+
+    // WHEN - Explicitly setting openListener: true
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      loadBalancer: alb,
+      openListener: true,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+    });
+
+    // THEN - SecurityGroupIngress rules should be created despite custom security groups
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [Match.objectLike({
+        CidrIp: '0.0.0.0/0',
+        FromPort: 80,
+        IpProtocol: 'tcp',
+        ToPort: 80,
+      })],
+    });
+  });
+
+  test('redirectHTTP: redirect listener also uses conditional default', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        '@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener': true,
+      },
+    });
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const customSg = new ec2.SecurityGroup(stack, 'CustomSG', { vpc });
+    const alb = new ApplicationLoadBalancer(stack, 'ALB', {
+      vpc,
+      securityGroup: customSg,
+    });
+
+    // WHEN - Using HTTPS with redirectHTTP and custom security groups
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      loadBalancer: alb,
+      protocol: ApplicationProtocol.HTTPS,
+      certificate: Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012'),
+      redirectHTTP: true,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+    });
+
+    // THEN - No SecurityGroupIngress rules should be created for either listener
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: Match.absent(),
+    });
+  });
+
+  test('backward compatibility: openListener defaults to true even with custom security groups when feature flag is disabled', () => {
+    // GIVEN - Feature flag is NOT enabled (default behavior)
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const customSg = new ec2.SecurityGroup(stack, 'CustomSG', { vpc });
+    const alb = new ApplicationLoadBalancer(stack, 'ALB', {
+      vpc,
+      securityGroup: customSg,
+    });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      loadBalancer: alb,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+    });
+
+    // THEN - SecurityGroupIngress rules should be created (backward compatibility)
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [Match.objectLike({
+        CidrIp: '0.0.0.0/0',
+        FromPort: 80,
+        IpProtocol: 'tcp',
+        ToPort: 80,
+      })],
+    });
+  });
 });
 
 describe('NetworkLoadBalancedFargateService', () => {

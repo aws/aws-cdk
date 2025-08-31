@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as eks from '../lib';
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 
 class EksClusterStack extends Stack {
   constructor(scope: App, id: string) {
@@ -22,9 +22,9 @@ class EksClusterStack extends Stack {
       vpc,
       mastersRole,
       endpointAccess: eks.EndpointAccess.PRIVATE,
-      version: eks.KubernetesVersion.V1_32,
+      version: eks.KubernetesVersion.V1_33,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+        kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),
       },
     });
 
@@ -55,5 +55,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-cluster-private-endpoint', {
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
-
-app.synth();
