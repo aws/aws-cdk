@@ -418,6 +418,23 @@ To apply changes of the cluster, such as engine version, in the next scheduled m
 
 For details, see [Modifying an Amazon Aurora DB cluster](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Modifying.html).
 
+### Deleting Automated Backups
+
+By default, when a database cluster is deleted, automated backups are removed immediately unless an AWS Backup policy specifies a point-in-time restore rule. You can control this behavior using the `deleteAutomatedBackups` property:
+
+```ts
+declare const vpc: ec2.IVpc;
+// Retain automated backups after cluster deletion
+new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  writer: rds.ClusterInstance.provisioned('writer'),
+  vpc,
+  deleteAutomatedBackups: false,
+});
+```
+
+When set to `false`, automated backups are retained after the cluster is deleted. When set to `true` or not specified (default), automated backups are deleted immediately when the cluster is deleted.
+
 ### Migrating from instanceProps
 
 Creating instances in a `DatabaseCluster` using `instanceProps` & `instances` is
