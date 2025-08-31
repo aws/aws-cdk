@@ -14,12 +14,9 @@ on:
 
   # Triggered from a separate job when a review is added
   workflow_run:
-    workflows: [PR Linter Trigger]
+    workflows: ["PR Linter Trigger", "Codebuild PR Build"]
     types:
       - completed
-
-  # Trigger when a status is updated (CodeBuild leads to statuses)
-  status: {}
 
   # Trigger when a check suite is completed (GitHub actions and CodeCov create checks)
   check_suite:
@@ -70,7 +67,7 @@ jobs:
     needs: download-if-workflow-run
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install & Build prlint
         run: yarn install --frozen-lockfile && cd tools/@aws-cdk/prlint && yarn build+test

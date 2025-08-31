@@ -1025,6 +1025,65 @@
     ]
   },
   "aps": {},
+  "arcregionswitch": {
+    "AlarmCondition": [
+      "red",
+      "green"
+    ],
+    "AlarmType": [
+      "applicationHealth",
+      "trigger"
+    ],
+    "Ec2AsgCapacityMonitoringApproach": [
+      "sampledMaxInLast24Hours",
+      "autoscalingMaxInLast24Hours"
+    ],
+    "EcsCapacityMonitoringApproach": [
+      "sampledMaxInLast24Hours",
+      "containerInsightsMaxInLast24Hours"
+    ],
+    "EksCapacityMonitoringApproach": [
+      "sampledMaxInLast24Hours"
+    ],
+    "ExecutionBlockType": [
+      "CustomActionLambda",
+      "ManualApproval",
+      "AuroraGlobalDatabase",
+      "EC2AutoScaling",
+      "ARCRoutingControl",
+      "ARCRegionSwitchPlan",
+      "Parallel",
+      "ECSServiceScaling",
+      "EKSResourceScaling",
+      "Route53HealthCheck"
+    ],
+    "GlobalAuroraDefaultBehavior": [
+      "switchoverOnly",
+      "failover"
+    ],
+    "GlobalAuroraUngracefulBehavior": [
+      "failover"
+    ],
+    "LambdaUngracefulBehavior": [
+      "skip"
+    ],
+    "RecoveryApproach": [
+      "activeActive",
+      "activePassive"
+    ],
+    "RegionToRunIn": [
+      "activatingRegion",
+      "deactivatingRegion"
+    ],
+    "RoutingControlStateChange": [
+      "On",
+      "Off"
+    ],
+    "WorkflowTargetAction": [
+      "activate",
+      "deactivate"
+    ]
+  },
   "arczonalshift": {
     "AutoshiftObserverNotificationStatus": [
       "ENABLED"
@@ -1708,7 +1767,8 @@
       "RUNNABLE"
     ],
     "Action": [
-      "CANCEL"
+      "CANCEL",
+      "TERMINATE"
     ]
   },
   "bcmdataexports": {
@@ -6027,12 +6087,17 @@
     ],
     "ImageTagMutability": [
       "MUTABLE",
-      "IMMUTABLE"
+      "IMMUTABLE",
+      "IMMUTABLE_WITH_EXCLUSION",
+      "MUTABLE_WITH_EXCLUSION"
     ],
     "EncryptionType": [
       "AES256",
       "KMS",
       "KMS_DSSE"
+    ],
+    "ImageTagMutabilityExclusionFilterType": [
+      "WILDCARD"
     ],
     "AppliedForItem": [
       "REPLICATION",
@@ -7033,7 +7098,13 @@
       "G.025X",
       "G.4X",
       "G.8X",
-      "Z.2X"
+      "Z.2X",
+      "G.12X",
+      "G.16X",
+      "R.1X",
+      "R.2X",
+      "R.4X",
+      "R.8X"
     ],
     "Compatibility": [
       "NONE",
@@ -8757,6 +8828,7 @@
       "ap-south-1",
       "ap-southeast-1",
       "ap-southeast-2",
+      "ap-southeast-3",
       "ca-central-1",
       "eu-central-1",
       "eu-north-1",
@@ -12553,8 +12625,8 @@
       "ShardedByS3Key"
     ],
     "S3InputMode": [
-      "Pipe",
-      "File"
+      "File",
+      "Pipe"
     ],
     "S3UploadMode": [
       "Continuous",
@@ -13189,8 +13261,8 @@
       "ml.trn2.48xlarge"
     ],
     "S3DataType": [
-      "S3Prefix",
-      "S3Object"
+      "ManifestFile",
+      "S3Prefix"
     ],
     "CompressionType": [
       "None",
@@ -13352,6 +13424,36 @@
     ],
     "AuthType": [
       "IAM"
+    ],
+    "ProcessingJobStatus": [
+      "Completed",
+      "InProgress",
+      "Stopping",
+      "Stopped",
+      "Failed"
+    ],
+    "OutputCompression": [
+      "None",
+      "GZIP",
+      "SNAPPY",
+      "ZSTD",
+      "BZIP2"
+    ],
+    "OutputFormat": [
+      "PARQUET",
+      "CSV"
+    ],
+    "DataDistributionType": [
+      "FullyReplicated",
+      "ShardedByS3Key"
+    ],
+    "InputMode": [
+      "File",
+      "Pipe"
+    ],
+    "S3CompressionType": [
+      "None",
+      "Gzip"
     ],
     "ProjectStatus": [
       "Pending",
