@@ -42,6 +42,16 @@ export interface PrivateCertificateProps {
    * @default KeyAlgorithm.RSA_2048
    */
   readonly keyAlgorithm?: KeyAlgorithm;
+
+  /**
+   * Enable or disable export of this certificate.
+   *
+   * If you issue an exportable public certificate, there is a charge at certificate issuance and again when the certificate renews.
+   * Ref: https://aws.amazon.com/certificate-manager/pricing
+   *
+   * @default false
+   */
+  readonly allowExport?: boolean;
 }
 
 /**
@@ -75,11 +85,14 @@ export class PrivateCertificate extends CertificateBase implements ICertificate 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    const certificateExport = (props.allowExport === true) ? 'ENABLED' : undefined;
+
     const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
       certificateAuthorityArn: props.certificateAuthority.certificateAuthorityArn,
       keyAlgorithm: props.keyAlgorithm?.name,
+      certificateExport,
     });
 
     this.certificateArn = cert.ref;
