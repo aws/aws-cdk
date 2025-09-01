@@ -2,6 +2,7 @@ import boto3  # type: ignore
 import json
 import logging
 import urllib.request
+from botocore.exceptions import ClientError
 
 s3 = boto3.client("s3")
 
@@ -22,7 +23,13 @@ def handler(event: dict, context):
       config = handle_managed(event["RequestType"], notification_configuration)
     else:
       config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old)
-    s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config, SkipDestinationValidation=skipDestinationValidation)
+    try:
+      s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config, SkipDestinationValidation=skipDestinationValidation)
+    except ClientError as e:
+      if event["RequestType"] == 'Delete' and e.response['Error']['Code'] == 'NoSuchBucket':
+        logging.info(f"Bucket {props['BucketName']} no longer exists during deletion - this is expected")
+      else:
+        raise e
   except Exception as e:
     logging.exception("Failed to put bucket notification configuration")
     response_status = "FAILED"
@@ -47,7 +54,13 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration,
 
   # find external notifications
   external_notifications = {}
-  existing_notifications = s3.get_bucket_notification_configuration(Bucket=bucket)
+  try:
+    existing_notifications = s3.get_bucket_notification_configuration(Bucket=bucket)
+  except ClientError as e:
+    if e.response['Error']['Code'] == 'NoSuchBucket' and request_type == 'Delete':
+      return {}
+    else:
+      raise e
   for t in CONFIGURATION_TYPES:
     if request_type == 'Update':
         old_incoming_ids = [get_id(n) for n in old.get(t, [])]

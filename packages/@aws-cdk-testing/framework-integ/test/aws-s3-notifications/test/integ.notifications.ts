@@ -1,5 +1,6 @@
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as cdk from 'aws-cdk-lib';
 import * as s3n from 'aws-cdk-lib/aws-s3-notifications';
 
@@ -31,5 +32,12 @@ const bucket3 = new s3.Bucket(stack, 'Bucket3', {
 
 const importedBucket3 = s3.Bucket.fromBucketName(stack, 'Bucket3Imported', bucket3.bucketName);
 importedBucket3.addEventNotification(s3.EventType.OBJECT_CREATED_COPY, new s3n.SnsDestination(topic3));
+
+// Test bucket with RETAIN policy - should not cause deletion errors
+const retainBucket = new s3.Bucket(stack, 'RetainBucket', {
+  removalPolicy: cdk.RemovalPolicy.RETAIN,
+});
+const queue = new sqs.Queue(stack, 'Queue');
+retainBucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SqsDestination(queue));
 
 app.synth();

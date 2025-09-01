@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "48.0.0",
   "testCases": {
     "cdk-integ-dashboard-with-graph-widget-with-annotations/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "cdkintegdashboardwithgraphwidgetwithannotationsDefaultTestDeployAssertCC28F170"
     }
   },
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1027.0"
 }

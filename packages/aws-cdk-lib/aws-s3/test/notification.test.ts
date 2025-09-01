@@ -544,4 +544,60 @@ describe('notification', () => {
       SkipDestinationValidation: false,
     });
   });
+
+  test('bucket with RETAIN policy should not cause deletion errors', () => {
+    const stack = new cdk.Stack();
+
+    const bucket = new s3.Bucket(stack, 'Bucket', {
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'arn:aws:sqs:us-east-1:123456789012:test-queue',
+        type: s3.BucketNotificationDestinationType.QUEUE,
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+
+    // Verify the custom resource is created
+    template.hasResourceProperties('Custom::S3BucketNotifications', {
+      BucketName: { Ref: 'Bucket83908E77' },
+      Managed: true,
+    });
+
+    // Verify bucket has RETAIN policy
+    template.hasResource('AWS::S3::Bucket', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    });
+  });
+
+  test('bucket with DESTROY policy should not cause deletion errors', () => {
+    const stack = new cdk.Stack();
+
+    const bucket = new s3.Bucket(stack, 'Bucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'arn:aws:sqs:us-east-1:123456789012:test-queue',
+        type: s3.BucketNotificationDestinationType.QUEUE,
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('Custom::S3BucketNotifications', {
+      BucketName: { Ref: 'Bucket83908E77' },
+      Managed: true,
+    });
+
+    template.hasResource('AWS::S3::Bucket', {
+      DeletionPolicy: 'Delete',
+      UpdateReplacePolicy: 'Delete',
+    });
+  });
 });
