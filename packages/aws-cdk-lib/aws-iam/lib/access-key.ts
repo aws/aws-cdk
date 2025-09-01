@@ -20,7 +20,7 @@ export enum AccessKeyStatus {
   INACTIVE = 'Inactive',
 
   /**
-   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   * An expired access key. 
    */
   EXPIRED = 'Expired',
 }
