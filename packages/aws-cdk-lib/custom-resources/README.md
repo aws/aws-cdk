@@ -833,7 +833,7 @@ new cr.AwsCustomResource(this, 'CrossAccount', {
 
 #### Using External IDs for Enhanced Security
 
-For enhanced security when assuming cross-account roles, you can specify an external ID to prevent "confused deputy" attacks. The external ID is a secret value that both you and the role owner must know:
+When assuming cross-account roles, you can specify an external ID to prevent the "confused deputy" problem. The external ID is a unique identifier provided by the third-party service that helps ensure the service is acting on behalf of the correct customer:
 
 ```ts
 const crossAccountRoleArn = 'arn:aws:iam::OTHERACCOUNT:role/CrossAccountRoleName';
