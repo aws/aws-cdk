@@ -1361,6 +1361,7 @@ test('"SourceMarkers" is not included if none of the sources have markers', () =
     'SourceBucketNames',
     'SourceObjectKeys',
     'DestinationBucketName',
+    'WaitForDistributionInvalidation',
     'Prune',
     'OutputObjectKeys',
   ]);
