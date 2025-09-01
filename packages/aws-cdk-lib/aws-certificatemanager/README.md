@@ -146,6 +146,17 @@ new acm.PrivateCertificate(this, 'PrivateCertificate', {
 });
 ```
 
+## Requesting public SSL/TLS certificates exportable to use anywhere
+
+AWS Certificate Manager can issue an exportable public certificate. There is a charge at certificate issuance and again when the certificate renews. See [opting out of certificate transparency logging](https://docs.aws.amazon.com/acm/latest/userguide/acm-exportable-certificates.html) for details.
+
+```ts
+new acm.Certificate(this, 'Certificate', {
+  domainName: 'test.example.com',
+  allowExport: true,
+});
+```
+
 ## Requesting certificates without transparency logging
 
 Transparency logging can be opted out of for AWS Certificate Manager certificates. See [opting out of certificate transparency logging](https://docs.aws.amazon.com/acm/latest/userguide/acm-bestpractices.html#best-practices-transparency) for limits.
