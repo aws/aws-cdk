@@ -24,12 +24,13 @@ test('replace re-export with getter', () => {
     `__exportStar(require("${someModulePath}"), exports);`
   ].join('\n'));
 
-  console.log(transformed);
-
   const mod = evalModule(transformed);
-  console.log(mod);
 
   const logMock = jest.spyOn(console, 'log');
+
+  // If we do `expect(mod.foo).toEqual(...)` Jest has some magic somewhere to
+  // detect that it's a getter, rather than evaluate the getter to get to the
+  // number `42`. So do the getter evaluation outside of an `expect` statement.
   const access1 = mod.foo;
   expect(access1).toEqual(42);
   const access2 = mod.foo;
