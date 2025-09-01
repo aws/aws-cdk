@@ -28,7 +28,6 @@ test('replace re-export with getter', () => {
 
   const mod = evalModule(transformed);
   console.log(mod);
-  console.log(mod.foo);
 
   const logMock = jest.spyOn(console, 'log');
   const access1 = mod.foo;
