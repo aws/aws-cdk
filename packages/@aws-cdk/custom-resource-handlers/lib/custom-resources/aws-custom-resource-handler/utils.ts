@@ -99,6 +99,11 @@ export function respond(
  * Gets credentials used to make an API call.
  */
 export async function getCredentials(call: AwsSdkCall, physicalResourceId: string): Promise<AwsCredentialIdentityProvider | undefined> {
+  // Validate that ExternalId is only provided with assumedRoleArn
+  if (call.externalId && !call.assumedRoleArn) {
+    throw new Error('ExternalId can only be provided when assumedRoleArn is specified');
+  }
+
   let credentials;
   if (call.assumedRoleArn) {
     const timestamp = (new Date()).getTime();
