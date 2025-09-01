@@ -66,6 +66,7 @@ export class ResourceClass extends ClassType {
         extends: [CONSTRUCTS.IConstruct],
         docs: {
           summary: `Indicates that this resource can be referenced as a ${resource.name}.`,
+          stability: Stability.Experimental,
         },
       });
     }
