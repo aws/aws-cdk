@@ -92,6 +92,36 @@ export enum WorkerType {
    * that frequently encounter out-of-memory errors or require high memory-to-CPU ratios.
    */
   R_8X = 'R.8X',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  G_12X = 'G.12X',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  G_16X = 'G.16X',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  R_1X = 'R.1X',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  R_2X = 'R.2X',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  R_4X = 'R.4X',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  R_8X = 'R.8X',
 }
 
 /**
