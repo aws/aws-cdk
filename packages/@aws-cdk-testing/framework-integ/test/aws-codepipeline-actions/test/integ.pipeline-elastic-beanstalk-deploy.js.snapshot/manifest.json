@@ -403,10 +403,7 @@
         "/aws-cdk-codepipeline-elastic-beanstalk-deploy/beanstlk-env": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "beanstlkenv",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "beanstlkenv"
           }
         ],
         "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline": [
@@ -1338,5 +1335,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1025.0"
+  "minimumCliVersion": "2.1027.0"
 }
