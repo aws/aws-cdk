@@ -28,6 +28,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'basicAuth': '*',
       'buildSpec': '*',
       'customResponseHeaders': {
+        'appRoot': '*',
         'pattern': '*',
         'headers': '*'
       },
@@ -94,7 +95,25 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'pullRequestEnvironmentName': '*',
           'stage': '*',
           'asset': '*',
-          'performanceMode': 'boolean'
+          'performanceMode': 'boolean',
+          'skewProtection': 'boolean',
+          'computeRole': {
+            'roleArn': '*',
+            'roleName': '*',
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*',
+            'grantPrincipal': {
+              'assumeRoleAction': '*',
+              'principalAccount': '*'
+            },
+            'stack': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            },
+            'node': '*'
+          }
         }
       ],
       'addDomain': [
@@ -142,6 +161,24 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'stage': '*',
       'asset': '*',
       'performanceMode': 'boolean',
+      'skewProtection': 'boolean',
+      'computeRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
       'addEnvironment': [
         '*',
         '*'
@@ -2265,6 +2302,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'reservedConcurrentExecutions': '*',
       'events': '*',
       'logRetention': 'RetentionDays',
+      'logRemovalPolicy': 'RemovalPolicy',
       'logRetentionRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -2539,6 +2577,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'reservedConcurrentExecutions': '*',
       'events': '*',
       'logRetention': 'RetentionDays',
+      'logRemovalPolicy': 'RemovalPolicy',
       'logRetentionRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -3799,6 +3838,26 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     }
   },
   '@aws-cdk.aws-s3tables-alpha': {
+    'Namespace': {
+      'namespaceName': '*',
+      'tableBucket': {
+        'tableBucketArn': '*',
+        'tableBucketName': '*',
+        'account': '*',
+        'region': '*',
+        'encryptionKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        }
+      },
+      'removalPolicy': 'RemovalPolicy'
+    },
     'TableBucketPolicy': {
       'tableBucket': {
         'tableBucketArn': '*',
@@ -3840,6 +3899,49 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'node': '*'
       },
       'removalPolicy': 'RemovalPolicy'
+    },
+    'Table': {
+      'tableName': '*',
+      'namespace': {
+        'namespaceName': '*',
+        'tableBucket': {
+          'tableBucketArn': '*',
+          'tableBucketName': '*',
+          'account': '*',
+          'region': '*',
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            },
+            'node': '*'
+          }
+        }
+      },
+      'openTableFormat': 'OpenTableFormat',
+      'compaction': {
+        'status': 'Status',
+        'targetFileSizeMb': '*'
+      },
+      'icebergMetadata': {
+        'icebergSchema': {
+          'schemaFieldList': {
+            'name': '*',
+            'required': 'boolean',
+            'type': '*'
+          }
+        }
+      },
+      'snapshotManagement': {
+        'maxSnapshotAgeHours': '*',
+        'minSnapshotsToKeep': '*',
+        'status': 'Status'
+      },
+      'removalPolicy': 'RemovalPolicy',
+      'withoutMetadata': 'boolean'
     }
   },
   '@aws-cdk.aws-sagemaker-alpha': {
@@ -6568,6 +6670,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -6640,6 +6744,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -6712,6 +6818,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -6784,6 +6892,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -6856,6 +6966,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -6928,6 +7040,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -7000,6 +7114,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -7072,6 +7188,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -7165,6 +7283,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'maxLength': '*',
         'minLength': '*',
         'pattern': '*',
+        'additionalItems': 'boolean',
         'maxItems': '*',
         'minItems': '*',
         'uniqueItems': 'boolean',
@@ -7768,6 +7887,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'maxLength': '*',
             'minLength': '*',
             'pattern': '*',
+            'additionalItems': 'boolean',
             'maxItems': '*',
             'minItems': '*',
             'uniqueItems': 'boolean',
@@ -8911,6 +9031,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'migrateToLaunchTemplate': 'boolean',
       'mixedInstancesPolicy': {
         'instancesDistribution': {
           'onDemandAllocationStrategy': 'OnDemandAllocationStrategy',
@@ -10272,6 +10393,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -10287,6 +10410,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -10302,6 +10427,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -10317,6 +10444,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -10332,6 +10461,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -10347,6 +10478,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -10362,6 +10495,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -10377,6 +10512,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -10392,6 +10529,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -10407,6 +10546,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -10422,6 +10563,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -10437,6 +10580,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -10452,6 +10597,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -10467,6 +10614,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -10482,6 +10631,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -12794,6 +12945,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'resourcePolicy': '*'
       },
+      'witnessRegion': '*',
+      'multiRegionConsistency': 'MultiRegionConsistency',
       'globalSecondaryIndexes': {
         'partitionKey': {
           'name': '*',
@@ -13283,6 +13436,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'authorizeAllUsersToVpcCidr': 'boolean',
       'sessionTimeout': 'ClientVpnSessionTimeout',
       'clientLoginBanner': '*',
+      'clientRouteEnforcementOptions': {
+        'enforced': 'boolean'
+      },
       'addAuthorizationRule': [
         '*',
         {
@@ -13836,7 +13992,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'volumeType': 'EbsDeviceVolumeType',
       'iops': '*',
       'removalPolicy': 'RemovalPolicy',
-      'throughput': '*'
+      'throughput': '*',
+      'volumeInitializationRate': '*'
     },
     'VpcEndpointService': {
       'vpcEndpointServiceName': '*',
@@ -13969,7 +14126,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'lookupSupportedAzs': 'boolean',
       'ipAddressType': 'VpcEndpointIpAddressType',
       'dnsRecordIpType': 'VpcEndpointDnsRecordIpType',
-      'privateDnsOnlyForInboundResolverEndpoint': 'VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint'
+      'privateDnsOnlyForInboundResolverEndpoint': 'VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint',
+      'serviceRegion': '*'
     },
     'FlowLog': {
       'flowLogName': '*',
@@ -14691,6 +14849,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -14706,6 +14866,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -14721,6 +14883,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -14736,6 +14900,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -14752,6 +14918,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -15213,6 +15381,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'node': '*'
       },
       'bootstrapClusterCreatorAdminPermissions': 'boolean',
+      'bootstrapSelfManagedAddons': 'boolean',
       'tags': '*',
       'mastersRole': {
         'roleArn': '*',
@@ -17530,6 +17699,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -17672,7 +17843,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'metricsConfig': {
         'metrics': 'MetricType'
-      }
+      },
+      'schemaRegistryConfig': '*'
     },
     'LatestVersion': {
       'addAlias': [
@@ -17944,6 +18116,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'reservedConcurrentExecutions': '*',
       'events': '*',
       'logRetention': 'RetentionDays',
+      'logRemovalPolicy': 'RemovalPolicy',
       'logRetentionRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -18267,6 +18440,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'reservedConcurrentExecutions': '*',
       'events': '*',
       'logRetention': 'RetentionDays',
+      'logRemovalPolicy': 'RemovalPolicy',
       'logRetentionRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -18396,6 +18570,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -18628,6 +18804,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'reservedConcurrentExecutions': '*',
       'events': '*',
       'logRetention': 'RetentionDays',
+      'logRemovalPolicy': 'RemovalPolicy',
       'logRetentionRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -18977,6 +19154,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'reservedConcurrentExecutions': '*',
       'events': '*',
       'logRetention': 'RetentionDays',
+      'logRemovalPolicy': 'RemovalPolicy',
       'logRetentionRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -19155,6 +19333,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -19194,6 +19374,20 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'filterName': '*',
       'distribution': 'Distribution'
+    },
+    'Transformer': {
+      'transformerName': '*',
+      'logGroup': {
+        'logGroupArn': '*',
+        'logGroupName': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'transformerConfig': '*'
     }
   },
   'aws-cdk-lib.aws-opensearchservice': {
@@ -19608,6 +19802,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'readers': '*',
       'serverlessV2MaxCapacity': '*',
       'serverlessV2MinCapacity': '*',
+      'serverlessV2AutoPauseDuration': '*',
       'vpc': {
         'vpcId': '*',
         'vpcArn': '*',
@@ -19941,6 +20136,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'readers': '*',
       'serverlessV2MaxCapacity': '*',
       'serverlessV2MinCapacity': '*',
+      'serverlessV2AutoPauseDuration': '*',
       'vpc': {
         'vpcId': '*',
         'vpcArn': '*',
@@ -20422,6 +20618,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'databaseInsightsMode': 'DatabaseInsightsMode',
       'cloudwatchLogsExports': '*',
       'cloudwatchLogsRetention': 'RetentionDays',
       'cloudwatchLogsRetentionRole': {
@@ -20554,10 +20751,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'publiclyAccessible': 'boolean',
       'networkType': 'NetworkType',
       'caCertificate': '*',
-      'applyImmediately': 'boolean'
+      'applyImmediately': 'boolean',
+      'engineLifecycleSupport': 'EngineLifecycleSupport'
     },
     'DatabaseInstanceFromSnapshot': {
       'snapshotIdentifier': '*',
+      'clusterSnapshotIdentifier': '*',
       'credentials': '*',
       'engine': {
         'singleUserRotationApplication': '*',
@@ -20722,6 +20921,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'databaseInsightsMode': 'DatabaseInsightsMode',
       'cloudwatchLogsExports': '*',
       'cloudwatchLogsRetention': 'RetentionDays',
       'cloudwatchLogsRetentionRole': {
@@ -20854,7 +21054,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'publiclyAccessible': 'boolean',
       'networkType': 'NetworkType',
       'caCertificate': '*',
-      'applyImmediately': 'boolean'
+      'applyImmediately': 'boolean',
+      'engineLifecycleSupport': 'EngineLifecycleSupport'
     },
     'DatabaseInstanceReadReplica': {
       'instanceType': '*',
@@ -21041,6 +21242,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'databaseInsightsMode': 'DatabaseInsightsMode',
       'cloudwatchLogsExports': '*',
       'cloudwatchLogsRetention': 'RetentionDays',
       'cloudwatchLogsRetentionRole': {
@@ -21173,7 +21375,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'publiclyAccessible': 'boolean',
       'networkType': 'NetworkType',
       'caCertificate': '*',
-      'applyImmediately': 'boolean'
+      'applyImmediately': 'boolean',
+      'engineLifecycleSupport': 'EngineLifecycleSupport'
     },
     'OptionGroup': {
       'engine': {
@@ -23651,6 +23854,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -23666,6 +23871,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -23681,6 +23888,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -23696,6 +23905,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -23711,6 +23922,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -23726,6 +23939,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -23741,6 +23956,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -23756,6 +23973,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -23771,6 +23990,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -23786,6 +24007,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -23891,6 +24114,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'timeToLive': '*',
       'schedule': '*',
+      'maxRetries': '*',
       'startAfterCreation': 'boolean',
       'successRetentionPeriod': '*',
       'failureRetentionPeriod': '*',
@@ -23989,6 +24213,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'dryRunAndUpdate': 'boolean',
+      'resourcesToReplicateTags': 'ResourceToReplicateTags',
       'metricDuration': [
         {
           'period': '*',
@@ -23998,6 +24224,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -24013,6 +24241,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -24028,6 +24258,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -24227,6 +24459,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'reservedConcurrentExecutions': '*',
       'events': '*',
       'logRetention': 'RetentionDays',
+      'logRemovalPolicy': 'RemovalPolicy',
       'logRetentionRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -24312,6 +24545,160 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'executeOnHandlerChange': 'boolean'
     }
   },
+  'aws-bedrock-alpha.bedrock': {
+    'AgentAlias': {
+      'agentAliasName': '*',
+      'agentVersion': '*',
+      'agent': {
+        'agentArn': '*',
+        'agentId': '*',
+        'role': {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          },
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'kmsKey': {
+          'keyArn': '*',
+          'keyId': '*'
+        },
+        'lastUpdated': '*'
+      },
+      'description': '*'
+    },
+    'Agent': {
+      'agentName': '*',
+      'instruction': '*',
+      'foundationModel': {
+        'invokableArn': '*'
+      },
+      'existingRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'shouldPrepareAgent': 'boolean',
+      'idleSessionTTL': '*',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'description': '*',
+      'actionGroups': '*',
+      'promptOverrideConfiguration': '*',
+      'userInputEnabled': 'boolean',
+      'codeInterpreterEnabled': 'boolean',
+      'forceDelete': 'boolean',
+      'memory': '*',
+      'agentCollaboration': '*',
+      'customOrchestrationExecutor': '*',
+      'addActionGroup': [
+        '*'
+      ],
+      'addActionGroups': [
+        '*'
+      ]
+    },
+    'ApplicationInferenceProfile': {
+      'applicationInferenceProfileName': '*',
+      'description': '*',
+      'modelSource': {
+        'invokableArn': '*'
+      },
+      'tags': '*',
+      'grantInvoke': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ],
+      'grantProfileUsage': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ]
+    },
+    'Prompt': {
+      'promptName': '*',
+      'description': '*',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'defaultVariant': {
+        'name': '*',
+        'templateType': 'PromptTemplateType',
+        'inferenceConfiguration': '*',
+        'modelId': '*',
+        'templateConfiguration': '*',
+        'genAiResource': '*'
+      },
+      'variants': {
+        'name': '*',
+        'templateType': 'PromptTemplateType',
+        'inferenceConfiguration': '*',
+        'modelId': '*',
+        'templateConfiguration': '*',
+        'genAiResource': '*'
+      },
+      'tags': '*',
+      'createVersion': [
+        '*'
+      ],
+      'addVariant': [
+        {
+          'name': '*',
+          'templateType': 'PromptTemplateType',
+          'inferenceConfiguration': '*',
+          'modelId': '*',
+          'templateConfiguration': '*',
+          'genAiResource': '*'
+        }
+      ]
+    }
+  },
   'aws-glue-alpha.lib': {
     'PySparkEtlJob': {
       'extraPythonFiles': '*',
@@ -24344,6 +24731,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24440,6 +24829,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24536,6 +24927,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24673,6 +25066,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'RayJob': {
       'runtime': 'Runtime',
       'jobRunQueuingEnabled': 'boolean',
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24769,6 +25164,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24865,6 +25262,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24961,6 +25360,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'prefix': '*'
       },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -25348,7 +25749,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'accessLogSettings': {
             'destination': '*',
             'format': '*'
-          }
+          },
+          'stageVariables': '*'
         }
       ],
       'addRoutes': [
@@ -25497,7 +25899,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'accessLogSettings': {
         'destination': '*',
         'format': '*'
-      }
+      },
+      'stageVariables': '*'
     },
     'VpcLink': {
       'vpc': {
@@ -25591,6 +25994,48 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'connections': '*'
         }
       ]
+    },
+    'ApiKey': {
+      'customerId': '*',
+      'enabled': 'boolean',
+      'generateDistinctId': 'boolean',
+      'apiKeyName': '*',
+      'value': '*',
+      'description': '*'
+    },
+    'RateLimitedApiKey': {
+      'apiStages': {
+        'api': {
+          'apiId': '*',
+          'apiEndpoint': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'stage': {
+          'callbackUrl': '*',
+          'stageName': '*',
+          'url': '*'
+        }
+      },
+      'quota': {
+        'limit': '*',
+        'offset': '*',
+        'period': 'Period'
+      },
+      'throttle': {
+        'rateLimit': '*',
+        'burstLimit': '*'
+      },
+      'customerId': '*',
+      'enabled': 'boolean',
+      'generateDistinctId': 'boolean',
+      'apiKeyName': '*',
+      'value': '*',
+      'description': '*'
     },
     'WebSocketApi': {
       'addRoute': [
@@ -25728,12 +26173,62 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'destination': '*',
         'format': '*'
       },
+      'stageVariables': '*',
       'grantManagementApiAccess': [
         {
           'grantPrincipal': {
             'assumeRoleAction': '*',
             'policyFragment': '*',
             'principalAccount': '*'
+          }
+        }
+      ]
+    },
+    'UsagePlan': {
+      'apiStages': {
+        'api': {
+          'apiId': '*',
+          'apiEndpoint': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'stage': {
+          'callbackUrl': '*',
+          'stageName': '*',
+          'url': '*'
+        }
+      },
+      'description': '*',
+      'quota': {
+        'limit': '*',
+        'offset': '*',
+        'period': 'Period'
+      },
+      'throttle': {
+        'rateLimit': '*',
+        'burstLimit': '*'
+      },
+      'usagePlanName': '*',
+      'addApiStage': [
+        {
+          'api': {
+            'apiId': '*',
+            'apiEndpoint': '*',
+            'stack': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            },
+            'node': '*'
+          },
+          'stage': {
+            'callbackUrl': '*',
+            'stageName': '*',
+            'url': '*'
           }
         }
       ]
@@ -25909,6 +26404,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'reservedConcurrentExecutions': '*',
       'events': '*',
       'logRetention': 'RetentionDays',
+      'logRemovalPolicy': 'RemovalPolicy',
       'logRetentionRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -26071,7 +26567,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           },
           'metricsConfig': {
             'metrics': 'MetricType'
-          }
+          },
+          'schemaRegistryConfig': '*'
         }
       ],
       'addPermission': [
@@ -26176,6 +26673,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -26191,6 +26690,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -26206,6 +26707,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -26221,6 +26724,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -26236,6 +26741,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -27118,7 +27625,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         {
           'containerName': '*',
           'containerPort': '*',
-          'protocol': 'Protocol'
+          'protocol': 'Protocol',
+          'alternateTarget': '*'
         }
       ],
       '_portRangeFromPortMapping': [
@@ -27532,6 +28040,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
+      'deploymentStrategy': 'DeploymentStrategy',
+      'bakeTime': '*',
+      'lifecycleHooks': '*',
       'addPlacementStrategies': [
         '*'
       ],
@@ -27784,6 +28295,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
+      'deploymentStrategy': 'DeploymentStrategy',
+      'bakeTime': '*',
+      'lifecycleHooks': '*',
       'attachToApplicationTargetGroup': [
         {
           'metrics': '*',
@@ -27798,7 +28312,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         {
           'containerName': '*',
           'containerPort': '*',
-          'protocol': 'Protocol'
+          'protocol': 'Protocol',
+          'alternateTarget': '*'
         }
       ],
       'registerLoadBalancerTargets': [
@@ -28144,6 +28659,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
+      'deploymentStrategy': 'DeploymentStrategy',
+      'bakeTime': '*',
+      'lifecycleHooks': '*',
       'attachToClassicLB': [
         '*'
       ]
@@ -28609,6 +29127,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28624,6 +29144,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28639,6 +29161,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28654,6 +29178,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28669,6 +29195,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28684,6 +29212,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28699,6 +29229,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28715,6 +29247,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28731,6 +29265,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28746,6 +29282,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28761,6 +29299,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28776,6 +29316,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28791,6 +29333,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28806,6 +29350,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28821,6 +29367,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28836,6 +29384,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28851,6 +29401,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28866,6 +29418,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28881,6 +29435,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28896,6 +29452,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28911,6 +29469,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28926,6 +29486,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -28941,6 +29503,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -29357,6 +29921,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -29372,6 +29938,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -29387,6 +29955,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -29402,6 +29972,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -29417,6 +29989,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -29432,6 +30006,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -29447,6 +30023,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -29462,6 +30040,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -29477,6 +30057,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',
@@ -29492,6 +30074,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'unit': 'Unit',
           'label': '*',
           'color': '*',
+          'id': '*',
+          'visible': 'boolean',
           'account': '*',
           'region': '*',
           'stackAccount': '*',

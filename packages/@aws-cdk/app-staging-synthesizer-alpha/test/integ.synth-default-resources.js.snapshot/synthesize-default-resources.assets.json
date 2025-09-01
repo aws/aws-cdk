@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "45.0.0",
   "files": {
     "68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650": {
       "displayName": "lambda-s3/Code",
@@ -8,23 +8,23 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-00fa297e": {
           "bucketName": "cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "deploy-time/68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-default-resourcesmax-file-role-${AWS::Region}"
         }
       }
     },
-    "60f7c2dac879a9de34a1b00340c5ad12c3ffd444e6c91049832d893f3631b8c4": {
+    "acfe7519eb1a112b48493b56fa6bdce07f09ca5160db91d9cf0fe4b48cda6b3c": {
       "displayName": "synthesize-default-resources Template",
       "source": {
         "path": "synthesize-default-resources.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-98480320": {
           "bucketName": "cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "deploy-time/60f7c2dac879a9de34a1b00340c5ad12c3ffd444e6c91049832d893f3631b8c4.json",
+          "objectKey": "deploy-time/acfe7519eb1a112b48493b56fa6bdce07f09ca5160db91d9cf0fe4b48cda6b3c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-default-resourcesmax-file-role-${AWS::Region}"
         }
       }
@@ -37,7 +37,7 @@
         "directory": "asset.16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-44084e60": {
           "repositoryName": "default-resourcesmax/ecr-asset/1",
           "imageTag": "16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-default-resourcesmax-image-role-${AWS::Region}"
@@ -50,7 +50,7 @@
         "directory": "asset.16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-7279319a": {
           "repositoryName": "default-resourcesmax/ecr-asset-2",
           "imageTag": "16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-default-resourcesmax-image-role-${AWS::Region}"

@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "testCases": {
     "eks-fargate-cluster/DefaultTest": {
       "stacks": [
@@ -10,5 +10,5 @@
       "assertionStackName": "eksfargateclusterDefaultTestDeployAssertAA8FD90E"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1023.0"
 }

@@ -123,7 +123,7 @@ export interface ProviderProps {
    * service principal.
    *
    * @default - A default role will be created.
-   * @deprecated - Use frameworkOnEventLambdaRole, frameworkIsCompleteLambdaRole, frameworkOnTimeoutLambdaRole
+   * @deprecated - Use frameworkOnEventRole, frameworkCompleteAndTimeoutRole
    */
   readonly role?: iam.IRole;
 
@@ -175,9 +175,16 @@ export interface ProviderProps {
   /**
    * Whether logging for the waiter state machine is disabled.
    *
-   * @default - false
+   * @default - true
    */
   readonly disableWaiterStateMachineLogging?: boolean;
+
+  /**
+   * Log level of the provider framework lambda
+   *
+   * @default true - Logging is disabled by default
+   */
+  readonly frameworkLambdaLoggingLevel?: lambda.ApplicationLogLevel;
 }
 
 /**
@@ -216,6 +223,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
   private readonly securityGroups?: ec2.ISecurityGroup[];
   private readonly role?: iam.IRole;
   private readonly providerFunctionEnvEncryption?: kms.IKey;
+  private readonly frameworkLambdaLoggingLevel?: lambda.ApplicationLogLevel;
 
   constructor(scope: Construct, id: string, props: ProviderProps) {
     super(scope, id);
@@ -243,6 +251,8 @@ export class Provider extends Construct implements ICustomResourceProvider {
     this.onEventHandler = props.onEventHandler;
     this.isCompleteHandler = props.isCompleteHandler;
 
+    this.frameworkLambdaLoggingLevel = props.frameworkLambdaLoggingLevel ?? lambda.ApplicationLogLevel.FATAL;
+
     this.logRetention = props.logRetention;
     this.logGroup = props.logGroup;
     this.vpc = props.vpc;
@@ -266,7 +276,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
         interval: retry.interval,
         maxAttempts: retry.maxAttempts,
         logOptions: props.waiterStateMachineLogOptions,
-        disableLogging: props.disableWaiterStateMachineLogging,
+        disableLogging: props.disableWaiterStateMachineLogging ?? true,
       });
       // the on-event entrypoint is going to start the execution of the waiter
       onEventFunction.addEnvironment(consts.WAITER_STATE_MACHINE_ARN_ENV, waiterStateMachine.stateMachineArn);
@@ -302,6 +312,9 @@ export class Provider extends Construct implements ICustomResourceProvider {
   }
 
   private createFunction(entrypoint: string, name?: string, role?: iam.IRole) {
+    // Determine logging configuration - disabled by default for security
+    const loggingLevel = this.frameworkLambdaLoggingLevel;
+
     const fn = new lambda.Function(this, `framework-${entrypoint}`, {
       code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH, {
         exclude: ['*.ts'],
@@ -310,6 +323,10 @@ export class Provider extends Construct implements ICustomResourceProvider {
       runtime: lambda.determineLatestNodeRuntime(this),
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
+
+      // Using loggingFormat instead of deprecated logFormat which will be removed in the next major release
+      loggingFormat: lambda.LoggingFormat.JSON,
+      applicationLogLevelV2: loggingLevel,
       // props.logRetention is deprecated, make sure we only set it if it is actually provided
       // otherwise jsii will print warnings even for users that don't use this directly
       ...(this.logRetention ? { logRetention: this.logRetention } : {}),
