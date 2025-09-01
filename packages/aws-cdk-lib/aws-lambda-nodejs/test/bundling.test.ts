@@ -60,6 +60,7 @@ test('esbuild bundling in Docker', () => {
       '.png': 'dataurl',
     },
     forceDockerBundling: true,
+    network: 'host',
   });
 
   // Correctly bundles with esbuild
@@ -82,6 +83,7 @@ test('esbuild bundling in Docker', () => {
       IMAGE: expect.stringMatching(/build-nodejs/),
     }),
     platform: 'linux/amd64',
+    network: 'host',
   }));
 });
 
@@ -393,7 +395,7 @@ test('esbuild bundling with feature flag enabled using Node Latest', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
+        'esbuild --bundle "/asset-input/lib/handler.ts" --target=node22 --platform=node --outfile="/asset-output/index.js"',
       ],
     }),
   });
@@ -1046,7 +1048,7 @@ test('bundling using NODEJS_LATEST doesn\'t externalize anything by default', ()
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
+        'esbuild --bundle "/asset-input/lib/handler.ts" --target=node22 --platform=node --outfile="/asset-output/index.js"',
       ],
     }),
   });
