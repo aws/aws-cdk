@@ -24,7 +24,11 @@ test('replace re-export with getter', () => {
     `__exportStar(require("${someModulePath}"), exports);`
   ].join('\n'));
 
+  console.log(transformed);
+
   const mod = evalModule(transformed);
+  console.log(mod);
+  console.log(mod.foo);
 
   const logMock = jest.spyOn(console, 'log');
   expect(mod.foo).toEqual(42);
