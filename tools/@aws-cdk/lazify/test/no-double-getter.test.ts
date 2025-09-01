@@ -31,8 +31,10 @@ test('replace re-export with getter', () => {
   console.log(mod.foo);
 
   const logMock = jest.spyOn(console, 'log');
-  expect(mod.foo).toEqual(42);
-  expect(mod.foo).toEqual(42);
+  const access1 = mod.foo;
+  expect(access1).toEqual(42);
+  const access2 = mod.foo;
+  expect(access2).toEqual(42);
 
   expect(logMock).toHaveBeenCalledTimes(1);
 });
