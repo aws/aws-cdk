@@ -191,7 +191,7 @@ export enum JobStateTimeLimitActionsAction {
    */
   CANCEL = 'CANCEL',
   /**
-   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   * Terminate the job. 
    */
   TERMINATE = 'TERMINATE',
 }
