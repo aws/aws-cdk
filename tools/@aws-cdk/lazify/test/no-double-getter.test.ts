@@ -3,9 +3,10 @@ import * as path from 'path';
 import { transformFileContents } from '../lib';
 import { parse } from 'cjs-module-lexer';
 
-// Write a .js file in this directory that will be imported by tests below
+// Write a .js file in this directory that will be imported by tests below (make it work on Windows).
+let someModulePath = path.join(__dirname, 'some-module.js').replace(/\\/g, '/');
 beforeEach(async () => {
-  await fs.writeFile(path.join(__dirname, 'some-module.js'), [
+  await fs.writeFile(someModulePath, [
     'Object.defineProperty(module.exports, "foo", {',
     // Necessary otherwise the way we find exported symbols (by actually including the file and iterating keys)
     // won't find this symbol.
@@ -21,11 +22,10 @@ beforeEach(async () => {
 test('replace re-export with getter', () => {
   const fakeFile = path.join(__dirname, 'index.ts');
   const transformed = transformFileContents(fakeFile, [
-    '__exportStar(require("./some-module"), exports);'
+    `__exportStar(require("${someModulePath}"), exports);`
   ].join('\n'));
 
   const mod = evalModule(transformed);
-  console.log(mod);
 
   const logMock = jest.spyOn(console, 'log');
   expect(mod.foo).toEqual(42);
