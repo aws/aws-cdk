@@ -872,6 +872,7 @@ describe('Graphs', () => {
       displayLabelsOnChart: true,
     };
 
+    // THEN
     expect(() => new GraphWidget(widgetProps)).toThrow(UnscopedValidationError);
   });
 
