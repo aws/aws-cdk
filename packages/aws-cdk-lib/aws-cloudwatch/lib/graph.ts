@@ -380,6 +380,13 @@ export interface GraphWidgetProps extends MetricWidgetProps {
   readonly liveData?: boolean;
 
   /**
+   * Whether the graph should show labels on the chart. Currently only applicable for Pie charts.
+   *
+   * @default false
+   */
+  readonly displayLabelsOnChart?: boolean;
+
+  /**
    * Display this metric
    *
    * @default TimeSeries
@@ -466,6 +473,10 @@ export class GraphWidget extends ConcreteWidget {
     if (props.end !== undefined && props.start === undefined) {
       throw new cdk.UnscopedValidationError('If you specify a value for end, you must also specify a value for start.');
     }
+
+    if (props.displayLabelsOnChart && props.view !== GraphWidgetView.PIE) {
+      throw new cdk.UnscopedValidationError('displayLabelsOnChart can currently only be set to true if view is GraphWidgetView.PIE');
+    }
   }
 
   /**
@@ -513,6 +524,7 @@ export class GraphWidget extends ConcreteWidget {
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
         stacked: this.props.stacked,
+        labels: this.props.displayLabelsOnChart ? { visible: true } : undefined,
         metrics: metrics.length > 0 ? metrics : undefined,
         annotations,
         yAxis: {
