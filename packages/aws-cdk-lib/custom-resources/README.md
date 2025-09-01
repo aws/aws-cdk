@@ -837,7 +837,8 @@ When assuming cross-account roles, you can specify an external ID to prevent the
 
 ```ts
 const crossAccountRoleArn = 'arn:aws:iam::OTHERACCOUNT:role/CrossAccountRoleName';
-const secretExternalId = 'unique-secret-value-12345'; // This should be a secret known only to you and the role owner
+const serviceExternalId = 'unique-secret-value-12345'; // External ID provided by the third party service. This value should be unique among the third-party service's customers.
+
 
 new cr.AwsCustomResource(this, 'SecureCrossAccount', {
   onCreate: {
