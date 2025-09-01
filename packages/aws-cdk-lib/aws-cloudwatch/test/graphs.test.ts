@@ -1,4 +1,4 @@
-import { Duration, Stack } from '../../core';
+import { Duration, Stack, UnscopedValidationError } from '../../core';
 import {
   Alarm,
   AlarmWidget,
@@ -6,6 +6,7 @@ import {
   CustomWidget,
   GaugeWidget,
   GraphWidget,
+  GraphWidgetProps,
   GraphWidgetView,
   LegendPosition,
   LogQueryVisualizationType,
@@ -829,11 +830,14 @@ describe('Graphs', () => {
     }]);
   });
 
-  test('add displayLabelsOnChart to GraphWidget', () => {
+  test('GraphWidget with displayLabelsOnChart true', () => {
     // GIVEN
     const stack = new Stack();
+    const left = [new Metric({ namespace: 'CDK', metricName: 'Test' })];
+
+    // WHEN
     const widget = new GraphWidget({
-      left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      left: left,
       view: GraphWidgetView.PIE,
       displayLabelsOnChart: true,
     });
@@ -855,6 +859,20 @@ describe('Graphs', () => {
         },
       },
     }]);
+  });
+
+  test('GraphWidget with displayLabelsOnChart true and view not GraphWidgetView.PIE throws validation error', () => {
+    // GIVEN
+    const left = [new Metric({ namespace: 'CDK', metricName: 'Test' })];
+
+    // WHEN
+    const widgetProps: GraphWidgetProps = {
+      left: left,
+      view: GraphWidgetView.BAR,
+      displayLabelsOnChart: true,
+    };
+
+    expect(() => new GraphWidget(widgetProps)).toThrow(UnscopedValidationError);
   });
 
   test('add setPeriodToTimeRange to GraphWidget', () => {

@@ -365,7 +365,7 @@ export interface GraphWidgetProps extends MetricWidgetProps {
   readonly liveData?: boolean;
 
   /**
-   * Whether the graph should show labels on the chart. Only applicable for Pie charts.
+   * Whether the graph should show labels on the chart. Currently only applicable for Pie charts.
    *
    * @default false
    */
@@ -457,6 +457,10 @@ export class GraphWidget extends ConcreteWidget {
 
     if (props.end !== undefined && props.start === undefined) {
       throw new cdk.UnscopedValidationError('If you specify a value for end, you must also specify a value for start.');
+    }
+
+    if (props.displayLabelsOnChart && props.view !== GraphWidgetView.PIE) {
+      throw new cdk.UnscopedValidationError('displayLabelsOnChart can currently only be set to true if view is GraphWidgetView.PIE');
     }
   }
 
