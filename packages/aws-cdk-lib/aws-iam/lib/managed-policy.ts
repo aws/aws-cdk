@@ -1,13 +1,13 @@
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { IGroup } from './group';
-import { CfnManagedPolicy } from './iam.generated';
+import { CfnManagedPolicy, IManagedPolicyRef, ManagedPolicyReference } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
-import { ArnFormat, Resource, Stack, Arn, Aws, UnscopedValidationError } from '../../core';
+import { Arn, ArnFormat, Aws, Resource, Stack, UnscopedValidationError } from '../../core';
 import { getCustomizeRolesConfig, PolicySynthesizer } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -15,7 +15,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A managed policy
  */
-export interface IManagedPolicy {
+export interface IManagedPolicy extends IManagedPolicyRef {
   /**
    * The ARN of the managed policy
    * @attribute
@@ -123,6 +123,11 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         resource: 'policy',
         resourceName: managedPolicyName,
       });
+      public get managedPolicyRef(): ManagedPolicyReference {
+        return {
+          policyArn: this.managedPolicyArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -149,6 +154,11 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   public static fromManagedPolicyArn(scope: Construct, id: string, managedPolicyArn: string): IManagedPolicy {
     class Import extends Resource implements IManagedPolicy {
       public readonly managedPolicyArn = managedPolicyArn;
+      public get managedPolicyRef(): ManagedPolicyReference {
+        return {
+          policyArn: this.managedPolicyArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -172,6 +182,14 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         resource: 'policy',
         resourceName: managedPolicyName,
       });
+      public get managedPolicyRef(): ManagedPolicyReference {
+        return {
+          policyArn: this.managedPolicyArn,
+        };
+      }
+      public get node(): Node {
+        throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
+      }
     }
     return new AwsManagedPolicy();
   }
@@ -277,6 +295,12 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
     this.grantPrincipal = new ManagedPolicyGrantPrincipal(this);
 
     this.node.addValidation({ validate: () => this.validateManagedPolicy() });
+  }
+
+  public get managedPolicyRef(): ManagedPolicyReference {
+    return {
+      policyArn: this.managedPolicyArn,
+    };
   }
 
   /**
