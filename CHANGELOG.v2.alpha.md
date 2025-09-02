@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.213.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.212.0-alpha.0...v2.213.0-alpha.0) (2025-08-27)
+
+
+### Features
+
+* **s3tables-alpha:** add TablePolicy support to L2 construct library ([#35223](https://github.com/aws/aws-cdk/issues/35223)) ([a4aad78](https://github.com/aws/aws-cdk/commit/a4aad78a45fb776f2c2c71cb7818b4f8cbeaadd0)), closes [#33054](https://github.com/aws/aws-cdk/issues/33054)
+
+## [2.212.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.211.0-alpha.0...v2.212.0-alpha.0) (2025-08-20)
+
 ## [2.211.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.210.0-alpha.0...v2.211.0-alpha.0) (2025-08-12)
 
 ## [2.210.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.209.1-alpha.0...v2.210.0-alpha.0) (2025-08-06)
