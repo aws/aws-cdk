@@ -57,3 +57,5 @@ You can fix it by authenticating with AWS ECR Public before running your tests:
 ```sh
 aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
 ```
+
+Refer to the [AWS CLI documentation](https://docs.aws.amazon.com/cli/latest/reference/ecr-public/get-login-password.html) for additional details.
