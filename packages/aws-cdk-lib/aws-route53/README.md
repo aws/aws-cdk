@@ -347,10 +347,11 @@ const crossAccountRole = new iam.Role(this, 'CrossAccountRole', {
 parentZone.grantDelegation(crossAccountRole);
 ```
 
-To restrict the domain names that can be delegated with the IAM role, use the optional `nameEquals` property in the delegation options,
-which enforces the `route53:ChangeResourceRecordSetsNormalizedRecordNames` condition key.
+To restrict the records that can be created with the delegation IAM role, use the optional `delegatedZoneNames` property in the delegation options,
+which enforces the `route53:ChangeResourceRecordSetsNormalizedRecordNames` condition key for record names that match those hosted zone names.
+The `delegatedZoneNames` list may only consist of hosted zones names that are subzones of the parent hosted zone.
 
-This allows you to follow the minimum privilege principle:
+This feature allows you to better follow the minimum permissions privilege principle:
 
 ```ts
 const parentZone = new route53.PublicHostedZone(this, 'HostedZone', {
@@ -359,12 +360,12 @@ const parentZone = new route53.PublicHostedZone(this, 'HostedZone', {
 
 declare const betaCrossAccountRole: iam.Role;
 parentZone.grantDelegation(betaCrossAccountRole, {
-    nameEquals: ['beta.someexample.com'],
+    delegatedZoneNames: ['beta.someexample.com'],
 });
 
 declare const prodCrossAccountRole: iam.Role;
 parentZone.grantDelegation(prodCrossAccountRole, {
-    nameEquals: ['prod.someexample.com'],
+    delegatedZoneNames: ['prod.someexample.com'],
 });
 ```
 
@@ -507,7 +508,8 @@ const zone = route53.HostedZone.fromHostedZoneAttributes(this, 'MyZone', {
 ```
 
 Alternatively, use the `HostedZone.fromHostedZoneId` to import hosted zones if
-you know the ID and the retrieval for the `zoneName` is undesirable.
+you know the ID and the retrieval for the `zoneName` is undesirable. 
+Note that any records created with a hosted zone obtained this way must have their name be fully qualified
 
 ```ts
 const zone = route53.HostedZone.fromHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');

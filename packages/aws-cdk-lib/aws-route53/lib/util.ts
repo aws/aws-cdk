@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { GrantDelegationOptions, IHostedZone } from './hosted-zone-ref';
 import * as iam from '../../aws-iam';
-import { Stack } from '../../core';
+import { Stack, UnscopedValidationError } from '../../core';
 
 /**
  * Validates a zone name is valid by Route53 specific naming rules,
@@ -49,9 +49,7 @@ export function determineFullyQualifiedDomainName(providedName: string, hostedZo
     return providedName;
   }
 
-  const hostedZoneName = hostedZone.zoneName.endsWith('.')
-    ? hostedZone.zoneName.substring(0, hostedZone.zoneName.length - 1)
-    : hostedZone.zoneName;
+  const hostedZoneName = stripTrailingDot(hostedZone.zoneName);
 
   const suffix = `.${hostedZoneName}`;
   if (providedName.endsWith(suffix) || providedName === hostedZoneName) {
@@ -71,17 +69,50 @@ export function makeHostedZoneArn(construct: Construct, hostedZoneId: string): s
   });
 }
 
-export function makeGrantDelegation(grantee: iam.IGrantable, hostedZoneArn: string, delegationOptions?: GrantDelegationOptions): iam.Grant {
+function stripTrailingDot(zoneName: string) {
+  return zoneName.endsWith('.') ? zoneName.substring(0, zoneName.length - 1) : zoneName;
+}
+
+function validateDelegatedZoneName(parentZoneName: string, delegatedZoneName: string) {
+  try {
+    validateZoneName(delegatedZoneName);
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      throw new UnscopedValidationError(
+        `Error while validating delegated zone name '${delegatedZoneName}': ${error.message}`,
+      );
+    }
+  }
+
+  const parentZoneNameNoTrailingDot = stripTrailingDot(parentZoneName);
+  const delegatedZoneNameNoTrailingDot = stripTrailingDot(delegatedZoneName);
+
+  if (!delegatedZoneNameNoTrailingDot.endsWith(parentZoneNameNoTrailingDot)) {
+    throw new UnscopedValidationError(
+      `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name must be suffixed by parent zone name`,
+    );
+  }
+
+  if (delegatedZoneNameNoTrailingDot === parentZoneNameNoTrailingDot) {
+    throw new UnscopedValidationError(
+      `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot be the same as the parent zone name`,
+    );
+  }
+}
+
+export function makeGrantDelegation(grantee: iam.IGrantable, hostedZone: IHostedZone, delegationOptions?: GrantDelegationOptions): iam.Grant {
+  const delegatedZoneNames = delegationOptions?.delegatedZoneNames;
+  delegatedZoneNames?.forEach(zoneName => validateDelegatedZoneName(hostedZone.zoneName, zoneName));
   const g1 = iam.Grant.addToPrincipal({
     grantee,
     actions: ['route53:ChangeResourceRecordSets'],
-    resourceArns: [hostedZoneArn],
+    resourceArns: [hostedZone.hostedZoneArn],
     conditions: {
       'ForAllValues:StringEquals': {
         'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
         'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
-        ...(delegationOptions?.nameEquals ? {
-          'route53:ChangeResourceRecordSetsNormalizedRecordNames': delegationOptions.nameEquals,
+        ...(delegationOptions?.delegatedZoneNames ? {
+          'route53:ChangeResourceRecordSetsNormalizedRecordNames': delegationOptions.delegatedZoneNames,
         } : {}),
       },
     },

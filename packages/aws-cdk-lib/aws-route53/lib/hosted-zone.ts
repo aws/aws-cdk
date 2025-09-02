@@ -118,7 +118,7 @@ export class HostedZone extends Resource implements IHostedZone {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
       public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn, options);
+        return makeGrantDelegation(grantee, this, options);
       }
     }
 
@@ -142,7 +142,7 @@ export class HostedZone extends Resource implements IHostedZone {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
       public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn, options);
+        return makeGrantDelegation(grantee, this, options);
       }
     }
 
@@ -242,7 +242,7 @@ export class HostedZone extends Resource implements IHostedZone {
 
   @MethodMetadata()
   public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
-    return makeGrantDelegation(grantee, this.hostedZoneArn, options);
+    return makeGrantDelegation(grantee, this, options);
   }
 
   /**
@@ -346,7 +346,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
       public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn, options);
+        return makeGrantDelegation(grantee, this, options);
       }
     }
     return new Import(scope, id);
@@ -369,7 +369,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
       public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn, options);
+        return makeGrantDelegation(grantee, this, options);
       }
     }
     return new Import(scope, id);
@@ -514,7 +514,7 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
       public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn, options);
+        return makeGrantDelegation(grantee, this, options);
       }
     }
     return new Import(scope, id);

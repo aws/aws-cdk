@@ -59,11 +59,7 @@ class ParentStack extends cdk.Stack {
       assumedBy: new iam.AccountPrincipal(crossAccount),
     });
     parentZone.grantDelegation(crossAccountRole, {
-      nameEquals: [
-        'sub.uniqueexample.com',
-        'sub2.uniqueexample.com',
-        'sub3.uniqueexample.com',
-      ],
+      delegatedZoneNames: ['sub.uniqueexample.com', 'sub2.uniqueexample.com', 'sub3.uniqueexample.com'],
     });
   }
 }

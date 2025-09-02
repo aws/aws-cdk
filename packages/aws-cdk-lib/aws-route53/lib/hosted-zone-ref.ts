@@ -65,9 +65,9 @@ export interface PublicHostedZoneAttributes extends HostedZoneAttributes { }
  */
 export interface GrantDelegationOptions {
   /**
-   * List of NS record names to allowlist in the delegation permissions
+   * List of hosted zone names to allow delegation to in the grant permissions.
    *
-   * @default the grant does not restrict record name
+   * @default the grant allows delegation to any hosted zone
    */
-  readonly nameEquals?: string[];
+  readonly delegatedZoneNames?: string[];
 }

@@ -1,6 +1,6 @@
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { HostedZone } from '../lib';
+import { GrantDelegationOptions, HostedZone } from '../lib';
 import * as util from '../lib/util';
 
 describe('util', () => {
@@ -69,13 +69,16 @@ describe('util', () => {
     expect(qualified).toEqual('test.domain.com.');
   });
 
-  test('grant delegation without nameEquals returns ChangeResourceRecordSets statement without normalzed record names condition', () => {
+  test('grantDelegation without delegatedZoneNames returns ChangeResourceRecordSets statement without normalized record names condition', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const grantee = new iam.User(stack, 'Grantee');
+    const hostedZone = new HostedZone(stack, 'zone', {
+      zoneName: 'example.com',
+    });
 
     // WHEN
-    const actual = util.makeGrantDelegation(grantee, 'hosted-zone');
+    const actual = util.makeGrantDelegation(grantee, hostedZone);
 
     // THEN
     const statement = actual.principalStatements.find(x => x.actions.includes('route53:ChangeResourceRecordSets'));
@@ -88,14 +91,17 @@ describe('util', () => {
     });
   });
 
-  test('grant delegation with nameEquals returns ChangeResourceRecordSets statement with normalized record names condition', () => {
+  test('grantDelegation with delegatedZoneNames returns ChangeResourceRecordSets statement with normalized record names condition', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const grantee = new iam.User(stack, 'Grantee');
+    const hostedZone = new HostedZone(stack, 'zone', {
+      zoneName: 'example.com.',
+    });
 
     // WHEN
-    const actual = util.makeGrantDelegation(grantee, 'hosted-zone', {
-      nameEquals: ['name-1', 'name-2'],
+    const actual = util.makeGrantDelegation(grantee, hostedZone, {
+      delegatedZoneNames: ['gamma.example.com', 'beta.example.com'],
     });
 
     // THEN
@@ -105,8 +111,28 @@ describe('util', () => {
       'ForAllValues:StringEquals': {
         'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
         'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
-        'route53:ChangeResourceRecordSetsNormalizedRecordNames': ['name-1', 'name-2'],
+        'route53:ChangeResourceRecordSetsNormalizedRecordNames': ['gamma.example.com', 'beta.example.com'],
       },
     });
   });
+
+  test.each([[' '], ['com'], ['example.com']])(
+    'grantDelegation with invalid delegated zone name \'%s\' throws UnscopedValidationError',
+    (invalidZoneName) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const grantee = new iam.User(stack, 'Grantee');
+      const hostedZone = new HostedZone(stack, 'zone', {
+        zoneName: 'example.com',
+      });
+
+      // WHEN
+      const opts: GrantDelegationOptions = { delegatedZoneNames: [invalidZoneName] };
+
+      // THEN
+      expect(() =>
+        util.makeGrantDelegation(grantee, hostedZone, opts),
+      ).toThrow(cdk.UnscopedValidationError);
+    },
+  );
 });
