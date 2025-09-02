@@ -11,7 +11,7 @@ def lambda_handler(event, context):
   lifecycle_event = json.loads(event['Records'][0]['Sns']['Message'])
   instance_id = lifecycle_event.get('EC2InstanceId')
   if not instance_id:
-    print('Got event without EC2InstanceId: %s', json.dumps(dict(event, ResponseURL='...')))
+    print(f"Got event without EC2InstanceId: { json.dumps(dict(event, ResponseURL='...')) }")
     return
 
   instance_arn = container_instance_arn(cluster, instance_id)

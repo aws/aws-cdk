@@ -1,0 +1,305 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "sns-sqs-subscription-filter.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "sns-sqs-subscription-filter.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "sns-sqs-subscription-filter": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "sns-sqs-subscription-filter.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0d7151cff5207688c73aa124a1200d988589169223935d3ce3414cb0b0a8fe4b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "sns-sqs-subscription-filter.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "sns-sqs-subscription-filter.assets"
+      ],
+      "metadata": {
+        "/sns-sqs-subscription-filter/MyTopic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/sns-sqs-subscription-filter/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434"
+          }
+        ],
+        "/sns-sqs-subscription-filter/MyQueue1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/sns-sqs-subscription-filter/MyQueue1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueue13ECD6C63"
+          }
+        ],
+        "/sns-sqs-subscription-filter/MyQueue1/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/sns-sqs-subscription-filter/MyQueue1/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueue1Policy0240BB7D"
+          }
+        ],
+        "/sns-sqs-subscription-filter/MyQueue1/snssqssubscriptionfilterMyTopicB7B2DAA4": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/sns-sqs-subscription-filter/MyQueue1/snssqssubscriptionfilterMyTopicB7B2DAA4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueue1snssqssubscriptionfilterMyTopicB7B2DAA4F1B5576D"
+          }
+        ],
+        "/sns-sqs-subscription-filter/MyQueue2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/sns-sqs-subscription-filter/MyQueue2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueue22D001D59"
+          }
+        ],
+        "/sns-sqs-subscription-filter/MyQueue2/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/sns-sqs-subscription-filter/MyQueue2/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueue2Policy8835A248"
+          }
+        ],
+        "/sns-sqs-subscription-filter/MyQueue2/snssqssubscriptionfilterMyTopicB7B2DAA4": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/sns-sqs-subscription-filter/MyQueue2/snssqssubscriptionfilterMyTopicB7B2DAA4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueue2snssqssubscriptionfilterMyTopicB7B2DAA496B040E3"
+          }
+        ],
+        "/sns-sqs-subscription-filter/Exports/Output{\"Ref\":\"MyTopic86869434\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMyTopic868694349D03D60F"
+          }
+        ],
+        "/sns-sqs-subscription-filter/Exports/Output{\"Ref\":\"MyQueue13ECD6C63\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMyQueue13ECD6C63493C83EE"
+          }
+        ],
+        "/sns-sqs-subscription-filter/Exports/Output{\"Ref\":\"MyQueue22D001D59\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMyQueue22D001D59CA385180"
+          }
+        ],
+        "/sns-sqs-subscription-filter/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/sns-sqs-subscription-filter/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "sns-sqs-subscription-filter"
+    },
+    "SNSSubscriptionfiltersDefaultTestDeployAssertA2ED6F70.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SNSSubscriptionfiltersDefaultTestDeployAssertA2ED6F70.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SNSSubscriptionfiltersDefaultTestDeployAssertA2ED6F70": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SNSSubscriptionfiltersDefaultTestDeployAssertA2ED6F70.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/479f1a28d85ccefcb1909e107a03aa415e8793380b122165da511ba46aa1363f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SNSSubscriptionfiltersDefaultTestDeployAssertA2ED6F70.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "sns-sqs-subscription-filter",
+        "SNSSubscriptionfiltersDefaultTestDeployAssertA2ED6F70.assets"
+      ],
+      "metadata": {
+        "/SNS Subscription filters/DefaultTest/DeployAssert/AwsApiCallSNSpublish1ed44e75b058a4b9f26876a86fe8a97a/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/SNS Subscription filters/DefaultTest/DeployAssert/AwsApiCallSNSpublish1ed44e75b058a4b9f26876a86fe8a97a/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSNSpublish1ed44e75b058a4b9f26876a86fe8a97a"
+          }
+        ],
+        "/SNS Subscription filters/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/SNS Subscription filters/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/SNS Subscription filters/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/SNS Subscription filters/DefaultTest/DeployAssert/AwsApiCallSNSpublishd0438513bea402ba99deda3ee780813d/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/SNS Subscription filters/DefaultTest/DeployAssert/AwsApiCallSNSpublishd0438513bea402ba99deda3ee780813d/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSNSpublishd0438513bea402ba99deda3ee780813d"
+          }
+        ],
+        "/SNS Subscription filters/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessagea4a3f449de51fc58592c8d26238a5c3e/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/SNS Subscription filters/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessagea4a3f449de51fc58592c8d26238a5c3e/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSQSreceiveMessagea4a3f449de51fc58592c8d26238a5c3e"
+          }
+        ],
+        "/SNS Subscription filters/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessagea4a3f449de51fc58592c8d26238a5c3e/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSQSreceiveMessagea4a3f449de51fc58592c8d26238a5c3e"
+          }
+        ],
+        "/SNS Subscription filters/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessageda8a6d34acbbf0f5244c08cd96703b6d/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/SNS Subscription filters/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessageda8a6d34acbbf0f5244c08cd96703b6d/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSQSreceiveMessageda8a6d34acbbf0f5244c08cd96703b6d"
+          }
+        ],
+        "/SNS Subscription filters/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessageda8a6d34acbbf0f5244c08cd96703b6d/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSQSreceiveMessageda8a6d34acbbf0f5244c08cd96703b6d"
+          }
+        ],
+        "/SNS Subscription filters/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SNS Subscription filters/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SNS Subscription filters/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

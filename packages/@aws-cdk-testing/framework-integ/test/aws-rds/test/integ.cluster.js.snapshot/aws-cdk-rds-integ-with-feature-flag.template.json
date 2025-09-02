@@ -503,6 +503,7 @@
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets56F17B9A"
     },
+    "DeleteAutomatedBackups": false,
     "Engine": "aurora-mysql",
     "EngineVersion": "8.0.mysql_aurora.3.07.1",
     "KmsKeyId": {

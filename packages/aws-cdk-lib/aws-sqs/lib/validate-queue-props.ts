@@ -13,8 +13,8 @@ const queueValidationRules: ValidationRule<QueueProps>[] = [
     message: (props) => `delivery delay must be between 0 and 900 seconds, but ${props.deliveryDelay?.toSeconds()} was provided`,
   },
   {
-    condition: (props) => validateRange(props.maxMessageSizeBytes, 1_024, 262_144),
-    message: (props) => `maximum message size must be between 1,024 and 262,144 bytes, but ${props.maxMessageSizeBytes} was provided`,
+    condition: (props) => validateRange(props.maxMessageSizeBytes, 1_024, 1_048_576),
+    message: (props) => `maximum message size must be between 1,024 and 1,048,576 bytes, but ${props.maxMessageSizeBytes} was provided`,
   },
   {
     condition: (props) => validateRange(props.retentionPeriod?.toSeconds(), 60, 1_209_600),

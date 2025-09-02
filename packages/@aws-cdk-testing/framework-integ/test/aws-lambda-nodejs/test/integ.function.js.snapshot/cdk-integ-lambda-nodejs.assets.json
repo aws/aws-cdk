@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "5017e4b2e278e32bc634202d075b7ed8961b0d784f75450f7918a6a4f6f7df4a": {
       "displayName": "ts-handler/Code",
@@ -43,16 +43,16 @@
         }
       }
     },
-    "3ded710676dff1cab66f31a16dd351400f530af4c895b63977e4cf2dd832b443": {
+    "02ac15515b509130668615976a62c179d7c3f39c932fbb25fe310ceaa9f415a3": {
       "displayName": "ts-handler-metafile-path/Code",
       "source": {
-        "path": "asset.3ded710676dff1cab66f31a16dd351400f530af4c895b63977e4cf2dd832b443",
+        "path": "asset.02ac15515b509130668615976a62c179d7c3f39c932fbb25fe310ceaa9f415a3",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-86780b33": {
+        "current_account-current_region-3fbe4314": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3ded710676dff1cab66f31a16dd351400f530af4c895b63977e4cf2dd832b443.zip",
+          "objectKey": "02ac15515b509130668615976a62c179d7c3f39c932fbb25fe310ceaa9f415a3.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -85,16 +85,16 @@
         }
       }
     },
-    "9ea8f936a88b0a7898d215fe931779507d9419d41815217079bd5f648465c7f2": {
+    "58580af9d82e596a64bc3e7b83264c81d36fc0bb30b21f04e92211b13f52b394": {
       "displayName": "cdk-integ-lambda-nodejs Template",
       "source": {
         "path": "cdk-integ-lambda-nodejs.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-3ccc3882": {
+        "current_account-current_region-e302cb37": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9ea8f936a88b0a7898d215fe931779507d9419d41815217079bd5f648465c7f2.json",
+          "objectKey": "58580af9d82e596a64bc3e7b83264c81d36fc0bb30b21f04e92211b13f52b394.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

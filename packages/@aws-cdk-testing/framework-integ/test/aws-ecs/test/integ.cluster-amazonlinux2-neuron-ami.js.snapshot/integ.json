@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "testCases": {
     "ClusterNeuronAmi/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "ClusterNeuronAmi/DefaultTest/DeployAssert",
       "assertionStackName": "ClusterNeuronAmiDefaultTestDeployAssert0A9C16F8"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }

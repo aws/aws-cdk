@@ -8,11 +8,6 @@ import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
 
-/*
- * Stack verification steps:
- * * aws lambda invoke --function-name <deployed fn name> --invocation-type Event --payload '"OK"' response.json
- */
-
 class TestStack extends Stack {
   public readonly functionName: string;
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -21,11 +16,14 @@ class TestStack extends Stack {
     const projectDirectory = path.join(__dirname, 'lambda-handler-project');
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(projectDirectory, 'lambda'),
-      runtime: Runtime.PYTHON_3_9,
+      runtime: Runtime.PYTHON_3_13,
       layers: [
         new lambda.PythonLayerVersion(this, 'Shared', {
           entry: path.join(projectDirectory, 'shared'),
-          compatibleRuntimes: [Runtime.PYTHON_3_9],
+          compatibleRuntimes: [Runtime.PYTHON_3_13],
+          bundling: {
+            network: 'default',
+          },
         }),
       ],
     });
@@ -51,4 +49,3 @@ const invoke = integ.assertions.invokeFunction({
 invoke.expect(ExpectedResult.objectLike({
   Payload: '200',
 }));
-app.synth();

@@ -211,7 +211,7 @@
      }
     ],
     "SourceObjectKeys": [
-     "0a7f54a0096af5218b6c473a3c08586f6a91b3f49e54810845c28945eb20a6a6.zip",
+     "cf2d05b1507b6b83057fa7a3bd1dcf80419fd04b4b30f3f6102c46601e38cc2a.zip",
      "cbc7dae5477d6aa98463e36140d5833273cc3caca06c731d848799f30237fefe.zip",
      "4458891c23c9754723db261b607985ee4fce5a087343fca93e9608fb49e083ba.zip",
      "28993f893d6ff78d86a5b8265321158c6da4719974a8aa757202f429679cc7e6.zip"
@@ -265,6 +265,7 @@
     "DestinationBucketName": {
      "Ref": "Bucket83908E77"
     },
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "OutputObjectKeys": true
@@ -404,7 +405,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
+     "S3Key": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip"
     },
     "Environment": {
      "Variables": {

@@ -500,6 +500,13 @@ interface DatabaseClusterBaseProps {
    * @default undefined - AWS RDS default setting is `EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT`
    */
   readonly engineLifecycleSupport?: EngineLifecycleSupport;
+
+  /**
+   * Specifies whether to remove automated backups immediately after the DB cluster is deleted.
+   *
+   * @default undefined - AWS RDS default is to remove automated backups immediately after the DB cluster is deleted, unless the AWS Backup policy specifies a point-in-time restore rule.
+   */
+  readonly deleteAutomatedBackups?: boolean;
 }
 
 /**
@@ -968,6 +975,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? props.monitoringInterval?.toSeconds() : undefined,
       monitoringRoleArn: props.enableClusterLevelEnhancedMonitoring ? this.monitoringRole?.roleArn : undefined,
       engineLifecycleSupport: props.engineLifecycleSupport,
+      deleteAutomatedBackups: props.deleteAutomatedBackups,
     };
   }
 

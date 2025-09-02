@@ -204,4 +204,16 @@ describe('CompositeAlarm', () => {
     expect(alarmFromName.alarmName).toEqual('TestAlarmName');
     expect(alarmFromName.alarmArn).toMatch(/:alarm:TestAlarmName$/);
   });
+
+  test('empty anyOf', () => {
+    expect(() => new CompositeAlarm(new Stack(), 'alarm', {
+      alarmRule: AlarmRule.anyOf(),
+    })).toThrow('Did not detect any operands for AlarmRule.anyOf');
+  });
+
+  test('empty allOf', () => {
+    expect(() => new CompositeAlarm(new Stack(), 'alarm', {
+      alarmRule: AlarmRule.allOf(),
+    })).toThrow('Did not detect any operands for AlarmRule.allOf');
+  });
 });

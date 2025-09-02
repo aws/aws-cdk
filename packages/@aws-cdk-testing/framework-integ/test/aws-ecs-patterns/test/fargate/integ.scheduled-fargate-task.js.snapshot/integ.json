@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "45.0.0",
   "testCases": {
     "publicQueueProcessingFargateServiceTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert",
       "assertionStackName": "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }

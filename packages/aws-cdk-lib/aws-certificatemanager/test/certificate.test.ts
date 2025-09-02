@@ -363,6 +363,48 @@ test('CertificateValidation.fromDnsMultiZone', () => {
   });
 });
 
+describe('Certificate export setting', () => {
+  test('leaves certificate export setting untouched by default', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+    });
+
+    const certificateNodes = Template.fromStack(stack).findResources('AWS::CertificateManager::Certificate');
+    expect(certificateNodes.Certificate4E7ABB08).toBeDefined();
+    expect(certificateNodes.Certificate4E7ABB08.CertificateTransparencyLoggingPreference).toBeUndefined();
+  });
+
+  test('can enable certificate export', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      allowExport: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      CertificateExport: 'ENABLED',
+    });
+  });
+
+  test('can disable certificate export', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      allowExport: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      CertificateExport: Match.absent(),
+    });
+  });
+});
+
 describe('Transparency logging settings', () => {
   test('leaves transparency logging untouched by default', () => {
     const stack = new Stack();

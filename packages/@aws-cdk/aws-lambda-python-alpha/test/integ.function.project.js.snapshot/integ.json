@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "44.0.0",
   "testCases": {
     "lambda-python-project/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "lambda-python-project/DefaultTest/DeployAssert",
       "assertionStackName": "lambdapythonprojectDefaultTestDeployAssert35F9254C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
