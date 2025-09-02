@@ -5,6 +5,12 @@ import {
   GatewayResponseRef,
   IGatewayResponseRef,
 } from './apigateway.generated';
+import {
+  CfnGatewayResponse,
+  CfnGatewayResponseProps,
+  GatewayResponseReference,
+  IGatewayResponseRef,
+} from './apigateway.generated';
 import { IRestApi } from './restapi';
 import { IResource, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -78,7 +84,7 @@ export class GatewayResponse extends Resource implements IGatewayResponse {
     return new Import(scope, id);
   }
 
-  public readonly gatewayResponseRef: GatewayResponseRef;
+  public readonly gatewayResponseRef: GatewayResponseReference;
 
   constructor(scope: Construct, id: string, props: GatewayResponseProps) {
     super(scope, id);

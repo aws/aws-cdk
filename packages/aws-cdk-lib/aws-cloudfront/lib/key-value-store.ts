@@ -2,10 +2,10 @@ import * as fs from 'fs';
 import { join } from 'path';
 
 import { Construct } from 'constructs';
-import { CfnKeyValueStore, IKeyValueStoreRef, KeyValueStoreRef } from './cloudfront.generated';
+import { CfnKeyValueStore, IKeyValueStoreRef, KeyValueStoreReference } from './cloudfront.generated';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
-import { Resource, IResource, Lazy, Names, Stack, Arn, ArnFormat, FileSystem, ValidationError } from '../../core';
+import { Arn, ArnFormat, FileSystem, IResource, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -254,7 +254,7 @@ export class KeyValueStore extends Resource implements IKeyValueStore {
   readonly keyValueStoreArn: string;
   readonly keyValueStoreId: string;
   readonly keyValueStoreStatus: string;
-  readonly keyValueStoreRef: KeyValueStoreRef;
+  readonly keyValueStoreRef: KeyValueStoreReference;
 
   constructor(scope: Construct, id: string, props?: KeyValueStoreProps) {
     super(scope, id, {

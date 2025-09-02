@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnVpcLink, IVpcLinkRef, VpcLinkRef } from './apigateway.generated';
+import { CfnVpcLink, IVpcLinkRef, VpcLinkReference } from './apigateway.generated';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { IResource, Lazy, Names, Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -70,7 +71,7 @@ export class VpcLink extends Resource implements IVpcLink {
    */
   public readonly vpcLinkId: string;
 
-  public readonly vpcLinkRef: VpcLinkRef;
+  public readonly vpcLinkRef: VpcLinkReference;
 
   private readonly _targets = new Array<elbv2.INetworkLoadBalancer>();
 

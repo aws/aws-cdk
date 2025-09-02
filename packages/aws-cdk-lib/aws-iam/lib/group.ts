@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnGroup, GroupRef, IGroupRef } from './iam.generated';
+import { CfnGroup, GroupReference, IGroupRef } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
@@ -85,7 +85,7 @@ abstract class GroupBase extends Resource implements IGroup {
     return new ArnPrincipal(this.groupArn).policyFragment;
   }
 
-  public get groupRef(): GroupRef {
+  public get groupRef(): GroupReference {
     return {
       groupName: this.groupName,
       groupArn: this.groupArn,

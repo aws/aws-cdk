@@ -1,6 +1,15 @@
 import { Construct } from 'constructs';
-import { CfnDistribution, DistributionRef } from './cloudfront.generated';
-import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
+import { CfnDistribution, DistributionReference } from './cloudfront.generated';
+import {
+  HttpVersion,
+  IDistribution,
+  LambdaEdgeEventType,
+  OriginProtocolPolicy,
+  PriceClass,
+  SecurityPolicyProtocol,
+  SSLMethod,
+  ViewerProtocolPolicy,
+} from './distribution';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
@@ -810,7 +819,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
    */
   public readonly distributionId: string;
 
-  public readonly distributionRef: DistributionRef;
+  public readonly distributionRef: DistributionReference;
 
   /**
    * Maps our methods to the string arrays they are

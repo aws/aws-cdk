@@ -1,8 +1,22 @@
 import { Construct } from 'constructs';
-import { CfnVolume, IInstanceRef, IVolumeRef, VolumeRef } from './ec2.generated';
+import { CfnVolume, IVolumeRef, VolumeReference } from './ec2.generated';
+import { IInstance } from './instance';
 import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
-import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy, FeatureFlags, UnscopedValidationError, ValidationError } from '../../core';
+import {
+  FeatureFlags,
+  IResource,
+  Names,
+  RemovalPolicy,
+  Resource,
+  Size,
+  SizeRoundingBehavior,
+  Stack,
+  Tags,
+  Token,
+  UnscopedValidationError,
+  ValidationError,
+} from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -513,13 +527,13 @@ abstract class VolumeBase extends Resource implements IVolume {
   public abstract readonly availabilityZone: string;
   public abstract readonly encryptionKey?: IKey;
 
-  public get volumeRef(): VolumeRef {
+  public get volumeRef(): VolumeReference {
     return {
       volumeId: this.volumeId,
     };
   }
 
-  public grantAttachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
+  public grantAttachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
       actions: ['ec2:AttachVolume'],

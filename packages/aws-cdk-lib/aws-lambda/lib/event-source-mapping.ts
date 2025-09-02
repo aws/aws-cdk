@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
-import { CfnEventSourceMapping, EventSourceMappingRef, IEventSourceMappingRef } from './lambda.generated';
+import { CfnEventSourceMapping, EventSourceMappingReference, IEventSourceMappingRef } from './lambda.generated';
 import { ISchemaRegistry } from './schema-registry';
 import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
@@ -402,7 +402,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       public readonly eventSourceMappingId = eventSourceMappingId;
       public readonly eventSourceMappingArn = eventSourceMappingArn;
 
-      public get eventSourceMappingRef(): EventSourceMappingRef {
+      public get eventSourceMappingRef(): EventSourceMappingReference {
         return {
           eventSourceMappingId,
           eventSourceMappingArn,
@@ -577,7 +577,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     this.eventSourceMappingArn = EventSourceMapping.formatArn(this, this.eventSourceMappingId);
   }
 
-  public get eventSourceMappingRef(): EventSourceMappingRef {
+  public get eventSourceMappingRef(): EventSourceMappingReference {
     return {
       eventSourceMappingId: this.eventSourceMappingId,
       eventSourceMappingArn: this.eventSourceMappingArn,

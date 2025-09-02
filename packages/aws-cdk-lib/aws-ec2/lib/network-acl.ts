@@ -1,5 +1,12 @@
 import { Construct } from 'constructs';
-import { CfnNetworkAcl, CfnNetworkAclEntry, CfnSubnetNetworkAclAssociation, INetworkAclEntryRef, INetworkAclRef, ISubnetNetworkAclAssociationRef, NetworkAclEntryRef, NetworkAclRef, SubnetNetworkAclAssociationRef } from './ec2.generated';
+import {
+  CfnNetworkAcl,
+  CfnNetworkAclEntry,
+  CfnSubnetNetworkAclAssociation,
+  INetworkAclEntryRef,
+  INetworkAclRef,
+  ISubnetNetworkAclAssociationRef, NetworkAclEntryReference, NetworkAclReference, SubnetNetworkAclAssociationReference,
+} from './ec2.generated';
 import { AclCidr, AclTraffic } from './network-acl-types';
 import { ISubnet, IVpc, SubnetSelection } from './vpc';
 import { IResource, Resource, Tags } from '../../core';
@@ -36,7 +43,7 @@ export interface INetworkAcl extends IResource, INetworkAclRef {
 abstract class NetworkAclBase extends Resource implements INetworkAcl {
   public abstract readonly networkAclId: string;
 
-  public get networkAclRef(): NetworkAclRef {
+  public get networkAclRef(): NetworkAclReference {
     return {
       networkAclId: this.networkAclId,
     };
@@ -194,7 +201,7 @@ export interface INetworkAclEntry extends IResource, INetworkAclEntryRef {
  */
 abstract class NetworkAclEntryBase extends Resource implements INetworkAclEntry {
   public abstract readonly networkAcl: INetworkAcl;
-  public abstract readonly networkAclEntryRef: NetworkAclEntryRef;
+  public abstract readonly networkAclEntryRef: NetworkAclEntryReference;
 }
 
 /**
@@ -288,6 +295,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
   public readonly networkAclEntryRef: NetworkAclEntryRef;
 
   private readonly _networkAcl: INetworkAclRef;
+  public readonly networkAclEntryRef: NetworkAclEntryReference;
 
   constructor(scope: Construct, id: string, props: NetworkAclEntryProps) {
     super(scope, id, {
@@ -307,10 +315,6 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
       ...props.cidr.toCidrConfig(),
     });
     this.networkAclEntryRef = resource.networkAclEntryRef;
-  }
-
-  public get networkAcl(): INetworkAcl {
-    return asNetworkAcl(this._networkAcl, this);
   }
 }
 
@@ -362,7 +366,7 @@ export interface SubnetNetworkAclAssociationProps {
 abstract class SubnetNetworkAclAssociationBase extends Resource implements ISubnetNetworkAclAssociation {
   public abstract readonly subnetNetworkAclAssociationAssociationId: string;
 
-  public get subnetNetworkAclAssociationRef(): SubnetNetworkAclAssociationRef {
+  public get subnetNetworkAclAssociationRef(): SubnetNetworkAclAssociationReference {
     return {
       associationId: this.subnetNetworkAclAssociationAssociationId,
     };

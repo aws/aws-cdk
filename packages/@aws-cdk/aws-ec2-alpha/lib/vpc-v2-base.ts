@@ -24,12 +24,48 @@ import {
   SubnetFilter,
   VPCRef,
 } from 'aws-cdk-lib/aws-ec2';
+import { Annotations, Aws, Resource, ValidationError } from 'aws-cdk-lib';
+import {
+  CfnVPCGatewayAttachment,
+  CfnVPNGatewayRoutePropagation,
+  ClientVpnEndpoint,
+  ClientVpnEndpointOptions,
+  EnableVpnGatewayOptions,
+  FlowLog,
+  FlowLogOptions,
+  FlowLogResourceType,
+  GatewayVpcEndpoint,
+  GatewayVpcEndpointOptions,
+  InterfaceVpcEndpoint,
+  InterfaceVpcEndpointOptions,
+  ISubnet,
+  IVpc,
+  SelectedSubnets,
+  SubnetFilter,
+  SubnetSelection,
+  SubnetType,
+  VpnConnection,
+  VpnConnectionOptions,
+  VpnConnectionType,
+  VpnGateway,
+} from 'aws-cdk-lib/aws-ec2';
 import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
-import { IDependable, Dependable, IConstruct, DependencyGroup } from 'constructs';
-import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, NatGatewayOptions, Route, VPCPeeringConnection, VPCPeeringConnectionOptions, VPNGatewayV2 } from './route';
+import { Dependable, DependencyGroup, IConstruct, IDependable } from 'constructs';
+import {
+  EgressOnlyInternetGateway,
+  InternetGateway,
+  NatConnectivityType,
+  NatGateway,
+  NatGatewayOptions,
+  Route,
+  VPCPeeringConnection,
+  VPCPeeringConnectionOptions,
+  VPNGatewayV2,
+} from './route';
 import { ISubnetV2 } from './subnet-v2';
 import { AccountPrincipal, Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 import { IVPCCidrBlock } from './vpc-v2';
+import { VPCReference } from 'aws-cdk-lib/aws-ec2/lib/ec2.generated';
 
 /**
  * Options to define EgressOnlyInternetGateway for VPC
@@ -351,7 +387,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     };
   }
 
-  public get vpcRef(): VPCRef {
+  public get vpcRef(): VPCReference {
     return {
       vpcId: this.vpcId,
     };

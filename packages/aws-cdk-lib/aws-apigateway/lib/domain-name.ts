@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnDomainName, DomainNameRef, IDomainNameRef, IRestApiRef, IStageRef } from './apigateway.generated';
+import { CfnDomainName, DomainNameReference, IDomainNameRef } from './apigateway.generated';
 import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
 import { EndpointType, IRestApi } from './restapi';
 import * as apigwv2 from '../../aws-apigatewayv2';
@@ -146,7 +147,7 @@ export class DomainName extends Resource implements IDomainName {
   }
 
   public readonly domainName: string;
-  public readonly domainNameRef: DomainNameRef;
+  public readonly domainNameRef: DomainNameReference;
   public readonly domainNameAliasDomainName: string;
   public readonly domainNameAliasHostedZoneId: string;
   private readonly basePaths = new Set<string | undefined>();

@@ -6,9 +6,7 @@ import {
   CfnVPNConnectionRoute,
   CfnVPNGateway,
   IVPNConnectionRef,
-  IVPNGatewayRef,
-  VPNConnectionRef,
-  VPNGatewayRef,
+  IVPNGatewayRef, VPNConnectionReference, VPNGatewayReference,
 } from './ec2.generated';
 import { IVpc, SubnetSelection } from './vpc';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -176,7 +174,7 @@ export class VpnGateway extends Resource implements IVpnGateway {
    */
   public readonly gatewayId: string;
 
-  public readonly vpnGatewayRef: VPNGatewayRef;
+  public readonly vpnGatewayRef: VPNGatewayReference;
 
   constructor(scope: Construct, id: string, props: VpnGatewayProps) {
     super(scope, id);
@@ -228,7 +226,7 @@ export abstract class VpnConnectionBase extends Resource implements IVpnConnecti
   public abstract readonly customerGatewayIp: string;
   public abstract readonly customerGatewayAsn: number;
 
-  public get vpnConnectionRef(): VPNConnectionRef {
+  public get vpnConnectionRef(): VPNConnectionReference {
     return {
       vpnConnectionId: this.customerGatewayId,
     };

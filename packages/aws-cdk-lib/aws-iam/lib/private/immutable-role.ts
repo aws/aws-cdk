@@ -3,7 +3,7 @@ import { Resource } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { Grant } from '../grant';
-import { RoleRef } from '../iam.generated';
+import { RoleReference } from '../iam.generated';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
 import { PolicyStatement } from '../policy-statement';
@@ -50,7 +50,7 @@ export class ImmutableRole extends Resource implements IRole {
     this.node.defaultChild = role.node.defaultChild;
   }
 
-  public get roleRef(): RoleRef {
+  public get roleRef(): RoleReference {
     return {
       roleName: this.roleName,
       roleArn: this.roleArn,

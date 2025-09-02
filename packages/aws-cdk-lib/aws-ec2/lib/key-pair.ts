@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
-import { CfnKeyPair, IKeyPairRef, KeyPairRef } from './ec2.generated';
+import { CfnKeyPair, IKeyPairRef, KeyPairReference } from './ec2.generated';
 import { OperatingSystemType } from './machine-image';
-import { StringParameter, IStringParameter } from '../../aws-ssm';
-import { Resource, ResourceProps, Names, Lazy, IResource, ValidationError } from '../../core';
+import { IStringParameter, StringParameter } from '../../aws-ssm';
+import { IResource, Lazy, Names, Resource, ResourceProps, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -148,7 +148,7 @@ export class KeyPair extends Resource implements IKeyPair {
         this.type = attrs.type;
       }
 
-      public get keyPairRef(): KeyPairRef {
+      public get keyPairRef(): KeyPairReference {
         return {
           keyName: this.keyPairName,
         };
@@ -240,7 +240,7 @@ export class KeyPair extends Resource implements IKeyPair {
     this.format = keyFormat;
   }
 
-  public get keyPairRef(): KeyPairRef {
+  public get keyPairRef(): KeyPairReference {
     return {
       keyName: this.keyPairName,
     };

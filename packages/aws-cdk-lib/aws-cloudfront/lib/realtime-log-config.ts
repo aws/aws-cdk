@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnRealtimeLogConfig, IRealtimeLogConfigRef, RealtimeLogConfigRef } from './cloudfront.generated';
+import { CfnRealtimeLogConfig, IRealtimeLogConfigRef, RealtimeLogConfigReference } from './cloudfront.generated';
 import { Endpoint } from '../';
 import { IResource, Lazy, Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -58,7 +58,7 @@ export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.RealtimeLogConfig';
   public readonly realtimeLogConfigName: string;
   public readonly realtimeLogConfigArn: string;
-  public readonly realtimeLogConfigRef: RealtimeLogConfigRef;
+  public readonly realtimeLogConfigRef: RealtimeLogConfigReference;
 
   constructor(scope: Construct, id: string, props: RealtimeLogConfigProps) {
     super(scope, id, {

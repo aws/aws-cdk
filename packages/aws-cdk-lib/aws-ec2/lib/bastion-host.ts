@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { InstanceArchitecture, InstanceClass, InstanceSize, InstanceType } from '.';
+import { InstanceArchitecture, InstanceClass, InstanceReference, InstanceSize, InstanceType } from '.';
 import { CloudFormationInit } from './cfn-init';
 import { Connections } from './connections';
 import { InstanceRef } from './ec2.generated';
@@ -243,7 +243,7 @@ export class BastionHostLinux extends Resource implements IInstance {
     });
   }
 
-  public get instanceRef(): InstanceRef {
+  public get instanceRef(): InstanceReference {
     return {
       instanceId: this.instanceId,
     };

@@ -8,6 +8,13 @@ import {
   IKeyGroupRef,
   IOriginRequestPolicyRef, IRealtimeLogConfigRef, IResponseHeadersPolicyRef,
 } from './cloudfront.generated';
+import { ICachePolicy } from './cache-policy';
+import {
+  CfnDistribution,
+  CfnMonitoringSubscription,
+  DistributionReference,
+  IDistributionRef,
+} from './cloudfront.generated';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
@@ -338,7 +345,7 @@ export class Distribution extends Resource implements IDistribution {
   public readonly domainName: string;
   public readonly distributionDomainName: string;
   public readonly distributionId: string;
-  public readonly distributionRef: DistributionRef;
+  public readonly distributionRef: DistributionReference;
 
   private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;

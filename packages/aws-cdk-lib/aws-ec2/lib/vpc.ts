@@ -1,32 +1,73 @@
 import { Construct, Dependable, DependencyGroup, IConstruct, IDependable, Node } from 'constructs';
 import { ClientVpnEndpoint, ClientVpnEndpointOptions } from './client-vpn-endpoint';
 import {
-  CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
-  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCCidrBlock, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
+  CfnEgressOnlyInternetGateway,
+  CfnEIP,
+  CfnInternetGateway,
+  CfnNatGateway,
+  CfnRoute,
+  CfnRouteTable,
+  CfnSubnet,
+  CfnSubnetRouteTableAssociation,
+  CfnVPC,
+  CfnVPCCidrBlock,
+  CfnVPCGatewayAttachment,
+  CfnVPNGatewayRoutePropagation,
   ISubnetRef,
-  IVPCRef,
-  SubnetRef,
-  VPCRef,
+  IVPCRef, SubnetReference, VPCReference,
 } from './ec2.generated';
-import { AllocatedSubnet, IIpAddresses, RequestedSubnet, IpAddresses, IIpv6Addresses, Ipv6Addresses } from './ip-addresses';
+import {
+  AllocatedSubnet,
+  IIpAddresses,
+  IIpv6Addresses,
+  IpAddresses,
+  Ipv6Addresses,
+  RequestedSubnet,
+} from './ip-addresses';
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { SubnetFilter } from './subnet';
-import { allRouteTableIds, defaultSubnetName, flatten, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId } from './util';
-import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
+import {
+  allRouteTableIds,
+  defaultSubnetName,
+  flatten,
+  ImportSubnetGroup,
+  subnetGroupNameFromConstructId,
+  subnetId,
+} from './util';
+import {
+  GatewayVpcEndpoint,
+  GatewayVpcEndpointAwsService,
+  GatewayVpcEndpointOptions,
+  InterfaceVpcEndpoint,
+  InterfaceVpcEndpointOptions,
+} from './vpc-endpoint';
 import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
 import { VpcLookupOptions } from './vpc-lookup';
 import { EnableVpnGatewayOptions, VpnConnection, VpnConnectionOptions, VpnConnectionType, VpnGateway } from './vpn';
 import * as cxschema from '../../cloud-assembly-schema';
 import {
-  Arn, Annotations, ContextProvider,
-  IResource, Fn, Lazy, Resource, Stack, Token, Tags, Names, CustomResource, FeatureFlags,
-  ValidationError,
+  Annotations,
+  Arn,
+  ContextProvider,
+  CustomResource,
+  FeatureFlags,
+  Fn,
+  IResource,
+  Lazy,
+  Names,
+  Resource,
+  Stack,
+  Tags,
+  Token,
   UnscopedValidationError,
+  ValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { RestrictDefaultSgProvider } from '../../custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated';
+import {
+  RestrictDefaultSgProvider,
+} from '../../custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated';
 import * as cxapi from '../../cx-api';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
 
@@ -475,7 +516,7 @@ abstract class VpcBase extends Resource implements IVpc {
    */
   protected _vpnGatewayId?: string;
 
-  public get vpcRef(): VPCRef {
+  public get vpcRef(): VPCReference {
     return {
       vpcId: this.vpcId,
     };
@@ -2109,7 +2150,7 @@ export class Subnet extends Resource implements ISubnet {
    */
   public readonly routeTable: IRouteTable;
 
-  public readonly subnetRef: SubnetRef;
+  public readonly subnetRef: SubnetReference;
 
   public readonly internetConnectivityEstablished: IDependable;
 
@@ -2699,7 +2740,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
     };
   }
 
-  public get subnetRef(): SubnetRef {
+  public get subnetRef(): SubnetReference {
     return {
       subnetId: this.subnetId,
     };

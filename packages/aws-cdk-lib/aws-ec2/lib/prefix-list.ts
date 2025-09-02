@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import { Connections } from './connections';
-import { CfnPrefixList, IPrefixListRef, PrefixListRef } from './ec2.generated';
+import { CfnPrefixList, IPrefixListRef, PrefixListReference } from './ec2.generated';
 import { IPeer } from './peer';
 import * as cxschema from '../../cloud-assembly-schema';
-import { IResource, Lazy, Resource, Names, ContextProvider, Token, ValidationError, Stack } from '../../core';
+import { ContextProvider, IResource, Lazy, Names, Resource, Stack, Token, ValidationError, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -89,7 +89,7 @@ abstract class PrefixListBase extends Resource implements IPrefixList {
    */
   public readonly canInlineRule = false;
 
-  public abstract readonly prefixListRef: PrefixListRef;
+  public abstract readonly prefixListRef: PrefixListReference;
 
   /**
    * A unique identifier for this connection peer
@@ -161,7 +161,7 @@ export class PrefixList extends PrefixListBase {
     class Import extends PrefixListBase {
       public readonly prefixListId = prefixListId;
 
-      public get prefixListRef(): PrefixListRef {
+      public get prefixListRef(): PrefixListReference {
         return {
           prefixListArn: Stack.of(scope).formatArn({
             service: 'ec2',
@@ -305,7 +305,7 @@ export class PrefixList extends PrefixListBase {
     this.addressFamily = prefixList.addressFamily;
   }
 
-  public get prefixListRef(): PrefixListRef {
+  public get prefixListRef(): PrefixListReference {
     return {
       prefixListArn: this.prefixListArn,
       prefixListId: this.prefixListId,

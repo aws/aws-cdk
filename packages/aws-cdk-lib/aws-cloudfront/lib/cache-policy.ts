@@ -1,6 +1,18 @@
 import { Construct, Node } from 'constructs';
 import { CachePolicyRef, CfnCachePolicy, ICachePolicyRef } from './cloudfront.generated';
 import { Duration, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError, withResolved } from '../../core';
+import { Construct, Node } from 'constructs';
+import { CachePolicyReference, CfnCachePolicy, ICachePolicyRef } from './cloudfront.generated';
+import {
+  Duration,
+  Names,
+  Resource,
+  Stack,
+  Token,
+  UnscopedValidationError,
+  ValidationError,
+  withResolved,
+} from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -152,7 +164,7 @@ export class CachePolicy extends Resource implements ICachePolicy {
 
   public readonly cachePolicyId: string;
 
-  public readonly cachePolicyRef: CachePolicyRef;
+  public readonly cachePolicyRef: CachePolicyReference;
 
   constructor(scope: Construct, id: string, props: CachePolicyProps = {}) {
     super(scope, id, {
