@@ -155,7 +155,7 @@ test.each([
       deviceCertificateAgeCheck: true,
       deviceCertificateAgeCheckDuration: duration,
     },
-  })).toThrow(`The device certificate age check threshold must be between 30 and 3652 days. got: ${duration.toDays()} days.`);
+  })).toThrow(`The device certificate age check threshold must be between 30 and 3650 days. got: ${duration.toDays()} days.`);
 });
 
 test('import by Account ID', () => {
