@@ -1,8 +1,7 @@
 import { Construct } from 'constructs';
-import { CfnDomainName, DomainNameReference, IDomainNameRef } from './apigateway.generated';
+import { CfnDomainName, DomainNameReference, IDomainNameRef, IRestApiRef, IStageRef } from './apigateway.generated';
 import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
 import { EndpointType, IRestApi } from './restapi';
-import { IStage } from './stage';
 import * as apigwv2 from '../../aws-apigatewayv2';
 import * as acm from '../../aws-certificatemanager';
 import { IBucket } from '../../aws-s3';
@@ -228,7 +227,7 @@ export class DomainName extends Resource implements IDomainName {
    * @param options Options for mapping to base path with or without a stage
    */
   @MethodMetadata()
-  public addBasePathMapping(targetApi: IRestApi, options: BasePathMappingOptions = {}): BasePathMapping {
+  public addBasePathMapping(targetApi: IRestApiRef, options: BasePathMappingOptions = {}): BasePathMapping {
     if (this.basePaths.has(options.basePath)) {
       throw new ValidationError(`DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
     }
@@ -258,7 +257,7 @@ export class DomainName extends Resource implements IDomainName {
    * @param options Options for mapping to a stage
    */
   @MethodMetadata()
-  public addApiMapping(targetStage: IStage, options: ApiMappingOptions = {}): void {
+  public addApiMapping(targetStage: IStageRef, options: ApiMappingOptions = {}): void {
     if (this.basePaths.has(options.basePath)) {
       throw new ValidationError(`DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
     }
@@ -266,8 +265,8 @@ export class DomainName extends Resource implements IDomainName {
     this.basePaths.add(options.basePath);
     const id = `Map:${options.basePath ?? 'none'}=>${Names.nodeUniqueId(targetStage.node)}`;
     new apigwv2.CfnApiMapping(this, id, {
-      apiId: targetStage.restApi.restApiId,
-      stage: targetStage.stageName,
+      apiId: targetStage.stageRef.restApiId,
+      stage: targetStage.stageRef.stageName,
       domainName: this.domainName,
       apiMappingKey: options.basePath,
     });

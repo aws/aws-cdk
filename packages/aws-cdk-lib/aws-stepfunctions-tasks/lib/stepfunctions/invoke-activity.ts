@@ -1,7 +1,7 @@
 
 import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
-import { IKey } from '../../../aws-kms';
+import { IKeyRef } from '../../../aws-kms';
 import * as sfn from '../../../aws-stepfunctions';
 import { CustomerManagedEncryptionConfiguration } from '../../../aws-stepfunctions/lib/customer-managed-key-encryption-configuration';
 
@@ -99,13 +99,13 @@ export class StepFunctionsInvokeActivity extends sfn.TaskStateBase {
   }
 
   // IAM policy for the State Machine execution role to use the Activity KMS key when encrypting inputs
-  private createPolicyStatements(kmskey: IKey): iam.PolicyStatement[] {
+  private createPolicyStatements(kmskey: IKeyRef): iam.PolicyStatement[] {
     return [
       new iam.PolicyStatement({
         actions: [
           'kms:Decrypt', 'kms:GenerateDataKey',
         ],
-        resources: [kmskey.keyArn],
+        resources: [kmskey.keyRef.keyArn],
         conditions: {
           StringEquals: {
             'kms:EncryptionContext:aws:states:activityArn': this.props.activity.activityArn,

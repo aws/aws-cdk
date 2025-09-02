@@ -16,7 +16,7 @@ import {
 import { CidrBlock } from './network-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { IVpc, SubnetSelection } from './vpc';
-import { ISamlProvider } from '../../aws-iam';
+import { ISAMLProviderRef } from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import { CfnOutput, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -229,7 +229,7 @@ export abstract class ClientVpnUserBasedAuthentication {
   }
 
   /** Federated authentication */
-  public static federated(samlProvider: ISamlProvider, selfServiceSamlProvider?: ISamlProvider): ClientVpnUserBasedAuthentication {
+  public static federated(samlProvider: ISAMLProviderRef, selfServiceSamlProvider?: ISAMLProviderRef): ClientVpnUserBasedAuthentication {
     return new FederatedAuthentication(samlProvider, selfServiceSamlProvider);
   }
 
@@ -257,7 +257,7 @@ class ActiveDirectoryAuthentication extends ClientVpnUserBasedAuthentication {
  * Federated authentication
  */
 class FederatedAuthentication extends ClientVpnUserBasedAuthentication {
-  constructor(private readonly samlProvider: ISamlProvider, private readonly selfServiceSamlProvider?: ISamlProvider) {
+  constructor(private readonly samlProvider: ISAMLProviderRef, private readonly selfServiceSamlProvider?: ISAMLProviderRef) {
     super();
   }
 
@@ -265,8 +265,8 @@ class FederatedAuthentication extends ClientVpnUserBasedAuthentication {
     return {
       type: 'federated-authentication',
       federatedAuthentication: {
-        samlProviderArn: this.samlProvider.samlProviderArn,
-        selfServiceSamlProviderArn: this.selfServiceSamlProvider?.samlProviderArn,
+        samlProviderArn: this.samlProvider.samlProviderRef.samlProviderArn,
+        selfServiceSamlProviderArn: this.selfServiceSamlProvider?.samlProviderRef.samlProviderArn,
       },
     };
   }

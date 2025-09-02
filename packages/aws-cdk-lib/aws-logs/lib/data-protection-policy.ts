@@ -1,7 +1,8 @@
 import { Construct } from 'constructs';
 import { ILogGroup } from './log-group';
-import { IBucket } from '../../aws-s3';
+import { IBucketRef } from '../../aws-s3';
 import { Stack, UnscopedValidationError } from '../../core';
+
 /**
  * Creates a data protection policy for CloudWatch Logs log groups.
  */
@@ -32,7 +33,7 @@ export class DataProtectionPolicy {
 
     if (this.dataProtectionPolicyProps.s3BucketAuditDestination) {
       findingsDestination.S3 = {
-        Bucket: this.dataProtectionPolicyProps.s3BucketAuditDestination.bucketName,
+        Bucket: this.dataProtectionPolicyProps.s3BucketAuditDestination.bucketRef.bucketName,
       };
     }
 
@@ -162,7 +163,7 @@ export interface DataProtectionPolicyProps {
    *
    * @default - no S3 bucket audit destination
    */
-  readonly s3BucketAuditDestination?: IBucket;
+  readonly s3BucketAuditDestination?: IBucketRef;
 
   /**
    * Amazon Data Firehose delivery stream to send audit findings to. The delivery stream must already exist.

@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
-import { CfnFlowLog, FlowLogReference, IFlowLogRef } from './ec2.generated';
-import { ISubnet, IVpc } from './vpc';
+import { CfnFlowLog, FlowLogReference, IFlowLogRef, ISubnetRef } from './ec2.generated';
+import { IVpc } from './vpc';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
@@ -83,10 +83,10 @@ export abstract class FlowLogResourceType {
   /**
    * The subnet to attach the Flow Log to
    */
-  public static fromSubnet(subnet: ISubnet): FlowLogResourceType {
+  public static fromSubnet(subnet: ISubnetRef): FlowLogResourceType {
     return {
       resourceType: 'Subnet',
-      resourceId: subnet.subnetId,
+      resourceId: subnet.subnetRef.subnetId,
     };
   }
 
