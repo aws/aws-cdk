@@ -810,6 +810,20 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "ContainerProviderTypes": [
     "EKS"
   ],
+  "ContentFilterStrength": [
+    "NONE",
+    "LOW",
+    "MEDIUM",
+    "HIGH"
+  ],
+  "ContentFilterType": [
+    "SEXUAL",
+    "VIOLENCE",
+    "HATE",
+    "INSULTS",
+    "MISCONDUCT",
+    "PROMPT_ATTACK"
+  ],
   "ContentHandling": [
     "CONVERT_TO_BINARY",
     "CONVERT_TO_TEXT"
@@ -821,6 +835,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "application/javascript",
     "application/json"
   ],
+  "ContextualGroundingFilterType": [
+    "GROUNDING",
+    "RELEVANCE"
+  ],
   "Continent": [
     "AF",
     "AN",
@@ -829,6 +847,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "OC",
     "NA",
     "SA"
+  ],
+  "ContributorInsightsMode": [
+    "ACCESSED_AND_THROTTLED_KEYS",
+    "THROTTLED_KEYS"
   ],
   "CoreDnsComputeType": [
     "ec2",
@@ -1410,6 +1432,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "internal",
     "resource-exhausted",
     "unavailable"
+  ],
+  "GuardrailAction": [
+    "BLOCK",
+    "ANONYMIZE",
+    "NONE"
   ],
   "HandlerBehavior": [
     "CODE",
@@ -2338,6 +2365,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     1,
     2
   ],
+  "ManagedWordFilterType": [
+    "PROFANITY"
+  ],
   "ManagementEventSources": [
     "kms.amazonaws.com",
     "rdsdata.amazonaws.com"
@@ -2414,6 +2444,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "OFF",
     "OPTIONAL",
     "ON"
+  ],
+  "ModalityType": [
+    "TEXT",
+    "IMAGE"
   ],
   "Mode": [
     "SingleModel",
@@ -3599,6 +3633,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "bursting",
     "provisioned",
     "elastic"
+  ],
+  "TierConfig": [
+    "CLASSIC",
+    "STANDARD"
   ],
   "TimeoutAction": [
     "ForceApplyCapacityChange",
