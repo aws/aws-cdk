@@ -416,7 +416,15 @@ export class HostedConfiguration extends ConfigurationBase {
   public readonly content: string;
 
   /**
-   * The content type of the hosted configuration.
+   * The configuration content type, specified as a standard MIME type.
+   * Supported examples include:
+   * - `text/plain`
+   * - `application/json`
+   * - `application/octet-stream`
+   * - `application/x-yaml`
+   *
+   * For an up-to-date list of valid MIME types, see:
+   * https://www.iana.org/assignments/media-types/media-types.xhtml
    */
   public readonly contentType?: string;
 
@@ -587,7 +595,7 @@ export class SourcedConfiguration extends ConfigurationBase {
   private readonly _cfnConfigurationProfile: CfnConfigurationProfile;
   private readonly _retrievalRole?: iam.IRoleRef;
 
-  constructor (scope: Construct, id: string, props: SourcedConfigurationProps) {
+  constructor(scope: Construct, id: string, props: SourcedConfigurationProps) {
     super(scope, id, props);
 
     this.location = props.location;
@@ -848,7 +856,15 @@ export abstract class ConfigurationContent {
    * Defines the hosted configuration content from a file.
    *
    * @param inputPath The path to the file that defines configuration content
-   * @param contentType The content type of the configuration
+   * @param contentType The configuration content type, specified as a standard MIME type.
+   * Supported examples include:
+   * - `text/plain`
+   * - `application/json`
+   * - `application/octet-stream`
+   * - `application/x-yaml`
+   *
+   * For an up-to-date list of valid MIME types, see:
+   * https://www.iana.org/assignments/media-types/media-types.xhtml
    */
   public static fromFile(inputPath: string, contentType?: string): ConfigurationContent {
     return {
@@ -861,7 +877,15 @@ export abstract class ConfigurationContent {
    * Defines the hosted configuration content from inline code.
    *
    * @param content The inline code that defines the configuration content
-   * @param contentType The content type of the configuration
+   * @param contentType The configuration content type, specified as a standard MIME type.
+   * Supported examples include:
+   * - `text/plain`
+   * - `application/json`
+   * - `application/octet-stream`
+   * - `application/x-yaml`
+   *
+   * For an up-to-date list of valid MIME types, see:
+   * https://www.iana.org/assignments/media-types/media-types.xhtml
    */
   public static fromInline(content: string, contentType?: string): ConfigurationContent {
     return {
@@ -874,7 +898,15 @@ export abstract class ConfigurationContent {
    * Defines the hosted configuration content as JSON from inline code.
    *
    * @param content The inline code that defines the configuration content
-   * @param contentType The content type of the configuration
+   * @param contentType The configuration content type, specified as a standard MIME type.
+   * Supported examples include:
+   * - `text/plain`
+   * - `application/json`
+   * - `application/octet-stream`
+   * - `application/x-yaml`
+   *
+   * For an up-to-date list of valid MIME types, see:
+   * https://www.iana.org/assignments/media-types/media-types.xhtml
    */
   public static fromInlineJson(content: string, contentType?: string): ConfigurationContent {
     return {
@@ -913,7 +945,15 @@ export abstract class ConfigurationContent {
   public abstract readonly content: string;
 
   /**
-   * The configuration content type.
+   * The configuration content type, specified as a standard MIME type.
+   * Supported examples include:
+   * - `text/plain`
+   * - `application/json`
+   * - `application/octet-stream`
+   * - `application/x-yaml`
+   *
+   * For an up-to-date list of valid MIME types, see:
+   * https://www.iana.org/assignments/media-types/media-types.xhtml
    */
   public abstract readonly contentType: string;
 }
