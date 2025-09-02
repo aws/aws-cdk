@@ -331,7 +331,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       If true, openListener will default to false when custom security groups are detected on the
       load balancer, and true otherwise. Users can still explicitly set openListener: true to
       override this behavior.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.214.0' },
     unconfiguredBehavesLike: { v2: false },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'You can pass `openListener: true` explicitly to maintain the old behavior.',
