@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "testCases": {
     "scheduledEc2TaskTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "scheduledEc2TaskTest/DefaultTest/DeployAssert",
       "assertionStackName": "scheduledEc2TaskTestDefaultTestDeployAssertF02313CA"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }

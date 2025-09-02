@@ -14,6 +14,12 @@ export * from './agents/orchestration-executor';
 export * from './agents/function-schema';
 
 // ===================================
+// Guardrails
+// ===================================
+export * from './guardrails/guardrail-filters';
+export * from './guardrails/guardrails';
+
+// ===================================
 // Prompts
 // ===================================
 export * from './prompts/prompt';
