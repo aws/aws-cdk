@@ -191,7 +191,7 @@ export interface INetworkAclEntry extends IResource, INetworkAclEntryRef {
   /**
    * The network ACL.
    */
-  readonly networkAcl: INetworkAclRef;
+  readonly networkAcl: INetworkAcl;
 }
 
 /**
@@ -200,7 +200,7 @@ export interface INetworkAclEntry extends IResource, INetworkAclEntryRef {
  *
  */
 abstract class NetworkAclEntryBase extends Resource implements INetworkAclEntry {
-  public abstract readonly networkAcl: INetworkAclRef;
+  public abstract readonly networkAcl: INetworkAcl;
   public abstract readonly networkAclEntryRef: NetworkAclEntryReference;
 }
 
@@ -280,7 +280,7 @@ export interface NetworkAclEntryProps extends CommonNetworkAclEntryOptions {
   /**
    * The network ACL this entry applies to.
    */
-  readonly networkAcl: INetworkAclRef;
+  readonly networkAcl: INetworkAcl;
 }
 
 /**
@@ -293,7 +293,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.NetworkAclEntry';
 
-  public readonly networkAcl: INetworkAclRef;
+  public readonly networkAcl: INetworkAcl;
   public readonly networkAclEntryRef: NetworkAclEntryReference;
 
   constructor(scope: Construct, id: string, props: NetworkAclEntryProps) {
