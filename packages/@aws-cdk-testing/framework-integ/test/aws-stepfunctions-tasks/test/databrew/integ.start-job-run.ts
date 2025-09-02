@@ -6,9 +6,6 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import { UnscopedValidationError } from 'aws-cdk-lib';
 import { GlueDataBrewStartJobRun } from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import { IManagedPolicy, ManagedPolicyRef } from 'aws-cdk-lib/aws-iam';
-import { Node } from 'constructs';
-import { UnscopedValidationError } from 'aws-cdk-lib';
 import { Node } from 'constructs';
 
 /*

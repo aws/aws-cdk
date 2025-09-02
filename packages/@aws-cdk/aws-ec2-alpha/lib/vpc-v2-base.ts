@@ -1,29 +1,3 @@
-import { Aws, Resource, Annotations, ValidationError } from 'aws-cdk-lib';
-import {
-  IVpc,
-  ISubnet,
-  SubnetSelection,
-  SelectedSubnets,
-  EnableVpnGatewayOptions,
-  VpnGateway,
-  VpnConnectionType,
-  CfnVPCGatewayAttachment,
-  CfnVPNGatewayRoutePropagation,
-  VpnConnectionOptions,
-  VpnConnection,
-  ClientVpnEndpointOptions,
-  ClientVpnEndpoint,
-  InterfaceVpcEndpointOptions,
-  InterfaceVpcEndpoint,
-  GatewayVpcEndpointOptions,
-  GatewayVpcEndpoint,
-  FlowLogOptions,
-  FlowLog,
-  FlowLogResourceType,
-  SubnetType,
-  SubnetFilter,
-  VPCRef,
-} from 'aws-cdk-lib/aws-ec2';
 import { Annotations, Aws, Resource, ValidationError } from 'aws-cdk-lib';
 import {
   CfnVPCGatewayAttachment,

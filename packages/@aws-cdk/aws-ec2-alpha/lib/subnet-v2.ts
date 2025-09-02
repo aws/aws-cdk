@@ -1,7 +1,13 @@
 import { Lazy, Names, Resource, Tags, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
 import {
-  CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation,
-  SubnetRef, SubnetType,
+  CfnSubnet,
+  CfnSubnetRouteTableAssociation,
+  INetworkAcl,
+  IRouteTable,
+  ISubnet,
+  NetworkAcl,
+  SubnetNetworkAclAssociation,
+  SubnetType,
 } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';

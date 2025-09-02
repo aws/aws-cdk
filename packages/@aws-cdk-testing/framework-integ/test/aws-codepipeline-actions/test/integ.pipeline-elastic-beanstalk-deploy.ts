@@ -9,8 +9,6 @@ import { App, Fn, RemovalPolicy, Stack, UnscopedValidationError } from 'aws-cdk-
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Node } from 'constructs';
-import { IManagedPolicy, ManagedPolicyRef } from 'aws-cdk-lib/aws-iam';
-import { Node } from 'constructs';
 
 /**
  * To validate that the deployment actually succeeds, perform the following actions:
