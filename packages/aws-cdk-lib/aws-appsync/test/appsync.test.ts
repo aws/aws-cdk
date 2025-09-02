@@ -441,7 +441,10 @@ test('GraphqlApi with attach enhanced metrics', () => {
   new appsync.GraphqlApi(stack, 'minimal-enhanced-metrics', {
     name: 'enhanced-metrics',
     schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
-    enhancedMetricsConfig: {},
+    enhancedMetricsConfig: {
+      dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.PER_DATA_SOURCE_METRICS,
+      resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS,
+    },
   });
 
   // THEN
@@ -462,7 +465,7 @@ test('GraphqlApi with attach enhanced metrics to all data sources', () => {
     enhancedMetricsConfig: {
       dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS,
       operationLevelMetricsEnabled: true,
-      resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS,
+      resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS,
     },
   });
 
@@ -471,7 +474,7 @@ test('GraphqlApi with attach enhanced metrics to all data sources', () => {
     EnhancedMetricsConfig: {
       DataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS,
       OperationLevelMetricsConfig: 'ENABLED',
-      ResolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS,
+      ResolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS,
     },
   });
 });

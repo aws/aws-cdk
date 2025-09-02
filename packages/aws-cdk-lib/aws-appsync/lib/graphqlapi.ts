@@ -278,10 +278,8 @@ export enum ResolverLevelMetricsBehavior {
 export interface EnhancedMetricsConfig {
   /**
    * Controls how data source metrics will be emitted to CloudWatch.
-   *
-   * @default - Only data sources with metricsConfig enabled
    */
-  readonly dataSourceLevelMetricsBehavior?: DataSourceLevelMetricsBehavior;
+  readonly dataSourceLevelMetricsBehavior: DataSourceLevelMetricsBehavior;
   /**
    * Controls how operation metrics will be emitted to CloudWatch.
    *
@@ -290,10 +288,8 @@ export interface EnhancedMetricsConfig {
   readonly operationLevelMetricsEnabled?: boolean;
   /**
    * Controls how resolver metrics will be emitted to CloudWatch.
-   *
-   * @default - Only resolvers with metricsConfig enabled
    */
-  readonly resolverLevelMetricsBehavior?: ResolverLevelMetricsBehavior;
+  readonly resolverLevelMetricsBehavior: ResolverLevelMetricsBehavior;
 }
 
 /**
