@@ -81,45 +81,40 @@ export interface InstanceMetadataOptions {
   /**
    * Enables or disables the HTTP metadata endpoint on your instances.
    *
+   * @default true - CloudFormation default is "enabled"
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-httpendpoint
-   *
-   * @default true
    */
   readonly httpEndpoint?: boolean;
 
   /**
    * Enables or disables the IPv6 endpoint for the instance metadata service.
    *
+   * @default false - CloudFormation default is "disabled"
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-httpprotocolipv6
-   *
-   * @default true
    */
   readonly httpProtocolIpv6?: boolean;
 
   /**
    * The desired HTTP PUT response hop limit for instance metadata requests. The larger the number, the further instance metadata requests can travel.
    *
+   * @default - Determined by underlying CloudFormation (no default specified in CFN docs)
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-httpputresponsehoplimit
-   *
-   * @default 1
    */
   readonly httpPutResponseHopLimit?: number;
 
   /**
    * The state of token usage for your instance metadata requests.
    *
+   * @default - Depends on AMI and account settings. If the AMI supports IMDSv2 and account default is set to "no-preference", then "required". Otherwise "optional".
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-httptokens
-   *
-   * @default LaunchTemplateHttpTokens.OPTIONAL
    */
   readonly httpTokens?: LaunchTemplateHttpTokens;
 
   /**
    * Set to enabled to allow access to instance tags from the instance metadata. Set to disabled to turn off access to instance tags from the instance metadata.
    *
+   * @default false - CloudFormation default is "disabled"
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-instancemetadatatags
-   *
-   * @default false
    */
   readonly instanceMetadataTags?: boolean;
 }
@@ -332,7 +327,7 @@ export interface InstanceProps {
   /**
    * The metadata options for the instance.
    *
-   * @default - no metadata options
+   * @default undefined - uses CloudFormation defaults
    */
   readonly metadataOptions?: InstanceMetadataOptions;
 
@@ -850,7 +845,7 @@ export class Instance extends Resource implements IInstance {
 
     // Validate httpPutResponseHopLimit range
     if (metadataOptions.httpPutResponseHopLimit !== undefined &&
-        (metadataOptions.httpPutResponseHopLimit < 1 || metadataOptions.httpPutResponseHopLimit > 64)) {
+      (metadataOptions.httpPutResponseHopLimit < 1 || metadataOptions.httpPutResponseHopLimit > 64)) {
       throw new ValidationError('httpPutResponseHopLimit must be between 1 and 64', this);
     }
 
