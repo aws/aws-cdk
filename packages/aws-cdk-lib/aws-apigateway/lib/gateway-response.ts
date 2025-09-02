@@ -2,12 +2,6 @@ import { Construct } from 'constructs';
 import {
   CfnGatewayResponse,
   CfnGatewayResponseProps,
-  GatewayResponseRef,
-  IGatewayResponseRef,
-} from './apigateway.generated';
-import {
-  CfnGatewayResponse,
-  CfnGatewayResponseProps,
   GatewayResponseReference,
   IGatewayResponseRef,
 } from './apigateway.generated';

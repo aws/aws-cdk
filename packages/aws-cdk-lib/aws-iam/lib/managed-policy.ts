@@ -1,6 +1,12 @@
 import { Construct, Node } from 'constructs';
-import { IGroup } from './group';
-import { CfnManagedPolicy, IManagedPolicyRef, ManagedPolicyReference } from './iam.generated';
+import {
+  CfnManagedPolicy,
+  IGroupRef,
+  IManagedPolicyRef,
+  IRoleRef,
+  IUserRef,
+  ManagedPolicyReference,
+} from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';

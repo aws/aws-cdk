@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { AccessLogFormat, IAccessLogDestination } from './access-log';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
 import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
-import { CfnStage, IStageRef, StageRef } from './apigateway.generated';
 import { CfnStage, IStageRef, StageReference } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi, RestApiBase } from './restapi';

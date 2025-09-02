@@ -1,5 +1,4 @@
 import { Construct } from 'constructs';
-import { CfnVpcLink, IVpcLinkRef, VpcLinkRef } from './apigateway.generated';
 import { CfnVpcLink, IVpcLinkRef, VpcLinkReference } from './apigateway.generated';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { IResource, Lazy, Names, Resource } from '../../core';

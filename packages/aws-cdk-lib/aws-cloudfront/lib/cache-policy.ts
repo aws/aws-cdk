@@ -1,7 +1,4 @@
 import { Construct, Node } from 'constructs';
-import { CachePolicyRef, CfnCachePolicy, ICachePolicyRef } from './cloudfront.generated';
-import { Duration, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError, withResolved } from '../../core';
-import { Construct, Node } from 'constructs';
 import { CachePolicyReference, CfnCachePolicy, ICachePolicyRef } from './cloudfront.generated';
 import {
   Duration,

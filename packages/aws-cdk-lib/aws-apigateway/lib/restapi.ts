@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
 import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
-import { CfnAccount, CfnRestApi, IRestApiRef, RestApiRef } from './apigateway.generated';
 import { CfnAccount, CfnRestApi, IRestApiRef, RestApiReference } from './apigateway.generated';
 import { CorsOptions } from './cors';
 import { Deployment } from './deployment';

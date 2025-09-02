@@ -191,7 +191,7 @@ export interface INetworkAclEntry extends IResource, INetworkAclEntryRef {
   /**
    * The network ACL.
    */
-  readonly networkAcl: INetworkAcl;
+  readonly networkAcl: INetworkAclRef;
 }
 
 /**
@@ -200,7 +200,7 @@ export interface INetworkAclEntry extends IResource, INetworkAclEntryRef {
  *
  */
 abstract class NetworkAclEntryBase extends Resource implements INetworkAclEntry {
-  public abstract readonly networkAcl: INetworkAcl;
+  public abstract readonly networkAcl: INetworkAclRef;
   public abstract readonly networkAclEntryRef: NetworkAclEntryReference;
 }
 
@@ -292,9 +292,8 @@ export interface NetworkAclEntryProps extends CommonNetworkAclEntryOptions {
 export class NetworkAclEntry extends NetworkAclEntryBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.NetworkAclEntry';
-  public readonly networkAclEntryRef: NetworkAclEntryRef;
 
-  private readonly _networkAcl: INetworkAclRef;
+  public readonly networkAcl: INetworkAclRef;
   public readonly networkAclEntryRef: NetworkAclEntryReference;
 
   constructor(scope: Construct, id: string, props: NetworkAclEntryProps) {
@@ -304,10 +303,10 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._networkAcl = props.networkAcl;
+    this.networkAcl = props.networkAcl;
 
     const resource = new CfnNetworkAclEntry(this, 'Resource', {
-      networkAclId: this._networkAcl.networkAclRef.networkAclId,
+      networkAclId: this.networkAcl.networkAclRef.networkAclId,
       ruleNumber: props.ruleNumber,
       ruleAction: props.ruleAction ?? Action.ALLOW,
       egress: props.direction !== undefined ? props.direction === TrafficDirection.EGRESS : undefined,

@@ -1,5 +1,4 @@
 import { Construct } from 'constructs';
-import { IOIDCProviderRef, OIDCProviderRef } from './iam.generated';
 import { IOIDCProviderRef, OIDCProviderReference } from './iam.generated';
 import { Arn, CustomResource, FeatureFlags, IResource, Resource, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';

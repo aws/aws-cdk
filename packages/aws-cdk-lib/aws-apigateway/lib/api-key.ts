@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
-import { ApiKeyRef, CfnApiKey, IApiKeyRef, IStageRef } from './apigateway.generated';
-import { ApiKeyReference, CfnApiKey, IApiKeyRef } from './apigateway.generated';
+import { ApiKeyReference, CfnApiKey, IApiKeyRef, IStageRef } from './apigateway.generated';
 import { ResourceOptions } from './resource';
 import { IRestApi } from './restapi';
 import { IStage } from './stage';

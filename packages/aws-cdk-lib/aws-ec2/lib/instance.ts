@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { InstanceRequireImdsv2Aspect } from './aspects';
 import { CloudFormationInit } from './cfn-init';
 import { Connections, IConnectable } from './connections';
-import { CfnInstance, IInstanceRef, InstanceReference } from './ec2.generated';
+import { CfnInstance, IInstanceRef, InstanceReference, IPlacementGroupRef } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { CpuCredits, InstanceInitiatedShutdownBehavior } from './launch-template';

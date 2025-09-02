@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnDomainName, DomainNameRef, IDomainNameRef, IRestApiRef, IStageRef } from './apigateway.generated';
-import { CfnDomainName, DomainNameReference, IDomainNameRef } from './apigateway.generated';
+import { CfnDomainName, DomainNameReference, IDomainNameRef, IRestApiRef, IStageRef } from './apigateway.generated';
 import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
 import { EndpointType, IRestApi } from './restapi';
 import * as apigwv2 from '../../aws-apigatewayv2';

@@ -2,18 +2,13 @@ import { Construct } from 'constructs';
 import {
   CfnDistribution,
   CfnMonitoringSubscription,
-  DistributionRef,
+  DistributionReference,
   ICachePolicyRef,
   IDistributionRef,
   IKeyGroupRef,
-  IOriginRequestPolicyRef, IRealtimeLogConfigRef, IResponseHeadersPolicyRef,
-} from './cloudfront.generated';
-import { ICachePolicy } from './cache-policy';
-import {
-  CfnDistribution,
-  CfnMonitoringSubscription,
-  DistributionReference,
-  IDistributionRef,
+  IOriginRequestPolicyRef,
+  IRealtimeLogConfigRef,
+  IResponseHeadersPolicyRef,
 } from './cloudfront.generated';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';

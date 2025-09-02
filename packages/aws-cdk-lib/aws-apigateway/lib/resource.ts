@@ -1,5 +1,4 @@
 import { Construct } from 'constructs';
-import { CfnResource, CfnResourceProps, IResourceRef, ResourceRef } from './apigateway.generated';
 import { CfnResource, CfnResourceProps, IResourceRef, ResourceReference } from './apigateway.generated';
 import { Cors, CorsOptions } from './cors';
 import { Integration } from './integration';

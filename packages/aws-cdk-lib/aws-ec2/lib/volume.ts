@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnVolume, IVolumeRef, VolumeReference } from './ec2.generated';
-import { IInstance } from './instance';
+import { CfnVolume, IInstanceRef, IVolumeRef, VolumeReference } from './ec2.generated';
 import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
 import {
@@ -533,7 +532,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     };
   }
 
-  public grantAttachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
+  public grantAttachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
       actions: ['ec2:AttachVolume'],

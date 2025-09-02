@@ -1,7 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnKeyGroup, IKeyGroupRef, IPublicKeyRef, KeyGroupRef } from './cloudfront.generated';
-import { CfnKeyGroup, IKeyGroupRef, KeyGroupReference } from './cloudfront.generated';
-import { IPublicKey } from './public-key';
+import { CfnKeyGroup, IKeyGroupRef, IPublicKeyRef, KeyGroupReference } from './cloudfront.generated';
 import { IResource, Names, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
