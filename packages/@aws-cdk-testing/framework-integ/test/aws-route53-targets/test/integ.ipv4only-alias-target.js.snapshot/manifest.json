@@ -1,0 +1,511 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "aws-cdk-ipv4only-lb-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-ipv4only-lb-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-ipv4only-lb-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-ipv4only-lb-integ.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c0b79e52d915dc3efa4c3635ff54d79a41ff88f42eea6b188d877038b78fe1df.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-ipv4only-lb-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-ipv4only-lb-integ.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-ipv4only-lb-integ/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*",
+              "restrictDefaultSecurityGroup": false,
+              "natGateways": "*",
+              "subnetConfiguration": [
+                {
+                  "name": "*",
+                  "subnetType": "Public",
+                  "mapPublicIpOnLaunch": true
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1SubnetB4246D30"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EIP6AD938E8"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/IPv4NLB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/IPv4NLB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IPv4NLBBFC45C50"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/DefaultNLB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/DefaultNLB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultNLB1C5840B5"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/IPv4ALB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/IPv4ALB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IPv4ALBD0B0B71B"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/IPv4ALB/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*",
+              "allowAllOutbound": false
+            }
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/IPv4ALB/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IPv4ALBSecurityGroupA748E88C"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/DefaultALB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/DefaultALB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultALB240E3987"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/DefaultALB/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*",
+              "allowAllOutbound": false
+            }
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/DefaultALB/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultALBSecurityGroup07202F1C"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/HostedZone": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/HostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDB99F866"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/IPv4NLBAlias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/IPv4NLBAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IPv4NLBAlias555335AB"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/DefaultNLBAlias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/DefaultNLBAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultNLBAlias0A1ABDF9"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/IPv4ALBAlias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/IPv4ALBAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IPv4ALBAlias12081E08"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/DefaultALBAlias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/DefaultALBAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultALBAlias89FDD51F"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/IPv4NLBAliasWithHealthCheck": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/IPv4NLBAliasWithHealthCheck/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IPv4NLBAliasWithHealthCheckEA626585"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/IPv4ALBAliasWithHealthCheck": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/IPv4ALBAliasWithHealthCheck/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IPv4ALBAliasWithHealthCheck42F614B6"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-ipv4only-lb-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-ipv4only-lb-integ"
+    },
+    "ipv4onlyaliastargetDefaultTestDeployAssert4265F300.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ipv4onlyaliastargetDefaultTestDeployAssert4265F300.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ipv4onlyaliastargetDefaultTestDeployAssert4265F300": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ipv4onlyaliastargetDefaultTestDeployAssert4265F300.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ipv4onlyaliastargetDefaultTestDeployAssert4265F300.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ipv4onlyaliastargetDefaultTestDeployAssert4265F300.assets"
+      ],
+      "metadata": {
+        "/ipv4only-alias-target/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ipv4only-alias-target/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ipv4only-alias-target/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}

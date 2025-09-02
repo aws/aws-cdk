@@ -1,0 +1,569 @@
+{
+ "Resources": {
+  "VPCB9E5F0B4": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ipv4only-lb-integ/VPC"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1SubnetB4246D30": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/17",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "VPCPublicSubnet1RouteTableFEE4B781": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    }
+   }
+  },
+  "VPCPublicSubnet1DefaultRoute91CEF279": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ]
+  },
+  "VPCPublicSubnet1EIP6AD938E8": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet1NATGatewayE0556630": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCPublicSubnet1EIP6AD938E8",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ]
+  },
+  "VPCPublicSubnet2Subnet74179F39": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/17",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "VPCPublicSubnet2RouteTable6F1A15F1": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ipv4only-lb-integ/VPC/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "VPCPublicSubnet2RouteTableAssociation5A808732": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
+    }
+   }
+  },
+  "VPCPublicSubnet2DefaultRouteB7481BBA": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ]
+  },
+  "VPCIGWB7E252D3": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ipv4only-lb-integ/VPC"
+     }
+    ]
+   }
+  },
+  "VPCVPCGW99B986DC": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    },
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "IPv4NLBBFC45C50": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "IpAddressType": "ipv4",
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internet-facing",
+    "Subnets": [
+     {
+      "Ref": "VPCPublicSubnet1SubnetB4246D30"
+     },
+     {
+      "Ref": "VPCPublicSubnet2Subnet74179F39"
+     }
+    ],
+    "Type": "network"
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC",
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
+  },
+  "DefaultNLB1C5840B5": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internet-facing",
+    "Subnets": [
+     {
+      "Ref": "VPCPublicSubnet1SubnetB4246D30"
+     },
+     {
+      "Ref": "VPCPublicSubnet2Subnet74179F39"
+     }
+    ],
+    "Type": "network"
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC",
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
+  },
+  "IPv4ALBD0B0B71B": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "IpAddressType": "ipv4",
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "IPv4ALBSecurityGroupA748E88C",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "VPCPublicSubnet1SubnetB4246D30"
+     },
+     {
+      "Ref": "VPCPublicSubnet2Subnet74179F39"
+     }
+    ],
+    "Type": "application"
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC",
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
+  },
+  "IPv4ALBSecurityGroupA748E88C": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB awscdkipv4onlylbintegIPv4ALBAFC140B7",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "DefaultALB240E3987": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "DefaultALBSecurityGroup07202F1C",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "VPCPublicSubnet1SubnetB4246D30"
+     },
+     {
+      "Ref": "VPCPublicSubnet2Subnet74179F39"
+     }
+    ],
+    "Type": "application"
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC",
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
+  },
+  "DefaultALBSecurityGroup07202F1C": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB awscdkipv4onlylbintegDefaultALB6AE1188F",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "HostedZoneDB99F866": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "test.public."
+   }
+  },
+  "IPv4NLBAlias555335AB": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "IPv4NLBBFC45C50",
+       "DNSName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "IPv4NLBBFC45C50",
+       "CanonicalHostedZoneID"
+      ]
+     }
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "ipv4-nlb.test.public.",
+    "Type": "A"
+   }
+  },
+  "DefaultNLBAlias0A1ABDF9": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "DefaultNLB1C5840B5",
+       "DNSName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "DefaultNLB1C5840B5",
+       "CanonicalHostedZoneID"
+      ]
+     }
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "default-nlb.test.public.",
+    "Type": "A"
+   }
+  },
+  "IPv4ALBAlias12081E08": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "IPv4ALBD0B0B71B",
+       "DNSName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "IPv4ALBD0B0B71B",
+       "CanonicalHostedZoneID"
+      ]
+     }
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "ipv4-alb.test.public.",
+    "Type": "A"
+   }
+  },
+  "DefaultALBAlias89FDD51F": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "DefaultALB240E3987",
+       "DNSName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "DefaultALB240E3987",
+       "CanonicalHostedZoneID"
+      ]
+     }
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "default-alb.test.public.",
+    "Type": "A"
+   }
+  },
+  "IPv4NLBAliasWithHealthCheckEA626585": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "IPv4NLBBFC45C50",
+       "DNSName"
+      ]
+     },
+     "EvaluateTargetHealth": true,
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "IPv4NLBBFC45C50",
+       "CanonicalHostedZoneID"
+      ]
+     }
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "ipv4-nlb-health.test.public.",
+    "Type": "A"
+   }
+  },
+  "IPv4ALBAliasWithHealthCheck42F614B6": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "IPv4ALBD0B0B71B",
+       "DNSName"
+      ]
+     },
+     "EvaluateTargetHealth": true,
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "IPv4ALBD0B0B71B",
+       "CanonicalHostedZoneID"
+      ]
+     }
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "ipv4-alb-health.test.public.",
+    "Type": "A"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

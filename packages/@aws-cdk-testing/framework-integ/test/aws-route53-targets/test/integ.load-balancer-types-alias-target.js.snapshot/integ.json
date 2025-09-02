@@ -1,0 +1,15 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "LoadBalancerTypesAliasTargetTest/DefaultTest": {
+      "stacks": [
+        "LoadBalancerTypesAliasTargetStack"
+      ],
+      "diffAssets": true,
+      "stackUpdateWorkflow": true,
+      "assertionStack": "LoadBalancerTypesAliasTargetTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LoadBalancerTypesAliasTargetTestDefaultTestDeployAssert1A1E2A2E"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}

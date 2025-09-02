@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "c0b79e52d915dc3efa4c3635ff54d79a41ff88f42eea6b188d877038b78fe1df": {
+      "displayName": "aws-cdk-ipv4only-lb-integ Template",
+      "source": {
+        "path": "aws-cdk-ipv4only-lb-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c0b79e52d915dc3efa4c3635ff54d79a41ff88f42eea6b188d877038b78fe1df.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
