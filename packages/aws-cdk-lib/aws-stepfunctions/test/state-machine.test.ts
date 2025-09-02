@@ -354,7 +354,7 @@ describe('State Machine', () => {
     });
   }),
 
-  test('Instantiate State Machine With Many Labeled And One Unlabled Distributed Map State', () => {
+  test('Instantiate State Machine With Many Labeled And One Unlabeled Distributed Map State', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -369,7 +369,7 @@ describe('State Machine', () => {
       label: 'myLabel3',
     }).itemProcessor(new sfn.Pass(stack, 'Pass 3'));
 
-    const unlabeledMap4 = new sfn.DistributedMap(stack, 'Unlabled Map State');
+    const unlabeledMap4 = new sfn.DistributedMap(stack, 'Unlabeled Map State');
     unlabeledMap4.itemProcessor(new sfn.Pass(stack, 'Pass 4'));
 
     const chain = map1.next(map2).next(map3).next(unlabeledMap4);
