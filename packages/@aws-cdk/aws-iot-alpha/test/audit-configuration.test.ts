@@ -147,7 +147,7 @@ test('throw error for configuring duration without enabling deviceCertificateAge
 
 test.each([
   cdk.Duration.days(29),
-  cdk.Duration.days(3653),
+  cdk.Duration.days(3651),
 ])('throw error for invalid duration %s', (duration) => {
   const stack = new cdk.Stack();
   expect(() => new iot.AccountAuditConfiguration(stack, 'AccountAuditConfiguration', {
@@ -155,7 +155,7 @@ test.each([
       deviceCertificateAgeCheck: true,
       deviceCertificateAgeCheckDuration: duration,
     },
-  })).toThrow(`The device certificate age check threshold must be between 30 and 3652 days. got: ${duration.toDays()} days.`);
+  })).toThrow(`The device certificate age check threshold must be between 30 and 3650 days. got: ${duration.toDays()} days.`);
 });
 
 test('import by Account ID', () => {
