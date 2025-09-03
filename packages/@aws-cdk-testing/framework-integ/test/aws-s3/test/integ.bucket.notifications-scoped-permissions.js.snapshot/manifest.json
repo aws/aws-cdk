@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "integ-sqs-bucket-notifications.assets": {
+    "aws-cdk-s3-notifications-scoped-permissions.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integ-sqs-bucket-notifications.assets.json",
+        "file": "aws-cdk-s3-notifications-scoped-permissions.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integ-sqs-bucket-notifications": {
+    "aws-cdk-s3-notifications-scoped-permissions": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integ-sqs-bucket-notifications.template.json",
+        "templateFile": "aws-cdk-s3-notifications-scoped-permissions.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/367266746cb08469fabd336c489bce6ade4dd871c3a805028a1903f70a5433b5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/19ed43ce2b2e649cea6045804e9b17e30ece51dc5ac0ef94ae95a549bc2f7530.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integ-sqs-bucket-notifications.assets"
+          "aws-cdk-s3-notifications-scoped-permissions.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,93 +31,92 @@
         }
       },
       "dependencies": [
-        "integ-sqs-bucket-notifications.assets"
+        "aws-cdk-s3-notifications-scoped-permissions.assets"
       ],
       "metadata": {
-        "/integ-sqs-bucket-notifications/Bucket1": [
+        "/aws-cdk-s3-notifications-scoped-permissions/Bucket1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "autoDeleteObjects": true,
               "removalPolicy": "destroy"
             }
           }
         ],
-        "/integ-sqs-bucket-notifications/Bucket1/Resource": [
+        "/aws-cdk-s3-notifications-scoped-permissions/Bucket1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Bucket12520700A"
           }
         ],
-        "/integ-sqs-bucket-notifications/Bucket1/Policy": [
+        "/aws-cdk-s3-notifications-scoped-permissions/Bucket1/Notifications/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket1NotificationsBC5D9A45"
+          }
+        ],
+        "/aws-cdk-s3-notifications-scoped-permissions/Bucket2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "bucket": "*"
+              "removalPolicy": "destroy"
             }
           }
         ],
-        "/integ-sqs-bucket-notifications/Bucket1/Policy/Resource": [
+        "/aws-cdk-s3-notifications-scoped-permissions/Bucket2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Bucket1Policy65042C0B"
+            "data": "Bucket25524B414"
           }
         ],
-        "/integ-sqs-bucket-notifications/Bucket1/AutoDeleteObjectsCustomResource": [
+        "/aws-cdk-s3-notifications-scoped-permissions/Bucket2/Notifications/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket2NotificationsD9BA2A77"
+          }
+        ],
+        "/aws-cdk-s3-notifications-scoped-permissions/Topic": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/integ-sqs-bucket-notifications/Bucket1/AutoDeleteObjectsCustomResource/Default": [
+        "/aws-cdk-s3-notifications-scoped-permissions/Topic/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Bucket1AutoDeleteObjectsCustomResource41848F29"
+            "data": "TopicBFC7AF6E"
           }
         ],
-        "/integ-sqs-bucket-notifications/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/integ-sqs-bucket-notifications/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-          }
-        ],
-        "/integ-sqs-bucket-notifications/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-          }
-        ],
-        "/integ-sqs-bucket-notifications/Construct1/IntegUnmanagedBucket1/Notifications/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Construct1IntegUnmanagedBucket1Notifications4A1599D7"
-          }
-        ],
-        "/integ-sqs-bucket-notifications/Construct2/IntegUnmanagedBucket2/Notifications/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Construct2IntegUnmanagedBucket2Notifications950BFEEC"
-          }
-        ],
-        "/integ-sqs-bucket-notifications/IntegQueue1": [
+        "/aws-cdk-s3-notifications-scoped-permissions/Topic/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "topics": [
+                "*"
+              ]
+            }
           }
         ],
-        "/integ-sqs-bucket-notifications/IntegQueue1/Resource": [
+        "/aws-cdk-s3-notifications-scoped-permissions/Topic/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegQueue16691AAFF"
+            "data": "TopicPolicyA1747468"
           }
         ],
-        "/integ-sqs-bucket-notifications/IntegQueue1/Policy": [
+        "/aws-cdk-s3-notifications-scoped-permissions/Queue": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/aws-cdk-s3-notifications-scoped-permissions/Queue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Queue4A7E3555"
+          }
+        ],
+        "/aws-cdk-s3-notifications-scoped-permissions/Queue/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -127,41 +126,13 @@
             }
           }
         ],
-        "/integ-sqs-bucket-notifications/IntegQueue1/Policy/Resource": [
+        "/aws-cdk-s3-notifications-scoped-permissions/Queue/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegQueue1Policy53174001"
+            "data": "QueuePolicy25439813"
           }
         ],
-        "/integ-sqs-bucket-notifications/IntegQueue2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-sqs-bucket-notifications/IntegQueue2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IntegQueue2DA51259C"
-          }
-        ],
-        "/integ-sqs-bucket-notifications/IntegQueue2/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "queues": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/integ-sqs-bucket-notifications/IntegQueue2/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IntegQueue2Policy109EC112"
-          }
-        ],
-        "/integ-sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role": [
+        "/aws-cdk-s3-notifications-scoped-permissions/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -214,19 +185,19 @@
             }
           }
         ],
-        "/integ-sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/ImportRole": [
+        "/aws-cdk-s3-notifications-scoped-permissions/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/integ-sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
+        "/aws-cdk-s3-notifications-scoped-permissions/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
           }
         ],
-        "/integ-sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy": [
+        "/aws-cdk-s3-notifications-scoped-permissions/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -264,73 +235,55 @@
             }
           }
         ],
-        "/integ-sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource": [
+        "/aws-cdk-s3-notifications-scoped-permissions/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36"
           }
         ],
-        "/integ-sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource": [
+        "/aws-cdk-s3-notifications-scoped-permissions/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691"
           }
         ],
-        "/integ-sqs-bucket-notifications/Exports/Output{\"Ref\":\"IntegQueue16691AAFF\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefIntegQueue16691AAFF77621FF1"
-          }
-        ],
-        "/integ-sqs-bucket-notifications/Exports/Output{\"Ref\":\"IntegQueue2DA51259C\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefIntegQueue2DA51259CC4A33DFB"
-          }
-        ],
-        "/integ-sqs-bucket-notifications/Exports/Output{\"Ref\":\"Bucket12520700A\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefBucket12520700A8CDAA090"
-          }
-        ],
-        "/integ-sqs-bucket-notifications/BootstrapVersion": [
+        "/aws-cdk-s3-notifications-scoped-permissions/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-sqs-bucket-notifications/CheckBootstrapVersion": [
+        "/aws-cdk-s3-notifications-scoped-permissions/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-sqs-bucket-notifications"
+      "displayName": "aws-cdk-s3-notifications-scoped-permissions"
     },
-    "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E.assets": {
+    "ScopedPermissionsTestDefaultTestDeployAssert9637B750.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E.assets.json",
+        "file": "ScopedPermissionsTestDefaultTestDeployAssert9637B750.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E": {
+    "ScopedPermissionsTestDefaultTestDeployAssert9637B750": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E.template.json",
+        "templateFile": "ScopedPermissionsTestDefaultTestDeployAssert9637B750.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/873609a394de4a7e2daee4c422f8e4c6eb85f15d33f644e7b3998a141dd70f3f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E.assets"
+          "ScopedPermissionsTestDefaultTestDeployAssert9637B750.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -339,136 +292,23 @@
         }
       },
       "dependencies": [
-        "integ-sqs-bucket-notifications",
-        "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E.assets"
+        "ScopedPermissionsTestDefaultTestDeployAssert9637B750.assets"
       ],
       "metadata": {
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue9dee3c309fd35c8e9de6a283d5a45696/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue9dee3c309fd35c8e9de6a283d5a45696/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSpurgeQueue9dee3c309fd35c8e9de6a283d5a45696"
-          }
-        ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue3dbc33339559b3b0ad9846209312d812/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue3dbc33339559b3b0ad9846209312d812/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSpurgeQueue3dbc33339559b3b0ad9846209312d812"
-          }
-        ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObjectba38728e762569a855acb7c5fc7c4adf/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObjectba38728e762569a855acb7c5fc7c4adf/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3putObjectba38728e762569a855acb7c5fc7c4adf"
-          }
-        ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObject6e450f6e95fe6d25da5bf5102c1ebad4/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObject6e450f6e95fe6d25da5bf5102c1ebad4/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3putObject6e450f6e95fe6d25da5bf5102c1ebad4"
-          }
-        ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a"
-          }
-        ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a"
-          }
-        ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessagea37e53065313eefe09c34224f0e93eb6/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessagea37e53065313eefe09c34224f0e93eb6/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSreceiveMessagea37e53065313eefe09c34224f0e93eb6"
-          }
-        ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessagea37e53065313eefe09c34224f0e93eb6/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallSQSreceiveMessagea37e53065313eefe09c34224f0e93eb6"
-          }
-        ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/ScopedPermissionsTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/ScopedPermissionsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "SQSBucketNotificationsTest/DefaultTest/DeployAssert"
+      "displayName": "ScopedPermissionsTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
