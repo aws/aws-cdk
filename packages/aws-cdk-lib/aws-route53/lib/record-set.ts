@@ -1033,7 +1033,7 @@ export interface CrossAccountZoneDelegationRecordProps {
   /**
    * The delegation role in the parent account
    */
-  readonly delegationRole: iam.IRole;
+  readonly delegationRole: iam.IRoleRef;
 
   /**
    * The resource record cache time to live (TTL).
@@ -1083,7 +1083,7 @@ export class CrossAccountZoneDelegationRecord extends Construct {
     const addToPrinciplePolicyResult = role.addToPrincipalPolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['sts:AssumeRole'],
-      resources: [props.delegationRole.roleArn],
+      resources: [props.delegationRole.roleRef.roleArn],
     }));
 
     const customResource = new CustomResource(this, 'CrossAccountZoneDelegationCustomResource', {
@@ -1091,7 +1091,7 @@ export class CrossAccountZoneDelegationRecord extends Construct {
       serviceToken: provider.serviceToken,
       removalPolicy: props.removalPolicy,
       properties: {
-        AssumeRoleArn: props.delegationRole.roleArn,
+        AssumeRoleArn: props.delegationRole.roleRef.roleArn,
         ParentZoneName: props.parentHostedZoneName,
         ParentZoneId: props.parentHostedZoneId,
         DelegatedZoneName: props.delegatedZone.zoneName,

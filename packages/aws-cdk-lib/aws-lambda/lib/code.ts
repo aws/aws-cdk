@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import * as ecr from '../../aws-ecr';
 import * as ecr_assets from '../../aws-ecr-assets';
 import * as iam from '../../aws-iam';
-import { IKey } from '../../aws-kms';
+import { IKeyRef } from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
@@ -338,7 +338,7 @@ export class S3CodeV2 extends Code {
         objectKey: this.key,
         objectVersion: this.options?.objectVersion,
       },
-      sourceKMSKeyArn: this.options?.sourceKMSKey?.keyArn,
+      sourceKMSKeyArn: this.options?.sourceKMSKey?.keyRef.keyArn,
     };
   }
 }
@@ -400,7 +400,7 @@ export class AssetCode extends Code {
         bucketName: this.asset.s3BucketName,
         objectKey: this.asset.s3ObjectKey,
       },
-      sourceKMSKeyArn: this.options.sourceKMSKey?.keyArn,
+      sourceKMSKeyArn: this.options.sourceKMSKey?.keyRef.keyArn,
     };
   }
 
@@ -450,7 +450,7 @@ export interface CfnParametersCodeProps {
    * The ARN of the KMS key used to encrypt the handler code.
    * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
    */
-  readonly sourceKMSKey?: IKey;
+  readonly sourceKMSKey?: IKeyRef;
 }
 
 /**
@@ -463,7 +463,7 @@ export class CfnParametersCode extends Code {
   public readonly isInline = false;
   private _bucketNameParam?: cdk.CfnParameter;
   private _objectKeyParam?: cdk.CfnParameter;
-  private _sourceKMSKey?: IKey;
+  private _sourceKMSKey?: IKeyRef;
 
   constructor(props: CfnParametersCodeProps = {}) {
     super();
@@ -491,7 +491,7 @@ export class CfnParametersCode extends Code {
         bucketName: this._bucketNameParam.valueAsString,
         objectKey: this._objectKeyParam.valueAsString,
       },
-      sourceKMSKeyArn: this._sourceKMSKey?.keyArn,
+      sourceKMSKeyArn: this._sourceKMSKey?.keyRef.keyArn,
     };
   }
 
@@ -720,5 +720,5 @@ export interface BucketOptions {
    * The ARN of the KMS key used to encrypt the handler code.
    * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
    */
-  readonly sourceKMSKey?: IKey;
+  readonly sourceKMSKey?: IKeyRef;
 }

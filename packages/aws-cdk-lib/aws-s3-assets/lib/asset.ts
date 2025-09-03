@@ -54,7 +54,7 @@ export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.Asse
    * The ARN of the KMS key used to encrypt the handler code.
    * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
    */
-  readonly sourceKMSKey?: kms.IKey;
+  readonly sourceKMSKey?: kms.IKeyRef;
 
   /**
    * A display name for this asset
