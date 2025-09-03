@@ -1,13 +1,13 @@
 import { Construct } from 'constructs';
 import { IGroup } from './group';
-import { CfnPolicy } from './iam.generated';
+import { CfnPolicy, IPolicyRef, PolicyReference } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { generatePolicyName, undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
-import { IResource, Lazy, Resource, UnscopedValidationError } from '../../core';
+import { IResource, Lazy, Resource, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -16,7 +16,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  *
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage.html
  */
-export interface IPolicy extends IResource {
+export interface IPolicy extends IResource, IPolicyRef {
   /**
    * The name of this policy.
    *
@@ -117,6 +117,10 @@ export class Policy extends Resource implements IPolicy, IGrantable {
   public static fromPolicyName(scope: Construct, id: string, policyName: string): IPolicy {
     class Import extends Resource implements IPolicy {
       public readonly policyName = policyName;
+
+      public get policyRef(): PolicyReference {
+        throw new ValidationError('Cannot use a Policy.fromPolicyName() here.', this);
+      }
     }
 
     return new Import(scope, id);
@@ -128,6 +132,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
   public readonly document = new PolicyDocument();
 
   public readonly grantPrincipal: IPrincipal;
+  public readonly policyRef: PolicyReference;
 
   private readonly _policyName: string;
   private readonly roles = new Array<IRole>();
@@ -171,6 +176,10 @@ export class Policy extends Resource implements IPolicy, IGrantable {
       users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
       groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
     });
+
+    this.policyRef = {
+      policyId: resource.attrId,
+    };
 
     this._policyName = this.physicalName!;
     this.force = props.force ?? false;
