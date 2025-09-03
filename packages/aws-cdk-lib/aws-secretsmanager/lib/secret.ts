@@ -724,7 +724,7 @@ export class Secret extends SecretBase {
    * @param encryptionKey The customer-managed encryption key to use for encrypting the secret value.
    */
   @MethodMetadata()
-  public addReplicaRegion(region: string, encryptionKey?: kms.IKey): void {
+  public addReplicaRegion(region: string, encryptionKey?: kms.IKeyRef): void {
     const stack = Stack.of(this);
     if (!Token.isUnresolved(stack.region) && !Token.isUnresolved(region) && region === stack.region) {
       throw new ValidationError('Cannot add the region where this stack is deployed as a replica region.', this);
@@ -732,7 +732,7 @@ export class Secret extends SecretBase {
 
     this.replicaRegions.push({
       region,
-      kmsKeyId: encryptionKey?.keyArn,
+      kmsKeyId: encryptionKey?.keyRef.keyArn,
     });
   }
 }
