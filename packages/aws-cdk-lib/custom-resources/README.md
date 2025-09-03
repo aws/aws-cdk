@@ -843,7 +843,7 @@ const serviceExternalId = 'unique-secret-value-12345'; // External ID provided b
 new cr.AwsCustomResource(this, 'SecureCrossAccount', {
   onCreate: {
     assumedRoleArn: crossAccountRoleArn,
-    externalId: secretExternalId, // Prevents confused deputy attacks
+    externalId: serviceExternalId, // Prevents confused deputy attacks
     service: 'sts',
     action: 'GetCallerIdentity',
     physicalResourceId: cr.PhysicalResourceId.of('id'),
