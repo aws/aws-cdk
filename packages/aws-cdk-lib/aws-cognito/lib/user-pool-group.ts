@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnUserPoolGroup } from './cognito.generated';
 import { IUserPool } from './user-pool';
-import { IRole } from '../../aws-iam';
+import { IRoleRef } from '../../aws-iam';
 import { IResource, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -58,7 +58,7 @@ export interface UserPoolGroupOptions {
    *
    * @default - no description
    */
-  readonly role?: IRole;
+  readonly role?: IRoleRef;
 }
 
 /**
@@ -121,7 +121,7 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
       description: props.description,
       groupName: props.groupName,
       precedence: props.precedence,
-      roleArn: props.role?.roleArn,
+      roleArn: props.role?.roleRef.roleArn,
     });
 
     this.groupName = resource.ref;
