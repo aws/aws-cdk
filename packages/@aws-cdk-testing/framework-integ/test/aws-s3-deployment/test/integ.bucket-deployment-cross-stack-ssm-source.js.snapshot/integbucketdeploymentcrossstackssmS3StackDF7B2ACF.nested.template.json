@@ -173,7 +173,7 @@
      }
     ],
     "SourceObjectKeys": [
-     "a03379cb1c18c3195a119b640be370e0cfc34cfb5449546154c645b6ea415d18.zip"
+     "a8167c2186082a973d5d13efd3b9dc0f1d1af508e020aaa63dff394105dc7f13.zip"
     ],
     "SourceMarkers": [
      {
@@ -349,7 +349,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.11",
+    "Runtime": "python3.13",
     "Timeout": 900
    },
    "DependsOn": [
