@@ -193,7 +193,7 @@ export class ResultWriter {
    */
   public render(queryLanguage?: QueryLanguage): any {
     const argumentOrParameter = {
-      Bucket: this.bucket.bucketName,
+      Bucket: this.bucket.bucketRef.bucketName,
       ...(this.prefix && { Prefix: this.prefix }),
     };
 
@@ -211,7 +211,7 @@ export class ResultWriter {
    * Compile policy statements to provide relevent permissions to the state machine
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
-    return this.bucket?.bucketName ? buildS3PutObjectPolicyStatements(this.bucket.bucketName) : [];
+    return this.bucket?.bucketRef.bucketName ? buildS3PutObjectPolicyStatements(this.bucket.bucketRef.bucketName) : [];
   }
 }
 
@@ -259,7 +259,7 @@ export class ResultWriterV2 {
     // Resource and Parameters are only applicable if the bucket is defined, otherwise they shouldn't be rendered.
     const shouldRenderResourceAndParameters = !!(this.bucket || this.bucketNamePath);
     const argumentOrParameter = shouldRenderResourceAndParameters ? {
-      ...(this.bucket && { Bucket: this.bucket.bucketName }),
+      ...(this.bucket && { Bucket: this.bucket.bucketRef.bucketName }),
       ...(this.bucketNamePath && { Bucket: this.bucketNamePath }),
       ...(this.prefix && { Prefix: this.prefix }),
     }: undefined;

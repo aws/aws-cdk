@@ -51,7 +51,7 @@ export interface AccessPointProps {
   /**
    * The bucket to which this access point belongs.
    */
-  readonly bucket: s3.IBucket;
+  readonly bucket: s3.IBucketRef;
 
   /**
    * The Lambda function used to transform objects.
@@ -224,7 +224,7 @@ export class AccessPoint extends AccessPointBase {
     }
 
     const supporting = new s3.CfnAccessPoint(this, 'SupportingAccessPoint', {
-      bucket: props.bucket.bucketName,
+      bucket: props.bucket.bucketRef.bucketName,
     });
 
     const allowedFeatures = [];
