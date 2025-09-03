@@ -1,5 +1,6 @@
 import { Match, Template, Annotations } from '../../assertions';
 import * as iam from '../../aws-iam';
+import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as s3 from '../lib';
@@ -488,7 +489,7 @@ describe('notification', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: 'python3.13',
+      Runtime: lambda.Runtime.PYTHON_LATEST.name,
     });
   });
 
