@@ -205,6 +205,7 @@ export interface AwsSdkCall {
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html
  * @default - no external ID
  */
+  readonly externalId?: string;
 
   /**
    * A property used to configure logging during lambda function execution.
