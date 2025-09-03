@@ -3,7 +3,6 @@ import { AdotInstrumentationConfig, AdotLambdaExecWrapper } from './adot-layers'
 import { AliasOptions, Alias } from './alias';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
-import { ICodeSigningConfig } from './code-signing-config';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FileSystem } from './filesystem';
@@ -12,7 +11,7 @@ import { calculateFunctionHash, trimFromStart } from './function-hash';
 import { Handler } from './handler';
 import { LambdaInsightsVersion } from './lambda-insights';
 import { Version, VersionOptions } from './lambda-version';
-import { CfnFunction } from './lambda.generated';
+import { CfnFunction, ICodeSigningConfigRef } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
 import { ParamsAndSecretsLayerVersion } from './params-and-secrets-layers';
@@ -524,14 +523,14 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - AWS Lambda creates and uses an AWS managed customer master key (CMK).
    */
-  readonly environmentEncryption?: kms.IKey;
+  readonly environmentEncryption?: kms.IKeyRef;
 
   /**
    * Code signing config associated with this function
    *
    * @default - Not Sign the Code
    */
-  readonly codeSigningConfig?: ICodeSigningConfig;
+  readonly codeSigningConfig?: ICodeSigningConfigRef;
 
   /**
    * DEPRECATED
@@ -1090,9 +1089,9 @@ export class Function extends FunctionBase {
         entryPoint: code.image?.entrypoint,
         workingDirectory: code.image?.workingDirectory,
       }),
-      kmsKeyArn: props.environmentEncryption?.keyArn,
+      kmsKeyArn: props.environmentEncryption?.keyRef.keyArn,
       fileSystemConfigs,
-      codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
+      codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigRef.codeSigningConfigArn,
       architectures: this._architecture ? [this._architecture.name] : undefined,
       runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
       snapStart: this.configureSnapStart(props),

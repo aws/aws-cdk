@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
-import { Aws } from '../../../core';
+import { Aws, UnscopedValidationError } from '../../../core';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 
@@ -51,7 +51,15 @@ export class ElasticBeanstalkDeployAction extends Action {
   ): codepipeline.ActionConfig {
     // Per https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/AWSHowTo.iam.managed-policies.html
     // it doesn't seem we can scope this down further for the codepipeline action.
-    options.role.addManagedPolicy({ managedPolicyArn: `arn:${Aws.PARTITION}:iam::aws:policy/AdministratorAccess-AWSElasticBeanstalk` });
+
+    const policyArn = `arn:${Aws.PARTITION}:iam::aws:policy/AdministratorAccess-AWSElasticBeanstalk`;
+    options.role.addManagedPolicy({
+      get node(): Node {
+        throw new UnscopedValidationError('This object can not be used in this API');
+      },
+      managedPolicyArn: policyArn,
+      managedPolicyRef: { policyArn },
+    });
 
     // the Action's Role needs to read from the Bucket to get artifacts
     options.bucket.grantRead(options.role);

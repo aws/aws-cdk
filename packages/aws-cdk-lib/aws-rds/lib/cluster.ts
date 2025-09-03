@@ -373,7 +373,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - if storageEncrypted is true then the default master key, no key otherwise
    */
-  readonly storageEncryptionKey?: kms.IKey;
+  readonly storageEncryptionKey?: kms.IKeyRef;
 
   /**
    * The storage type to be associated with the DB cluster.
@@ -961,7 +961,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       databaseName: props.defaultDatabaseName,
       enableCloudwatchLogsExports: props.cloudwatchLogsExports,
       // Encryption
-      kmsKeyId: props.storageEncryptionKey?.keyArn,
+      kmsKeyId: props.storageEncryptionKey?.keyRef.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
       // Tags
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
@@ -1836,7 +1836,7 @@ function validatePerformanceInsightsSettings(
     nodeId?: string;
     performanceInsightsEnabled?: boolean;
     performanceInsightRetention?: PerformanceInsightRetention;
-    performanceInsightEncryptionKey?: kms.IKey;
+    performanceInsightEncryptionKey?: kms.IKeyRef;
   },
 ): void {
   const target = instance.nodeId ? `instance \'${instance.nodeId}\'` : '`instanceProps`';
@@ -1864,11 +1864,11 @@ function validatePerformanceInsightsSettings(
   // undefined or the same as the value at cluster level.
   if (cluster.performanceInsightEncryptionKey && instance.performanceInsightEncryptionKey) {
     const clusterKeyArn = cluster.performanceInsightEncryptionKey.keyArn;
-    const instanceKeyArn = instance.performanceInsightEncryptionKey.keyArn;
+    const instanceKeyArn = instance.performanceInsightEncryptionKey.keyRef.keyArn;
     const compared = Token.compareStrings(clusterKeyArn, instanceKeyArn);
 
     if (compared === TokenComparison.DIFFERENT) {
-      throw new ValidationError(`\`performanceInsightEncryptionKey\` for each instance must be the same as the one at cluster level, got ${target}: '${instance.performanceInsightEncryptionKey.keyArn}', cluster: '${cluster.performanceInsightEncryptionKey.keyArn}'`, cluster);
+      throw new ValidationError(`\`performanceInsightEncryptionKey\` for each instance must be the same as the one at cluster level, got ${target}: '${instance.performanceInsightEncryptionKey.keyRef.keyArn}', cluster: '${cluster.performanceInsightEncryptionKey.keyRef.keyArn}'`, cluster);
     }
     // Even if both of cluster and instance keys are unresolved, check if they are the same token.
     if (compared === TokenComparison.BOTH_UNRESOLVED && clusterKeyArn !== instanceKeyArn) {

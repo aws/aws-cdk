@@ -496,7 +496,7 @@ export class Extension extends Resource implements IExtension {
   public readonly extensionVersionNumber: number;
 
   private readonly _cfnExtension: CfnExtension;
-  private executionRole?: iam.IRole;
+  private executionRole?: iam.IRoleRef;
 
   constructor(scope: Construct, id: string, props: ExtensionProps) {
     super(scope, id, {
@@ -527,7 +527,7 @@ export class Extension extends Resource implements IExtension {
               Uri: extensionUri,
               ...(sourceType === SourceType.EVENTS || cur.invokeWithoutExecutionRole
                 ? {}
-                : { RoleArn: this.executionRole?.roleArn || this.getExecutionRole(cur.eventDestination, name).roleArn }),
+                : { RoleArn: this.executionRole?.roleRef.roleArn || this.getExecutionRole(cur.eventDestination, name).roleRef.roleArn }),
               ...(cur.description ? { Description: cur.description } : {}),
             },
           ];
@@ -556,7 +556,7 @@ export class Extension extends Resource implements IExtension {
     });
   }
 
-  private getExecutionRole(eventDestination: IEventDestination, actionName: string): iam.IRole {
+  private getExecutionRole(eventDestination: IEventDestination, actionName: string): iam.IRoleRef {
     const versionNumber = this.latestVersionNumber ? this.latestVersionNumber + 1 : 1;
     const combinedObjects = stringifyObjects(this.name, versionNumber, actionName);
     this.executionRole = new iam.Role(this, `Role${getHash(combinedObjects)}`, {

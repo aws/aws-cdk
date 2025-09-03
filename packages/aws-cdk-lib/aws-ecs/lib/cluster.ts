@@ -9,7 +9,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { IKey } from '../../aws-kms';
+import { IKey, IKeyRef } from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
@@ -439,7 +439,7 @@ export class Cluster extends Resource implements ICluster {
       },
       managedStorageConfiguration: this._managedStorageConfiguration && {
         fargateEphemeralStorageKmsKeyId: this._managedStorageConfiguration.fargateEphemeralStorageKmsKey?.keyId,
-        kmsKeyId: this._managedStorageConfiguration.kmsKey?.keyId,
+        kmsKeyId: this._managedStorageConfiguration.kmsKey?.keyRef.keyId,
       },
     };
   }
@@ -1495,7 +1495,7 @@ export interface ManagedStorageConfiguration {
    *
    * @default - Encrypted using AWS-managed key
    */
-  readonly kmsKey?: IKey;
+  readonly kmsKey?: IKeyRef;
 }
 
 /**

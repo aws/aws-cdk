@@ -514,7 +514,7 @@ export interface LogGroupProps {
    *
    * @default Server-side encryption managed by the CloudWatch Logs service
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKeyRef;
 
   /**
    * Name of the log group.
@@ -666,7 +666,7 @@ export class LogGroup extends LogGroupBase {
     }
 
     const resource = new CfnLogGroup(this, 'Resource', {
-      kmsKeyId: props.encryptionKey?.keyArn,
+      kmsKeyId: props.encryptionKey?.keyRef.keyArn,
       logGroupClass,
       logGroupName: this.physicalName,
       retentionInDays,

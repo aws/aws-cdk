@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "testCases": {
     "DistributionFunction/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "DistributionFunction/DefaultTest/DeployAssert",
       "assertionStackName": "DistributionFunctionDefaultTestDeployAssert9D427BC1"
     }
-  }
+  },
+  "minimumCliVersion": "2.1024.0"
 }

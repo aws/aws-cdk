@@ -76,7 +76,7 @@ export interface S3Encryption {
    * The KMS key to be used to encrypt the data.
    * @default no kms key if mode = S3_MANAGED. A key will be created if one is not provided and mode = KMS.
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
@@ -92,7 +92,7 @@ export interface CloudWatchEncryption {
    * The KMS key to be used to encrypt the data.
    * @default A key will be created if one is not provided.
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
@@ -108,7 +108,7 @@ export interface JobBookmarksEncryption {
    * The KMS key to be used to encrypt the data.
    * @default A key will be created if one is not provided.
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
@@ -179,17 +179,17 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
   /**
    * The KMS key used in CloudWatch encryption if it requires a kms key.
    */
-  public readonly cloudWatchEncryptionKey?: kms.IKey;
+  public readonly cloudWatchEncryptionKey?: kms.IKeyRef;
 
   /**
    * The KMS key used in job bookmarks encryption if it requires a kms key.
    */
-  public readonly jobBookmarksEncryptionKey?: kms.IKey;
+  public readonly jobBookmarksEncryptionKey?: kms.IKeyRef;
 
   /**
    * The KMS key used in S3 encryption if it requires a kms key.
    */
-  public readonly s3EncryptionKey?: kms.IKey;
+  public readonly s3EncryptionKey?: kms.IKeyRef;
 
   constructor(scope: constructs.Construct, id: string, props: SecurityConfigurationProps = {}) {
     super(scope, id, {
@@ -216,7 +216,7 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
       this.cloudWatchEncryptionKey = props.cloudWatchEncryption.kmsKey || autoCreatedKmsKey;
       cloudWatchEncryption = {
         cloudWatchEncryptionMode: props.cloudWatchEncryption.mode,
-        kmsKeyArn: this.cloudWatchEncryptionKey?.keyArn,
+        kmsKeyArn: this.cloudWatchEncryptionKey?.keyRef.keyArn,
       };
     }
 
@@ -225,7 +225,7 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
       this.jobBookmarksEncryptionKey = props.jobBookmarksEncryption.kmsKey || autoCreatedKmsKey;
       jobBookmarksEncryption = {
         jobBookmarksEncryptionMode: props.jobBookmarksEncryption.mode,
-        kmsKeyArn: this.jobBookmarksEncryptionKey?.keyArn,
+        kmsKeyArn: this.jobBookmarksEncryptionKey?.keyRef.keyArn,
       };
     }
 
@@ -237,7 +237,7 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
       // NOTE: CloudFormations errors out if array is of length > 1. That's why the props don't expose an array
       s3Encryptions = [{
         s3EncryptionMode: props.s3Encryption.mode,
-        kmsKeyArn: this.s3EncryptionKey?.keyArn,
+        kmsKeyArn: this.s3EncryptionKey?.keyRef.keyArn,
       }];
     }
 

@@ -213,7 +213,7 @@ export interface DatabaseClusterProps {
    *
    * @default - default master key.
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 
   /**
    * Whether to enable storage encryption
@@ -687,7 +687,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       // Encryption
-      kmsKeyId: props.kmsKey?.keyArn,
+      kmsKeyId: props.kmsKey?.keyRef.keyArn,
       // CloudWatch Logs exports
       enableCloudwatchLogsExports: props.cloudwatchLogsExports?.map(logType => logType.value),
       storageEncrypted,

@@ -53,7 +53,7 @@ export interface GeofenceCollectionProps {
    * @default - Use an AWS managed key
    * @see https://docs.aws.amazon.com/location/latest/developerguide/encryption-at-rest.html
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
@@ -141,7 +141,7 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
     const geofenceCollection = new CfnGeofenceCollection(this, 'Resource', {
       collectionName: this.physicalName,
       description: props.description,
-      kmsKeyId: props.kmsKey?.keyArn,
+      kmsKeyId: props.kmsKey?.keyRef.keyArn,
     });
 
     this.geofenceCollectionName = geofenceCollection.ref;

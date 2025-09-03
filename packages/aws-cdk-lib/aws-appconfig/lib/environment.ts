@@ -403,10 +403,10 @@ export abstract class Monitor {
    * @param alarm The Amazon CloudWatch alarm.
    * @param alarmRole The IAM role for AWS AppConfig to view the alarm state.
    */
-  public static fromCloudWatchAlarm(alarm: cloudwatch.IAlarm, alarmRole?: iam.IRole): Monitor {
+  public static fromCloudWatchAlarm(alarm: cloudwatch.IAlarm, alarmRole?: iam.IRoleRef): Monitor {
     return {
       alarmArn: alarm.alarmArn,
-      alarmRoleArn: alarmRole?.roleArn,
+      alarmRoleArn: alarmRole?.roleRef.roleArn,
       monitorType: MonitorType.CLOUDWATCH,
     };
   }

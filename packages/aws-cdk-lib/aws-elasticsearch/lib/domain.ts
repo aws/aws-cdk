@@ -380,7 +380,7 @@ export interface EncryptionAtRestOptions {
    * @default - uses default aws/es KMS key.
    * @deprecated use opensearchservice module instead
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
@@ -1841,7 +1841,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       encryptionAtRestOptions: {
         enabled: encryptionAtRestEnabled,
         kmsKeyId: encryptionAtRestEnabled
-          ? props.encryptionAtRest?.kmsKey?.keyId
+          ? props.encryptionAtRest?.kmsKey?.keyRef.keyId
           : undefined,
       },
       nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
@@ -1970,7 +1970,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
           this.accessPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
             actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
-            resources: [this.encryptionAtRestOptions.kmsKey.keyArn],
+            resources: [this.encryptionAtRestOptions.kmsKey.keyRef.keyArn],
             effect: iam.Effect.ALLOW,
           }));
         }

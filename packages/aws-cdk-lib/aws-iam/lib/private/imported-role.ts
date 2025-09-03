@@ -1,15 +1,22 @@
 import { Construct } from 'constructs';
 import { MAX_POLICY_NAME_LEN } from './util';
-import { FeatureFlags, Names, Resource, Token, TokenComparison, Annotations } from '../../../core';
+import { Annotations, FeatureFlags, Names, Resource, Token, TokenComparison } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../../cx-api';
 import { Grant } from '../grant';
+import { RoleReference } from '../iam.generated';
 import { IManagedPolicy, ManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
 import { PolicyStatement } from '../policy-statement';
-import { IComparablePrincipal, IPrincipal, ArnPrincipal, AddToPrincipalPolicyResult, PrincipalPolicyFragment } from '../principals';
-import { IRole, FromRoleArnOptions } from '../role';
+import {
+  AddToPrincipalPolicyResult,
+  ArnPrincipal,
+  IComparablePrincipal,
+  IPrincipal,
+  PrincipalPolicyFragment,
+} from '../principals';
+import { FromRoleArnOptions, IRole } from '../role';
 import { AttachedPolicies } from '../util';
 
 export interface ImportedRoleProps extends FromRoleArnOptions {
@@ -44,6 +51,13 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
     this.defaultPolicyName = props.defaultPolicyName;
     this.principalAccount = props.account;
+  }
+
+  public get roleRef(): RoleReference {
+    return {
+      roleName: this.roleName,
+      roleArn: this.roleArn,
+    };
   }
 
   @MethodMetadata()

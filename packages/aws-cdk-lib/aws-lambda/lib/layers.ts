@@ -1,7 +1,12 @@
 import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { Code } from './code';
-import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
+import {
+  CfnLayerVersion,
+  CfnLayerVersionPermission,
+  ILayerVersionRef,
+  LayerVersionReference,
+} from './lambda.generated';
 import { Runtime } from './runtime';
 import { IResource, RemovalPolicy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -64,7 +69,7 @@ export interface LayerVersionProps extends LayerVersionOptions {
   readonly code: Code;
 }
 
-export interface ILayerVersion extends IResource {
+export interface ILayerVersion extends IResource, ILayerVersionRef {
   /**
    * The ARN of the Lambda Layer version that this Layer defines.
    * @attribute
@@ -98,6 +103,12 @@ export interface ILayerVersion extends IResource {
 abstract class LayerVersionBase extends Resource implements ILayerVersion {
   public abstract readonly layerVersionArn: string;
   public abstract readonly compatibleRuntimes?: Runtime[];
+
+  public get layerVersionRef(): LayerVersionReference {
+    return {
+      layerVersionArn: this.layerVersionArn,
+    };
+  }
 
   public addPermission(id: string, permission: LayerVersionPermission) {
     if (permission.organizationId != null && permission.accountId !== '*') {
