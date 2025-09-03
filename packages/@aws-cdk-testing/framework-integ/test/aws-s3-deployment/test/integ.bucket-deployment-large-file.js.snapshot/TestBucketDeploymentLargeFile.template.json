@@ -211,7 +211,7 @@
      }
     ],
     "SourceObjectKeys": [
-     "cf2d05b1507b6b83057fa7a3bd1dcf80419fd04b4b30f3f6102c46601e38cc2a.zip",
+     "8628d484a8deea225fc9fe498f9f2c8e52a85f8bb65298cb9c9b30a47c92b532.zip",
      "cbc7dae5477d6aa98463e36140d5833273cc3caca06c731d848799f30237fefe.zip",
      "4458891c23c9754723db261b607985ee4fce5a087343fca93e9608fb49e083ba.zip",
      "28993f893d6ff78d86a5b8265321158c6da4719974a8aa757202f429679cc7e6.zip"
@@ -424,7 +424,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.11",
+    "Runtime": "python3.13",
     "Timeout": 900
    },
    "DependsOn": [
