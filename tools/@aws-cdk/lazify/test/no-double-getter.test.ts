@@ -1,11 +1,11 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { transformFileContents } from '../lib';
-import { parse } from 'cjs-module-lexer';
 
-// Write a .js file in this directory that will be imported by tests below
+// Write a .js file in this directory that will be imported by tests below (make it work on Windows).
+let someModulePath = path.join(__dirname, 'some-module.js').replace(/\\/g, '/');
 beforeEach(async () => {
-  await fs.writeFile(path.join(__dirname, 'some-module.js'), [
+  await fs.writeFile(someModulePath, [
     'Object.defineProperty(module.exports, "foo", {',
     // Necessary otherwise the way we find exported symbols (by actually including the file and iterating keys)
     // won't find this symbol.
@@ -21,14 +21,20 @@ beforeEach(async () => {
 test('replace re-export with getter', () => {
   const fakeFile = path.join(__dirname, 'index.ts');
   const transformed = transformFileContents(fakeFile, [
-    '__exportStar(require("./some-module"), exports);'
+    `__exportStar(require("${someModulePath}"), exports);`
   ].join('\n'));
 
   const mod = evalModule(transformed);
 
   const logMock = jest.spyOn(console, 'log');
-  expect(mod.foo).toEqual(42);
-  expect(mod.foo).toEqual(42);
+
+  // If we do `expect(mod.foo).toEqual(...)` Jest has some magic somewhere to
+  // detect that it's a getter, rather than evaluate the getter to get to the
+  // number `42`. So do the getter evaluation outside of an `expect` statement.
+  const access1 = mod.foo;
+  expect(access1).toEqual(42);
+  const access2 = mod.foo;
+  expect(access2).toEqual(42);
 
   expect(logMock).toHaveBeenCalledTimes(1);
 });
