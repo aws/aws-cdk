@@ -50,23 +50,23 @@ export class KafkaSchemaRegistryAccessConfigType {
    */
   public static readonly SERVER_ROOT_CA_CERTIFICATE = new KafkaSchemaRegistryAccessConfigType('SERVER_ROOT_CA_CERTIFICATE');
   /**
-   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   * The name of the virtual host in your schema registry. Lambda uses this broker host as the event source.
    */
   public static readonly VIRTUAL_HOST = new KafkaSchemaRegistryAccessConfigType('VIRTUAL_HOST');
   /**
-   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   * The Secrets Manager ARN of your secret key used for SASL SCRAM-256 authentication of your self-managed broker.
    */
   public static readonly SASL_SCRAM_256_AUTH = new KafkaSchemaRegistryAccessConfigType('SASL_SCRAM_256_AUTH');
   /**
-   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   * The Secrets Manager ARN of your secret key used for SASL SCRAM-512 authentication of your self-managed broker.
    */
   public static readonly SASL_SCRAM_512_AUTH = new KafkaSchemaRegistryAccessConfigType('SASL_SCRAM_512_AUTH');
   /**
-   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   * The VPC security group used to manage access to your self-managed brokers.
    */
   public static readonly VPC_SECURITY_GROUP = new KafkaSchemaRegistryAccessConfigType('VPC_SECURITY_GROUP');
   /**
-   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   * The subnets associated with your VPC. Lambda connects to these subnets to fetch data from your self-managed cluster.
    */
   public static readonly VPC_SUBNET = new KafkaSchemaRegistryAccessConfigType('VPC_SUBNET');
 
