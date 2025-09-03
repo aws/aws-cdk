@@ -40,6 +40,27 @@
     "AgentStepType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/prompt-override.ts"
     },
+    "GuardrailAction": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "TierConfig": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "ContentFilterStrength": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "ModalityType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "ContentFilterType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "ManagedWordFilterType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "ContextualGroundingFilterType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
     "CrossRegionInferenceProfileRegion": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/cross-region-inference-profile.ts"
     },
@@ -63,6 +84,27 @@
     },
     "Memory": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/memory.ts"
+    },
+    "Topic": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "GeneralPIIType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "FinancePIIType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "InformationTechnologyPIIType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "USASpecificPIIType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "CanadaSpecificPIIType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "UKSpecificPIIType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
     },
     "DefaultPromptRouterIdentifier": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/prompt-router.ts"
@@ -600,6 +642,12 @@
     },
     "PassthroughBehavior": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/integration.ts"
+    },
+    "Period": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/usage-plan.ts"
+    },
+    "UsagePlanKeyType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/usage-plan.ts"
     },
     "PayloadFormatVersion": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.ts"
