@@ -810,6 +810,20 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "ContainerProviderTypes": [
     "EKS"
   ],
+  "ContentFilterStrength": [
+    "NONE",
+    "LOW",
+    "MEDIUM",
+    "HIGH"
+  ],
+  "ContentFilterType": [
+    "SEXUAL",
+    "VIOLENCE",
+    "HATE",
+    "INSULTS",
+    "MISCONDUCT",
+    "PROMPT_ATTACK"
+  ],
   "ContentHandling": [
     "CONVERT_TO_BINARY",
     "CONVERT_TO_TEXT"
@@ -821,6 +835,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "application/javascript",
     "application/json"
   ],
+  "ContextualGroundingFilterType": [
+    "GROUNDING",
+    "RELEVANCE"
+  ],
   "Continent": [
     "AF",
     "AN",
@@ -829,6 +847,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "OC",
     "NA",
     "SA"
+  ],
+  "ContributorInsightsMode": [
+    "ACCESSED_AND_THROTTLED_KEYS",
+    "THROTTLED_KEYS"
   ],
   "CoreDnsComputeType": [
     "ec2",
@@ -993,6 +1015,19 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ECS",
     "CODE_DEPLOY",
     "EXTERNAL"
+  ],
+  "DeploymentLifecycleStage": [
+    "RECONCILE_SERVICE",
+    "PRE_SCALE_UP",
+    "POST_SCALE_UP",
+    "TEST_TRAFFIC_SHIFT",
+    "POST_TEST_TRAFFIC_SHIFT",
+    "PRODUCTION_TRAFFIC_SHIFT",
+    "POST_PRODUCTION_TRAFFIC_SHIFT"
+  ],
+  "DeploymentStrategy": [
+    "ROLLING",
+    "BLUE_GREEN"
   ],
   "DesiredState": [
     "RUNNING",
@@ -1397,6 +1432,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "internal",
     "resource-exhausted",
     "unavailable"
+  ],
+  "GuardrailAction": [
+    "BLOCK",
+    "ANONYMIZE",
+    "NONE"
   ],
   "HandlerBehavior": [
     "CODE",
@@ -2325,6 +2365,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     1,
     2
   ],
+  "ManagedWordFilterType": [
+    "PROFANITY"
+  ],
   "ManagementEventSources": [
     "kms.amazonaws.com",
     "rdsdata.amazonaws.com"
@@ -2402,6 +2445,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "OPTIONAL",
     "ON"
   ],
+  "ModalityType": [
+    "TEXT",
+    "IMAGE"
+  ],
   "Mode": [
     "SingleModel",
     "MultiModel"
@@ -2417,6 +2464,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "MqttQualityOfService": [
     0,
     1
+  ],
+  "MultiRegionConsistency": [
+    "EVENTUAL",
+    "STRONG"
   ],
   "MutualAuthenticationMode": [
     "off",
@@ -3582,6 +3633,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "bursting",
     "provisioned",
     "elastic"
+  ],
+  "TierConfig": [
+    "CLASSIC",
+    "STANDARD"
   ],
   "TimeoutAction": [
     "ForceApplyCapacityChange",

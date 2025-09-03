@@ -349,7 +349,7 @@ export class LustreFileSystem extends FileSystemBase {
       fileSystemType: LustreFileSystem.DEFAULT_FILE_SYSTEM_TYPE,
       subnetIds: [props.vpcSubnet.subnetId],
       backupId: props.backupId,
-      kmsKeyId: (props.kmsKey ? props.kmsKey.keyId : undefined),
+      kmsKeyId: (props.kmsKey ? props.kmsKey.keyRef.keyId : undefined),
       lustreConfiguration,
       securityGroupIds: [securityGroup.securityGroupId],
       storageCapacity: props.storageCapacityGiB,

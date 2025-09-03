@@ -8,6 +8,13 @@ on:
       - main
       - v2-release
   pull_request: {}
+  pull_request_target:
+    branches:
+      - v2-release
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 # For every PR, cancel any previous builds in progress
 # ... but for all other builds we keep them running
@@ -24,7 +31,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
