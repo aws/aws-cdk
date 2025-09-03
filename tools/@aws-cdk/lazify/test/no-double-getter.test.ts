@@ -3,7 +3,7 @@ import * as path from 'path';
 import { transformFileContents } from '../lib';
 
 // Write a .js file in this directory that will be imported by tests below (make it work on Windows).
-let someModulePath = path.join(__dirname, 'some-module.js').replace(/\\/g, '/');
+const someModulePath = path.join(__dirname, 'no-double-getter-import.js').replace(/\\/g, '/');
 beforeEach(async () => {
   await fs.writeFile(someModulePath, [
     'Object.defineProperty(module.exports, "foo", {',
