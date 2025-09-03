@@ -387,7 +387,21 @@
         "s3:PutBucketNotification"
        ],
        "Effect": "Allow",
-       "Resource": "*"
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
+          {
+           "Ref": "Bucket12520700A"
+          }
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
