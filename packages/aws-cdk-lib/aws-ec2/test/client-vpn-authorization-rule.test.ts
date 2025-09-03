@@ -24,6 +24,9 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       connections: new Connections(),
       node: stack.node,
       applyRemovalPolicy: () => { },
+      clientVpnEndpointRef: {
+        clientVpnEndpointId: 'myClientVpnEndpoint',
+      },
     };
     new ClientVpnAuthorizationRule(stack, 'NormalRule', {
       cidr: '10.0.10.0/32',
@@ -52,6 +55,9 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       connections: new Connections(),
       node: stack.node,
       applyRemovalPolicy: () => { },
+      clientVpnEndpointRef: {
+        clientVpnEndpointId: 'typoTypo',
+      },
     };
     const clientVpnEndpoint: IClientVpnEndpoint = {
       endpointId: 'myClientVpnEndpoint',
@@ -61,6 +67,9 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       connections: new Connections(),
       node: stack.node,
       applyRemovalPolicy: () => { },
+      clientVpnEndpointRef: {
+        clientVpnEndpointId: 'myClientVpnEndpoint',
+      },
     };
     expect(() => {
       new ClientVpnAuthorizationRule(stack, 'RuleBothEndointAndEndpoint', {
@@ -92,6 +101,9 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       connections: new Connections(),
       node: stack.node,
       applyRemovalPolicy: () => { },
+      clientVpnEndpointRef: {
+        clientVpnEndpointId: 'myClientVpnEndpoint',
+      },
     };
     new ClientVpnAuthorizationRule(stack, 'RuleWithEndointTypo', {
       cidr: '10.0.10.0/32',
