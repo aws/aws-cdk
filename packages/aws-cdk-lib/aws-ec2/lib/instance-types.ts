@@ -441,6 +441,28 @@ export enum InstanceClass {
   R7IZ = 'r7iz',
 
   /**
+   * Memory optimized instances based on custom Intel Xeon Scalable 6 processors, available only on AWS
+   */
+  MEMORY8_INTEL_BASE = 'memory8-intel-base',
+
+  /**
+   * Memory optimized instances based on custom Intel Xeon Scalable 6 processors, available only on AWS
+   */
+  R8I = 'r8i',
+
+  /**
+   * Memory optimized flexible instances based on custom Intel Xeon Scalable 6 processors, available only on AWS
+   * Provide up to 20% higher performance, 2.5x more memory throughput, and can scale up to full CPU performance 95% of the time
+   */
+  MEMORY8_INTEL_FLEX = 'memory8-intel-flex',
+
+  /**
+   * Memory optimized flexible instances based on custom Intel Xeon Scalable 6 processors, available only on AWS
+   * Provide up to 20% higher performance, 2.5x more memory throughput, and can scale up to full CPU performance 95% of the time
+   */
+  R8I_FLEX = 'r8i-flex',
+
+  /**
    * Memory optimized instances based on 4th generation AMD EPYC (codename Genoa), 7th generation
    */
   MEMORY7_AMD = 'memory7-amd',
@@ -1340,6 +1362,28 @@ export enum InstanceClass {
   M8GD = 'm8gd',
 
   /**
+   * Standard instances based on custom Intel Xeon Scalable 6 processors, available only on AWS
+   */
+  STANDARD8_INTEL = 'standard8-intel',
+
+  /**
+   * Standard instances based on custom Intel Xeon Scalable 6 processors, available only on AWS
+   */
+  M8I = 'm8i',
+
+  /**
+   * Flexible instances based on custom Intel Xeon Scalable 6 processors, available only on AWS
+   * Provide up to 20% higher performance, 2.5x more memory throughput, and can scale up to full CPU performance 95% of the time
+   */
+  STANDARD8_INTEL_FLEX = 'standard8-intel-flex',
+
+  /**
+   * Flexible instances based on custom Intel Xeon Scalable 6 processors, available only on AWS
+   * Provide up to 20% higher performance, 2.5x more memory throughput, and can scale up to full CPU performance 95% of the time
+   */
+  M8I_FLEX = 'm8i-flex',
+
+  /**
    * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
    */
   STANDARD7_INTEL = 'standard7-intel',
@@ -1795,6 +1839,10 @@ export class InstanceType {
       [InstanceClass.R8G]: 'r8g',
       [InstanceClass.MEMORY8_GRAVITON4_NVME_DRIVE]: 'r8gd',
       [InstanceClass.R8GD]: 'r8gd',
+      [InstanceClass.MEMORY8_INTEL_BASE]: 'r8i',
+      [InstanceClass.R8I]: 'r8i',
+      [InstanceClass.MEMORY8_INTEL_FLEX]: 'r8i-flex',
+      [InstanceClass.R8I_FLEX]: 'r8i-flex',
       [InstanceClass.COMPUTE3]: 'c3',
       [InstanceClass.C3]: 'c3',
       [InstanceClass.COMPUTE4]: 'c4',
@@ -1955,6 +2003,10 @@ export class InstanceType {
       [InstanceClass.M7I]: 'm7i',
       [InstanceClass.STANDARD7_INTEL_FLEX]: 'm7i-flex',
       [InstanceClass.M7I_FLEX]: 'm7i-flex',
+      [InstanceClass.STANDARD8_INTEL]: 'm8i',
+      [InstanceClass.M8I]: 'm8i',
+      [InstanceClass.STANDARD8_INTEL_FLEX]: 'm8i-flex',
+      [InstanceClass.M8I_FLEX]: 'm8i-flex',
       [InstanceClass.STANDARD7_AMD]: 'm7a',
       [InstanceClass.M7A]: 'm7a',
       [InstanceClass.HIGH_COMPUTE_MEMORY1]: 'z1d',
