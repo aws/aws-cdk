@@ -111,7 +111,7 @@ describe('instance engine', () => {
 
   describe('Oracle engine bindToInstance', () => {
     test('returns s3 integration feature', () => {
-      const engine = rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 });
+      const engine = rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2025_07_R1 });
 
       const engineConfig = engine.bindToInstance(new cdk.Stack(), {});
       expect(engineConfig.features?.s3Import).toEqual('S3_INTEGRATION');
@@ -120,7 +120,7 @@ describe('instance engine', () => {
 
     test('s3 import/export - creates an option group if needed', () => {
       const stack = new cdk.Stack();
-      const engine = rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 });
+      const engine = rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2025_07_R1 });
 
       const engineConfig = engine.bindToInstance(stack, {
         optionGroup: undefined,
@@ -139,7 +139,7 @@ describe('instance engine', () => {
 
     test('s3 import/export - appends to an existing option group if it exists', () => {
       const stack = new cdk.Stack();
-      const engine = rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 });
+      const engine = rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2025_07_R1 });
       const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
         engine,
         configurations: [{
@@ -308,6 +308,7 @@ describe('instance engine', () => {
       ['11.4.4', rds.MariaDbEngineVersion.VER_11_4_4],
       ['11.4.5', rds.MariaDbEngineVersion.VER_11_4_5],
       ['11.4.7', rds.MariaDbEngineVersion.VER_11_4_7],
+      ['11.8.3', rds.MariaDbEngineVersion.VER_11_8_3],
     ])('is passed correctly for %s', (engineVersion, version) => {
       // WHEN
       const stack = new cdk.Stack();
