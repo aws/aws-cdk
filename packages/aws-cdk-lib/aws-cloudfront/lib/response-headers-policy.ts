@@ -144,6 +144,11 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
         throw new ValidationError(`accessControlAllowMethods contains unexpected method name; allowed values: ${allowedMethods.join(', ')}`, this);
       }
     });
+    withResolved(behavior.accessControlAllowHeaders, (headers) => {
+      if (behavior.accessControlAllowCredentials && headers.some(header => !Token.isUnresolved(header) && header.includes('*'))) {
+        throw new ValidationError('accessControlAllowHeaders cannot contain "*" or headers with "*" when accessControlAllowCredentials is true', this);
+      }
+    });
 
     return {
       accessControlAllowCredentials: behavior.accessControlAllowCredentials,
