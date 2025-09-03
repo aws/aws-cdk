@@ -71,7 +71,7 @@ export interface CheckConfiguration {
    * The duration used to check if a device certificate has been active
    * for a number of days greater than or equal to the number you specify.
    *
-   * Valid values range from 30 days (minimum) to 3652 days (10 years, maximum).
+   * Valid values range from 30 days (minimum) to 3650 days (10 years, maximum).
    *
    * You cannot specify a value for this check if `deviceCertificateAgeCheck` is set to `false`.
    *
@@ -231,8 +231,8 @@ export class AccountAuditConfiguration extends Resource implements IAccountAudit
       if (props?.checkConfiguration?.deviceCertificateAgeCheck === false) {
         throw new Error('You cannot specify a value for `deviceCertificateAgeCheckDuration` if `deviceCertificateAgeCheck` is set to `false`.');
       }
-      if (!deviceAgeCheckThreshold.isUnresolved() && deviceAgeCheckThreshold.toDays() < 30 || deviceAgeCheckThreshold.toDays() > 3652) {
-        throw new Error(`The device certificate age check threshold must be between 30 and 3652 days. got: ${deviceAgeCheckThreshold.toDays()} days.`);
+      if (!deviceAgeCheckThreshold.isUnresolved() && deviceAgeCheckThreshold.toDays() < 30 || deviceAgeCheckThreshold.toDays() > 3650) {
+        throw new Error(`The device certificate age check threshold must be between 30 and 3650 days. got: ${deviceAgeCheckThreshold.toDays()} days.`);
       }
     }
 
