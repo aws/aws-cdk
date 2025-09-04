@@ -421,7 +421,7 @@ export class EventBus extends EventBusBase {
     if (props?.kmsKey) {
       props?.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
         resources: ['*'],
-        actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey'],
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
         principals: [new iam.ServicePrincipal('events.amazonaws.com')],
         conditions: {
           StringEquals: {
@@ -439,6 +439,22 @@ export class EventBus extends EventBusBase {
           },
         },
       }));
+      props?.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['kms:DescribeKey'],
+        principals: [new iam.ServicePrincipal('events.amazonaws.com')],
+        conditions: {
+          StringEquals: {
+            'aws:SourceAccount': this.stack.account,
+            'aws:SourceArn': Stack.of(this).formatArn({
+              service: 'events',
+              resource: 'event-bus',
+              resourceName: eventBusName,
+            }),
+          },
+        },
+      }));
+
     }
 
     this.eventBusName = this.getResourceNameAttribute(eventBus.ref);
