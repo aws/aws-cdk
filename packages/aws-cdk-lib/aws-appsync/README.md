@@ -945,8 +945,7 @@ new appsync.GraphqlApi(this, 'api', {
   enhancedMetricsConfig: {
     dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS,
     operationLevelMetricsEnabled: true,
-    resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.    dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS,
-,
+    resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS,
   },
 });
 ```
@@ -955,7 +954,7 @@ If you wish to enable enhanced monitoring only for subset of data sources or res
 
 ```ts
 const schema = new appsync.SchemaFile({ filePath: 'mySchemaFile' })
-new appsync.GraphqlApi(this, 'api', {
+const api = new appsync.GraphqlApi(this, 'api', {
   name: 'myApi',
   definition: appsync.Definition.fromSchema(schema),
   enhancedMetricsConfig: {
