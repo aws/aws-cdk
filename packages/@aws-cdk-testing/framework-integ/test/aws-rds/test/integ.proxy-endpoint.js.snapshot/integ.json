@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "cdk-rds-proxy-endpoint-integ/DefaultTest": {
+      "stacks": [
+        "cdk-rds-proxy-endpoint"
+      ],
+      "assertionStack": "cdk-rds-proxy-endpoint-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkrdsproxyendpointintegDefaultTestDeployAssert6E0E4C48"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}
