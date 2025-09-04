@@ -3,6 +3,7 @@ import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
 import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
+import { InstanceRequirementsRequest, renderInstanceRequirements } from './managed-instances-requirements';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -26,6 +27,7 @@ import {
   Names,
   FeatureFlags, Annotations,
   ValidationError,
+  Size,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
@@ -227,6 +229,11 @@ export class Cluster extends Resource implements ICluster {
   private _capacityProviderNames: string[] = [];
 
   /**
+   * The names of cluster scoped capacity providers.
+   */
+  private _clusterScopedCapacityProviderNames: string[] = [];
+
+  /**
    * The cluster default capacity provider strategy. This takes the form of a list of CapacityProviderStrategy objects.
    */
   private _defaultCapacityProviderStrategy: CapacityProviderStrategy[] = [];
@@ -417,8 +424,8 @@ export class Cluster extends Resource implements ICluster {
     }
 
     defaultCapacityProviderStrategy.forEach(dcp => {
-      if (!this._capacityProviderNames.includes(dcp.capacityProvider)) {
-        throw new ValidationError(`Capacity provider ${dcp.capacityProvider} must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.`, this);
+      if (!this._capacityProviderNames.includes(dcp.capacityProvider) && !this._clusterScopedCapacityProviderNames.includes(dcp.capacityProvider)) {
+        throw new ValidationError(`Capacity provider ${dcp.capacityProvider} must be added to the cluster with addAsgCapacityProvider() or addManagedInstancesCapacityProvider() before it can be used in a default capacity provider strategy.`, this);
       }
     });
 
@@ -523,6 +530,14 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * Getter for _clusterScopedCapacityProviderNames
+   * @attribute
+   */
+  public get clusterScopedCapacityProviderNames() {
+    return this._clusterScopedCapacityProviderNames;
+  }
+
+  /**
    * Getter for namespace added to cluster
    */
   public get defaultCloudMapNamespace(): cloudmap.INamespace | undefined {
@@ -586,6 +601,22 @@ export class Cluster extends Resource implements ICluster {
     });
 
     this._capacityProviderNames.push(provider.capacityProviderName);
+  }
+
+  /**
+   * This method adds a Managed Instances Capacity Provider to a cluster.
+   *
+   * @param provider the capacity provider to add to this cluster.
+   */
+  @MethodMetadata()
+  public addManagedInstancesCapacityProvider(provider: ManagedInstancesCapacityProvider) {
+    // Don't add the same capacity provider more than once.
+    if (this._clusterScopedCapacityProviderNames.includes(provider.capacityProviderName)) {
+      return;
+    }
+    // Set the cluster name on the capacity provider
+    provider.associateWithCluster(this.clusterName);
+    this._clusterScopedCapacityProviderNames.push(provider.capacityProviderName);
   }
 
   /**
@@ -1499,6 +1530,239 @@ export interface ManagedStorageConfiguration {
 }
 
 /**
+ * The monitoring configuration for EC2 instances.
+ */
+export enum InstanceMonitoring {
+  /**
+   * Basic monitoring (5-minute intervals)
+   */
+  BASIC = 'BASIC',
+
+  /**
+   * Detailed monitoring (1-minute intervals)
+   */
+  DETAILED = 'DETAILED',
+}
+
+/**
+ * The capacity option type for EC2 instances.
+ */
+export enum CapacityOptionType {
+  /**
+   * On-demand instances
+   */
+  ON_DEMAND = 'ON_DEMAND',
+
+  /**
+   * Spot instances
+   */
+  SPOT = 'SPOT',
+}
+
+/**
+ * Propagate tags for Managed Instances.
+ */
+export enum PropagateMITags {
+  /**
+   * Propagate tags from the capacity provider
+   */
+  CAPACITY_PROVIDER = 'CAPACITY_PROVIDER',
+
+  /**
+   * Do not propagate tags
+   */
+  NONE = 'NONE',
+}
+
+/**
+ * The options for creating a Managed Instances Capacity Provider.
+ */
+export interface ManagedInstancesCapacityProviderProps {
+  /**
+   * The name of the capacity provider. If a name is specified,
+   * it cannot start with `aws`, `ecs`, or `fargate`. If no name is specified,
+   * a default name in the CFNStackName-CFNResourceName-RandomString format is used.
+   * If the stack name starts with `aws`, `ecs`, or `fargate`, a unique resource name
+   * is generated that starts with `cp-`.
+   *
+   * @default CloudFormation-generated name
+   */
+  readonly capacityProviderName?: string;
+
+  /**
+   * The infrastructure role.
+   *
+   * @default - A new role will be created with the AmazonECSInfrastructureRolePolicyForLoadBalancers managed policy
+   */
+  readonly infrastructureRole?: iam.IRole;
+
+  /**
+   * The EC2 instance profile.
+   */
+  readonly ec2InstanceProfile: iam.IInstanceProfile;
+
+  /**
+   * The subnets (required and should be non-empty).
+   */
+  readonly subnets: ec2.ISubnet[];
+
+  /**
+   * The security groups (optional).
+   * Defaults to the default SG of VPC to which the above subnets belong.
+   *
+   * @default - default security group of the VPC
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * Task volume storage size.
+   *
+   * @default Size.gibibytes(80)
+   */
+  readonly taskVolumeStorage?: Size;
+
+  /**
+   * The monitoring configuration (optional).
+   *
+   * @default - none
+   */
+  readonly monitoring?: InstanceMonitoring;
+
+  /**
+   * The capacity option type (optional).
+   *
+   * @default - none
+   */
+  readonly capacityOptionType?: CapacityOptionType;
+
+  /**
+   * The instance requirements for the Fargate Managed Instances.
+   * This allows you to specify detailed requirements for instance selection
+   * including vCPU count, memory, CPU manufacturers, and many other criteria.
+   *
+   * @default - no instance requirements specified
+   */
+  readonly instanceRequirements?: InstanceRequirementsRequest;
+
+  /**
+   * Specifies whether to propagate the tags from the capacity provider to the instances.
+   *
+   * @default - no tag propagation
+   */
+  readonly propagateTags?: PropagateMITags;
+}
+
+/**
+ * A Managed Instances Capacity Provider. This allows an ECS cluster to use
+ * Managed Instances for task placement with managed infrastructure.
+ */
+@propertyInjectable
+export class ManagedInstancesCapacityProvider extends Construct {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.ManagedInstancesCapacityProvider';
+
+  /**
+   * Capacity provider name
+   */
+  readonly capacityProviderName: string;
+
+  /**
+   * The CloudFormation capacity provider resource
+   */
+  private capacityProvider: CfnCapacityProvider;
+
+  constructor(scope: Construct, id: string, props: ManagedInstancesCapacityProviderProps) {
+    super(scope, id);
+
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    // Validate required properties
+    if (!props.ec2InstanceProfile) {
+      throw new ValidationError('EC2 instance profile is required.', this);
+    }
+
+    if (!props.subnets || props.subnets.length === 0) {
+      throw new ValidationError('Subnets are required and should be non-empty.', this);
+    }
+
+    // Create or use provided infrastructure role
+    const roleId = `${id}Role`;
+    const infrastructureRole = props.infrastructureRole ?? new iam.Role(this, roleId, {
+      assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonECSInfrastructureRolePolicyForManagedInstances'),
+      ],
+    });
+
+    // Handle capacity provider name generation similar to AsgCapacityProvider
+    let capacityProviderName = props.capacityProviderName;
+    const capacityProviderNameRegex = /^(?!aws|ecs|fargate).+/gm;
+    if (capacityProviderName) {
+      if (!(capacityProviderNameRegex.test(capacityProviderName))) {
+        throw new ValidationError(`Invalid Capacity Provider Name: ${capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`, this);
+      }
+    } else {
+      if (!(capacityProviderNameRegex.test(Stack.of(this).stackName))) {
+        // name cannot start with 'aws|ecs|fargate', so append 'cp-'
+        // 255 is the max length, subtract 3 because of 'cp-'
+        // if the regex condition isn't met, CFN will name the capacity provider
+        capacityProviderName = 'cp-' + Names.uniqueResourceName(this, { maxLength: 252, allowedSpecialCharacters: '-_' });
+      }
+    }
+
+    // Build the managed instances provider configuration
+    const managedInstancesProviderConfig: CfnCapacityProvider.ManagedInstancesProviderProperty = {
+      infrastructureRoleArn: infrastructureRole.roleArn,
+      instanceLaunchTemplate: {
+        ec2InstanceProfileArn: props.ec2InstanceProfile.instanceProfileArn,
+        networkConfiguration: {
+          subnets: props.subnets.map((subnet: ec2.ISubnet) => subnet.subnetId),
+          ...(props.securityGroups && {
+            securityGroups: props.securityGroups.map((sg: ec2.ISecurityGroup) => sg.securityGroupId),
+          }),
+        },
+        ...(props.taskVolumeStorage && {
+          storageConfiguration: {
+            storageSizeGiB: props.taskVolumeStorage.toGibibytes(),
+          },
+        }),
+        ...(props.monitoring && {
+          monitoring: props.monitoring,
+        }),
+        ...(props.capacityOptionType && {
+          capacityOptionType: props.capacityOptionType,
+        }),
+        ...(props.instanceRequirements && {
+          instanceRequirements: renderInstanceRequirements(props.instanceRequirements),
+        }),
+      },
+      propagateTags: props.propagateTags,
+    };
+
+    // Create the capacity provider
+    this.capacityProvider = new CfnCapacityProvider(this, id, {
+      name: capacityProviderName,
+      managedInstancesProvider: managedInstancesProviderConfig,
+    });
+
+    this.capacityProviderName = this.capacityProvider.ref;
+
+    this.node.defaultChild = this.capacityProvider;
+  }
+
+  /**
+   * Associates the capacity provider with the specified cluster.
+   * This method is called by the cluster when adding the capacity provider.
+   */
+  public associateWithCluster(clusterName: string): void {
+    this.capacityProvider.clusterName = clusterName;
+  }
+}
+
+/**
  * An Auto Scaling Group Capacity Provider. This allows an ECS cluster to target
  * a specific EC2 Auto Scaling Group for the placement of tasks. Optionally (and
  * recommended), ECS can manage the number of instances in the ASG to fit the
@@ -1629,7 +1893,8 @@ class MaybeCreateCapacityProviderAssociations implements IAspect {
 
   public visit(node: IConstruct): void {
     if (Cluster.isCluster(node)) {
-      if ((this.scope.defaultCapacityProviderStrategy.length > 0 || this.scope.capacityProviderNames.length > 0 && !this.resource)) {
+      if ((this.scope.defaultCapacityProviderStrategy.length > 0
+          || (this.scope.capacityProviderNames.length > 0 || this.scope.clusterScopedCapacityProviderNames.length > 0) && !this.resource)) {
         this.resource = new CfnClusterCapacityProviderAssociations(this.scope, this.id, {
           cluster: node.clusterName,
           defaultCapacityProviderStrategy: this.scope.defaultCapacityProviderStrategy,

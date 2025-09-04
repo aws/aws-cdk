@@ -2596,6 +2596,677 @@ describe('cluster', () => {
     });
   });
 
+  describe('creates Managed Instances capacity providers', () => {
+    test('with expected defaults', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      // WHEN
+      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        infrastructureRole,
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InfrastructureRoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('InfrastructureRole'),
+              'Arn',
+            ],
+          },
+          InstanceLaunchTemplate: {
+            Ec2InstanceProfileArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('InstanceProfile'),
+                'Arn',
+              ],
+            },
+            NetworkConfiguration: {
+              Subnets: [
+                { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+              ],
+            },
+          },
+        },
+      });
+    });
+
+    test('with custom capacity provider name', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      // WHEN
+      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        capacityProviderName: 'my-managed-instances-cp',
+        infrastructureRole,
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        Name: 'my-managed-instances-cp',
+        ManagedInstancesProvider: {
+          InfrastructureRoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('InfrastructureRole'),
+              'Arn',
+            ],
+          },
+          InstanceLaunchTemplate: {
+            Ec2InstanceProfileArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('InstanceProfile'),
+                'Arn',
+              ],
+            },
+            NetworkConfiguration: {
+              Subnets: [
+                { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+              ],
+            },
+          },
+        },
+      });
+    });
+
+    test('with security groups', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+
+      // WHEN
+      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        infrastructureRole,
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InfrastructureRoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('InfrastructureRole'),
+              'Arn',
+            ],
+          },
+          InstanceLaunchTemplate: {
+            Ec2InstanceProfileArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('InstanceProfile'),
+                'Arn',
+              ],
+            },
+            NetworkConfiguration: {
+              Subnets: [
+                { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+              ],
+              SecurityGroups: [
+                { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
+              ],
+            },
+          },
+        },
+      });
+    });
+
+    test('with task volume storage', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      // WHEN
+      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        infrastructureRole,
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+        taskVolumeStorage: cdk.Size.gibibytes(100),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InfrastructureRoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('InfrastructureRole'),
+              'Arn',
+            ],
+          },
+          InstanceLaunchTemplate: {
+            Ec2InstanceProfileArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('InstanceProfile'),
+                'Arn',
+              ],
+            },
+            NetworkConfiguration: {
+              Subnets: [
+                { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+              ],
+            },
+            StorageConfiguration: {
+              StorageSizeGiB: 100,
+            },
+          },
+        },
+      });
+    });
+
+    test('with monitoring configuration', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      // WHEN
+      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        infrastructureRole,
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+        monitoring: ecs.InstanceMonitoring.DETAILED,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InfrastructureRoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('InfrastructureRole'),
+              'Arn',
+            ],
+          },
+          InstanceLaunchTemplate: {
+            Ec2InstanceProfileArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('InstanceProfile'),
+                'Arn',
+              ],
+            },
+            NetworkConfiguration: {
+              Subnets: [
+                { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+              ],
+            },
+            Monitoring: 'DETAILED',
+          },
+        },
+      });
+    });
+
+    test('with capacity option type', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      // WHEN
+      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        infrastructureRole,
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+        capacityOptionType: ecs.CapacityOptionType.SPOT,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InfrastructureRoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('InfrastructureRole'),
+              'Arn',
+            ],
+          },
+          InstanceLaunchTemplate: {
+            Ec2InstanceProfileArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('InstanceProfile'),
+                'Arn',
+              ],
+            },
+            NetworkConfiguration: {
+              Subnets: [
+                { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+              ],
+            },
+            CapacityOptionType: 'SPOT',
+          },
+        },
+      });
+    });
+
+    test('with instance requirements', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      // WHEN
+      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        infrastructureRole,
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+        instanceRequirements: {
+          vCpuCountMin: 2,
+          vCpuCountMax: 8,
+          memoryMiBMin: cdk.Size.gibibytes(4),
+          memoryMiBMax: cdk.Size.gibibytes(16),
+          cpuManufacturers: [ecs.CpuManufacturer.INTEL, ecs.CpuManufacturer.AMD],
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InfrastructureRoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('InfrastructureRole'),
+              'Arn',
+            ],
+          },
+          InstanceLaunchTemplate: {
+            Ec2InstanceProfileArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('InstanceProfile'),
+                'Arn',
+              ],
+            },
+            NetworkConfiguration: {
+              Subnets: [
+                { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+              ],
+            },
+            InstanceRequirements: {
+              VCpuCount: {
+                Min: 2,
+                Max: 8,
+              },
+              MemoryMiB: {
+                Min: 4096,
+                Max: 16384,
+              },
+              CpuManufacturers: ['intel', 'amd'],
+            },
+          },
+        },
+      });
+    });
+
+    test('with propagate tags', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      // WHEN
+      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        infrastructureRole,
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+        propagateTags: ecs.PropagateMITags.CAPACITY_PROVIDER,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InfrastructureRoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('InfrastructureRole'),
+              'Arn',
+            ],
+          },
+          InstanceLaunchTemplate: {
+            Ec2InstanceProfileArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('InstanceProfile'),
+                'Arn',
+              ],
+            },
+            NetworkConfiguration: {
+              Subnets: [
+                { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+              ],
+            },
+          },
+          PropagateTags: 'CAPACITY_PROVIDER',
+        },
+      });
+    });
+
+    test('throws when EC2 instance profile is not provided', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      // THEN
+      expect(() => {
+        new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+          infrastructureRole,
+          ec2InstanceProfile: undefined as any,
+          subnets: vpc.privateSubnets,
+        });
+      }).toThrow('EC2 instance profile is required.');
+    });
+
+    test('throws when subnets are not provided', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      // THEN
+      expect(() => {
+        new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+          infrastructureRole,
+          ec2InstanceProfile: instanceProfile,
+          subnets: [],
+        });
+      }).toThrow('Subnets are required and should be non-empty.');
+    });
+
+    test('throws when capacity provider name starts with aws, ecs or fargate', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      // THEN
+      expect(() => {
+        new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+          capacityProviderName: 'awscp',
+          infrastructureRole,
+          ec2InstanceProfile: instanceProfile,
+          subnets: vpc.privateSubnets,
+        });
+      }).toThrow(/Invalid Capacity Provider Name: awscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+
+      expect(() => {
+        new ecs.ManagedInstancesCapacityProvider(stack, 'provider2', {
+          capacityProviderName: 'ecscp',
+          infrastructureRole,
+          ec2InstanceProfile: instanceProfile,
+          subnets: vpc.privateSubnets,
+        });
+      }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+
+      expect(() => {
+        new ecs.ManagedInstancesCapacityProvider(stack, 'provider3', {
+          capacityProviderName: 'fargatecp',
+          infrastructureRole,
+          ec2InstanceProfile: instanceProfile,
+          subnets: vpc.privateSubnets,
+        });
+      }).toThrow(/Invalid Capacity Provider Name: fargatecp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+    });
+
+    test('can add Managed Instances capacity via Capacity Provider', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      // WHEN
+      const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+      });
+
+      cluster.enableFargateCapacityProviders();
+
+      // Ensure not added twice
+      cluster.addManagedInstancesCapacityProvider(capacityProvider);
+      cluster.addManagedInstancesCapacityProvider(capacityProvider);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InfrastructureRoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('providerRole'),
+              'Arn',
+            ],
+          },
+          InstanceLaunchTemplate: {
+            Ec2InstanceProfileArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('InstanceProfile'),
+                'Arn',
+              ],
+            },
+            NetworkConfiguration: {
+              Subnets: [
+                { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+              ],
+            },
+          },
+        },
+      });
+    });
+  });
+
   test('can disable Managed Scaling and Managed Termination Protection for ASG capacity provider', () => {
     // GIVEN
     const app = new cdk.App();
@@ -2880,7 +3551,7 @@ describe('cluster', () => {
       }).addDefaultCapacityProviderStrategy([
         { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
       ]);
-    }).toThrow('Capacity provider test capacityProvider must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.');
+    }).toThrow('Capacity provider test capacityProvider must be added to the cluster with addAsgCapacityProvider() or addManagedInstancesCapacityProvider() before it can be used in a default capacity provider strategy.');
   });
 
   test('should throw an error when capacity providers is length 0 and default capacity provider startegy specified', () => {
@@ -2894,7 +3565,7 @@ describe('cluster', () => {
       }).addDefaultCapacityProviderStrategy([
         { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
       ]);
-    }).toThrow('Capacity provider test capacityProvider must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.');
+    }).toThrow('Capacity provider test capacityProvider must be added to the cluster with addAsgCapacityProvider() or addManagedInstancesCapacityProvider() before it can be used in a default capacity provider strategy.');
   });
 
   test('should throw an error when more than 1 default capacity provider have base specified', () => {
