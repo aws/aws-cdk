@@ -47,6 +47,7 @@
       "ApiId"
      ]
     },
+    "MetricsConfig": "ENABLED",
     "Name": "None",
     "Type": "NONE"
    }
@@ -63,6 +64,7 @@
     "DataSourceName": "None",
     "FieldName": "getTests",
     "Kind": "UNIT",
+    "MetricsConfig": "ENABLED",
     "RequestMappingTemplate": "{\"version\":\"2017-02-28\"}",
     "ResponseMappingTemplate": "{\"version\":\"v1\"}",
     "TypeName": "Query"
