@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "8ee6a8a1cbe4834d66ff5541138015b6fc44772d8cdcf889b6ac3640c4e5ec22": {
+      "displayName": "cloudfront-distribution-certificate-validation Template",
+      "source": {
+        "path": "cloudfront-distribution-certificate-validation.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4df79758": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8ee6a8a1cbe4834d66ff5541138015b6fc44772d8cdcf889b6ac3640c4e5ec22.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
