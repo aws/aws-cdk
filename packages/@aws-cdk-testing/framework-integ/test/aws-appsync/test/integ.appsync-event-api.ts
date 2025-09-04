@@ -30,7 +30,8 @@ class EventApiStack extends cdk.Stack {
     });
 
     const certificate = new acm.Certificate(this, 'Certificate', {
-      domainName: `*.${props.domainName}`,
+      // we need this to avoid *.*.example.com in our CI, which would throw an error as invalid
+      domainName: props.domainName.includes('*') ? props.domainName : `*.${props.domainName}`,
       validation: acm.CertificateValidation.fromDns(hostedZone),
     });
 

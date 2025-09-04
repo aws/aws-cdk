@@ -63,7 +63,7 @@ export interface CertificateProps {
    * @default - Apex domain is used for every domain that's not overridden.
    * @deprecated use `validation` instead.
    */
-  readonly validationDomains?: {[domainName: string]: string};
+  readonly validationDomains?: { [domainName: string]: string };
 
   /**
    * Validation method used to assert domain ownership
@@ -325,6 +325,42 @@ export class Certificate extends CertificateBase implements ICertificate {
     // check if domain name is 64 characters or less
     if (!Token.isUnresolved(props.domainName) && props.domainName.length > 64) {
       throw new ValidationError('Domain name must be 64 characters or less', this);
+    }
+
+    // AWS Certificate Manager domain name regex pattern
+    // Based on AWS Route 53 domain name format requirements:
+    // https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/DomainNameFormat.html#domain-name-format-hosted-zones
+    //
+    // Key requirements enforced:
+    // - Each label must be 1-63 characters long
+    // - Labels must start and end with alphanumeric characters (a-z, A-Z, 0-9)
+    // - Labels can contain hyphens in the middle but not at start or end
+    // - Optional wildcard prefix (*.) is allowed for subdomains
+    // - Domain must have at least one dot (subdomain + TLD structure)
+    const DOMAIN_NAME_REGEX = /^(\*\.)?([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/;
+
+    // check if domain name format is valid
+    if (!Token.isUnresolved(props.domainName) && !DOMAIN_NAME_REGEX.test(props.domainName)) {
+      throw new ValidationError(
+        'Domain name format is invalid. Domain names must match AWS Certificate Manager requirements. ' +
+        'Valid examples: "example.com", "*.example.com", "sub.example.com". ' +
+        'Domain labels cannot start or end with hyphens and must be 1-63 characters each.',
+        this,
+      );
+    }
+
+    // check subject alternative names format if provided
+    if (props.subjectAlternativeNames) {
+      for (const altName of props.subjectAlternativeNames) {
+        if (!Token.isUnresolved(altName) && !DOMAIN_NAME_REGEX.test(altName)) {
+          throw new ValidationError(
+            `Subject alternative name "${altName}" format is invalid. Domain names must match AWS Certificate Manager requirements. ` +
+            'Valid examples: "example.com", "*.example.com", "sub.example.com". ' +
+            'Domain labels cannot start or end with hyphens and must be 1-62 characters each.',
+            this,
+          );
+        }
+      }
     }
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);

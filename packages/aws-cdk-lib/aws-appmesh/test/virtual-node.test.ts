@@ -637,7 +637,7 @@ describe('virtual node', () => {
         });
 
         const cert = new acm.Certificate(stack, 'cert', {
-          domainName: '',
+          domainName: 'example.com',
         });
 
         new appmesh.VirtualNode(stack, 'test-node', {
