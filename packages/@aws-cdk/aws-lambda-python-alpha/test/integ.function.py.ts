@@ -20,7 +20,7 @@ class TestStack extends Stack {
 
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(__dirname, 'lambda-handler'),
-      runtime: Runtime.PYTHON_3_8,
+      runtime: Runtime.PYTHON_3_13,
     });
     this.functionName = fn.functionName;
 
@@ -35,8 +35,8 @@ const app = new App({
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
 });
-const testCase = new TestStack(app, 'cdk-integ-lambda-python-38');
-const integ = new IntegTest(app, 'lambda-python-38', {
+const testCase = new TestStack(app, 'cdk-integ-lambda-python');
+const integ = new IntegTest(app, 'lambda-python', {
   testCases: [testCase],
   stackUpdateWorkflow: false,
 });
