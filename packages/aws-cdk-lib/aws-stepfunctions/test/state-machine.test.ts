@@ -430,6 +430,138 @@ describe('State Machine', () => {
     });
   }),
 
+  // Test to make sure there is no infinite loop when finding all DistributedMap states
+  test('Instantiate State Machine With Self Referencing Distributed Map State', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new sfn.DistributedMap(stack, 'Map State');
+    map.itemProcessor(new sfn.Pass(stack, 'Pass'));
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(map.next(map)),
+    });
+    const stateMachineLogicalId = stack.getLogicalId(stateMachine.node.defaultChild as sfn.CfnStateMachine);
+    const stateMachineRoleLogicalId = stack.getLogicalId(stateMachine.role.node.defaultChild as iam.CfnRole);
+    const stateMachineNameTemplate = {
+      'Fn::Select': [
+        6,
+        {
+          'Fn::Split': [
+            ':',
+            {
+              Ref: stateMachineLogicalId,
+            },
+          ],
+        },
+      ],
+    };
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:StartExecution',
+            Effect: 'Allow',
+            Resource: { Ref: stateMachineLogicalId },
+          },
+          {
+            Action: [
+              'states:DescribeExecution',
+              'states:StopExecution',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
+            },
+          },
+          {
+            Action: 'states:RedriveExecution',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/*:*'])],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: stateMachineRoleLogicalId,
+        },
+      ],
+    });
+  }),
+
+  test('Instantiate State Machine With Distributed Map State in Branch state', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new sfn.DistributedMap(stack, 'Map State');
+    map.itemProcessor(new sfn.Pass(stack, 'Pass'));
+    const parallel = new sfn.Parallel(stack, 'Parallel', {
+      resultPath: '$.result',
+    });
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(parallel.branch(map)),
+    });
+    const stateMachineLogicalId = stack.getLogicalId(stateMachine.node.defaultChild as sfn.CfnStateMachine);
+    const stateMachineRoleLogicalId = stack.getLogicalId(stateMachine.role.node.defaultChild as iam.CfnRole);
+    const stateMachineNameTemplate = {
+      'Fn::Select': [
+        6,
+        {
+          'Fn::Split': [
+            ':',
+            {
+              Ref: stateMachineLogicalId,
+            },
+          ],
+        },
+      ],
+    };
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:StartExecution',
+            Effect: 'Allow',
+            Resource: { Ref: stateMachineLogicalId },
+          },
+          {
+            Action: [
+              'states:DescribeExecution',
+              'states:StopExecution',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
+            },
+          },
+          {
+            Action: 'states:RedriveExecution',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/*:*'])],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: stateMachineRoleLogicalId,
+        },
+      ],
+    });
+  }),
+
   test('State Machine with invalid name', () => {
     // GIVEN
     const stack = new cdk.Stack();
