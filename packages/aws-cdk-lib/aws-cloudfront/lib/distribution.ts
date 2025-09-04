@@ -348,6 +348,16 @@ export class Distribution extends Resource implements IDistribution {
       }
     }
 
+    // Validate that minimumProtocolVersion and sslSupportMethod are only specified with a certificate
+    if (!props.certificate) {
+      if (props.minimumProtocolVersion !== undefined) {
+        throw new ValidationError('minimumProtocolVersion can only be specified when using a custom certificate. Use the \'certificate\' property to provide a certificate.', this);
+      }
+      if (props.sslSupportMethod !== undefined) {
+        throw new ValidationError('sslSupportMethod can only be specified when using a custom certificate. Use the \'certificate\' property to provide a certificate.', this);
+      }
+    }
+
     this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
     this.validateGrpc(props.defaultBehavior);
 

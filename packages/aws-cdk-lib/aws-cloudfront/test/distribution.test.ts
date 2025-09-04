@@ -531,6 +531,65 @@ describe('certificates', () => {
       },
     });
   });
+
+  test('should fail if minimumProtocolVersion is specified without a certificate', () => {
+    const origin = defaultOrigin();
+    
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: { origin },
+        minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2021,
+      });
+    }).toThrow(/minimumProtocolVersion can only be specified when using a custom certificate\. Use the \'certificate\' property to provide a certificate\./);
+  });
+
+  test('should fail if sslSupportMethod is specified without a certificate', () => {
+    const origin = defaultOrigin();
+    
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: { origin },
+        sslSupportMethod: SSLMethod.SNI,
+      });
+    }).toThrow(/sslSupportMethod can only be specified when using a custom certificate\. Use the \'certificate\' property to provide a certificate\./);
+  });
+
+  test('should fail if both minimumProtocolVersion and sslSupportMethod are specified without a certificate', () => {
+    const origin = defaultOrigin();
+    
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: { origin },
+        minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2021,
+        sslSupportMethod: SSLMethod.VIP,
+      });
+    }).toThrow(/minimumProtocolVersion can only be specified when using a custom certificate\. Use the \'certificate\' property to provide a certificate\./);
+  });
+
+  test('should succeed when minimumProtocolVersion and sslSupportMethod are specified with a certificate', () => {
+    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    const origin = defaultOrigin();
+    
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: { origin },
+        domainNames: ['www.example.com'],
+        certificate,
+        minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2021,
+        sslSupportMethod: SSLMethod.VIP,
+      });
+    }).not.toThrow();
+    
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerCertificate: {
+          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+          SslSupportMethod: 'vip',
+          MinimumProtocolVersion: 'TLSv1.2_2021',
+        },
+      },
+    });
+  });
 });
 
 describe('custom error responses', () => {
