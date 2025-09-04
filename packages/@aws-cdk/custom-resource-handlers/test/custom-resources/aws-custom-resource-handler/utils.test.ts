@@ -1,5 +1,5 @@
-import { getCredentials } from '../lib/custom-resources/aws-custom-resource-handler/utils';
-import { AwsSdkCall } from '../lib/custom-resources/aws-custom-resource-handler/construct-types';
+import { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
+import { getCredentials } from '../../../lib/custom-resources/aws-custom-resource-handler/utils';
 
 // Mock the @aws-sdk/credential-providers import
 const mockFromTemporaryCredentials = jest.fn();
@@ -20,7 +20,7 @@ describe('getCredentials with External ID support', () => {
       assumedRoleArn: 'arn:aws:iam::123456789012:role/TestRole',
       externalId: 'test-external-id-123',
     };
-    
+
     const physicalResourceId = 'test-resource-id';
     const mockCredentials = { mock: 'credentials' };
     mockFromTemporaryCredentials.mockResolvedValue(mockCredentials);
@@ -48,7 +48,7 @@ describe('getCredentials with External ID support', () => {
       assumedRoleArn: 'arn:aws:iam::123456789012:role/TestRole',
       // No externalId
     };
-    
+
     const physicalResourceId = 'test-resource-id';
     const mockCredentials = { mock: 'credentials' };
     mockFromTemporaryCredentials.mockResolvedValue(mockCredentials);
@@ -76,7 +76,7 @@ describe('getCredentials with External ID support', () => {
       assumedRoleArn: 'arn:aws:iam::123456789012:role/TestRole',
       externalId: '', // Empty string should be preserved
     };
-    
+
     const physicalResourceId = 'test-resource-id';
     const mockCredentials = { mock: 'credentials' };
     mockFromTemporaryCredentials.mockResolvedValue(mockCredentials);
@@ -105,7 +105,7 @@ describe('getCredentials with External ID support', () => {
       externalId: 'test-external-id-123',
       region: 'us-west-2',
     };
-    
+
     const physicalResourceId = 'test-resource-id';
     const mockCredentials = { mock: 'credentials' };
     mockFromTemporaryCredentials.mockResolvedValue(mockCredentials);
@@ -132,7 +132,7 @@ describe('getCredentials with External ID support', () => {
       action: 'GetCallerIdentity',
       externalId: 'test-external-id-123', // Should be ignored
     };
-    
+
     const physicalResourceId = 'test-resource-id';
 
     // WHEN
@@ -151,7 +151,7 @@ describe('getCredentials with External ID support', () => {
       assumedRoleArn: 'arn:aws:iam::123456789012:role/TestRole',
       externalId: 'test-external-id-123',
     };
-    
+
     // Physical resource ID with special characters that should be sanitized
     const physicalResourceId = 'test-resource@#$%^&*()id';
     const mockCredentials = { mock: 'credentials' };
@@ -180,7 +180,7 @@ describe('getCredentials with External ID support', () => {
       assumedRoleArn: 'arn:aws:iam::123456789012:role/TestRole',
       externalId: 'test-external-id-123',
     };
-    
+
     // Very long physical resource ID
     const physicalResourceId = 'very-long-resource-id-that-exceeds-the-maximum-length-allowed-for-role-session-names';
     const mockCredentials = { mock: 'credentials' };
@@ -192,7 +192,7 @@ describe('getCredentials with External ID support', () => {
     // THEN
     const callArgs = mockFromTemporaryCredentials.mock.calls[0][0];
     const roleSessionName = callArgs.params.RoleSessionName;
-    
+
     expect(roleSessionName.length).toBeLessThanOrEqual(64);
     expect(roleSessionName).toMatch(/^\d+-very-long-resource-id-that-exceeds-the-maximum-lengt$/);
     expect(callArgs.params.ExternalId).toBe('test-external-id-123');
