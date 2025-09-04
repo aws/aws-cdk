@@ -158,7 +158,7 @@ describe('Proxy endpoint', () => {
         vpc,
         securityGroups: [],
       });
-    }).toThrow(/`securityGroups` requires at least 1 security group or undefined/);
+    }).toThrow(/`securityGroups` must be undefined or a non-empty array/);
   });
 
   test('throw when less than 2 subnets', () => {

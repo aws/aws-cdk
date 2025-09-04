@@ -39,7 +39,7 @@ export interface DatabaseProxyEndpointOptions {
   /**
    * The name of the DB proxy endpoint
    *
-   * @default - CloudFormation-generated name
+   * @default - a CDK generated name
    */
   readonly dbProxyEndpointName?: string;
 
@@ -65,7 +65,7 @@ export interface DatabaseProxyEndpointOptions {
   /**
    * A value that indicates whether the DB proxy endpoint can be used for read/write or read-only operations.
    *
-   * @default - None
+   * @default - ProxyEndpointTargetRole.READ_WRITE
    */
   readonly targetRole?: ProxyEndpointTargetRole;
 }
@@ -85,17 +85,17 @@ export interface DatabaseProxyEndpointProps extends DatabaseProxyEndpointOptions
  */
 export interface DatabaseProxyEndpointAttributes {
   /**
-   * DB Proxy Name
+   * DB Proxy Endpoint Name
    */
   readonly dbProxyEndpointName: string;
 
   /**
-   * DB Proxy ARN
+   * DB Proxy Endpoint ARN
    */
   readonly dbProxyEndpointArn: string;
 
   /**
-   * Endpoint
+   * The endpoint that you can use to connect to the DB proxy
    */
   readonly endpoint: string;
 }
@@ -167,7 +167,7 @@ export class DatabaseProxyEndpoint extends DatabaseProxyEndpointBase {
   public readonly dbProxyEndpointArn: string;
 
   /**
-   * Endpoint
+   * The endpoint that you can use to connect to the DB proxy
    *
    * @attribute
    */
@@ -186,7 +186,7 @@ export class DatabaseProxyEndpoint extends DatabaseProxyEndpointBase {
     }
 
     if (props.securityGroups && props.securityGroups.length == 0) {
-      throw new ValidationError(`\`securityGroups\` requires at least 1 security group or undefined, got ${props.securityGroups.length}`, this);
+      throw new ValidationError('\`securityGroups\` must be undefined or a non-empty array.', this);
     }
 
     const resource = new CfnDBProxyEndpoint(this, 'Resource', {
