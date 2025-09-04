@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f074395ff504431341d2ceff72bccaf0067dc2d607147e0e8faaa4aa6e5b945b.zip"
+     "S3Key": "5cc87f90482399a08d34d15529b08e99acbc9810c979ad76dbe314e65a727699.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -47,7 +47,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.8"
+    "Runtime": "python3.13"
    },
    "DependsOn": [
     "myhandlerServiceRole77891068"
@@ -68,7 +68,7 @@
     "Ref": "myhandlerD202FA8E"
    },
    "Export": {
-    "Name": "cdk-integ-lambda-python-38:ExportsOutputRefmyhandlerD202FA8E369E8804"
+    "Name": "cdk-integ-lambda-python:ExportsOutputRefmyhandlerD202FA8E369E8804"
    }
   }
  },

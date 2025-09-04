@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "cdk-integ-lambda-python-38:ExportsOutputRefmyhandlerD202FA8E369E8804"
+         "Fn::ImportValue": "cdk-integ-lambda-python:ExportsOutputRefmyhandlerD202FA8E369E8804"
         },
         "\""
        ]
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1697143588371"
+    "salt": "1756982230036"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -37,7 +37,7 @@
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "cdk-integ-lambda-python-38:ExportsOutputRefmyhandlerD202FA8E369E8804"
+     "Fn::ImportValue": "cdk-integ-lambda-python:ExportsOutputRefmyhandlerD202FA8E369E8804"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -106,7 +106,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "cdk-integ-lambda-python-38:ExportsOutputRefmyhandlerD202FA8E369E8804"
+              "Fn::ImportValue": "cdk-integ-lambda-python:ExportsOutputRefmyhandlerD202FA8E369E8804"
              }
             ]
            ]
@@ -122,12 +122,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs22.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "211bd8c514e07e047addb5c06afe6f8e85ce4e0b19b64ad78b28e84fc09aafe7.zip"
+     "S3Key": "53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
