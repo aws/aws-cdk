@@ -8,6 +8,7 @@ import { DestinationS3BackupProps } from '../common';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 import { ILoggingConfig } from '../logging-config';
 import { IDataProcessor } from '../processor';
+import { DataFormatConversionProps } from '../s3-bucket';
 
 export interface DestinationLoggingProps {
   /**
@@ -72,6 +73,7 @@ export function createBufferingHints(
   scope: Construct,
   interval?: cdk.Duration,
   size?: cdk.Size,
+  dataFormatConversionProps?: DataFormatConversionProps,
 ): CfnDeliveryStream.BufferingHintsProperty | undefined {
   if (!interval && !size) {
     return undefined;
@@ -81,9 +83,14 @@ export function createBufferingHints(
   if (intervalInSeconds > 900) {
     throw new cdk.ValidationError(`Buffering interval must be less than 900 seconds. Buffering interval provided was ${intervalInSeconds} seconds.`, scope);
   }
-  const sizeInMBs = size?.toMebibytes() ?? 5;
+  const defaultSizeInMBs = dataFormatConversionProps ? 128 : 5;
+  const sizeInMBs = size?.toMebibytes() ?? defaultSizeInMBs;
   if (sizeInMBs < 1 || sizeInMBs > 128) {
     throw new cdk.ValidationError(`Buffering size must be between 1 and 128 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`, scope);
+  }
+
+  if (dataFormatConversionProps && sizeInMBs < 64) {
+    throw new cdk.ValidationError(`When data format conversion is enabled, buffering size must be at least 64 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`, scope);
   }
   return { intervalInSeconds, sizeInMBs };
 }
