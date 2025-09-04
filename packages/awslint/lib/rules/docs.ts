@@ -84,6 +84,10 @@ docsLinter.add({
     if (isModuleExperimental(e.ctx.assembly)) {
       return;
     }
+    if ((e.ctx.kind === 'type' && CoreTypes.isCfnType(e.ctx.documentable))
+    || (e.ctx.kind === 'interface-property' && CoreTypes.isCfnType(e.ctx.containingType))) {
+      return;
+    }
     const sym = e.ctx.documentable;
     e.assert(sym.docs.docs.stability !== Stability.Experimental, e.ctx.errorKey);
   },
