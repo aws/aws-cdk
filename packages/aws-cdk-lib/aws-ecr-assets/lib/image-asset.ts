@@ -498,7 +498,7 @@ export class DockerImageAsset extends Construct implements IAsset {
 
     const defaultIgnoreMode = FeatureFlags.of(this).isEnabled(cxapi.DOCKER_IGNORE_SUPPORT)
       ? IgnoreMode.DOCKER : IgnoreMode.GLOB;
-    let ignoreMode = props.ignoreMode ?? defaultIgnoreMode;
+    const ignoreMode = props.ignoreMode ?? defaultIgnoreMode;
 
     let exclude: string[] = props.exclude || [];
 
@@ -538,7 +538,7 @@ export class DockerImageAsset extends Construct implements IAsset {
     if (props.invalidation?.networkMode !== false && props.networkMode) { extraHash.networkMode = props.networkMode; }
     if (props.invalidation?.platform !== false && props.platform) { extraHash.platform = props.platform; }
     if (props.invalidation?.outputs !== false && props.outputs) { extraHash.outputs = props.outputs; }
-    
+
     // Include new custom repository and tagging properties in hash calculation
     if (props.ecrRepository) { extraHash.ecrRepository = props.ecrRepository.repositoryName; }
     if (props.imageTag) { extraHash.imageTag = props.imageTag; }
@@ -578,22 +578,22 @@ export class DockerImageAsset extends Construct implements IAsset {
     // Handle custom ECR repository or use default synthesizer
     let location: DockerImageAssetLocation;
     const locationProps = {
-        directoryName: this.assetPath,
-        assetName: this.assetName,
-        dockerBuildArgs: this.dockerBuildArgs,
-        dockerBuildSecrets: this.dockerBuildSecrets,
-        dockerBuildSsh: this.dockerBuildSsh,
-        dockerBuildTarget: this.dockerBuildTarget,
-        dockerFile: props.file,
-        sourceHash: staging.assetHash,
-        networkMode: props.networkMode?.mode,
-        platform: props.platform?.platform,
-        dockerOutputs: this.dockerOutputs,
-        dockerCacheFrom: this.dockerCacheFrom,
-        dockerCacheTo: this.dockerCacheTo,
-        dockerCacheDisabled: this.dockerCacheDisabled,
-        displayName: props.displayName ?? props.assetName ?? Names.stackRelativeConstructPath(this),
-      }
+      directoryName: this.assetPath,
+      assetName: this.assetName,
+      dockerBuildArgs: this.dockerBuildArgs,
+      dockerBuildSecrets: this.dockerBuildSecrets,
+      dockerBuildSsh: this.dockerBuildSsh,
+      dockerBuildTarget: this.dockerBuildTarget,
+      dockerFile: props.file,
+      sourceHash: staging.assetHash,
+      networkMode: props.networkMode?.mode,
+      platform: props.platform?.platform,
+      dockerOutputs: this.dockerOutputs,
+      dockerCacheFrom: this.dockerCacheFrom,
+      dockerCacheTo: this.dockerCacheTo,
+      dockerCacheDisabled: this.dockerCacheDisabled,
+      displayName: props.displayName ?? props.assetName ?? Names.stackRelativeConstructPath(this),
+    };
     if (props.ecrRepository) {
       // Custom repository: create location manually
       const customTag = props.imageTag ?? `${props.imageTagPrefix ?? ''}${this.assetHash}`;
@@ -624,15 +624,15 @@ export class DockerImageAsset extends Construct implements IAsset {
     stack: Stack,
     source: DockerImageAssetSource,
     imageTagPrefix?: string,
-    imageTag?: string
+    imageTag?: string,
   ): DockerImageAssetLocation {
     // Create a custom tag
     const customTag = imageTag ?? `${imageTagPrefix ?? ''}${source.sourceHash}`;
-    
+
     // For custom tagging, we need to work with the synthesizer's docker repository
     // but override the tag generation logic
     const baseLocation = stack.synthesizer.addDockerImageAsset(source);
-    
+
     // Create a modified location with our custom tag
     return {
       repositoryName: baseLocation.repositoryName,

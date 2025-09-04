@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import * as ecr from 'aws-cdk-lib/aws-ecr';
-import { App, Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib';
-import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { App, Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
 import { Construct } from 'constructs';
 
 export class CustomRepositoryTestStack extends Stack {
