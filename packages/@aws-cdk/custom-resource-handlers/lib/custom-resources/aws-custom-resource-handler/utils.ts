@@ -65,6 +65,7 @@ export function respond(
   if (logApiResponseData) {
     console.log('Responding', JSON.stringify(responseObject));
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { Data, ...filteredResponseObject } = responseObject;
     console.log('Responding', JSON.stringify(filteredResponseObject));
   }
