@@ -35,55 +35,57 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
   readonly dataFormatConversionConfiguration?: DataFormatConversionConfiguration;
 }
 
-interface IDeserializer {
-  bind(): CfnDeliveryStream.DeserializerProperty;
+interface IInputFormat {
+  bind(): CfnDeliveryStream.InputFormatConfigurationProperty;
 }
 
-interface OpenXJsonDeserializerProps {
+interface OpenXJsonInputFormatProps {
   readonly caseInsensitive?: boolean;
   readonly columnToJsonKeyMappings?: Record<string, string>;
   readonly convertDotsInJsonKeysToUnderscores?: boolean;
 }
-class OpenXJsonDeserializer implements IDeserializer {
-  constructor(readonly props?: OpenXJsonDeserializerProps) {}
+class OpenXJsonInputFormat implements IInputFormat {
+  constructor(readonly props?: OpenXJsonInputFormatProps) {}
 
-  bind(): CfnDeliveryStream.DeserializerProperty {
+  bind(): CfnDeliveryStream.InputFormatConfigurationProperty {
     return {
-      openXJsonSerDe: {
-        ...this.props,
+      deserializer: {
+        openXJsonSerDe: {
+          ...this.props,
+        },
       },
     };
   }
 }
 
-interface HiveJsonDeserializerProps {
+interface HiveJsonInputFormatProps {
   readonly timestampFormats?: string[];
 }
 
-class HiveJsonDeserializer implements IDeserializer {
-  constructor(readonly props?: HiveJsonDeserializerProps) {}
+class HiveJsonInputFormat implements IInputFormat {
+  constructor(readonly props?: HiveJsonInputFormatProps) {}
 
-  bind(): CfnDeliveryStream.DeserializerProperty {
+  bind(): CfnDeliveryStream.InputFormatConfigurationProperty {
     return {
-      hiveJsonSerDe: {
-        ...this.props,
+      deserializer: {
+        hiveJsonSerDe: {
+          ...this.props,
+        },
       },
     };
   }
 }
 
 class InputFormat {
-  constructor(readonly deserializer: IDeserializer) {}
-
-  static readonly OPENX_JSON = new InputFormat(new OpenXJsonDeserializer());
-  static readonly HIVE_JSON = new InputFormat(new HiveJsonDeserializer());
+  static readonly OPENX_JSON = new OpenXJsonInputFormat();
+  static readonly HIVE_JSON = new HiveJsonInputFormat();
 }
 
-interface ISerializer {
-  bind(): CfnDeliveryStream.SerializerProperty;
+interface IOutputFormat {
+  bind(): CfnDeliveryStream.OutputFormatConfigurationProperty;
 }
 
-interface ParquetSerializerProps {
+interface ParquetOutputFormatProps {
   readonly blockSizeBytes?: number;
   readonly compression?: "UNCOMPRESSED|SNAPPY|GZIP";
   readonly enableDictionaryCompression?: boolean;
@@ -91,18 +93,20 @@ interface ParquetSerializerProps {
   readonly pageSizeBytes?: number;
   readonly writerVersion?: "V1|V2";
 }
-class ParquetSerializer implements ISerializer {
-  constructor(readonly props?: ParquetSerializerProps) {}
-  bind(): CfnDeliveryStream.SerializerProperty {
+class ParquetOutputFormat implements IOutputFormat {
+  constructor(readonly props?: ParquetOutputFormatProps) {}
+  bind(): CfnDeliveryStream.OutputFormatConfigurationProperty {
     return {
-      parquetSerDe: {
-        ...this.props,
+      serializer: {
+        parquetSerDe: {
+          ...this.props,
+        },
       },
     };
   }
 }
 
-interface OrcSerializerProps {
+interface OrcOutputFormatProps {
   readonly blockSizeBytes?: number;
   readonly bloomFilterColumns?: string[];
   readonly bloomFilterFalsePositiveProbability?: number;
@@ -114,22 +118,22 @@ interface OrcSerializerProps {
   readonly rowIndexStride?: number;
   readonly stripeSizeBytes?: number;
 }
-class OrcSerializer implements ISerializer {
-  constructor(readonly props?: OrcSerializerProps) {}
-  bind(): CfnDeliveryStream.SerializerProperty {
+class OrcOutputFormat implements IOutputFormat {
+  constructor(readonly props?: OrcOutputFormatProps) {}
+  bind(): CfnDeliveryStream.OutputFormatConfigurationProperty {
     return {
-      orcSerDe: {
-        ...this.props,
+      serializer: {
+        orcSerDe: {
+          ...this.props,
+        },
       },
     };
   }
 }
 
 class OutputFormat {
-  constructor(readonly serializer: ISerializer) {}
-
-  static readonly PARQUET = new OutputFormat(new ParquetSerializer());
-  static readonly ORC = new OutputFormat(new OrcSerializer());
+  static readonly PARQUET = new ParquetOutputFormat();
+  static readonly ORC = new OrcOutputFormat();
 }
 
 interface DataFormatConversionSchemaProps {
@@ -239,8 +243,8 @@ class DataFormatConversionSchema {
 
 interface DataFormatConversionConfiguration {
   readonly schema: DataFormatConversionSchema;
-  readonly inputFormat: InputFormat;
-  readonly outputFormat: OutputFormat;
+  readonly inputFormat: IInputFormat;
+  readonly outputFormat: IOutputFormat;
 }
 
 /*
@@ -311,12 +315,8 @@ export class S3Bucket implements IDestination {
     const dataFormatConversionConfiguration = this.props.dataFormatConversionConfiguration ? {
       enabled: true,
       schemaConfiguration: this.props.dataFormatConversionConfiguration.schema.bind(scope, { role: role }),
-      inputFormatConfiguration: {
-        deserializer: this.props.dataFormatConversionConfiguration.inputFormat.deserializer.bind()
-      },
-      outputFormatConfiguration: { 
-        serializer: this.props.dataFormatConversionConfiguration.outputFormat.serializer.bind(),
-      }
+      inputFormatConfiguration: this.props.dataFormatConversionConfiguration.inputFormat.bind(),
+      outputFormatConfiguration: this.props.dataFormatConversionConfiguration.outputFormat.bind(),
     } : undefined
 
     return {
