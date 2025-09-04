@@ -136,7 +136,7 @@ class OutputFormat {
   static readonly ORC = new OrcOutputFormat();
 }
 
-interface DataFormatConversionSchemaProps {
+interface ConversionSchemaProps {
   /**
    * The ID of the AWS Glue Data Catalog.
    *
@@ -185,10 +185,10 @@ interface SchemaBindOptions {
   readonly role: iam.IRole;
 }
 
-class DataFormatConversionSchema {
+class ConversionSchema {
   static fromCfnTable(table: glue.CfnTable) {
     const stack = core.Stack.of(table);
-    return new DataFormatConversionSchema({
+    return new ConversionSchema({
       tableName: table.ref,
       databaseName: table.databaseName,
       databaseRegion: stack.region,
@@ -200,7 +200,7 @@ class DataFormatConversionSchema {
   // Once Glue L2 constructs are stable, we can do something like the following to support it
   // static fromTable(table: glue.Table) {}
 
-  constructor(readonly props: DataFormatConversionSchemaProps) {}
+  constructor(readonly props: ConversionSchemaProps) {}
 
   bind(
     scope: Construct,
@@ -242,7 +242,7 @@ class DataFormatConversionSchema {
 }
 
 interface DataFormatConversionConfiguration {
-  readonly schema: DataFormatConversionSchema;
+  readonly schema: ConversionSchema;
   readonly inputFormat: IInputFormat;
   readonly outputFormat: IOutputFormat;
 }
