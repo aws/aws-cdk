@@ -1,0 +1,214 @@
+{
+ "Resources": {
+  "AwsApiCallEKSlistPodIdentityAssociationsa2367419c2f573ba80a202dff0676152": {
+   "Type": "Custom::DeployAssert@SdkCallEKSlistPodIdentityAssociations",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EKS",
+    "api": "listPodIdentityAssociations",
+    "parameters": {
+     "clusterName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "eks-pod-identity-target-role-test:ExportsOutputRefClusterEB0386A796A0E3FE"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "associations.0.associationId"
+    ],
+    "salt": "1755129390754"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "eks:ListPodIdentityAssociations"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "eks:DescribePodIdentityAssociation"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "1bf478116a59c3d8e069e12fe42948c11b5d5233fca90d2f2b3ec9fcd695025b.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallEKSdescribePodIdentityAssociation4e9c41b6ff27a2e551f92b8292bff11c": {
+   "Type": "Custom::DeployAssert@SdkCallEKSdescribePodIdentityAssociatio",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EKS",
+    "api": "describePodIdentityAssociation",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"association\":{\"$ObjectLike\":{\"clusterName\":\"",
+       {
+        "Fn::ImportValue": "eks-pod-identity-target-role-test:ExportsOutputRefClusterEB0386A796A0E3FE"
+       },
+       "\",\"namespace\":\"default\",\"serviceAccount\":{\"$StringLike\":\".*serviceaccount.*\"},\"roleArn\":{\"$StringLike\":\"arn:aws:iam::\\\\d+:role/.*ServiceAccountRole.*\"},\"targetRoleArn\":\"",
+       {
+        "Fn::ImportValue": "eks-pod-identity-target-role-test:ExportsOutputFnGetAttTargetRole7662179DArn88C87860"
+       },
+       "\",\"associationArn\":{\"$StringLike\":\"arn:aws:eks:.*:podidentityassociation/.*\"}}}}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "clusterName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "eks-pod-identity-target-role-test:ExportsOutputRefClusterEB0386A796A0E3FE"
+        },
+        "\""
+       ]
+      ]
+     },
+     "associationId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::GetAtt": [
+          "AwsApiCallEKSlistPodIdentityAssociationsa2367419c2f573ba80a202dff0676152",
+          "apiCallResponse.associations.0.associationId"
+         ]
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1755129390754"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallEKSdescribePodIdentityAssociation4e9c41b6ff27a2e551f92b8292bff11c": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallEKSdescribePodIdentityAssociation4e9c41b6ff27a2e551f92b8292bff11c",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
