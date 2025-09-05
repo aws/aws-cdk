@@ -66,6 +66,14 @@ export interface BaseResolverProps {
    * @default - no code is used
    */
   readonly code?: Code;
+
+  /**
+   * The whether to enable enhanced metrics
+   * Value will be ignored, if `enhancedMetricsConfig.resolverLevelMetricsBehavior` on AppSync GraphqlApi construct is set to `FULL_REQUEST_RESOLVER_METRICS`
+   *
+   * @default - Enhance metrics are disabled
+   */
+  readonly enhancedMetricsEnabled?: boolean;
 }
 
 /**
@@ -133,6 +141,8 @@ export class Resolver extends Construct {
     }
 
     const code = props.code?.bind(this);
+    const metricsConfig = props.enhancedMetricsEnabled === undefined ? undefined
+      : (props.enhancedMetricsEnabled ? 'ENABLED': 'DISABLED');
     this.resolver = new CfnResolver(this, 'Resource', {
       apiId: props.api.apiId,
       typeName: props.typeName,
@@ -147,6 +157,7 @@ export class Resolver extends Construct {
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
       cachingConfig: this.createCachingConfig(props.cachingConfig),
       maxBatchSize: props.maxBatchSize,
+      metricsConfig: metricsConfig,
     });
     props.api.addSchemaDependency(this.resolver);
     if (props.dataSource) {
