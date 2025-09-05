@@ -57,7 +57,7 @@ interface OpenXJsonInputFormatProps {
 
   /**
    * Maps column names to JSON keys that aren't identical to the column names.
-   * This is useful when the JSON contains keys that are Hive keywords. 
+   * This is useful when the JSON contains keys that are Hive keywords.
    * For example, `timestamp` is a Hive keyword. If you have a JSON key named `timestamp`, set this parameter to `{"ts": "timestamp"}` to map this key to a column named `ts`
    *
    * @default JSON keys are not renamed
@@ -66,7 +66,7 @@ interface OpenXJsonInputFormatProps {
 
   /**
    * When set to `true`, specifies that the names of the keys include dots and that you want Firehose to replace them with underscores.
-   * This is useful because Apache Hive does not allow dots in column names. 
+   * This is useful because Apache Hive does not allow dots in column names.
    * For example, if the JSON contains a key whose name is "a.b", you can define the column name to be "a_b" when using this option.
    *
    * @default false
@@ -80,7 +80,6 @@ interface OpenXJsonInputFormatProps {
  * You should only need to specify an instance of this class if the default configuration does not suit your needs.
  */
 class OpenXJsonInputFormat implements IInputFormat {
-
   /**
    * Construct a new OpenX JSON input format specification for record format conversion
    */
@@ -189,12 +188,11 @@ class HiveJsonInputFormat implements IInputFormat {
 }
 
 /**
- * Represents possible input formats when perform record data conversion. 
+ * Represents possible input formats when perform record data conversion.
  *
  * You can choose to parse your input JSON with OpenX JSON specification or Hive JSON specification.
  */
 class InputFormat {
-
   /**
    * Parse your JSON with OpenX JSON specification. This will typically suffice.
    */
@@ -404,10 +402,23 @@ interface ConversionSchemaProps {
 }
 
 interface SchemaBindOptions {
+  
+  /**
+   * The IAM Role to grant permissions to read the glue table schema to
+   */
   readonly role: iam.IRole;
 }
 
+/**
+ * Represents a schema for Firehose S3 data record format conversion.
+ *
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-dataformatconversionconfiguration.html#cfn-kinesisfirehose-deliverystream-dataformatconversionconfiguration-schemaconfiguration
+ */
 class Schema {
+
+  /**
+   * Obtain schema for data record format conversion from an `aws_glue.CfnTable`
+   */
   static fromCfnTable(table: glue.CfnTable) {
     const stack = core.Stack.of(table);
     return new Schema({
@@ -534,7 +545,7 @@ export class S3Bucket implements IDestination {
     }
 
     const dataFormatConfig = this.props.dataFormatConversionConfiguration;
-    const dataFormatConversionConfiguration = dataFormatConfig ? {
+    const dataFormatConversionConfiguration: CfnDeliveryStream.DataFormatConversionConfigurationProperty|undefined = dataFormatConfig ? {
       enabled: true,
       schemaConfiguration: dataFormatConfig.schema.bind(scope, { role: role }),
       inputFormatConfiguration: dataFormatConfig.inputFormat.render(),
