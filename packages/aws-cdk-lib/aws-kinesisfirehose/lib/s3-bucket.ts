@@ -36,7 +36,7 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
 }
 
 interface IInputFormat {
-  bind(): CfnDeliveryStream.InputFormatConfigurationProperty;
+  render(): CfnDeliveryStream.InputFormatConfigurationProperty;
 }
 
 interface OpenXJsonInputFormatProps {
@@ -47,7 +47,7 @@ interface OpenXJsonInputFormatProps {
 class OpenXJsonInputFormat implements IInputFormat {
   constructor(readonly props?: OpenXJsonInputFormatProps) {}
 
-  bind(): CfnDeliveryStream.InputFormatConfigurationProperty {
+  render(): CfnDeliveryStream.InputFormatConfigurationProperty {
     return {
       deserializer: {
         openXJsonSerDe: {
@@ -65,7 +65,7 @@ interface HiveJsonInputFormatProps {
 class HiveJsonInputFormat implements IInputFormat {
   constructor(readonly props?: HiveJsonInputFormatProps) {}
 
-  bind(): CfnDeliveryStream.InputFormatConfigurationProperty {
+  render(): CfnDeliveryStream.InputFormatConfigurationProperty {
     return {
       deserializer: {
         hiveJsonSerDe: {
@@ -82,25 +82,61 @@ class InputFormat {
 }
 
 interface IOutputFormat {
-  bind(): CfnDeliveryStream.OutputFormatConfigurationProperty;
+  render(): CfnDeliveryStream.OutputFormatConfigurationProperty;
+}
+
+enum WriterVersion {
+  V1 = "V1",
+  V2 = "V2",
+}
+
+enum Compression {
+  UNCOMPRESSED = "UNCOMPRESSED",
+  SNAPPY = "SNAPPY",
+  GZIP = "GZIP",
 }
 
 interface ParquetOutputFormatProps {
-  readonly blockSizeBytes?: number;
-  readonly compression?: "UNCOMPRESSED|SNAPPY|GZIP";
+  readonly blockSize?: core.Size;
+  readonly compression?: Compression;
   readonly enableDictionaryCompression?: boolean;
-  readonly maxPaddingBytes?: number;
-  readonly pageSizeBytes?: number;
-  readonly writerVersion?: "V1|V2";
+  readonly maxPadding?: core.Size;
+  readonly pageSize?: core.Size;
+  readonly writerVersion?: WriterVersion;
 }
 class ParquetOutputFormat implements IOutputFormat {
-  constructor(readonly props?: ParquetOutputFormatProps) {}
-  bind(): CfnDeliveryStream.OutputFormatConfigurationProperty {
+  constructor(readonly props?: ParquetOutputFormatProps) {
+    if (props) {
+      this.validateProps(props)
+    }
+  }
+
+  private validateProps(props: ParquetOutputFormatProps) {
+    if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 16) {
+      throw new core.UnscopedValidationError(`Block size ${props.blockSize} must be at least 16MiB`)
+    }
+
+    if (props.pageSize !== undefined && props.pageSize.toKibibytes() < 64) {
+      throw new core.UnscopedValidationError(`Page size ${props.pageSize} must be at least 64KiB`)
+    }
+  }
+
+  private createParquetSerDeProps(): CfnDeliveryStream.ParquetSerDeProperty {
+    const props = this.props
+    return props ? {
+      blockSizeBytes: props.blockSize?.toBytes(),
+      compression: props.compression,
+      enableDictionaryCompression: props.enableDictionaryCompression,
+      maxPaddingBytes: props.maxPadding?.toBytes(),
+      pageSizeBytes: props.pageSize?.toBytes(),
+      writerVersion: props.writerVersion,
+    } : {}
+  }
+
+  render(): CfnDeliveryStream.OutputFormatConfigurationProperty {
     return {
       serializer: {
-        parquetSerDe: {
-          ...this.props,
-        },
+        parquetSerDe: this.createParquetSerDeProps()
       },
     };
   }
@@ -120,7 +156,7 @@ interface OrcOutputFormatProps {
 }
 class OrcOutputFormat implements IOutputFormat {
   constructor(readonly props?: OrcOutputFormatProps) {}
-  bind(): CfnDeliveryStream.OutputFormatConfigurationProperty {
+  render(): CfnDeliveryStream.OutputFormatConfigurationProperty {
     return {
       serializer: {
         orcSerDe: {
@@ -315,8 +351,8 @@ export class S3Bucket implements IDestination {
     const dataFormatConversionConfiguration = this.props.dataFormatConversionConfiguration ? {
       enabled: true,
       schemaConfiguration: this.props.dataFormatConversionConfiguration.schema.bind(scope, { role: role }),
-      inputFormatConfiguration: this.props.dataFormatConversionConfiguration.inputFormat.bind(),
-      outputFormatConfiguration: this.props.dataFormatConversionConfiguration.outputFormat.bind(),
+      inputFormatConfiguration: this.props.dataFormatConversionConfiguration.inputFormat.render(),
+      outputFormatConfiguration: this.props.dataFormatConversionConfiguration.outputFormat.render(),
     } : undefined
 
     return {
