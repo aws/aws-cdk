@@ -11,11 +11,11 @@ export interface IInputFormat {
 export interface OpenXJsonInputFormatProps {
 
   /**
-   * Whether the JSON keys should be downshifted (converted to lowercase)
+   * Whether the JSON keys should be lowercased when written as column names
    *
    * @default true
    */
-  readonly downshiftJsonKeys?: boolean;
+  readonly lowercaseColumnNames?: boolean;
 
   /**
    * Maps column names to JSON keys that aren't identical to the column names.
@@ -50,7 +50,7 @@ export class OpenXJsonInputFormat implements IInputFormat {
   private createOpenXJsonSerde(): CfnDeliveryStream.OpenXJsonSerDeProperty {
     const props = this.props;
     return props ? {
-      caseInsensitive: props.downshiftJsonKeys,
+      caseInsensitive: props.lowercaseColumnNames,
       columnToJsonKeyMappings: props.columnToJsonKeyMappings,
       convertDotsInJsonKeysToUnderscores: props.convertDotsInJsonKeysToUnderscores,
     } : {};

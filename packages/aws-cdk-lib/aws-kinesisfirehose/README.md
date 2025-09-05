@@ -125,6 +125,81 @@ const s3Destination = new firehose.S3Bucket(bucket, {
 });
 ```
 
+### Data Format Conversion
+
+Defining an S3 destination configured with data format conversion:
+
+```ts
+declare const bucket: s3.Bucket;
+declare const schemaGlueTable: glue.cfnTable;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  compression: firehose.Compression.GZIP,
+  fileExtension: '.json.gz',
+  dataFormatConversionConfiguration: {
+    schema: Schema.fromCfnTable(schemaGlueTable),
+    inputFormat: InputFormat.OPENX_JSON,
+    outputFormat: OutputFormat.PARQUET,
+  }
+});
+```
+
+You can only parse JSON and transform it into either Parquet or ORC:
+- to read JSON using OpenX parser, choose `InputFormat.OPENX_JSON`.
+- to read JSON using Hive parser, choose `InputFormat.HIVE_JSON`.
+- to transform into Parquet, choose `OutputFormat.PARQUET`.
+- to transform into ORC, choose `OutputFormat.ORC`.
+
+Each input and output format has highly specific props that can be tuned if the defaults do not suit your usecase.
+These are detailed below
+
+#### Input: OpenX JSON
+
+Example creation of custom OpenX JSON InputFormat:
+
+```ts
+const inputFormat = new OpenXJsonInputFormat({
+  lowercaseColumnNames: false,
+  columnToJsonKeyMappings: {"ts": "timestamp"},
+  convertDotsInJsonKeysTounderscores: true,
+})
+```
+
+#### Input: Hive JSON
+
+Example creation of custom Hive JSON InputFormat:
+
+```ts
+const inputFormat = new HiveJsonInputFormat({
+  timestampParsers: [TimestampParser.fromFormatString('yyyy-MM-dd')]
+})
+```
+
+Hive JSON allows you to specify custom timestamp formats to parse. The syntax is Joda Time (link needed).
+When you specify a custom `TimestampParser`, the default parser is overriden. To retain the default parser,
+add `TimestampParser.DEFAULT` to the list of parsers.
+
+To parse epoch millis, use the convenience `TimestampParser.EPOCH_MILLIS`.
+
+#### Output: Parquet
+
+Example creation of custom Parquet OutputFormat
+
+```ts
+const outputFormat = new ParquetOutputFormat({
+  // TODO: Props
+})
+```
+
+#### Output: ORC
+
+Example creation of custom ORC OutputFormat
+
+```ts
+const outputFormat = new OrcOutputFormat({
+  // TODO: Props
+})
+```
+
 ## Server-side Encryption
 
 Enabling server-side encryption (SSE) requires Amazon Data Firehose to encrypt all data
