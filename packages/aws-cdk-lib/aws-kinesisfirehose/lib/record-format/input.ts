@@ -45,7 +45,7 @@ export class OpenXJsonInputFormat implements IInputFormat {
   /**
    * Construct a new OpenX JSON input format specification for record format conversion
    */
-  constructor(readonly props?: OpenXJsonInputFormatProps) {}
+  public constructor(readonly props?: OpenXJsonInputFormatProps) {}
 
   private createOpenXJsonSerde(): CfnDeliveryStream.OpenXJsonSerDeProperty {
     const props = this.props;
@@ -73,13 +73,13 @@ export class TimestampParser {
   /**
    * Parses timestamps formatted in milliseconds since epoch.
    */
-  static readonly EPOCH_MILLIS = new TimestampParser('millis');
+  public static readonly EPOCH_MILLIS = new TimestampParser('millis');
   /**
    * Default timestamp parser.
    *
    * You should specify this parser if you want to preserve the default timestamp parsing logic.
    */
-  static readonly DEFAULT = new TimestampParser('java.sql.Timestamp::valueOf');
+  public static readonly DEFAULT = new TimestampParser('java.sql.Timestamp::valueOf');
 
   /**
    * Creates a TimestampParser from the given format string.
@@ -89,7 +89,7 @@ export class TimestampParser {
    *
    * @param format the Joda Time format string
    */
-  static fromFormatString(format: string): TimestampParser {
+  public static fromFormatString(format: string): TimestampParser {
     if (format === this.DEFAULT.format) {
       throw new core.UnscopedValidationError(`Cannot use reserved format string ${format} - Use 'TimestampParser.DEFAULT' instead`);
     }
@@ -131,7 +131,7 @@ export class HiveJsonInputFormat implements IInputFormat {
   /**
    * Construct a new Hive JSON input format specification for record format conversion
    */
-  constructor(readonly props?: HiveJsonInputFormatProps) {}
+  public constructor(readonly props?: HiveJsonInputFormatProps) {}
 
   private createHiveJsonSerde(): CfnDeliveryStream.HiveJsonSerDeProperty {
     const props = this.props;
@@ -158,12 +158,12 @@ export class InputFormat {
   /**
    * Parse your JSON with OpenX JSON specification. This will typically suffice.
    */
-  static readonly OPENX_JSON = new OpenXJsonInputFormat();
+  public static readonly OPENX_JSON = new OpenXJsonInputFormat();
 
   /**
    * Parse your JSON with Hive JSON specification. Use this if you want to parse custom timestamps.
    */
-  static readonly HIVE_JSON = new HiveJsonInputFormat();
+  public static readonly HIVE_JSON = new HiveJsonInputFormat();
 
   private constructor() {}
 }

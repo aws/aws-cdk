@@ -26,7 +26,7 @@ export interface ParquetOutputFormatProps {
 }
 
 export class ParquetOutputFormat implements IOutputFormat {
-  constructor(readonly props?: ParquetOutputFormatProps) {
+  public constructor(readonly props?: ParquetOutputFormatProps) {
     this.validateProps(props);
   }
 
@@ -56,7 +56,7 @@ export class ParquetOutputFormat implements IOutputFormat {
     } : {};
   }
 
-  render(): CfnDeliveryStream.OutputFormatConfigurationProperty {
+  public render(): CfnDeliveryStream.OutputFormatConfigurationProperty {
     return {
       serializer: {
         parquetSerDe: this.createParquetSerDeProps(),
@@ -83,7 +83,7 @@ export interface OrcOutputFormatProps {
   readonly stripeSize?: core.Size;
 }
 class OrcOutputFormat implements IOutputFormat {
-  constructor(readonly props?: OrcOutputFormatProps) {
+  public constructor(readonly props?: OrcOutputFormatProps) {
     this.validateProps(props);
   }
 
@@ -136,7 +136,8 @@ class OrcOutputFormat implements IOutputFormat {
       stripeSizeBytes: props.stripeSize?.toBytes(),
     } : {};
   }
-  render(): CfnDeliveryStream.OutputFormatConfigurationProperty {
+
+  public render(): CfnDeliveryStream.OutputFormatConfigurationProperty {
     return {
       serializer: {
         orcSerDe: this.createOrcSerDeProps(),
@@ -146,8 +147,8 @@ class OrcOutputFormat implements IOutputFormat {
 }
 
 export class OutputFormat {
-  static readonly PARQUET = new ParquetOutputFormat();
-  static readonly ORC = new OrcOutputFormat();
+  public static readonly PARQUET = new ParquetOutputFormat();
+  public static readonly ORC = new OrcOutputFormat();
 
   private constructor() {}
 }

@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
 import { BackupMode, CommonDestinationProps, CommonDestinationS3Props } from './common';
 import { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
-import { CfnDeliveryStream } from './kinesisfirehose.generated';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
@@ -18,7 +17,7 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
    * Specify a file extension.
    * It will override the default file extension appended by Data Format Conversion or S3 compression features such as `.parquet` or `.gz`.
    *
-   * File extension is invalid, it must start with a period (`.`) and can contain allowed characters: `0-9a-z!-_.*'()`.
+   * File extension must start with a period (`.`) and can contain allowed characters: `0-9a-z!-_.*'()`.
    *
    * @see https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html#create-destination-s3
    * @default - The default file extension appended by Data Format Conversion or S3 compression features
@@ -83,7 +82,7 @@ export class S3Bucket implements IDestination {
     }
 
     const dataFormatConfig = this.props.dataFormatConversionConfiguration;
-    const dataFormatConversionConfiguration: CfnDeliveryStream.DataFormatConversionConfigurationProperty|undefined = dataFormatConfig ? {
+    const dataFormatConversionConfiguration = dataFormatConfig ? {
       enabled: true,
       schemaConfiguration: dataFormatConfig.schema.bind(scope, { role: role }),
       inputFormatConfiguration: dataFormatConfig.inputFormat.render(),

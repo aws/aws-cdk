@@ -49,7 +49,7 @@ export interface SchemaProps {
   readonly versionId?: string;
 }
 
-interface SchemaBindOptions {
+export interface SchemaBindOptions {
 
   /**
    * The IAM Role to grant permissions to read the glue table schema to
@@ -80,9 +80,9 @@ export class Schema {
   // Once Glue L2 constructs are stable, we can do something like the following to support it
   // static fromTable(table: glue.Table) {}
 
-  constructor(readonly props: SchemaProps) {}
+  public constructor(readonly props: SchemaProps) {}
 
-  bind(
+  public bind(
     scope: Construct,
     options: SchemaBindOptions,
   ): CfnDeliveryStream.SchemaConfigurationProperty {
