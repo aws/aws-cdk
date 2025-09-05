@@ -32,6 +32,10 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
    */
   readonly timeZone?: core.TimeZone;
 
+  /**
+   * The input format, output format, and schema for converting data from the JSON format to the Parquet or ORC format before writing it to Amazon S3.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-extendeds3destinationconfiguration.html#cfn-kinesisfirehose-deliverystream-extendeds3destinationconfiguration-dataformatconversionconfiguration
+   */
   readonly dataFormatConversionConfiguration?: DataFormatConversionConfiguration;
 }
 
@@ -39,18 +43,53 @@ interface IInputFormat {
   render(): CfnDeliveryStream.InputFormatConfigurationProperty;
 }
 
+/**
+ * Props for OpenX JSON input format for data record format conversion
+ */
 interface OpenXJsonInputFormatProps {
-  readonly caseInsensitive?: boolean;
+
+  /**
+   * Whether the JSON keys should be downshifted (converted to lowercase)
+   *
+   * @default true
+   */
+  readonly downshiftJsonKeys?: boolean;
+
+  /**
+   * Maps column names to JSON keys that aren't identical to the column names.
+   * This is useful when the JSON contains keys that are Hive keywords. 
+   * For example, `timestamp` is a Hive keyword. If you have a JSON key named `timestamp`, set this parameter to `{"ts": "timestamp"}` to map this key to a column named `ts`
+   *
+   * @default JSON keys are not renamed
+   */
   readonly columnToJsonKeyMappings?: Record<string, string>;
+
+  /**
+   * When set to `true`, specifies that the names of the keys include dots and that you want Firehose to replace them with underscores.
+   * This is useful because Apache Hive does not allow dots in column names. 
+   * For example, if the JSON contains a key whose name is "a.b", you can define the column name to be "a_b" when using this option.
+   *
+   * @default false
+   */
   readonly convertDotsInJsonKeysToUnderscores?: boolean;
 }
+
+/**
+ * This class specifies properties for OpenX JSON input format for record format conversion.
+ *
+ * You should only need to specify an instance of this class if the default configuration does not suit your needs.
+ */
 class OpenXJsonInputFormat implements IInputFormat {
+
+  /**
+   * Construct a new OpenX JSON input format specification for record format conversion
+   */
   constructor(readonly props?: OpenXJsonInputFormatProps) {}
 
   private createOpenXJsonSerde(): CfnDeliveryStream.OpenXJsonSerDeProperty {
     const props = this.props;
     return props ? {
-      caseInsensitive: props.caseInsensitive,
+      caseInsensitive: props.downshiftJsonKeys,
       columnToJsonKeyMappings: props.columnToJsonKeyMappings,
       convertDotsInJsonKeysToUnderscores: props.convertDotsInJsonKeysToUnderscores,
     } : {};
@@ -67,7 +106,7 @@ class OpenXJsonInputFormat implements IInputFormat {
 
 /**
  * Value class that wraps a Joda Time format string.
- * Use this with the Hive Json input format for data record format conversion to parse custom timestamp formats.
+ * Use this with the Hive JSON input format for data record format conversion to parse custom timestamp formats.
  */
 class TimestampParser {
   /**
@@ -105,14 +144,14 @@ class TimestampParser {
 }
 
 /**
- * Props for Hive Json input format for data record format conversion
+ * Props for Hive JSON input format for data record format conversion
  */
 interface HiveJsonInputFormatProps {
 
   /**
    * List of TimestampParsers.
    *
-   * These are used to parse custom timestamp strings from your input into dates.
+   * These are used to parse custom timestamp strings from your input JSON into dates.
    *
    * Note: Specifying a parser will override the default timestamp parser. If you require the default timestamp parser,
    *  include `TimestampParser.DEFAULT` in the list of parsers along with your custom parser.
@@ -123,13 +162,13 @@ interface HiveJsonInputFormatProps {
 }
 
 /**
- * This class specifies properties for Hive Json input format for record format conversion.
+ * This class specifies properties for Hive JSON input format for record format conversion.
  *
  * You should only need to specify an instance of this class if the default configuration does not suit your needs.
  */
 class HiveJsonInputFormat implements IInputFormat {
   /**
-   * Construct a new Hive Json input format specification for record format conversion
+   * Construct a new Hive JSON input format specification for record format conversion
    */
   constructor(readonly props?: HiveJsonInputFormatProps) {}
 
@@ -149,8 +188,21 @@ class HiveJsonInputFormat implements IInputFormat {
   }
 }
 
+/**
+ * Represents possible input formats when perform record data conversion. 
+ *
+ * You can choose to parse your input JSON with OpenX JSON specification or Hive JSON specification.
+ */
 class InputFormat {
+
+  /**
+   * Parse your JSON with OpenX JSON specification. This will typically suffice.
+   */
   static readonly OPENX_JSON = new OpenXJsonInputFormat();
+
+  /**
+   * Parse your JSON with Hive JSON specification. Use this if you want to parse custom timestamps.
+   */
   static readonly HIVE_JSON = new HiveJsonInputFormat();
 
   private constructor() {}
@@ -355,10 +407,10 @@ interface SchemaBindOptions {
   readonly role: iam.IRole;
 }
 
-class ConversionSchema {
+class Schema {
   static fromCfnTable(table: glue.CfnTable) {
     const stack = core.Stack.of(table);
-    return new ConversionSchema({
+    return new Schema({
       tableName: table.ref,
       databaseName: table.databaseName,
       databaseRegion: stack.region,
@@ -412,7 +464,7 @@ class ConversionSchema {
 }
 
 interface DataFormatConversionConfiguration {
-  readonly schema: ConversionSchema;
+  readonly schema: Schema;
   readonly inputFormat: IInputFormat;
   readonly outputFormat: IOutputFormat;
 }
