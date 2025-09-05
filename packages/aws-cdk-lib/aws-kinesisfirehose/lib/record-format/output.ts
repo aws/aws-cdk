@@ -14,6 +14,9 @@ export enum ParquetWriterVersion {
   V2 = 'V2',
 }
 
+/**
+ * Props for Parquet output format for data record format conversion
+ */
 export interface ParquetOutputFormatProps {
 
   /**
@@ -82,7 +85,7 @@ export interface ParquetOutputFormatProps {
  * You should only need to specify an instance of this class if the default configuration does not suit your needs.
  */
 export class ParquetOutputFormat implements IOutputFormat {
-  private readonly VALID_COMPRESSIONS = [Compression.SNAPPY, Compression.UNCOMPRESSED, Compression.GZIP];
+  private static readonly VALID_COMPRESSIONS = [Compression.SNAPPY, Compression.UNCOMPRESSED, Compression.GZIP];
 
   public constructor(readonly props?: ParquetOutputFormatProps) {
     this.validateProps(props);
@@ -93,8 +96,8 @@ export class ParquetOutputFormat implements IOutputFormat {
       return;
     }
 
-    if (props.compression !== undefined && !this.VALID_COMPRESSIONS.map(compression => compression.value).includes(props.compression.value)) {
-      throw new core.UnscopedValidationError(`Compression ${props.compression} is invalid, it must be one of ${this.VALID_COMPRESSIONS}`);
+    if (props.compression !== undefined && !ParquetOutputFormat.VALID_COMPRESSIONS.map(compression => compression.value).includes(props.compression.value)) {
+      throw new core.UnscopedValidationError(`Compression ${props.compression} is invalid, it must be one of ${ParquetOutputFormat.VALID_COMPRESSIONS}`);
     }
 
     if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 64) {
@@ -132,21 +135,132 @@ export enum OrcFormatVersion {
   V0_12 = 'V0_12',
 }
 
+/**
+ * Props for ORC output format for data record format conversion
+ */
 export interface OrcOutputFormatProps {
+
+  /**
+   * The Hadoop Distributed File System (HDFS) block size.
+   * This is useful if you intend to copy the data from Amazon S3 to HDFS before querying.
+   * Firehose uses this value for padding calculations.
+   *
+   * @minimum `Size.mebibytes(64)`
+   * @default `Size.mebibytes(256)`
+   */
   readonly blockSize?: core.Size;
-  readonly bloomFilterColumns?: string[];
-  readonly bloomFilterFalsePositiveProbability?: number;
+
+  /**
+   * The compression code to use over data blocks.
+   *
+   * The possible values are `UNCOMPRESSED` , `SNAPPY` , and `GZIP`.
+   * Use `SNAPPY` for higher decompression speed.
+   * Use `GZIP` if the compression ratio is more important than speed.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-compression
+   * @default `SNAPPY`
+   */
   readonly compression?: Compression;
+
+  /**
+   * The column names for which you want Firehose to create bloom filters.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-bloomfiltercolumns
+   *
+   * @default no bloom filters are created
+   */
+  readonly bloomFilterColumns?: string[];
+
+  /**
+   * The Bloom filter false positive probability (FPP).
+   *
+   * The lower the FPP, the bigger the bloom filter.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-bloomfilterfalsepositiveprobability
+   *
+   * @minimum `0`
+   * @maximum `1`
+   * @default `0.05`
+   */
+  readonly bloomFilterFalsePositiveProbability?: number;
+
+  /**
+   * Determines whether dictionary encoding should be applied to a column.
+   *
+   * If the number of distinct keys (unique values) in a column exceeds this fraction of the total non-null rows in that column, dictionary encoding will be turned off for that specific column.
+   *
+   * To turn off dictionary encoding, set this threshold to 0. To always use dictionary encoding, set this threshold to 1.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-dictionarykeythreshold
+   *
+   * @minimum `0`
+   * @maximum `1`
+   * @default `0.8`
+   */
   readonly dictionaryKeyThreshold?: number;
+
+  /**
+   * Set this to `true` to indicate that you want stripes to be padded to the HDFS block boundaries.
+   *
+   * This is useful if you intend to copy the data from Amazon S3 to HDFS before querying.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-enablepadding
+   *
+   * @default `false`
+   */
   readonly enablePadding?: boolean;
+
+  /**
+   * The version of the ORC format to write.
+   *
+   * The possible values are `V0_11` and `V0_12`.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-formatversion
+   *
+   * @default `V0_12`
+   */
   readonly formatVersion?: OrcFormatVersion;
+
+  /**
+   * A number between 0 and 1 that defines the tolerance for block padding as a decimal fraction of stripe size.
+   *
+   * The default value is 0.05, which means 5 percent of stripe size.
+   *
+   * For the default values of 64 MiB ORC stripes and 256 MiB HDFS blocks, the default block padding tolerance of 5 percent reserves a maximum of 3.2 MiB for padding within the 256 MiB block. 
+   * In such a case, if the available size within the block is more than 3.2 MiB, a new, smaller stripe is inserted to fit within that space. 
+   * This ensures that no stripe crosses block boundaries and causes remote reads within a node-local task.
+   *
+   * Kinesis Data Firehose ignores this parameter when `EnablePadding` is `false` .
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-paddingtolerance
+   *
+   * @default `0.05` if `enablePadding` is `true`
+   */
   readonly paddingTolerance?: number;
+
+  /**
+   * The number of rows between index entries.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-rowindexstride
+   *
+   * @minimum 1000
+   * @default 10000
+   */
   readonly rowIndexStride?: number;
+
+  /**
+   * The number of bytes in each stripe.
+   *
+   * The default is 64 MiB and the minimum is 8 MiB.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-stripesizebytes
+   *
+   * @minimum `Size.mebibytes(8)`
+   * @default `Size.mebibytes(64)`
+   */
   readonly stripeSize?: core.Size;
 }
 
+/**
+ * This class specifies properties for ORC output format for record format conversion.
+ *
+ * You should only need to specify an instance of this class if the default configuration does not suit your needs.
+ */
 class OrcOutputFormat implements IOutputFormat {
-  private readonly VALID_COMPRESSIONS = [Compression.SNAPPY, Compression.UNCOMPRESSED, Compression.GZIP];
+  private static readonly VALID_COMPRESSIONS = [Compression.SNAPPY, Compression.UNCOMPRESSED, Compression.GZIP];
 
   public constructor(readonly props?: OrcOutputFormatProps) {
     this.validateProps(props);
@@ -161,8 +275,8 @@ class OrcOutputFormat implements IOutputFormat {
       return;
     }
 
-    if (props.compression !== undefined && !this.VALID_COMPRESSIONS.map(compression => compression.value).includes(props.compression.value)) {
-      throw new core.UnscopedValidationError(`Compression ${props.compression} is invalid, it must be one of ${this.VALID_COMPRESSIONS}`);
+    if (props.compression !== undefined && !OrcOutputFormat.VALID_COMPRESSIONS.map(compression => compression.value).includes(props.compression.value)) {
+      throw new core.UnscopedValidationError(`Compression ${props.compression} is invalid, it must be one of ${OrcOutputFormat.VALID_COMPRESSIONS}`);
     }
 
     if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 64) {
@@ -215,8 +329,20 @@ class OrcOutputFormat implements IOutputFormat {
   }
 }
 
+
+/**
+ * Represents possible output formats when performing record data conversion.
+ */
 export class OutputFormat {
+
+  /**
+   * Write output files in Parquet
+   */
   public static readonly PARQUET = new ParquetOutputFormat();
+
+  /**
+   * Write output files in ORC
+   */
   public static readonly ORC = new OrcOutputFormat();
 
   private constructor() {}

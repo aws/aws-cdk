@@ -36,6 +36,8 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
   /**
    * The input format, output format, and schema for converting data from the JSON format to the Parquet or ORC format before writing it to Amazon S3.
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-extendeds3destinationconfiguration.html#cfn-kinesisfirehose-deliverystream-extendeds3destinationconfiguration-dataformatconversionconfiguration
+   *
+   * @default no data format conversion is done
    */
   readonly dataFormatConversionConfiguration?: DataFormatConversionConfiguration;
 }

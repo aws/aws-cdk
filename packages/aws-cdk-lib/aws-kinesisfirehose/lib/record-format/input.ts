@@ -74,7 +74,7 @@ export class TimestampParser {
   /**
    * Default timestamp parser.
    *
-   * You should specify this parser if you want to preserve the default timestamp parsing logic.
+   * Specify this parser to preserve the default timestamp parsing logic.
    */
   public static readonly DEFAULT = new TimestampParser('java.sql.Timestamp::valueOf');
 
@@ -109,10 +109,10 @@ export interface HiveJsonInputFormatProps {
   /**
    * List of TimestampParsers.
    *
-   * These are used to parse custom timestamp strings from your input JSON into dates.
+   * These are used to parse custom timestamp strings from input JSON into dates.
    *
-   * Note: Specifying a parser will override the default timestamp parser. If you require the default timestamp parser,
-   *  include `TimestampParser.DEFAULT` in the list of parsers along with your custom parser.
+   * Note: Specifying a parser will override the default timestamp parser. If the default timestamp parser is required,
+   *  include `TimestampParser.DEFAULT` in the list of parsers along with the custom parser.
    *
    * @default the default timestamp parser is used
    */
@@ -147,18 +147,16 @@ export class HiveJsonInputFormat implements IInputFormat {
 }
 
 /**
- * Represents possible input formats when perform record data conversion.
- *
- * You can choose to parse your input JSON with OpenX JSON specification or Hive JSON specification.
+ * Represents possible input formats when performing record data conversion.
  */
 export class InputFormat {
   /**
-   * Parse your JSON with OpenX JSON specification. This will typically suffice.
+   * Parse input JSON with OpenX JSON specification. This will typically suffice.
    */
   public static readonly OPENX_JSON = new OpenXJsonInputFormat();
 
   /**
-   * Parse your JSON with Hive JSON specification.
+   * Parse input JSON with Hive JSON specification.
    */
   public static readonly HIVE_JSON = new HiveJsonInputFormat();
 
