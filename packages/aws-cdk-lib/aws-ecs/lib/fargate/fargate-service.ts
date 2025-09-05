@@ -71,7 +71,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * of a Classic Load Balancer.
    *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-rebalancing.html
-   * @default AvailabilityZoneRebalancing.DISABLED
+   * @default AvailabilityZoneRebalancing.ENABLED
    */
   readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing;
 }
