@@ -2,10 +2,10 @@ import { EOL } from 'os';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
-import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
+import { BucketFactories, IBucketReflect } from './reflection';
 import { LifecycleRule, StorageClass } from './rule';
-import { BucketReference, CfnBucket, IBucketRef } from './s3.generated';
+import { BucketReference, CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -40,7 +40,7 @@ import * as regionInformation from '../../region-info';
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
 
-export interface IBucket extends IResource, IBucketRef {
+export interface IBucket extends IResource, IBucketReflect {
   /**
    * The ARN of the bucket.
    * @attribute
@@ -52,59 +52,6 @@ export interface IBucket extends IResource, IBucketRef {
    * @attribute
    */
   readonly bucketName: string;
-
-  /**
-   * The URL of the static website.
-   * @attribute
-   */
-  readonly bucketWebsiteUrl: string;
-
-  /**
-   * The Domain name of the static website.
-   * @attribute
-   */
-  readonly bucketWebsiteDomainName: string;
-
-  /**
-   * The IPv4 DNS name of the specified bucket.
-   * @attribute
-   */
-  readonly bucketDomainName: string;
-
-  /**
-   * The IPv6 DNS name of the specified bucket.
-   * @attribute
-   */
-  readonly bucketDualStackDomainName: string;
-
-  /**
-   * The regional domain name of the specified bucket.
-   * @attribute
-   */
-  readonly bucketRegionalDomainName: string;
-
-  /**
-   * If this bucket has been configured for static website hosting.
-   */
-  readonly isWebsite?: boolean;
-
-  /**
-   * Optional KMS encryption key associated with this bucket.
-   */
-  readonly encryptionKey?: kms.IKey;
-
-  /**
-   * The resource policy associated with this bucket.
-   *
-   * If `autoCreatePolicy` is true, a `BucketPolicy` will be created upon the
-   * first call to addToResourcePolicy(s).
-   */
-  policy?: BucketPolicy;
-
-  /**
-   * Role used to set up permissions on this bucket for replication
-   */
-  replicationRoleArn?: string;
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
@@ -610,17 +557,18 @@ export abstract class BucketBase extends Resource implements IBucket {
    */
   protected abstract disallowPublicAccess?: boolean;
 
-  private notifications?: BucketNotifications;
+  protected factories: BucketFactories;
 
-  protected notificationsHandlerRole?: iam.IRole;
+  public notificationsHandlerRole?: iam.IRole;
 
-  protected notificationsSkipDestinationValidation?: boolean;
+  public notificationsSkipDestinationValidation?: boolean;
 
   protected objectOwnership?: ObjectOwnership;
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
 
+    this.factories = new BucketFactories(this);
     this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
   }
 
@@ -1015,18 +963,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
    */
   public addEventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    this.withNotifications(notifications => notifications.addNotification(event, dest, ...filters));
-  }
-
-  private withNotifications(cb: (notifications: BucketNotifications) => void) {
-    if (!this.notifications) {
-      this.notifications = new BucketNotifications(this, 'Notifications', {
-        bucket: this,
-        handlerRole: this.notificationsHandlerRole,
-        skipDestinationValidation: this.notificationsSkipDestinationValidation ?? false,
-      });
-    }
-    cb(this.notifications);
+    this.factories.addEventNotification(event, dest, ...filters);
   }
 
   /**
@@ -1038,7 +975,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * @param filters Filters (see onEvent)
    */
   public addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    return this.addEventNotification(EventType.OBJECT_CREATED, dest, ...filters);
+    return this.factories.addObjectCreatedNotification(dest, ...filters);
   }
 
   /**
@@ -1050,7 +987,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * @param filters Filters (see onEvent)
    */
   public addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
+    return this.factories.addObjectRemovedNotification(dest, ...filters);
   }
 
   /**
@@ -1068,7 +1005,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * - Object Tags Deleted
    */
   public enableEventBridgeNotification() {
-    this.withNotifications(notifications => notifications.enableEventBridgeNotification());
+    this.factories.enableEventBridgeNotification();
   }
 
   /**
@@ -2169,7 +2106,7 @@ export class Bucket extends BucketBase {
       public replicationRoleArn?: string = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
-      protected notificationsHandlerRole = attrs.notificationsHandlerRole;
+      public readonly notificationsHandlerRole = attrs.notificationsHandlerRole;
 
       /**
        * Exports this bucket from the stack.
