@@ -16,7 +16,7 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
    * Specify a file extension.
    * It will override the default file extension appended by Data Format Conversion or S3 compression features such as `.parquet` or `.gz`.
    *
-   * File extension must start with a period (`.`) and can contain allowed characters: `0-9a-z!-_.*'()`.
+   * File extension is invalid, it must start with a period (`.`) and can contain allowed characters: `0-9a-z!-_.*'()`.
    *
    * @see https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html#create-destination-s3
    * @default - The default file extension appended by Data Format Conversion or S3 compression features
@@ -47,30 +47,54 @@ interface OpenXJsonInputFormatProps {
 class OpenXJsonInputFormat implements IInputFormat {
   constructor(readonly props?: OpenXJsonInputFormatProps) {}
 
+  private createOpenXJsonSerde(): CfnDeliveryStream.OpenXJsonSerDeProperty {
+    const props = this.props
+    return props ? {
+      caseInsensitive: props.caseInsensitive,
+      columnToJsonKeyMappings: props.columnToJsonKeyMappings,
+      convertDotsInJsonKeysToUnderscores: props.convertDotsInJsonKeysToUnderscores,
+    } : {}
+  }
+
   render(): CfnDeliveryStream.InputFormatConfigurationProperty {
     return {
       deserializer: {
-        openXJsonSerDe: {
-          ...this.props,
-        },
+        openXJsonSerDe: this.createOpenXJsonSerde(),
       },
     };
   }
 }
 
+// Validation of Joda time formats is possible but requires third party dependency.
+class TimestampParser {
+  private constructor(readonly format: string) {}
+
+  static readonly EPOCH_MILLIS = new TimestampParser('millis')
+  static readonly DEFAULT = new TimestampParser('java.sql.Timestamp::valueOf')
+
+  static fromFormatString(format: string) {
+    return new TimestampParser(format)
+  }
+}
+
 interface HiveJsonInputFormatProps {
-  readonly timestampFormats?: string[];
+  readonly timestampFormats?: TimestampParser[];
 }
 
 class HiveJsonInputFormat implements IInputFormat {
   constructor(readonly props?: HiveJsonInputFormatProps) {}
 
+  private createHiveJsonSerde(): CfnDeliveryStream.HiveJsonSerDeProperty {
+    const props = this.props
+    return props ? {
+      timestampFormats: props.timestampFormats?.map(format => format.format),
+    } : {}
+  }
+
   render(): CfnDeliveryStream.InputFormatConfigurationProperty {
     return {
       deserializer: {
-        hiveJsonSerDe: {
-          ...this.props,
-        },
+        hiveJsonSerDe: this.createHiveJsonSerde(),
       },
     };
   }
@@ -115,11 +139,11 @@ class ParquetOutputFormat implements IOutputFormat {
     }
 
     if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 64) {
-      throw new core.UnscopedValidationError(`Block size ${props.blockSize.toMebibytes()} must be at least 64 MiB`)
+      throw new core.UnscopedValidationError(`Block size ${props.blockSize.toMebibytes()} is invalid, it must be at least 64 MiB`)
     }
 
     if (props.pageSize !== undefined && props.pageSize.toKibibytes() < 64) {
-      throw new core.UnscopedValidationError(`Page size ${props.pageSize.toKibibytes()} must be at least 64 KiB`)
+      throw new core.UnscopedValidationError(`Page size ${props.pageSize.toKibibytes()} is invalid, it must be at least 64 KiB`)
     }
   }
 
@@ -176,27 +200,27 @@ class OrcOutputFormat implements IOutputFormat {
     }
 
     if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 64) {
-      throw new core.UnscopedValidationError(`Block size ${props.blockSize.toMebibytes()} must be at least 64 MiB`)
+      throw new core.UnscopedValidationError(`Block size ${props.blockSize.toMebibytes()} is invalid, it must be at least 64 MiB`)
     }
 
     if (props.stripeSize !== undefined && props.stripeSize.toMebibytes() < 8) {
-      throw new core.UnscopedValidationError(`Stripe size ${props.stripeSize.toMebibytes()} must be at least 8 MiB`)
+      throw new core.UnscopedValidationError(`Stripe size ${props.stripeSize.toMebibytes()} is invalid, it must be at least 8 MiB`)
     }
 
     if (props.bloomFilterFalsePositiveProbability !== undefined && !this.betweenInclusive(props.bloomFilterFalsePositiveProbability, 0, 1)) {
-      throw new core.UnscopedValidationError(`Bloom filter false positive probability ${props.bloomFilterFalsePositiveProbability} must be between 0 and 1, inclusive`)
+      throw new core.UnscopedValidationError(`Bloom filter false positive probability ${props.bloomFilterFalsePositiveProbability} is invalid, it must be between 0 and 1, inclusive`)
     }
 
     if (props.dictionaryKeyThreshold !== undefined && !this.betweenInclusive(props.dictionaryKeyThreshold, 0, 1)) {
-      throw new core.UnscopedValidationError(`Dictioanry key threshold ${props.dictionaryKeyThreshold} must be between 0 and 1, inclusive`)
+      throw new core.UnscopedValidationError(`Invalid Dictioanry key threshold ${props.dictionaryKeyThreshold} is invalid, it must be between 0 and 1, inclusive`)
     }
 
     if (props.paddingTolerance !== undefined && !this.betweenInclusive(props.paddingTolerance, 0, 1)) {
-      throw new core.UnscopedValidationError(`Padding tolerance ${props.paddingTolerance} must be between 0 and 1, inclusive`)
+      throw new core.UnscopedValidationError(`Padding tolerance ${props.paddingTolerance} is invalid, it must be between 0 and 1, inclusive`)
     }
 
     if (props.rowIndexStride !== undefined && props.rowIndexStride < 1000) {
-      throw new core.UnscopedValidationError(`Row index stride ${props.rowIndexStride} must be at least 1000`)
+      throw new core.UnscopedValidationError(`Row index stride ${props.rowIndexStride} is invalid, it must be at least 1000`)
     }
   }
 
@@ -405,11 +429,12 @@ export class S3Bucket implements IDestination {
       }
     }
 
-    const dataFormatConversionConfiguration = this.props.dataFormatConversionConfiguration ? {
+    const dataFormatConfig = this.props.dataFormatConversionConfiguration
+    const dataFormatConversionConfiguration = dataFormatConfig ? {
       enabled: true,
-      schemaConfiguration: this.props.dataFormatConversionConfiguration.schema.bind(scope, { role: role }),
-      inputFormatConfiguration: this.props.dataFormatConversionConfiguration.inputFormat.render(),
-      outputFormatConfiguration: this.props.dataFormatConversionConfiguration.outputFormat.render(),
+      schemaConfiguration: dataFormatConfig.schema.bind(scope, { role: role }),
+      inputFormatConfiguration: dataFormatConfig.inputFormat.render(),
+      outputFormatConfiguration: dataFormatConfig.outputFormat.render(),
     } : undefined
 
     return {
