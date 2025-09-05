@@ -562,6 +562,69 @@ describe('State Machine', () => {
     });
   }),
 
+  test('Instantiate State Machine Finds all Distributed Map States in Nested Branch StateGraphs', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map1 = new sfn.DistributedMap(stack, 'Map 1', { label: 'map1' }).itemProcessor(new sfn.Pass(stack, 'Pass 1'));
+    const map2 = new sfn.DistributedMap(stack, 'Map 2', { label: 'map2' }).itemProcessor(new sfn.Pass(stack, 'Pass 2'));
+    const map3 = new sfn.DistributedMap(stack, 'Map 3', { label: 'map3' }).itemProcessor(new sfn.Pass(stack, 'Pass 3'));
+    const map4 = new sfn.DistributedMap(stack, 'Map 4', { label: 'map4' }).itemProcessor(new sfn.Pass(stack, 'Pass 4'));
+    const map5 = new sfn.DistributedMap(stack, 'Map 5', { label: 'map5' }).itemProcessor(new sfn.Pass(stack, 'Pass 5'));
+    const parallel1 = new sfn.Parallel(stack, 'Parallel 1');
+    const parallel2 = new sfn.Parallel(stack, 'Parallel 2');
+    const parallel3 = new sfn.Parallel(stack, 'Parallel 3');
+
+    const chain = sfn.Chain
+      .start(map1)
+      .next(parallel1
+        .branch(map2)
+        .branch(parallel2
+          .branch(map3.next(parallel3
+            .branch(map4)))
+          .branch(map5),
+        ),
+      );
+
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(chain),
+    });
+    const stateMachineLogicalId = stack.getLogicalId(stateMachine.node.defaultChild as sfn.CfnStateMachine);
+    const stateMachineNameTemplate = {
+      'Fn::Select': [
+        6,
+        {
+          'Fn::Split': [
+            ':',
+            {
+              Ref: stateMachineLogicalId,
+            },
+          ],
+        },
+      ],
+    };
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: 'states:RedriveExecution',
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/map1:*'])] },
+              { 'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/map5:*'])] },
+              { 'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/map4:*'])] },
+              { 'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/map3:*'])] },
+              { 'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/map2:*'])] },
+            ],
+          },
+        ]),
+      },
+    });
+  }),
+
   test('State Machine with invalid name', () => {
     // GIVEN
     const stack = new cdk.Stack();
