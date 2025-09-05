@@ -200,11 +200,20 @@ const outputFormat = new ParquetOutputFormat({
 
 ### Output Format: ORC
 
-Example creation of custom ORC OutputFormat
+Example creation of custom ORC OutputFormat, with all values changed from the defaults.
 
 ```ts
 const outputFormat = new OrcOutputFormat({
-  // TODO: Props
+  formatVersion: OrcFormatVersion.V0_11,
+  blockSize: core.Size.mebibytes(256),
+  compression: Compression.UNCOMPRESSED,
+  bloomFilterColumns: ['columnA'],
+  bloomFilterFalsePositiveProbability: 0.1,
+  dictionaryKeyThreshold: 0.7,
+  enablePadding: true,
+  paddingTolerance: 0.2,
+  rowIndexStride: 9000,
+  stripeSize: core.Size.mebibytes(32),
 })
 ```
 

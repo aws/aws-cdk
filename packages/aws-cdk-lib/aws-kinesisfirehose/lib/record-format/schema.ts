@@ -66,7 +66,7 @@ export interface SchemaFromCfnTableProps {
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-schemaconfiguration.html#cfn-kinesisfirehose-deliverystream-schemaconfiguration-versionid
    * @default `LATEST`
    */
-  readonly versionId?: string,
+  readonly versionId?: string;
 }
 
 /**

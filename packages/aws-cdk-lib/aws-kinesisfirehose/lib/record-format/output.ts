@@ -85,7 +85,7 @@ export interface ParquetOutputFormatProps {
  * You should only need to specify an instance of this class if the default configuration does not suit your needs.
  */
 export class ParquetOutputFormat implements IOutputFormat {
-  private static readonly VALID_COMPRESSIONS = [Compression.SNAPPY, Compression.UNCOMPRESSED, Compression.GZIP];
+  private static readonly VALID_COMPRESSIONS = [Compression.SNAPPY, Compression.UNCOMPRESSED, Compression.GZIP].map(compression => compression.value);
 
   public constructor(readonly props?: ParquetOutputFormatProps) {
     this.validateProps(props);
@@ -96,7 +96,7 @@ export class ParquetOutputFormat implements IOutputFormat {
       return;
     }
 
-    if (props.compression !== undefined && !ParquetOutputFormat.VALID_COMPRESSIONS.map(compression => compression.value).includes(props.compression.value)) {
+    if (props.compression !== undefined && !ParquetOutputFormat.VALID_COMPRESSIONS.includes(props.compression.value)) {
       throw new core.UnscopedValidationError(`Compression ${props.compression} is invalid, it must be one of ${ParquetOutputFormat.VALID_COMPRESSIONS}`);
     }
 
@@ -221,8 +221,8 @@ export interface OrcOutputFormatProps {
    *
    * The default value is 0.05, which means 5 percent of stripe size.
    *
-   * For the default values of 64 MiB ORC stripes and 256 MiB HDFS blocks, the default block padding tolerance of 5 percent reserves a maximum of 3.2 MiB for padding within the 256 MiB block. 
-   * In such a case, if the available size within the block is more than 3.2 MiB, a new, smaller stripe is inserted to fit within that space. 
+   * For the default values of 64 MiB ORC stripes and 256 MiB HDFS blocks, the default block padding tolerance of 5 percent reserves a maximum of 3.2 MiB for padding within the 256 MiB block.
+   * In such a case, if the available size within the block is more than 3.2 MiB, a new, smaller stripe is inserted to fit within that space.
    * This ensures that no stripe crosses block boundaries and causes remote reads within a node-local task.
    *
    * Kinesis Data Firehose ignores this parameter when `EnablePadding` is `false` .
@@ -260,7 +260,7 @@ export interface OrcOutputFormatProps {
  * You should only need to specify an instance of this class if the default configuration does not suit your needs.
  */
 class OrcOutputFormat implements IOutputFormat {
-  private static readonly VALID_COMPRESSIONS = [Compression.SNAPPY, Compression.UNCOMPRESSED, Compression.GZIP];
+  private static readonly VALID_COMPRESSIONS = [Compression.SNAPPY, Compression.UNCOMPRESSED, Compression.GZIP].map(compression => compression.value);
 
   public constructor(readonly props?: OrcOutputFormatProps) {
     this.validateProps(props);
@@ -275,7 +275,7 @@ class OrcOutputFormat implements IOutputFormat {
       return;
     }
 
-    if (props.compression !== undefined && !OrcOutputFormat.VALID_COMPRESSIONS.map(compression => compression.value).includes(props.compression.value)) {
+    if (props.compression !== undefined && !OrcOutputFormat.VALID_COMPRESSIONS.includes(props.compression.value)) {
       throw new core.UnscopedValidationError(`Compression ${props.compression} is invalid, it must be one of ${OrcOutputFormat.VALID_COMPRESSIONS}`);
     }
 
@@ -329,12 +329,10 @@ class OrcOutputFormat implements IOutputFormat {
   }
 }
 
-
 /**
  * Represents possible output formats when performing record data conversion.
  */
 export class OutputFormat {
-
   /**
    * Write output files in Parquet
    */
