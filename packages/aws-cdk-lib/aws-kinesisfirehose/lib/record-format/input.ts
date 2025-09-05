@@ -42,9 +42,6 @@ export interface OpenXJsonInputFormatProps {
  * You should only need to specify an instance of this class if the default configuration does not suit your needs.
  */
 export class OpenXJsonInputFormat implements IInputFormat {
-  /**
-   * Construct a new OpenX JSON input format specification for record format conversion
-   */
   public constructor(readonly props?: OpenXJsonInputFormatProps) {}
 
   private createOpenXJsonSerde(): CfnDeliveryStream.OpenXJsonSerDeProperty {

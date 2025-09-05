@@ -125,16 +125,20 @@ const s3Destination = new firehose.S3Bucket(bucket, {
 });
 ```
 
-### Data Format Conversion
+## Data Format Conversion
 
-Defining an S3 destination configured with data format conversion:
+Data format conversion allows automatic conversion of inputs from JSON to either Parquet or ORC.
+Converting JSON records to columnar formats like Parquet or ORC can help speed up analytical querying while also increasing compression efficiency.
+When data format conversion is specified, it automatically enables Snappy compression on the output.
+
+Only S3 Destinations support data format conversion.
+
+An example of defining an S3 destination configured with data format conversion:
 
 ```ts
 declare const bucket: s3.Bucket;
 declare const schemaGlueTable: glue.cfnTable;
 const s3Destination = new firehose.S3Bucket(bucket, {
-  compression: firehose.Compression.GZIP,
-  fileExtension: '.json.gz',
   dataFormatConversionConfiguration: {
     schema: Schema.fromCfnTable(schemaGlueTable),
     inputFormat: InputFormat.OPENX_JSON,
@@ -149,10 +153,9 @@ You can only parse JSON and transform it into either Parquet or ORC:
 - to transform into Parquet, choose `OutputFormat.PARQUET`.
 - to transform into ORC, choose `OutputFormat.ORC`.
 
-Each input and output format has highly specific props that can be tuned if the defaults do not suit your usecase.
-These are detailed below
+The following subsections explain how to specify advanced configuration options for each input and output format if the defaults are not desirable
 
-#### Input: OpenX JSON
+### Input Format: OpenX JSON
 
 Example creation of custom OpenX JSON InputFormat:
 
@@ -164,7 +167,7 @@ const inputFormat = new OpenXJsonInputFormat({
 })
 ```
 
-#### Input: Hive JSON
+### Input Format: Hive JSON
 
 Example creation of custom Hive JSON InputFormat:
 
@@ -174,23 +177,22 @@ const inputFormat = new HiveJsonInputFormat({
 })
 ```
 
-Hive JSON allows you to specify custom timestamp formats to parse. The syntax is Joda Time (link needed).
+Hive JSON allows you to specify custom timestamp formats to parse. The syntax of the format string is Joda Time.
 When you specify a custom `TimestampParser`, the default parser is overriden. To retain the default parser,
 add `TimestampParser.DEFAULT` to the list of parsers.
 
-To parse epoch millis, use the convenience `TimestampParser.EPOCH_MILLIS`.
+To parse timestamps formatted as milliseconds since epoch, use the convenience constant `TimestampParser.EPOCH_MILLIS`.
 
-#### Output: Parquet
+### Output Format: Parquet
 
 Example creation of custom Parquet OutputFormat
 
 ```ts
 const outputFormat = new ParquetOutputFormat({
-  // TODO: Props
 })
 ```
 
-#### Output: ORC
+### Output Format: ORC
 
 Example creation of custom ORC OutputFormat
 

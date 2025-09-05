@@ -9,26 +9,78 @@ export interface IOutputFormat {
   render(): CfnDeliveryStream.OutputFormatConfigurationProperty;
 }
 
-export enum WriterVersion {
+export enum ParquetWriterVersion {
   V1 = 'V1',
   V2 = 'V2',
 }
 
-// export enum Compression {
-//   UNCOMPRESSED = 'UNCOMPRESSED',
-//   SNAPPY = 'SNAPPY',
-//   GZIP = 'GZIP',
-// }
-
 export interface ParquetOutputFormatProps {
+
+  /**
+   * The Hadoop Distributed File System (HDFS) block size.
+   * This is useful if you intend to copy the data from Amazon S3 to HDFS before querying.
+   * Firehose uses this value for padding calculations.
+   *
+   * @minimum `Size.mebibytes(64)`
+   * @default `Size.mebibytes(256)`
+   */
   readonly blockSize?: core.Size;
+
+  /**
+   * The compression code to use over data blocks.
+   *
+   * The possible values are `UNCOMPRESSED` , `SNAPPY` , and `GZIP`.
+   * Use `SNAPPY` for higher decompression speed.
+   * Use `GZIP` if the compression ratio is more important than speed.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-compression
+   * @default `SNAPPY`
+   */
   readonly compression?: Compression;
+
+  /**
+   * Indicates whether to enable dictionary compression.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-enabledictionarycompression
+   * @default `false`
+   */
   readonly enableDictionaryCompression?: boolean;
+
+  /**
+   * The maximum amount of padding to apply.
+   *
+   * This is useful if you intend to copy the data from Amazon S3 to HDFS before querying.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-maxpaddingbytes
+   * @default no padding is applied
+   */
   readonly maxPadding?: core.Size;
+
+  /**
+   * The Parquet page size.
+   *
+   * Column chunks are divided into pages. A page is conceptually an indivisible unit (in terms of compression and encoding). The minimum value is 64 KiB and the default is 1 MiB.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-pagesizebytes
+   *
+   * @minimum `Size.kibibytes(64)`
+   * @default `Size.mebibytes(1)`
+   */
   readonly pageSize?: core.Size;
-  readonly writerVersion?: WriterVersion;
+
+  /**
+   * Indicates the version of Parquet to output.
+   *
+   * The possible values are `V1` and `V2`
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-writerversion
+   *
+   * @default `V1`
+   */
+  readonly writerVersion?: ParquetWriterVersion;
 }
 
+/**
+ * This class specifies properties for Parquet output format for record format conversion.
+ *
+ * You should only need to specify an instance of this class if the default configuration does not suit your needs.
+ */
 export class ParquetOutputFormat implements IOutputFormat {
   private readonly VALID_COMPRESSIONS = [Compression.SNAPPY, Compression.UNCOMPRESSED, Compression.GZIP];
 
@@ -75,7 +127,7 @@ export class ParquetOutputFormat implements IOutputFormat {
   }
 }
 
-export enum FormatVersion {
+export enum OrcFormatVersion {
   V0_11 = 'V0_11',
   V0_12 = 'V0_12',
 }
@@ -87,7 +139,7 @@ export interface OrcOutputFormatProps {
   readonly compression?: Compression;
   readonly dictionaryKeyThreshold?: number;
   readonly enablePadding?: boolean;
-  readonly formatVersion?: FormatVersion;
+  readonly formatVersion?: OrcFormatVersion;
   readonly paddingTolerance?: number;
   readonly rowIndexStride?: number;
   readonly stripeSize?: core.Size;
