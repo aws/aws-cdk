@@ -56,7 +56,7 @@ export class OpenXJsonInputFormat implements IInputFormat {
     } : {};
   }
 
-  render(): CfnDeliveryStream.InputFormatConfigurationProperty {
+  public render(): CfnDeliveryStream.InputFormatConfigurationProperty {
     return {
       deserializer: {
         openXJsonSerDe: this.createOpenXJsonSerde(),
@@ -140,7 +140,7 @@ export class HiveJsonInputFormat implements IInputFormat {
     } : {};
   }
 
-  render(): CfnDeliveryStream.InputFormatConfigurationProperty {
+  public render(): CfnDeliveryStream.InputFormatConfigurationProperty {
     return {
       deserializer: {
         hiveJsonSerDe: this.createHiveJsonSerde(),

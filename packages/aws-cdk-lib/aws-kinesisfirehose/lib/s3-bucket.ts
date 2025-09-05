@@ -82,6 +82,18 @@ export class S3Bucket implements IDestination {
     }
 
     const dataFormatConfig = this.props.dataFormatConversionConfiguration;
+
+    if (dataFormatConfig) {
+      if (this.props.compression) {
+        throw new core.ValidationError('When data record format conversion is enabled, compression cannot be set on the S3 Destination. Compression may only be set in the OutputFormat. By default, this compression is SNAPPY', scope);
+      }
+
+      const bufferSizeMiB = this.props.bufferingSize?.toMebibytes();
+      if (bufferSizeMiB !== undefined && bufferSizeMiB < 64) {
+        throw new core.ValidationError('When data record format conversion is enabled, buffer size must be at least 64 MiB', scope);
+      }
+    }
+
     const dataFormatConversionConfiguration = dataFormatConfig ? {
       enabled: true,
       schemaConfiguration: dataFormatConfig.schema.bind(scope, { role: role }),

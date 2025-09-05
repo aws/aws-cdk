@@ -1,6 +1,10 @@
 import * as core from '../../../core';
+import { Compression } from '../common';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 
+export interface OutputFormatRenderOptions {
+  compression?: Compression;
+}
 export interface IOutputFormat {
   render(): CfnDeliveryStream.OutputFormatConfigurationProperty;
 }
@@ -10,11 +14,11 @@ export enum WriterVersion {
   V2 = 'V2',
 }
 
-export enum Compression {
-  UNCOMPRESSED = 'UNCOMPRESSED',
-  SNAPPY = 'SNAPPY',
-  GZIP = 'GZIP',
-}
+// export enum Compression {
+//   UNCOMPRESSED = 'UNCOMPRESSED',
+//   SNAPPY = 'SNAPPY',
+//   GZIP = 'GZIP',
+// }
 
 export interface ParquetOutputFormatProps {
   readonly blockSize?: core.Size;
@@ -26,6 +30,8 @@ export interface ParquetOutputFormatProps {
 }
 
 export class ParquetOutputFormat implements IOutputFormat {
+  private readonly VALID_COMPRESSIONS = [Compression.SNAPPY, Compression.UNCOMPRESSED, Compression.GZIP];
+
   public constructor(readonly props?: ParquetOutputFormatProps) {
     this.validateProps(props);
   }
@@ -33,6 +39,10 @@ export class ParquetOutputFormat implements IOutputFormat {
   private validateProps(props?: ParquetOutputFormatProps) {
     if (!props) {
       return;
+    }
+
+    if (props.compression !== undefined && !this.VALID_COMPRESSIONS.map(compression => compression.value).includes(props.compression.value)) {
+      throw new core.UnscopedValidationError(`Compression ${props.compression} is invalid, it must be one of ${this.VALID_COMPRESSIONS}`);
     }
 
     if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 64) {
@@ -48,7 +58,7 @@ export class ParquetOutputFormat implements IOutputFormat {
     const props = this.props;
     return props ? {
       blockSizeBytes: props.blockSize?.toBytes(),
-      compression: props.compression,
+      compression: props.compression?.value,
       enableDictionaryCompression: props.enableDictionaryCompression,
       maxPaddingBytes: props.maxPadding?.toBytes(),
       pageSizeBytes: props.pageSize?.toBytes(),
@@ -82,7 +92,10 @@ export interface OrcOutputFormatProps {
   readonly rowIndexStride?: number;
   readonly stripeSize?: core.Size;
 }
+
 class OrcOutputFormat implements IOutputFormat {
+  private readonly VALID_COMPRESSIONS = [Compression.SNAPPY, Compression.UNCOMPRESSED, Compression.GZIP];
+
   public constructor(readonly props?: OrcOutputFormatProps) {
     this.validateProps(props);
   }
@@ -94,6 +107,10 @@ class OrcOutputFormat implements IOutputFormat {
   private validateProps(props?: OrcOutputFormatProps) {
     if (!props) {
       return;
+    }
+
+    if (props.compression !== undefined && !this.VALID_COMPRESSIONS.map(compression => compression.value).includes(props.compression.value)) {
+      throw new core.UnscopedValidationError(`Compression ${props.compression} is invalid, it must be one of ${this.VALID_COMPRESSIONS}`);
     }
 
     if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 64) {
@@ -127,7 +144,7 @@ class OrcOutputFormat implements IOutputFormat {
       blockSizeBytes: props.blockSize?.toBytes(),
       bloomFilterColumns: props.bloomFilterColumns,
       bloomFilterFalsePositiveProbability: props.bloomFilterFalsePositiveProbability,
-      compression: props.compression,
+      compression: props.compression?.value,
       dictionaryKeyThreshold: props.dictionaryKeyThreshold,
       enablePadding: props.enablePadding,
       formatVersion: props.formatVersion,
