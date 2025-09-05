@@ -1,12 +1,12 @@
 import { Construct } from 'constructs';
 import { BackupMode, CommonDestinationProps, CommonDestinationS3Props } from './common';
 import { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
+import { CfnDeliveryStream } from './kinesisfirehose.generated';
+import * as glue from '../../aws-glue';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
 import * as core from '../../core';
-import { CfnDeliveryStream } from './kinesisfirehose.generated';
-import * as glue from '../../aws-glue';
 
 /**
  * Props for defining an S3 destination of an Amazon Data Firehose delivery stream.
@@ -48,12 +48,12 @@ class OpenXJsonInputFormat implements IInputFormat {
   constructor(readonly props?: OpenXJsonInputFormatProps) {}
 
   private createOpenXJsonSerde(): CfnDeliveryStream.OpenXJsonSerDeProperty {
-    const props = this.props
+    const props = this.props;
     return props ? {
       caseInsensitive: props.caseInsensitive,
       columnToJsonKeyMappings: props.columnToJsonKeyMappings,
       convertDotsInJsonKeysToUnderscores: props.convertDotsInJsonKeysToUnderscores,
-    } : {}
+    } : {};
   }
 
   render(): CfnDeliveryStream.InputFormatConfigurationProperty {
@@ -65,30 +65,79 @@ class OpenXJsonInputFormat implements IInputFormat {
   }
 }
 
-// Validation of Joda time formats is possible but requires third party dependency.
+/**
+ * Value class that wraps a Joda Time format string.
+ * Use this with the Hive Json input format for data record format conversion to parse custom timestamp formats.
+ */
 class TimestampParser {
-  private constructor(readonly format: string) {}
+  /**
+   * Parses timestamps formatted in milliseconds since epoch.
+   */
+  static readonly EPOCH_MILLIS = new TimestampParser('millis');
+  /**
+   * Default timestamp parser.
+   *
+   * You should specify this parser if you want to preserve the default timestamp parsing logic.
+   */
+  static readonly DEFAULT = new TimestampParser('java.sql.Timestamp::valueOf');
 
-  static readonly EPOCH_MILLIS = new TimestampParser('millis')
-  static readonly DEFAULT = new TimestampParser('java.sql.Timestamp::valueOf')
+  /**
+   * Creates a TimestampParser from the given format string.
+   *
+   * The format string should be a valid Joda Time pattern string.
+   * See [Class DateTimeFormat](https://docs.aws.amazon.com/https://www.joda.org/joda-time/apidocs/org/joda/time/format/DateTimeFormat.html) for more details
+   *
+   * @param format the Joda Time format string
+   */
+  static fromFormatString(format: string): TimestampParser {
+    if (format === this.DEFAULT.format) {
+      throw new core.UnscopedValidationError(`Cannot use reserved format string ${format} - Use 'TimestampParser.DEFAULT' instead`);
+    }
 
-  static fromFormatString(format: string) {
-    return new TimestampParser(format)
+    if (format === this.EPOCH_MILLIS.format) {
+      throw new core.UnscopedValidationError(`Cannot use reserved format string ${format} - Use 'TimestampParser.EPOCH_MILLIS' instead`);
+    }
+
+    return new TimestampParser(format);
   }
+
+  private constructor(readonly format: string) {}
 }
 
+/**
+ * Props for Hive Json input format for data record format conversion
+ */
 interface HiveJsonInputFormatProps {
-  readonly timestampFormats?: TimestampParser[];
+
+  /**
+   * List of TimestampParsers.
+   *
+   * These are used to parse custom timestamp strings from your input into dates.
+   *
+   * Note: Specifying a parser will override the default timestamp parser. If you require the default timestamp parser,
+   *  include `TimestampParser.DEFAULT` in the list of parsers along with your custom parser.
+   *
+   * @default the default timestamp parser is used
+   */
+  readonly timestampParsers?: TimestampParser[];
 }
 
+/**
+ * This class specifies properties for Hive Json input format for record format conversion.
+ *
+ * You should only need to specify an instance of this class if the default configuration does not suit your needs.
+ */
 class HiveJsonInputFormat implements IInputFormat {
+  /**
+   * Construct a new Hive Json input format specification for record format conversion
+   */
   constructor(readonly props?: HiveJsonInputFormatProps) {}
 
   private createHiveJsonSerde(): CfnDeliveryStream.HiveJsonSerDeProperty {
-    const props = this.props
+    const props = this.props;
     return props ? {
-      timestampFormats: props.timestampFormats?.map(format => format.format),
-    } : {}
+      timestampFormats: props.timestampParsers?.map(parser => parser.format),
+    } : {};
   }
 
   render(): CfnDeliveryStream.InputFormatConfigurationProperty {
@@ -103,6 +152,8 @@ class HiveJsonInputFormat implements IInputFormat {
 class InputFormat {
   static readonly OPENX_JSON = new OpenXJsonInputFormat();
   static readonly HIVE_JSON = new HiveJsonInputFormat();
+
+  private constructor() {}
 }
 
 interface IOutputFormat {
@@ -110,14 +161,14 @@ interface IOutputFormat {
 }
 
 enum WriterVersion {
-  V1 = "V1",
-  V2 = "V2",
+  V1 = 'V1',
+  V2 = 'V2',
 }
 
 enum Compression {
-  UNCOMPRESSED = "UNCOMPRESSED",
-  SNAPPY = "SNAPPY",
-  GZIP = "GZIP",
+  UNCOMPRESSED = 'UNCOMPRESSED',
+  SNAPPY = 'SNAPPY',
+  GZIP = 'GZIP',
 }
 
 interface ParquetOutputFormatProps {
@@ -130,25 +181,25 @@ interface ParquetOutputFormatProps {
 }
 class ParquetOutputFormat implements IOutputFormat {
   constructor(readonly props?: ParquetOutputFormatProps) {
-    this.validateProps(props)
+    this.validateProps(props);
   }
 
   private validateProps(props?: ParquetOutputFormatProps) {
     if (!props) {
-      return
+      return;
     }
 
     if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 64) {
-      throw new core.UnscopedValidationError(`Block size ${props.blockSize.toMebibytes()} is invalid, it must be at least 64 MiB`)
+      throw new core.UnscopedValidationError(`Block size ${props.blockSize.toMebibytes()} is invalid, it must be at least 64 MiB`);
     }
 
     if (props.pageSize !== undefined && props.pageSize.toKibibytes() < 64) {
-      throw new core.UnscopedValidationError(`Page size ${props.pageSize.toKibibytes()} is invalid, it must be at least 64 KiB`)
+      throw new core.UnscopedValidationError(`Page size ${props.pageSize.toKibibytes()} is invalid, it must be at least 64 KiB`);
     }
   }
 
   private createParquetSerDeProps(): CfnDeliveryStream.ParquetSerDeProperty {
-    const props = this.props
+    const props = this.props;
     return props ? {
       blockSizeBytes: props.blockSize?.toBytes(),
       compression: props.compression,
@@ -156,21 +207,21 @@ class ParquetOutputFormat implements IOutputFormat {
       maxPaddingBytes: props.maxPadding?.toBytes(),
       pageSizeBytes: props.pageSize?.toBytes(),
       writerVersion: props.writerVersion,
-    } : {}
+    } : {};
   }
 
   render(): CfnDeliveryStream.OutputFormatConfigurationProperty {
     return {
       serializer: {
-        parquetSerDe: this.createParquetSerDeProps()
+        parquetSerDe: this.createParquetSerDeProps(),
       },
     };
   }
 }
 
 enum FormatVersion {
-  V0_11 = "V0_11",
-  V0_12 = "V0_12",
+  V0_11 = 'V0_11',
+  V0_12 = 'V0_12',
 }
 
 interface OrcOutputFormatProps {
@@ -187,40 +238,40 @@ interface OrcOutputFormatProps {
 }
 class OrcOutputFormat implements IOutputFormat {
   constructor(readonly props?: OrcOutputFormatProps) {
-    this.validateProps(props)
+    this.validateProps(props);
   }
 
   private betweenInclusive(num: number, min: number, max: number) {
-    return num >= min && num <= max
+    return num >= min && num <= max;
   }
 
   private validateProps(props?: OrcOutputFormatProps) {
     if (!props) {
-      return
+      return;
     }
 
     if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 64) {
-      throw new core.UnscopedValidationError(`Block size ${props.blockSize.toMebibytes()} is invalid, it must be at least 64 MiB`)
+      throw new core.UnscopedValidationError(`Block size ${props.blockSize.toMebibytes()} is invalid, it must be at least 64 MiB`);
     }
 
     if (props.stripeSize !== undefined && props.stripeSize.toMebibytes() < 8) {
-      throw new core.UnscopedValidationError(`Stripe size ${props.stripeSize.toMebibytes()} is invalid, it must be at least 8 MiB`)
+      throw new core.UnscopedValidationError(`Stripe size ${props.stripeSize.toMebibytes()} is invalid, it must be at least 8 MiB`);
     }
 
     if (props.bloomFilterFalsePositiveProbability !== undefined && !this.betweenInclusive(props.bloomFilterFalsePositiveProbability, 0, 1)) {
-      throw new core.UnscopedValidationError(`Bloom filter false positive probability ${props.bloomFilterFalsePositiveProbability} is invalid, it must be between 0 and 1, inclusive`)
+      throw new core.UnscopedValidationError(`Bloom filter false positive probability ${props.bloomFilterFalsePositiveProbability} is invalid, it must be between 0 and 1, inclusive`);
     }
 
     if (props.dictionaryKeyThreshold !== undefined && !this.betweenInclusive(props.dictionaryKeyThreshold, 0, 1)) {
-      throw new core.UnscopedValidationError(`Invalid Dictioanry key threshold ${props.dictionaryKeyThreshold} is invalid, it must be between 0 and 1, inclusive`)
+      throw new core.UnscopedValidationError(`Dictionary key threshold ${props.dictionaryKeyThreshold} is invalid, it must be between 0 and 1, inclusive`);
     }
 
     if (props.paddingTolerance !== undefined && !this.betweenInclusive(props.paddingTolerance, 0, 1)) {
-      throw new core.UnscopedValidationError(`Padding tolerance ${props.paddingTolerance} is invalid, it must be between 0 and 1, inclusive`)
+      throw new core.UnscopedValidationError(`Padding tolerance ${props.paddingTolerance} is invalid, it must be between 0 and 1, inclusive`);
     }
 
     if (props.rowIndexStride !== undefined && props.rowIndexStride < 1000) {
-      throw new core.UnscopedValidationError(`Row index stride ${props.rowIndexStride} is invalid, it must be at least 1000`)
+      throw new core.UnscopedValidationError(`Row index stride ${props.rowIndexStride} is invalid, it must be at least 1000`);
     }
   }
 
@@ -237,7 +288,7 @@ class OrcOutputFormat implements IOutputFormat {
       paddingTolerance: props.paddingTolerance,
       rowIndexStride: props.rowIndexStride,
       stripeSizeBytes: props.stripeSize?.toBytes(),
-    } : {}
+    } : {};
   }
   render(): CfnDeliveryStream.OutputFormatConfigurationProperty {
     return {
@@ -251,6 +302,8 @@ class OrcOutputFormat implements IOutputFormat {
 class OutputFormat {
   static readonly PARQUET = new ParquetOutputFormat();
   static readonly ORC = new OrcOutputFormat();
+
+  private constructor() {}
 }
 
 interface ConversionSchemaProps {
@@ -310,7 +363,7 @@ class ConversionSchema {
       databaseName: table.databaseName,
       databaseRegion: stack.region,
       catalogId: stack.account,
-      versionId: "LATEST",
+      versionId: 'LATEST',
     });
   }
 
@@ -327,8 +380,8 @@ class ConversionSchema {
     const region = this.props.databaseRegion ?? stack.region;
 
     const tableArn = stack.formatArn({
-      service: "glue",
-      resource: "table",
+      service: 'glue',
+      resource: 'table',
       resourceName: `${this.props.databaseName}/${this.props.tableName}`,
       region: region,
       account: this.props.catalogId,
@@ -336,19 +389,19 @@ class ConversionSchema {
 
     iam.Grant.addToPrincipal({
       actions: [
-        "glue:GetTable",
-        "glue:GetTableVersion",
-        "glue:GetTableVersions",
+        'glue:GetTable',
+        'glue:GetTableVersion',
+        'glue:GetTableVersions',
       ],
       grantee: options.role,
       resourceArns: [tableArn],
     });
 
     iam.Grant.addToPrincipal({
-      actions: ["glue:GetSchemaVersion"],
+      actions: ['glue:GetSchemaVersion'],
       grantee: options.role,
-      resourceArns: ['*']
-    })
+      resourceArns: ['*'],
+    });
 
     return {
       roleArn: options.role.roleArn,
@@ -393,7 +446,6 @@ const dataFormatConversionConfiguration: CfnDeliveryStream.DataFormatConversionC
 }
 */
 
-
 /**
  * An S3 bucket destination for data from an Amazon Data Firehose delivery stream.
  */
@@ -429,13 +481,13 @@ export class S3Bucket implements IDestination {
       }
     }
 
-    const dataFormatConfig = this.props.dataFormatConversionConfiguration
+    const dataFormatConfig = this.props.dataFormatConversionConfiguration;
     const dataFormatConversionConfiguration = dataFormatConfig ? {
       enabled: true,
       schemaConfiguration: dataFormatConfig.schema.bind(scope, { role: role }),
       inputFormatConfiguration: dataFormatConfig.inputFormat.render(),
       outputFormatConfiguration: dataFormatConfig.outputFormat.render(),
-    } : undefined
+    } : undefined;
 
     return {
       extendedS3DestinationConfiguration: {
