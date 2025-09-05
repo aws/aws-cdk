@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
 import { Bucket, IBucket } from './bucket';
-import { IBucketReflect } from './reflection';
 import { BucketPolicyReference, CfnBucket, CfnBucketPolicy, IBucketPolicyRef } from './s3.generated';
 import { PolicyDocument } from '../../aws-iam';
 import { RemovalPolicy, Resource, Token, Tokenization } from '../../core';
@@ -12,7 +11,7 @@ export interface BucketPolicyProps {
   /**
    * The Amazon S3 bucket that the policy applies to.
    */
-  readonly bucket: IBucketReflect;
+  readonly bucket: IBucket;
 
   /**
    * Policy to apply when the policy is removed from this stack.
@@ -105,7 +104,7 @@ export class BucketPolicy extends Resource implements IBucketPolicyRef {
   public readonly document = new PolicyDocument();
 
   /** The Bucket this Policy applies to. */
-  public readonly bucket: IBucketReflect;
+  public readonly bucket: IBucket;
 
   private resource: CfnBucketPolicy;
 
