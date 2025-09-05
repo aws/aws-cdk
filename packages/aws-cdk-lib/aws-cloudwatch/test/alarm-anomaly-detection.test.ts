@@ -54,6 +54,59 @@ describe('AnomalyDetectionAlarm', () => {
       });
     });
 
+    test('can create with custom period', () => {
+      // WHEN
+      new AnomalyDetectionAlarm(stack, 'Alarm', {
+        metric,
+        evaluationPeriods: 3,
+        period: Duration.minutes(10),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+        ComparisonOperator: 'LessThanLowerOrGreaterThanUpperThreshold',
+        EvaluationPeriods: 3,
+        ThresholdMetricId: 'expr_1',
+        Metrics: Match.arrayWith([
+          Match.objectLike({
+            Expression: 'ANOMALY_DETECTION_BAND(m0, 2)',
+            Id: 'expr_1',
+            ReturnData: true,
+          }),
+          Match.objectLike({
+            Id: 'm0',
+            MetricStat: Match.objectLike({
+              Period: 600,
+            }),
+          }),
+        ]),
+      });
+    });
+
+    test('period overrides metric period in math expression', () => {
+      // GIVEN
+      const metricWithPeriod = metric.with({ period: Duration.minutes(1) });
+
+      // WHEN
+      new AnomalyDetectionAlarm(stack, 'Alarm', {
+        metric: metricWithPeriod,
+        evaluationPeriods: 3,
+        period: Duration.minutes(15),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+        Metrics: Match.arrayWith([
+          Match.objectLike({
+            Id: 'm0',
+            MetricStat: Match.objectLike({
+              Period: 900, // 15 minutes overrides the 1 minute from metric
+            }),
+          }),
+        ]),
+      });
+    });
+
     test('can create with custom settings', () => {
       // WHEN
       new AnomalyDetectionAlarm(stack, 'Alarm', {
