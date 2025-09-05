@@ -150,9 +150,21 @@ export class AssetCode extends Code {
       if (runtimeName && !Token.isUnresolved(runtimeName)) {
         const playwrightValidExtensions = ['.cjs', '.mjs', '.js'];
         const hasValidExtension = playwrightValidExtensions.some(ext => fs.existsSync(path.join(assetPath, `${filename}${ext}`)));
-        // Requires asset directory to have the structure 'nodejs/node_modules' for puppeteer runtime.
-        if (family === RuntimeFamily.NODEJS && runtimeName.includes('puppeteer') && !fs.existsSync(path.join(assetPath, 'nodejs', 'node_modules', nodeFilename))) {
-          throw new ValidationError(`The canary resource requires that the handler is present at "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`, scope);
+        // Requires asset directory to have the structure 'nodejs/node_modules' for puppeteer runtime < version 11.0.
+        if (family === RuntimeFamily.NODEJS && runtimeName.includes('puppeteer')) {
+          const versionMatch = runtimeName.match(/syn-nodejs-puppeteer-(\d+\.\d+)/);
+          const version = versionMatch ? parseFloat(versionMatch[1]) : 0;
+          if (version >= 11.0) {
+            // For versions > 11.0, allow JS files in root path
+            if (!fs.existsSync(path.join(assetPath, nodeFilename)) && !fs.existsSync(path.join(assetPath, 'nodejs', 'node_modules', nodeFilename))) {
+              throw new ValidationError(`The canary resource requires that the handler is present at "${nodeFilename}" or "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`, scope);
+            }
+          } else {
+            // For versions < 11.0, require nodejs/node_modules structure
+            if (!fs.existsSync(path.join(assetPath, 'nodejs', 'node_modules', nodeFilename))) {
+              throw new ValidationError(`The canary resource requires that the handler is present at "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`, scope);
+            }
+          }
         }
         // Requires the canary handler file to have the extension '.js', '.mjs', or '.cjs' for the playwright runtime.
         if (family === RuntimeFamily.NODEJS && runtimeName.includes('playwright') && !hasValidExtension) {

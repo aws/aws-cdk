@@ -248,6 +248,34 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_9_1 = new Runtime('syn-nodejs-puppeteer-9.1', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-puppeteer-10.0` includes the following:
+   * - Lambda runtime Node.js 20.x
+   * - Puppeteer-core version 24.2.0
+   * - Chromium version 131.0.6778.264
+   *
+   * New Features:
+   * - **Bug fixes** Bug fix for browser close taking excessively long intermittently.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-10.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_10_0 = new Runtime('syn-nodejs-puppeteer-10.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-11.0` includes the following:
+   * - Lambda runtime Node.js 20.x
+   * - Puppeteer-core version 24.15.0
+   * - Chromium version 138.0.7204.168
+   * - Firefox version 141.0
+   *
+   * New Features:
+   * - **Support for canaries with multiple browsers (Chrome and Firefox)**
+   * - **Bug fixes** visual monitoring fixes, and improved monitoring on canary timeout.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-11.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_11_0 = new Runtime('syn-nodejs-puppeteer-11.0', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-nodejs-playwright-1.0` includes the following:
    * - Lambda runtime Node.js 20.x
    * - Playwright version 1.45
@@ -277,6 +305,20 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-2.0
    */
   public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_2_0 = new Runtime('syn-nodejs-playwright-2.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-playwright-3.0` includes the following:
+   * - Lambda runtime Node.js 20.x
+   * - Playwright version 1.53.0
+   * - Chromium version 138.0.7204.168
+   * - Firefox version 139.0
+   *
+   * New Features:
+   * - **Support for canaries with multiple browsers (Chrome and Firefox) and visual monitoring**
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-3.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_3_0 = new Runtime('syn-nodejs-playwright-3.0', RuntimeFamily.NODEJS);
 
   /**
    * `syn-python-selenium-1.0` includes the following:
