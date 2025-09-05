@@ -5,20 +5,20 @@ import { Architecture } from './architecture';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
-import { FunctionUrlAuthType, FunctionUrlOptions, FunctionUrl } from './function-url';
+import { FunctionUrl, FunctionUrlAuthType, FunctionUrlOptions } from './function-url';
 import { IVersion } from './lambda-version';
-import { CfnPermission } from './lambda.generated';
+import { CfnPermission, FunctionReference, IFunctionRef, VersionReference } from './lambda.generated';
 import { Permission } from './permission';
 import { addAlias, flatMap } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { Annotations, ArnFormat, IResource, Resource, Token, Stack, FeatureFlags } from '../../core';
+import { Annotations, ArnFormat, FeatureFlags, IResource, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
-export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
+export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable, IFunctionRef {
 
   /**
    * The name of the function.
@@ -341,6 +341,13 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * @internal
    */
   private _hasAddedArrayTokenStatements: boolean = false;
+
+  public get functionRef(): FunctionReference {
+    return {
+      functionName: this.functionName,
+      functionArn: this.functionArn,
+    };
+  }
 
   /**
    * A warning will be added to functions under the following conditions:
@@ -855,6 +862,16 @@ class LatestVersion extends FunctionBase implements IVersion {
   constructor(lambda: FunctionBase) {
     super(lambda, '$LATEST');
     this.lambda = lambda;
+  }
+
+  public get versionRef(): VersionReference {
+    return {
+      functionArn: this.functionRef.functionArn,
+    };
+  }
+
+  public get functionRef() {
+    return this.lambda.functionRef;
   }
 
   public get functionArn() {

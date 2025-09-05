@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
-import { IBucket, Location } from 'aws-cdk-lib/aws-s3';
+import { IBucketRef, Location } from 'aws-cdk-lib/aws-s3';
 import { ActionGroupSchema } from './schema-base';
 
 /**
@@ -42,9 +42,9 @@ export abstract class ApiSchema extends ActionGroupSchema {
    * @param bucket - the bucket containing the local file containing the OpenAPI schema for the action group
    * @param objectKey - object key in the bucket
    */
-  public static fromS3File(bucket: IBucket, objectKey: string): S3ApiSchema {
+  public static fromS3File(bucket: IBucketRef, objectKey: string): S3ApiSchema {
     return new S3ApiSchema({
-      bucketName: bucket.bucketName,
+      bucketName: bucket.bucketRef.bucketName,
       objectKey: objectKey,
     });
   }
