@@ -4,14 +4,15 @@ import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import * as cxapi from '../../../cx-api';
-import { Bucket, IBucket, EventType, NotificationKeyFilter } from '../bucket';
+import { Bucket, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
+import { IBucketReflect } from '../reflection';
 
 interface NotificationsProps {
   /**
    * The bucket to manage notifications for.
    */
-  bucket: IBucket;
+  bucket: IBucketReflect;
 
   /**
    * The role to be used by the lambda handler
@@ -45,7 +46,7 @@ export class BucketNotifications extends Construct {
   private readonly queueNotifications = new Array<QueueConfiguration>();
   private readonly topicNotifications = new Array<TopicConfiguration>();
   private resource?: cdk.CfnResource;
-  private readonly bucket: IBucket;
+  private readonly bucket: IBucketReflect;
   private readonly handlerRole?: iam.IRole;
   private readonly skipDestinationValidation: boolean;
 
@@ -142,7 +143,7 @@ export class BucketNotifications extends Construct {
         type: 'Custom::S3BucketNotifications',
         properties: {
           ServiceToken: handler.functionArn,
-          BucketName: this.bucket.bucketName,
+          BucketName: this.bucket.bucketRef.bucketName,
           NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
           Managed: managed,
           SkipDestinationValidation: this.skipDestinationValidation,
@@ -181,7 +182,7 @@ export class BucketNotifications extends Construct {
     // All buckets need PutBucketNotification to set/update notification configurations
     handler.addToRolePolicy(new iam.PolicyStatement({
       actions: ['s3:PutBucketNotification'],
-      resources: [this.bucket.bucketArn],
+      resources: [this.bucket.bucketRef.bucketArn],
     }));
 
     // Unmanaged (imported) buckets need GetBucketNotification to read existing configurations
@@ -190,7 +191,7 @@ export class BucketNotifications extends Construct {
     if (!managed) {
       handler.addToRolePolicy(new iam.PolicyStatement({
         actions: ['s3:GetBucketNotification'],
-        resources: [this.bucket.bucketArn],
+        resources: [this.bucket.bucketRef.bucketArn],
       }));
     }
   }
