@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e9219944d3a5884d05b549f6a82f539551f4fa8b0430eb662e5a201375c60a7f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fafabf2b7be9ad82302c98ecf859718c76532a504f5143b932779d6d2f312ef9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -945,6 +945,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "NodeProxyAgentLayer924C1971"
+          }
+        ],
+        "/aws-cdk-eks-import-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-eks-import-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler": [
@@ -2014,6 +2020,12 @@
             "data": "ProviderframeworkonEvent83C1D0A7"
           }
         ],
+        "/aws-cdk-eks-import-cluster-test/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/aws-cdk-eks-import-cluster-test/@aws-cdk--aws-eks.KubectlProvider/awscdkeksimportclustertestawscdkawseksKubectlProviderframeworkonEvent301ACD4FArn": [
           {
             "type": "aws:cdk:logicalId",
@@ -2054,6 +2066,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B"
+          }
+        ],
+        "/aws-cdk-eks-import-cluster-test/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-eks-import-cluster-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
@@ -2411,6 +2429,10 @@
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "recommendedValue": true,
+            "explanation": "Disable implicit openListener when custom security groups are provided"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
@@ -2864,5 +2886,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1023.0"
+  "minimumCliVersion": "2.1027.0"
 }

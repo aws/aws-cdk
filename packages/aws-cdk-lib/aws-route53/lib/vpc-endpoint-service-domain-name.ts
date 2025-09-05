@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { IVpcEndpointService } from '../../aws-ec2';
+import { IVPCEndpointServiceRef } from '../../aws-ec2';
 import { Fn, Names, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
@@ -14,7 +14,7 @@ export interface VpcEndpointServiceDomainNameProps {
   /**
    * The VPC Endpoint Service to configure Private DNS for
    */
-  readonly endpointService: IVpcEndpointService;
+  readonly endpointService: IVPCEndpointServiceRef;
 
   /**
    * The domain name to use.
@@ -37,7 +37,7 @@ export interface VpcEndpointServiceDomainNameProps {
  */
 export class VpcEndpointServiceDomainName extends Construct {
   // Track all domain names created, so someone doesn't accidentally associate two domains with a single service
-  private static readonly endpointServices: IVpcEndpointService[] = [];
+  private static readonly endpointServices: IVPCEndpointServiceRef[] = [];
 
   // Track all domain names created, so someone doesn't accidentally associate two domains with a single service
   private static readonly endpointServicesMap: { [endpointService: string]: string} = {};
@@ -58,7 +58,7 @@ export class VpcEndpointServiceDomainName extends Construct {
     super(scope, id);
 
     const serviceUniqueId = Names.nodeUniqueId(props.endpointService.node);
-    const serviceId = props.endpointService.vpcEndpointServiceId;
+    const serviceId = props.endpointService.vpcEndpointServiceRef.serviceId;
     this.domainName = props.domainName;
 
     // Make sure a user doesn't accidentally add multiple domains
