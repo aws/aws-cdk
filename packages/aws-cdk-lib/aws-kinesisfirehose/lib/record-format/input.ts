@@ -13,7 +13,7 @@ export interface OpenXJsonInputFormatProps {
   /**
    * Whether the JSON keys should be lowercased when written as column names
    *
-   * @default true
+   * @default `true`
    */
   readonly lowercaseColumnNames?: boolean;
 
@@ -31,7 +31,7 @@ export interface OpenXJsonInputFormatProps {
    * This is useful because Apache Hive does not allow dots in column names.
    * For example, if the JSON contains a key whose name is "a.b", you can define the column name to be "a_b" when using this option.
    *
-   * @default false
+   * @default `false`
    */
   readonly convertDotsInJsonKeysToUnderscores?: boolean;
 }
@@ -158,7 +158,7 @@ export class InputFormat {
   public static readonly OPENX_JSON = new OpenXJsonInputFormat();
 
   /**
-   * Parse your JSON with Hive JSON specification. Use this if you want to parse custom timestamps.
+   * Parse your JSON with Hive JSON specification.
    */
   public static readonly HIVE_JSON = new HiveJsonInputFormat();
 

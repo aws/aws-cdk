@@ -185,10 +185,16 @@ To parse timestamps formatted as milliseconds since epoch, use the convenience c
 
 ### Output Format: Parquet
 
-Example creation of custom Parquet OutputFormat
+Example of a custom Parquet OutputFormat, with all values changed from the defaults.
 
 ```ts
 const outputFormat = new ParquetOutputFormat({
+  blockSize: core.Size.mebibytes(512),
+  compression: Compression.UNCOMPRESSED,
+  enableDictionaryCompression: true,
+  maxPadding: core.Size.bytes(10),
+  pageSize: core.Size.mebibytes(2),
+  writerVersion: ParquetWriterVersion.V2,
 })
 ```
 
