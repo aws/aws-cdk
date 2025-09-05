@@ -57,20 +57,6 @@ export interface IBucketReflect extends IBucketAttr {
   readonly encryptionKey?: kms.IKey;
 
   /**
-   * The role to be used by the lambda handler
-   *
-   * @default - A role will be created
-   */
-  notificationsHandlerRole?: iam.IRole;
-
-  /**
-   * Skips notification validation of Amazon SQS, Amazon SNS, and Lambda destinations.
-   *
-   * @default false
-   */
-  notificationsSkipDestinationValidation?: boolean;
-
-  /**
    * The resource policy associated with this bucket.
    *
    * If `autoCreatePolicy` is true, a `BucketPolicy` will be created upon the
@@ -89,8 +75,29 @@ export interface IBucketReflect extends IBucketAttr {
  */
 export class BucketFactories {
   private notifications?: BucketNotifications;
+  private _notificationsHandlerRole?: iam.IRole;
+  private _notificationsSkipDestinationValidation?: boolean;
 
-  constructor(private readonly bucket: IBucketReflect) {}
+  /**
+   * The role to be used by the notifications handler
+   *
+   * @default - a new role will be created.
+   */
+  public set notificationsHandlerRole(value: iam.IRole) {
+    this._notificationsHandlerRole = value;
+  }
+
+  /**
+   * Skips notification validation of Amazon SQS, Amazon SNS, and Lambda destinations.
+   *
+   * @default false
+   */
+  public set notificationsSkipDestinationValidation(value: boolean) {
+    this._notificationsSkipDestinationValidation = value;
+  }
+
+  constructor(private readonly bucket: IBucketReflect) {
+  }
 
   /**
    * Adds a bucket notification event destination.
@@ -163,8 +170,8 @@ export class BucketFactories {
     if (!this.notifications) {
       this.notifications = new BucketNotifications(this.bucket, 'Notifications', {
         bucket: this.bucket,
-        handlerRole: this.bucket.notificationsHandlerRole,
-        skipDestinationValidation: this.bucket.notificationsSkipDestinationValidation ?? false,
+        handlerRole: this._notificationsHandlerRole,
+        skipDestinationValidation: this._notificationsSkipDestinationValidation ?? false,
       });
     }
     cb(this.notifications);

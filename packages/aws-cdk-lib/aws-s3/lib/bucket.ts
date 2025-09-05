@@ -559,9 +559,9 @@ export abstract class BucketBase extends Resource implements IBucket {
 
   protected factories: BucketFactories;
 
-  public notificationsHandlerRole?: iam.IRole;
+  protected notificationsHandlerRole?: iam.IRole;
 
-  public notificationsSkipDestinationValidation?: boolean;
+  protected notificationsSkipDestinationValidation?: boolean;
 
   protected objectOwnership?: ObjectOwnership;
 
@@ -2106,7 +2106,13 @@ export class Bucket extends BucketBase {
       public replicationRoleArn?: string = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
-      public readonly notificationsHandlerRole = attrs.notificationsHandlerRole;
+      protected readonly notificationsHandlerRole = attrs.notificationsHandlerRole;
+      constructor(s: Construct, i: string, props: ResourceProps = {}) {
+        super(s, i, props);
+        if (this.notificationsHandlerRole) {
+          this.factories.notificationsHandlerRole = this.notificationsHandlerRole;
+        }
+      }
 
       /**
        * Exports this bucket from the stack.
@@ -2275,6 +2281,13 @@ export class Bucket extends BucketBase {
 
     this.notificationsHandlerRole = props.notificationsHandlerRole;
     this.notificationsSkipDestinationValidation = props.notificationsSkipDestinationValidation;
+    if (this.notificationsHandlerRole != null) {
+      this.factories.notificationsHandlerRole = this.notificationsHandlerRole;
+    }
+
+    if (this.notificationsSkipDestinationValidation != null) {
+      this.factories.notificationsSkipDestinationValidation = this.notificationsSkipDestinationValidation;
+    }
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
     this.encryptionKey = encryptionKey;
