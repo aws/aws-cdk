@@ -20,6 +20,21 @@ const AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE = 'Custom::SyntheticsAutoDe
 const AUTO_DELETE_UNDERLYING_RESOURCES_TAG = 'aws-cdk:auto-delete-underlying-resources';
 
 /**
+ * Browser types supported by CloudWatch Synthetics Canary
+ */
+export enum BrowserType {
+  /**
+   * Google Chrome browser
+   */
+  CHROME = 'CHROME',
+
+  /**
+   * Mozilla Firefox browser
+   */
+  FIREFOX = 'FIREFOX',
+}
+
+/**
  * Specify a test that the canary should run
  */
 export class Test {
@@ -345,6 +360,20 @@ export interface CanaryProps {
    * @default - No resources will have their tags replicated to this canary
    */
   readonly resourcesToReplicateTags?: ResourceToReplicateTags[];
+
+  /**
+   * Browser configurations for the canary.
+   *
+   * Specifies which browser(s) to use for running the canary tests.
+   * You can specify up to 2 browser configurations.
+   *
+   * Firefox is supported with Node.js Puppeteer and Playwright runtimes,
+   * but not with Python Selenium runtimes.
+   *
+   * @default undefined - AWS CloudWatch default is using only Chrome browser
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html
+   */
+  readonly browserConfigs?: BrowserType[];
 }
 
 /**
@@ -440,6 +469,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     }
 
     this.validateDryRunAndUpdate(props.runtime, props.dryRunAndUpdate);
+    this.validateBrowserConfigs(props.runtime, props.browserConfigs);
 
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
@@ -460,6 +490,9 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
           : 'OFF'
         : undefined,
       dryRunAndUpdate: props.dryRunAndUpdate,
+      browserConfigs: props.browserConfigs?.map(browserType => ({
+        browserType,
+      })),
       resourcesToReplicateTags: props.resourcesToReplicateTags,
     });
     this._resource = resource;
@@ -490,6 +523,32 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
     if (!match || match.length < 3 || MIN_SUPPORTED_VERSIONS[match[1]] === undefined || parseFloat(match[2]) < MIN_SUPPORTED_VERSIONS[match[1]]) {
       throw new ValidationError(`dryRunAndUpdate is only supported for canary runtime versions 'syn-nodejs-puppeteer-10.0+', 'syn-nodejs-playwright-2.0+', or 'syn-python-selenium-5.1+', got: ${runtimeName}`, this);
+    }
+  }
+
+  private validateBrowserConfigs(runtime: Runtime, browserConfigs?: BrowserType[]) {
+    if (!browserConfigs) {
+      return;
+    }
+
+    if (browserConfigs.length > 2) {
+      throw new ValidationError(`You can specify up to 2 browser configurations, got: ${browserConfigs.length}.`, this);
+    }
+
+    if (browserConfigs.length === 0) {
+      throw new ValidationError('browserConfigs must contain at least one browser type if specified.', this);
+    }
+
+    // Firefox support validation
+    const hasFirefox = browserConfigs.includes(BrowserType.FIREFOX);
+    if (hasFirefox) {
+      const runtimeName = runtime.name;
+      const isSeleniumRuntime = !cdk.Token.isUnresolved(runtimeName) &&
+        runtimeName.includes('python-selenium');
+
+      if (isSeleniumRuntime) {
+        throw new ValidationError('Firefox browser is not supported with Python Selenium runtimes. Use Chrome instead or switch to a Node.js runtime with Puppeteer or Playwright.', this);
+      }
     }
   }
 
