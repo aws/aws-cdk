@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1348d433d471ec21e710109f265bbc0e54ecc5c2a9b86c0fab1ccc0544e5733.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d929451c2e751d20bbc0fccb233f30dda360d529401a0b5c1a52f6d3701ef86e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -830,6 +830,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Clusterchartawsloadbalancercontroller9E1FDE79"
+          }
+        ],
+        "/aws-cdk-eks-v2-alpha-helm-logging-test/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-eks-v2-alpha-helm-logging-test/BootstrapVersion": [
