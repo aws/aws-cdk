@@ -4,9 +4,11 @@
    "Type": "AWS::CodeBuild::Fleet",
    "Properties": {
     "BaseCapacity": 1,
-    "ComputeType": "BUILD_GENERAL1_SMALL",
-    "EnvironmentType": "LINUX_CONTAINER",
-    "Name": "MyFleet"
+    "ComputeConfiguration": {
+     "instanceType": "t3.medium"
+    },
+    "ComputeType": "CUSTOM_INSTANCE_TYPE",
+    "EnvironmentType": "LINUX_CONTAINER"
    }
   },
   "MyProjectRole9BBE5233": {
@@ -172,23 +174,12 @@
   }
  },
  "Outputs": {
-  "ExportsOutputFnGetAttMyFleet1E628396Arn64216BDA": {
-   "Value": {
-    "Fn::GetAtt": [
-     "MyFleet1E628396",
-     "Arn"
-    ]
-   },
-   "Export": {
-    "Name": "aws-cdk-project-fleet:ExportsOutputFnGetAttMyFleet1E628396Arn64216BDA"
-   }
-  },
   "ExportsOutputRefMyProject39F7B0AE1CE3CA42": {
    "Value": {
     "Ref": "MyProject39F7B0AE"
    },
    "Export": {
-    "Name": "aws-cdk-project-fleet:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+    "Name": "CustomInstanceTypeComputeFleetIntegStack0:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
    }
   }
  },
