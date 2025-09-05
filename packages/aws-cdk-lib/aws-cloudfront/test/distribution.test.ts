@@ -534,7 +534,7 @@ describe('certificates', () => {
 
   test('should fail if minimumProtocolVersion is specified without a certificate', () => {
     const origin = defaultOrigin();
-    
+
     expect(() => {
       new Distribution(stack, 'Dist', {
         defaultBehavior: { origin },
@@ -545,7 +545,7 @@ describe('certificates', () => {
 
   test('should fail if sslSupportMethod is specified without a certificate', () => {
     const origin = defaultOrigin();
-    
+
     expect(() => {
       new Distribution(stack, 'Dist', {
         defaultBehavior: { origin },
@@ -556,7 +556,7 @@ describe('certificates', () => {
 
   test('should fail if both minimumProtocolVersion and sslSupportMethod are specified without a certificate', () => {
     const origin = defaultOrigin();
-    
+
     expect(() => {
       new Distribution(stack, 'Dist', {
         defaultBehavior: { origin },
@@ -569,7 +569,7 @@ describe('certificates', () => {
   test('should succeed when minimumProtocolVersion and sslSupportMethod are specified with a certificate', () => {
     const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
     const origin = defaultOrigin();
-    
+
     expect(() => {
       new Distribution(stack, 'Dist', {
         defaultBehavior: { origin },
@@ -579,7 +579,7 @@ describe('certificates', () => {
         sslSupportMethod: SSLMethod.VIP,
       });
     }).not.toThrow();
-    
+
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         ViewerCertificate: {
