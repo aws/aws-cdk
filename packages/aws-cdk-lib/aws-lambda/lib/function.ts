@@ -15,7 +15,7 @@ import { CfnFunction, ICodeSigningConfigRef } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
 import { ParamsAndSecretsLayerVersion } from './params-and-secrets-layers';
-import { Runtime, RuntimeFamily } from './runtime';
+import { determineLatestNodeRuntime, Runtime, RuntimeFamily } from './runtime';
 import { RuntimeManagementMode } from './runtime-management';
 import { SnapStartConf } from './snapstart-config';
 import { addAlias } from './util';
@@ -1057,6 +1057,8 @@ export class Function extends FunctionBase {
       throw new ValidationError(`Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize}.`, this);
     }
 
+    const effectiveRuntime = props.runtime === Runtime.NODEJS_LATEST ? determineLatestNodeRuntime(this) : props.runtime;
+
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
@@ -1072,7 +1074,7 @@ export class Function extends FunctionBase {
       handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
       packageType: props.runtime === Runtime.FROM_IMAGE ? 'Image' : undefined,
-      runtime: props.runtime === Runtime.FROM_IMAGE ? undefined : props.runtime.name,
+      runtime: props.runtime === Runtime.FROM_IMAGE ? undefined : effectiveRuntime.name,
       role: this.role.roleArn,
       // Uncached because calling '_checkEdgeCompatibility', which gets called in the resolve of another
       // Token, actually *modifies* the 'environment' map.
@@ -1115,7 +1117,7 @@ export class Function extends FunctionBase {
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
-    this.runtime = props.runtime;
+    this.runtime = effectiveRuntime;
     this.timeout = props.timeout;
 
     this.architecture = props.architecture ?? Architecture.X86_64;
