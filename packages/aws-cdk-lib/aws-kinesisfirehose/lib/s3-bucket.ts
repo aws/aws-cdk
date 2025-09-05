@@ -106,18 +106,20 @@ interface ParquetOutputFormatProps {
 }
 class ParquetOutputFormat implements IOutputFormat {
   constructor(readonly props?: ParquetOutputFormatProps) {
-    if (props) {
-      this.validateProps(props)
-    }
+    this.validateProps(props)
   }
 
-  private validateProps(props: ParquetOutputFormatProps) {
-    if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 16) {
-      throw new core.UnscopedValidationError(`Block size ${props.blockSize} must be at least 16MiB`)
+  private validateProps(props?: ParquetOutputFormatProps) {
+    if (!props) {
+      return
+    }
+
+    if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 64) {
+      throw new core.UnscopedValidationError(`Block size ${props.blockSize.toMebibytes()} must be at least 64 MiB`)
     }
 
     if (props.pageSize !== undefined && props.pageSize.toKibibytes() < 64) {
-      throw new core.UnscopedValidationError(`Page size ${props.pageSize} must be at least 64KiB`)
+      throw new core.UnscopedValidationError(`Page size ${props.pageSize.toKibibytes()} must be at least 64 KiB`)
     }
   }
 
@@ -142,26 +144,81 @@ class ParquetOutputFormat implements IOutputFormat {
   }
 }
 
+enum FormatVersion {
+  V0_11 = "V0_11",
+  V0_12 = "V0_12",
+}
+
 interface OrcOutputFormatProps {
-  readonly blockSizeBytes?: number;
+  readonly blockSize?: core.Size;
   readonly bloomFilterColumns?: string[];
   readonly bloomFilterFalsePositiveProbability?: number;
-  readonly compression?: "SNAPPY|UNCOMPRESSED|GZIP";
+  readonly compression?: Compression;
   readonly dictionaryKeyThreshold?: number;
   readonly enablePadding?: boolean;
-  readonly formatVersion?: "V0_12|V0_11";
+  readonly formatVersion?: FormatVersion;
   readonly paddingTolerance?: number;
   readonly rowIndexStride?: number;
-  readonly stripeSizeBytes?: number;
+  readonly stripeSize?: core.Size;
 }
 class OrcOutputFormat implements IOutputFormat {
-  constructor(readonly props?: OrcOutputFormatProps) {}
+  constructor(readonly props?: OrcOutputFormatProps) {
+    this.validateProps(props)
+  }
+
+  private betweenInclusive(num: number, min: number, max: number) {
+    return num >= min && num <= max
+  }
+
+  private validateProps(props?: OrcOutputFormatProps) {
+    if (!props) {
+      return
+    }
+
+    if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 64) {
+      throw new core.UnscopedValidationError(`Block size ${props.blockSize.toMebibytes()} must be at least 64 MiB`)
+    }
+
+    if (props.stripeSize !== undefined && props.stripeSize.toMebibytes() < 8) {
+      throw new core.UnscopedValidationError(`Stripe size ${props.stripeSize.toMebibytes()} must be at least 8 MiB`)
+    }
+
+    if (props.bloomFilterFalsePositiveProbability !== undefined && !this.betweenInclusive(props.bloomFilterFalsePositiveProbability, 0, 1)) {
+      throw new core.UnscopedValidationError(`Bloom filter false positive probability ${props.bloomFilterFalsePositiveProbability} must be between 0 and 1, inclusive`)
+    }
+
+    if (props.dictionaryKeyThreshold !== undefined && !this.betweenInclusive(props.dictionaryKeyThreshold, 0, 1)) {
+      throw new core.UnscopedValidationError(`Dictioanry key threshold ${props.dictionaryKeyThreshold} must be between 0 and 1, inclusive`)
+    }
+
+    if (props.paddingTolerance !== undefined && !this.betweenInclusive(props.paddingTolerance, 0, 1)) {
+      throw new core.UnscopedValidationError(`Padding tolerance ${props.paddingTolerance} must be between 0 and 1, inclusive`)
+    }
+
+    if (props.rowIndexStride !== undefined && props.rowIndexStride < 1000) {
+      throw new core.UnscopedValidationError(`Row index stride ${props.rowIndexStride} must be at least 1000`)
+    }
+  }
+
+  private createOrcSerDeProps(): CfnDeliveryStream.OrcSerDeProperty {
+    const props = this.props;
+    return props ? {
+      blockSizeBytes: props.blockSize?.toBytes(),
+      bloomFilterColumns: props.bloomFilterColumns,
+      bloomFilterFalsePositiveProbability: props.bloomFilterFalsePositiveProbability,
+      compression: props.compression,
+      dictionaryKeyThreshold: props.dictionaryKeyThreshold,
+      enablePadding: props.enablePadding,
+      formatVersion: props.formatVersion,
+      paddingTolerance: props.paddingTolerance,
+      rowIndexStride: props.rowIndexStride,
+      stripeSizeBytes: props.stripeSize?.toBytes(),
+    } : {}
+  }
   render(): CfnDeliveryStream.OutputFormatConfigurationProperty {
     return {
       serializer: {
-        orcSerDe: {
-          ...this.props,
-        },
+        orcSerDe: this.createOrcSerDeProps(),
       },
     };
   }
