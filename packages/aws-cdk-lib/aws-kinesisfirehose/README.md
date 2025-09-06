@@ -137,7 +137,7 @@ An example of defining an S3 destination configured with data format conversion:
 
 ```ts
 declare const bucket: s3.Bucket;
-declare const schemaGlueTable: glue.cfnTable;
+declare const schemaGlueTable: glue.CfnTable;
 const s3Destination = new firehose.S3Bucket(bucket, {
   dataFormatConversionConfiguration: {
     schema: firehose.Schema.fromCfnTable(schemaGlueTable),
@@ -163,7 +163,7 @@ Example creation of custom OpenX JSON InputFormat:
 const inputFormat = new firehose.OpenXJsonInputFormat({
   lowercaseColumnNames: false,
   columnToJsonKeyMappings: {"ts": "timestamp"},
-  convertDotsInJsonKeysTounderscores: true,
+  convertDotsInJsonKeysToUnderscores: true,
 })
 ```
 

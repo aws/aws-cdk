@@ -37,7 +37,7 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
    *
    * @default no data format conversion is done
    */
-  readonly dataFormatConversionConfiguration?: DataFormatConversionProps;
+  readonly dataFormatConversion?: DataFormatConversionProps;
 }
 
 /**
@@ -97,7 +97,7 @@ export class S3Bucket implements IDestination {
       }
     }
 
-    const dataFormatConfig = this.props.dataFormatConversionConfiguration;
+    const dataFormatConfig = this.props.dataFormatConversion;
 
     if (dataFormatConfig) {
       if (this.props.compression) {
