@@ -70,6 +70,17 @@ export class S3Bucket implements IDestination {
     if (this.props.s3Backup?.mode === BackupMode.FAILED) {
       throw new cdk.UnscopedValidationError('S3 destinations do not support BackupMode.FAILED');
     }
+
+    if (this.props.dataFormatConversion) {
+      if (this.props.compression) {
+        throw new cdk.UnscopedValidationError('When data record format conversion is enabled, compression cannot be set on the S3 Destination. Compression may only be set in the OutputFormat. By default, this compression is SNAPPY');
+      }
+
+      const bufferSizeMiB = this.props.bufferingSize?.toMebibytes();
+      if (bufferSizeMiB !== undefined && bufferSizeMiB < 64) {
+        throw new cdk.UnscopedValidationError(`When data record format conversion is enabled, buffer size must be at least 64 MiB. Provided buffer size was ${bufferSizeMiB} MiB`);
+      }
+    }
   }
 
   bind(scope: Construct, _options: DestinationBindOptions): DestinationConfig {
@@ -98,17 +109,6 @@ export class S3Bucket implements IDestination {
     }
 
     const dataFormatConfig = this.props.dataFormatConversion;
-
-    if (dataFormatConfig) {
-      if (this.props.compression) {
-        throw new cdk.ValidationError('When data record format conversion is enabled, compression cannot be set on the S3 Destination. Compression may only be set in the OutputFormat. By default, this compression is SNAPPY', scope);
-      }
-
-      const bufferSizeMiB = this.props.bufferingSize?.toMebibytes();
-      if (bufferSizeMiB !== undefined && bufferSizeMiB < 64) {
-        throw new cdk.ValidationError('When data record format conversion is enabled, buffer size must be at least 64 MiB', scope);
-      }
-    }
 
     const dataFormatConversionConfiguration = dataFormatConfig ? {
       enabled: true,
