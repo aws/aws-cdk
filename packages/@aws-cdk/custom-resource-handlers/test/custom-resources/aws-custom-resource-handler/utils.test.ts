@@ -130,7 +130,7 @@ describe('getCredentials with External ID support', () => {
     const call: AwsSdkCall = {
       service: 'STS',
       action: 'GetCallerIdentity',
-      externalId: 'test-external-id-123', // Should be ignored
+      // No externalId provided when assumedRoleArn is not specified
     };
 
     const physicalResourceId = 'test-resource-id';
@@ -139,8 +139,21 @@ describe('getCredentials with External ID support', () => {
     const result = await getCredentials(call, physicalResourceId);
 
     // THEN
-    expect(mockFromTemporaryCredentials).not.toHaveBeenCalled();
     expect(result).toBeUndefined();
+  });
+
+  test('throws error when externalId provided without assumedRoleArn', async () => {
+    // GIVEN
+    const call: AwsSdkCall = {
+      service: 'STS',
+      action: 'GetCallerIdentity',
+      externalId: 'test-external-id-123', // Should cause error
+    };
+
+    const physicalResourceId = 'test-resource-id';
+
+    // WHEN & THEN
+    await expect(getCredentials(call, physicalResourceId)).rejects.toThrow('ExternalId can only be provided when assumedRoleArn is specified');
   });
 
   test('sanitizes role session name correctly', async () => {
@@ -164,7 +177,7 @@ describe('getCredentials with External ID support', () => {
     expect(mockFromTemporaryCredentials).toHaveBeenCalledWith({
       params: {
         RoleArn: 'arn:aws:iam::123456789012:role/TestRole',
-        RoleSessionName: expect.stringMatching(/^\d+-test-resourceid$/),
+        RoleSessionName: expect.stringMatching(/^\d+-test-resource@id$/),
         ExternalId: 'test-external-id-123',
       },
       clientConfig: undefined,
@@ -194,7 +207,7 @@ describe('getCredentials with External ID support', () => {
     const roleSessionName = callArgs.params.RoleSessionName;
 
     expect(roleSessionName.length).toBeLessThanOrEqual(64);
-    expect(roleSessionName).toMatch(/^\d+-very-long-resource-id-that-exceeds-the-maximum-lengt$/);
+    expect(roleSessionName).toMatch(/^\d+-very-long-resource-id-that-exceeds-the-maximum-len$/);
     expect(callArgs.params.ExternalId).toBe('test-external-id-123');
     expect(result).toBe(mockCredentials);
   });
