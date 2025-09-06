@@ -1,11 +1,11 @@
 import { Construct } from 'constructs';
 import { BackupMode, CommonDestinationProps, CommonDestinationS3Props } from './common';
 import { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
+import { Schema, IInputFormat, IOutputFormat } from './record-format';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
 import * as core from '../../core';
-import { Schema, IInputFormat, IOutputFormat } from './record-format';
 
 /**
  * Props for defining an S3 destination of an Amazon Data Firehose delivery stream.

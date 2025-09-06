@@ -5,6 +5,10 @@ import { CfnDeliveryStream } from '../kinesisfirehose.generated';
  * An input format to be used in Firehose record format conversion.
  */
 export interface IInputFormat {
+
+  /**
+   * Renders the cloudformation properties for the input format.
+   */
   render(): CfnDeliveryStream.InputFormatConfigurationProperty;
 }
 
@@ -45,7 +49,14 @@ export interface OpenXJsonInputFormatProps {
  * You should only need to specify an instance of this class if the default configuration does not suit your needs.
  */
 export class OpenXJsonInputFormat implements IInputFormat {
-  public constructor(readonly props?: OpenXJsonInputFormatProps) {}
+  /**
+   * Properties for OpenX JSON input format
+   */
+  readonly props?: OpenXJsonInputFormatProps;
+
+  public constructor(props?: OpenXJsonInputFormatProps) {
+    this.props = props;
+  }
 
   private createOpenXJsonSerde(): CfnDeliveryStream.OpenXJsonSerDeProperty {
     const props = this.props;
@@ -74,6 +85,7 @@ export class TimestampParser {
    * Parses timestamps formatted in milliseconds since epoch.
    */
   public static readonly EPOCH_MILLIS = new TimestampParser('millis');
+
   /**
    * Default timestamp parser.
    *
@@ -101,7 +113,14 @@ export class TimestampParser {
     return new TimestampParser(format);
   }
 
-  private constructor(readonly format: string) {}
+  /**
+   * The format string to use in Hive JSON input format configuration.
+   */
+  public readonly format: string;
+
+  private constructor(format: string) {
+    this.format = format;
+  }
 }
 
 /**
@@ -129,9 +148,13 @@ export interface HiveJsonInputFormatProps {
  */
 export class HiveJsonInputFormat implements IInputFormat {
   /**
-   * Construct a new Hive JSON input format specification for record format conversion
+   * Properties for Hive JSON input format
    */
-  public constructor(readonly props?: HiveJsonInputFormatProps) {}
+  readonly props?: HiveJsonInputFormatProps;
+
+  public constructor(props?: HiveJsonInputFormatProps) {
+    this.props = props;
+  }
 
   private createHiveJsonSerde(): CfnDeliveryStream.HiveJsonSerDeProperty {
     const props = this.props;

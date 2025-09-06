@@ -4,6 +4,9 @@ import * as iam from '../../../aws-iam';
 import * as core from '../../../core';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 
+/**
+ * Options for creating a Schema to use in record format conversion
+ */
 export interface SchemaConfiguration {
 
   /**
@@ -48,6 +51,9 @@ export interface SchemaConfiguration {
   readonly versionId?: string;
 }
 
+/**
+ * Options when binding a Schema to a Destination
+ */
 export interface SchemaBindOptions {
 
   /**
@@ -56,6 +62,9 @@ export interface SchemaBindOptions {
   readonly role: iam.IRole;
 }
 
+/**
+ * Options for creating a Schema for record format conversion from a `glue.CfnTable`
+ */
 export interface SchemaFromCfnTableProps {
 
   /**
@@ -67,6 +76,13 @@ export interface SchemaFromCfnTableProps {
    * @default `LATEST`
    */
   readonly versionId?: string;
+
+  /**
+   * The region of the database.
+   *
+   * @default the region of the stack that contains the table reference is used
+   */
+  readonly region?: string;
 }
 
 /**
@@ -83,8 +99,8 @@ export class Schema {
     return new Schema({
       tableName: table.ref,
       databaseName: table.databaseName,
-      databaseRegion: stack.region,
-      catalogId: stack.account,
+      databaseRegion: props?.region ?? stack.region,
+      catalogId: table.catalogId,
       versionId: props?.versionId ?? 'LATEST',
     });
   }
@@ -92,21 +108,31 @@ export class Schema {
   // Once Glue L2 constructs are stable, we can do something like the following to support it
   // static fromTable(table: glue.Table) {}
 
-  public constructor(readonly props: SchemaConfiguration) {}
+  /**
+   * Configuration for creation of a Schema.
+   */
+  readonly config: SchemaConfiguration;
 
+  public constructor(config: SchemaConfiguration) {
+    this.config = config;
+  }
+
+  /**
+   * Binds this Schema to the Destination, adding the necessary permissions to the Destination role.
+   */
   public bind(
     scope: Construct,
     options: SchemaBindOptions,
   ): CfnDeliveryStream.SchemaConfigurationProperty {
     const stack = core.Stack.of(scope);
-    const region = this.props.databaseRegion ?? stack.region;
+    const region = this.config.databaseRegion ?? stack.region;
 
     const tableArn = stack.formatArn({
       service: 'glue',
       resource: 'table',
-      resourceName: `${this.props.databaseName}/${this.props.tableName}`,
+      resourceName: `${this.config.databaseName}/${this.config.tableName}`,
       region: region,
-      account: this.props.catalogId,
+      account: this.config.catalogId,
     });
 
     iam.Grant.addToPrincipal({
@@ -128,7 +154,10 @@ export class Schema {
     return {
       roleArn: options.role.roleArn,
       region: region,
-      ...this.props,
+      tableName: this.config.tableName,
+      databaseName: this.config.databaseName,
+      versionId: this.config.versionId,
+      catalogId: this.config.catalogId,
     };
   }
 }

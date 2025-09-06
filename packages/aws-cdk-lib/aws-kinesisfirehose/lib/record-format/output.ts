@@ -6,11 +6,26 @@ import { CfnDeliveryStream } from '../kinesisfirehose.generated';
  * An output format to be used in Firehose record format conversion.
  */
 export interface IOutputFormat {
+
+  /**
+   * Renders the cloudformation properties for the output format.
+   */
   render(): CfnDeliveryStream.OutputFormatConfigurationProperty;
 }
 
+/**
+ * The available WriterVersions for Parquet output format
+ */
 export enum ParquetWriterVersion {
+
+  /**
+   * Use V1 Parquet writer version when writing the output
+   */
   V1 = 'V1',
+
+  /**
+   * Use V2 Parquet writer version when writing the output
+   */
   V2 = 'V2',
 }
 
@@ -87,7 +102,13 @@ export interface ParquetOutputFormatProps {
 export class ParquetOutputFormat implements IOutputFormat {
   private static readonly VALID_COMPRESSIONS = [Compression.SNAPPY, Compression.UNCOMPRESSED, Compression.GZIP].map(compression => compression.value);
 
-  public constructor(readonly props?: ParquetOutputFormatProps) {
+  /**
+   * Properties for the Parquet output format
+   */
+  readonly props?: ParquetOutputFormatProps;
+
+  public constructor(props?: ParquetOutputFormatProps) {
+    this.props = props;
     this.validateProps(props);
   }
 
@@ -130,8 +151,19 @@ export class ParquetOutputFormat implements IOutputFormat {
   }
 }
 
+/**
+ * The available WriterVersions for ORC output format
+ */
 export enum OrcFormatVersion {
+
+  /**
+   * Use V0_11 ORC writer version when writing the output of the record transformation
+   */
   V0_11 = 'V0_11',
+
+  /**
+   * Use V0_12 ORC writer version when writing the output of the record transformation
+   */
   V0_12 = 'V0_12',
 }
 
@@ -262,7 +294,13 @@ export interface OrcOutputFormatProps {
 export class OrcOutputFormat implements IOutputFormat {
   private static readonly VALID_COMPRESSIONS = [Compression.SNAPPY, Compression.UNCOMPRESSED, Compression.GZIP].map(compression => compression.value);
 
-  public constructor(readonly props?: OrcOutputFormatProps) {
+  /**
+   * Properties for the ORC output format
+   */
+  readonly props?: OrcOutputFormatProps;
+
+  public constructor(props?: OrcOutputFormatProps) {
+    this.props = props;
     this.validateProps(props);
   }
 
