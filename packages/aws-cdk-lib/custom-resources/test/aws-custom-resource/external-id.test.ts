@@ -1,6 +1,6 @@
+import { Template } from '../../../assertions';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
-import { Template } from '../../../assertions';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../lib';
 
 describe('AwsCustomResource External ID Support', () => {
@@ -278,7 +278,7 @@ describe('AwsCustomResource External ID Support', () => {
   test('UUID external ID pattern', () => {
     // GIVEN & WHEN
     const uuidExternalId = '550e8400-e29b-41d4-a716-446655440000';
-    
+
     new AwsCustomResource(stack, 'CustomResource', {
       onCreate: {
         service: 'STS',
@@ -323,7 +323,7 @@ describe('AwsCustomResource External ID Support', () => {
       },
       onUpdate: {
         service: 'EC2',
-        action: 'DescribeVpcs', 
+        action: 'DescribeVpcs',
         assumedRoleArn: crossAccountRoleArn,
         externalId: secretExternalId,
         region: 'us-west-2',
