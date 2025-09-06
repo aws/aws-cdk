@@ -24,7 +24,7 @@ const externalId = 'test-external-id-12345';
 const roleWithExternalId = new iam.Role(stack, 'RoleWithExternalId', {
   assumedBy: new iam.CompositePrincipal(
     new iam.ServicePrincipal('lambda.amazonaws.com'),
-    new iam.AccountRootPrincipal()
+    new iam.ArnPrincipal('arn:aws:iam::123456789012:role/TestAssumeRole')
   ),
   externalIds: [externalId],
   inlinePolicies: {
