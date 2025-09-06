@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "displayName": "BucketReplicationMultipleSourcesTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "ec332e15f91a23c7c7ef46ca9a09fe0447c55fbab854f41b13aa29ac9f3dc2ad": {
+    "09f86d4ec4ad7d0dec7d4fbc69e3840bb51cfe157d4dec25a3f870debe84386b": {
       "displayName": "BucketReplicationMultipleSourcesTestStack Template",
       "source": {
         "path": "BucketReplicationMultipleSourcesTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-aae5bf21": {
+        "current_account-current_region-4e9ad02e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ec332e15f91a23c7c7ef46ca9a09fe0447c55fbab854f41b13aa29ac9f3dc2ad.json",
+          "objectKey": "09f86d4ec4ad7d0dec7d4fbc69e3840bb51cfe157d4dec25a3f870debe84386b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
