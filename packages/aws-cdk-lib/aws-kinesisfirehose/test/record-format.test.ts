@@ -1,11 +1,7 @@
-import { each } from 'lodash';
 import * as cdk from '../..';
 import { Match, Template } from '../../assertions';
 import * as glue from '../../aws-glue';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
-import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as firehose from '../lib';
 
@@ -95,6 +91,40 @@ describe('Record format conversion', () => {
           VersionId: 'LATEST',
         },
       });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        Roles: [stack.resolve(destinationRole.roleName)],
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: [
+                'glue:GetTable',
+                'glue:GetTableVersion',
+                'glue:GetTableVersions',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    stack.resolve(stack.partition),
+                    `:glue:${stack.region}:123456789012:table/`,
+                    stack.resolve(database.ref),
+                    '/',
+                    stack.resolve(table.ref),
+                  ]
+                ]
+              },
+            },
+            {
+              Action: 'glue:GetSchemaVersion',
+              Effect: 'Allow',
+              Resource: '*',
+            }
+          ]),
+        },
+      });
     });
 
     it('set schema from CfnTable with props', () => {
@@ -121,11 +151,46 @@ describe('Record format conversion', () => {
           VersionId: 'some_version',
         },
       });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        Roles: [stack.resolve(destinationRole.roleName)],
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: [
+                'glue:GetTable',
+                'glue:GetTableVersion',
+                'glue:GetTableVersions',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    stack.resolve(stack.partition),
+                    ':glue:some_region:123456789012:table/',
+                    stack.resolve(database.ref),
+                    '/',
+                    stack.resolve(table.ref),
+                  ]
+                ]
+              },
+            },
+            {
+              Action: 'glue:GetSchemaVersion',
+              Effect: 'Allow',
+              Resource: '*',
+            }
+          ]),
+        },
+      });
     });
 
     it('set schema from custom props', () => {
       new firehose.DeliveryStream(stack, 'Delivery Stream', {
         destination: new firehose.S3Bucket(bucket, {
+          role: destinationRole,
           dataFormatConversion: {
             schema: new firehose.Schema({
               tableName: 'some_table',
@@ -147,6 +212,37 @@ describe('Record format conversion', () => {
           CatalogId: '123456789013',
           Region: 'region',
           VersionId: 'version_string',
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        Roles: [stack.resolve(destinationRole.roleName)],
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: [
+                'glue:GetTable',
+                'glue:GetTableVersion',
+                'glue:GetTableVersions',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    stack.resolve(stack.partition),
+                    ':glue:region:123456789013:table/some_database/some_table',
+                  ]
+                ]
+              },
+            },
+            {
+              Action: 'glue:GetSchemaVersion',
+              Effect: 'Allow',
+              Resource: '*',
+            }
+          ]),
         },
       });
     });
