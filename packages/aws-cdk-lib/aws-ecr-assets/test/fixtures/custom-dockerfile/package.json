@@ -1,7 +1,0 @@
-{
-  "name": "test-app",
-  "version": "1.0.0",
-  "description": "Test application for Docker Image Asset custom repository support",
-  "main": "app.js",
-  "dependencies": {}
-}
