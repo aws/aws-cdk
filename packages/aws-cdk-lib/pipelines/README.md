@@ -549,6 +549,22 @@ class PipelineStack extends Stack {
 }
 ```
 
+### Execution mode
+
+To control the concurrency behavior when multiple executions of a pipeline are started, you can use the `executionMode` property.
+
+The [execution mode](https://docs.aws.amazon.com/codepipeline/latest/userguide/execution-modes.html) can only be used with pipeline type V2.
+
+```ts
+declare const synth: pipelines.ShellStep;
+
+new pipelines.CodePipeline(this, 'Pipeline', {
+  synth,
+  pipelineType: codepipeline.PipelineType.V2,
+  executionMode: codepipeline.ExecutionMode.QUEUED,
+});
+```
+
 ### Validation
 
 Every `addStage()` and `addWave()` command takes additional options. As part of these options,
