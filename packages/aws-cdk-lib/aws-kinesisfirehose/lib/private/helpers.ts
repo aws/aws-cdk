@@ -83,7 +83,7 @@ export function createBufferingHints(
   if (intervalInSeconds > 900) {
     throw new cdk.ValidationError(`Buffering interval must be less than 900 seconds. Buffering interval provided was ${intervalInSeconds} seconds.`, scope);
   }
-  const defaultSizeInMBs = dataFormatConversionProps ? 64 : 5;
+  const defaultSizeInMBs = dataFormatConversionProps ? 128 : 5;
   const sizeInMBs = size?.toMebibytes() ?? defaultSizeInMBs;
   if (sizeInMBs < 1 || sizeInMBs > 128) {
     throw new cdk.ValidationError(`Buffering size must be between 1 and 128 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`, scope);

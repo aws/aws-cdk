@@ -97,31 +97,36 @@ describe('Record format conversion', () => {
         PolicyDocument: {
           Statement: Match.arrayWith([
             {
-              Action: [
-                'glue:GetTable',
-                'glue:GetTableVersion',
-                'glue:GetTableVersions',
-              ],
+              Action: 'glue:GetTableVersions',
               Effect: 'Allow',
-              Resource: {
-                'Fn::Join': [
-                  '',
-                  [
+              Resource: [
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    stack.resolve(stack.partition),
+                    `:glue:${stack.region}:123456789012:catalog`,
+                  ]],
+                },
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    stack.resolve(stack.partition),
+                    `:glue:${stack.region}:123456789012:database/`,
+                    stack.resolve(database.ref),
+                  ]],
+                },
+                {
+                  'Fn::Join': ['', [
                     'arn:',
                     stack.resolve(stack.partition),
                     `:glue:${stack.region}:123456789012:table/`,
                     stack.resolve(database.ref),
                     '/',
                     stack.resolve(table.ref),
-                  ]
-                ]
-              },
+                  ]],
+                },
+              ],
             },
-            {
-              Action: 'glue:GetSchemaVersion',
-              Effect: 'Allow',
-              Resource: '*',
-            }
           ]),
         },
       });
@@ -157,31 +162,45 @@ describe('Record format conversion', () => {
         PolicyDocument: {
           Statement: Match.arrayWith([
             {
-              Action: [
-                'glue:GetTable',
-                'glue:GetTableVersion',
-                'glue:GetTableVersions',
+              Action: 'glue:GetTableVersions',
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      stack.resolve(stack.partition),
+                      ':glue:some_region:123456789012:catalog',
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      stack.resolve(stack.partition),
+                      ':glue:some_region:123456789012:database/',
+                      stack.resolve(database.ref),
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      stack.resolve(stack.partition),
+                      ':glue:some_region:123456789012:table/',
+                      stack.resolve(database.ref),
+                      '/',
+                      stack.resolve(table.ref),
+                    ],
+                  ],
+                },
               ],
-              Effect: 'Allow',
-              Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    stack.resolve(stack.partition),
-                    ':glue:some_region:123456789012:table/',
-                    stack.resolve(database.ref),
-                    '/',
-                    stack.resolve(table.ref),
-                  ]
-                ]
-              },
             },
-            {
-              Action: 'glue:GetSchemaVersion',
-              Effect: 'Allow',
-              Resource: '*',
-            }
           ]),
         },
       });
@@ -220,28 +239,41 @@ describe('Record format conversion', () => {
         PolicyDocument: {
           Statement: Match.arrayWith([
             {
-              Action: [
-                'glue:GetTable',
-                'glue:GetTableVersion',
-                'glue:GetTableVersions',
+              Action: 'glue:GetTableVersions',
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      stack.resolve(stack.partition),
+                      ':glue:region:123456789013:catalog',
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      stack.resolve(stack.partition),
+                      ':glue:region:123456789013:database/some_database',
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      stack.resolve(stack.partition),
+                      ':glue:region:123456789013:table/some_database/some_table',
+                    ],
+                  ],
+                },
               ],
-              Effect: 'Allow',
-              Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    stack.resolve(stack.partition),
-                    ':glue:region:123456789013:table/some_database/some_table',
-                  ]
-                ]
-              },
             },
-            {
-              Action: 'glue:GetSchemaVersion',
-              Effect: 'Allow',
-              Resource: '*',
-            }
           ]),
         },
       });
@@ -327,7 +359,6 @@ describe('Record format conversion', () => {
               schema: firehose.Schema.fromCfnTable(table),
               inputFormat: new firehose.HiveJsonInputFormat({
                 timestampParsers: [
-                  firehose.TimestampParser.DEFAULT,
                   firehose.TimestampParser.EPOCH_MILLIS,
                   firehose.TimestampParser.fromFormatString('yyyy-MM-dd'),
                 ],
@@ -342,7 +373,6 @@ describe('Record format conversion', () => {
             Deserializer: Match.objectEquals({
               HiveJsonSerDe: {
                 TimestampFormats: [
-                  'java.sql.Timestamp::valueOf',
                   'millis',
                   'yyyy-MM-dd',
                 ],
@@ -352,8 +382,8 @@ describe('Record format conversion', () => {
         });
       });
 
-      it.each([['millis'], ['java.sql.Timestamp::valueOf']])
-      ('set custom invalid timestamp format string %s', (format: string) => {
+      it.each([['millis'], [''], [' '], ['\t']])
+      ('set custom invalid timestamp format string `%s`', (format: string) => {
         expect(() => {
           new firehose.DeliveryStream(stack, 'Delivery Stream', {
             destination: new firehose.S3Bucket(bucket, {

@@ -127,6 +127,21 @@ export class Schema {
     const stack = cdk.Stack.of(scope);
     const region = this.config.databaseRegion ?? stack.region;
 
+    const catalogArn = stack.formatArn({
+      service: 'glue',
+      resource: 'catalog',
+      region: region,
+      account: this.config.catalogId,
+    });
+
+    const databaseArn = stack.formatArn({
+      service: 'glue',
+      resource: 'database',
+      resourceName: this.config.databaseName,
+      region: region,
+      account: this.config.catalogId,
+    });
+
     const tableArn = stack.formatArn({
       service: 'glue',
       resource: 'table',
@@ -136,19 +151,9 @@ export class Schema {
     });
 
     iam.Grant.addToPrincipal({
-      actions: [
-        'glue:GetTable',
-        'glue:GetTableVersion',
-        'glue:GetTableVersions',
-      ],
+      actions: ['glue:GetTableVersions'],
       grantee: options.role,
-      resourceArns: [tableArn],
-    });
-
-    iam.Grant.addToPrincipal({
-      actions: ['glue:GetSchemaVersion'],
-      grantee: options.role,
-      resourceArns: ['*'],
+      resourceArns: [catalogArn, databaseArn, tableArn],
     });
 
     return {

@@ -173,13 +173,14 @@ Example creation of custom Hive JSON InputFormat:
 
 ```ts
 const inputFormat = new firehose.HiveJsonInputFormat({
-  timestampParsers: [firehose.TimestampParser.fromFormatString('yyyy-MM-dd')]
+  timestampParsers: [
+    firehose.TimestampParser.fromFormatString('yyyy-MM-dd'),
+    firehose.TimestampParser.EPOCH_MILLIS,
+  ]
 })
 ```
 
 Hive JSON allows you to specify custom timestamp formats to parse. The syntax of the format string is Joda Time.
-When you specify a custom `TimestampParser`, the default parser is overriden. To retain the default parser,
-add `TimestampParser.DEFAULT` to the list of parsers.
 
 To parse timestamps formatted as milliseconds since epoch, use the convenience constant `TimestampParser.EPOCH_MILLIS`.
 

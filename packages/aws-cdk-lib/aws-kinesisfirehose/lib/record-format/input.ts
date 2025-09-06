@@ -87,13 +87,6 @@ export class TimestampParser {
   public static readonly EPOCH_MILLIS = new TimestampParser('millis');
 
   /**
-   * Default timestamp parser.
-   *
-   * Specify this parser to preserve the default timestamp parsing logic.
-   */
-  public static readonly DEFAULT = new TimestampParser('java.sql.Timestamp::valueOf');
-
-  /**
    * Creates a TimestampParser from the given format string.
    *
    * The format string should be a valid Joda Time pattern string.
@@ -102,12 +95,12 @@ export class TimestampParser {
    * @param format the Joda Time format string
    */
   public static fromFormatString(format: string): TimestampParser {
-    if (format === this.DEFAULT.format) {
-      throw new cdk.UnscopedValidationError(`Cannot use reserved format string ${format} - Use 'TimestampParser.DEFAULT' instead`);
-    }
-
     if (format === this.EPOCH_MILLIS.format) {
       throw new cdk.UnscopedValidationError(`Cannot use reserved format string ${format} - Use 'TimestampParser.EPOCH_MILLIS' instead`);
+    }
+
+    if (format.trim() === '') {
+      throw new cdk.UnscopedValidationError('Format string cannot be blank or empty');
     }
 
     return new TimestampParser(format);
