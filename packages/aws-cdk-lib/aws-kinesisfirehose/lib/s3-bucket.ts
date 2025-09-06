@@ -5,7 +5,7 @@ import { Schema, IInputFormat, IOutputFormat } from './record-format';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
-import * as core from '../../core';
+import * as cdk from '../../core';
 
 /**
  * Props for defining an S3 destination of an Amazon Data Firehose delivery stream.
@@ -29,7 +29,7 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
    *
    * @default - UTC
    */
-  readonly timeZone?: core.TimeZone;
+  readonly timeZone?: cdk.TimeZone;
 
   /**
    * The input format, output format, and schema for converting data from the JSON format to the Parquet or ORC format before writing it to Amazon S3.
@@ -68,7 +68,7 @@ export interface DataFormatConversionProps {
 export class S3Bucket implements IDestination {
   constructor(private readonly bucket: s3.IBucket, private readonly props: S3BucketProps = {}) {
     if (this.props.s3Backup?.mode === BackupMode.FAILED) {
-      throw new core.UnscopedValidationError('S3 destinations do not support BackupMode.FAILED');
+      throw new cdk.UnscopedValidationError('S3 destinations do not support BackupMode.FAILED');
     }
   }
 
@@ -88,12 +88,12 @@ export class S3Bucket implements IDestination {
     const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, this.props.s3Backup) ?? {};
 
     const fileExtension = this.props.fileExtension;
-    if (fileExtension && !core.Token.isUnresolved(fileExtension)) {
+    if (fileExtension && !cdk.Token.isUnresolved(fileExtension)) {
       if (!fileExtension.startsWith('.')) {
-        throw new core.ValidationError("fileExtension must start with '.'", scope);
+        throw new cdk.ValidationError("fileExtension must start with '.'", scope);
       }
       if (/[^0-9a-z!\-_.*'()]/.test(fileExtension)) {
-        throw new core.ValidationError("fileExtension can contain allowed characters: 0-9a-z!-_.*'()", scope);
+        throw new cdk.ValidationError("fileExtension can contain allowed characters: 0-9a-z!-_.*'()", scope);
       }
     }
 
@@ -101,12 +101,12 @@ export class S3Bucket implements IDestination {
 
     if (dataFormatConfig) {
       if (this.props.compression) {
-        throw new core.ValidationError('When data record format conversion is enabled, compression cannot be set on the S3 Destination. Compression may only be set in the OutputFormat. By default, this compression is SNAPPY', scope);
+        throw new cdk.ValidationError('When data record format conversion is enabled, compression cannot be set on the S3 Destination. Compression may only be set in the OutputFormat. By default, this compression is SNAPPY', scope);
       }
 
       const bufferSizeMiB = this.props.bufferingSize?.toMebibytes();
       if (bufferSizeMiB !== undefined && bufferSizeMiB < 64) {
-        throw new core.ValidationError('When data record format conversion is enabled, buffer size must be at least 64 MiB', scope);
+        throw new cdk.ValidationError('When data record format conversion is enabled, buffer size must be at least 64 MiB', scope);
       }
     }
 

@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import * as glue from '../../../aws-glue';
 import * as iam from '../../../aws-iam';
-import * as core from '../../../core';
+import * as cdk from '../../../core';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 
 /**
@@ -95,7 +95,7 @@ export class Schema {
    * Obtain schema for data record format conversion from an `aws_glue.CfnTable`
    */
   static fromCfnTable(table: glue.CfnTable, props?: SchemaFromCfnTableProps) {
-    const stack = core.Stack.of(table);
+    const stack = cdk.Stack.of(table);
     return new Schema({
       tableName: table.ref,
       databaseName: table.databaseName,
@@ -124,7 +124,7 @@ export class Schema {
     scope: Construct,
     options: SchemaBindOptions,
   ): CfnDeliveryStream.SchemaConfigurationProperty {
-    const stack = core.Stack.of(scope);
+    const stack = cdk.Stack.of(scope);
     const region = this.config.databaseRegion ?? stack.region;
 
     const tableArn = stack.formatArn({

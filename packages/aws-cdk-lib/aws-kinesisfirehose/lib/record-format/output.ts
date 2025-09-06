@@ -1,4 +1,4 @@
-import * as core from '../../../core';
+import * as cdk from '../../../core';
 import { Compression } from '../common';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 
@@ -42,7 +42,7 @@ export interface ParquetOutputFormatProps {
    * @minimum `Size.mebibytes(64)`
    * @default `Size.mebibytes(256)`
    */
-  readonly blockSize?: core.Size;
+  readonly blockSize?: cdk.Size;
 
   /**
    * The compression code to use over data blocks.
@@ -70,7 +70,7 @@ export interface ParquetOutputFormatProps {
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-maxpaddingbytes
    * @default no padding is applied
    */
-  readonly maxPadding?: core.Size;
+  readonly maxPadding?: cdk.Size;
 
   /**
    * The Parquet page size.
@@ -81,7 +81,7 @@ export interface ParquetOutputFormatProps {
    * @minimum `Size.kibibytes(64)`
    * @default `Size.mebibytes(1)`
    */
-  readonly pageSize?: core.Size;
+  readonly pageSize?: cdk.Size;
 
   /**
    * Indicates the version of Parquet to output.
@@ -118,15 +118,15 @@ export class ParquetOutputFormat implements IOutputFormat {
     }
 
     if (props.compression !== undefined && !ParquetOutputFormat.VALID_COMPRESSIONS.includes(props.compression.value)) {
-      throw new core.UnscopedValidationError(`Compression ${props.compression} is invalid, it must be one of ${ParquetOutputFormat.VALID_COMPRESSIONS}`);
+      throw new cdk.UnscopedValidationError(`Compression ${props.compression} is invalid, it must be one of ${ParquetOutputFormat.VALID_COMPRESSIONS}`);
     }
 
     if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 64) {
-      throw new core.UnscopedValidationError(`Block size ${props.blockSize.toMebibytes()} is invalid, it must be at least 64 MiB`);
+      throw new cdk.UnscopedValidationError(`Block size ${props.blockSize.toMebibytes()} is invalid, it must be at least 64 MiB`);
     }
 
     if (props.pageSize !== undefined && props.pageSize.toKibibytes() < 64) {
-      throw new core.UnscopedValidationError(`Page size ${props.pageSize.toKibibytes()} is invalid, it must be at least 64 KiB`);
+      throw new cdk.UnscopedValidationError(`Page size ${props.pageSize.toKibibytes()} is invalid, it must be at least 64 KiB`);
     }
   }
 
@@ -180,7 +180,7 @@ export interface OrcOutputFormatProps {
    * @minimum `Size.mebibytes(64)`
    * @default `Size.mebibytes(256)`
    */
-  readonly blockSize?: core.Size;
+  readonly blockSize?: cdk.Size;
 
   /**
    * The compression code to use over data blocks.
@@ -283,7 +283,7 @@ export interface OrcOutputFormatProps {
    * @minimum `Size.mebibytes(8)`
    * @default `Size.mebibytes(64)`
    */
-  readonly stripeSize?: core.Size;
+  readonly stripeSize?: cdk.Size;
 }
 
 /**
@@ -314,31 +314,31 @@ export class OrcOutputFormat implements IOutputFormat {
     }
 
     if (props.compression !== undefined && !OrcOutputFormat.VALID_COMPRESSIONS.includes(props.compression.value)) {
-      throw new core.UnscopedValidationError(`Compression ${props.compression} is invalid, it must be one of ${OrcOutputFormat.VALID_COMPRESSIONS}`);
+      throw new cdk.UnscopedValidationError(`Compression ${props.compression} is invalid, it must be one of ${OrcOutputFormat.VALID_COMPRESSIONS}`);
     }
 
     if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 64) {
-      throw new core.UnscopedValidationError(`Block size ${props.blockSize.toMebibytes()} is invalid, it must be at least 64 MiB`);
+      throw new cdk.UnscopedValidationError(`Block size ${props.blockSize.toMebibytes()} is invalid, it must be at least 64 MiB`);
     }
 
     if (props.stripeSize !== undefined && props.stripeSize.toMebibytes() < 8) {
-      throw new core.UnscopedValidationError(`Stripe size ${props.stripeSize.toMebibytes()} is invalid, it must be at least 8 MiB`);
+      throw new cdk.UnscopedValidationError(`Stripe size ${props.stripeSize.toMebibytes()} is invalid, it must be at least 8 MiB`);
     }
 
     if (props.bloomFilterFalsePositiveProbability !== undefined && !this.betweenInclusive(props.bloomFilterFalsePositiveProbability, 0, 1)) {
-      throw new core.UnscopedValidationError(`Bloom filter false positive probability ${props.bloomFilterFalsePositiveProbability} is invalid, it must be between 0 and 1, inclusive`);
+      throw new cdk.UnscopedValidationError(`Bloom filter false positive probability ${props.bloomFilterFalsePositiveProbability} is invalid, it must be between 0 and 1, inclusive`);
     }
 
     if (props.dictionaryKeyThreshold !== undefined && !this.betweenInclusive(props.dictionaryKeyThreshold, 0, 1)) {
-      throw new core.UnscopedValidationError(`Dictionary key threshold ${props.dictionaryKeyThreshold} is invalid, it must be between 0 and 1, inclusive`);
+      throw new cdk.UnscopedValidationError(`Dictionary key threshold ${props.dictionaryKeyThreshold} is invalid, it must be between 0 and 1, inclusive`);
     }
 
     if (props.paddingTolerance !== undefined && !this.betweenInclusive(props.paddingTolerance, 0, 1)) {
-      throw new core.UnscopedValidationError(`Padding tolerance ${props.paddingTolerance} is invalid, it must be between 0 and 1, inclusive`);
+      throw new cdk.UnscopedValidationError(`Padding tolerance ${props.paddingTolerance} is invalid, it must be between 0 and 1, inclusive`);
     }
 
     if (props.rowIndexStride !== undefined && props.rowIndexStride < 1000) {
-      throw new core.UnscopedValidationError(`Row index stride ${props.rowIndexStride} is invalid, it must be at least 1000`);
+      throw new cdk.UnscopedValidationError(`Row index stride ${props.rowIndexStride} is invalid, it must be at least 1000`);
     }
   }
 

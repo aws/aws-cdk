@@ -139,7 +139,7 @@ An example of defining an S3 destination configured with data format conversion:
 declare const bucket: s3.Bucket;
 declare const schemaGlueTable: glue.CfnTable;
 const s3Destination = new firehose.S3Bucket(bucket, {
-  dataFormatConversionConfiguration: {
+  dataFormatConversion: {
     schema: firehose.Schema.fromCfnTable(schemaGlueTable),
     inputFormat: firehose.InputFormat.OPENX_JSON,
     outputFormat: firehose.OutputFormat.PARQUET,

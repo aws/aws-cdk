@@ -1,4 +1,4 @@
-import * as core from '../../../core';
+import * as cdk from '../../../core';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 
 /**
@@ -103,11 +103,11 @@ export class TimestampParser {
    */
   public static fromFormatString(format: string): TimestampParser {
     if (format === this.DEFAULT.format) {
-      throw new core.UnscopedValidationError(`Cannot use reserved format string ${format} - Use 'TimestampParser.DEFAULT' instead`);
+      throw new cdk.UnscopedValidationError(`Cannot use reserved format string ${format} - Use 'TimestampParser.DEFAULT' instead`);
     }
 
     if (format === this.EPOCH_MILLIS.format) {
-      throw new core.UnscopedValidationError(`Cannot use reserved format string ${format} - Use 'TimestampParser.EPOCH_MILLIS' instead`);
+      throw new cdk.UnscopedValidationError(`Cannot use reserved format string ${format} - Use 'TimestampParser.EPOCH_MILLIS' instead`);
     }
 
     return new TimestampParser(format);
