@@ -748,7 +748,7 @@ describe('S3 destination', () => {
             },
           }),
         });
-      }).toThrow(cdk.UnscopedValidationError);
+      }).toThrow(cdk.ValidationError);
     });
   });
 });
