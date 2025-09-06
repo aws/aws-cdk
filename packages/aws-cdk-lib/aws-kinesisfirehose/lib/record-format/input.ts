@@ -1,6 +1,9 @@
 import * as core from '../../../core';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 
+/**
+ * An input format to be used in Firehose record format conversion.
+ */
 export interface IInputFormat {
   render(): CfnDeliveryStream.InputFormatConfigurationProperty;
 }

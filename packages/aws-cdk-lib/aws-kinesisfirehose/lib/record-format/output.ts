@@ -2,9 +2,9 @@ import * as core from '../../../core';
 import { Compression } from '../common';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 
-export interface OutputFormatRenderOptions {
-  compression?: Compression;
-}
+/**
+ * An output format to be used in Firehose record format conversion.
+ */
 export interface IOutputFormat {
   render(): CfnDeliveryStream.OutputFormatConfigurationProperty;
 }
@@ -259,7 +259,7 @@ export interface OrcOutputFormatProps {
  *
  * You should only need to specify an instance of this class if the default configuration does not suit your needs.
  */
-class OrcOutputFormat implements IOutputFormat {
+export class OrcOutputFormat implements IOutputFormat {
   private static readonly VALID_COMPRESSIONS = [Compression.SNAPPY, Compression.UNCOMPRESSED, Compression.GZIP].map(compression => compression.value);
 
   public constructor(readonly props?: OrcOutputFormatProps) {

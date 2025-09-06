@@ -5,9 +5,7 @@ import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
 import * as core from '../../core';
-import { IInputFormat } from './record-format/input';
-import { IOutputFormat } from './record-format/output';
-import { Schema } from './record-format/schema';
+import { Schema, IInputFormat, IOutputFormat } from './record-format';
 
 /**
  * Props for defining an S3 destination of an Amazon Data Firehose delivery stream.
