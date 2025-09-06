@@ -140,9 +140,9 @@ declare const bucket: s3.Bucket;
 declare const schemaGlueTable: glue.cfnTable;
 const s3Destination = new firehose.S3Bucket(bucket, {
   dataFormatConversionConfiguration: {
-    schema: Schema.fromCfnTable(schemaGlueTable),
-    inputFormat: InputFormat.OPENX_JSON,
-    outputFormat: OutputFormat.PARQUET,
+    schema: firehose.Schema.fromCfnTable(schemaGlueTable),
+    inputFormat: firehose.InputFormat.OPENX_JSON,
+    outputFormat: firehose.OutputFormat.PARQUET,
   }
 });
 ```
@@ -160,7 +160,7 @@ The following subsections explain how to specify advanced configuration options 
 Example creation of custom OpenX JSON InputFormat:
 
 ```ts
-const inputFormat = new OpenXJsonInputFormat({
+const inputFormat = new firehose.OpenXJsonInputFormat({
   lowercaseColumnNames: false,
   columnToJsonKeyMappings: {"ts": "timestamp"},
   convertDotsInJsonKeysTounderscores: true,
@@ -172,8 +172,8 @@ const inputFormat = new OpenXJsonInputFormat({
 Example creation of custom Hive JSON InputFormat:
 
 ```ts
-const inputFormat = new HiveJsonInputFormat({
-  timestampParsers: [TimestampParser.fromFormatString('yyyy-MM-dd')]
+const inputFormat = new firehose.HiveJsonInputFormat({
+  timestampParsers: [firehose.TimestampParser.fromFormatString('yyyy-MM-dd')]
 })
 ```
 
@@ -188,13 +188,13 @@ To parse timestamps formatted as milliseconds since epoch, use the convenience c
 Example of a custom Parquet OutputFormat, with all values changed from the defaults.
 
 ```ts
-const outputFormat = new ParquetOutputFormat({
-  blockSize: core.Size.mebibytes(512),
-  compression: Compression.UNCOMPRESSED,
+const outputFormat = new firehose.ParquetOutputFormat({
+  blockSize: Size.mebibytes(512),
+  compression: firehose.Compression.UNCOMPRESSED,
   enableDictionaryCompression: true,
-  maxPadding: core.Size.bytes(10),
-  pageSize: core.Size.mebibytes(2),
-  writerVersion: ParquetWriterVersion.V2,
+  maxPadding: Size.bytes(10),
+  pageSize: Size.mebibytes(2),
+  writerVersion: firehose.ParquetWriterVersion.V2,
 })
 ```
 
@@ -203,17 +203,17 @@ const outputFormat = new ParquetOutputFormat({
 Example creation of custom ORC OutputFormat, with all values changed from the defaults.
 
 ```ts
-const outputFormat = new OrcOutputFormat({
-  formatVersion: OrcFormatVersion.V0_11,
-  blockSize: core.Size.mebibytes(256),
-  compression: Compression.UNCOMPRESSED,
+const outputFormat = new firehose.OrcOutputFormat({
+  formatVersion: firehose.OrcFormatVersion.V0_11,
+  blockSize: Size.mebibytes(256),
+  compression: firehose.Compression.UNCOMPRESSED,
   bloomFilterColumns: ['columnA'],
   bloomFilterFalsePositiveProbability: 0.1,
   dictionaryKeyThreshold: 0.7,
   enablePadding: true,
   paddingTolerance: 0.2,
   rowIndexStride: 9000,
-  stripeSize: core.Size.mebibytes(32),
+  stripeSize: Size.mebibytes(32),
 })
 ```
 

@@ -39,12 +39,28 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
    *
    * @default no data format conversion is done
    */
-  readonly dataFormatConversionConfiguration?: DataFormatConversionConfiguration;
+  readonly dataFormatConversionConfiguration?: DataFormatConversionProps;
 }
 
-interface DataFormatConversionConfiguration {
+/**
+ * Props for specifying data format conversion for Firehose
+ *
+ * @see https://docs.aws.amazon.com/firehose/latest/dev/record-format-conversion.html */
+export interface DataFormatConversionProps {
+
+  /**
+   * The schema to use in converting the input format to output format
+   */
   readonly schema: Schema;
+
+  /**
+   * The input format to convert from for record format conversion
+   */
   readonly inputFormat: IInputFormat;
+
+  /**
+   * The output format to convert to for record format conversion
+   */
   readonly outputFormat: IOutputFormat;
 }
 
