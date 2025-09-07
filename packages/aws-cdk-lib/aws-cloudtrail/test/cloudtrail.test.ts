@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
@@ -246,7 +246,7 @@ describe('cloudtrail', () => {
       });
     });
 
-    test('with orgId', () => {
+    test('organization trail with orgId and trailName', () => {
       // GIVEN
       const stack = getTestStack();
 
@@ -374,6 +374,194 @@ describe('cloudtrail', () => {
           Version: '2012-10-17',
         },
       });
+    });
+
+    test('organization trail without orgId skips attaching S3 policies', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      new Trail(stack, 'Trail', { isOrganizationTrail: true, trailName: 'trailname123' });
+
+      Template.fromStack(stack).resourceCountIs('AWS::CloudTrail::Trail', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        Bucket: { Ref: 'TrailS30071F172' },
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 's3:*',
+              Condition: {
+                Bool: {
+                  'aws:SecureTransport': 'false',
+                },
+              },
+              Effect: 'Deny',
+              Principal: {
+                AWS: '*',
+              },
+              Resource: [
+                {
+                  'Fn::GetAtt': [
+                    'TrailS30071F172',
+                    'Arn',
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      {
+                        'Fn::GetAtt': [
+                          'TrailS30071F172',
+                          'Arn',
+                        ],
+                      },
+                      '/*',
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              Action: 's3:GetBucketAcl',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'cloudtrail.amazonaws.com',
+              },
+              Resource: {
+                'Fn::GetAtt': [
+                  'TrailS30071F172',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: 's3:PutObject',
+              Condition: {
+                StringEquals: {
+                  's3:x-amz-acl': 'bucket-owner-full-control',
+                },
+              },
+              Effect: 'Allow',
+              Principal: {
+                Service: 'cloudtrail.amazonaws.com',
+              },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'TrailS30071F172',
+                        'Arn',
+                      ],
+                    },
+                    '/AWSLogs/123456789012/*',
+                  ],
+                ],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      });
+
+      Annotations.fromStack(stack).hasWarning('/TestStack/Trail', 'Skipped attaching a policy to the bucket which allows organization trail to write because of missing orgId. Consider specifying orgId to add missing permissions [ack: @aws-cdk/aws-cloudtrail:missingOrgIdForOrganizationTrail]');
+    });
+
+    test('organization trail without trailName skips attaching S3 policies', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      new Trail(stack, 'Trail', { isOrganizationTrail: true, orgId: 'o-xxxxxxxxx' });
+
+      Template.fromStack(stack).resourceCountIs('AWS::CloudTrail::Trail', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        Bucket: { Ref: 'TrailS30071F172' },
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 's3:*',
+              Condition: {
+                Bool: {
+                  'aws:SecureTransport': 'false',
+                },
+              },
+              Effect: 'Deny',
+              Principal: {
+                AWS: '*',
+              },
+              Resource: [
+                {
+                  'Fn::GetAtt': [
+                    'TrailS30071F172',
+                    'Arn',
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      {
+                        'Fn::GetAtt': [
+                          'TrailS30071F172',
+                          'Arn',
+                        ],
+                      },
+                      '/*',
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              Action: 's3:GetBucketAcl',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'cloudtrail.amazonaws.com',
+              },
+              Resource: {
+                'Fn::GetAtt': [
+                  'TrailS30071F172',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: 's3:PutObject',
+              Condition: {
+                StringEquals: {
+                  's3:x-amz-acl': 'bucket-owner-full-control',
+                },
+              },
+              Effect: 'Allow',
+              Principal: {
+                Service: 'cloudtrail.amazonaws.com',
+              },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'TrailS30071F172',
+                        'Arn',
+                      ],
+                    },
+                    '/AWSLogs/123456789012/*',
+                  ],
+                ],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      });
+
+      Annotations.fromStack(stack).hasWarning('/TestStack/Trail', 'Skipped attaching a policy to the bucket which allows organization trail to write because of missing trailName. Consider specifying trailName to add missing permissions [ack: @aws-cdk/aws-cloudtrail:missingTrailNameForOrganizationTrail]');
     });
 
     test('encryption keys', () => {
