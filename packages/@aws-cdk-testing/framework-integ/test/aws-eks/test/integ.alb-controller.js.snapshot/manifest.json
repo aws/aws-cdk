@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/53d0b0f84abaae2da1349da21b417589fbcb576f0d3fd5f5afa191452f44377e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/90a0c96530f85cf140d950fb45cd8851b98fa8ce923da15be322877b6aafc7f3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -936,6 +936,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "NodeProxyAgentLayer924C1971"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler": [
@@ -2005,6 +2011,12 @@
             "data": "ProviderframeworkonEvent83C1D0A7"
           }
         ],
+        "/aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/awscdkeksclusteralbcontrollerawscdkawseksKubectlProviderframeworkonEvent17CBA575Arn": [
           {
             "type": "aws:cdk:logicalId",
@@ -2408,6 +2420,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkeksclusteralbcontrollerCluster0686D58BAlbController2EB2FB81"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-eks-cluster-alb-controller/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
@@ -3224,5 +3242,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1025.0"
+  "minimumCliVersion": "2.1027.0"
 }
