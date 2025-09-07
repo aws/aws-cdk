@@ -532,38 +532,43 @@ describe('certificates', () => {
     });
   });
 
-  test('should fail if minimumProtocolVersion is specified without a certificate', () => {
+  test('should warn if minimumProtocolVersion is specified without a certificate', () => {
     const origin = defaultOrigin();
 
-    expect(() => {
-      new Distribution(stack, 'Dist', {
-        defaultBehavior: { origin },
-        minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2021,
-      });
-    }).toThrow(/minimumProtocolVersion can only be specified when using a custom certificate\. Use the \'certificate\' property to provide a certificate\./);
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin },
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2021,
+    });
+
+    Annotations.fromStack(stack).hasWarning('*', 
+      'minimumProtocolVersion can only be specified when using a custom certificate. Without a custom certificate, CloudFront defaults to TLSv1. [ack: @aws-cdk/aws-cloudfront:minimumProtocolVersionRequiresCertificate]');
   });
 
-  test('should fail if sslSupportMethod is specified without a certificate', () => {
+  test('should warn if sslSupportMethod is specified without a certificate', () => {
     const origin = defaultOrigin();
 
-    expect(() => {
-      new Distribution(stack, 'Dist', {
-        defaultBehavior: { origin },
-        sslSupportMethod: SSLMethod.SNI,
-      });
-    }).toThrow(/sslSupportMethod can only be specified when using a custom certificate\. Use the \'certificate\' property to provide a certificate\./);
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin },
+      sslSupportMethod: SSLMethod.SNI,
+    });
+
+    Annotations.fromStack(stack).hasWarning('*', 
+      'sslSupportMethod can only be specified when using a custom certificate. Without a custom certificate, CloudFront defaults to SNI. [ack: @aws-cdk/aws-cloudfront:sslSupportMethodRequiresCertificate]');
   });
 
-  test('should fail if both minimumProtocolVersion and sslSupportMethod are specified without a certificate', () => {
+  test('should warn for both minimumProtocolVersion and sslSupportMethod when specified without a certificate', () => {
     const origin = defaultOrigin();
 
-    expect(() => {
-      new Distribution(stack, 'Dist', {
-        defaultBehavior: { origin },
-        minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2021,
-        sslSupportMethod: SSLMethod.VIP,
-      });
-    }).toThrow(/minimumProtocolVersion can only be specified when using a custom certificate\. Use the \'certificate\' property to provide a certificate\./);
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin },
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2021,
+      sslSupportMethod: SSLMethod.VIP,
+    });
+
+    Annotations.fromStack(stack).hasWarning('*', 
+      'minimumProtocolVersion can only be specified when using a custom certificate. Without a custom certificate, CloudFront defaults to TLSv1. [ack: @aws-cdk/aws-cloudfront:minimumProtocolVersionRequiresCertificate]');
+    Annotations.fromStack(stack).hasWarning('*', 
+      'sslSupportMethod can only be specified when using a custom certificate. Without a custom certificate, CloudFront defaults to SNI. [ack: @aws-cdk/aws-cloudfront:sslSupportMethodRequiresCertificate]');
   });
 
   test('should succeed when minimumProtocolVersion and sslSupportMethod are specified with a certificate', () => {
