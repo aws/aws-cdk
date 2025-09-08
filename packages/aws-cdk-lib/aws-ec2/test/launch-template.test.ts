@@ -19,6 +19,7 @@ import {
   AmazonLinuxImage,
   BlockDevice,
   BlockDeviceVolume,
+  CapacityReservationPreference,
   CpuCredits,
   EbsDeviceVolumeType,
   InstanceInitiatedShutdownBehavior,
@@ -1247,6 +1248,132 @@ describe('LaunchTemplate metadataOptions', () => {
           HttpTokens: 'required',
         },
       },
+    });
+  });
+});
+describe('LaunchTemplate capacityReservationSpecification', () => {
+  let app: App;
+  let stack: Stack;
+
+  beforeEach(() => {
+    app = new App();
+    stack = new Stack(app);
+  });
+
+  test('given empty capacityReservationSpecification', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      capacityReservationSpecification: {},
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CapacityReservationSpecification: {},
+      },
+    });
+  });
+
+  test.each([
+    [CapacityReservationPreference.OPEN, 'open'],
+    [CapacityReservationPreference.NONE, 'none'],
+  ])('given capacityReservationPreference %p', (given: CapacityReservationPreference, expected: string) => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      capacityReservationSpecification: {
+        capacityReservationPreference: given,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CapacityReservationSpecification: {
+          CapacityReservationPreference: expected,
+        },
+      },
+    });
+  });
+
+  test('given capacityReservationTarget with capacityReservationId', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      capacityReservationSpecification: {
+        capacityReservationTarget: {
+          capacityReservationId: 'cr-1234567890abcdef0',
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CapacityReservationSpecification: {
+          CapacityReservationTarget: {
+            CapacityReservationId: 'cr-1234567890abcdef0',
+          },
+        },
+      },
+    });
+  });
+
+  test('given capacityReservationTarget with capacityReservationResourceGroupArn', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      capacityReservationSpecification: {
+        capacityReservationTarget: {
+          capacityReservationResourceGroupArn: 'arn:aws:resource-groups:us-west-2:123456789012:group/my-group',
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CapacityReservationSpecification: {
+          CapacityReservationTarget: {
+            CapacityReservationResourceGroupArn: 'arn:aws:resource-groups:us-west-2:123456789012:group/my-group',
+          },
+        },
+      },
+    });
+  });
+
+  test('given complete capacityReservationSpecification', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      capacityReservationSpecification: {
+        capacityReservationPreference: CapacityReservationPreference.OPEN,
+        capacityReservationTarget: {
+          capacityReservationId: 'cr-1234567890abcdef0',
+          capacityReservationResourceGroupArn: 'arn:aws:resource-groups:us-west-2:123456789012:group/my-group',
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CapacityReservationSpecification: {
+          CapacityReservationPreference: 'open',
+          CapacityReservationTarget: {
+            CapacityReservationId: 'cr-1234567890abcdef0',
+            CapacityReservationResourceGroupArn: 'arn:aws:resource-groups:us-west-2:123456789012:group/my-group',
+          },
+        },
+      },
+    });
+  });
+
+  test('capacityReservationSpecification is omitted when not specified', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {});
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: Match.not(Match.objectLike({
+        CapacityReservationSpecification: Match.anyValue(),
+      })),
     });
   });
 });

@@ -147,6 +147,51 @@ export enum SpotRequestType {
 }
 
 /**
+ * Capacity Reservation preferences
+ */
+export enum CapacityReservationPreference {
+  /** Launch instances into any available Capacity Reservation */
+  OPEN = 'open',
+  /** Do not launch instances into Capacity Reservations */
+  NONE = 'none',
+}
+
+/**
+ * Target Capacity Reservation specification
+ */
+export interface LaunchTemplateCapacityReservationTarget {
+  /**
+   * The ID of the Capacity Reservation in which to run the instance
+   * @default - No specific Capacity Reservation ID
+   */
+  readonly capacityReservationId?: string;
+
+  /**
+   * The ARN of the Capacity Reservation resource group in which to run the instance
+   * @default - No Capacity Reservation resource group
+   */
+  readonly capacityReservationResourceGroupArn?: string;
+}
+
+/**
+ * Capacity Reservation specification for LaunchTemplate
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-capacityreservationspecification.html
+ */
+export interface LaunchTemplateCapacityReservationSpecification {
+  /**
+   * Indicates the instance's Capacity Reservation preferences
+   * @default - No preference specified
+   */
+  readonly capacityReservationPreference?: CapacityReservationPreference;
+
+  /**
+   * Information about the target Capacity Reservation or Capacity Reservation group
+   * @default - No target specified
+   */
+  readonly capacityReservationTarget?: LaunchTemplateCapacityReservationTarget;
+}
+
+/**
  * Interface for the Spot market instance options provided in a LaunchTemplate.
  */
 export interface LaunchTemplateSpotOptions {
@@ -450,6 +495,12 @@ export interface LaunchTemplateProps {
    * @default - no placement group will be used for this launch template.
    */
   readonly placementGroup?: IPlacementGroupRef;
+
+  /**
+   * Capacity Reservation specification
+   * @default - No capacity reservation specification
+   */
+  readonly capacityReservationSpecification?: LaunchTemplateCapacityReservationSpecification;
 }
 
 /**
@@ -812,11 +863,16 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
           groupName: props.placementGroup.placementGroupRef.groupName,
         } : undefined,
 
+        capacityReservationSpecification: props.capacityReservationSpecification ? {
+          capacityReservationPreference: props.capacityReservationSpecification.capacityReservationPreference,
+          capacityReservationTarget: props.capacityReservationSpecification.capacityReservationTarget ? {
+            capacityReservationId: props.capacityReservationSpecification.capacityReservationTarget.capacityReservationId,
+            capacityReservationResourceGroupArn: props.capacityReservationSpecification.capacityReservationTarget.capacityReservationResourceGroupArn,
+          } : undefined,
+        } : undefined,
+
         // Fields not yet implemented:
         // ==========================
-        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-capacityreservationspecification.html
-        // Will require creating an L2 for AWS::EC2::CapacityReservation
-        // capacityReservationSpecification: undefined,
 
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-cpuoptions.html
         // cpuOptions: undefined,
