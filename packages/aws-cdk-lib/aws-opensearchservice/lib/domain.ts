@@ -258,7 +258,7 @@ export interface EncryptionAtRestOptions {
    *
    * @default - uses default aws/es KMS key.
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
@@ -276,7 +276,7 @@ export interface CognitoOptions {
    *
    * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cognito-auth.html#cognito-auth-prereq
    */
-  readonly role: iam.IRole;
+  readonly role: iam.IRoleRef;
 
   /**
    * The Amazon Cognito user pool ID that you want Amazon OpenSearch Service to use for OpenSearch Dashboards authentication.
@@ -1988,7 +1988,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       encryptionAtRestOptions: {
         enabled: encryptionAtRestEnabled,
         kmsKeyId: encryptionAtRestEnabled
-          ? props.encryptionAtRest?.kmsKey?.keyId
+          ? props.encryptionAtRest?.kmsKey?.keyRef.keyId
           : undefined,
       },
       nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
@@ -1996,7 +1996,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       cognitoOptions: props.cognitoDashboardsAuth ? {
         enabled: true,
         identityPoolId: props.cognitoDashboardsAuth?.identityPoolId,
-        roleArn: props.cognitoDashboardsAuth?.role.roleArn,
+        roleArn: props.cognitoDashboardsAuth?.role.roleRef.roleArn,
         userPoolId: props.cognitoDashboardsAuth?.userPoolId,
       } : undefined,
       vpcOptions: cfnVpcOptions,
@@ -2188,7 +2188,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
           this.accessPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
             actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
-            resources: [this.encryptionAtRestOptions.kmsKey.keyArn],
+            resources: [this.encryptionAtRestOptions.kmsKey.keyRef.keyArn],
             effect: iam.Effect.ALLOW,
           }));
         }
