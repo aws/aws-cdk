@@ -911,6 +911,188 @@ test('deploy without deleting missing files from destination', () => {
   });
 });
 
+describe('explicit prune validation', () => {
+  test('allows deployment when feature flag is disabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN - prune is undefined and feature flag is disabled (default)
+    expect(() => {
+      new s3deploy.BucketDeployment(stack, 'Deploy', {
+        sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+        destinationBucket: bucket,
+        // prune is undefined - should work when flag is disabled
+      });
+    }).not.toThrow();
+
+    // THEN - should use default prune: true
+    Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+      Prune: true,
+    });
+  });
+
+  test('allows deployment with explicit prune: true when feature flag is enabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        [cxapi.S3_DEPLOYMENT_REQUIRE_EXPLICIT_PRUNE]: true,
+      },
+    });
+    const stack = new cdk.Stack(app);
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN
+    expect(() => {
+      new s3deploy.BucketDeployment(stack, 'Deploy', {
+        sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+        destinationBucket: bucket,
+        prune: true,
+      });
+    }).not.toThrow();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+      Prune: true,
+    });
+  });
+
+  test('allows deployment with explicit prune: false when feature flag is enabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        [cxapi.S3_DEPLOYMENT_REQUIRE_EXPLICIT_PRUNE]: true,
+      },
+    });
+    const stack = new cdk.Stack(app);
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN
+    expect(() => {
+      new s3deploy.BucketDeployment(stack, 'Deploy', {
+        sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+        destinationBucket: bucket,
+        prune: false,
+      });
+    }).not.toThrow();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+      Prune: false,
+    });
+  });
+
+  test('allows deployment with acknowledgePruneRisk when feature flag is enabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        [cxapi.S3_DEPLOYMENT_REQUIRE_EXPLICIT_PRUNE]: true,
+      },
+    });
+    const stack = new cdk.Stack(app);
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN
+    expect(() => {
+      new s3deploy.BucketDeployment(stack, 'Deploy', {
+        sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+        destinationBucket: bucket,
+        acknowledgePruneRisk: true,
+        // prune is undefined but acknowledgePruneRisk is true
+      });
+    }).not.toThrow();
+
+    // THEN - should use default prune: true
+    Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+      Prune: true,
+    });
+  });
+
+  test('throws error when prune is undefined and acknowledgePruneRisk is false/undefined with feature flag enabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        [cxapi.S3_DEPLOYMENT_REQUIRE_EXPLICIT_PRUNE]: true,
+      },
+    });
+    const stack = new cdk.Stack(app);
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN & THEN
+    expect(() => {
+      new s3deploy.BucketDeployment(stack, 'Deploy', {
+        sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+        destinationBucket: bucket,
+        // prune is undefined and acknowledgePruneRisk is undefined
+      });
+    }).toThrow(/The prune property must be explicitly set to true or false/);
+  });
+
+  test('throws error with helpful message when feature flag is enabled and prune is undefined', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        [cxapi.S3_DEPLOYMENT_REQUIRE_EXPLICIT_PRUNE]: true,
+      },
+    });
+    const stack = new cdk.Stack(app);
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN & THEN
+    expect(() => {
+      new s3deploy.BucketDeployment(stack, 'Deploy', {
+        sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+        destinationBucket: bucket,
+      });
+    }).toThrow(/Set acknowledgePruneRisk: true to acknowledge the risk and use the default behavior/);
+  });
+
+  test('throws error with documentation link when feature flag is enabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        [cxapi.S3_DEPLOYMENT_REQUIRE_EXPLICIT_PRUNE]: true,
+      },
+    });
+    const stack = new cdk.Stack(app);
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN & THEN
+    expect(() => {
+      new s3deploy.BucketDeployment(stack, 'Deploy', {
+        sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+        destinationBucket: bucket,
+      });
+    }).toThrow(/https:\/\/docs\.aws\.amazon\.com\/cdk\/api\/v2\/docs\/aws-cdk-lib\.aws_s3_deployment-readme\.html#prune-behavior/);
+  });
+
+  test('allows explicit prune setting even when acknowledgePruneRisk is also set', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: {
+        [cxapi.S3_DEPLOYMENT_REQUIRE_EXPLICIT_PRUNE]: true,
+      },
+    });
+    const stack = new cdk.Stack(app);
+    const bucket = new s3.Bucket(stack, 'Dest');
+
+    // WHEN - both prune and acknowledgePruneRisk are set (should work)
+    expect(() => {
+      new s3deploy.BucketDeployment(stack, 'Deploy', {
+        sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+        destinationBucket: bucket,
+        prune: false,
+        acknowledgePruneRisk: true,
+      });
+    }).not.toThrow();
+
+    // THEN - should respect explicit prune setting
+    Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+      Prune: false,
+    });
+  });
+});
+
 test('deploy with excluded files from destination', () => {
   // GIVEN
   const stack = new cdk.Stack();

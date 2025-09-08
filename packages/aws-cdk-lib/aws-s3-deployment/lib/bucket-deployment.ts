@@ -11,9 +11,11 @@ import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { BucketDeploymentSingletonFunction } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated';
+import { S3_DEPLOYMENT_REQUIRE_EXPLICIT_PRUNE } from '../../cx-api';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
 // tag key has a limit of 128 characters
@@ -87,6 +89,21 @@ export interface BucketDeploymentProps {
    * @default true
    */
   readonly prune?: boolean;
+
+  /**
+   * Acknowledge that you understand the default pruning behavior and accept the risk of potential data loss.
+   *
+   * This property serves as an escape hatch when the feature flag `@aws-cdk/aws-s3-deployment:requireExplicitPrune`
+   * is enabled. When the flag is enabled, you must either:
+   * - Explicitly set `prune: true` or `prune: false`, OR
+   * - Set `acknowledgePruneRisk: true` to use the default behavior
+   *
+   * This ensures you make a conscious decision about whether files in the destination bucket
+   * should be deleted when they don't exist in the source.
+   *
+   * @default false
+   */
+  readonly acknowledgePruneRisk?: boolean;
 
   /**
    * If this is set to "false", the destination files will be deleted when the
@@ -334,6 +351,17 @@ export class BucketDeployment extends Construct {
 
     if (props.useEfs && !props.vpc) {
       throw new ValidationError('Vpc must be specified if useEfs is set', this);
+    }
+
+    // Validate explicit prune setting when feature flag is enabled
+    const requireExplicitPrune = FeatureFlags.of(this).isEnabled(S3_DEPLOYMENT_REQUIRE_EXPLICIT_PRUNE);
+    if (requireExplicitPrune && props.prune === undefined && !props.acknowledgePruneRisk) {
+      throw new ValidationError(
+        'The prune property must be explicitly set to true or false. ' +
+        'Set acknowledgePruneRisk: true to acknowledge the risk and use the default behavior. ' +
+        'See https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3_deployment-readme.html#prune-behavior',
+        this,
+      );
     }
 
     this.destinationBucket = props.destinationBucket;

@@ -199,6 +199,41 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination',
 });
 ```
 
+### Explicit Prune Validation
+
+To prevent accidental data loss, you can enable the feature flag `@aws-cdk/aws-s3-deployment:requireExplicitPrune` 
+in your `cdk.json` to require explicit setting of the `prune` property:
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-s3-deployment:requireExplicitPrune": true
+  }
+}
+```
+
+When this feature flag is enabled, you must explicitly set `prune` to `true` or `false`:
+
+```ts
+declare const destinationBucket: s3.Bucket;
+new s3deploy.BucketDeployment(this, 'MyDeployment', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  destinationBucket,
+  prune: true, // Must be explicitly set when feature flag is enabled
+});
+```
+
+Alternatively, if you want to use the default behavior but acknowledge the risk, you can set `acknowledgePruneRisk: true`:
+
+```ts
+declare const destinationBucket: s3.Bucket;
+new s3deploy.BucketDeployment(this, 'MyDeployment', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  destinationBucket,
+  acknowledgePruneRisk: true, // Acknowledges risk and uses default prune: true
+});
+```
+
 This option also enables you to
 multiple bucket deployments for the same destination bucket & prefix,
 each with its own characteristics. For example, you can set different cache-control headers

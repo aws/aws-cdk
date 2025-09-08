@@ -145,6 +145,7 @@ export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-c
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
+export const S3_DEPLOYMENT_REQUIRE_EXPLICIT_PRUNE = '@aws-cdk/aws-s3-deployment:requireExplicitPrune';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1719,6 +1720,26 @@ export const FLAGS: Record<string, FlagInfo> = {
     unconfiguredBehavesLike: { v2: false },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_DEPLOYMENT_REQUIRE_EXPLICIT_PRUNE]: {
+    type: FlagType.ApiDefault,
+    summary: 'Require explicit prune setting for BucketDeployment to prevent accidental data loss',
+    detailsMd: `
+      When this feature flag is enabled, the \`prune\` property must be explicitly set to \`true\` or \`false\`
+      in BucketDeployment constructs. This prevents accidental data loss that can occur when users are unaware
+      that the default behavior (\`prune: true\`) will delete files in the destination bucket that don't exist
+      in the source.
+
+      When this flag is disabled, the \`prune\` property defaults to \`true\` (existing behavior).
+
+      An escape hatch is provided via the \`acknowledgePruneRisk\` property, which allows users to explicitly
+      acknowledge they understand the pruning behavior and accept the default.`,
+    introducedIn: { v2: 'V2NEXT' },
+    unconfiguredBehavesLike: { v2: false },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Set `acknowledgePruneRisk: true` to maintain existing behavior, or explicitly set `prune: true` or `prune: false`.',
   },
 };
 
