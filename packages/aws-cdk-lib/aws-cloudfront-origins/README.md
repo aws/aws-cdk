@@ -596,6 +596,20 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+You can specify the IP address type for connecting to the origin:
+
+```ts
+const origin = new origins.HttpOrigin('www.example.com', {
+  ipAddressType: cloudfront.OriginIpAddressType.IPV6, // IPv4, IPv6, or DUALSTACK
+});
+
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin },
+});
+```
+
+The `ipAddressType` property allows you to specify whether CloudFront should use IPv4, IPv6, or both (dual-stack) when connecting to your origin.
+
 See the documentation of `aws-cdk-lib/aws-cloudfront` for more information.
 
 ## VPC origins
