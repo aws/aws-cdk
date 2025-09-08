@@ -34,7 +34,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1753282849847"
+    "salt": "1756989993359"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -106,7 +106,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1bf478116a59c3d8e069e12fe42948c11b5d5233fca90d2f2b3ec9fcd695025b.zip"
+     "S3Key": "53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -145,7 +145,7 @@
      "Key": "\"hello.txt\""
     },
     "flattenResponse": "false",
-    "salt": "1753282849850"
+    "salt": "1756989993363"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -227,7 +227,7 @@
     "value": "nodejs22.x"
    },
    "eu-isoe-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "eu-north-1": {
     "value": "nodejs22.x"
@@ -278,10 +278,10 @@
     "value": "nodejs22.x"
    },
    "us-iso-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "us-iso-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "us-isob-east-1": {
     "value": "nodejs18.x"

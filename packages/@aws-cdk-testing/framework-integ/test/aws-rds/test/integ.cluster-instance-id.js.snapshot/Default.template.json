@@ -733,7 +733,7 @@
     "value": "nodejs22.x"
    },
    "eu-isoe-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "eu-north-1": {
     "value": "nodejs22.x"
@@ -784,10 +784,10 @@
     "value": "nodejs22.x"
    },
    "us-iso-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "us-iso-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "us-isob-east-1": {
     "value": "nodejs18.x"

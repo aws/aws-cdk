@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "c9e084a249774d97a978bed2e1976874a70517128a904136b8737f0792322c1f": {
       "displayName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "05d50d71ef3d6994c56f7af16b78ff710ed2b543571f043b8b61c08816a11f4b": {
+    "10fed9d58bc23230b943abe7c7685856d30ccde4576d4a95a85d2c50cd924b85": {
       "displayName": "aws-cdk-log-retention-integ Template",
       "source": {
         "path": "aws-cdk-log-retention-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-b4a1e9b3": {
+        "current_account-current_region-44ed7f7b": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "05d50d71ef3d6994c56f7af16b78ff710ed2b543571f043b8b61c08816a11f4b.json",
+          "objectKey": "10fed9d58bc23230b943abe7c7685856d30ccde4576d4a95a85d2c50cd924b85.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

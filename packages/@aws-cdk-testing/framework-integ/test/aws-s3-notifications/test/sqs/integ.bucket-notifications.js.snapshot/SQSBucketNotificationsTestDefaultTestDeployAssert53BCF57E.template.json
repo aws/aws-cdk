@@ -26,7 +26,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1753360913915"
+    "salt": "1756990216823"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -106,7 +106,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
+     "S3Key": "53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -146,7 +146,7 @@
      "Body": "\"Some content\""
     },
     "flattenResponse": "false",
-    "salt": "1753360913916"
+    "salt": "1756990216824"
    },
    "DependsOn": [
     "AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4"
@@ -186,7 +186,7 @@
     "outputPaths": [
      "Messages.0.Body.Records.0.s3.object.key"
     ],
-    "salt": "1753360913916"
+    "salt": "1756990216825"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f"
@@ -261,7 +261,7 @@
     "value": "nodejs22.x"
    },
    "eu-isoe-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "eu-north-1": {
     "value": "nodejs22.x"
@@ -312,10 +312,10 @@
     "value": "nodejs22.x"
    },
    "us-iso-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "us-iso-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "us-isob-east-1": {
     "value": "nodejs18.x"

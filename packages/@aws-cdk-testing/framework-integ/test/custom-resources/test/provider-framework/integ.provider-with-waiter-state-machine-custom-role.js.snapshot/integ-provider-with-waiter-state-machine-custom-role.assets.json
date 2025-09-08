@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6": {
       "displayName": "MyProviderWithCustomRole/framework-onEvent/Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "a6ecb9c1d2c52aab3a5f46d5e76ac466ebb0e7af689629879c196295415a1bfa": {
+    "e4e0deb1f1f3f4ca6ad7b9cc46f653b71f7582e6cbffeff42548fd82393914c4": {
       "displayName": "integ-provider-with-waiter-state-machine-custom-role Template",
       "source": {
         "path": "integ-provider-with-waiter-state-machine-custom-role.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-033e3e4f": {
+        "current_account-current_region-1caae36b": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a6ecb9c1d2c52aab3a5f46d5e76ac466ebb0e7af689629879c196295415a1bfa.json",
+          "objectKey": "e4e0deb1f1f3f4ca6ad7b9cc46f653b71f7582e6cbffeff42548fd82393914c4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

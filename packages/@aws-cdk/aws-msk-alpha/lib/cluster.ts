@@ -190,7 +190,7 @@ export interface EbsStorageInfo {
    *
    * @default Uses AWS managed CMK (aws/kafka)
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKeyRef;
 }
 
 /**
@@ -390,7 +390,7 @@ export interface SaslAuthProps {
    *
    * @default - CMK will be created with alias msk/{clusterName}/sasl/scram
    */
-  readonly key?: kms.IKey;
+  readonly key?: kms.IKeyRef;
 }
 
 /**
@@ -549,7 +549,7 @@ export class Cluster extends ClusterBase {
     const encryptionAtRest = props.ebsStorageInfo?.encryptionKey
       ? {
         dataVolumeKmsKeyId:
-            props.ebsStorageInfo.encryptionKey.keyId,
+            props.ebsStorageInfo.encryptionKey.keyRef.keyId,
       }
       : undefined; // MSK will create the managed key
 
