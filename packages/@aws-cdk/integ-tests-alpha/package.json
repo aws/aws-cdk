@@ -67,7 +67,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.189.2",
+    "@aws-cdk/integ-runner": "^2.190.2",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/aws-custom-resource-sdk-adapter": "0.0.0",
     "@aws-sdk/client-ec2": "3.632.0",

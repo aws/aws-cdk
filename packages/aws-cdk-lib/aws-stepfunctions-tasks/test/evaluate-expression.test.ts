@@ -38,9 +38,7 @@ test('Eval with Node.js', () => {
     Runtime: {
       'Fn::FindInMap': [
         'LatestNodeRuntimeMap',
-        {
-          Ref: 'AWS::Region',
-        },
+        { Ref: 'AWS::Region' },
         'value',
       ],
     },
@@ -109,5 +107,20 @@ test('With Node.js 20.x', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Runtime: 'nodejs20.x',
+  });
+});
+
+test('With Node.js 22.x', () => {
+  // WHEN
+  const task = new tasks.EvaluateExpression(stack, 'Task', {
+    expression: '$.a + $.b',
+    runtime: Runtime.NODEJS_22_X,
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Runtime: 'nodejs22.x',
   });
 });

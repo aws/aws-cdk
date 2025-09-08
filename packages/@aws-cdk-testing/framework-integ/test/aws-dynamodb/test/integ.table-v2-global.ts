@@ -19,7 +19,9 @@ class TestStack extends Stack {
         writeCapacity: Capacity.autoscaled({ maxCapacity: 20, targetUtilizationPercent: 60, seedCapacity: 10 }),
       }),
       encryption: TableEncryptionV2.awsManagedKey(),
-      contributorInsights: true,
+      contributorInsightsSpecification: {
+        enabled: true,
+      },
       pointInTimeRecovery: true,
       tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
       timeToLiveAttribute: 'attr',
@@ -49,7 +51,9 @@ class TestStack extends Stack {
           readCapacity: Capacity.autoscaled({ minCapacity: 5, maxCapacity: 25 }),
           globalSecondaryIndexOptions: {
             gsi2: {
-              contributorInsights: false,
+              contributorInsightsSpecification: {
+                enabled: false,
+              },
             },
           },
           tags: [{ key: 'USE2ReplicaTagKey', value: 'USE2ReplicaTagValue' }],
@@ -57,7 +61,9 @@ class TestStack extends Stack {
         {
           region: 'us-west-2',
           tableClass: TableClass.STANDARD,
-          contributorInsights: false,
+          contributorInsightsSpecification: {
+            enabled: false,
+          },
           globalSecondaryIndexOptions: {
             gsi1: {
               readCapacity: Capacity.fixed(15),

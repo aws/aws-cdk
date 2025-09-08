@@ -116,7 +116,7 @@ export class Runtime {
    * The latest NodeJS version currently available in ALL regions (not necessarily the latest NodeJS version
    * available in YOUR region).
    */
-  public static readonly NODEJS_LATEST = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
+  public static readonly NODEJS_LATEST = new Runtime('nodejs22.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
 
   /**
    * The NodeJS 22.x runtime (nodejs22.x)
@@ -200,6 +200,11 @@ export class Runtime {
     supportsCodeGuruProfiling: true,
     supportsSnapStart: true,
   });
+
+  /**
+   * The latest Python version currently available in ALL regions.
+   */
+  public static readonly PYTHON_LATEST = this.PYTHON_3_13;
 
   /**
    * The Java 8 runtime (java8)

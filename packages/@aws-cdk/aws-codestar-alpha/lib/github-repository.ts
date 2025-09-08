@@ -43,7 +43,7 @@ export interface GitHubRepositoryProps {
   /**
    * The name of the Amazon S3 bucket that contains the ZIP file with the content to be committed to the new repository
    */
-  readonly contentsBucket: s3.IBucket;
+  readonly contentsBucket: s3.IBucketRef;
 
   /**
    * The S3 object key or file name for the ZIP file
@@ -103,7 +103,7 @@ export class GitHubRepository extends cdk.Resource implements IGitHubRepository 
       repositoryAccessToken: props.accessToken.unsafeUnwrap(), // Safe usage
       code: {
         s3: {
-          bucket: props.contentsBucket.bucketName,
+          bucket: props.contentsBucket.bucketRef.bucketName,
           key: props.contentsKey,
           objectVersion: props.contentsS3Version,
         },

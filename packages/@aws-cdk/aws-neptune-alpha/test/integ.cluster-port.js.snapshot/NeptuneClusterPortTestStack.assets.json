@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "NeptuneClusterPortTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "d941446a30c8d71df9e1610846c2259cf45d001c3159b588750f30765d845a8c": {
+    "b985f0c75dc66bf223720cd647c0523c901945a397d4745aafeced9fc94f7b4e": {
       "displayName": "NeptuneClusterPortTestStack Template",
       "source": {
         "path": "NeptuneClusterPortTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-256eced5": {
+        "current_account-current_region-d21ac899": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d941446a30c8d71df9e1610846c2259cf45d001c3159b588750f30765d845a8c.json",
+          "objectKey": "b985f0c75dc66bf223720cd647c0523c901945a397d4745aafeced9fc94f7b4e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

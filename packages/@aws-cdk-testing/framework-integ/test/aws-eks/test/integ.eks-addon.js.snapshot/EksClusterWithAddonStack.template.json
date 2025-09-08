@@ -580,7 +580,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+        ":iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
        ]
       ]
      },
@@ -1084,7 +1084,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/6cfe5a04366395647b411da89a19a3f1f98344b95e7f93bc02ff1f07630ad4b1.json"
+       "/4366b3f3b417034642a6efdd6688afc8074b3fd2adab00ad87fc77e9f6708aad.json"
       ]
      ]
     }
@@ -1134,7 +1134,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/5ca785e72a241a2af4f468ebbc4aae74cc5d70f8bd3120fe9f3a47c80f00c54e.json"
+       "/3f21bc8ab7f22010fb54eabe183f3dd0fa03674e9e633ff0a3379f603d2ae3c2.json"
       ]
      ]
     }
@@ -1228,7 +1228,7 @@
     "value": "nodejs22.x"
    },
    "eu-isoe-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "eu-north-1": {
     "value": "nodejs22.x"
@@ -1279,10 +1279,10 @@
     "value": "nodejs22.x"
    },
    "us-iso-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "us-iso-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "us-isob-east-1": {
     "value": "nodejs18.x"
