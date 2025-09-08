@@ -194,6 +194,10 @@ export enum JobStateTimeLimitActionsAction {
    * Terminate the job.
    */
   TERMINATE = 'TERMINATE',
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  TERMINATE = 'TERMINATE',
 }
 
 /**
