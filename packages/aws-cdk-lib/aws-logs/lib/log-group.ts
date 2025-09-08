@@ -586,6 +586,24 @@ export enum Distribution {
 }
 
 /**
+ * The replacement strategy to use when updating a subscription filter.
+ */
+export enum ReplacementStrategy {
+  /**
+   * Create the new subscription filter before deleting the old one.
+   * This is the default CloudFormation behavior but may fail if the log group
+   * already has 2 subscription filters (AWS limit).
+   */
+  CREATE_BEFORE_DELETE = 'CreateBeforeDelete',
+
+  /**
+   * Delete the old subscription filter before creating the new one.
+   * This avoids hitting the 2-filter limit but may cause a brief gap in log processing.
+   */
+  DELETE_BEFORE_CREATE = 'DeleteBeforeCreate',
+}
+
+/**
  * Define a CloudWatch Log Group
  */
 @propertyInjectable
@@ -736,6 +754,21 @@ export interface SubscriptionFilterOptions {
    * @default Distribution.BY_LOG_STREAM
    */
   readonly distribution?: Distribution;
+
+  /**
+   * The replacement strategy to use when updating this subscription filter.
+   *
+   * When set to DELETE_BEFORE_CREATE, the old subscription filter will be deleted
+   * before creating the new one. This avoids hitting the 2-filter limit per log group
+   * but may cause a brief gap in log processing during updates.
+   *
+   * When set to CREATE_BEFORE_DELETE (default), CloudFormation will attempt to create
+   * the new filter before deleting the old one, which may fail if the log group
+   * already has 2 subscription filters.
+   *
+   * @default ReplacementStrategy.CREATE_BEFORE_DELETE
+   */
+  readonly replacementStrategy?: ReplacementStrategy;
 }
 
 /**

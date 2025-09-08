@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
-import { ILogGroup, SubscriptionFilterOptions } from './log-group';
+import { ILogGroup, ReplacementStrategy, SubscriptionFilterOptions } from './log-group';
 import { CfnSubscriptionFilter } from './logs.generated';
 import * as iam from '../../aws-iam';
 import { KinesisDestination } from '../../aws-logs-destinations';
-import { Resource, Token, ValidationError } from '../../core';
+import { CfnDeletionPolicy, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -76,8 +76,9 @@ export class SubscriptionFilter extends Resource {
     }
 
     const destProps = props.destination.bind(this, props.logGroup);
+    const replacementStrategy = props.replacementStrategy ?? ReplacementStrategy.CREATE_BEFORE_DELETE;
 
-    new CfnSubscriptionFilter(this, 'Resource', {
+    const resource = new CfnSubscriptionFilter(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
       destinationArn: destProps.arn,
       roleArn: destProps.role?.roleArn,
@@ -85,5 +86,12 @@ export class SubscriptionFilter extends Resource {
       filterName: this.physicalName,
       distribution: props.distribution,
     });
+
+    // For DELETE_BEFORE_CREATE strategy, set the UpdateReplacePolicy to Delete
+    // This forces CloudFormation to delete the old resource before creating the new one
+    if (replacementStrategy === ReplacementStrategy.DELETE_BEFORE_CREATE) {
+      resource.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.DELETE;
+      resource.cfnOptions.deletionPolicy = CfnDeletionPolicy.DELETE;
+    }
   }
 }
