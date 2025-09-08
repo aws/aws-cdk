@@ -1734,12 +1734,12 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       When this flag is disabled, the \`prune\` property defaults to \`true\` (existing behavior).
 
-      An escape hatch is provided via the \`acknowledgePruneRisk\` property, which allows users to explicitly
-      acknowledge they understand the pruning behavior and accept the default.`,
+      An escape hatch is provided via the \`suppressPruneWarning\` property, which allows users to explicitly
+      suppress the warning and use the default behavior.`,
     introducedIn: { v2: 'V2NEXT' },
     unconfiguredBehavesLike: { v2: false },
     recommendedValue: true,
-    compatibilityWithOldBehaviorMd: 'Set `acknowledgePruneRisk: true` to maintain existing behavior, or explicitly set `prune: true` or `prune: false`.',
+    compatibilityWithOldBehaviorMd: 'Set `suppressPruneWarning: true` to maintain existing behavior, or explicitly set `prune: true` or `prune: false`.',
   },
 };
 

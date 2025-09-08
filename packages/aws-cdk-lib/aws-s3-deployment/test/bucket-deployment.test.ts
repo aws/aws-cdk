@@ -982,7 +982,7 @@ describe('explicit prune validation', () => {
     });
   });
 
-  test('allows deployment with acknowledgePruneRisk when feature flag is enabled', () => {
+  test('allows deployment with suppressPruneWarning when feature flag is enabled', () => {
     // GIVEN
     const app = new cdk.App({
       context: {
@@ -997,8 +997,8 @@ describe('explicit prune validation', () => {
       new s3deploy.BucketDeployment(stack, 'Deploy', {
         sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
         destinationBucket: bucket,
-        acknowledgePruneRisk: true,
-        // prune is undefined but acknowledgePruneRisk is true
+        suppressPruneWarning: true,
+        // prune is undefined but suppressPruneWarning is true
       });
     }).not.toThrow();
 
@@ -1008,7 +1008,7 @@ describe('explicit prune validation', () => {
     });
   });
 
-  test('throws error when prune is undefined and acknowledgePruneRisk is false/undefined with feature flag enabled', () => {
+  test('throws error when prune is undefined and suppressPruneWarning is false/undefined with feature flag enabled', () => {
     // GIVEN
     const app = new cdk.App({
       context: {
@@ -1023,7 +1023,7 @@ describe('explicit prune validation', () => {
       new s3deploy.BucketDeployment(stack, 'Deploy', {
         sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
         destinationBucket: bucket,
-        // prune is undefined and acknowledgePruneRisk is undefined
+        // prune is undefined and suppressPruneWarning is undefined
       });
     }).toThrow(/The prune property must be explicitly set to true or false/);
   });
@@ -1044,7 +1044,7 @@ describe('explicit prune validation', () => {
         sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
         destinationBucket: bucket,
       });
-    }).toThrow(/Set acknowledgePruneRisk: true to acknowledge the risk and use the default behavior/);
+    }).toThrow(/Set suppressPruneWarning: true to suppress this warning and use the default behavior/);
   });
 
   test('throws error with documentation link when feature flag is enabled', () => {
@@ -1066,7 +1066,7 @@ describe('explicit prune validation', () => {
     }).toThrow(/https:\/\/docs\.aws\.amazon\.com\/cdk\/api\/v2\/docs\/aws-cdk-lib\.aws_s3_deployment-readme\.html#prune-behavior/);
   });
 
-  test('allows explicit prune setting even when acknowledgePruneRisk is also set', () => {
+  test('allows explicit prune setting even when suppressPruneWarning is also set', () => {
     // GIVEN
     const app = new cdk.App({
       context: {
@@ -1076,13 +1076,13 @@ describe('explicit prune validation', () => {
     const stack = new cdk.Stack(app);
     const bucket = new s3.Bucket(stack, 'Dest');
 
-    // WHEN - both prune and acknowledgePruneRisk are set (should work)
+    // WHEN - both prune and suppressPruneWarning are set (should work)
     expect(() => {
       new s3deploy.BucketDeployment(stack, 'Deploy', {
         sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
         destinationBucket: bucket,
         prune: false,
-        acknowledgePruneRisk: true,
+        suppressPruneWarning: true,
       });
     }).not.toThrow();
 

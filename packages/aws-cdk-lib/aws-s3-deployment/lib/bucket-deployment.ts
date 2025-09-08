@@ -91,19 +91,19 @@ export interface BucketDeploymentProps {
   readonly prune?: boolean;
 
   /**
-   * Acknowledge that you understand the default pruning behavior and accept the risk of potential data loss.
+   * Suppress the warning about explicit prune setting requirement.
    *
    * This property serves as an escape hatch when the feature flag `@aws-cdk/aws-s3-deployment:requireExplicitPrune`
    * is enabled. When the flag is enabled, you must either:
    * - Explicitly set `prune: true` or `prune: false`, OR
-   * - Set `acknowledgePruneRisk: true` to use the default behavior
+   * - Set `suppressPruneWarning: true` to use the default behavior
    *
    * This ensures you make a conscious decision about whether files in the destination bucket
    * should be deleted when they don't exist in the source.
    *
    * @default false
    */
-  readonly acknowledgePruneRisk?: boolean;
+  readonly suppressPruneWarning?: boolean;
 
   /**
    * If this is set to "false", the destination files will be deleted when the
@@ -355,10 +355,10 @@ export class BucketDeployment extends Construct {
 
     // Validate explicit prune setting when feature flag is enabled
     const requireExplicitPrune = FeatureFlags.of(this).isEnabled(S3_DEPLOYMENT_REQUIRE_EXPLICIT_PRUNE);
-    if (requireExplicitPrune && props.prune === undefined && !props.acknowledgePruneRisk) {
+    if (requireExplicitPrune && props.prune === undefined && !props.suppressPruneWarning) {
       throw new ValidationError(
         'The prune property must be explicitly set to true or false. ' +
-        'Set acknowledgePruneRisk: true to acknowledge the risk and use the default behavior. ' +
+        'Set suppressPruneWarning: true to suppress this warning and use the default behavior. ' +
         'See https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3_deployment-readme.html#prune-behavior',
         this,
       );

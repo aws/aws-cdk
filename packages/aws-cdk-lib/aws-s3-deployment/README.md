@@ -223,14 +223,14 @@ new s3deploy.BucketDeployment(this, 'MyDeployment', {
 });
 ```
 
-Alternatively, if you want to use the default behavior but acknowledge the risk, you can set `acknowledgePruneRisk: true`:
+Alternatively, if you want to use the default behavior but suppress the warning, you can set `suppressPruneWarning: true`:
 
 ```ts
 declare const destinationBucket: s3.Bucket;
 new s3deploy.BucketDeployment(this, 'MyDeployment', {
   sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
   destinationBucket,
-  acknowledgePruneRisk: true, // Acknowledges risk and uses default prune: true
+  suppressPruneWarning: true, // Suppresses warning and uses default prune: true
 });
 ```
 

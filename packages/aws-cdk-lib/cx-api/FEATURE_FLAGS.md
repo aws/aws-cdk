@@ -2292,8 +2292,8 @@ in the source.
 
 When this flag is disabled, the `prune` property defaults to `true` (existing behavior).
 
-An escape hatch is provided via the `acknowledgePruneRisk` property, which allows users to explicitly
-acknowledge they understand the pruning behavior and accept the default.
+An escape hatch is provided via the `suppressPruneWarning` property, which allows users to explicitly
+suppress the warning and use the default behavior.
 
 
 | Since | Unset behaves like | Recommended value |
@@ -2301,7 +2301,7 @@ acknowledge they understand the pruning behavior and accept the default.
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
 
-**Compatibility with old behavior:** Set `acknowledgePruneRisk: true` to maintain existing behavior, or explicitly set `prune: true` or `prune: false`.
+**Compatibility with old behavior:** Set `suppressPruneWarning: true` to maintain existing behavior, or explicitly set `prune: true` or `prune: false`.
 
 
 <!-- END details -->
