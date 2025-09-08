@@ -216,7 +216,7 @@ export class BucketReflector implements IBucketReflect {
     return this.bucket.bucketRef;
   }
 
-  public get isWebsite(): boolean {
+  public get isWebsite(): boolean | undefined {
     return this.bucket.isWebsite ?? false;
   }
 
@@ -228,7 +228,15 @@ export class BucketReflector implements IBucketReflect {
     return this.bucket.policy;
   }
 
+  public set policy(value: BucketPolicy | undefined) {
+    this.bucket.policy = value;
+  }
+
   public get replicationRoleArn(): string | undefined {
     return this.bucket.replicationRoleArn;
+  }
+
+  public set replicationRoleArn(value: string | undefined) {
+    this.bucket.replicationRoleArn = value;
   }
 }
