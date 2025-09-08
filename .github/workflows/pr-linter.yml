@@ -14,12 +14,9 @@ on:
 
   # Triggered from a separate job when a review is added
   workflow_run:
-    workflows: [PR Linter Trigger]
+    workflows: ["PR Linter Trigger", "Codebuild PR Build"]
     types:
       - completed
-
-  # Trigger when a status is updated (CodeBuild leads to statuses)
-  status: {}
 
   # Trigger when a check suite is completed (GitHub actions and CodeCov create checks)
   check_suite:
@@ -37,6 +34,7 @@ jobs:
       - name: 'Download workflow_run artifact'
         if: github.event_name == 'workflow_run'
         uses: dawidd6/action-download-artifact@v11
+        continue-on-error: true
         with:
           run_id: ${{ github.event.workflow_run.id }}
           name: pr_info
@@ -49,10 +47,10 @@ jobs:
         id: 'pr_output'
         run: |
           if [[ ! -f pr/pr_number ]]; then
-            echo "${{ github.event.pull_request.number }}" > pr/pr_number
+            echo "${{ github.event.workflow_run.pull_requests[0].number }}" > pr/pr_number
           fi
           if [[ ! -f pr/pr_sha ]]; then
-            echo "${{ github.event.pull_request.head.sha }}" > pr/pr_sha
+            echo "${{ github.event.workflow_run.head_sha }}" > pr/pr_sha
           fi
           cat pr/*
           echo "pr_number=$(cat pr/pr_number)" >> "$GITHUB_OUTPUT"
@@ -70,7 +68,7 @@ jobs:
     needs: download-if-workflow-run
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install & Build prlint
         run: yarn install --frozen-lockfile && cd tools/@aws-cdk/prlint && yarn build+test

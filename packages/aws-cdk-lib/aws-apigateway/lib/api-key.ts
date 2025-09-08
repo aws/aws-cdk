@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnApiKey } from './apigateway.generated';
+import { ApiKeyReference, CfnApiKey, IApiKeyRef, IStageRef } from './apigateway.generated';
 import { ResourceOptions } from './resource';
 import { IRestApi } from './restapi';
 import { IStage } from './stage';
@@ -14,7 +14,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  * API keys are alphanumeric string values that you distribute to
  * app developer customers to grant access to your API
  */
-export interface IApiKey extends IResourceBase {
+export interface IApiKey extends IResourceBase, IApiKeyRef {
   /**
    * The API key ID.
    * @attribute
@@ -138,6 +138,12 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
       resourceArns: [this.keyArn],
     });
   }
+
+  public get apiKeyRef(): ApiKeyReference {
+    return {
+      apiKeyId: this.keyId,
+    };
+  }
 }
 
 /**
@@ -201,7 +207,7 @@ export class ApiKey extends ApiKeyBase {
     });
   }
 
-  private renderStageKeys(resources?: IRestApi[], stages?: IStage[]): CfnApiKey.StageKeyProperty[] | undefined {
+  private renderStageKeys(resources?: IRestApi[], stages?: IStageRef[]): CfnApiKey.StageKeyProperty[] | undefined {
     if (!resources && !stages) {
       return undefined;
     }
@@ -222,7 +228,7 @@ export class ApiKey extends ApiKeyBase {
         return { restApiId, stageName };
       })
       : stages ? stages.map((stage => {
-        return { restApiId: stage.restApi.restApiId, stageName: stage.stageName };
+        return { restApiId: stage.stageRef.restApiId, stageName: stage.stageRef.stageName };
       })) : undefined;
   }
 }

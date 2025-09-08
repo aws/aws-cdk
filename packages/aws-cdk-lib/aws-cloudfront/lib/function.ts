@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import { Construct } from 'constructs';
-import { CfnFunction } from './cloudfront.generated';
-import { IKeyValueStore } from './key-value-store';
+import { CfnFunction, FunctionReference, IFunctionRef, IKeyValueStoreRef } from './cloudfront.generated';
 import { IResource, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -73,7 +72,7 @@ class FileCode extends FunctionCode {
 /**
  * Represents a CloudFront Function
  */
-export interface IFunction extends IResource {
+export interface IFunction extends IResource, IFunctionRef {
   /**
    * The name of the function.
    * @attribute
@@ -144,7 +143,7 @@ export interface FunctionProps {
    *
    * @default - no key value store is associated
    */
-  readonly keyValueStore?: IKeyValueStore;
+  readonly keyValueStore?: IKeyValueStoreRef;
 
   /**
    * A flag that determines whether to automatically publish the function to the LIVE stage when it’s created.
@@ -170,6 +169,9 @@ export class Function extends Resource implements IFunction {
       public readonly functionName = attrs.functionName;
       public readonly functionArn = attrs.functionArn;
       public readonly functionRuntime = attrs.functionRuntime ?? FunctionRuntime.JS_1_0.value;
+      public readonly functionRef = {
+        functionArn: attrs.functionArn,
+      };
     }(scope, id);
   }
 
@@ -194,6 +196,8 @@ export class Function extends Resource implements IFunction {
    */
   public readonly functionRuntime: string;
 
+  public readonly functionRef: FunctionReference;
+
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
@@ -214,11 +218,12 @@ export class Function extends Resource implements IFunction {
       functionConfig: {
         comment: props.comment ?? this.functionName,
         runtime: this.functionRuntime,
-        keyValueStoreAssociations: props.keyValueStore ? [{ keyValueStoreArn: props.keyValueStore.keyValueStoreArn }] : undefined,
+        keyValueStoreAssociations: props.keyValueStore ? [{ keyValueStoreArn: props.keyValueStore.keyValueStoreRef.keyValueStoreArn }] : undefined,
       },
       name: this.functionName,
     });
 
+    this.functionRef = resource.functionRef;
     this.functionArn = resource.attrFunctionArn;
     this.functionStage = resource.attrStage;
   }
@@ -262,7 +267,7 @@ export interface FunctionAssociation {
   /**
    * The CloudFront function that will be invoked.
    */
-  readonly function: IFunction;
+  readonly function: IFunctionRef;
 
   /** The type of event which should invoke the function. */
   readonly eventType: FunctionEventType;

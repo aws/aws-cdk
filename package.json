@@ -20,7 +20,7 @@
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "aws-sdk-js-codemod": "^2.4.5",
-    "cdk-generate-synthetic-examples": "^0.2.26",
+    "cdk-generate-synthetic-examples": "^0.2.29",
     "conventional-changelog-cli": "^2.2.2",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.11",
@@ -32,7 +32,7 @@
     "nx": "^20",
     "semver": "^7.7.2",
     "standard-version": "^9.5.0",
-    "ts-jest": "^29.4.0",
+    "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
     "typescript": "~5.5.4"
   },

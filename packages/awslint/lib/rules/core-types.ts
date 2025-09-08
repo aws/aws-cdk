@@ -44,11 +44,7 @@ export class CoreTypes {
       return false;
     }
 
-    if (!c.name.startsWith('Cfn')) {
-      return false;
-    }
-
-    return true;
+    return c.name.startsWith('Cfn');
   }
 
   /**
@@ -86,10 +82,11 @@ export class CoreTypes {
   }
 
   /**
-   * Return true if the given interface type is a CFN class or prop type
+   * Return true if the given interface type is a CFN class, prop type or interface
    */
   public static isCfnType(interfaceType: reflect.Type) {
     return interfaceType.name.startsWith('Cfn')
+      || /^I\w+Ref/.test(interfaceType.name)
       || (interfaceType.namespace && interfaceType.namespace.startsWith('Cfn'))
       // aws_service.CfnTheResource.SubType
       || (interfaceType.namespace && interfaceType.namespace.split('.', 2).at(1)?.startsWith('Cfn'));

@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IKey } from './key';
-import { CfnAlias } from './kms.generated';
+import { AliasReference, CfnAlias, IAliasRef, KeyReference } from './kms.generated';
 import * as iam from '../../aws-iam';
 import * as perms from './private/perms';
 import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
@@ -15,7 +15,7 @@ const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'aws/';
  * A KMS Key alias.
  * An alias can be used in all places that expect a key.
  */
-export interface IAlias extends IKey {
+export interface IAlias extends IKey, IAliasRef {
   /**
    * The name of the alias.
    *
@@ -61,6 +61,16 @@ abstract class AliasBase extends Resource implements IAlias {
   public abstract readonly aliasName: string;
 
   public abstract readonly aliasTargetKey: IKey;
+
+  public get aliasRef(): AliasReference {
+    return {
+      aliasName: this.aliasName,
+    };
+  }
+
+  public get keyRef(): KeyReference {
+    return this.aliasTargetKey.keyRef;
+  }
 
   /**
    * The ARN of the alias.
@@ -209,6 +219,10 @@ export class Alias extends AliasBase {
         return { statementAdded: false };
       }
 
+      public get keyRef(): KeyReference {
+        return this.aliasTargetKey.keyRef;
+      }
+
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
         if (!FeatureFlags.of(this).isEnabled(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL)) {
           return iam.Grant.drop(grantee, '');
@@ -227,6 +241,12 @@ export class Alias extends AliasBase {
             },
           },
         });
+      }
+
+      public get aliasRef(): AliasReference {
+        return {
+          aliasName: this.aliasName,
+        };
       }
 
       public grantDecrypt(grantee: iam.IGrantable): iam.Grant {

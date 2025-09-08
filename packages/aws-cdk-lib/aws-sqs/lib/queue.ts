@@ -45,10 +45,10 @@ export interface QueueProps {
   /**
    * The limit of how many bytes that a message can contain before Amazon SQS rejects it.
    *
-   * You can specify an integer value from 1024 bytes (1 KiB) to 262144 bytes
-   * (256 KiB). The default value is 262144 (256 KiB).
+   * You can specify an integer value from 1024 bytes (1 KiB) to 1048576 bytes
+   * (1 MiB). The default value is 1048576 (1 MiB).
    *
-   * @default 256KiB
+   * @default 1MiB
    */
   readonly maxMessageSizeBytes?: number;
 

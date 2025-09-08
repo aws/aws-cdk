@@ -1018,11 +1018,11 @@ export abstract class InitSource extends InitElement {
  * This block is the same every time (modulo bucket name), so it has the same
  * key every time so the blocks are merged into one in the final render.
  */
-function standardS3Auth(role: iam.IRole, bucketName: string) {
+function standardS3Auth(role: iam.IRoleRef, bucketName: string) {
   return {
     S3AccessCreds: {
       type: 'S3',
-      roleName: role.roleName,
+      roleName: role.roleRef.roleName,
       buckets: [bucketName],
     },
   };

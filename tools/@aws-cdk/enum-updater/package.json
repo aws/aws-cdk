@@ -29,7 +29,7 @@
     "axios": "^1.11.0",
     "esbuild": "^0.25.8",
     "extract-zip": "^2.0.1",
-    "tmp": "^0.2.1",
+    "tmp": "^0.2.5",
     "ts-morph": "~24.0.0"
   },
   "main": "lib/index.js",

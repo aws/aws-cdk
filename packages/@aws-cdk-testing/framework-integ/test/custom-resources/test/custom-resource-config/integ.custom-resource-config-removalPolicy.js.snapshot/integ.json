@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "testCases": {
     "integ-test-custom-resource-config-removal-policy-logGroup/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "integ-test-custom-resource-config-removal-policy-logGroup/DefaultTest/DeployAssert",
       "assertionStackName": "integtestcustomresourceconfigremovalpolicylogGroupDefaultTestDeployAssert3B9FD773"
     }
-  }
+  },
+  "minimumCliVersion": "2.1025.0"
 }

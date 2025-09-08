@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "48.0.0",
   "testCases": {
     "deploy-time-substitution-integ-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "deploy-time-substitution-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "deploytimesubstitutionintegtestDefaultTestDeployAssertCBBB427B"
     }
-  }
+  },
+  "minimumCliVersion": "2.1025.0"
 }

@@ -202,6 +202,11 @@ export class Runtime {
   });
 
   /**
+   * The latest Python version currently available in ALL regions.
+   */
+  public static readonly PYTHON_LATEST = this.PYTHON_3_13;
+
+  /**
    * The Java 8 runtime (java8)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Java runtime.
    */

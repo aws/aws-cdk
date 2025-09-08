@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "testCases": {
     "integ-pipeline-cfn-cross-account/DefaultTest": {
       "stacks": [
@@ -10,5 +10,5 @@
       "assertionStackName": "integpipelinecfncrossaccountDefaultTestDeployAssertC7E37541"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1025.0"
 }

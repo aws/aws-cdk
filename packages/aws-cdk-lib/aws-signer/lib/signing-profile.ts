@@ -1,8 +1,11 @@
 import { Construct } from 'constructs';
 import { CfnSigningProfile } from './signer.generated';
-import { Duration, IResource, Resource, Stack } from '../../core';
+import { Duration, FeatureFlags, IResource, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as cxapi from '../../cx-api';
+
+// Feature flag is defined in cx-api
 
 /**
  * Platforms that are allowed with signing config.
@@ -144,7 +147,7 @@ export class SigningProfile extends Resource implements ISigningProfile {
    * @param id The construct's name.
    * @param attrs A `SigningProfileAttributes` object.
    */
-  public static fromSigningProfileAttributes( scope: Construct, id: string, attrs: SigningProfileAttributes): ISigningProfile {
+  public static fromSigningProfileAttributes(scope: Construct, id: string, attrs: SigningProfileAttributes): ISigningProfile {
     class Import extends Resource implements ISigningProfile {
       public readonly signingProfileArn: string;
       public readonly signingProfileName = attrs.signingProfileName;
@@ -176,14 +179,15 @@ export class SigningProfile extends Resource implements ISigningProfile {
   public readonly signingProfileVersionArn: string;
 
   constructor(scope: Construct, id: string, props: SigningProfileProps) {
-    super(scope, id, {
-      physicalName: props.signingProfileName,
-    });
+    super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const resource = new CfnSigningProfile( this, 'Resource', {
+    const useProfileNameInCfn = FeatureFlags.of(this).isEnabled(cxapi.SIGNER_PROFILE_NAME_PASSED_TO_CFN);
+
+    const resource = new CfnSigningProfile(this, 'Resource', {
       platformId: props.platform.platformId,
+      profileName: useProfileNameInCfn ? props.signingProfileName : undefined,
       signatureValidityPeriod: props.signatureValidity ? {
         type: 'DAYS',
         value: props.signatureValidity?.toDays(),
@@ -191,7 +195,7 @@ export class SigningProfile extends Resource implements ISigningProfile {
         type: 'MONTHS',
         value: 135,
       },
-    } );
+    });
 
     this.signingProfileArn = resource.attrArn;
     this.signingProfileName = resource.attrProfileName;

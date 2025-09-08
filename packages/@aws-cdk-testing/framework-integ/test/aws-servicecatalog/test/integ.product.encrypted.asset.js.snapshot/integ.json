@@ -1,6 +1,6 @@
 {
   "enableLookups": true,
-  "version": "41.0.0",
+  "version": "48.0.0",
   "testCases": {
     "integ-product-encrypted-asset/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "integ-product-encrypted-asset/DefaultTest/DeployAssert",
       "assertionStackName": "integproductencryptedassetDefaultTestDeployAssertCD64745E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1025.0"
 }

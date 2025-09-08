@@ -1,0 +1,15 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "TableWithGrantIntegTest/DefaultTest": {
+      "stacks": [
+        "grant-read-table",
+        "grant-write-table",
+        "grant-read-write-table"
+      ],
+      "assertionStack": "TableWithGrantIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "TableWithGrantIntegTestDefaultTestDeployAssertE9880469"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}

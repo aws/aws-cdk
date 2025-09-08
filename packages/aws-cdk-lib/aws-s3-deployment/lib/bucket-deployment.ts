@@ -107,7 +107,7 @@ export interface BucketDeploymentProps {
    *
    * @default - No invalidation occurs
    */
-  readonly distribution?: cloudfront.IDistribution;
+  readonly distribution?: cloudfront.IDistributionRef;
 
   /**
    * The file paths to invalidate in the CloudFront distribution.
@@ -115,6 +115,17 @@ export interface BucketDeploymentProps {
    * @default - All files under the destination bucket key prefix will be invalidated.
    */
   readonly distributionPaths?: string[];
+
+  /**
+   * In case of using a cloudfront distribtuion, if this property is set to false then the custom resource
+   * will not wait and verify for Cloudfront invalidation to complete. This may speed up deployment and avoid
+   * intermittent Cloudfront issues. However, this is risky and not recommended as cache invalidation
+   * can silently fail.
+   *
+   * @see https://github.com/aws/aws-cdk/issues/15891
+   * @default true
+   */
+  readonly waitForDistributionInvalidation?: boolean;
 
   /**
    * The number of days that the lambda function's log events are kept in CloudWatch Logs.
@@ -448,6 +459,7 @@ export class BucketDeployment extends Construct {
         }, { omitEmptyArray: true }),
         DestinationBucketName: this.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
+        WaitForDistributionInvalidation: props.waitForDistributionInvalidation ?? true,
         RetainOnDelete: props.retainOnDelete,
         Extract: props.extract,
         Prune: props.prune ?? true,
@@ -455,7 +467,7 @@ export class BucketDeployment extends Construct {
         Include: props.include,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
-        DistributionId: props.distribution?.distributionId,
+        DistributionId: props.distribution?.distributionRef.distributionId,
         DistributionPaths: props.distributionPaths,
         SignContent: props.signContent,
         OutputObjectKeys: props.outputObjectKeys ?? true,
@@ -945,8 +957,9 @@ export interface UserDefinedObjectMetadata {
 }
 
 function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
+  const resolveName = (config: SourceConfig) => JSON.stringify(stack.resolve(config.bucket.bucketName));
   return (
-    JSON.stringify(stack.resolve(a.bucket.bucketName)) === JSON.stringify(stack.resolve(b.bucket.bucketName))
+    resolveName(a) === resolveName(b)
     && a.zipObjectKey === b.zipObjectKey
     && a.markers === undefined && b.markers === undefined);
 }

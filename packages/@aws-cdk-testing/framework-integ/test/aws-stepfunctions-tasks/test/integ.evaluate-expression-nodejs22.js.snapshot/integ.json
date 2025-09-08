@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "EvaluateExpressionNodejs22/DefaultTest": {
+      "stacks": [
+        "evaluate-expression-nodejs22"
+      ],
+      "assertionStack": "EvaluateExpressionNodejs22/DefaultTest/DeployAssert",
+      "assertionStackName": "EvaluateExpressionNodejs22DefaultTestDeployAssert27FE8CA6"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -205,5 +205,20 @@ describe('ResponseHeadersPolicy', () => {
         },
       })).toThrow(/accessControlAllowMethods contains unexpected method name/);
     });
+
+    test.each([
+      [['*']],
+      [['X-Custom-*', 'Authorization']],
+    ])('throws if accessControlAllowHeaders contains wildcard when accessControlAllowCredentials is true', (headers) => {
+      expect(() => new ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
+        corsBehavior: {
+          accessControlAllowCredentials: true,
+          accessControlAllowHeaders: headers,
+          accessControlAllowMethods: ['GET'],
+          accessControlAllowOrigins: ['https://example.com'],
+          originOverride: true,
+        },
+      })).toThrow('accessControlAllowHeaders cannot contain "*" or headers with "*" when accessControlAllowCredentials is true');
+    });
   });
 });

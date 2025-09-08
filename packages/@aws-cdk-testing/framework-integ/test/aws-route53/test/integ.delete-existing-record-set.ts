@@ -23,7 +23,6 @@ class TestStack extends Stack {
       ttl: Duration.hours(2),
       zone: hostedZone,
       recordName: 'integ',
-      deleteExisting: true,
     });
     newRecord.node.addDependency(existingRecord);
   }

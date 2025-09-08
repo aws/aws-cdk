@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "aws-cdk-rds-read-replica-with-allocated-storage/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "b2de3133e15ae36c38efab7ca59a637776b7d6b9371675da0b73296c8ac2567e": {
+    "16dae2c91cee4a6595d6cf971013f164320d5962c2e1fbd5a46f752fb0d2c0dd": {
       "displayName": "aws-cdk-rds-read-replica-with-allocated-storage Template",
       "source": {
         "path": "aws-cdk-rds-read-replica-with-allocated-storage.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-30a9b5e4": {
+        "current_account-current_region-3ae4dcc5": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b2de3133e15ae36c38efab7ca59a637776b7d6b9371675da0b73296c8ac2567e.json",
+          "objectKey": "16dae2c91cee4a6595d6cf971013f164320d5962c2e1fbd5a46f752fb0d2c0dd.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

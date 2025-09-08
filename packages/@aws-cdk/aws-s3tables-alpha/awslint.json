@@ -5,6 +5,8 @@
     "duration-prop-name:@aws-cdk/aws-s3tables-alpha.UnreferencedFileRemoval.noncurrentDays",
     "duration-prop-type:@aws-cdk/aws-s3tables-alpha.UnreferencedFileRemoval.unreferencedDays",
     "duration-prop-name:@aws-cdk/aws-s3tables-alpha.UnreferencedFileRemoval.unreferencedDays",
-    "attribute-tag:@aws-cdk/aws-s3tables-alpha.TableBucket.tableBucketPolicy"
+    "attribute-tag:@aws-cdk/aws-s3tables-alpha.TableBucket.tableBucketPolicy",
+    "attribute-tag:@aws-cdk/aws-s3tables-alpha.Table.tablePolicy",
+    "props-physical-name:@aws-cdk/aws-s3tables-alpha.TablePolicyProps"
   ]
 }

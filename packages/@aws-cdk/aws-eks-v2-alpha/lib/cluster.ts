@@ -371,7 +371,7 @@ export interface ClusterCommonOptions {
    *            all etcd volumes used by Amazon EKS are encrypted at the disk-level
    *            using AWS-Managed encryption keys.
    */
-  readonly secretsEncryptionKey?: kms.IKey;
+  readonly secretsEncryptionKey?: kms.IKeyRef;
 
   /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
@@ -675,6 +675,15 @@ export class KubernetesVersion {
    * `@aws-cdk/lambda-layer-kubectl-v32`.
    */
   public static readonly V1_32 = KubernetesVersion.of('1.32');
+
+  /**
+   * Kubernetes version 1.33
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV33Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v33`.
+   */
+  public static readonly V1_33 = KubernetesVersion.of('1.33');
 
   /**
    * Custom cluster version
@@ -1205,7 +1214,7 @@ export class Cluster extends ClusterBase {
       ...(props.secretsEncryptionKey ? {
         encryptionConfig: [{
           provider: {
-            keyArn: props.secretsEncryptionKey.keyArn,
+            keyArn: props.secretsEncryptionKey.keyRef.keyArn,
           },
           resources: ['secrets'],
         }],
