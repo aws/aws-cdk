@@ -1,8 +1,9 @@
-import { EventType, NotificationKeyFilter } from './bucket';
+import { Node } from 'constructs';
+import { Bucket, EventType, IBucket, NotificationKeyFilter } from './bucket';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
-import { IBucketRef } from './s3.generated';
+import { BucketReference, CfnBucket, IBucketRef } from './s3.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 
@@ -175,5 +176,59 @@ export class BucketFactories {
       });
     }
     cb(this.notifications);
+  }
+}
+
+/**
+ * Reflection utilities for CfnBucket.
+ */
+export class BucketReflector implements IBucketReflect {
+  private readonly bucket: IBucket;
+  constructor(cfnBucket: CfnBucket) {
+    this.bucket = Bucket.fromCfnBucket(cfnBucket);
+  }
+
+  public get bucketDomainName(): string {
+    return this.bucket.bucketDomainName;
+  }
+
+  public get bucketDualStackDomainName(): string {
+    return this.bucket.bucketDualStackDomainName;
+  }
+
+  public get bucketRegionalDomainName(): string {
+    return this.bucket.bucketRegionalDomainName;
+  }
+
+  public get bucketWebsiteDomainName(): string {
+    return this.bucket.bucketWebsiteDomainName;
+  }
+
+  public get bucketWebsiteUrl(): string {
+    return this.bucket.bucketWebsiteUrl;
+  }
+
+  public get node(): Node {
+    return this.bucket.node;
+  }
+
+  public get bucketRef(): BucketReference {
+    return this.bucket.bucketRef;
+  }
+
+  public get isWebsite(): boolean {
+    return this.bucket.isWebsite ?? false;
+  }
+
+  public get encryptionKey(): kms.IKey | undefined {
+    return this.bucket.encryptionKey;
+  }
+
+  public get policy(): BucketPolicy | undefined {
+    return this.bucket.policy;
+  }
+
+  public get replicationRoleArn(): string | undefined {
+    return this.bucket.replicationRoleArn;
   }
 }
