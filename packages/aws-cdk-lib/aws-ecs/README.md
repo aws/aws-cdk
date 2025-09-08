@@ -1680,7 +1680,7 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
   securityGroups: [new ec2.SecurityGroup(this, 'MISecurityGroup', { vpc })],
   instanceRequirements: {
     vCpuCountMin: 1,
-    memoryMiBMin: cdk.Size.gibibytes(2),
+    memoryMiBMin: Size.gibibytes(2),
     cpuManufacturers: [ecs.CpuManufacturer.INTEL],
     acceleratorManufacturers: [ecs.AcceleratorManufacturer.NVIDIA],
   },
@@ -1725,8 +1725,8 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
     // Required: CPU and memory constraints
     vCpuCountMin: 2,
     vCpuCountMax: 8,
-    memoryMiBMin: cdk.Size.gibibytes(4),
-    memoryMiBMax: cdk.Size.gibibytes(32),
+    memoryMiBMin: Size.gibibytes(4),
+    memoryMiBMax: Size.gibibytes(32),
     
     // CPU preferences
     cpuManufacturers: [ecs.CpuManufacturer.INTEL, ecs.CpuManufacturer.AMD],
