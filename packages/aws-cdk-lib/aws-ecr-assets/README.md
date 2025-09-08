@@ -163,6 +163,10 @@ This will instruct the toolkit to add the tarball as a file asset. During deploy
 from `local-image.tar`, push it to an Amazon ECR repository and wire the name of the repository as CloudFormation parameters
 to your stack.
 
+Similar to `DockerImageAsset`, you can set the `CDK_DOCKER` environment variable to provide a custom Docker executable 
+command or path. This may be needed when building in environments where the standard docker cannot be executed or when 
+using alternative container runtimes like Finch.
+
 ## Publishing images to ECR repositories
 
 `DockerImageAsset` is designed for seamless build & consumption of image assets by CDK code deployed to multiple environments
