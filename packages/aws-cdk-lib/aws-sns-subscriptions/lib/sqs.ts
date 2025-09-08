@@ -62,6 +62,16 @@ export class SqsSubscription implements sns.ITopicSubscription {
       },
     })).policyDependable;
 
+    // Prevent circular dependency if restrictSqsDescryption flag is enabled and same KMS key is used for sqs and sns
+    if (this.queue.encryptionMasterKey === topic.masterKey &&
+      FeatureFlags.of(topic).isEnabled(cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY)) {
+        // Throw error: restrictSqsDescryption flag cannot be used with shared KMS key
+        throw new ValidationError(
+          'Cannot use restrictSqsDescryption flag with shared KMS key. Use separate keys or disable the flag.',
+          topic
+        );
+    }
+
     // if the queue is encrypted, add a statement to the key resource policy
     // which allows this topic to decrypt KMS keys
     if (this.queue.encryptionMasterKey) {
