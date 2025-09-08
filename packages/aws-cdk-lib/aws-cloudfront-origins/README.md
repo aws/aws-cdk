@@ -603,7 +603,7 @@ const origin = new origins.HttpOrigin('www.example.com', {
   ipAddressType: cloudfront.OriginIpAddressType.IPV6, // IPv4, IPv6, or DUALSTACK
 });
 
-new cloudfront.Distribution(this, 'myDist', {
+new cloudfront.Distribution(this, 'Distribution', {
   defaultBehavior: { origin },
 });
 ```
