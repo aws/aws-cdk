@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b32831a4f2ae154a4fd6203a1621e74e1c625488442d996f8cf38cd6030f7f48.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3a0b6a7d4f30e3a8c8d02b52c7efd4ea71bafcb03aed02f21d9ff1ac6210d5a8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -321,6 +321,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
+          }
+        ],
+        "/eks-pod-identities/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/eks-pod-identities/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
@@ -996,6 +1002,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "NodeProxyAgentLayer924C1971"
+          }
+        ],
+        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler": [
@@ -2065,6 +2077,12 @@
             "data": "ProviderframeworkonEvent83C1D0A7"
           }
         ],
+        "/eks-pod-identities/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/eks-pod-identities/@aws-cdk--aws-eks.KubectlProvider/ekspodidentitiesawscdkawseksKubectlProviderframeworkonEvent98E60426Arn": [
           {
             "type": "aws:cdk:logicalId",
@@ -2696,5 +2714,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1025.0"
+  "minimumCliVersion": "2.1027.0"
 }
