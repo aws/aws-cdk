@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "SubscriptionFilterReplacementTest/DefaultTest": {
+      "stacks": [
+        "SubscriptionFilterReplacementStack"
+      ],
+      "assertionStack": "SubscriptionFilterReplacementTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SubscriptionFilterReplacementTestDefaultTestDeployAssert"
+    }
+  }
+}

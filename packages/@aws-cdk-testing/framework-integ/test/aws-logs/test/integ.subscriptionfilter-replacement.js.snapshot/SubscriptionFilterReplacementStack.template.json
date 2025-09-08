@@ -1,0 +1,55 @@
+{
+  "Resources": {
+    "TestLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/test/subscription-filter-replacement",
+        "RetentionInDays": 1
+      }
+    },
+    "DestinationFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Runtime": "nodejs18.x",
+        "Handler": "index.handler",
+        "Code": {
+          "ZipFile": "\n        exports.handler = async (event) => {\n          console.log('Received log events:', JSON.stringify(event, null, 2));\n          return { statusCode: 200 };\n        };\n      "
+        }
+      }
+    },
+    "DefaultSubscriptionFilter": {
+      "Type": "AWS::Logs::SubscriptionFilter",
+      "Properties": {
+        "LogGroupName": {
+          "Ref": "TestLogGroup"
+        },
+        "FilterName": "default-filter",
+        "FilterPattern": "",
+        "DestinationArn": {
+          "Fn::GetAtt": [
+            "DestinationFunction",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "DeleteBeforeCreateFilter": {
+      "Type": "AWS::Logs::SubscriptionFilter",
+      "Properties": {
+        "LogGroupName": {
+          "Ref": "TestLogGroup"
+        },
+        "FilterName": "delete-before-create-filter",
+        "FilterPattern": "[timestamp, request_id, level=\"ERROR\"]",
+        "DestinationArn": {
+          "Fn::GetAtt": [
+            "DestinationFunction",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    }
+  }
+}

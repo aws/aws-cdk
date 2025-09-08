@@ -166,6 +166,30 @@ new logs.SubscriptionFilter(this, 'Subscription', {
 });
 ```
 
+### Replacement Strategy
+
+When updating subscription filters, you can control the CloudFormation replacement behavior to avoid hitting AWS CloudWatch Logs' 2-filter limit per log group. By default, CloudFormation uses a "create before delete" strategy which can temporarily exceed the limit during updates.
+
+```ts
+import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
+
+declare const fn: lambda.Function;
+declare const logGroup: logs.LogGroup;
+
+new logs.SubscriptionFilter(this, 'Subscription', {
+  logGroup,
+  destination: new destinations.LambdaDestination(fn),
+  filterPattern: logs.FilterPattern.allTerms("ERROR", "MainThread"),
+  filterName: 'ErrorInMainThread',
+  // Use DELETE_BEFORE_CREATE to avoid the 2-filter limit during updates
+  replacementStrategy: logs.ReplacementStrategy.DELETE_BEFORE_CREATE,
+});
+```
+
+The `ReplacementStrategy` enum provides two options:
+- `CREATE_BEFORE_DELETE` (default): Standard CloudFormation behavior, creates new resource before deleting old one
+- `DELETE_BEFORE_CREATE`: Deletes the old resource before creating the new one, avoiding temporary limit violations but causing a brief gap in log processing
+
 ## Metric Filters
 
 CloudWatch Logs can extract and emit metrics based on a textual log stream.
