@@ -61,16 +61,16 @@
         }
       }
     },
-    "5035e53acbfc8c110e7714d36624e93aa200f85d9e93b0eadf7198f3018696f9": {
+    "b5f4c0547489f25e12f2da31435bf14b73b2b547d98c7ba0217c9d9a98ad2322": {
       "displayName": "CrossAccountSourceStack Template",
       "source": {
         "path": "CrossAccountSourceStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "234567890123-test-region-71e06860": {
+        "234567890123-test-region-e47f4f9e": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
-          "objectKey": "5035e53acbfc8c110e7714d36624e93aa200f85d9e93b0eadf7198f3018696f9.json",
+          "objectKey": "b5f4c0547489f25e12f2da31435bf14b73b2b547d98c7ba0217c9d9a98ad2322.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-test-region"
         }

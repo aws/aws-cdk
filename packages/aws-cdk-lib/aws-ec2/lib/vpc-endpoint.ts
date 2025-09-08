@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
-import { CfnVPCEndpoint } from './ec2.generated';
+import { CfnVPCEndpoint, IVPCEndpointRef, VPCEndpointReference } from './ec2.generated';
 import { Peer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -15,7 +15,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A VPC endpoint.
  */
-export interface IVpcEndpoint extends IResource {
+export interface IVpcEndpoint extends IResource, IVPCEndpointRef {
   /**
    * The VPC endpoint identifier.
    * @attribute
@@ -27,6 +27,12 @@ export abstract class VpcEndpoint extends Resource implements IVpcEndpoint {
   public abstract readonly vpcEndpointId: string;
 
   protected policyDocument?: iam.PolicyDocument;
+
+  public get vpcEndpointRef(): VPCEndpointReference {
+    return {
+      vpcEndpointId: this.vpcEndpointId,
+    };
+  }
 
   /**
    * Adds a statement to the policy document of the VPC endpoint. The statement
@@ -981,6 +987,11 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
         defaultPort: Port.tcp(attrs.port),
         securityGroups,
       });
+      public get vpcEndpointRef(): VPCEndpointReference {
+        return {
+          vpcEndpointId: this.vpcEndpointId,
+        };
+      }
     }
 
     return new Import(scope, id);
