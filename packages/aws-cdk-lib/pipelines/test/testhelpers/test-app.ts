@@ -71,7 +71,7 @@ export class AppWithOutput extends Stage {
     super(scope, id, props);
 
     const stack = new BucketStack(this, props.stackId ?? 'Stack');
-    this.theOutput = new CfnOutput(stack, 'MyOutput', { value: stack.bucket.bucketName });
+    this.theOutput = new CfnOutput(stack, 'MyOutput', { value: stack.bucket.bucketRef.bucketName });
   }
 }
 
@@ -122,7 +122,7 @@ export class ThreeStackApp extends Stage {
  * It contains a single Bucket. Such robust. Much uptime.
  */
 export class BucketStack extends Stack {
-  public readonly bucket: s3.IBucket;
+  public readonly bucket: s3.IBucketRef;
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -165,7 +165,7 @@ export class StageWithStackOutput extends Stage {
     const stack = new BucketStack(this, 'Stack');
 
     this.output = new CfnOutput(stack, 'BucketName', {
-      value: stack.bucket.bucketName,
+      value: stack.bucket.bucketRef.bucketName,
     });
   }
 }
