@@ -28,7 +28,7 @@
      "Key": "\"my-json/secret-config.json\""
     },
     "flattenResponse": "false",
-    "salt": "1756990213284"
+    "salt": "1757338580723"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -175,7 +175,7 @@
      "Key": "\"my-json/secret-config-no-escape.json\""
     },
     "flattenResponse": "false",
-    "salt": "1756990213285"
+    "salt": "1757338580723"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -212,7 +212,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1756990213286"
+    "salt": "1757338580724"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -514,7 +514,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1756990213288"
+    "salt": "1757338580726"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -798,6 +798,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"

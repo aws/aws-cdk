@@ -27,7 +27,7 @@
      "Key": "\"sample.txt\""
     },
     "flattenResponse": "false",
-    "salt": "1756989967534"
+    "salt": "1757338662972"
    },
    "DependsOn": [
     "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
@@ -164,7 +164,7 @@
      "Body": "\"HelloWorld\""
     },
     "flattenResponse": "false",
-    "salt": "1756989967535"
+    "salt": "1757338662973"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -199,7 +199,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756989967536"
+    "salt": "1757338662973"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -568,6 +568,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"

@@ -28,7 +28,7 @@
      "Body": "\"a,b,c\\n1,2,3\\n4,5,6\""
     },
     "flattenResponse": "false",
-    "salt": "1756990233400"
+    "salt": "1757338568681"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -170,7 +170,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1756990233402"
+    "salt": "1757338568684"
    },
    "DependsOn": [
     "AwsApiCallS3putObject9f7ed865afc47100b3c2a9fea2cf51ee"
@@ -212,7 +212,7 @@
      "includedData": "\"METADATA_ONLY\""
     },
     "flattenResponse": "false",
-    "salt": "1756990233403"
+    "salt": "1757338568684"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsstartExecution1d723c8b7e407f0d96f49983a50bd3ab"
@@ -594,6 +594,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"

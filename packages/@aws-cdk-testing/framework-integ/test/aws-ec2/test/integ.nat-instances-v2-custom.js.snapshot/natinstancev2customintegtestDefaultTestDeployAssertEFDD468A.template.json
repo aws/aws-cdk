@@ -34,7 +34,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1756989993359"
+    "salt": "1757338652414"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -145,7 +145,7 @@
      "Key": "\"hello.txt\""
     },
     "flattenResponse": "false",
-    "salt": "1756989993363"
+    "salt": "1757338652417"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -288,6 +288,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"

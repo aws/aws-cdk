@@ -35,7 +35,7 @@
      "taskArns.0",
      "taskArns.0"
     ],
-    "salt": "1756990220613"
+    "salt": "1757338575726"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -431,7 +431,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756990220617"
+    "salt": "1757338575730"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -481,7 +481,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756990220618"
+    "salt": "1757338575730"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -749,6 +749,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"

@@ -15,16 +15,16 @@
         }
       }
     },
-    "fd4d598e884c7cb9d451ab6f13ec6ad7b9e8369c39352c948e3d848286db3cda": {
+    "01ea7d785529beb8ccb58bf850535db916d096ace7eb29249d0535a6f9626587": {
       "displayName": "aws-cdk-codepipeline-codecommit-custom-event Template",
       "source": {
         "path": "aws-cdk-codepipeline-codecommit-custom-event.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-5559bafe": {
+        "current_account-current_region-a54d2d7a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "fd4d598e884c7cb9d451ab6f13ec6ad7b9e8369c39352c948e3d848286db3cda.json",
+          "objectKey": "01ea7d785529beb8ccb58bf850535db916d096ace7eb29249d0535a6f9626587.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

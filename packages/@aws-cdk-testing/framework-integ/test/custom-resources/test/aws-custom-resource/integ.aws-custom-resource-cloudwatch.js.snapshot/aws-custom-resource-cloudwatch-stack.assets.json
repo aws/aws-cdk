@@ -15,16 +15,16 @@
         }
       }
     },
-    "69ec2d655c624215befdcdf24f627ddedb403e99da48d1069706236a3ea8e5df": {
+    "786eac366a8fb9554741c8b777f1968ede035231ae10147646b395abceb8d629": {
       "displayName": "aws-custom-resource-cloudwatch-stack Template",
       "source": {
         "path": "aws-custom-resource-cloudwatch-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-7c024d8a": {
+        "current_account-current_region-7a15688d": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "69ec2d655c624215befdcdf24f627ddedb403e99da48d1069706236a3ea8e5df.json",
+          "objectKey": "786eac366a8fb9554741c8b777f1968ede035231ae10147646b395abceb8d629.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

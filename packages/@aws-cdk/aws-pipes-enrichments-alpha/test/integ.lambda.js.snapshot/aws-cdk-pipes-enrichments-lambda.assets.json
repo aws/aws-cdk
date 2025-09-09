@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "29b845727daf8f5e386fcb8c32d772cf9218369260b7c503b3d86d1515c149cb": {
+    "23fa45ae7003b67196872fecaa825be503bde31cb45da5db988220fd36935877": {
       "displayName": "aws-cdk-pipes-enrichments-lambda Template",
       "source": {
         "path": "aws-cdk-pipes-enrichments-lambda.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-feb2e5b5": {
+        "current_account-current_region-fa254f96": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "29b845727daf8f5e386fcb8c32d772cf9218369260b7c503b3d86d1515c149cb.json",
+          "objectKey": "23fa45ae7003b67196872fecaa825be503bde31cb45da5db988220fd36935877.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
