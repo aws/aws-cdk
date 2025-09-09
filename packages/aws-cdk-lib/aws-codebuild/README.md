@@ -376,6 +376,7 @@ can use the `environment` property to customize the build environment:
   details on how to define build images.
 * `certificate` defines the location of a PEM encoded certificate to import.
 * `computeType` defines the instance type used for the build.
+* `dockerServer` defines the docker server used for the build.
 * `privileged` can be set to `true` to allow privileged access.
 * `environmentVariables` can be set at this level (and also at the project
   level).

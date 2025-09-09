@@ -5,7 +5,7 @@ import { Cache } from './cache';
 import { CodeBuildMetrics } from './codebuild-canned-metrics.generated';
 import { CfnProject } from './codebuild.generated';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
-import { ComputeType } from './compute-type';
+import { ComputeType, DockerServerComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
 import { IFileSystemLocation } from './file-location';
 import { IFleet } from './fleet';
@@ -1420,6 +1420,10 @@ export class Project extends ProjectBase {
       environmentVariables: hasEnvironmentVars
         ? Project.serializeEnvVariables(vars, props.checkSecretsInPlainTextEnvVariables ?? true, this)
         : undefined,
+      dockerServer: env.dockerServer ? {
+        computeType: env.dockerServer.computeType,
+        securityGroupIds: env.dockerServer.securityGroups?.map(e => e.securityGroupId),
+      } : undefined,
     };
   }
 
@@ -1663,6 +1667,15 @@ export interface BuildEnvironment {
   readonly computeType?: ComputeType;
 
   /**
+   * The Docker server configuration CodeBuild use to build your Docker image.
+   *
+   * @note Security groups configured for Docker servers should allow ingress network traffic
+   * from the VPC configured in the project. They should allow ingress on port 9876.
+   * @default - Doesn't use remote docker server
+   */
+  readonly dockerServer?: DockerServerOptions;
+
+  /**
    * Fleet resource for a reserved capacity CodeBuild project.
    *
    * Fleets allow for process builds or tests to run immediately and reduces build durations,
@@ -1698,6 +1711,26 @@ export interface BuildEnvironment {
    * The environment variables that your builds can use.
    */
   readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
+}
+
+/**
+ * The Docker server configuration CodeBuild use to build your Docker image.
+ */
+export interface DockerServerOptions {
+  /**
+   * The type of compute to use for the docker server.
+   * See the `DockerServerComputeType` enum for the possible values.
+   */
+  readonly computeType: DockerServerComputeType;
+
+  /**
+   * A list of maximum 5 security groups.
+   *
+   * @note Security groups configured for Docker servers should allow ingress network traffic
+   * from the VPC configured in the project. They should allow ingress on port 9876.
+   * @default - no security group
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 /**
