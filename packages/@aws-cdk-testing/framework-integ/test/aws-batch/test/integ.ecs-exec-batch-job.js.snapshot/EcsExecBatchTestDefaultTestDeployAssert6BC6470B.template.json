@@ -29,7 +29,7 @@
     "outputPaths": [
      "computeEnvironments.0.ecsClusterArn"
     ],
-    "salt": "1757083913295"
+    "salt": "1757338677442"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -208,7 +208,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4e818c462cf84c112f84262d376efd099d66da03f7a2aabae64c50c0511de276.zip"
+     "S3Key": "53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -265,7 +265,7 @@
     "outputPaths": [
      "jobId"
     ],
-    "salt": "1757083913296"
+    "salt": "1757338677443"
    },
    "DependsOn": [
     "AwsApiCallBatchdescribeComputeEnvironments5ec6dfa5172f58141e1b4b8a564b2a0a"
@@ -502,7 +502,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4e818c462cf84c112f84262d376efd099d66da03f7a2aabae64c50c0511de276.zip"
+     "S3Key": "53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -552,7 +552,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4e818c462cf84c112f84262d376efd099d66da03f7a2aabae64c50c0511de276.zip"
+     "S3Key": "53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -602,7 +602,7 @@
      "jobs.0.status",
      "jobs.0.container.taskArn"
     ],
-    "salt": "1757083913298"
+    "salt": "1757338677445"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -774,7 +774,7 @@
      "command": "\"/bin/bash\""
     },
     "flattenResponse": "false",
-    "salt": "1757083913300"
+    "salt": "1757338677447"
    },
    "DependsOn": [
     "AwsApiCallBatchdescribeJobs3024f89ea6cbe73852b34b3ad4b788cf",
@@ -958,7 +958,7 @@
     "outputPaths": [
      "computeEnvironments.0.ecsClusterArn"
     ],
-    "salt": "1757083913300"
+    "salt": "1757338677447"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1008,7 +1008,7 @@
     "outputPaths": [
      "jobId"
     ],
-    "salt": "1757083913301"
+    "salt": "1757338677448"
    },
    "DependsOn": [
     "AwsApiCallBatchdescribeComputeEnvironments384355fec4ab3cf9ea1cdc6261cea704"
@@ -1181,7 +1181,7 @@
      "jobs.0.status",
      "jobs.0.container.taskArn"
     ],
-    "salt": "1757083913301"
+    "salt": "1757338677448"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1353,7 +1353,7 @@
      "command": "\"/bin/bash\""
     },
     "flattenResponse": "false",
-    "salt": "1757083913302"
+    "salt": "1757338677449"
    },
    "DependsOn": [
     "AwsApiCallBatchdescribeJobsdce098d6da0d99b096d5480c1155f3b0",
@@ -1636,6 +1636,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"
