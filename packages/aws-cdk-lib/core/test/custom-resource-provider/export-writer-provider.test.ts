@@ -159,6 +159,12 @@ describe('export writer provider', () => {
           'us-isob-west-1': {
             value: 'nodejs18.x',
           },
+          'us-isof-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-isof-south-1': {
+            value: 'nodejs22.x',
+          },
           'us-west-1': {
             value: 'nodejs22.x',
           },
@@ -414,6 +420,12 @@ describe('export writer provider', () => {
           },
           'us-isob-west-1': {
             value: 'nodejs18.x',
+          },
+          'us-isof-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-isof-south-1': {
+            value: 'nodejs22.x',
           },
           'us-west-1': {
             value: 'nodejs22.x',
@@ -807,6 +819,12 @@ describe('export writer provider', () => {
           'us-isob-west-1': {
             value: 'nodejs18.x',
           },
+          'us-isof-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-isof-south-1': {
+            value: 'nodejs22.x',
+          },
           'us-west-1': {
             value: 'nodejs22.x',
           },
@@ -1063,6 +1081,12 @@ describe('export writer provider', () => {
           },
           'us-isob-west-1': {
             value: 'nodejs18.x',
+          },
+          'us-isof-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-isof-south-1': {
+            value: 'nodejs22.x',
           },
           'us-west-1': {
             value: 'nodejs22.x',
