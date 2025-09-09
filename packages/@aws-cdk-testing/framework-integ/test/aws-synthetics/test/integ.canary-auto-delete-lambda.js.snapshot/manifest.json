@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/156756c396e9ace968b9197a4297fa69896fdb75be955864ed385727ec9a69b3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e378a4e7cf7823ce6ceaf565358dd7bf5c422eaefcb1533a015efa3dec26e94e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -116,6 +116,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CanaryAutoDeleteUnderlyingResourcesCustomResource76464216"
+          }
+        ],
+        "/cdk-synthetics-canary-auto-delete/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/cdk-synthetics-canary-auto-delete/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider": [
@@ -465,6 +471,10 @@
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "recommendedValue": true,
+            "explanation": "Disable implicit openListener when custom security groups are provided"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
@@ -918,5 +928,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1024.0"
+  "minimumCliVersion": "2.1027.0"
 }
