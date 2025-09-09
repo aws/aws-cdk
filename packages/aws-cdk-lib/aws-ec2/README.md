@@ -2609,6 +2609,42 @@ new ec2.LaunchTemplate(this, 'LaunchTemplate', {
 
 Please note this feature does not support Launch Configurations.
 
+### Capacity Reservations
+
+You can specify [EC2 Capacity Reservations](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html) for your launch template to ensure that EC2 capacity is reserved for your instances:
+
+```ts fixture=with-vpc
+declare const instanceType: ec2.InstanceType;
+
+new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  instanceType,
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  capacityReservationSpecification: {
+    capacityReservationPreference: ec2.CapacityReservationPreference.OPEN,
+    capacityReservationTarget: {
+      capacityReservationId: 'cr-1234567890abcdef0',
+    },
+  },
+});
+```
+
+You can also target a Capacity Reservation resource group:
+
+```ts fixture=with-vpc
+declare const instanceType: ec2.InstanceType;
+
+new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  instanceType,
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  capacityReservationSpecification: {
+    capacityReservationPreference: ec2.CapacityReservationPreference.OPEN,
+    capacityReservationTarget: {
+      capacityReservationResourceGroupArn: 'arn:aws:resource-groups:us-west-2:123456789012:group/my-group',
+    },
+  },
+});
+```
+
 ## Detailed Monitoring
 
 The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](http://aws.amazon.com/cloudwatch/pricing/).
