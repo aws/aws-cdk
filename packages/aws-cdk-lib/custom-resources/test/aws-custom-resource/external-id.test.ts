@@ -1,4 +1,4 @@
-import { Template } from '../../../assertions';
+import { Template, Match } from '../../../assertions';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../lib';
@@ -32,17 +32,17 @@ describe('AwsCustomResource External ID Support', () => {
 
     // THEN
     const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::CloudFormation::CustomResource', {
+    template.hasResourceProperties('Custom::AWS', {
       ServiceToken: {
         'Fn::GetAtt': [
-          'AWS679f53fac002430cb0da5b7982bd2287679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2',
+          Match.anyValue(),
           'Arn',
         ],
       },
       Create: JSON.stringify({
         service: 'STS',
         action: 'GetCallerIdentity',
-        assumedRoleArn: { 'Fn::GetAtt': ['AssumedRole1ABCC5F0', 'Arn'] },
+        assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         externalId: 'test-external-id-123',
         physicalResourceId: { id: 'test-resource' },
         logApiResponseData: true,
@@ -79,11 +79,11 @@ describe('AwsCustomResource External ID Support', () => {
 
     // THEN
     const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::CloudFormation::CustomResource', {
+    template.hasResourceProperties('Custom::AWS', {
       Create: JSON.stringify({
         service: 'STS',
         action: 'GetCallerIdentity',
-        assumedRoleArn: { 'Fn::GetAtt': ['AssumedRole1ABCC5F0', 'Arn'] },
+        assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         externalId: 'create-external-id',
         physicalResourceId: { id: 'test-resource' },
         logApiResponseData: true,
@@ -91,14 +91,14 @@ describe('AwsCustomResource External ID Support', () => {
       Update: JSON.stringify({
         service: 'STS',
         action: 'GetCallerIdentity',
-        assumedRoleArn: { 'Fn::GetAtt': ['AssumedRole1ABCC5F0', 'Arn'] },
+        assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         externalId: 'update-external-id',
         logApiResponseData: true,
       }),
       Delete: JSON.stringify({
         service: 'STS',
         action: 'GetCallerIdentity',
-        assumedRoleArn: { 'Fn::GetAtt': ['AssumedRole1ABCC5F0', 'Arn'] },
+        assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         externalId: 'delete-external-id',
         logApiResponseData: true,
       }),
@@ -121,7 +121,7 @@ describe('AwsCustomResource External ID Support', () => {
 
     // THEN
     const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::CloudFormation::CustomResource', {
+    template.hasResourceProperties('Custom::AWS', {
       Create: JSON.stringify({
         service: 'STS',
         action: 'GetCallerIdentity',
@@ -156,7 +156,7 @@ describe('AwsCustomResource External ID Support', () => {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': ['AssumedRole1ABCC5F0', 'Arn'],
+              'Fn::GetAtt': [Match.anyValue(), 'Arn'],
             },
           },
         ],
@@ -199,11 +199,11 @@ describe('AwsCustomResource External ID Support', () => {
 
     // THEN
     const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::CloudFormation::CustomResource', {
+    template.hasResourceProperties('Custom::AWS', {
       Create: JSON.stringify({
         service: 'STS',
         action: 'GetCallerIdentity',
-        assumedRoleArn: { 'Fn::GetAtt': ['Role13A5C70C1', 'Arn'] },
+        assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         externalId: 'external-1',
         physicalResourceId: { id: 'test-resource' },
         logApiResponseData: true,
@@ -211,7 +211,7 @@ describe('AwsCustomResource External ID Support', () => {
       Update: JSON.stringify({
         service: 'STS',
         action: 'GetCallerIdentity',
-        assumedRoleArn: { 'Fn::GetAtt': ['Role2FEDE8F48', 'Arn'] },
+        assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         externalId: 'external-2',
         logApiResponseData: true,
       }),
@@ -235,11 +235,11 @@ describe('AwsCustomResource External ID Support', () => {
 
     // THEN
     const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::CloudFormation::CustomResource', {
+    template.hasResourceProperties('Custom::AWS', {
       Create: JSON.stringify({
         service: 'STS',
         action: 'GetCallerIdentity',
-        assumedRoleArn: { 'Fn::GetAtt': ['AssumedRole1ABCC5F0', 'Arn'] },
+        assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         physicalResourceId: { id: 'test-resource' },
         logApiResponseData: true,
       }),
@@ -263,11 +263,11 @@ describe('AwsCustomResource External ID Support', () => {
 
     // THEN
     const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::CloudFormation::CustomResource', {
+    template.hasResourceProperties('Custom::AWS', {
       Create: JSON.stringify({
         service: 'STS',
         action: 'GetCallerIdentity',
-        assumedRoleArn: { 'Fn::GetAtt': ['AssumedRole1ABCC5F0', 'Arn'] },
+        assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         externalId: '',
         physicalResourceId: { id: 'test-resource' },
         logApiResponseData: true,
@@ -294,11 +294,11 @@ describe('AwsCustomResource External ID Support', () => {
 
     // THEN
     const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::CloudFormation::CustomResource', {
+    template.hasResourceProperties('Custom::AWS', {
       Create: JSON.stringify({
         service: 'STS',
         action: 'GetCallerIdentity',
-        assumedRoleArn: { 'Fn::GetAtt': ['AssumedRole1ABCC5F0', 'Arn'] },
+        assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         externalId: uuidExternalId,
         physicalResourceId: { id: 'test-resource' },
         logApiResponseData: true,
@@ -339,7 +339,7 @@ describe('AwsCustomResource External ID Support', () => {
 
     // THEN
     const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::CloudFormation::CustomResource', {
+    template.hasResourceProperties('Custom::AWS', {
       Create: JSON.stringify({
         service: 'EC2',
         action: 'DescribeVpcs',

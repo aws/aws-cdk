@@ -6,8 +6,8 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '
 
 /**
  * Integration test for AwsCustomResource External ID support.
- * 
- * This test demonstrates the use of external IDs when assuming roles 
+ *
+ * This test demonstrates the use of external IDs when assuming roles
  * in cross-account scenarios to prevent "confused deputy" attacks.
  */
 
@@ -24,7 +24,7 @@ const externalId = 'test-external-id-12345';
 const roleWithExternalId = new iam.Role(stack, 'RoleWithExternalId', {
   assumedBy: new iam.CompositePrincipal(
     new iam.ServicePrincipal('lambda.amazonaws.com'),
-    new iam.ArnPrincipal('arn:aws:iam::123456789012:role/TestAssumeRole')
+    new iam.ArnPrincipal('arn:aws:iam::123456789012:role/TestAssumeRole'),
   ),
   externalIds: [externalId],
   inlinePolicies: {
