@@ -128,5 +128,3 @@ const testCase = new integ.IntegTest(app, 'DistributedMap', {
 
 setupAssertions(labeledDistributedMapStack, testCase.assertions);
 setupAssertions(unlabeledDistributedMapStack, testCase.assertions);
-
-app.synth();
