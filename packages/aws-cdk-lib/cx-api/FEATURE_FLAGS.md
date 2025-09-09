@@ -756,16 +756,6 @@ the subscribed queue.
 | 2.32.0 | `false` | `true` |
 
 
-⚠️ **Important**: This flag is incompatible with using the same KMS key for both SNS topic and SQS queue encryption. Use separate KMS keys or disable this flag to avoid circular dependency errors.
-
-**Compatible:**
-- Different KMS keys for SNS and SQS
-- AWS-managed encryption
-- Unencrypted resources
-
-**Incompatible:**
-- Same customer-managed KMS key for both SNS topic and SQS queue
-
 ### @aws-cdk/aws-ecs:arnFormatIncludesClusterName
 
 *ARN format used by ECS. In the new ARN format, the cluster name is part of the resource ID.*
