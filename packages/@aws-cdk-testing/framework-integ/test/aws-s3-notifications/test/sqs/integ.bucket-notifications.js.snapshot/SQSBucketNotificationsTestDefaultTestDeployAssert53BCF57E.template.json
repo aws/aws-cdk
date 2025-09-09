@@ -26,7 +26,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756990216823"
+    "salt": "1757338576155"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -146,7 +146,7 @@
      "Body": "\"Some content\""
     },
     "flattenResponse": "false",
-    "salt": "1756990216824"
+    "salt": "1757338576156"
    },
    "DependsOn": [
     "AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4"
@@ -186,7 +186,7 @@
     "outputPaths": [
      "Messages.0.Body.Records.0.s3.object.key"
     ],
-    "salt": "1756990216825"
+    "salt": "1757338576156"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f"
@@ -322,6 +322,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"

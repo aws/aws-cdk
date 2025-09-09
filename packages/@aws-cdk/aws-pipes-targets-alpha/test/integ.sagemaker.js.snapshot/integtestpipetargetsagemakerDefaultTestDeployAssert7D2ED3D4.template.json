@@ -27,7 +27,7 @@
      "MessageBody": "\"Nebraska\""
     },
     "flattenResponse": "false",
-    "salt": "1756989923680"
+    "salt": "1757337793849"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -161,7 +161,7 @@
     "outputPaths": [
      "PipelineExecutionSummaries.0.PipelineExecutionArn"
     ],
-    "salt": "1756989923681"
+    "salt": "1757337793850"
    },
    "DependsOn": [
     "AwsApiCallSQSsendMessagece34a187bbbeaff4047b3759d5ddf254"
@@ -543,6 +543,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"
