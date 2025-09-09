@@ -166,7 +166,7 @@ export class StateGraph {
    * Binds this StateGraph to the StateMachine it defines and updates state machine permissions if there are DistributedMap states.
    */
   public bind(stateMachine: StateMachine) {
-    const distributedMapStates = Array.from(this.allStates)
+    const distributedMapStates = this.getAllStatesInThisAndChildStateGraphs()
       .filter(state => DistributedMap.isDistributedMap(state))
       .map(state => state.toStateJson() as any);
 
@@ -196,6 +196,9 @@ export class StateGraph {
     });
   }
 
+  /**
+   * Helper method for returning executionArn with mapRunLabel
+   */
   private getStateMachineExecutionArnWithLabel(stateMachine: StateMachine, mapRunLabel: string) {
     return Stack.of(stateMachine).formatArn({
       resource: 'execution',
@@ -203,5 +206,26 @@ export class StateGraph {
       resourceName: `${Arn.split(stateMachine.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}/${mapRunLabel}:*`,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+  }
+
+  /**
+   * Returns all the states referenced in this StateGraph and all child StateGraphs
+   */
+  private getAllStatesInThisAndChildStateGraphs(): State[] {
+    const discoveredStateGraphs = new Set<StateGraph>();
+    const stateGraphsToSearch: StateGraph[] = [this];
+
+    // Do a BFS of all sub graphs
+    while (stateGraphsToSearch.length > 0) {
+      const stateGraph = stateGraphsToSearch.pop()!;
+
+      discoveredStateGraphs.add(stateGraph);
+      Array.from(stateGraph.allContainedStates.values())
+        .filter(subGraph => !discoveredStateGraphs.has(subGraph))
+        .forEach(subGraph => stateGraphsToSearch.push(subGraph));
+    }
+
+    return Array.from(discoveredStateGraphs)
+      .flatMap(stateGraph => Array.from(stateGraph.allStates));
   }
 }
