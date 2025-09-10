@@ -168,7 +168,7 @@ export interface EcsFargateLaunchTargetOptions {
    *
    * @default - 'FARGATE' LaunchType with AWS Fargate On-Demand infrastructure is used.
    */
-  readonly capacityProviderStrategy?: ecs.CapacityProviderStrategy[];
+  readonly capacityProviderOptions?: CapacityProviderOptionsBase;
 }
 
 /**
@@ -196,7 +196,87 @@ export interface EcsEc2LaunchTargetOptions {
    *
    * @default - 'EC2' LaunchType is used.
    */
-  readonly capacityProviderStrategy?: ecs.CapacityProviderStrategy[];
+  readonly capacityProviderOptions?: CapacityProviderOptionsBase;
+}
+
+interface CapacityProviderOptions {
+  launchType?: ecs.LaunchType;
+  capacityProviderStrategy?: ecs.CapacityProviderStrategy[];
+}
+
+export abstract class CapacityProviderOptionsBase {
+  /**
+   * WIP
+   */
+  public static none(): NoneCapacityProviderOptions {
+    return new NoneCapacityProviderOptions();
+  }
+
+  /**
+   * WIP
+   */
+  public static custom(capacityProviderStrategy: ecs.CapacityProviderStrategy[]): CustomCapacityProviderOptions {
+    return new CustomCapacityProviderOptions(capacityProviderStrategy);
+  }
+
+  /**
+   * WIP
+   */
+  public static default(): DefaultCapacityProviderOptions {
+    return new DefaultCapacityProviderOptions();
+  }
+
+  /**
+   * @internal
+   */
+  abstract bind(launchType: ecs.LaunchType): CapacityProviderOptions;
+}
+
+export class NoneCapacityProviderOptions extends CapacityProviderOptionsBase {
+  constructor() {
+    super();
+  }
+
+  /**
+   * @internal
+   */
+  bind(launchType: ecs.LaunchType): CapacityProviderOptions {
+    return {
+      launchType: launchType,
+    };
+  }
+}
+
+export class CustomCapacityProviderOptions extends CapacityProviderOptionsBase {
+  constructor(private readonly capacityProviderStrategy: ecs.CapacityProviderStrategy[]) {
+    super();
+
+    if (capacityProviderStrategy && capacityProviderStrategy.length > 20) {
+      throw new cdk.UnscopedValidationError(`Capacity provider strategy can contain a maximum of 20 capacity providers, got ${capacityProviderStrategy.length}`);
+    }
+  }
+
+  /**
+   * @internal
+   */
+  bind(_launchType: ecs.LaunchType): CapacityProviderOptions {
+    return {
+      capacityProviderStrategy: this.capacityProviderStrategy,
+    };
+  }
+}
+
+export class DefaultCapacityProviderOptions extends CapacityProviderOptionsBase {
+  constructor() {
+    super();
+  }
+
+  /**
+   * @internal
+   */
+  bind(_launchType: ecs.LaunchType): CapacityProviderOptions {
+    return {};
+  }
 }
 
 /**
@@ -215,15 +295,13 @@ export class EcsFargateLaunchTarget implements IEcsLaunchTarget {
       throw new ValidationError('Supplied TaskDefinition is not compatible with Fargate', task);
     }
 
-    const capacityProviderStrategy = this.options?.capacityProviderStrategy;
-    if (capacityProviderStrategy && capacityProviderStrategy.length > 20) {
-      throw new ValidationError(`Capacity provider strategy can contain a maximum of 20 capacity providers, got ${capacityProviderStrategy.length}`, task);
-    }
+    const capacityProvider = this.options?.capacityProviderOptions ?? CapacityProviderOptionsBase.none();
+    const bound = capacityProvider.bind(ecs.LaunchType.FARGATE);
 
     return {
       parameters: {
-        LaunchType: (!capacityProviderStrategy || !capacityProviderStrategy.length) ? 'FARGATE' : undefined,
-        CapacityProviderStrategy: capacityProviderStrategy?.map((s) => ({
+        LaunchType: bound.launchType,
+        CapacityProviderStrategy: bound.capacityProviderStrategy?.map((s) => ({
           CapacityProvider: s.capacityProvider,
           Weight: s.weight,
           Base: s.base,
@@ -253,15 +331,13 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
       throw new ValidationError('Cluster for this service needs Ec2 capacity. Call addCapacity() on the cluster.', task);
     }
 
-    const capacityProviderStrategy = this.options?.capacityProviderStrategy;
-    if (capacityProviderStrategy && capacityProviderStrategy.length > 20) {
-      throw new ValidationError(`Capacity provider strategy can contain a maximum of 20 capacity providers, got ${capacityProviderStrategy.length}`, task);
-    }
+    const capacityProvider = this.options?.capacityProviderOptions ?? CapacityProviderOptionsBase.none();
+    const bound = capacityProvider.bind(ecs.LaunchType.FARGATE);
 
     return {
       parameters: {
-        LaunchType: (!capacityProviderStrategy || !capacityProviderStrategy.length) ? 'EC2' : undefined,
-        CapacityProviderStrategy: capacityProviderStrategy?.map((s) => ({
+        LaunchType: bound.launchType,
+        CapacityProviderStrategy: bound.capacityProviderStrategy?.map((s) => ({
           CapacityProvider: s.capacityProvider,
           Weight: s.weight,
           Base: s.base,
