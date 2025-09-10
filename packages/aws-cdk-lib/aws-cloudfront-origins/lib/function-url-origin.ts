@@ -5,6 +5,26 @@ import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 
 /**
+ * IP address type for CloudFront to use when connecting to the origin.
+ */
+export enum OriginIpAddressType {
+  /**
+   * CloudFront uses IPv4 only to connect to the origin.
+   */
+  IPV4 = 'ipv4',
+
+  /**
+   * CloudFront uses IPv6 only to connect to the origin.
+   */
+  IPV6 = 'ipv6',
+
+  /**
+   * CloudFront uses both IPv4 and IPv6 to connect to the origin.
+   */
+  DUALSTACK = 'dualstack',
+}
+
+/**
  * Properties for a Lambda Function URL Origin.
  */
 export interface FunctionUrlOriginProps extends cloudfront.OriginProps {
@@ -35,9 +55,9 @@ export interface FunctionUrlOriginProps extends cloudfront.OriginProps {
    *
    * If your origin uses both IPv4 and IPv6 protocols, you can choose dualstack to help optimize reliability.
    *
-   * @default 'dualstack'
+   * @default OriginIpAddressType.IPV4
    */
-  readonly ipAddressType?: 'ipv4' | 'ipv6' | 'dualstack';
+  readonly ipAddressType?: OriginIpAddressType;
 }
 
 /**
@@ -85,7 +105,7 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
       originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
-      ipAddressType: this.props.ipAddressType ?? 'dualstack',
+      ipAddressType: this.props.ipAddressType,
     };
   }
 }
@@ -116,7 +136,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
       originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
-      ipAddressType: this.props.ipAddressType ?? 'dualstack',
+      ipAddressType: this.props.ipAddressType,
     };
   }
 

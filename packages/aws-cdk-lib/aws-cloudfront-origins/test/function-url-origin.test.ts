@@ -2,7 +2,7 @@ import { Template, Match } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
 import { Duration, Stack } from '../../core';
-import { FunctionUrlOrigin } from '../lib';
+import { FunctionUrlOrigin, OriginIpAddressType } from '../lib';
 
 let stack: Stack;
 let otherStack: Stack;
@@ -42,7 +42,6 @@ test('Correctly renders the origin for a Lambda Function URL', () => {
     customOriginConfig: {
       originProtocolPolicy: 'https-only',
       originSslProtocols: ['TLSv1.2'],
-      ipAddressType: 'dualstack',
     },
   });
 });
@@ -364,7 +363,6 @@ describe('FunctionUrlOriginAccessControl', () => {
       customOriginConfig: {
         originProtocolPolicy: 'https-only',
         originSslProtocols: ['TLSv1.2'],
-        ipAddressType: 'dualstack',
       },
       originAccessControlId: {
         'Fn::GetAtt': [
@@ -410,7 +408,6 @@ describe('FunctionUrlOriginAccessControl', () => {
         originSslProtocols: ['TLSv1.2'],
         originReadTimeout: 120,
         originKeepaliveTimeout: 60,
-        ipAddressType: 'dualstack',
       },
       originAccessControlId: {
         'Fn::GetAtt': [
@@ -447,7 +444,7 @@ describe('FunctionUrlOriginAccessControl', () => {
 });
 
 describe('ipAddressType', () => {
-  test('Uses default ipAddressType dualstack when not specified', () => {
+  test('Does not include ipAddressType when not specified (uses CloudFormation default)', () => {
     const fn = new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
       handler: 'index.handler',
@@ -469,7 +466,6 @@ describe('ipAddressType', () => {
       customOriginConfig: {
         originProtocolPolicy: 'https-only',
         originSslProtocols: ['TLSv1.2'],
-        ipAddressType: 'dualstack',
       },
     });
   });
@@ -486,14 +482,14 @@ describe('ipAddressType', () => {
     });
 
     const origin = new FunctionUrlOrigin(fnUrl, {
-      ipAddressType: 'dualstack',
+      ipAddressType: OriginIpAddressType.DUALSTACK,
     });
 
     const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
 
     expect(stack.resolve(originBindConfig.originProperty)).toMatchObject({
       customOriginConfig: {
-        ipAddressType: 'dualstack',
+        ipAddressType: OriginIpAddressType.DUALSTACK,
       },
     });
   });
@@ -510,14 +506,14 @@ describe('ipAddressType', () => {
     });
 
     const origin = new FunctionUrlOrigin(fnUrl, {
-      ipAddressType: 'ipv6',
+      ipAddressType: OriginIpAddressType.IPV6,
     });
 
     const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
 
     expect(stack.resolve(originBindConfig.originProperty)).toMatchObject({
       customOriginConfig: {
-        ipAddressType: 'ipv6',
+        ipAddressType: OriginIpAddressType.IPV6,
       },
     });
   });
@@ -536,7 +532,7 @@ describe('ipAddressType', () => {
     new cloudfront.Distribution(stack, 'MyDistribution', {
       defaultBehavior: {
         origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
-          ipAddressType: 'dualstack',
+          ipAddressType: OriginIpAddressType.DUALSTACK,
         }),
       },
     });
@@ -547,7 +543,7 @@ describe('ipAddressType', () => {
         Origins: Match.arrayWith([
           Match.objectLike({
             CustomOriginConfig: Match.objectLike({
-              IpAddressType: 'dualstack',
+              IpAddressType: OriginIpAddressType.DUALSTACK,
             }),
           }),
         ]),
