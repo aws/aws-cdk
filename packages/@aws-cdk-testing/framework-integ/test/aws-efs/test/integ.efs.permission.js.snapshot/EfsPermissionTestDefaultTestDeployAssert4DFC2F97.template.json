@@ -42,7 +42,7 @@
     "outputPaths": [
      "Command.CommandId"
     ],
-    "salt": "1756990025240"
+    "salt": "1757338638498"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -206,7 +206,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756990025241"
+    "salt": "1757338638499"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -487,7 +487,7 @@
     "outputPaths": [
      "Command.CommandId"
     ],
-    "salt": "1756990025244"
+    "salt": "1757338638501"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -537,7 +537,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756990025245"
+    "salt": "1757338638502"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -787,6 +787,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"
