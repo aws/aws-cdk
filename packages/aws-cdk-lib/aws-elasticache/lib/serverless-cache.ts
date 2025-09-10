@@ -1,0 +1,637 @@
+import { Construct } from 'constructs';
+import { UserEngine } from './common';
+import { CfnServerlessCache, CfnUserGroup } from './elasticache.generated';
+import { IServerlessCache, ServerlessCacheBase, CacheEngine } from './serverless-cache-base';
+import { IUserGroup } from './user-group';
+import * as ec2 from '../../aws-ec2';
+import * as events from '../../aws-events';
+import * as kms from '../../aws-kms';
+import { ArnFormat, Stack, Size, Lazy } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+
+const ELASTICACHE_SERVERLESSCACHE_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.ServerlessCache');
+
+/**
+ * Unit types for data storage usage limits
+ */
+export enum DataStorageUnit {
+  /**
+   * Gigabytes
+   */
+  GIGABYTES = 'GB',
+}
+
+/**
+ * Usage limits configuration for ServerlessCache
+ */
+export interface CacheUsageLimitsProperty {
+  /**
+   * Minimum data storage size (1 GB)
+   *
+   * @default - No minimum limit
+   */
+  readonly dataStorageMinimumSize?: Size;
+  /**
+   * Maximum data storage size (5000 GB)
+   *
+   * @default - No maximum limit
+   */
+  readonly dataStorageMaximumSize?: Size;
+  /**
+   * Minimum request rate limit (1000 ECPUs per second)
+   *
+   * @default - No minimum limit
+   */
+  readonly requestRateLimitMinimum?: number;
+  /**
+   * Maximum request rate limit (15000000 ECPUs per second)
+   *
+   * @default - No maximum limit
+   */
+  readonly requestRateLimitMaximum?: number;
+}
+
+/**
+ * Backup configuration for ServerlessCache
+ */
+export interface BackupSettings {
+  /**
+   * Automated daily backup UTC time
+   *
+   * @default - No automated backups
+   */
+  readonly backupTime?: events.Schedule;
+  /**
+   * Number of days to retain backups (1-35)
+   *
+   * @default - Backups are not retained
+   */
+  readonly backupRetentionLimit?: number;
+  /**
+   * Name for the final backup taken before deletion
+   *
+   * @default - No final backup
+   */
+  readonly backupNameBeforeDeletion?: string;
+  /**
+   * ARNs of backups from which to restore data into the new cache
+   *
+   * @default - Create a new cache with no existing data
+   */
+  readonly backupArnsToRestore?: string[];
+}
+
+/**
+ * Properties for defining a ServerlessCache
+ */
+export interface ServerlessCacheProps {
+  /**
+   * The cache engine combined with the version
+   * Enum options: VALKEY_DEFAULT, VALKEY_7, VALKEY_8, REDIS_DEFAULT, MEMCACHED_DEFAULT
+   * The default options bring the latest versions available.
+   *
+   * @default when not provided, the default engine would be Valkey, latest version available (VALKEY_DEFAULT)
+   */
+  readonly engine?: CacheEngine;
+  /**
+   * Name for the serverless cache
+   *
+   * @default automatically generated name by Resource
+   */
+  readonly serverlessCacheName?: string;
+  /**
+   * A description for the cache
+   *
+   * @default - No description
+   */
+  readonly description?: string;
+  /**
+   * Usage limits for the cache
+   *
+   * @default - No usage limits
+   */
+  readonly cacheUsageLimits?: CacheUsageLimitsProperty;
+  /**
+   * Backup configuration
+   *
+   * @default - No backups configured
+   */
+  readonly backup?: BackupSettings;
+  /**
+   * KMS key for encryption
+   *
+   * @default - Service managed encryption (AWS owned KMS key)
+   */
+  readonly kmsKey?: kms.IKey;
+  /**
+   * The VPC to place the cache in
+   */
+  readonly vpc: ec2.IVpc;
+  /**
+   * Which subnets to place the cache in
+   *
+   * @default - Private subnets with egress
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+  /**
+   * Security groups for the cache
+   *
+   * @default - A new security group is created
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+  /**
+   * User group for access control
+   *
+   * @default - No user group
+   */
+  readonly userGroup?: IUserGroup;
+}
+
+/**
+ * Attributes that can be specified when importing a ServerlessCache
+ */
+export interface ServerlessCacheAttributes {
+  /**
+   * The cache engine used by this cache
+   *
+   * @default - engine type is unknown
+   */
+  readonly engine?: CacheEngine;
+  /**
+   * The name of the serverless cache
+   *
+   * One of `serverlessCacheName` or `serverlessCacheArn` is required.
+   *
+   * @default - derived from serverlessCacheArn
+   */
+  readonly serverlessCacheName?: string;
+  /**
+   * The ARN of the serverless cache
+   *
+   * One of `serverlessCacheName` or `serverlessCacheArn` is required.
+   *
+   * @default - derived from serverlessCacheName
+   */
+  readonly serverlessCacheArn?: string;
+  /**
+   * The ARNs of backups restored in the cache
+   *
+   * @default - backups are unknown
+   */
+  readonly backupArnsToRestore?: string[];
+  /**
+   * The KMS key used for encryption
+   *
+   * @default - encryption key is unknown
+   */
+  readonly kmsKey?: kms.IKey;
+  /**
+   * The VPC this cache is deployed in
+   *
+   * @default - VPC is unknown
+   */
+  readonly vpc?: ec2.IVpc;
+  /**
+   * The subnets this cache is deployed in
+   *
+   * @default - subnets are unknown
+   */
+  readonly subnets?: ec2.ISubnet[];
+  /**
+   * The security groups associated with this cache
+   *
+   * @default - security groups are unknown
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+  /**
+   * The user group associated with this cache
+   *
+   * @default - user group is unknown
+   */
+  readonly userGroup?: IUserGroup;
+}
+
+/**
+ * A serverless ElastiCache cache
+ *
+ * @resource AWS::ElastiCache::ServerlessCache
+ */
+@propertyInjectable
+export class ServerlessCache extends ServerlessCacheBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticache.ServerlessCache';
+
+  /**
+   * Return whether the given object is a `ServerlessCache`
+   */
+  public static isServerlessCache(x: any) : x is ServerlessCache {
+    return x !== null && typeof(x) === 'object' && ELASTICACHE_SERVERLESSCACHE_SYMBOL in x;
+  }
+
+  /**
+   * Import an existing serverless cache by name
+   *
+   * @param scope The parent creating construct (usually `this`)
+   * @param id The construct's name
+   * @param serverlessCacheName The name of the existing serverless cache
+   */
+  public static fromServerlessCacheName(scope: Construct, id: string, serverlessCacheName: string): IServerlessCache {
+    return ServerlessCache.fromServerlessCacheAttributes(scope, id, { serverlessCacheName });
+  }
+
+  /**
+   * Import an existing serverless cache by ARN
+   *
+   * @param scope The parent creating construct (usually `this`)
+   * @param id The construct's name
+   * @param serverlessCacheArn The ARN of the existing serverless cache
+   */
+  public static fromServerlessCacheArn(scope: Construct, id: string, serverlessCacheArn: string): IServerlessCache {
+    return ServerlessCache.fromServerlessCacheAttributes(scope, id, { serverlessCacheArn });
+  }
+
+  /**
+   * Import an existing serverless cache using attributes
+   *
+   * @param scope The parent creating construct (usually `this`)
+   * @param id The construct's name
+   * @param attrs A `ServerlessCacheAttributes` object
+   */
+  public static fromServerlessCacheAttributes(scope: Construct, id: string, attrs: ServerlessCacheAttributes): IServerlessCache {
+    let name: string;
+    let arn: string;
+    const stack = Stack.of(scope);
+
+    if (!attrs.serverlessCacheName) {
+      if (!attrs.serverlessCacheArn) {
+        throw new ValidationError('One of serverlessCacheName or serverlessCacheArn is required!', scope);
+      }
+
+      arn = attrs.serverlessCacheArn;
+      const maybeServerlessCacheName = stack.splitArn(attrs.serverlessCacheArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+      if (!maybeServerlessCacheName) {
+        throw new ValidationError('Unable to extract serverless cache name from ARN', scope);
+      }
+      name = maybeServerlessCacheName;
+    } else {
+      if (attrs.serverlessCacheArn) {
+        throw new ValidationError('Only one of serverlessCacheArn or serverlessCacheName can be provided', scope);
+      }
+      name = attrs.serverlessCacheName;
+      arn = stack.formatArn({
+        service: 'elasticache',
+        resource: 'serverlesscache',
+        resourceName: attrs.serverlessCacheName,
+      });
+    }
+
+    class Import extends ServerlessCacheBase {
+      public readonly engine = attrs.engine;
+      public readonly serverlessCacheName: string;
+      public readonly serverlessCacheArn: string;
+      public readonly backupArnsToRestore = attrs.backupArnsToRestore;
+      public readonly kmsKey = attrs.kmsKey;
+      public readonly vpc = attrs.vpc;
+      public readonly subnets = attrs.subnets;
+      public readonly securityGroups = attrs.securityGroups;
+      public readonly userGroup = attrs.userGroup;
+
+      public readonly connections: ec2.Connections;
+
+      constructor(serverlessCacheArn: string, serverlessCacheName: string) {
+        super(scope, id);
+        this.serverlessCacheArn = serverlessCacheArn;
+        this.serverlessCacheName = serverlessCacheName;
+
+        if (this.engine) {
+          const getDefaultPort = (engine: CacheEngine): ec2.Port => {
+            switch (engine) {
+              case CacheEngine.VALKEY_DEFAULT:
+              case CacheEngine.VALKEY_7:
+              case CacheEngine.VALKEY_8:
+              case CacheEngine.REDIS_DEFAULT:
+                return ec2.Port.tcp(6379);
+              case CacheEngine.MEMCACHED_DEFAULT:
+                return ec2.Port.tcp(11211);
+              default:
+                throw new ValidationError(`Unsupported cache engine: ${engine}`, scope);
+            }
+          };
+
+          this.connections = new ec2.Connections({
+            securityGroups: this.securityGroups,
+            defaultPort: getDefaultPort(this.engine),
+          });
+        } else {
+          this.connections = new ec2.Connections({
+            securityGroups: this.securityGroups,
+          });
+        }
+      }
+    }
+
+    return new Import(arn, name);
+  }
+
+  public readonly engine?: CacheEngine;
+  public readonly serverlessCacheName: string;
+  public readonly backupArnsToRestore?: string[];
+  public readonly kmsKey?: kms.IKey;
+  public readonly vpc?: ec2.IVpc;
+  public readonly subnets?: ec2.ISubnet[];
+  public readonly securityGroups?: ec2.ISecurityGroup[];
+  public readonly userGroup?: IUserGroup;
+
+  /**
+   * The ARN of the serverless cache
+   *
+   * @attribute
+   */
+  public readonly serverlessCacheArn: string;
+  /**
+   * The endpoint address of the serverless cache
+   *
+   * @attribute
+   */
+  public readonly serverlessCacheEndpointAddress: string;
+  /**
+   * The endpoint port of the serverless cache
+   *
+   * @attribute
+   */
+  public readonly serverlessCacheEndpointPort: string;
+  /**
+   * The reader endpoint address of the serverless cache
+   *
+   * @attribute
+   */
+  public readonly serverlessCacheReaderEndpointAddress: string;
+  /**
+   * The reader endpoint port of the serverless cache
+   *
+   * @attribute
+   */
+  public readonly serverlessCacheReaderEndpointPort: string;
+  /**
+   * The current status of the serverless cache
+   * Can be 'CREATING', 'AVAILABLE', 'DELETING', 'CREATE-FAILED', 'MODIFYING'
+   *
+   * @attribute
+   */
+  public readonly serverlessCacheStatus: string;
+
+  /**
+   * Access to network connections
+   */
+  public readonly connections: ec2.Connections;
+
+  constructor(scope: Construct, id: string, props: ServerlessCacheProps) {
+    super(scope, id, {
+      physicalName: props.serverlessCacheName,
+    });
+
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    this.engine = props.engine ?? CacheEngine.VALKEY_DEFAULT;
+    this.serverlessCacheName = this.physicalName;
+    this.kmsKey = props.kmsKey;
+    this.vpc = props.vpc;
+    this.userGroup = props.userGroup;
+
+    this.validateDescription(props.description);
+    this.validateUsageLimits(props.cacheUsageLimits);
+    this.validateBackupSettings(props.backup);
+    this.validateUserGroupCompatibility(this.engine, this.userGroup);
+
+    let subnetIds: string[] | undefined;
+    let securityGroupIds: string[];
+
+    let selectedSubnets;
+    if (props.vpcSubnets) {
+      selectedSubnets = props.vpc.selectSubnets(props.vpcSubnets);
+    } else {
+      selectedSubnets = props.vpc.selectSubnets({
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+      });
+    }
+    subnetIds = selectedSubnets.subnetIds.length > 0 ? selectedSubnets.subnetIds : undefined;
+    this.subnets = selectedSubnets.subnets.length > 0 ? selectedSubnets.subnets : undefined;
+
+    if (props.securityGroups && props.securityGroups.length > 0) {
+      securityGroupIds = props.securityGroups.map(sg => sg.securityGroupId);
+      this.securityGroups = props.securityGroups;
+    } else {
+      const newSecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+        description: `Security group for ${this.node.id} cache.`,
+        vpc: props.vpc,
+      });
+      securityGroupIds = [newSecurityGroup.securityGroupId];
+      this.securityGroups = [newSecurityGroup];
+    }
+
+    const { engine, version } = this.parseEngine(this.engine);
+
+    const resource = new CfnServerlessCache(this, 'Resource', {
+      engine: engine,
+      majorEngineVersion: version,
+      serverlessCacheName: this.physicalName,
+      description: props.description,
+      cacheUsageLimits: this.renderCacheUsageLimits(props.cacheUsageLimits),
+      dailySnapshotTime: props.backup?.backupTime ? this.formatBackupTime(props.backup.backupTime) : undefined,
+      snapshotRetentionLimit: props.backup?.backupRetentionLimit,
+      finalSnapshotName: props.backup?.backupNameBeforeDeletion,
+      snapshotArnsToRestore: props.backup?.backupArnsToRestore,
+      kmsKeyId: props.kmsKey?.keyId,
+      subnetIds: subnetIds,
+      securityGroupIds: securityGroupIds,
+      userGroupId: props.userGroup?.userGroupName,
+    });
+
+    if (props.userGroup) {
+      const userGroupResource = props.userGroup.node.findChild('Resource') as CfnUserGroup;
+      resource.addDependency(userGroupResource);
+    }
+
+    this.backupArnsToRestore = resource.snapshotArnsToRestore;
+    this.serverlessCacheArn = resource.attrArn;
+    this.serverlessCacheEndpointAddress = resource.attrEndpointAddress;
+    this.serverlessCacheEndpointPort = resource.attrEndpointPort;
+    this.serverlessCacheReaderEndpointAddress = resource.attrReaderEndpointAddress;
+    this.serverlessCacheReaderEndpointPort = resource.attrReaderEndpointPort;
+    this.serverlessCacheStatus = resource.attrStatus;
+
+    this.connections = new ec2.Connections({
+      securityGroups: this.securityGroups,
+      defaultPort: ec2.Port.tcp(Lazy.number({ produce: () => parseInt(this.serverlessCacheEndpointPort) })),
+    });
+
+    Object.defineProperty(this, ELASTICACHE_SERVERLESSCACHE_SYMBOL, { value: true });
+  }
+
+  /**
+   * Validate description meets AWS requirements
+   *
+   * @param description The description to validate
+   */
+  private validateDescription(description?: string): void {
+    if (!description) return;
+
+    if (description.length > 255) {
+      throw new ValidationError(`Description must not exceed 255 characters, currently has ${description.length}`, this);
+    }
+
+    if (description.includes('<') || description.includes('>')) {
+      throw new ValidationError('Description must not contain < or > characters', this);
+    }
+  }
+
+  /**
+   * Validate usage limits are within AWS constraints
+   *
+   * @param limits The usage limits to validate
+   */
+  private validateUsageLimits(limits?: CacheUsageLimitsProperty): void {
+    if (limits?.dataStorageMinimumSize && !limits.dataStorageMinimumSize.isUnresolved() &&
+            (limits.dataStorageMinimumSize.toGibibytes() < 1 || limits.dataStorageMinimumSize.toGibibytes() > 5000)) {
+      throw new ValidationError('Data storage minimum must be between 1 and 5000 GB.', this);
+    }
+
+    if (limits?.dataStorageMaximumSize && !limits.dataStorageMaximumSize.isUnresolved() &&
+            (limits.dataStorageMaximumSize.toGibibytes() < 1 || limits.dataStorageMaximumSize.toGibibytes() > 5000)) {
+      throw new ValidationError('Data storage maximum must be between 1 and 5000 GB.', this);
+    }
+
+    if (limits?.dataStorageMinimumSize && limits?.dataStorageMaximumSize &&
+            !limits.dataStorageMinimumSize.isUnresolved() && !limits.dataStorageMaximumSize.isUnresolved() &&
+            limits.dataStorageMinimumSize.toGibibytes() > limits.dataStorageMaximumSize.toGibibytes()) {
+      throw new ValidationError('Data storage minimum cannot be greater than maximum', this);
+    }
+
+    if (limits?.requestRateLimitMinimum !== undefined && (limits.requestRateLimitMinimum < 1000 || limits.requestRateLimitMinimum > 15000000)) {
+      throw new ValidationError('Request rate minimum must be between 1,000 and 15,000,000 ECPUs per second', this);
+    }
+    if (limits?.requestRateLimitMaximum !== undefined && (limits.requestRateLimitMaximum < 1000 || limits.requestRateLimitMaximum > 15000000)) {
+      throw new ValidationError('Request rate maximum must be between 1,000 and 15,000,000 ECPUs per second', this);
+    }
+    if (limits?.requestRateLimitMinimum !== undefined && limits?.requestRateLimitMaximum !== undefined &&
+        limits.requestRateLimitMinimum > limits.requestRateLimitMaximum) {
+      throw new ValidationError('Request rate minimum cannot be greater than maximum', this);
+    }
+  }
+
+  /**
+   * Validate backup settings meet AWS requirements
+   *
+   * @param backup The backup settings to validate
+   */
+  private validateBackupSettings(backup?: BackupSettings): void {
+    if (backup?.backupRetentionLimit !== undefined) {
+      const limit = backup.backupRetentionLimit;
+      if (limit < 1 || limit > 35) {
+        throw new ValidationError('Backup retention limit must be between 1 and 35 days', this);
+      }
+    }
+
+    if (backup?.backupNameBeforeDeletion !== undefined) {
+      const name = backup.backupNameBeforeDeletion;
+
+      if (!/^[a-zA-Z]/.test(name)) {
+        throw new ValidationError('Final backup name must begin with a letter', this);
+      }
+
+      if (!/^[a-zA-Z0-9-]+$/.test(name)) {
+        throw new ValidationError('Final backup name must contain only ASCII letters, digits, and hyphens', this);
+      }
+
+      if (name.endsWith('-')) {
+        throw new ValidationError('Final backup name must not end with a hyphen', this);
+      }
+
+      if (name.includes('--')) {
+        throw new ValidationError('Final backup name must not contain two consecutive hyphens', this);
+      }
+    }
+  }
+
+  /**
+   * Validate user group compatibility with cache engine
+   *
+   * @param engine The cache engine
+   * @param userGroup The user group to validate
+   */
+  private validateUserGroupCompatibility(engine: CacheEngine, userGroup?: IUserGroup): void {
+    if (!userGroup) return;
+
+    if (engine === CacheEngine.REDIS_DEFAULT && userGroup.engine !== UserEngine.REDIS) {
+      throw new ValidationError('Redis cache can only use Redis user groups.', this);
+    }
+  }
+
+  /**
+   * Render cache usage limits for CloudFormation
+   *
+   * @param limits The usage limits to render
+   * @returns CloudFormation-compatible usage limits object or undefined
+   */
+  private renderCacheUsageLimits(limits?: CacheUsageLimitsProperty): any {
+    if (!limits) return undefined;
+
+    const cacheUsageLimits: any = {};
+
+    if (limits.dataStorageMinimumSize !== undefined || limits.dataStorageMaximumSize !== undefined) {
+      cacheUsageLimits.dataStorage = {
+        unit: DataStorageUnit.GIGABYTES,
+        ...(limits.dataStorageMinimumSize !== undefined && { minimum: limits.dataStorageMinimumSize.toGibibytes() }),
+        ...(limits.dataStorageMaximumSize !== undefined && { maximum: limits.dataStorageMaximumSize.toGibibytes() }),
+      };
+    }
+
+    if (limits.requestRateLimitMinimum !== undefined || limits.requestRateLimitMaximum !== undefined) {
+      cacheUsageLimits.ecpuPerSecond = {
+        ...(limits.requestRateLimitMinimum !== undefined && { minimum: limits.requestRateLimitMinimum }),
+        ...(limits.requestRateLimitMaximum !== undefined && { maximum: limits.requestRateLimitMaximum }),
+      };
+    }
+
+    return Object.keys(cacheUsageLimits).length > 0 ? cacheUsageLimits : undefined;
+  }
+
+  /**
+   * Format schedule to HH:MM format for daily backups
+   *
+   * @param schedule The schedule to format
+   * @returns Time string in HH:MM format
+   */
+  private formatBackupTime(schedule: events.Schedule): string {
+    const cronOptions = (schedule as any).cronOptions;
+    if (cronOptions) {
+      if (cronOptions.day || cronOptions.month || cronOptions.year || cronOptions.weekDay) {
+        throw new ValidationError('For now, only daily backup time is available (supports just hour and minute). Day, month, year, and weekDay are not allowed', this);
+      }
+
+      const hour = cronOptions.hour || '0';
+      const minute = cronOptions.minute || '0';
+      return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
+    }
+    throw new ValidationError('Invalid schedule format for backup time', this);
+  }
+
+  /**
+   * Parse engine string to extract engine name and version
+   *
+   * @param eng The cache engine enum value
+   * @returns Object with engine name and optional version
+   */
+  private parseEngine(eng: CacheEngine): {engine: string; version?: string} {
+    const parts = eng.split('_');
+    const engine = parts[0];
+    const version = parts.length > 1 ? parts[1] : undefined;
+
+    return { engine, version };
+  }
+}
