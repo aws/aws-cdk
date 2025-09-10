@@ -219,7 +219,7 @@
      }
     ],
     "SourceObjectKeys": [
-     "c239f535cb0dacc74baa91a31cd4c831cf3a2c6009fb0055490f06dd199ea71c.zip",
+     "bc23d62fee132f662f41fba7525e36191590fc32048e11cba3e367be020f9d17.zip",
      "cbc7dae5477d6aa98463e36140d5833273cc3caca06c731d848799f30237fefe.zip",
      "4458891c23c9754723db261b607985ee4fce5a087343fca93e9608fb49e083ba.zip",
      "28993f893d6ff78d86a5b8265321158c6da4719974a8aa757202f429679cc7e6.zip"
@@ -568,6 +568,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"

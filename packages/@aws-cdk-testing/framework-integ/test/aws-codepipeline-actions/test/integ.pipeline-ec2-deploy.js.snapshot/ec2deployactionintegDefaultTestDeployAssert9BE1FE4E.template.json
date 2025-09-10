@@ -29,7 +29,7 @@
     "outputPaths": [
      "pipelineExecutionId"
     ],
-    "salt": "1756989959076"
+    "salt": "1757338667604"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -166,7 +166,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756989959078"
+    "salt": "1757338667606"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -432,7 +432,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1756989959082"
+    "salt": "1757338667609"
    },
    "DependsOn": [
     "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0",
@@ -469,7 +469,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1756989959083"
+    "salt": "1757338667610"
    },
    "DependsOn": [
     "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0",
@@ -506,7 +506,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1756989959083"
+    "salt": "1757338667611"
    },
    "DependsOn": [
     "AwsApiCallcodepipelineGetPipelineExecution083755a0663d4b50d3d891f448a37be0",
@@ -646,6 +646,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"
