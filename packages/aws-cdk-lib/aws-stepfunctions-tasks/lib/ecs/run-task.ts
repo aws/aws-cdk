@@ -158,6 +158,17 @@ export interface EcsFargateLaunchTargetOptions {
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html
    */
   readonly platformVersion: ecs.FargatePlatformVersion;
+
+  /**
+   * The capacity provider strategy to use for the task.
+   *
+   * Set this property when using the FARGATE_SPOT capacity provider.
+   *
+   * It can contain a maximum of 20 capacity providers.
+   *
+   * @default - 'FARGATE' LaunchType with AWS Fargate On-Demand infrastructure is used.
+   */
+  readonly capacityProviderStrategy?: ecs.CapacityProviderStrategy[];
 }
 
 /**
@@ -177,6 +188,15 @@ export interface EcsEc2LaunchTargetOptions {
    * @default - None
    */
   readonly placementStrategies?: ecs.PlacementStrategy[];
+
+  /**
+   * The capacity provider strategy to use for the task.
+   *
+   * It can contain a maximum of 20 capacity providers.
+   *
+   * @default - 'EC2' LaunchType is used.
+   */
+  readonly capacityProviderStrategy?: ecs.CapacityProviderStrategy[];
 }
 
 /**
@@ -195,9 +215,19 @@ export class EcsFargateLaunchTarget implements IEcsLaunchTarget {
       throw new ValidationError('Supplied TaskDefinition is not compatible with Fargate', task);
     }
 
+    const capacityProviderStrategy = this.options?.capacityProviderStrategy;
+    if (capacityProviderStrategy && capacityProviderStrategy.length > 20) {
+      throw new ValidationError(`Capacity provider strategy can contain a maximum of 20 capacity providers, got ${capacityProviderStrategy.length}`, task);
+    }
+
     return {
       parameters: {
-        LaunchType: 'FARGATE',
+        LaunchType: (!capacityProviderStrategy || !capacityProviderStrategy.length) ? 'FARGATE' : undefined,
+        CapacityProviderStrategy: capacityProviderStrategy?.map((s) => ({
+          CapacityProvider: s.capacityProvider,
+          Weight: s.weight,
+          Base: s.base,
+        })),
         PlatformVersion: this.options?.platformVersion,
       },
     };
@@ -223,9 +253,19 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
       throw new ValidationError('Cluster for this service needs Ec2 capacity. Call addCapacity() on the cluster.', task);
     }
 
+    const capacityProviderStrategy = this.options?.capacityProviderStrategy;
+    if (capacityProviderStrategy && capacityProviderStrategy.length > 20) {
+      throw new ValidationError(`Capacity provider strategy can contain a maximum of 20 capacity providers, got ${capacityProviderStrategy.length}`, task);
+    }
+
     return {
       parameters: {
-        LaunchType: 'EC2',
+        LaunchType: (!capacityProviderStrategy || !capacityProviderStrategy.length) ? 'EC2' : undefined,
+        CapacityProviderStrategy: capacityProviderStrategy?.map((s) => ({
+          CapacityProvider: s.capacityProvider,
+          Weight: s.weight,
+          Base: s.base,
+        })),
         // takes an array of placement constraints each of which contain a single item array of constraints, flattens it
         // and renders the Json to be passed as a parameter in the state machine.
         // input: [ecs.PlacementConstraint.distinctInstances()] - distinctInstances() returns [{ type: 'distinctInstance' }]
