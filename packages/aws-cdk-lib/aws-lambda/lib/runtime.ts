@@ -342,7 +342,7 @@ export class Runtime {
    */
   // Will ignore the fact that scope is not yet being used, but it will be
   // @ts-ignore
-  public static pythonLatest(scope: Construct): Runtime {
+  public static determineLatestPythonRuntime(scope: Construct): Runtime {
     return this.PYTHON_3_13;
   }
 

@@ -96,7 +96,7 @@ export class NotificationsResourceHandler extends Construct {
          *   1. Unit test Dockerfile: https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/custom-resource-handlers/test/aws-s3/notifications-resource-handler/Dockerfile
          *   2. Custom Resource Handler Framework: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.ts
          */
-        Runtime: Runtime.pythonLatest(this).name,
+        Runtime: Runtime.determineLatestPythonRuntime(this).name,
         Timeout: 300,
       },
     });
