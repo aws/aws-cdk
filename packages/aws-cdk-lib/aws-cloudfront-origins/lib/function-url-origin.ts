@@ -29,6 +29,15 @@ export interface FunctionUrlOriginProps extends cloudfront.OriginProps {
    * @default Duration.seconds(5)
    */
   readonly keepaliveTimeout?: cdk.Duration;
+
+  /**
+   * Specifies which IP protocol CloudFront uses when connecting to your origin.
+   *
+   * If your origin uses both IPv4 and IPv6 protocols, you can choose dualstack to help optimize reliability.
+   *
+   * @default 'dualstack'
+   */
+  readonly ipAddressType?: 'ipv4' | 'ipv6' | 'dualstack';
 }
 
 /**
@@ -76,6 +85,7 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
       originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
+      ipAddressType: this.props.ipAddressType ?? 'dualstack',
     };
   }
 }
@@ -106,6 +116,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
       originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
+      ipAddressType: this.props.ipAddressType ?? 'dualstack',
     };
   }
 

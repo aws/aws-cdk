@@ -42,6 +42,7 @@ test('Correctly renders the origin for a Lambda Function URL', () => {
     customOriginConfig: {
       originProtocolPolicy: 'https-only',
       originSslProtocols: ['TLSv1.2'],
+      ipAddressType: 'dualstack',
     },
   });
 });
@@ -363,6 +364,7 @@ describe('FunctionUrlOriginAccessControl', () => {
       customOriginConfig: {
         originProtocolPolicy: 'https-only',
         originSslProtocols: ['TLSv1.2'],
+        ipAddressType: 'dualstack',
       },
       originAccessControlId: {
         'Fn::GetAtt': [
@@ -408,6 +410,7 @@ describe('FunctionUrlOriginAccessControl', () => {
         originSslProtocols: ['TLSv1.2'],
         originReadTimeout: 120,
         originKeepaliveTimeout: 60,
+        ipAddressType: 'dualstack',
       },
       originAccessControlId: {
         'Fn::GetAtt': [
@@ -440,5 +443,115 @@ describe('FunctionUrlOriginAccessControl', () => {
         },
       });
     }).toThrow('The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.');
+  });
+});
+
+describe('ipAddressType', () => {
+  test('Uses default ipAddressType dualstack when not specified', () => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+
+    const origin = new FunctionUrlOrigin(fnUrl);
+    const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
+
+    expect(stack.resolve(originBindConfig.originProperty)).toEqual({
+      id: 'StackOriginLambdaFunctionURL',
+      domainName: {
+        'Fn::Select': [2, { 'Fn::Split': ['/', { 'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionUrl'] }] }],
+      },
+      customOriginConfig: {
+        originProtocolPolicy: 'https-only',
+        originSslProtocols: ['TLSv1.2'],
+        ipAddressType: 'dualstack',
+      },
+    });
+  });
+
+  test('Correctly sets ipAddressType to dualstack', () => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+
+    const origin = new FunctionUrlOrigin(fnUrl, {
+      ipAddressType: 'dualstack',
+    });
+
+    const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
+
+    expect(stack.resolve(originBindConfig.originProperty)).toMatchObject({
+      customOriginConfig: {
+        ipAddressType: 'dualstack',
+      },
+    });
+  });
+
+  test('Correctly sets ipAddressType to ipv6', () => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+
+    const origin = new FunctionUrlOrigin(fnUrl, {
+      ipAddressType: 'ipv6',
+    });
+
+    const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
+
+    expect(stack.resolve(originBindConfig.originProperty)).toMatchObject({
+      customOriginConfig: {
+        ipAddressType: 'ipv6',
+      },
+    });
+  });
+
+  test('Correctly sets ipAddressType with OAC', () => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.AWS_IAM,
+    });
+
+    new cloudfront.Distribution(stack, 'MyDistribution', {
+      defaultBehavior: {
+        origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
+          ipAddressType: 'dualstack',
+        }),
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Origins: Match.arrayWith([
+          Match.objectLike({
+            CustomOriginConfig: Match.objectLike({
+              IpAddressType: 'dualstack',
+            }),
+          }),
+        ]),
+      },
+    });
   });
 });
