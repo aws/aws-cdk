@@ -489,7 +489,7 @@ describe('notification', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: lambda.Runtime.PYTHON_LATEST.name,
+      Runtime: 'python3.13',
     });
   });
 
