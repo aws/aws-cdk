@@ -202,11 +202,6 @@ export class Runtime {
   });
 
   /**
-   * The latest Python version currently available in ALL regions.
-   */
-  public static readonly PYTHON_LATEST = this.PYTHON_3_13;
-
-  /**
    * The Java 8 runtime (java8)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Java runtime.
    */
@@ -343,6 +338,15 @@ export class Runtime {
   public static readonly FROM_IMAGE = new Runtime('FROM_IMAGE');
 
   /**
+   * The latest Python version currently available
+   */
+  // Will ignore the fact that scope is not yet being used, but it will be
+  // @ts-ignore
+  public static determineLatestPythonRuntime(scope: Construct): Runtime {
+    return this.PYTHON_3_13;
+  }
+
+  /**
    * The name of this runtime, as expected by the Lambda resource.
    */
   public readonly name: string;
@@ -419,3 +423,4 @@ export function determineLatestNodeRuntime(scope: Construct): Runtime {
   const runtimeName = Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, Runtime.NODEJS_18_X.name);
   return new Runtime(runtimeName, RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
 }
+
