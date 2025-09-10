@@ -920,27 +920,6 @@ export enum OriginProtocolPolicy {
 }
 
 /**
- * The IP address type for the origin.
- * Determines whether CloudFront uses IPv4, IPv6, or both when connecting to the origin.
- */
-export enum OriginIpAddressType {
-  /**
-   * Use only IPv4 addresses
-   */
-  IPV4 = 'ipv4',
-
-  /**
-   * Use only IPv6 addresses
-   */
-  IPV6 = 'ipv6',
-
-  /**
-   * Use both IPv4 and IPv6 addresses
-   */
-  DUALSTACK = 'dualstack',
-}
-
-/**
  * The SSL method CloudFront will use for your distribution.
  *
  * Server Name Indication (SNI) - is an extension to the TLS computer networking protocol by which a client indicates
