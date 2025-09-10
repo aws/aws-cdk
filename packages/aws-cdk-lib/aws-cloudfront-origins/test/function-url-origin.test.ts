@@ -494,6 +494,30 @@ describe('ipAddressType', () => {
     });
   });
 
+  test('Correctly sets ipAddressType to ipv4', () => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+
+    const origin = new FunctionUrlOrigin(fnUrl, {
+      ipAddressType: OriginIpAddressType.IPV4,
+    });
+
+    const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
+
+    expect(stack.resolve(originBindConfig.originProperty)).toMatchObject({
+      customOriginConfig: {
+        ipAddressType: OriginIpAddressType.IPV4,
+      },
+    });
+  });
+
   test('Correctly sets ipAddressType to ipv6', () => {
     const fn = new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
