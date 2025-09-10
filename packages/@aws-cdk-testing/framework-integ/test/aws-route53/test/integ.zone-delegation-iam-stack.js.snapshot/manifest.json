@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3a1c94adff31c5c409b62b1582d5e84d5f08ab6188dbb7d283dbad2702cca0c0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5c36be095b6e41d2636ac39e6dd51e9392e1f0162176ac20c3936a7ba8ffc68a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,15 +37,19 @@
         "/ZoneDelegationStack/ParentZone": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "zoneName": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "zoneName": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {}
           }
         ],
         "/ZoneDelegationStack/ParentZone/Resource": [
@@ -57,23 +61,45 @@
         "/ZoneDelegationStack/ZoneDelegationRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/ZoneDelegationStack/ZoneDelegationRole/ImportZoneDelegationRole": [
@@ -95,19 +121,35 @@
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/ZoneDelegationStack/ZoneDelegationRole/DefaultPolicy/Resource": [
@@ -119,11 +161,15 @@
         "/ZoneDelegationStack/SubZone1": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "zoneName": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "zoneName": "*"
+            }
           }
         ],
         "/ZoneDelegationStack/SubZone1/Resource": [
@@ -153,19 +199,33 @@
         "/ZoneDelegationStack/SubZone1/ZoneDelegation/cross-account-zone-delegation-handler-role/PolicyZoneDelegationStackSubZone1ZoneDelegationcrossaccountzonedelegationhandlerrole3B7BF93F": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "policyName": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/ZoneDelegationStack/SubZone1/ZoneDelegation/cross-account-zone-delegation-handler-role/PolicyZoneDelegationStackSubZone1ZoneDelegationcrossaccountzonedelegationhandlerrole3B7BF93F/Resource": [
@@ -213,11 +273,15 @@
         "/ZoneDelegationStack/SubZone2": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "zoneName": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "zoneName": "*"
+            }
           }
         ],
         "/ZoneDelegationStack/SubZone2/Resource": [
@@ -247,19 +311,33 @@
         "/ZoneDelegationStack/SubZone2/ZoneDelegation/cross-account-zone-delegation-handler-role/PolicyZoneDelegationStackSubZone2ZoneDelegationcrossaccountzonedelegationhandlerrole36D1478D": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "policyName": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/ZoneDelegationStack/SubZone2/ZoneDelegation/cross-account-zone-delegation-handler-role/PolicyZoneDelegationStackSubZone2ZoneDelegationcrossaccountzonedelegationhandlerrole36D1478D/Resource": [
@@ -290,15 +368,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "HostedZoneDB99F866": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HostedZoneDB99F866",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
