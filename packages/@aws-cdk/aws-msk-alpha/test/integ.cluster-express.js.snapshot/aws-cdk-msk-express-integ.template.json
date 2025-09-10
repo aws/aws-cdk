@@ -680,7 +680,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a.zip"
+     "S3Key": "4e81d1590504dce642b87042b0999db745220956ae69e7441a66475972723162.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -695,6 +695,25 @@
    "DependsOn": [
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
    ]
+  },
+  "AWS679f53fac002430cb0da5b7982bd2287LogGroup449FB7C2": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Outputs": {
