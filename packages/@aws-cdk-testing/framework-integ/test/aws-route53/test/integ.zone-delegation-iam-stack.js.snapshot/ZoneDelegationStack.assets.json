@@ -1,0 +1,34 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "2a1e3a5c062d73050b47001ce8443b5cce3002e2af38029f60659b7002ce4b51": {
+      "displayName": "ZoneDelegationStack/Custom::CrossAccountZoneDelegationCustomResourceProvider Code",
+      "source": {
+        "path": "asset.2a1e3a5c062d73050b47001ce8443b5cce3002e2af38029f60659b7002ce4b51",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-08de1a37": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2a1e3a5c062d73050b47001ce8443b5cce3002e2af38029f60659b7002ce4b51.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "3a1c94adff31c5c409b62b1582d5e84d5f08ab6188dbb7d283dbad2702cca0c0": {
+      "displayName": "ZoneDelegationStack Template",
+      "source": {
+        "path": "ZoneDelegationStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-29609dc4": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3a1c94adff31c5c409b62b1582d5e84d5f08ab6188dbb7d283dbad2702cca0c0.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
