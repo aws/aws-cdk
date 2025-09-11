@@ -371,7 +371,7 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
     }
 
     const capacityProvider = this.options?.capacityProviderOptions ?? CapacityProviderOptionsBase.none();
-    const capacityProviderBound = capacityProvider._bind(ecs.LaunchType.FARGATE);
+    const capacityProviderBound = capacityProvider._bind(ecs.LaunchType.EC2);
 
     return {
       parameters: {
