@@ -828,7 +828,7 @@ strategy for both EC2 and Fargate launch targets.
 - When `CapacityProviderOptionsBase.custom()` is used, you can specify a custom capacity provider strategy.
 - When `CapacityProviderOptionsBase.default()` is used, the task uses the cluster's default capacity provider strategy,
 
-If `capacityProviderOptions` is not specified, it defaults to `none()`.
+If `capacityProviderOptions` is not specified, it defaults to `CapacityProviderOptionsBase.none()`.
 
 ```ts
 // Use none() option - uses launch type without capacity provider strategy
