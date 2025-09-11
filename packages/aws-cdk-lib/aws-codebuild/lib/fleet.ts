@@ -48,6 +48,18 @@ export interface FleetProps {
    * @default - do not specify compute configuration
    */
   readonly computeConfiguration?: ComputeConfiguration;
+
+  /**
+   * The compute fleet overflow behavior.
+   *
+   * For overflow behavior `QUEUE`, overflow builds need to wait on the existing fleet instances to become available.
+   *
+   * For overflow behavior `ON_DEMAND`, overflow builds run on CodeBuild on-demand.
+   *
+   * @default undefined - AWS CodeBuild default behavior is QUEUE
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
+   */
+  readonly overflowBehavior?: FleetOverflowBehavior;
 }
 
 /**
@@ -241,6 +253,7 @@ export class Fleet extends Resource implements IFleet {
       baseCapacity: props.baseCapacity,
       computeType: props.computeType,
       environmentType: props.environmentType,
+      overflowBehavior: props.overflowBehavior,
       computeConfiguration: props.computeConfiguration ? {
         disk: diskGiB,
         machineType: props.computeConfiguration.machineType,
@@ -320,4 +333,19 @@ export enum FleetComputeType {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment-reserved-capacity.types
    */
   ATTRIBUTE_BASED = ComputeType.ATTRIBUTE_BASED,
+}
+
+/**
+ * The compute fleet overflow behavior.
+ */
+export enum FleetOverflowBehavior {
+  /**
+   * Overflow builds wait for existing fleet instances to become available.
+   */
+  QUEUE = 'QUEUE',
+
+  /**
+   * Overflow builds run on CodeBuild on-demand instances.
+   */
+  ON_DEMAND = 'ON_DEMAND',
 }
