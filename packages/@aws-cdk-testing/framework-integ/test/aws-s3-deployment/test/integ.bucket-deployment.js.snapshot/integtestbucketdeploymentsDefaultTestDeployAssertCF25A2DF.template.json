@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756990215187"
+    "salt": "1757338577905"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -141,7 +141,7 @@
      "Stacks.0.Outputs.0.OutputKey",
      "Stacks.0.Outputs.0.OutputValue"
     ],
-    "salt": "1756990215188"
+    "salt": "1757338577906"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -292,6 +292,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"
