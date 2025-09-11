@@ -160,13 +160,23 @@ export interface EcsFargateLaunchTargetOptions {
   readonly platformVersion: ecs.FargatePlatformVersion;
 
   /**
-   * The capacity provider strategy to use for the task.
+   * The capacity provider options to use for the task.
    *
-   * Set this property when using the FARGATE_SPOT capacity provider.
+   * This property allows you to set the capacity provider strategy for the task.
    *
-   * It can contain a maximum of 20 capacity providers.
+   * If you don't need the capacity provider strategy, specify `CapacityProviderOptionsBase.none()`.
+   * In that case, 'FARGATE' LaunchType running tasks on AWS Fargate On-Demand
+   * infrastructure is used without the capacity provider strategy.
    *
-   * @default - 'FARGATE' LaunchType with AWS Fargate On-Demand infrastructure is used.
+   * If you want to set the capacity provider strategy for the task, specify
+   * `CapacityProviderOptionsBase.custom()`. This is required to use the FARGATE_SPOT
+   * capacity provider.
+   *
+   * If you want to use the cluster's default capacity provider strategy, specify
+   * `CapacityProviderOptionsBase.default()`.
+   *
+   * @default - 'FARGATE' LaunchType running tasks on AWS Fargate On-Demand
+   * infrastructure is used without the capacity provider strategy.
    */
   readonly capacityProviderOptions?: CapacityProviderOptionsBase;
 }
@@ -190,11 +200,22 @@ export interface EcsEc2LaunchTargetOptions {
   readonly placementStrategies?: ecs.PlacementStrategy[];
 
   /**
-   * The capacity provider strategy to use for the task.
+   * The capacity provider options to use for the task.
    *
-   * It can contain a maximum of 20 capacity providers.
+   * This property allows you to set the capacity provider strategy for the task.
    *
-   * @default - 'EC2' LaunchType is used.
+   * If you don't need the capacity provider strategy, specify `CapacityProviderOptionsBase.none()`.
+   * In that case, 'EC2' LaunchType running tasks on Amazon EC2 instances registered to
+   * your cluster is used without the capacity provider strategy.
+   *
+   * If you want to set the capacity provider strategy for the task, specify
+   * `CapacityProviderOptionsBase.custom()`.
+   *
+   * If you want to use the cluster's default capacity provider strategy, specify
+   * `CapacityProviderOptionsBase.default()`.
+   *
+   * @default - 'EC2' LaunchType running tasks on Amazon EC2 instances registered to
+   * your cluster is used without the capacity provider strategy.
    */
   readonly capacityProviderOptions?: CapacityProviderOptionsBase;
 }
@@ -205,25 +226,29 @@ interface CapacityProviderOptions {
 }
 
 /**
- * WIP
+ * Base class for capacity provider options
  */
 export abstract class CapacityProviderOptionsBase {
   /**
-   * WIP
+   * No capacity provider strategy is used.
    */
-  public static none(): NoneCapacityProviderOptions {
-    return new NoneCapacityProviderOptions();
+  public static none(): NoCapacityProviderOptions {
+    return new NoCapacityProviderOptions();
   }
 
   /**
-   * WIP
+   * Use a custom capacity provider strategy.
+   *
+   * You can specify a maximum of 20 capacity providers.
+   *
+   * @param capacityProviderStrategy The capacity provider strategy to use for the task.
    */
   public static custom(capacityProviderStrategy: ecs.CapacityProviderStrategy[]): CustomCapacityProviderOptions {
     return new CustomCapacityProviderOptions(capacityProviderStrategy);
   }
 
   /**
-   * WIP
+   * Use the cluster's default capacity provider strategy.
    */
   public static default(): DefaultCapacityProviderOptions {
     return new DefaultCapacityProviderOptions();
@@ -236,9 +261,9 @@ export abstract class CapacityProviderOptionsBase {
 }
 
 /**
- * WIP
+ * No capacity provider strategy options
  */
-export class NoneCapacityProviderOptions extends CapacityProviderOptionsBase {
+export class NoCapacityProviderOptions extends CapacityProviderOptionsBase {
   constructor() {
     super();
   }
@@ -254,7 +279,7 @@ export class NoneCapacityProviderOptions extends CapacityProviderOptionsBase {
 }
 
 /**
- * WIP
+ * Custom capacity provider strategy options
  */
 export class CustomCapacityProviderOptions extends CapacityProviderOptionsBase {
   constructor(private readonly capacityProviderStrategy: ecs.CapacityProviderStrategy[]) {
@@ -276,7 +301,7 @@ export class CustomCapacityProviderOptions extends CapacityProviderOptionsBase {
 }
 
 /**
- * WIP
+ * Default capacity provider strategy options
  */
 export class DefaultCapacityProviderOptions extends CapacityProviderOptionsBase {
   constructor() {
