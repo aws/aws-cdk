@@ -1,0 +1,58 @@
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { FunctionUrlOrigin, OriginIpAddressType } from 'aws-cdk-lib/aws-cloudfront-origins';
+import { App, Stack } from 'aws-cdk-lib';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+
+const app = new App();
+const stack = new Stack(app, 'FunctionUrlOriginIpAddressTypeStack');
+
+// Lambda function
+const fn = new lambda.Function(stack, 'TestFunction', {
+  code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200, body: "Hello" });'),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_20_X,
+});
+
+// Function URL with IAM auth
+const fnUrl = fn.addFunctionUrl({
+  authType: lambda.FunctionUrlAuthType.AWS_IAM,
+});
+
+// CloudFront distribution with IPv4 IP address type
+new cloudfront.Distribution(stack, 'DistributionWithoutIpAddressTypeProp(IPv4)', {
+  defaultBehavior: {
+    origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {}),
+  },
+});
+
+// CloudFront distribution with IPv4 IP address type
+new cloudfront.Distribution(stack, 'DistributionWithIPv4', {
+  defaultBehavior: {
+    origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
+      ipAddressType: OriginIpAddressType.IPV4,
+    }),
+  },
+});
+
+// CloudFront distribution with IPv6 IP address type
+new cloudfront.Distribution(stack, 'DistributionWithIPv6', {
+  defaultBehavior: {
+    origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
+      ipAddressType: OriginIpAddressType.IPV6,
+    }),
+  },
+});
+
+// CloudFront distribution with dualstack IP address type
+new cloudfront.Distribution(stack, 'DistributionWithDualstack', {
+  defaultBehavior: {
+    origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
+      ipAddressType: OriginIpAddressType.DUALSTACK,
+    }),
+  },
+});
+
+new IntegTest(app, 'FunctionUrlOriginIpAddressTypeTest', {
+  testCases: [stack],
+});
