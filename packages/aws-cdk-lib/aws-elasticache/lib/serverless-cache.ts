@@ -24,6 +24,23 @@ export enum DataStorageUnit {
 }
 
 /**
+ * Minimum data storage size in GB for ServerlessCache
+ */
+const DATA_STORAGE_MIN_GB = 1;
+/**
+ * Maximum data storage size in GB for ServerlessCache
+ */
+const DATA_STORAGE_MAX_GB = 5000;
+/**
+ * Minimum request rate limit in ECPUs per second for ServerlessCache
+ */
+const REQUEST_RATE_MIN_ECPU = 1000;
+/**
+ * Maximum request rate limit in ECPUs per second for ServerlessCache
+ */
+const REQUEST_RATE_MAX_ECPU = 15000000;
+
+/**
  * Usage limits configuration for ServerlessCache
  */
 export interface CacheUsageLimitsProperty {
@@ -266,27 +283,26 @@ export class ServerlessCache extends ServerlessCacheBase {
     let arn: string;
     const stack = Stack.of(scope);
 
-    if (!attrs.serverlessCacheName) {
-      if (!attrs.serverlessCacheArn) {
-        throw new ValidationError('One of serverlessCacheName or serverlessCacheArn is required!', scope);
-      }
+    if (attrs.serverlessCacheArn && attrs.serverlessCacheName) {
+      throw new ValidationError('Only one of serverlessCacheArn or serverlessCacheName can be provided.', scope);
+    }
 
+    if (attrs.serverlessCacheArn) {
       arn = attrs.serverlessCacheArn;
-      const maybeServerlessCacheName = stack.splitArn(attrs.serverlessCacheArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
-      if (!maybeServerlessCacheName) {
-        throw new ValidationError('Unable to extract serverless cache name from ARN', scope);
+      const extractedServerlessCacheName = stack.splitArn(attrs.serverlessCacheArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+      if (!extractedServerlessCacheName) {
+        throw new ValidationError('Unable to extract serverless cache name from ARN.', scope);
       }
-      name = maybeServerlessCacheName;
-    } else {
-      if (attrs.serverlessCacheArn) {
-        throw new ValidationError('Only one of serverlessCacheArn or serverlessCacheName can be provided', scope);
-      }
+      name = extractedServerlessCacheName;
+    } else if (attrs.serverlessCacheName) {
       name = attrs.serverlessCacheName;
       arn = stack.formatArn({
         service: 'elasticache',
         resource: 'serverlesscache',
         resourceName: attrs.serverlessCacheName,
       });
+    } else {
+      throw new ValidationError('One of serverlessCacheName or serverlessCacheArn is required.', scope);
     }
 
     class Import extends ServerlessCacheBase {
@@ -308,23 +324,24 @@ export class ServerlessCache extends ServerlessCacheBase {
         this.serverlessCacheName = serverlessCacheName;
 
         if (this.engine) {
-          const getDefaultPort = (engine: CacheEngine): ec2.Port => {
-            switch (engine) {
-              case CacheEngine.VALKEY_DEFAULT:
-              case CacheEngine.VALKEY_7:
-              case CacheEngine.VALKEY_8:
-              case CacheEngine.REDIS_DEFAULT:
-                return ec2.Port.tcp(6379);
-              case CacheEngine.MEMCACHED_DEFAULT:
-                return ec2.Port.tcp(11211);
-              default:
-                throw new ValidationError(`Unsupported cache engine: ${engine}`, scope);
-            }
-          };
+          let defaultPort: ec2.Port;
+          switch (this.engine) {
+            case CacheEngine.VALKEY_DEFAULT:
+            case CacheEngine.VALKEY_7:
+            case CacheEngine.VALKEY_8:
+            case CacheEngine.REDIS_DEFAULT:
+              defaultPort = ec2.Port.tcp(6379);
+              break;
+            case CacheEngine.MEMCACHED_DEFAULT:
+              defaultPort = ec2.Port.tcp(11211);
+              break;
+            default:
+              throw new ValidationError(`Unsupported cache engine: ${this.engine}`, scope);
+          }
 
           this.connections = new ec2.Connections({
             securityGroups: this.securityGroups,
-            defaultPort: getDefaultPort(this.engine),
+            defaultPort: defaultPort,
           });
         } else {
           this.connections = new ec2.Connections({
@@ -404,35 +421,18 @@ export class ServerlessCache extends ServerlessCacheBase {
     this.userGroup = props.userGroup;
 
     this.validateDescription(props.description);
-    this.validateUsageLimits(props.cacheUsageLimits);
+    this.validateDataStorageLimits(props.cacheUsageLimits);
+    this.validateRequestRateLimits(props.cacheUsageLimits);
     this.validateBackupSettings(props.backup);
     this.validateUserGroupCompatibility(this.engine, this.userGroup);
 
-    let subnetIds: string[] | undefined;
-    let securityGroupIds: string[];
+    const subnetConfig = this.configureSubnets(props);
+    const subnetIds = subnetConfig.subnetIds;
+    this.subnets = subnetConfig.subnets;
 
-    let selectedSubnets;
-    if (props.vpcSubnets) {
-      selectedSubnets = props.vpc.selectSubnets(props.vpcSubnets);
-    } else {
-      selectedSubnets = props.vpc.selectSubnets({
-        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-      });
-    }
-    subnetIds = selectedSubnets.subnetIds.length > 0 ? selectedSubnets.subnetIds : undefined;
-    this.subnets = selectedSubnets.subnets.length > 0 ? selectedSubnets.subnets : undefined;
-
-    if (props.securityGroups && props.securityGroups.length > 0) {
-      securityGroupIds = props.securityGroups.map(sg => sg.securityGroupId);
-      this.securityGroups = props.securityGroups;
-    } else {
-      const newSecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
-        description: `Security group for ${this.node.id} cache.`,
-        vpc: props.vpc,
-      });
-      securityGroupIds = [newSecurityGroup.securityGroupId];
-      this.securityGroups = [newSecurityGroup];
-    }
+    const securityGroupConfig = this.configureSecurityGroups(props);
+    const securityGroupIds = securityGroupConfig.securityGroupIds;
+    this.securityGroups = securityGroupConfig.securityGroups;
 
     const { engine, version } = this.parseEngine(this.engine);
 
@@ -491,34 +491,47 @@ export class ServerlessCache extends ServerlessCacheBase {
   }
 
   /**
-   * Validate usage limits are within AWS constraints
+   * Validate data storage size limits
    *
-   * @param limits The usage limits to validate
+   * @param limits The usage limits containing data storage settings
    */
-  private validateUsageLimits(limits?: CacheUsageLimitsProperty): void {
-    if (limits?.dataStorageMinimumSize && !limits.dataStorageMinimumSize.isUnresolved() &&
-            (limits.dataStorageMinimumSize.toGibibytes() < 1 || limits.dataStorageMinimumSize.toGibibytes() > 5000)) {
+  private validateDataStorageLimits(limits?: CacheUsageLimitsProperty): void {
+    if (!limits) return;
+
+    if (limits.dataStorageMinimumSize && !limits.dataStorageMinimumSize.isUnresolved() &&
+        (limits.dataStorageMinimumSize.toGibibytes() < DATA_STORAGE_MIN_GB || limits.dataStorageMinimumSize.toGibibytes() > DATA_STORAGE_MAX_GB)) {
       throw new ValidationError('Data storage minimum must be between 1 and 5000 GB.', this);
     }
-
-    if (limits?.dataStorageMaximumSize && !limits.dataStorageMaximumSize.isUnresolved() &&
-            (limits.dataStorageMaximumSize.toGibibytes() < 1 || limits.dataStorageMaximumSize.toGibibytes() > 5000)) {
+    if (limits.dataStorageMaximumSize && !limits.dataStorageMaximumSize.isUnresolved() &&
+        (limits.dataStorageMaximumSize.toGibibytes() < DATA_STORAGE_MIN_GB || limits.dataStorageMaximumSize.toGibibytes() > DATA_STORAGE_MAX_GB)) {
       throw new ValidationError('Data storage maximum must be between 1 and 5000 GB.', this);
     }
 
-    if (limits?.dataStorageMinimumSize && limits?.dataStorageMaximumSize &&
-            !limits.dataStorageMinimumSize.isUnresolved() && !limits.dataStorageMaximumSize.isUnresolved() &&
-            limits.dataStorageMinimumSize.toGibibytes() > limits.dataStorageMaximumSize.toGibibytes()) {
+    if (limits.dataStorageMinimumSize && limits.dataStorageMaximumSize &&
+        !limits.dataStorageMinimumSize.isUnresolved() && !limits.dataStorageMaximumSize.isUnresolved() &&
+        limits.dataStorageMinimumSize.toGibibytes() > limits.dataStorageMaximumSize.toGibibytes()) {
       throw new ValidationError('Data storage minimum cannot be greater than maximum', this);
     }
+  }
 
-    if (limits?.requestRateLimitMinimum !== undefined && (limits.requestRateLimitMinimum < 1000 || limits.requestRateLimitMinimum > 15000000)) {
+  /**
+   * Validate request rate limits
+   *
+   * @param limits The usage limits containing request rate settings
+   */
+  private validateRequestRateLimits(limits?: CacheUsageLimitsProperty): void {
+    if (!limits) return;
+
+    if (limits.requestRateLimitMinimum !== undefined &&
+        (limits.requestRateLimitMinimum < REQUEST_RATE_MIN_ECPU || limits.requestRateLimitMinimum > REQUEST_RATE_MAX_ECPU)) {
       throw new ValidationError('Request rate minimum must be between 1,000 and 15,000,000 ECPUs per second', this);
     }
-    if (limits?.requestRateLimitMaximum !== undefined && (limits.requestRateLimitMaximum < 1000 || limits.requestRateLimitMaximum > 15000000)) {
+    if (limits.requestRateLimitMaximum !== undefined &&
+        (limits.requestRateLimitMaximum < REQUEST_RATE_MIN_ECPU || limits.requestRateLimitMaximum > REQUEST_RATE_MAX_ECPU)) {
       throw new ValidationError('Request rate maximum must be between 1,000 and 15,000,000 ECPUs per second', this);
     }
-    if (limits?.requestRateLimitMinimum !== undefined && limits?.requestRateLimitMaximum !== undefined &&
+
+    if (limits.requestRateLimitMinimum !== undefined && limits.requestRateLimitMaximum !== undefined &&
         limits.requestRateLimitMinimum > limits.requestRateLimitMaximum) {
       throw new ValidationError('Request rate minimum cannot be greater than maximum', this);
     }
@@ -567,6 +580,10 @@ export class ServerlessCache extends ServerlessCacheBase {
   private validateUserGroupCompatibility(engine: CacheEngine, userGroup?: IUserGroup): void {
     if (!userGroup) return;
 
+    if (engine === CacheEngine.MEMCACHED_DEFAULT) {
+      throw new ValidationError('User groups cannot be used with Memcached engines. Only Redis and Valkey engines support user groups.', this);
+    }
+
     if (engine === CacheEngine.REDIS_DEFAULT && userGroup.engine !== UserEngine.REDIS) {
       throw new ValidationError('Redis cache can only use Redis user groups.', this);
     }
@@ -599,6 +616,52 @@ export class ServerlessCache extends ServerlessCacheBase {
     }
 
     return Object.keys(cacheUsageLimits).length > 0 ? cacheUsageLimits : undefined;
+  }
+
+  /**
+   * Configure subnets for the cache
+   *
+   * @param props The ServerlessCache properties
+   * @returns Object containing subnet IDs and subnet objects
+   */
+  private configureSubnets(props: ServerlessCacheProps): { subnetIds: string[] | undefined; subnets: ec2.ISubnet[] | undefined } {
+    let selectedSubnets;
+    if (props.vpcSubnets) {
+      selectedSubnets = props.vpc.selectSubnets(props.vpcSubnets);
+    } else {
+      selectedSubnets = props.vpc.selectSubnets({
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+      });
+    }
+
+    return {
+      subnetIds: selectedSubnets.subnetIds.length > 0 ? selectedSubnets.subnetIds : undefined,
+      subnets: selectedSubnets.subnets.length > 0 ? selectedSubnets.subnets : undefined,
+    };
+  }
+
+  /**
+   * Configure security groups for the cache
+   *
+   * @param props The ServerlessCache properties
+   * @returns Object containing security group IDs and security group objects
+   */
+  private configureSecurityGroups(props: ServerlessCacheProps): { securityGroupIds: string[]; securityGroups: ec2.ISecurityGroup[] } {
+    if (props.securityGroups && props.securityGroups.length > 0) {
+      return {
+        securityGroupIds: props.securityGroups.map(sg => sg.securityGroupId),
+        securityGroups: props.securityGroups,
+      };
+    } else {
+      const newSecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+        description: `Security group for ${this.node.id} cache.`,
+        vpc: props.vpc,
+      });
+      return {
+        securityGroupIds: [newSecurityGroup.securityGroupId],
+        securityGroups: [newSecurityGroup],
+      };
+    }
   }
 
   /**
