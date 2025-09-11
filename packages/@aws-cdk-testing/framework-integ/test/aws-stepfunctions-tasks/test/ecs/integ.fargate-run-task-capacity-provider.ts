@@ -24,6 +24,10 @@ cluster.addDefaultCapacityProviderStrategy([
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
   memoryLimitMiB: 512,
   cpu: 256,
+  runtimePlatform: {
+    cpuArchitecture: ecs.CpuArchitecture.X86_64,
+    operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+  },
 });
 const containerDefinition = taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
@@ -59,6 +63,7 @@ const definition = new sfn.Pass(stack, 'Start', {
     taskTimeout: sfn.Timeout.at('$.Timeout'),
     cpu: '1024',
     memoryMiB: '2048',
+    resultPath: sfn.JsonPath.DISCARD,
   }),
 ).next(
   // Task with custom capacity provider option
@@ -80,6 +85,7 @@ const definition = new sfn.Pass(stack, 'Start', {
         },
       ]),
     }),
+    resultPath: sfn.JsonPath.DISCARD,
   }),
 ).next(
   // Task with default capacity provider option - uses cluster default
@@ -90,6 +96,7 @@ const definition = new sfn.Pass(stack, 'Start', {
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
       capacityProviderOptions: tasks.NoCapacityProviderOptions.default(),
     }),
+    resultPath: sfn.JsonPath.DISCARD,
   }),
 );
 

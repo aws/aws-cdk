@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "SfnTasksEcsFargateRunTaskCapacityProviderTest/DefaultTest": {
+      "stacks": [
+        "SfnTasksEcsFargateRunTaskCapacityProvider"
+      ],
+      "assertionStack": "SfnTasksEcsFargateRunTaskCapacityProviderTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SfnTasksEcsFargateRunTaskCapacityProviderTestDefaultTestDeployAssertF21B5199"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}
