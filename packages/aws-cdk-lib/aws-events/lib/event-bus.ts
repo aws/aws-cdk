@@ -109,16 +109,20 @@ export enum EventBusLogDetail {
  */
 export interface EventBusLogConfig {
   /**
-   * The level of logging detail to include
+   * The level of logging detail to include.
+   * This applies to all log destinations for the event bus.
    *
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus-logs.html#eb-event-bus-logs-level
    */
   readonly level: EventBusLogLevel;
 
   /**
-   * Whether to include detailed event information in the logs
+   * Whether EventBridge include detailed event information in the records it generates.
+   * Detailed data can be useful for troubleshooting and debugging.
    *
-   * @default undefiend - AWS CloudWatch default is NONE
+   * This information includes details of the event itself, as well as target details.
+   *
+   * @default undefined - AWS CloudWatch default is NONE
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus-logs.html#eb-event-logs-data
    */
   readonly includeDetail?: EventBusLogDetail;
