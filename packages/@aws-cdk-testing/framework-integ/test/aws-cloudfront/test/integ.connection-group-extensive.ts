@@ -9,14 +9,13 @@ const stack = new cdk.Stack(app, 'integ-connection-group-extensive');
 *  https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/request-static-ips.html
 */
 const anycastIpList = new cloudfront.CfnAnycastIpList(stack, 'anycast', {
-  ipCount: 1,
-  name: 'integ-list',
+  ipCount: 21,
+  name: 'integlist',
 });
 
 new cloudfront.ConnectionGroup(stack, 'connection-group', {
   connectionGroupName: 'test-group',
   enabled: true,
-  ipv6Enabled: true,
   anycastIpListId: anycastIpList.attrId,
   tags: [
     { key: 'Environment', value: 'test' },

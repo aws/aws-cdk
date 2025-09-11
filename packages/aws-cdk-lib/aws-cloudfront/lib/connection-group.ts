@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnConnectionGroup } from './cloudfront.generated';
-import { CfnTag, IResource, Resource, Stack } from '../../core';
+import { CfnTag, IResource, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -147,11 +147,19 @@ export class ConnectionGroup extends Resource implements IConnectionGroup {
 
     const connectionGroup = new CfnConnectionGroup(this, 'Resource', {
       name: this.connectionGroupName,
-      anycastIpListId: props?.anycastIpListId,
       enabled: props?.enabled ?? true,
-      ipv6Enabled: props?.ipv6Enabled ?? true,
       tags: props?.tags,
     });
+
+    // Cloudformation expects the ipv6Enabled field to be absent from the template if attempting to use anycast IP lists
+    if (props?.anycastIpListId) {
+      if (props.ipv6Enabled) {
+        throw new ValidationError('enableIpv6 must not be defined when using anycast IP lists', this);
+      }
+      connectionGroup.anycastIpListId = props.anycastIpListId;
+    } else {
+      connectionGroup.ipv6Enabled = props?.ipv6Enabled ?? true;
+    }
 
     this.routingEndpoint = connectionGroup.attrRoutingEndpoint;
     this.arn = connectionGroup.attrArn;
