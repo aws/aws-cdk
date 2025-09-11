@@ -91,6 +91,42 @@
       "KNOWLEDGE_BASE_RESPONSE_GENERATION"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts": {
+    "GuardrailAction": [
+      "BLOCK",
+      "ANONYMIZE",
+      "NONE"
+    ],
+    "TierConfig": [
+      "CLASSIC",
+      "STANDARD"
+    ],
+    "ContentFilterStrength": [
+      "NONE",
+      "LOW",
+      "MEDIUM",
+      "HIGH"
+    ],
+    "ModalityType": [
+      "TEXT",
+      "IMAGE"
+    ],
+    "ContentFilterType": [
+      "SEXUAL",
+      "VIOLENCE",
+      "HATE",
+      "INSULTS",
+      "MISCONDUCT",
+      "PROMPT_ATTACK"
+    ],
+    "ManagedWordFilterType": [
+      "PROFANITY"
+    ],
+    "ContextualGroundingFilterType": [
+      "GROUNDING",
+      "RELEVANCE"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/cross-region-inference-profile.ts": {
     "CrossRegionInferenceProfileRegion": [
       "eu",
@@ -315,8 +351,14 @@
       "G.2X",
       "G.4X",
       "G.8X",
+      "G.12X",
+      "G.16X",
       "G.025X",
-      "Z.2X"
+      "Z.2X",
+      "R.1X",
+      "R.2X",
+      "R.4X",
+      "R.8X"
     ],
     "JobState": [
       "SUCCEEDED",
@@ -1120,6 +1162,16 @@
       "WHEN_NO_MATCH",
       "NEVER",
       "WHEN_NO_TEMPLATES"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/usage-plan.ts": {
+    "Period": [
+      "DAY",
+      "WEEK",
+      "MONTH"
+    ],
+    "UsagePlanKeyType": [
+      "API_KEY"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/application.ts": {
@@ -2408,6 +2460,10 @@
     "BillingMode": [
       "PAY_PER_REQUEST",
       "PROVISIONED"
+    ],
+    "ContributorInsightsMode": [
+      "ACCESSED_AND_THROTTLED_KEYS",
+      "THROTTLED_KEYS"
     ],
     "ProjectionType": [
       "KEYS_ONLY",

@@ -2,7 +2,6 @@ import * as github from '@actions/github';
 import { Octokit } from '@octokit/rest';
 import { StatusEvent, PullRequestEvent, CheckSuiteEvent } from '@octokit/webhooks-definitions/schema';
 import { PullRequestLinter } from './lint';
-import { LinterActions } from './linter-base';
 import { DEFAULT_LINTER_LOGIN } from './constants';
 
 /**
@@ -42,23 +41,7 @@ async function run() {
     linterLogin: process.env.LINTER_LOGIN || DEFAULT_LINTER_LOGIN,
   });
 
-  let actions: LinterActions | undefined;
-
-  switch (github.context.eventName) {
-    case 'status':
-      // Triggering on a 'status' event is solely used to see if the CodeBuild
-      // job just turned green, and adding certain 'ready for review' labels
-      // if it does.
-      const statusPayload = github.context.payload as StatusEvent;
-      console.log('validating status event');
-      actions = await prLinter.validateStatusEvent(statusPayload);
-      break;
-
-    default:
-      // This is the main PR validator action.
-      actions = await prLinter.validatePullRequestTarget();
-      break;
-  }
+  const actions = await prLinter.validatePullRequestTarget();
 
   if (actions) {
     console.log(actions);

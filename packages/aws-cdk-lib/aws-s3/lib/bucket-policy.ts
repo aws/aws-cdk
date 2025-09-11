@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Bucket, IBucket } from './bucket';
-import { CfnBucket, CfnBucketPolicy } from './s3.generated';
+import { BucketPolicyReference, CfnBucket, CfnBucketPolicy, IBucketPolicyRef } from './s3.generated';
 import { PolicyDocument } from '../../aws-iam';
 import { RemovalPolicy, Resource, Token, Tokenization } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -49,7 +49,7 @@ export interface BucketPolicyProps {
  *
  */
 @propertyInjectable
-export class BucketPolicy extends Resource {
+export class BucketPolicy extends Resource implements IBucketPolicyRef {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-s3.BucketPolicy';
 
@@ -88,10 +88,13 @@ export class BucketPolicy extends Resource {
     }(cfnBucketPolicy, id, {
       bucket,
     });
+
     // mark the Bucket as having this Policy
     bucket.policy = ret;
     return ret;
   }
+
+  public readonly bucketPolicyRef: BucketPolicyReference;
 
   /**
    * A policy document containing permissions to add to the specified bucket.
@@ -116,6 +119,7 @@ export class BucketPolicy extends Resource {
       bucket: this.bucket.bucketName,
       policyDocument: this.document,
     });
+    this.bucketPolicyRef = this.resource.bucketPolicyRef;
 
     if (props.removalPolicy) {
       this.resource.applyRemovalPolicy(props.removalPolicy);

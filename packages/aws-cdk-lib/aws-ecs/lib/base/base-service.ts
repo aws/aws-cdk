@@ -283,7 +283,7 @@ export interface ServiceConnectTlsConfiguration {
    *
    * @default - none
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 
   /**
    * The IAM role that's associated with the Service Connect TLS.
@@ -919,6 +919,7 @@ export abstract class BaseService extends Resource
           volumeType: spec.config.volumeType,
           snapshotId: spec.config.snapShotId,
           sizeInGiB: spec.config.size?.toGibibytes(),
+          volumeInitializationRate: spec.config.volumeInitializationRate?.toMebibytes(),
           tagSpecifications: tagSpecifications,
         },
       };
@@ -1022,7 +1023,7 @@ export abstract class BaseService extends Resource
         issuerCertificateAuthority: {
           awsPcaAuthorityArn: svc.tls.awsPcaAuthorityArn,
         },
-        kmsKey: svc.tls.kmsKey?.keyArn,
+        kmsKey: svc.tls.kmsKey?.keyRef.keyArn,
         roleArn: svc.tls.role?.roleArn,
       } : undefined;
 
@@ -1175,7 +1176,7 @@ export abstract class BaseService extends Resource
       }));
     }
 
-    if (logConfiguration?.s3Bucket?.bucketName) {
+    if (logConfiguration?.s3Bucket?.bucketRef.bucketName) {
       this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
         actions: [
           's3:GetBucketLocation',
@@ -1186,14 +1187,14 @@ export abstract class BaseService extends Resource
         actions: [
           's3:PutObject',
         ],
-        resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketName}/*`],
+        resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketRef.bucketName}/*`],
       }));
       if (logConfiguration.s3EncryptionEnabled) {
         this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
           actions: [
             's3:GetEncryptionConfiguration',
           ],
-          resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketName}`],
+          resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketRef.bucketName}`],
         }));
       }
     }

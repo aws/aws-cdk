@@ -32,7 +32,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187541"
+    "salt": "1757338582511"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1031,12 +1031,20 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
+     "S3Key": "53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -1080,7 +1088,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187542"
+    "salt": "1757338582512"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1117,7 +1125,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187543"
+    "salt": "1757338582512"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1154,7 +1162,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187543"
+    "salt": "1757338582512"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1191,7 +1199,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187544"
+    "salt": "1757338582513"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1228,7 +1236,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187545"
+    "salt": "1757338582513"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1265,7 +1273,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187545"
+    "salt": "1757338582513"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1302,7 +1310,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187548"
+    "salt": "1757338582514"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1339,7 +1347,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187549"
+    "salt": "1757338582514"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1376,7 +1384,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187549"
+    "salt": "1757338582514"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1413,7 +1421,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187550"
+    "salt": "1757338582515"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1450,7 +1458,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187550"
+    "salt": "1757338582515"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1487,7 +1495,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187551"
+    "salt": "1757338582515"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1524,7 +1532,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187551"
+    "salt": "1757338582515"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1561,7 +1569,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187552"
+    "salt": "1757338582515"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1598,7 +1606,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187552"
+    "salt": "1757338582516"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1635,7 +1643,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187552"
+    "salt": "1757338582516"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1672,7 +1680,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187553"
+    "salt": "1757338582516"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1709,7 +1717,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187553"
+    "salt": "1757338582516"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1746,7 +1754,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187554"
+    "salt": "1757338582516"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1783,7 +1791,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187554"
+    "salt": "1757338582516"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1820,7 +1828,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187555"
+    "salt": "1757338582517"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1857,7 +1865,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187555"
+    "salt": "1757338582517"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1894,7 +1902,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187555"
+    "salt": "1757338582517"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1931,7 +1939,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187556"
+    "salt": "1757338582517"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1968,7 +1976,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187556"
+    "salt": "1757338582517"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2005,7 +2013,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187556"
+    "salt": "1757338582517"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2042,7 +2050,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187557"
+    "salt": "1757338582518"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2079,7 +2087,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187557"
+    "salt": "1757338582518"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2116,7 +2124,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187558"
+    "salt": "1757338582518"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2153,7 +2161,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187558"
+    "salt": "1757338582518"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2190,7 +2198,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187559"
+    "salt": "1757338582519"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2227,7 +2235,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187559"
+    "salt": "1757338582519"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2264,7 +2272,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187560"
+    "salt": "1757338582519"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2301,7 +2309,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187560"
+    "salt": "1757338582519"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2338,7 +2346,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187560"
+    "salt": "1757338582520"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2375,7 +2383,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187561"
+    "salt": "1757338582520"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2412,7 +2420,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187561"
+    "salt": "1757338582520"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2449,7 +2457,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187562"
+    "salt": "1757338582520"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2486,7 +2494,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187563"
+    "salt": "1757338582520"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2523,7 +2531,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187563"
+    "salt": "1757338582520"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2560,7 +2568,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187564"
+    "salt": "1757338582520"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2597,7 +2605,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187564"
+    "salt": "1757338582521"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2634,7 +2642,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187564"
+    "salt": "1757338582521"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2671,7 +2679,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187565"
+    "salt": "1757338582521"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2708,7 +2716,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187565"
+    "salt": "1757338582521"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2745,7 +2753,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187566"
+    "salt": "1757338582521"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2782,7 +2790,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187566"
+    "salt": "1757338582521"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2819,7 +2827,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187566"
+    "salt": "1757338582522"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2856,7 +2864,7 @@
     "outputPaths": [
      "Body"
     ],
-    "salt": "1754373187567"
+    "salt": "1757338582522"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -2882,7 +2890,7 @@
      "Stacks.0.Outputs.0.OutputKey",
      "Stacks.0.Outputs.0.OutputValue"
     ],
-    "salt": "1754373187567"
+    "salt": "1757338582522"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -3295,6 +3303,148 @@
      "AwsApiCallCloudFormationdescribeStackseee0561cd3ca3cfdab32c1c7b9ebf09c",
      "assertion"
     ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs22.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs22.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs22.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs22.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs22.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
+    "value": "nodejs22.x"
+   },
+   "il-central-1": {
+    "value": "nodejs22.x"
+   },
+   "me-central-1": {
+    "value": "nodejs22.x"
+   },
+   "me-south-1": {
+    "value": "nodejs22.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs22.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-east-2": {
+    "value": "nodejs22.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs22.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
+   },
+   "us-west-1": {
+    "value": "nodejs22.x"
+   },
+   "us-west-2": {
+    "value": "nodejs22.x"
    }
   }
  },

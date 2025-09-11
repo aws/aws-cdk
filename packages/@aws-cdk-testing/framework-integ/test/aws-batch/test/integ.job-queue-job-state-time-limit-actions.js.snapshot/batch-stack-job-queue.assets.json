@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "batch-stack-job-queue/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "0f299b12400b9b2b0e9bfd22ffdd770c4f42f07329646d3a85a949e862b573b8": {
+    "cf0647dfc2bad74ea9dba7c6ee661cfb021911ccd7111f0443efb3dccf54ce1c": {
       "displayName": "batch-stack-job-queue Template",
       "source": {
         "path": "batch-stack-job-queue.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-c9a18aa2": {
+        "current_account-current_region-28b9e4ad": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0f299b12400b9b2b0e9bfd22ffdd770c4f42f07329646d3a85a949e862b573b8.json",
+          "objectKey": "cf0647dfc2bad74ea9dba7c6ee661cfb021911ccd7111f0443efb3dccf54ce1c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -313,7 +313,7 @@ export interface ClusterProps {
    *
    * @default - AWS-managed key, if encryption at rest is enabled
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKeyRef;
 
   /**
    * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
@@ -692,7 +692,7 @@ export class Cluster extends ClusterBase {
       dbName: props.defaultDatabaseName || 'default_db',
       publiclyAccessible: props.publiclyAccessible || false,
       // Encryption
-      kmsKeyId: props.encryptionKey?.keyId,
+      kmsKeyId: props.encryptionKey?.keyRef.keyId,
       encrypted: props.encrypted ?? true,
       classic: props.classicResizing,
       elasticIp: props.elasticIp,

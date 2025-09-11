@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "48.0.0",
   "testCases": {
     "test-s3-deploy-substitution-with-role/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "test-s3-deploy-substitution-with-role/DefaultTest/DeployAssert",
       "assertionStackName": "tests3deploysubstitutionwithroleDefaultTestDeployAssertC49A4480"
     }
-  }
+  },
+  "minimumCliVersion": "2.1025.0"
 }

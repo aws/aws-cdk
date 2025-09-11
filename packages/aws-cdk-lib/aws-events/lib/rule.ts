@@ -7,7 +7,7 @@ import { IRule } from './rule-ref';
 import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
 import { mergeEventPattern, renderEventPattern } from './util';
-import { IRole, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import { IRole, IRoleRef, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -61,7 +61,7 @@ export interface RuleProps extends EventCommonOptions {
    *
    * @default - No role associated
    */
-  readonly role?: IRole;
+  readonly role?: IRoleRef;
 }
 
 /**
@@ -129,7 +129,7 @@ export class Rule extends Resource implements IRule {
       eventPattern: Lazy.any({ produce: () => this._renderEventPattern() }),
       targets: Lazy.any({ produce: () => this.renderTargets() }),
       eventBusName: props.eventBus && props.eventBus.eventBusName,
-      roleArn: props.role?.roleArn,
+      roleArn: props.role?.roleRef.roleArn,
     });
 
     this.ruleArn = this.getResourceArnAttribute(resource.attrArn, {
