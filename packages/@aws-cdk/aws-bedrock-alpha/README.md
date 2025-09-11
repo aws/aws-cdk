@@ -28,6 +28,8 @@ This construct library facilitates the deployment of Bedrock Agents, enabling yo
 
 - [Agents](#agents)
   - [Create an Agent](#create-an-agent)
+  - [Model Access Validation](#model-access-validation)
+  - [Agent Properties](#agent-properties)
   - [Action groups](#action-groups)
   - [Prepare the Agent](#prepare-the-agent)
   - [Prompt Override Configuration](#prompt-override-configuration)
@@ -103,6 +105,47 @@ const agentWithGuardrail = new bedrock.Agent(this, 'AgentWithGuardrail', {
 });
 ```
 
+### Model Access Validation
+
+The ModelAccessValidator feature automatically validates that your agent has the necessary permissions to use the specified foundation model. When enabled, it creates a custom resource that checks model access and automatically creates the required IAM policies if they don't exist.
+
+#### Enabling Model Access Validation
+
+```ts fixture=default
+const agent = new bedrock.Agent(this, 'Agent', {
+  foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+  instruction: 'You are a helpful and friendly agent that answers questions about literature.',
+  validateModelAccess: true, // Enable automatic model access validation
+});
+```
+
+#### Cross-Region Model Validation
+
+The ModelAccessValidator also works with cross-region inference profiles:
+
+```ts fixture=default
+const crossRegionProfile = bedrock.CrossRegionInferenceProfile.fromConfig({
+  geoRegion: bedrock.CrossRegionInferenceProfileRegion.US,
+  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+});
+
+const agent = new bedrock.Agent(this, 'Agent', {
+  foundationModel: crossRegionProfile,
+  instruction: 'You are a helpful and friendly agent that answers questions about agriculture.',
+  validateModelAccess: true, // Validates access for cross-region inference
+});
+```
+
+#### How Model Access Validation Works
+
+When `validateModelAccess` is set to `true`, the validator checks whether you can actually use the specified foundation model in your AWS account. If the model is not enabled in Amazon Bedrock, the deployment will fail with a clear error message indicating that you need to enable the model first through the Bedrock console.
+
+#### Benefits
+
+- **Early Detection**: Catches model availability issues during deployment rather than at runtime
+- **Clear Guidance**: Provides actionable error messages when models need to be enabled
+- **Cross-Region Awareness**: Validates model access across all regions for cross-region inference profiles
+
 ### Agent Properties
 
 The Bedrock Agent class supports the following properties.
@@ -126,6 +169,7 @@ The Bedrock Agent class supports the following properties.
 | forceDelete | boolean | No | Whether to delete the resource even if it's in use. Defaults to true |
 | agentCollaboration | AgentCollaboration | No | Configuration for agent collaboration settings, including type and collaborators. This property allows you to define how the agent collaborates with other agents and what collaborators it can work with. Defaults to no agent collaboration configuration |
 | customOrchestrationExecutor | CustomOrchestrationExecutor | No | The Lambda function to use for custom orchestration. If provided, orchestrationType is set to CUSTOM_ORCHESTRATION. If not provided, orchestrationType defaults to DEFAULT. Defaults to default orchestration |
+| validateModelAccess | boolean | No | Whether to validate that the foundation model has the necessary permissions for the agent to use it. When enabled, creates a custom resource that checks model access and automatically creates the required IAM policies. Defaults to false |
 
 ### Action Groups
 
