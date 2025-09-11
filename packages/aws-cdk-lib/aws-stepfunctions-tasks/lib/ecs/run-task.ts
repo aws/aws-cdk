@@ -204,6 +204,9 @@ interface CapacityProviderOptions {
   capacityProviderStrategy?: ecs.CapacityProviderStrategy[];
 }
 
+/**
+ * WIP
+ */
 export abstract class CapacityProviderOptionsBase {
   /**
    * WIP
@@ -232,6 +235,9 @@ export abstract class CapacityProviderOptionsBase {
   abstract bind(launchType: ecs.LaunchType): CapacityProviderOptions;
 }
 
+/**
+ * WIP
+ */
 export class NoneCapacityProviderOptions extends CapacityProviderOptionsBase {
   constructor() {
     super();
@@ -247,6 +253,9 @@ export class NoneCapacityProviderOptions extends CapacityProviderOptionsBase {
   }
 }
 
+/**
+ * WIP
+ */
 export class CustomCapacityProviderOptions extends CapacityProviderOptionsBase {
   constructor(private readonly capacityProviderStrategy: ecs.CapacityProviderStrategy[]) {
     super();
@@ -266,6 +275,9 @@ export class CustomCapacityProviderOptions extends CapacityProviderOptionsBase {
   }
 }
 
+/**
+ * WIP
+ */
 export class DefaultCapacityProviderOptions extends CapacityProviderOptionsBase {
   constructor() {
     super();
@@ -296,12 +308,12 @@ export class EcsFargateLaunchTarget implements IEcsLaunchTarget {
     }
 
     const capacityProvider = this.options?.capacityProviderOptions ?? CapacityProviderOptionsBase.none();
-    const bound = capacityProvider.bind(ecs.LaunchType.FARGATE);
+    const capacityProviderBound = capacityProvider.bind(ecs.LaunchType.FARGATE);
 
     return {
       parameters: {
-        LaunchType: bound.launchType,
-        CapacityProviderStrategy: bound.capacityProviderStrategy?.map((s) => ({
+        LaunchType: capacityProviderBound.launchType,
+        CapacityProviderStrategy: capacityProviderBound.capacityProviderStrategy?.map((s) => ({
           CapacityProvider: s.capacityProvider,
           Weight: s.weight,
           Base: s.base,
@@ -332,12 +344,12 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
     }
 
     const capacityProvider = this.options?.capacityProviderOptions ?? CapacityProviderOptionsBase.none();
-    const bound = capacityProvider.bind(ecs.LaunchType.FARGATE);
+    const capacityProviderBound = capacityProvider.bind(ecs.LaunchType.FARGATE);
 
     return {
       parameters: {
-        LaunchType: bound.launchType,
-        CapacityProviderStrategy: bound.capacityProviderStrategy?.map((s) => ({
+        LaunchType: capacityProviderBound.launchType,
+        CapacityProviderStrategy: capacityProviderBound.capacityProviderStrategy?.map((s) => ({
           CapacityProvider: s.capacityProvider,
           Weight: s.weight,
           Base: s.base,
