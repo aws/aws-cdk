@@ -257,7 +257,7 @@ export abstract class CapacityProviderOptionsBase {
   /**
    * @internal
    */
-  abstract bind(launchType: ecs.LaunchType): CapacityProviderOptions;
+  abstract _bind(launchType: ecs.LaunchType): CapacityProviderOptions;
 }
 
 /**
@@ -271,9 +271,9 @@ export class NoCapacityProviderOptions extends CapacityProviderOptionsBase {
   /**
    * @internal
    */
-  bind(launchType: ecs.LaunchType): CapacityProviderOptions {
+  _bind(launchType: ecs.LaunchType): CapacityProviderOptions {
     return {
-      launchType: launchType,
+      launchType,
     };
   }
 }
@@ -293,7 +293,7 @@ export class CustomCapacityProviderOptions extends CapacityProviderOptionsBase {
   /**
    * @internal
    */
-  bind(_launchType: ecs.LaunchType): CapacityProviderOptions {
+  _bind(_launchType: ecs.LaunchType): CapacityProviderOptions {
     return {
       capacityProviderStrategy: this.capacityProviderStrategy,
     };
@@ -311,7 +311,9 @@ export class DefaultCapacityProviderOptions extends CapacityProviderOptionsBase 
   /**
    * @internal
    */
-  bind(_launchType: ecs.LaunchType): CapacityProviderOptions {
+  _bind(_launchType: ecs.LaunchType): CapacityProviderOptions {
+    // If neither `launchType` nor `capacityProviderStrategy` is specified,
+    // the cluster's `defaultCapacityProviderStrategy` is used.
     return {};
   }
 }
@@ -333,7 +335,7 @@ export class EcsFargateLaunchTarget implements IEcsLaunchTarget {
     }
 
     const capacityProvider = this.options?.capacityProviderOptions ?? CapacityProviderOptionsBase.none();
-    const capacityProviderBound = capacityProvider.bind(ecs.LaunchType.FARGATE);
+    const capacityProviderBound = capacityProvider._bind(ecs.LaunchType.FARGATE);
 
     return {
       parameters: {
@@ -369,7 +371,7 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
     }
 
     const capacityProvider = this.options?.capacityProviderOptions ?? CapacityProviderOptionsBase.none();
-    const capacityProviderBound = capacityProvider.bind(ecs.LaunchType.FARGATE);
+    const capacityProviderBound = capacityProvider._bind(ecs.LaunchType.FARGATE);
 
     return {
       parameters: {
