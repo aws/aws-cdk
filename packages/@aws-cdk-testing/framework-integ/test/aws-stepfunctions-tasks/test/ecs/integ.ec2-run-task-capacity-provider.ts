@@ -11,10 +11,8 @@ import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App({
   postCliContext: {
-    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
     '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
-    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 const stack = new cdk.Stack(app, 'aws-sfn-tasks-ecs-ec2-run-task-capacity-provider');
@@ -46,11 +44,13 @@ const autoScalingGroup2 = new asg.AutoScalingGroup(stack, 'AutoScalingGroup2', {
 const capacityProvider1 = new ecs.AsgCapacityProvider(stack, 'CP1', {
   autoScalingGroup: autoScalingGroup1,
   enableManagedTerminationProtection: false,
+  enableManagedDraining: true,
 });
 
 const capacityProvider2 = new ecs.AsgCapacityProvider(stack, 'CP2', {
   autoScalingGroup: autoScalingGroup2,
   enableManagedTerminationProtection: false,
+  enableManagedDraining: true,
 });
 
 cluster.addAsgCapacityProvider(capacityProvider1);
