@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "BedrockAgentCrossRegionValidationTest/DefaultTest": {
+      "stacks": [
+        "bedrock-cross-val"
+      ],
+      "assertionStack": "BedrockAgentCrossRegionValidationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentCrossRegionValidationTestDefaultTestDeployAssertF951A4B9"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

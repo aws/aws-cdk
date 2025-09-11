@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "BedrockAgentModelValidationTest/DefaultTest": {
+      "stacks": [
+        "bedrock-model-val"
+      ],
+      "assertionStack": "BedrockAgentModelValidationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentModelValidationTestDefaultTestDeployAssertF7457DE3"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
