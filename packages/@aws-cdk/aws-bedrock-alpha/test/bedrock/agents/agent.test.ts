@@ -36,6 +36,25 @@ describe('Agent', () => {
     });
   });
 
+  test('creates model access validator by default', () => {
+    new bedrock.Agent(stack, 'TestAgent', {
+      instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+      foundationModel,
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::ModelAccessValidator', 1);
+  });
+
+  test('skips model validation when validateModelAccess is false', () => {
+    new bedrock.Agent(stack, 'TestAgent', {
+      instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+      foundationModel,
+      validateModelAccess: false,
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::CloudFormation::CustomResource', 0);
+  });
+
   test('creates agent with basic properties', () => {
     new bedrock.Agent(stack, 'TestAgent', {
       instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
@@ -53,7 +72,7 @@ describe('Agent', () => {
   });
 
   test('creates agent with all properties', () => {
-    new bedrock.Agent(stack, 'TestAgent', {
+    new bedrock.Agent(stack, 'TestAgent2', {
       instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
       foundationModel,
       agentName: 'MyTestAgent',

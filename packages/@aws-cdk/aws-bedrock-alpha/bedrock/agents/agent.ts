@@ -19,6 +19,7 @@ import { AssetApiSchema, S3ApiSchema } from './api-schema';
 import { IGuardrail } from '../guardrails/guardrails';
 import * as validation from './validation-helpers';
 import { IBedrockInvokable } from '.././models';
+import { ModelAccessValidator } from '../model-access-validator';
 import { Memory } from './memory';
 import { CustomOrchestrationExecutor, OrchestrationType } from './orchestration-executor';
 
@@ -296,6 +297,15 @@ export interface AgentProps {
    * @default - Default orchestration
    */
   readonly customOrchestrationExecutor?: CustomOrchestrationExecutor;
+
+  /**
+   * Whether to validate that the foundation model is accessible during deployment.
+   * When enabled, a custom resource will test model access and fail deployment
+   * if the model hasn't been enabled in the Bedrock console.
+   *
+   * @default true
+   */
+  readonly validateModelAccess?: boolean;
 }
 /******************************************************************************
  *                      ATTRS FOR IMPORTED CONSTRUCT
@@ -579,6 +589,13 @@ export class Agent extends AgentBase implements IAgent {
       // add the appropriate permissions to use the FM
       const grant = this.foundationModel.grantInvoke(this.role);
       grant.applyBefore(this.__resource);
+    }
+
+    // Validate model access during deployment
+    if (props.validateModelAccess !== false) {
+      new ModelAccessValidator(this, 'ModelValidator', {
+        model: this.foundationModel,
+      });
     }
 
     this.testAlias = AgentAlias.fromAttributes(this, 'DefaultAlias', {

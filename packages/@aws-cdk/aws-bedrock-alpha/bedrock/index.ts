@@ -45,3 +45,4 @@ export * from './inference-profiles/prompt-router';
 // Models
 // ===================================
 export * from './models';
+export * from './model-access-validator';
