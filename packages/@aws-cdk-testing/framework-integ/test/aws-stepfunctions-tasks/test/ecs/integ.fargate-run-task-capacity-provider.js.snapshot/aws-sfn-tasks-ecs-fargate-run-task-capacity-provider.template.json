@@ -13,7 +13,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc"
      }
     ]
    }
@@ -42,7 +42,7 @@
      },
      {
       "Key": "Name",
-      "Value": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -56,7 +56,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -97,7 +97,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -117,7 +117,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -150,7 +150,7 @@
      },
      {
       "Key": "Name",
-      "Value": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -164,7 +164,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -205,7 +205,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -225,7 +225,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -258,7 +258,7 @@
      },
      {
       "Key": "Name",
-      "Value": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PrivateSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -272,7 +272,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PrivateSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -327,7 +327,7 @@
      },
      {
       "Key": "Name",
-      "Value": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PrivateSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -341,7 +341,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PrivateSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -378,7 +378,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc"
      }
     ]
    }
@@ -393,28 +393,6 @@
      "Ref": "FargateClusterVpc377E8024"
     }
    }
-  },
-  "FargateClusterVpcRestrictDefaultSecurityGroupCustomResourceAD25C67E": {
-   "Type": "Custom::VpcRestrictDefaultSG",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
-      "Arn"
-     ]
-    },
-    "DefaultSecurityGroupId": {
-     "Fn::GetAtt": [
-      "FargateClusterVpc377E8024",
-      "DefaultSecurityGroup"
-     ]
-    },
-    "Account": {
-     "Ref": "AWS::AccountId"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   },
   "FargateClusterFAF97480": {
    "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
@@ -438,100 +416,6 @@
      }
     ]
    }
-  },
-  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ],
-    "Policies": [
-     {
-      "PolicyName": "Inline",
-      "PolicyDocument": {
-       "Version": "2012-10-17",
-       "Statement": [
-        {
-         "Effect": "Allow",
-         "Action": [
-          "ec2:AuthorizeSecurityGroupIngress",
-          "ec2:AuthorizeSecurityGroupEgress",
-          "ec2:RevokeSecurityGroupIngress",
-          "ec2:RevokeSecurityGroupEgress"
-         ],
-         "Resource": [
-          {
-           "Fn::Join": [
-            "",
-            [
-             "arn:",
-             {
-              "Ref": "AWS::Partition"
-             },
-             ":ec2:",
-             {
-              "Ref": "AWS::Region"
-             },
-             ":",
-             {
-              "Ref": "AWS::AccountId"
-             },
-             ":security-group/",
-             {
-              "Fn::GetAtt": [
-               "FargateClusterVpc377E8024",
-               "DefaultSecurityGroup"
-              ]
-             }
-            ]
-           ]
-          }
-         ]
-        }
-       ]
-      }
-     }
-    ]
-   }
-  },
-  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
-    },
-    "Timeout": 900,
-    "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs22.x",
-    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
-   },
-   "DependsOn": [
-    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-   ]
   },
   "TaskDefTaskRole1EDB4A67": {
    "Type": "AWS::IAM::Role",
@@ -582,7 +466,7 @@
       "Arn"
      ]
     },
-    "Family": "SfnTasksEcsFargateRunTaskCapacityProviderTaskDef2D1DF9C4",
+    "Family": "awssfntasksecsfargateruntaskcapacityproviderTaskDefF736AC6B",
     "Memory": "512",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
@@ -690,7 +574,7 @@
   "FargateTaskWithNoneSecurityGroupF550C029": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateTaskWithNone/SecurityGroup",
+    "GroupDescription": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateTaskWithNone/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -706,7 +590,7 @@
   "FargateTaskWithCustomSecurityGroup532CD80A": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateTaskWithCustom/SecurityGroup",
+    "GroupDescription": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateTaskWithCustom/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -722,7 +606,7 @@
   "FargateTaskWithDefaultSecurityGroup8B0A8F28": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "SfnTasksEcsFargateRunTaskCapacityProvider/FargateTaskWithDefault/SecurityGroup",
+    "GroupDescription": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateTaskWithDefault/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -761,7 +645,116 @@
        "Action": "ecs:RunTask",
        "Effect": "Allow",
        "Resource": {
-        "Ref": "TaskDef54694570"
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Fn::Select": [
+            1,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Ref": "TaskDef54694570"
+              }
+             ]
+            }
+           ]
+          },
+          ":",
+          {
+           "Fn::Select": [
+            2,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Ref": "TaskDef54694570"
+              }
+             ]
+            }
+           ]
+          },
+          ":",
+          {
+           "Fn::Select": [
+            3,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Ref": "TaskDef54694570"
+              }
+             ]
+            }
+           ]
+          },
+          ":",
+          {
+           "Fn::Select": [
+            4,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Ref": "TaskDef54694570"
+              }
+             ]
+            }
+           ]
+          },
+          ":",
+          {
+           "Fn::Select": [
+            0,
+            {
+             "Fn::Split": [
+              "/",
+              {
+               "Fn::Select": [
+                5,
+                {
+                 "Fn::Split": [
+                  ":",
+                  {
+                   "Ref": "TaskDef54694570"
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          },
+          "/",
+          {
+           "Fn::Select": [
+            1,
+            {
+             "Fn::Split": [
+              "/",
+              {
+               "Fn::Select": [
+                5,
+                {
+                 "Fn::Split": [
+                  ":",
+                  {
+                   "Ref": "TaskDef54694570"
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          },
+          ":*"
+         ]
+        ]
        }
       },
       {
@@ -847,7 +840,7 @@
          "Arn"
         ]
        },
-       "\",\"TaskDefinition\":\"SfnTasksEcsFargateRunTaskCapacityProviderTaskDef2D1DF9C4\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"AssignPublicIp\":\"ENABLED\",\"Subnets\":[\"",
+       "\",\"TaskDefinition\":\"awssfntasksecsfargateruntaskcapacityproviderTaskDefF736AC6B\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"AssignPublicIp\":\"ENABLED\",\"Subnets\":[\"",
        {
         "Ref": "FargateClusterVpcPublicSubnet1SubnetB9C24BC7"
        },
@@ -873,7 +866,7 @@
          "Arn"
         ]
        },
-       "\",\"TaskDefinition\":\"SfnTasksEcsFargateRunTaskCapacityProviderTaskDef2D1DF9C4\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"Subnets\":[\"",
+       "\",\"TaskDefinition\":\"awssfntasksecsfargateruntaskcapacityproviderTaskDefF736AC6B\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"Subnets\":[\"",
        {
         "Ref": "FargateClusterVpcPrivateSubnet1Subnet9127625F"
        },
@@ -899,7 +892,7 @@
          "Arn"
         ]
        },
-       "\",\"TaskDefinition\":\"SfnTasksEcsFargateRunTaskCapacityProviderTaskDef2D1DF9C4\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"Subnets\":[\"",
+       "\",\"TaskDefinition\":\"awssfntasksecsfargateruntaskcapacityproviderTaskDefF736AC6B\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"Subnets\":[\"",
        {
         "Ref": "FargateClusterVpcPrivateSubnet1Subnet9127625F"
        },
@@ -939,7 +932,7 @@
     "Ref": "StateMachine2E01A3A5"
    },
    "Export": {
-    "Name": "SfnTasksEcsFargateRunTaskCapacityProvider:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+    "Name": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider:ExportsOutputRefStateMachine2E01A3A5BA46F753"
    }
   }
  },

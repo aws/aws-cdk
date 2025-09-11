@@ -1,39 +1,56 @@
 import * as path from 'path';
+import * as asg from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP, STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY } from 'aws-cdk-lib/cx-api';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
-const stack = new cdk.Stack(app, 'SfnTasksEcsEc2RunTaskCapacityProvider');
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
+const stack = new cdk.Stack(app, 'aws-sfn-tasks-ecs-ec2-run-task-capacity-provider');
+stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
+stack.node.setContext(STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY, false);
 
 const cluster = new ecs.Cluster(stack, 'Ec2Cluster');
 
-// Create first Auto Scaling Group and Capacity Provider
-const autoScalingGroup1 = cluster.addCapacity('AutoScalingGroup1', {
+// Create Auto Scaling Groups
+const autoScalingGroup1 = new asg.AutoScalingGroup(stack, 'AutoScalingGroup1', {
+  vpc: cluster.vpc,
   instanceType: new ec2.InstanceType('t2.micro'),
-  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
   minCapacity: 1,
   maxCapacity: 2,
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
 });
 
+const autoScalingGroup2 = new asg.AutoScalingGroup(stack, 'AutoScalingGroup2', {
+  vpc: cluster.vpc,
+  instanceType: new ec2.InstanceType('t2.micro'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  minCapacity: 1,
+  maxCapacity: 2,
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+});
+
+// Create and add Capacity Providers
 const capacityProvider1 = new ecs.AsgCapacityProvider(stack, 'CP1', {
   autoScalingGroup: autoScalingGroup1,
-});
-
-// Create second Auto Scaling Group and Capacity Provider
-const autoScalingGroup2 = cluster.addCapacity('AutoScalingGroup2', {
-  instanceType: new ec2.InstanceType('t2.micro'),
-  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-  minCapacity: 1,
-  maxCapacity: 2,
+  enableManagedTerminationProtection: false,
 });
 
 const capacityProvider2 = new ecs.AsgCapacityProvider(stack, 'CP2', {
   autoScalingGroup: autoScalingGroup2,
+  enableManagedTerminationProtection: false,
 });
 
 cluster.addAsgCapacityProvider(capacityProvider1);

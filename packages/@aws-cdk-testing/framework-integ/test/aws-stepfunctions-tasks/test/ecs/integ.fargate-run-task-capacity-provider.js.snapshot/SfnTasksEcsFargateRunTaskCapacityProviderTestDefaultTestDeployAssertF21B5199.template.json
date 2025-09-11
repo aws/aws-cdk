@@ -18,7 +18,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "SfnTasksEcsFargateRunTaskCapacityProvider:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+         "Fn::ImportValue": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider:ExportsOutputRefStateMachine2E01A3A5BA46F753"
         },
         "\""
        ]
@@ -30,7 +30,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1757590391648"
+    "salt": "1757599618626"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -147,7 +147,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1757590391648"
+    "salt": "1757599618626"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsstartExecutionbf96e74b1b8001e975176b946ae1b0af"

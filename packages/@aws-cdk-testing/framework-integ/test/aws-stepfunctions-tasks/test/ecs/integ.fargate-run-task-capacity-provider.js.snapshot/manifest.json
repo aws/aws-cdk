@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "SfnTasksEcsFargateRunTaskCapacityProvider.assets": {
+    "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "SfnTasksEcsFargateRunTaskCapacityProvider.assets.json",
+        "file": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "SfnTasksEcsFargateRunTaskCapacityProvider": {
+    "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "SfnTasksEcsFargateRunTaskCapacityProvider.template.json",
+        "templateFile": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/90c150de8dcb10c28b3f4d1287ea30bb5c8a1386a6867bef92d74050971f270b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd9cef58ec1f2feb40f777d99b05a2438d02293433e7e928ec30e578f9d5d928.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "SfnTasksEcsFargateRunTaskCapacityProvider.assets"
+          "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,10 +31,10 @@
         }
       },
       "dependencies": [
-        "SfnTasksEcsFargateRunTaskCapacityProvider.assets"
+        "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider.assets"
       ],
       "metadata": {
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -64,13 +64,13 @@
             }
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Resource": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateCluster7CCD5F93"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -78,13 +78,13 @@
             }
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/Resource": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpc377E8024"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet1": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -120,43 +120,43 @@
             }
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet1/Subnet": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPublicSubnet1SubnetB9C24BC7"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet1/RouteTable": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPublicSubnet1RouteTable1D7FA747"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPublicSubnet1RouteTableAssociation80F1442F"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet1/DefaultRoute": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPublicSubnet1DefaultRoute80086690"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet1/EIP": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPublicSubnet1EIPF91909D0"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet1/NATGateway": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPublicSubnet1NATGateway5202D86A"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet2": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -192,43 +192,43 @@
             }
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet2/Subnet": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPublicSubnet2Subnet24C0F9D8"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet2/RouteTable": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPublicSubnet2RouteTable1493C5D6"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet2/RouteTableAssociation": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPublicSubnet2RouteTableAssociation3EFA74DC"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet2/DefaultRoute": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPublicSubnet2DefaultRoute8E847CD2"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet2/EIP": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPublicSubnet2EIPBBB24774"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PublicSubnet2/NATGateway": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPublicSubnet2NATGatewayFFEC8ED2"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PrivateSubnet1": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -256,31 +256,31 @@
             "data": {}
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PrivateSubnet1/Subnet": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPrivateSubnet1Subnet9127625F"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PrivateSubnet1/RouteTable": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPrivateSubnet1RouteTable21B3CEAE"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPrivateSubnet1RouteTableAssociation78F6E213"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPrivateSubnet1DefaultRoute0438DCBA"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PrivateSubnet2": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -308,79 +308,49 @@
             "data": {}
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PrivateSubnet2/Subnet": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPrivateSubnet2Subnet307CEE57"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PrivateSubnet2/RouteTable": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPrivateSubnet2RouteTable7B7F9678"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPrivateSubnet2RouteTableAssociation3A46964C"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/PrivateSubnet2/DefaultRoute": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcPrivateSubnet2DefaultRoute35FDD29D"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/IGW": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcIGW827638CB"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/VPCGW": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterVpcVPCGW38717255"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/RestrictDefaultSecurityGroupCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FargateClusterVpcRestrictDefaultSecurityGroupCustomResourceAD25C67E"
-          }
-        ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateCluster/FargateCluster": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateCluster/FargateCluster": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterFAF97480"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-          }
-        ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
-          }
-        ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/TaskDef": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/TaskDef": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -406,7 +376,7 @@
             "data": "*"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/TaskDef/TaskRole": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/TaskDef/TaskRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -417,25 +387,25 @@
             }
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/TaskDef/TaskRole/ImportTaskRole": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/TaskDef/TaskRole/ImportTaskRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/TaskDef/TaskRole/Resource": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/TaskDef/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TaskDefTaskRole1EDB4A67"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/TaskDef/Resource": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TaskDef54694570"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/TaskDef/TheContainer/LogGroup": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/TaskDef/TheContainer/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -443,13 +413,13 @@
             }
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/TaskDef/TheContainer/LogGroup/Resource": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/TaskDef/TheContainer/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TaskDefTheContainerLogGroupD94C8EF5"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/TaskDef/ExecutionRole": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/TaskDef/ExecutionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -501,19 +471,19 @@
             }
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/TaskDef/ExecutionRole/ImportExecutionRole": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/TaskDef/ExecutionRole/ImportExecutionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/TaskDef/ExecutionRole/Resource": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/TaskDef/ExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TaskDefExecutionRoleB4775C97"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/TaskDef/ExecutionRole/DefaultPolicy": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/TaskDef/ExecutionRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -559,13 +529,13 @@
             }
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TaskDefExecutionRoleDefaultPolicy0DBB737A"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateTaskWithNone/SecurityGroup": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateTaskWithNone/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -573,13 +543,13 @@
             }
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateTaskWithNone/SecurityGroup/Resource": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateTaskWithNone/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateTaskWithNoneSecurityGroupF550C029"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateTaskWithCustom/SecurityGroup": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateTaskWithCustom/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -587,13 +557,13 @@
             }
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateTaskWithCustom/SecurityGroup/Resource": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateTaskWithCustom/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateTaskWithCustomSecurityGroup532CD80A"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateTaskWithDefault/SecurityGroup": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateTaskWithDefault/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -601,13 +571,13 @@
             }
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/FargateTaskWithDefault/SecurityGroup/Resource": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/FargateTaskWithDefault/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateTaskWithDefaultSecurityGroup8B0A8F28"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/StateMachine": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/StateMachine": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -699,7 +669,7 @@
             }
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/StateMachine/Role": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/StateMachine/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -806,19 +776,19 @@
             }
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/StateMachine/Role/ImportRole": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/StateMachine/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/StateMachine/Role/Resource": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/StateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachineRoleB840431D"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/StateMachine/Role/DefaultPolicy": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/StateMachine/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -920,38 +890,38 @@
             }
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/StateMachine/Role/DefaultPolicy/Resource": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/StateMachine/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachineRoleDefaultPolicyDF1E6607"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/StateMachine/Resource": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/StateMachine/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachine2E01A3A5"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefStateMachine2E01A3A5BA46F753"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/BootstrapVersion": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/SfnTasksEcsFargateRunTaskCapacityProvider/CheckBootstrapVersion": [
+        "/aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "SfnTasksEcsFargateRunTaskCapacityProvider"
+      "displayName": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider"
     },
     "SfnTasksEcsFargateRunTaskCapacityProviderTestDefaultTestDeployAssertF21B5199.assets": {
       "type": "cdk:asset-manifest",
@@ -970,7 +940,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/574c8deb1ef25c5dc0ecc46d395b4885bc3f8991589649b10af43abef7f09f90.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/46c2e9e26e77b5f97b4376c0b91131e3dbee04399a5a71c77c1c99aad49212c1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -983,7 +953,7 @@
         }
       },
       "dependencies": [
-        "SfnTasksEcsFargateRunTaskCapacityProvider",
+        "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider",
         "SfnTasksEcsFargateRunTaskCapacityProviderTestDefaultTestDeployAssertF21B5199.assets"
       ],
       "metadata": {

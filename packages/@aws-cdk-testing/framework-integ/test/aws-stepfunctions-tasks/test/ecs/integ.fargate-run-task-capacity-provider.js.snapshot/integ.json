@@ -3,7 +3,7 @@
   "testCases": {
     "SfnTasksEcsFargateRunTaskCapacityProviderTest/DefaultTest": {
       "stacks": [
-        "SfnTasksEcsFargateRunTaskCapacityProvider"
+        "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider"
       ],
       "assertionStack": "SfnTasksEcsFargateRunTaskCapacityProviderTest/DefaultTest/DeployAssert",
       "assertionStackName": "SfnTasksEcsFargateRunTaskCapacityProviderTestDefaultTestDeployAssertF21B5199"

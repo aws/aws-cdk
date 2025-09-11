@@ -18,7 +18,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "SfnTasksEcsEc2RunTaskCapacityProvider:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+         "Fn::ImportValue": "aws-sfn-tasks-ecs-ec2-run-task-capacity-provider:ExportsOutputRefStateMachine2E01A3A5BA46F753"
         },
         "\""
        ]
@@ -30,7 +30,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1757593471817"
+    "salt": "1757599631728"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -147,7 +147,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1757593471817"
+    "salt": "1757599631729"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsstartExecution31399787cdd54bc1e81e4cd43ab3ac04"
