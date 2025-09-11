@@ -1458,7 +1458,7 @@ describe('metadataOptions', () => {
     expect(instanceProps.MetadataOptions).toBeUndefined();
   });
 
-  test('empty metadata options renders with CloudFormation defaults', () => {
+  test('empty metadata options opts into CloudFormation defaults', () => {
     // WHEN
     new Instance(stack, 'Instance', {
       vpc,
@@ -1467,7 +1467,8 @@ describe('metadataOptions', () => {
       metadataOptions: {},
     });
 
-    // THEN - Should render MetadataOptions property with undefined values (CloudFormation defaults)
+    // THEN - Should render MetadataOptions property (opts into CloudFormation behavior)
+    // but with undefined values for all properties (letting CloudFormation apply its defaults)
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       MetadataOptions: {
         HttpEndpoint: Match.absent(),
@@ -1552,7 +1553,7 @@ describe('metadataOptions', () => {
     expect(instanceProps.MetadataOptions).toBeUndefined();
   });
 
-  test('metadataOptions with empty object opts into CloudFormation defaults', () => {
+  test('metadataOptions with empty object opts into CloudFormation behavior', () => {
     // WHEN
     new Instance(stack, 'Instance', {
       vpc,
@@ -1561,7 +1562,8 @@ describe('metadataOptions', () => {
       metadataOptions: {},
     });
 
-    // THEN - Should render MetadataOptions property (allowing CloudFormation to use defaults)
+    // THEN - Should render MetadataOptions property (opts into metadata options)
+    // but leaves all properties undefined so CloudFormation applies its own defaults
     const template = Template.fromStack(stack);
     const instances = template.findResources('AWS::EC2::Instance');
     const instanceProps = Object.values(instances)[0].Properties;
@@ -1575,7 +1577,7 @@ describe('metadataOptions', () => {
     expect(instanceProps.MetadataOptions.InstanceMetadataTags).toBeUndefined();
   });
 
-  test('metadataOptions with partial configuration uses CloudFormation defaults for unspecified properties', () => {
+  test('metadataOptions with partial configuration leaves unspecified properties undefined', () => {
     // WHEN
     new Instance(stack, 'Instance', {
       vpc,
@@ -1592,11 +1594,11 @@ describe('metadataOptions', () => {
       MetadataOptions: {
         HttpEndpoint: 'disabled',
         HttpTokens: 'required',
-        // Other properties should be undefined (CloudFormation defaults)
+        // Other properties should be undefined (CloudFormation will use its defaults)
       },
     });
 
-    // Verify unspecified properties are undefined
+    // Verify unspecified properties are undefined (CloudFormation handles defaults)
     const template = Template.fromStack(stack);
     const instances = template.findResources('AWS::EC2::Instance');
     const metadataOptions = Object.values(instances)[0].Properties.MetadataOptions;

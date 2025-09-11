@@ -1947,26 +1947,33 @@ new ec2.Instance(this, 'Instance', {
     // Allow 2 hops for metadata requests
     httpPutResponseHopLimit: 2,
     // Require IMDSv2 tokens (secure)
-    httpTokens: ec2.LaunchTemplateHttpTokens.REQUIRED,
+    httpTokens: ec2.HttpTokens.REQUIRED,
     // Enable access to instance tags from metadata
     instanceMetadataTags: true,
   },
 });
 
-// Example 2: Allow both IMDSv1 and IMDSv2 (less secure, but backward compatible)
-new ec2.Instance(this, 'LegacyInstance', {
+// Example 2: Use CloudFormation defaults with selective overrides
+new ec2.Instance(this, 'DefaultsInstance', {
   vpc,
   instanceType,
   machineImage,
 
   metadataOptions: {
-    // Enable the metadata endpoint
-    httpEndpoint: true,
-    // Allow both IMDSv1 and IMDSv2 (backward compatible)
-    httpTokens: ec2.LaunchTemplateHttpTokens.OPTIONAL,
-    // Default hop limit
-    httpPutResponseHopLimit: 1,
+    // Only specify what you want to override
+    // Unspecified properties use CloudFormation defaults
+    httpTokens: ec2.HttpTokens.REQUIRED,
   },
+});
+
+// Example 3: Opt into metadata options with all CloudFormation defaults
+new ec2.Instance(this, 'AllDefaultsInstance', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // Empty object opts into metadata options with CloudFormation defaults
+  metadataOptions: {},
 });
 ```
 
