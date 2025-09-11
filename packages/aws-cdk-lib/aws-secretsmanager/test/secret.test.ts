@@ -293,6 +293,7 @@ test('grantRead', () => {
         Action: [
           'secretsmanager:GetSecretValue',
           'secretsmanager:DescribeSecret',
+          'secretsmanager:BatchGetSecretValue',
         ],
         Effect: 'Allow',
         Resource: { Ref: 'SecretA720EF05' },
@@ -334,6 +335,7 @@ test('grantRead with KMS Key', () => {
         Action: [
           'secretsmanager:GetSecretValue',
           'secretsmanager:DescribeSecret',
+          'secretsmanager:BatchGetSecretValue',
         ],
         Effect: 'Allow',
         Resource: { Ref: 'SecretA720EF05' },
@@ -395,6 +397,7 @@ test('grantRead cross account', () => {
           Action: [
             'secretsmanager:GetSecretValue',
             'secretsmanager:DescribeSecret',
+            'secretsmanager:BatchGetSecretValue',
           ],
           Effect: 'Allow',
           Condition: {
@@ -1025,6 +1028,9 @@ testDeprecated('import by secret name', () => {
 testDeprecated('import by secret name with grants', () => {
   // GIVEN
   const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+testDeprecated('import by secret name with grants', () => {
+  // GIVEN
+  const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
   const secret = secretsmanager.Secret.fromSecretName(stack, 'Secret', 'MySecret');
 
   // WHEN
@@ -1050,13 +1056,11 @@ testDeprecated('import by secret name with grants', () => {
         Action: [
           'secretsmanager:GetSecretValue',
           'secretsmanager:DescribeSecret',
+          'secretsmanager:BatchGetSecretValue',
         ],
         Effect: 'Allow',
         Resource: expectedSecretReference,
-      },
-      {
-        Action: [
-          'secretsmanager:PutSecretValue',
+      },  'secretsmanager:PutSecretValue',
           'secretsmanager:UpdateSecret',
           'secretsmanager:UpdateSecretVersionStage',
         ],
@@ -1119,6 +1123,7 @@ test('import by secret name v2 with grants', () => {
         Action: [
           'secretsmanager:GetSecretValue',
           'secretsmanager:DescribeSecret',
+          'secretsmanager:BatchGetSecretValue',
         ],
         Effect: 'Allow',
         Resource: expectedSecretReference,
@@ -1382,6 +1387,7 @@ test('cross-environment grant with direct object reference', () => {
         Action: [
           'secretsmanager:GetSecretValue',
           'secretsmanager:DescribeSecret',
+          'secretsmanager:BatchGetSecretValue',
         ],
         Effect: 'Allow',
         Resource: {
@@ -1415,6 +1421,7 @@ test('cross-environment grant with imported from completeArn', () => {
         Action: [
           'secretsmanager:GetSecretValue',
           'secretsmanager:DescribeSecret',
+          'secretsmanager:BatchGetSecretValue',
         ],
         Effect: 'Allow',
         Resource: secretCompleteArn,
