@@ -106,6 +106,7 @@ new bedrock.Agent(stack, 'AgentWithDefaultMemory', {
   agentName: 'agent-with-default-memory',
   instruction: 'This is an agent using default memory configuration with at least 40 characters of instruction',
   foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+  validateModelAccess: false,
   forceDelete: true,
   actionGroups: [defaultMemoryActionGroup],
   memory: bedrock.Memory.SESSION_SUMMARY,
@@ -116,6 +117,7 @@ new bedrock.Agent(stack, 'AgentWithCustomMemory', {
   agentName: 'agent-with-custom-memory',
   instruction: 'This is an agent using custom memory configuration with at least 40 characters of instruction',
   foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+  validateModelAccess: false,
   forceDelete: true,
   actionGroups: [customMemoryActionGroup],
   memory: bedrock.Memory.sessionSummary({

@@ -17,6 +17,7 @@ const collaboratorAgent = new bedrock.Agent(stack, 'CollaboratorAgent', {
   agentName: 'collaborator-agent',
   instruction: 'This is a collaborator agent with at least 40 characters of instruction',
   foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+  validateModelAccess: false,
   forceDelete: true,
 });
 
@@ -31,6 +32,7 @@ new bedrock.Agent(stack, 'CollaborativeAgent', {
   agentName: 'collaborative-agent',
   instruction: 'This is a collaborative agent with at least 40 characters of instruction',
   foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+  validateModelAccess: false,
   forceDelete: true,
   // Configure collaboration
   agentCollaboration: new bedrock.AgentCollaboration({

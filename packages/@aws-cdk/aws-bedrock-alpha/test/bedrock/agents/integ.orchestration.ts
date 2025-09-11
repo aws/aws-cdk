@@ -51,6 +51,7 @@ new bedrock.Agent(stack, 'CustomOrchestrationAgent', {
   agentName: 'custom-orchestration-agent',
   instruction: 'This is an agent using custom orchestration with at least 40 characters of instruction',
   foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+  validateModelAccess: false,
   forceDelete: true,
   // Specify orchestration executor
   customOrchestrationExecutor: customOrchestrationExecutor,

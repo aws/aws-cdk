@@ -127,6 +127,7 @@ new bedrock.Agent(stack, 'AgentWithPromptOverride', {
   agentName: 'agent-with-prompt-override',
   instruction: 'This is an agent using prompt override configuration with at least 40 characters of instruction',
   foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+  validateModelAccess: false,
   forceDelete: true,
   actionGroups: [promptOverrideActionGroup],
   promptOverrideConfiguration: bedrock.PromptOverrideConfiguration.fromSteps([
@@ -162,6 +163,7 @@ new bedrock.Agent(stack, 'AgentWithCustomParser', {
   agentName: 'agent-with-custom-parser',
   instruction: 'This is an agent using custom parser with at least 40 characters of instruction',
   foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+  validateModelAccess: false,
   forceDelete: true,
   actionGroups: [customParserActionGroup],
   promptOverrideConfiguration: bedrock.PromptOverrideConfiguration.withCustomParser({

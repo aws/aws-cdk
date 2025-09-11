@@ -173,6 +173,7 @@ const testAgent = new bedrock.Agent(stack, 'TestAgent', {
   agentName: 'integration-test-agent',
   instruction: 'This is a test agent for integration testing prompt variants with agent capabilities',
   foundationModel,
+  validateModelAccess: false,
   forceDelete: true,
 });
 

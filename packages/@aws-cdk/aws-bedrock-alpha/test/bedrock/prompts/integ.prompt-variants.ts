@@ -130,6 +130,7 @@ const variantTestAgent = new bedrock.Agent(stack, 'VariantTestAgent', {
   agentName: 'variant-test-agent',
   instruction: 'This agent is used for testing agent prompt variants in integration tests',
   foundationModel: anthropicModel,
+  validateModelAccess: false,
   forceDelete: true,
 });
 

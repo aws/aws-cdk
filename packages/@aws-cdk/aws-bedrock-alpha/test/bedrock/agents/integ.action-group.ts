@@ -88,6 +88,7 @@ new bedrock.Agent(stack, 'MyAgent', {
   instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
   foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
   forceDelete: true,
+  validateModelAccess: false,
   // Enable built-in action groups
   userInputEnabled: true,
   codeInterpreterEnabled: true,

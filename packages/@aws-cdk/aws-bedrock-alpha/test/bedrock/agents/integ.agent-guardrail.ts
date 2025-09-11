@@ -29,6 +29,7 @@ new bedrock.Agent(stack, 'AgentWithGuardrail', {
   agentName: 'agent-with-guardrail',
   instruction: 'You are a helpful and friendly agent that answers questions about literature.',
   foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+  validateModelAccess: false,
   guardrail: guardrail,
   forceDelete: true,
 });

@@ -131,6 +131,7 @@ const versioningAgent = new bedrock.Agent(stack, 'VersioningAgent', {
   agentName: 'versioning-test-agent',
   instruction: 'This agent is used for testing prompt versioning with agent variants',
   foundationModel,
+  validateModelAccess: false,
   forceDelete: true,
 });
 

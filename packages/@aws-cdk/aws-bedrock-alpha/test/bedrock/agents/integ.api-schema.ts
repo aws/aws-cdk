@@ -170,6 +170,7 @@ const agent = new bedrock.Agent(stack, 'ApiSchemaAgent', {
   agentName: 'api-schema-agent',
   instruction: 'This is an agent using an API schema with at least 40 characters of instruction',
   foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+  validateModelAccess: false,
   forceDelete: true,
   actionGroups: [
     new bedrock.AgentActionGroup({

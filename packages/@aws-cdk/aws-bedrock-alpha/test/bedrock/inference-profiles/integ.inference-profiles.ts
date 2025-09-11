@@ -45,6 +45,7 @@ const agentWithAppProfile = new bedrock.Agent(stack, 'AgentWithAppProfile', {
   agentName: 'test-agent-with-app-profile',
   instruction: 'You are a helpful assistant that uses an application inference profile for cost tracking and monitoring.',
   foundationModel: appProfileWithModel,
+  validateModelAccess: false,
   description: 'Agent using application inference profile',
 });
 
@@ -53,6 +54,7 @@ const agentWithCrossRegion = new bedrock.Agent(stack, 'AgentWithCrossRegion', {
   agentName: 'test-agent-with-cross-region',
   instruction: 'You are a helpful assistant that uses cross-region inference for better availability and resilience.',
   foundationModel: crossRegionProfile,
+  validateModelAccess: false,
   description: 'Agent using cross-region inference profile',
 });
 
