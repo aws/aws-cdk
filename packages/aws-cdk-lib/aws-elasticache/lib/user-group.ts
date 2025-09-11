@@ -185,26 +185,26 @@ export class UserGroup extends UserGroupBase {
     let userGroupArn: string;
     const stack = Stack.of(scope);
 
-    if (!attrs.userGroupName) {
-      if (!attrs.userGroupArn) {
-        throw new ValidationError('One of userGroupName or userGroupArn is required!', scope);
-      }
+    if (attrs.userGroupArn && attrs.userGroupName) {
+      throw new ValidationError('Only one of userGroupArn or userGroupName can be provided.', scope);
+    }
+
+    if (attrs.userGroupArn) {
       userGroupArn = attrs.userGroupArn;
-      const maybeUserGroupName = stack.splitArn(attrs.userGroupArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
-      if (!maybeUserGroupName) {
-        throw new ValidationError('Unable to extract user group name from ARN', scope);
+      const extractedUserGroupName = stack.splitArn(attrs.userGroupArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+      if (!extractedUserGroupName) {
+        throw new ValidationError('Unable to extract user group name from ARN.', scope);
       }
-      userGroupName = maybeUserGroupName;
-    } else {
-      if (attrs.userGroupArn) {
-        throw new ValidationError('Only one of userGroupArn or userGroupName can be provided', scope);
-      }
+      userGroupName = extractedUserGroupName;
+    } else if (attrs.userGroupName) {
       userGroupName = attrs.userGroupName;
       userGroupArn = stack.formatArn({
         service: 'elasticache',
         resource: 'usergroup',
         resourceName: attrs.userGroupName,
       });
+    } else {
+      throw new ValidationError('One of userGroupName or userGroupArn is required.', scope);
     }
 
     class Import extends UserGroupBase {
@@ -274,13 +274,7 @@ export class UserGroup extends UserGroupBase {
       userGroupId: this.physicalName,
       userIds: Lazy.list({
         produce: () => {
-          if (this.engine === UserEngine.REDIS) {
-            const hasDefaultUser = this._users.some(user => user.userName === 'default');
-            if (!hasDefaultUser) {
-              throw new ValidationError('Redis user groups need to contain a user with the user name "default".', this);
-            }
-          }
-
+          this.validateUsers();
           return this._users.map(user => user.userId);
         },
       }),
@@ -314,6 +308,24 @@ export class UserGroup extends UserGroupBase {
    */
   public get users(): IUser[] | undefined {
     return this._users;
+  }
+
+  /**
+   * Validates users in the user group for duplicate usernames and Redis-specific requirements.
+   */
+  private validateUsers(): void {
+    const userNames = this._users.map(user => user.userName);
+    const duplicates = userNames.filter((name, index) => userNames.indexOf(name) !== index);
+    if (duplicates.length > 0) {
+      throw new ValidationError('User group cannot have users with the same user name.', this);
+    }
+
+    if (this.engine === UserEngine.REDIS) {
+      const hasDefaultUser = this._users.some(user => user.userName === 'default');
+      if (!hasDefaultUser) {
+        throw new ValidationError('Redis user groups need to contain a user with the user name "default".', this);
+      }
+    }
   }
 
   /**
