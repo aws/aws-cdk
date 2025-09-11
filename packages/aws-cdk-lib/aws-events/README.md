@@ -302,6 +302,33 @@ const bus = new events.EventBus(this, 'Bus', {
 });
 ```
 
+## EventBus Logging Configuration
+
+You can configure logging for an EventBus to capture detailed information about events processed by the bus. This is useful for troubleshooting and debugging.
+
+```ts
+const bus = new events.EventBus(this, 'Bus', {
+  eventBusName: 'MyEventBus',
+  logConfig: {
+    level: events.EventBusLogLevel.INFO,
+    includeDetail: events.EventBusLogDetail.FULL,
+  },
+});
+```
+
+The `logConfig` property supports the following options:
+
+* `level` (required): The level of logging detail to include. Options are:
+  * `EventBusLogLevel.INFO` - Information level logging
+  * `EventBusLogLevel.ERROR` - Error level logging only
+  * `EventBusLogLevel.TRACE` - Detailed trace logging
+  * `EventBusLogLevel.OFF` - Turn off logging
+* `includeDetail` (optional): Whether to include detailed event information in the logs. Options are:
+  * `EventBusLogDetail.FULL` - Include full event details
+  * `EventBusLogDetail.NONE` - Do not include event details (default)
+
+For more information about EventBridge logging, see the [AWS EventBridge User Guide](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus-logs.html).
+
 ## Granting PutEvents to an existing EventBus
 
 To import an existing EventBus into your CDK application, use `EventBus.fromEventBusArn`, `EventBus.fromEventBusAttributes`

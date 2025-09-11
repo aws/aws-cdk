@@ -65,6 +65,66 @@ export interface IEventBus extends IResource {
 }
 
 /**
+ * Log level for EventBus logging configuration
+ */
+export enum EventBusLogLevel {
+  /**
+   * INFO level logging
+   */
+  INFO = 'INFO',
+
+  /**
+   * ERROR level logging
+   */
+  ERROR = 'ERROR',
+
+  /**
+   * TRACE level logging
+   */
+  TRACE = 'TRACE',
+
+  /**
+   * Turn off logging
+   */
+  OFF = 'OFF',
+}
+
+/**
+ * Detail level for EventBus logging configuration
+ */
+export enum EventBusLogDetail {
+  /**
+   * Include full event details in logs
+   */
+  FULL = 'FULL',
+
+  /**
+   * Do not include event details in logs
+   */
+  NONE = 'NONE',
+}
+
+/**
+ * Logging configuration for an EventBus
+ */
+export interface EventBusLogConfig {
+  /**
+   * The level of logging detail to include
+   *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus-logs.html#eb-event-bus-logs-level
+   */
+  readonly level: EventBusLogLevel;
+
+  /**
+   * Whether to include detailed event information in the logs
+   *
+   * @default undefiend - AWS CloudWatch default is NONE
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus-logs.html#eb-event-logs-data
+   */
+  readonly includeDetail?: EventBusLogDetail;
+}
+
+/**
  * Properties to define an event bus
  */
 export interface EventBusProps {
@@ -112,6 +172,14 @@ export interface EventBusProps {
    * @default - Use an AWS managed key
    */
   readonly kmsKey?: kms.IKey;
+
+  /**
+   * Configuration for EventBus logging
+   *
+   * @default - no logging configuration
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus-logs.html
+   */
+  readonly logConfig?: EventBusLogConfig;
 }
 
 /**
@@ -405,6 +473,7 @@ export class EventBus extends EventBusBase {
       } : undefined,
       description: props?.description,
       kmsKeyIdentifier: props?.kmsKey?.keyArn,
+      logConfig: props?.logConfig,
     });
 
     this.eventBusArn = this.getResourceArnAttribute(eventBus.attrArn, {

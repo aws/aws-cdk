@@ -2,7 +2,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { EventBus } from 'aws-cdk-lib/aws-events';
+import { EventBus, EventBusLogDetail, EventBusLogLevel } from 'aws-cdk-lib/aws-events';
 
 const app = new App();
 const stack = new Stack(app, 'Stack');
@@ -12,6 +12,10 @@ const dlq = new sqs.Queue(stack, 'DLQ');
 const bus = new EventBus(stack, 'Bus', {
   deadLetterQueue: dlq,
   description: 'myEventBus',
+  logConfig: {
+    level: EventBusLogLevel.INFO,
+    includeDetail: EventBusLogDetail.FULL,
+  },
 });
 
 bus.addToResourcePolicy(new iam.PolicyStatement({

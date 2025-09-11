@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
 import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '../../core';
-import { EventBus } from '../lib';
+import { EventBus, EventBusLogLevel, EventBusLogDetail } from '../lib';
 
 describe('event bus', () => {
   test('default event bus', () => {
@@ -774,6 +774,29 @@ describe('event bus', () => {
           },
         ],
         Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('can set log config', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new EventBus(stack, 'Bus', {
+      eventBusName: 'myEventBus',
+      logConfig: {
+        level: EventBusLogLevel.INFO,
+        includeDetail: EventBusLogDetail.FULL,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
+      Name: 'myEventBus',
+      LogConfig: {
+        Level: 'INFO',
+        IncludeDetail: 'FULL',
       },
     });
   });
