@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  deployment_integ:
     runs-on: codebuild-aws-cdk-github-actions-deployment-integ-runner-${{ github.run_id }}-${{ github.run_attempt }}
     environment: deployment-integ-test
 
@@ -27,7 +27,7 @@ jobs:
       PR_BUILD: true
 
     steps:
-      - name: Checkout code
+      - name: Checkout code 
         uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.sha }}
