@@ -831,6 +831,18 @@ strategy for both EC2 and Fargate launch targets.
 If `capacityProviderOptions` is not specified, it defaults to `CapacityProviderOptionsBase.none()`.
 
 ```ts
+const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
+  isDefault: true,
+});
+
+const cluster = new ecs.Cluster(this, 'FargateCluster', { vpc });
+
+const taskDefinition = new ecs.TaskDefinition(this, 'TD', {
+  memoryMiB: '512',
+  cpu: '256',
+  compatibility: ecs.Compatibility.FARGATE,
+});
+
 // Use none() option - uses launch type without capacity provider strategy
 const runTaskWithNone = new tasks.EcsRunTask(this, 'RunTaskWithNone', {
   cluster,
