@@ -2,30 +2,23 @@ import * as path from 'path';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
+import { Duration } from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP, STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY } from 'aws-cdk-lib/cx-api';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 
-/*
- * Creates a state machine with a task state to run a job with ECS on Fargate using capacity provider options
- *
- * Stack verification steps:
- * The generated State Machine can be executed from the CLI (or Step Functions console)
- * and runs with an execution status of `Succeeded`.
- *
- * -- aws stepfunctions start-execution --state-machine-arn <state-machine-arn-from-output> provides execution arn
- * -- aws stepfunctions describe-execution --execution-arn <state-machine-arn-from-output> returns a status of `Succeeded`
- */
-const app = new cdk.App({
-  postCliContext: {
-    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
-  },
-});
-const stack = new cdk.Stack(app, 'aws-sfn-tasks-ecs-fargate-run-task-capacity-provider');
-stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
-stack.node.setContext(STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY, false);
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'SfnTasksEcsFargateRunTaskCapacityProvider');
 
 const cluster = new ecs.Cluster(stack, 'FargateCluster');
+
+// Enable FARGATE and FARGATE_SPOT capacity providers
+cluster.enableFargateCapacityProviders();
+
+// Set default capacity provider strategy for the cluster
+cluster.addDefaultCapacityProviderStrategy([
+  { capacityProvider: 'FARGATE', weight: 1, base: 1 },
+  { capacityProvider: 'FARGATE_SPOT', weight: 4 },
+]);
 
 // Build task definition
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
@@ -104,10 +97,23 @@ const sm = new sfn.StateMachine(stack, 'StateMachine', {
   definition,
 });
 
-new cdk.CfnOutput(stack, 'stateMachineArn', {
-  value: sm.stateMachineArn,
-});
-
-new IntegTest(app, 'SfnTasksEcsFargateRunTaskCapacityProviderTest', {
+const integ = new IntegTest(app, 'SfnTasksEcsFargateRunTaskCapacityProviderTest', {
   testCases: [stack],
 });
+
+// Start state machine execution and verify it succeeds
+const startExecutionCall = integ.assertions.awsApiCall('StepFunctions', 'startExecution', {
+  stateMachineArn: sm.stateMachineArn,
+  input: JSON.stringify({ SomeKey: 'SomeValue', Timeout: 900 }),
+});
+
+startExecutionCall.next(
+  integ.assertions.awsApiCall('StepFunctions', 'describeExecution', {
+    executionArn: startExecutionCall.getAttString('executionArn'),
+  }).expect(ExpectedResult.objectLike({
+    status: 'SUCCEEDED',
+  })).waitForAssertions({
+    totalTimeout: Duration.minutes(15),
+    interval: Duration.seconds(10),
+  }),
+);
