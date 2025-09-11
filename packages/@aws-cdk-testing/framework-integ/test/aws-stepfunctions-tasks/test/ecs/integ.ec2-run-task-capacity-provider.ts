@@ -11,19 +11,29 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'SfnTasksEcsEc2RunTaskCapacityProvider');
 
 const cluster = new ecs.Cluster(stack, 'Ec2Cluster');
-const autoScalingGroup = cluster.addCapacity('DefaultAutoScalingGroup', {
+
+// Create first Auto Scaling Group and Capacity Provider
+const autoScalingGroup1 = cluster.addCapacity('AutoScalingGroup1', {
   instanceType: new ec2.InstanceType('t2.micro'),
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+  minCapacity: 1,
+  maxCapacity: 2,
 });
 
-// Create capacity providers for EC2
 const capacityProvider1 = new ecs.AsgCapacityProvider(stack, 'CP1', {
-  autoScalingGroup,
-  capacityProviderName: 'CP1',
+  autoScalingGroup: autoScalingGroup1,
 });
+
+// Create second Auto Scaling Group and Capacity Provider
+const autoScalingGroup2 = cluster.addCapacity('AutoScalingGroup2', {
+  instanceType: new ec2.InstanceType('t2.micro'),
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+  minCapacity: 1,
+  maxCapacity: 2,
+});
+
 const capacityProvider2 = new ecs.AsgCapacityProvider(stack, 'CP2', {
-  autoScalingGroup,
-  capacityProviderName: 'CP2',
+  autoScalingGroup: autoScalingGroup2,
 });
 
 cluster.addAsgCapacityProvider(capacityProvider1);
@@ -31,8 +41,8 @@ cluster.addAsgCapacityProvider(capacityProvider2);
 
 // Set default capacity provider strategy for the cluster
 cluster.addDefaultCapacityProviderStrategy([
-  { capacityProvider: 'CP1', weight: 1, base: 1 },
-  { capacityProvider: 'CP2', weight: 2 },
+  { capacityProvider: capacityProvider1.capacityProviderName, weight: 1, base: 1 },
+  { capacityProvider: capacityProvider2.capacityProviderName, weight: 2 },
 ]);
 
 // Build task definition
@@ -67,6 +77,7 @@ const definition = new sfn.Pass(stack, 'Start', {
       capacityProviderOptions: tasks.NoCapacityProviderOptions.none(),
     }),
     enableExecuteCommand: true,
+    resultPath: sfn.JsonPath.DISCARD,
   }),
 ).next(
   // Task with custom capacity provider option
@@ -76,17 +87,18 @@ const definition = new sfn.Pass(stack, 'Start', {
     launchTarget: new tasks.EcsEc2LaunchTarget({
       capacityProviderOptions: tasks.NoCapacityProviderOptions.custom([
         {
-          capacityProvider: 'CP1',
+          capacityProvider: capacityProvider1.capacityProviderName,
           weight: 1,
           base: 0,
         },
         {
-          capacityProvider: 'CP2',
+          capacityProvider: capacityProvider2.capacityProviderName,
           weight: 2,
           base: 1,
         },
       ]),
     }),
+    resultPath: sfn.JsonPath.DISCARD,
   }),
 ).next(
   // Task with default capacity provider option - uses cluster default
@@ -96,6 +108,7 @@ const definition = new sfn.Pass(stack, 'Start', {
     launchTarget: new tasks.EcsEc2LaunchTarget({
       capacityProviderOptions: tasks.NoCapacityProviderOptions.default(),
     }),
+    resultPath: sfn.JsonPath.DISCARD,
   }),
 );
 

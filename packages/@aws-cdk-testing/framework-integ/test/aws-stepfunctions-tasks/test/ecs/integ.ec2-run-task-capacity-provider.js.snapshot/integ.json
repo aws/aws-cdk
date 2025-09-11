@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "SfnTasksEcsEc2RunTaskCapacityProviderTest/DefaultTest": {
+      "stacks": [
+        "SfnTasksEcsEc2RunTaskCapacityProvider"
+      ],
+      "assertionStack": "SfnTasksEcsEc2RunTaskCapacityProviderTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SfnTasksEcsEc2RunTaskCapacityProviderTestDefaultTestDeployAssertD08F9F1E"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}
