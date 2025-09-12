@@ -1,3 +1,80 @@
+/**
+ * SNS Data Protection Policy Integration Test
+ *
+ * This integration test validates the complete SNS Data Protection Policy implementation
+ * by creating multiple SNS topics with different policy configurations and verifying
+ * that they generate the correct CloudFormation templates.
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────────────┐
+ * │                    Integration Test Coverage Overview                            │
+ * └─────────────────────────────────────────────────────────────────────────────────┘
+ *
+ * Test Scenarios:
+ * ┌─────────────────────────────────────────────────────────────────────────────────┐
+ * │ 1. Basic Policy (Managed Identifiers Only)                                     │
+ * │    ├── Email Address + Credit Card Number                                      │
+ * │    ├── Default policy name and description                                     │
+ * │    └── No audit destinations                                                   │
+ * │                                                                                 │
+ * │ 2. Custom Policy (Mixed Identifiers)                                           │
+ * │    ├── Email Address (managed) + SSN (custom regex)                           │
+ * │    ├── Custom policy name and description                                      │
+ * │    └── Validates custom data identifier configuration                          │
+ * │                                                                                 │
+ * │ 3. Custom-Only Policy (Custom Identifiers Only)                               │
+ * │    ├── SSN + Custom Account ID (both custom regex)                            │
+ * │    ├── Tests policy with no managed identifiers                               │
+ * │    └── Validates multiple custom identifiers                                  │
+ * │                                                                                 │
+ * │ 4. Comprehensive Policy (All Features)                                         │
+ * │    ├── Multiple managed identifiers (Email, CC, SSN, Phone, Address)          │
+ * │    ├── Multiple custom identifiers (Employee ID, Project Code)                │
+ * │    └── Tests maximum complexity scenario                                       │
+ * │                                                                                 │
+ * │ 5. Audit Destinations Policy                                                   │
+ * │    ├── CloudWatch Logs audit destination                                       │
+ * │    ├── S3 bucket audit destination                                             │
+ * │    └── Validates audit findings routing                                        │
+ * │                                                                                 │
+ * │ 6. Control Topic (No Policy)                                                   │
+ * │    └── Standard SNS topic without data protection for comparison               │
+ * └─────────────────────────────────────────────────────────────────────────────────┘
+ *
+ * CloudFormation Validation:
+ * ┌─────────────────────────────────────────────────────────────────────────────────┐
+ * │ Expected Output Structure:                                                      │
+ * │                                                                                 │
+ * │ AWS::SNS::Topic                                                                 │
+ * │ ├── DataProtectionPolicy                                                        │
+ * │ │   ├── Name: "policy-name"                                                    │
+ * │ │   ├── Description: "policy-description"                                     │
+ * │ │   ├── Version: "2021-06-01"                                                 │
+ * │ │   ├── Statement[]                                                           │
+ * │ │   │   ├── [0] Audit Statement                                              │
+ * │ │   │   │   ├── Sid: "audit-statement-cdk"                                  │
+ * │ │   │   │   ├── DataIdentifier: ["arn:aws:dataprotection::...", "custom"]   │
+ * │ │   │   │   ├── DataDirection: "Inbound"                                     │
+ * │ │   │   │   ├── Principal: ["*"]                                             │
+ * │ │   │   │   └── Operation.Audit.SampleRate: 99                              │
+ * │ │   │   └── [1] Redaction Statement                                          │
+ * │ │   │       ├── Sid: "redact-statement-cdk"                                 │
+ * │ │   │       └── Operation.Deidentify.MaskConfig: {}                         │
+ * │ │   └── Configuration                                                         │
+ * │ │       └── CustomDataIdentifier[]                                           │
+ * │ │           └── { Name: "name", Regex: "pattern" }                           │
+ * │ └── Other topic properties (TopicName, DisplayName, etc.)                     │
+ * └─────────────────────────────────────────────────────────────────────────────────┘
+ *
+ * What This Test Validates:
+ * • ✅ CDK constructs generate correct CloudFormation templates
+ * • ✅ Managed data identifiers are converted to proper ARN format
+ * • ✅ Custom data identifiers are included in Configuration section
+ * • ✅ Policy statements have correct structure (audit + redaction)
+ * • ✅ Audit destinations are properly configured when specified
+ * • ✅ Integration with other AWS resources (CloudWatch Logs, S3)
+ * • ✅ No regressions in standard SNS topic functionality
+ */
+
 import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { Topic, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier } from 'aws-cdk-lib/aws-sns';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
