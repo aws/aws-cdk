@@ -373,6 +373,17 @@ abstract class SecretBase extends Resource implements ISecret {
       resource: this,
     });
 
+    /**  
+     * Ensure imported cross-account secrets work with ECS by directly granting permissions when the standard mechanism fails.
+     */
+    if (!this.autoCreatePolicy && (!result.principalStatement || !result.success)) {
+      return iam.Grant.addToPrincipal({
+        grantee,
+        actions: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+        resourceArns: [this.arnForPolicies],
+      });
+    }
+
     const statement = result.principalStatement || result.resourceStatement;
     if (versionStages != null && statement) {
       statement.addCondition('ForAnyValue:StringEquals', {
@@ -409,6 +420,21 @@ abstract class SecretBase extends Resource implements ISecret {
       resourceArns: [this.arnForPolicies],
       resource: this,
     });
+
+     /**  
+     * Ensure imported cross-account secrets work with ECS by directly granting permissions when the standard mechanism fails.
+     */
+    if (!this.autoCreatePolicy && (!result.principalStatement || !result.success)) {
+      return iam.Grant.addToPrincipal({
+        grantee,
+        actions: [
+          'secretsmanager:PutSecretValue',
+          'secretsmanager:UpdateSecret',
+          'secretsmanager:UpdateSecretVersionStage',
+        ],
+        resourceArns: [this.arnForPolicies],
+      });
+    }
 
     if (this.encryptionKey) {
       // See https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
