@@ -23,6 +23,11 @@ export enum AccessKeyStatus {
    * An expired access key.
    */
   EXPIRED = 'Expired',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  EXPIRED = 'Expired',
 }
 
 /**
