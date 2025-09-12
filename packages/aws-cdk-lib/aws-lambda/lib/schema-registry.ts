@@ -69,6 +69,26 @@ export class KafkaSchemaRegistryAccessConfigType {
    * The subnets associated with your VPC. Lambda connects to these subnets to fetch data from your self-managed cluster.
    */
   public static readonly VPC_SUBNET = new KafkaSchemaRegistryAccessConfigType('VPC_SUBNET');
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  public static readonly VIRTUAL_HOST = new KafkaSchemaRegistryAccessConfigType('VIRTUAL_HOST');
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  public static readonly SASL_SCRAM_256_AUTH = new KafkaSchemaRegistryAccessConfigType('SASL_SCRAM_256_AUTH');
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  public static readonly SASL_SCRAM_512_AUTH = new KafkaSchemaRegistryAccessConfigType('SASL_SCRAM_512_AUTH');
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  public static readonly VPC_SECURITY_GROUP = new KafkaSchemaRegistryAccessConfigType('VPC_SECURITY_GROUP');
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  public static readonly VPC_SUBNET = new KafkaSchemaRegistryAccessConfigType('VPC_SUBNET');
 
   /** A custom source access configuration property for schema registry */
   public static of(name: string): KafkaSchemaRegistryAccessConfigType {
