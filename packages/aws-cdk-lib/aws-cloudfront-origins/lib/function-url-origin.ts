@@ -3,26 +3,7 @@ import { validateSecondsInRangeOrUndefined } from './private/utils';
 import * as cloudfront from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
-
-/**
- * IP address type for CloudFront to use when connecting to the origin.
- */
-export enum OriginIpAddressType {
-  /**
-   * CloudFront uses IPv4 only to connect to the origin.
-   */
-  IPV4 = 'ipv4',
-
-  /**
-   * CloudFront uses IPv6 only to connect to the origin.
-   */
-  IPV6 = 'ipv6',
-
-  /**
-   * CloudFront uses both IPv4 and IPv6 to connect to the origin.
-   */
-  DUALSTACK = 'dualstack',
-}
+import { OriginIpAddressType } from '../../aws-cloudfront';
 
 /**
  * Properties for a Lambda Function URL Origin.

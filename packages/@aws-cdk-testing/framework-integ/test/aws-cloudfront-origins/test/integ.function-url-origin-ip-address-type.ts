@@ -1,8 +1,9 @@
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { FunctionUrlOrigin, OriginIpAddressType } from 'aws-cdk-lib/aws-cloudfront-origins';
+import { FunctionUrlOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { OriginIpAddressType } from 'aws-cdk-lib/aws-cloudfront';
 
 const app = new App();
 const stack = new Stack(app, 'FunctionUrlOriginIpAddressTypeStack');

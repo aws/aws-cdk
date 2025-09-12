@@ -1,8 +1,9 @@
 import { Template, Match } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
+import { OriginIpAddressType } from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
 import { Duration, Stack } from '../../core';
-import { FunctionUrlOrigin, OriginIpAddressType } from '../lib';
+import { FunctionUrlOrigin } from '../lib';
 
 let stack: Stack;
 let otherStack: Stack;
@@ -444,100 +445,22 @@ describe('FunctionUrlOriginAccessControl', () => {
 });
 
 describe('ipAddressType', () => {
-  test('Does not include ipAddressType when not specified (uses CloudFormation default)', () => {
+  test.each([OriginIpAddressType.DUALSTACK, OriginIpAddressType.IPV4, OriginIpAddressType.IPV6])('Correctly sets ipAddressType to %s', (ipAddressType) => {
     const fn = new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_20_X,
     });
-
     const fnUrl = fn.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.NONE,
     });
-
-    const origin = new FunctionUrlOrigin(fnUrl);
-    const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
-
-    expect(stack.resolve(originBindConfig.originProperty)).toEqual({
-      id: 'StackOriginLambdaFunctionURL',
-      domainName: {
-        'Fn::Select': [2, { 'Fn::Split': ['/', { 'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionUrl'] }] }],
-      },
-      customOriginConfig: {
-        originProtocolPolicy: 'https-only',
-        originSslProtocols: ['TLSv1.2'],
-      },
-    });
-  });
-
-  test('Correctly sets ipAddressType to dualstack', () => {
-    const fn = new lambda.Function(stack, 'MyFunction', {
-      code: lambda.Code.fromInline('exports.handler = async () => {};'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
-    });
-
-    const fnUrl = fn.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.NONE,
-    });
-
     const origin = new FunctionUrlOrigin(fnUrl, {
-      ipAddressType: OriginIpAddressType.DUALSTACK,
+      ipAddressType,
     });
-
     const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
-
     expect(stack.resolve(originBindConfig.originProperty)).toMatchObject({
       customOriginConfig: {
-        ipAddressType: OriginIpAddressType.DUALSTACK,
-      },
-    });
-  });
-
-  test('Correctly sets ipAddressType to ipv4', () => {
-    const fn = new lambda.Function(stack, 'MyFunction', {
-      code: lambda.Code.fromInline('exports.handler = async () => {};'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
-    });
-
-    const fnUrl = fn.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.NONE,
-    });
-
-    const origin = new FunctionUrlOrigin(fnUrl, {
-      ipAddressType: OriginIpAddressType.IPV4,
-    });
-
-    const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
-
-    expect(stack.resolve(originBindConfig.originProperty)).toMatchObject({
-      customOriginConfig: {
-        ipAddressType: OriginIpAddressType.IPV4,
-      },
-    });
-  });
-
-  test('Correctly sets ipAddressType to ipv6', () => {
-    const fn = new lambda.Function(stack, 'MyFunction', {
-      code: lambda.Code.fromInline('exports.handler = async () => {};'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
-    });
-
-    const fnUrl = fn.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.NONE,
-    });
-
-    const origin = new FunctionUrlOrigin(fnUrl, {
-      ipAddressType: OriginIpAddressType.IPV6,
-    });
-
-    const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
-
-    expect(stack.resolve(originBindConfig.originProperty)).toMatchObject({
-      customOriginConfig: {
-        ipAddressType: OriginIpAddressType.IPV6,
+        ipAddressType,
       },
     });
   });
