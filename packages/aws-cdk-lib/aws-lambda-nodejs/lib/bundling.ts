@@ -282,7 +282,7 @@ export class Bundling implements cdk.BundlingOptions {
       const lockFilePath = pathJoin(options.inputDir, this.relativeDepsLockFilePath ?? this.packageManager.lockFile);
 
       const isPnpm = this.packageManager.lockFile === LockFile.PNPM;
-      const isBun = this.packageManager.lockFile === LockFile.BUN;
+      const isBun = this.packageManager.lockFile === LockFile.BUN_LOCK || this.packageManager.lockFile === LockFile.BUN;
 
       // Create dummy package.json, copy lock file if any and then install
       depsCommand = chain([
