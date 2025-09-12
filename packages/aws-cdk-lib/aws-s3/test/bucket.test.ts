@@ -5222,6 +5222,15 @@ describe('bucket', () => {
       );
     });
   });
+
+  describe('L1 static factory methods', () => {
+    test('fromBucketArn', () => {
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketArn(stack, 'MyBucket', 'arn:aws:s3:::my-bucket-name');
+      expect(bucket.bucketRef.bucketName).toEqual('my-bucket-name');
+      expect(bucket.bucketRef.bucketArn).toEqual('arn:aws:s3:::my-bucket-name');
+    });
+  });
 });
 
 class AccessBucketInjector implements cdk.IPropertyInjector {
