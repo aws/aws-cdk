@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-opensearch-v3-0/DefaultTest": {
+      "stacks": [
+        "cdk-integ-opensearch-v3-0"
+      ],
+      "assertionStack": "integ-opensearch-v3-0/DefaultTest/DeployAssert",
+      "assertionStackName": "integopensearchv30DefaultTestDeployAssert119C00DA"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
