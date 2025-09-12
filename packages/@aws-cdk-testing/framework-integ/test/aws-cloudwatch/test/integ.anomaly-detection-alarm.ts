@@ -40,6 +40,15 @@ const descriptiveAlarm = Metric.anomalyDetectionFor({
   comparisonOperator: ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD,
 });
 
+// Create an anomaly detection alarm with custom period
+const customPeriodAlarm = new AnomalyDetectionAlarm(stack, 'CustomPeriodAnomalyAlarm', {
+  metric,
+  stdDevs: 2,
+  evaluationPeriods: 1,
+  period: Duration.days(1),
+  comparisonOperator: ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
+});
+
 // Create the integration test
 const integ = new IntegTest(app, 'AnomalyDetectionAlarmIntegTest', {
   testCases: [stack],
@@ -117,6 +126,33 @@ integ.assertions
           Match.objectLike({
             Expression: 'ANOMALY_DETECTION_BAND(m0, 2.5)',
             ReturnData: true,
+          }),
+        ]),
+      }),
+    ]),
+  }));
+
+integ.assertions
+  .awsApiCall('CloudWatch', 'describeAlarms', {
+    AlarmNames: [customPeriodAlarm.alarmName],
+  })
+  .expect(ExpectedResult.objectLike({
+    MetricAlarms: Match.arrayWith([
+      Match.objectLike({
+        ComparisonOperator: 'LessThanLowerOrGreaterThanUpperThreshold',
+        EvaluationPeriods: 1,
+        ThresholdMetricId: 'expr_1',
+        Metrics: Match.arrayWith([
+          Match.objectLike({
+            Expression: 'ANOMALY_DETECTION_BAND(m0, 2)',
+            Id: 'expr_1',
+            ReturnData: true,
+          }),
+          Match.objectLike({
+            Id: 'm0',
+            MetricStat: Match.objectLike({
+              Period: 86400, // 1 day in seconds, orignal metric period got overriden
+            }),
           }),
         ]),
       }),
