@@ -184,7 +184,7 @@ Here is an example architecture that allows as many subscriptions as needed on a
 
 ```ts
 import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
-import * as subscriptions from 'aws-cdk-lib/aws-sns-destinations';
+import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 
 declare const logGroup: logs.LogGroup;
 
