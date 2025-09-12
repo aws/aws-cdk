@@ -772,6 +772,35 @@ describe('proxy', () => {
       }).toThrow(/SQL_SERVER_AUTHENTICATION client password authentication type requires SQLSERVER engineFamily, got MYSQL/);
     });
   });
+
+  test('add additional proxy endpoint', () => {
+    // GIVEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_5_7,
+      }),
+      vpc,
+    });
+
+    const dbProxy = new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromInstance(instance),
+      secrets: [instance.secret!],
+      vpc,
+    });
+
+    // WHEN
+    dbProxy.addEndpoint('ProxyEndpoint', {
+      vpc,
+      targetRole: rds.ProxyEndpointTargetRole.READ_ONLY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxyEndpoint', {
+      DBProxyName: {
+        Ref: 'ProxyCB0DFB71',
+      },
+    });
+  });
 });
 
 describe('feature flag @aws-cdk/aws-rds:databaseProxyUniqueResourceName', () => {

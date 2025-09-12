@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "TestStackLoadBalancer/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "e601183efb96c8009ff95bed4a8f7abc276a1fbc1e113a89de9a9ad74edbcf28": {
+    "a38351bd44f4994a7dd6394b775b2d3f22aff99631ee5b0852ab3eb6ab1d54e2": {
       "displayName": "TestStackLoadBalancer Template",
       "source": {
         "path": "TestStackLoadBalancer.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-568dbd63": {
+        "current_account-current_region-94151647": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e601183efb96c8009ff95bed4a8f7abc276a1fbc1e113a89de9a9ad74edbcf28.json",
+          "objectKey": "a38351bd44f4994a7dd6394b775b2d3f22aff99631ee5b0852ab3eb6ab1d54e2.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
