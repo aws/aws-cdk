@@ -219,6 +219,7 @@ export interface RecordSetOptions {
    * > an existing Record Set's `deleteExisting` property from `false -> true` after deployment
    * > will delete the record!
    *
+   * @deprecated This property is dangerous and can lead to unintended record deletion in case of deployment failure.
    * @default false
    */
   readonly deleteExisting?: boolean;
@@ -419,6 +420,7 @@ export class RecordSet extends Resource implements IRecordSet {
     this.domainName = recordSet.ref;
 
     if (props.deleteExisting) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-route53:deleteExisting', 'deleteExisting field is deprecated do not use it');
       // Delete existing record before creating the new one
       const provider = DeleteExistingRecordSetProvider.getOrCreateProvider(this, DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE, {
         policyStatements: [{ // IAM permissions for all providers
@@ -1031,7 +1033,7 @@ export interface CrossAccountZoneDelegationRecordProps {
   /**
    * The delegation role in the parent account
    */
-  readonly delegationRole: iam.IRole;
+  readonly delegationRole: iam.IRoleRef;
 
   /**
    * The resource record cache time to live (TTL).
@@ -1081,7 +1083,7 @@ export class CrossAccountZoneDelegationRecord extends Construct {
     const addToPrinciplePolicyResult = role.addToPrincipalPolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['sts:AssumeRole'],
-      resources: [props.delegationRole.roleArn],
+      resources: [props.delegationRole.roleRef.roleArn],
     }));
 
     const customResource = new CustomResource(this, 'CrossAccountZoneDelegationCustomResource', {
@@ -1089,7 +1091,7 @@ export class CrossAccountZoneDelegationRecord extends Construct {
       serviceToken: provider.serviceToken,
       removalPolicy: props.removalPolicy,
       properties: {
-        AssumeRoleArn: props.delegationRole.roleArn,
+        AssumeRoleArn: props.delegationRole.roleRef.roleArn,
         ParentZoneName: props.parentHostedZoneName,
         ParentZoneId: props.parentHostedZoneId,
         DelegatedZoneName: props.delegatedZone.zoneName,

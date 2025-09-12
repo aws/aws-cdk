@@ -194,6 +194,15 @@
       "JSON_SCHEMA",
       "LAMBDA"
     ],
+    "State": [
+      "BAKING",
+      "VALIDATING",
+      "DEPLOYING",
+      "COMPLETE",
+      "ROLLING_BACK",
+      "ROLLED_BACK",
+      "REVERTED"
+    ],
     "GrowthType": [
       "EXPONENTIAL",
       "LINEAR"
@@ -633,7 +642,12 @@
       "NO_OP"
     ]
   },
-  "appintegrations": {},
+  "appintegrations": {
+    "Scope": [
+      "CROSS_CONTACTS",
+      "PER_CONTACT"
+    ]
+  },
   "applicationautoscaling": {
     "ScalableDimension": [
       "appstream:fleet:DesiredCapacity",
@@ -1025,6 +1039,65 @@
     ]
   },
   "aps": {},
+  "arcregionswitch": {
+    "AlarmCondition": [
+      "red",
+      "green"
+    ],
+    "AlarmType": [
+      "applicationHealth",
+      "trigger"
+    ],
+    "Ec2AsgCapacityMonitoringApproach": [
+      "sampledMaxInLast24Hours",
+      "autoscalingMaxInLast24Hours"
+    ],
+    "EcsCapacityMonitoringApproach": [
+      "sampledMaxInLast24Hours",
+      "containerInsightsMaxInLast24Hours"
+    ],
+    "EksCapacityMonitoringApproach": [
+      "sampledMaxInLast24Hours"
+    ],
+    "ExecutionBlockType": [
+      "CustomActionLambda",
+      "ManualApproval",
+      "AuroraGlobalDatabase",
+      "EC2AutoScaling",
+      "ARCRoutingControl",
+      "ARCRegionSwitchPlan",
+      "Parallel",
+      "ECSServiceScaling",
+      "EKSResourceScaling",
+      "Route53HealthCheck"
+    ],
+    "GlobalAuroraDefaultBehavior": [
+      "switchoverOnly",
+      "failover"
+    ],
+    "GlobalAuroraUngracefulBehavior": [
+      "failover"
+    ],
+    "LambdaUngracefulBehavior": [
+      "skip"
+    ],
+    "RecoveryApproach": [
+      "activeActive",
+      "activePassive"
+    ],
+    "RegionToRunIn": [
+      "activatingRegion",
+      "deactivatingRegion"
+    ],
+    "RoutingControlStateChange": [
+      "On",
+      "Off"
+    ],
+    "WorkflowTargetAction": [
+      "activate",
+      "deactivate"
+    ]
+  },
   "arczonalshift": {
     "AutoshiftObserverNotificationStatus": [
       "ENABLED"
@@ -1644,6 +1717,10 @@
       "ENABLED",
       "DISABLED"
     ],
+    "ElementRequirement": [
+      "OPTIONAL",
+      "MANDATORY"
+    ],
     "FileFormat": [
       "XML",
       "JSON",
@@ -1708,7 +1785,8 @@
       "RUNNABLE"
     ],
     "Action": [
-      "CANCEL"
+      "CANCEL",
+      "TERMINATE"
     ]
   },
   "bcmdataexports": {
@@ -2001,6 +2079,10 @@
       "MISCONDUCT",
       "PROMPT_ATTACK"
     ],
+    "ContentFiltersTierName": [
+      "CLASSIC",
+      "STANDARD"
+    ],
     "ContextualGroundingAction": [
       "BLOCK",
       "NONE"
@@ -2075,6 +2157,10 @@
     "TopicType": [
       "DENY"
     ],
+    "TopicsTierName": [
+      "CLASSIC",
+      "STANDARD"
+    ],
     "WordAction": [
       "BLOCK",
       "NONE"
@@ -2144,6 +2230,16 @@
     "ConversationRole": [
       "user",
       "assistant"
+    ]
+  },
+  "billing": {
+    "BillingViewType": [
+      "PRIMARY",
+      "BILLING_GROUP",
+      "CUSTOM"
+    ],
+    "DimensionKey": [
+      "LINKED_ACCOUNT"
     ]
   },
   "billingconductor": {
@@ -2595,6 +2691,11 @@
       503,
       504
     ],
+    "IpAddressType": [
+      "ipv4",
+      "ipv6",
+      "dualstack"
+    ],
     "OriginSSLProtocols": [
       "SSLv3",
       "TLSv1",
@@ -2891,6 +2992,7 @@
       "TLSv1.2_2018",
       "TLSv1.2_2019",
       "TLSv1.2_2021",
+      "TLSv1.3_2025",
       "TLSv1_2016"
     ],
     "SslSupportMethod": [
@@ -3118,6 +3220,7 @@
   },
   "codeconnections": {
     "ProviderType": [
+      "AzureDevOps",
       "Bitbucket",
       "GitHub",
       "GitHubEnterpriseServer",
@@ -4274,6 +4377,39 @@
     "EntityType": [
       "DOMAIN_UNIT"
     ],
+    "DomainUnitDesignation": [
+      "OWNER"
+    ],
+    "ManagedPolicyType": [
+      "ADD_TO_PROJECT_MEMBER_POOL",
+      "CREATE_ASSET_TYPE",
+      "CREATE_DOMAIN_UNIT",
+      "CREATE_ENVIRONMENT",
+      "CREATE_ENVIRONMENT_FROM_BLUEPRINT",
+      "CREATE_ENVIRONMENT_PROFILE",
+      "CREATE_FORM_TYPE",
+      "CREATE_GLOSSARY",
+      "CREATE_PROJECT",
+      "CREATE_PROJECT_FROM_PROJECT_PROFILE",
+      "DELEGATE_CREATE_ENVIRONMENT_PROFILE",
+      "OVERRIDE_DOMAIN_UNIT_OWNERS",
+      "OVERRIDE_PROJECT_OWNERS",
+      "USE_ASSET_TYPE"
+    ],
+    "ProjectDesignation": [
+      "OWNER",
+      "CONTRIBUTOR",
+      "PROJECT_CATALOG_STEWARD"
+    ],
+    "TargetEntityType": [
+      "DomainUnit",
+      "EnvironmentBlueprintConfiguration",
+      "EnvironmentProfile",
+      "DOMAIN_UNIT",
+      "ENVIRONMENT_BLUEPRINT_CONFIGURATION",
+      "ENVIRONMENT_PROFILE",
+      "ASSET_TYPE"
+    ],
     "OverallDeploymentStatus": [
       "PENDING_DEPLOYMENT",
       "IN_PROGRESS",
@@ -4350,14 +4486,16 @@
     ],
     "Ec2MarketType": [
       "on-demand",
-      "spot"
+      "spot",
+      "wait-and-save"
     ],
     "FleetStatus": [
       "ACTIVE",
       "CREATE_IN_PROGRESS",
       "UPDATE_IN_PROGRESS",
       "CREATE_FAILED",
-      "UPDATE_FAILED"
+      "UPDATE_FAILED",
+      "SUSPENDED"
     ],
     "ServiceManagedFleetOperatingSystemFamily": [
       "LINUX",
@@ -4511,10 +4649,18 @@
   },
   "dsql": {},
   "dynamodb": {
+    "MultiRegionConsistency": [
+      "EVENTUAL",
+      "STRONG"
+    ],
     "AttributeType": [
       "B",
       "N",
       "S"
+    ],
+    "Mode": [
+      "ACCESSED_AND_THROTTLED_KEYS",
+      "THROTTLED_KEYS"
     ],
     "ApproximateCreationDateTimePrecision": [
       "MICROSECOND",
@@ -4818,6 +4964,18 @@
       "c8gd.metal-24xl",
       "c8gd.metal-48xl",
       "c8gd.xlarge",
+      "c8gn.12xlarge",
+      "c8gn.16xlarge",
+      "c8gn.24xlarge",
+      "c8gn.2xlarge",
+      "c8gn.48xlarge",
+      "c8gn.4xlarge",
+      "c8gn.8xlarge",
+      "c8gn.large",
+      "c8gn.medium",
+      "c8gn.metal-24xl",
+      "c8gn.metal-48xl",
+      "c8gn.xlarge",
       "cc1.4xlarge",
       "cc2.8xlarge",
       "cg1.4xlarge",
@@ -4843,6 +5001,7 @@
       "f1.4xlarge",
       "f2.12xlarge",
       "f2.48xlarge",
+      "f2.6xlarge",
       "g2.2xlarge",
       "g2.8xlarge",
       "g3.16xlarge",
@@ -5230,6 +5389,7 @@
       "p5e.48xlarge",
       "p5en.48xlarge",
       "p6-b200.48xlarge",
+      "p6e-gb200.36xlarge",
       "r3.2xlarge",
       "r3.4xlarge",
       "r3.8xlarge",
@@ -5856,6 +6016,11 @@
       "accept",
       "reject"
     ],
+    "TrafficMirrorSessionField": [
+      "packet-length",
+      "description",
+      "virtual-network-id"
+    ],
     "ApplianceModeSupport": [
       "disable",
       "enable"
@@ -5942,6 +6107,10 @@
       "AllResolvers",
       "NotSpecified"
     ],
+    "PreSharedKeyStorage": [
+      "Standard",
+      "SecretsManager"
+    ],
     "LogOutputFormat": [
       "json",
       "text"
@@ -5986,12 +6155,17 @@
     ],
     "ImageTagMutability": [
       "MUTABLE",
-      "IMMUTABLE"
+      "IMMUTABLE",
+      "IMMUTABLE_WITH_EXCLUSION",
+      "MUTABLE_WITH_EXCLUSION"
     ],
     "EncryptionType": [
       "AES256",
       "KMS",
       "KMS_DSSE"
+    ],
+    "ImageTagMutabilityExclusionFilterType": [
+      "WILDCARD"
     ],
     "AppliedForItem": [
       "REPLICATION",
@@ -6036,8 +6210,21 @@
       "DISABLED",
       "ENABLED"
     ],
+    "Strategy": [
+      "ROLLING",
+      "BLUE_GREEN"
+    ],
     "Type": [
       "memberOf"
+    ],
+    "LifecycleStages": [
+      "RECONCILE_SERVICE",
+      "PRE_SCALE_UP",
+      "POST_SCALE_UP",
+      "TEST_TRAFFIC_SHIFT",
+      "POST_TEST_TRAFFIC_SHIFT",
+      "PRODUCTION_TRAFFIC_SHIFT",
+      "POST_PRODUCTION_TRAFFIC_SHIFT"
     ],
     "ResourceType": [
       "volume"
@@ -6361,6 +6548,9 @@
     ]
   },
   "entityresolution": {
+    "IncrementalRunType": [
+      "IMMEDIATE"
+    ],
     "AttributeMatchingModel": [
       "ONE_TO_ONE",
       "MANY_TO_MANY"
@@ -6380,9 +6570,6 @@
     "Type": [
       "SOURCE",
       "TARGET"
-    ],
-    "IncrementalRunType": [
-      "IMMEDIATE"
     ],
     "ResolutionType": [
       "RULE_MATCHING",
@@ -6439,6 +6626,16 @@
     "ReplicationState": [
       "ENABLED",
       "DISABLED"
+    ],
+    "IncludeDetail": [
+      "FULL",
+      "NONE"
+    ],
+    "Level": [
+      "INFO",
+      "ERROR",
+      "TRACE",
+      "OFF"
     ],
     "Action": [
       "events:PutEvents"
@@ -6969,7 +7166,13 @@
       "G.025X",
       "G.4X",
       "G.8X",
-      "Z.2X"
+      "Z.2X",
+      "G.12X",
+      "G.16X",
+      "R.1X",
+      "R.2X",
+      "R.4X",
+      "R.8X"
     ],
     "Compatibility": [
       "NONE",
@@ -7151,12 +7354,13 @@
       "S3_DATA_EVENTS"
     ],
     "Status": [
-      "Created",
-      "Disabled",
-      "Enabled",
-      "Invited",
-      "Removed",
-      "Resigned"
+      "INACTIVE",
+      "ACTIVATING",
+      "ACTIVE",
+      "DEACTIVATING",
+      "ERROR",
+      "DELETE_PENDING",
+      "DELETED"
     ],
     "Action": [
       "ARCHIVE",
@@ -7209,6 +7413,7 @@
   "iam": {
     "Status": [
       "Active",
+      "Expired",
       "Inactive"
     ],
     "AssertionEncryptionMode": [
@@ -7297,6 +7502,38 @@
       "FRI",
       "SAT",
       "SUN"
+    ],
+    "IntegrationStatus": [
+      "PENDING",
+      "IN_PROGRESS",
+      "ACTIVE",
+      "INACTIVE",
+      "DISABLING"
+    ],
+    "IntegrationType": [
+      "GITLAB_SELF_MANAGED",
+      "GITHUB"
+    ],
+    "ConfigurationLevel": [
+      "ORGANIZATION",
+      "ACCOUNT"
+    ],
+    "ContinuousIntegrationScanEvent": [
+      "PULL_REQUEST",
+      "PUSH"
+    ],
+    "PeriodicScanFrequency": [
+      "WEEKLY",
+      "MONTHLY",
+      "NEVER"
+    ],
+    "ProjectSelectionScope": [
+      "ALL"
+    ],
+    "RuleSetCategory": [
+      "SAST",
+      "IAC",
+      "SCA"
     ],
     "FilterAction": [
       "NONE",
@@ -7398,6 +7635,14 @@
     "ServerCertificateStatus": [
       "INVALID",
       "VALID"
+    ],
+    "ConfigurationStatus": [
+      "HEALTHY",
+      "UNHEALTHY"
+    ],
+    "EncryptionType": [
+      "CUSTOMER_MANAGED_KMS_KEY",
+      "AWS_OWNED_KMS_KEY"
     ],
     "Unit": [
       "Bits",
@@ -7709,7 +7954,8 @@
     ],
     "AssetModelType": [
       "ASSET_MODEL",
-      "COMPONENT_MODEL"
+      "COMPONENT_MODEL",
+      "INTERFACE"
     ],
     "DataType": [
       "STRING",
@@ -8140,6 +8386,10 @@
     "CodeContentType": [
       "PLAINTEXT",
       "ZIPFILE"
+    ],
+    "KeyType": [
+      "AWS_OWNED_KEY",
+      "CUSTOMER_MANAGED_KEY"
     ],
     "ApplicationRestoreType": [
       "SKIP_RESTORE_FROM_SNAPSHOT",
@@ -8692,6 +8942,7 @@
       "ap-south-1",
       "ap-southeast-1",
       "ap-southeast-2",
+      "ap-southeast-3",
       "ca-central-1",
       "eu-central-1",
       "eu-north-1",
@@ -8702,6 +8953,19 @@
       "us-east-2",
       "us-west-1",
       "us-west-2"
+    ],
+    "ResourceType": [
+      "Domain"
+    ],
+    "Type": [
+      "A",
+      "AAAA",
+      "CNAME",
+      "MX",
+      "NS",
+      "SOA",
+      "SRV",
+      "TXT"
     ]
   },
   "location": {
@@ -8723,7 +8987,8 @@
       "DATA_PROTECTION_POLICY",
       "SUBSCRIPTION_FILTER_POLICY",
       "FIELD_INDEX_POLICY",
-      "TRANSFORMER_POLICY"
+      "TRANSFORMER_POLICY",
+      "METRIC_EXTRACTION_POLICY"
     ],
     "Scope": [
       "ALL"
@@ -9297,6 +9562,10 @@
       "TS",
       "CMAF"
     ],
+    "DashCompactness": [
+      "STANDARD",
+      "NONE"
+    ],
     "DashDrmSignaling": [
       "INDIVIDUAL",
       "REFERENCED"
@@ -9308,8 +9577,15 @@
       "SOURCE_DISRUPTIONS",
       "NONE"
     ],
+    "DashProfile": [
+      "DVB_DASH"
+    ],
     "DashSegmentTemplateFormat": [
       "NUMBER_WITH_TIMELINE"
+    ],
+    "DashTtmlProfile": [
+      "IMSC_1",
+      "EBU_TT_D_101"
     ],
     "DashUtcTimingMode": [
       "HTTP_HEAD",
@@ -9587,6 +9863,11 @@
       "ALERT",
       "REJECT"
     ],
+    "SummaryRuleOption": [
+      "SID",
+      "MSG",
+      "METADATA"
+    ],
     "TCPFlag": [
       "FIN",
       "SYN",
@@ -9665,6 +9946,54 @@
       "AWS::InternetMonitor::Monitor",
       "AWS::ApplicationSignals::Service",
       "AWS::ApplicationSignals::ServiceLevelObjective"
+    ]
+  },
+  "observabilityadmin": {
+    "DestinationType": [
+      "cloud-watch-logs"
+    ],
+    "ResourceType": [
+      "AWS::EC2::VPC"
+    ],
+    "TelemetryType": [
+      "Logs"
+    ]
+  },
+  "odb": {
+    "ComputeModel": [
+      "ECPU",
+      "OCPU"
+    ],
+    "LicenseModel": [
+      "BRING_YOUR_OWN_LICENSE",
+      "LICENSE_INCLUDED"
+    ],
+    "DaysOfWeek": [
+      "MONDAY",
+      "TUESDAY",
+      "WEDNESDAY",
+      "THURSDAY",
+      "FRIDAY",
+      "SATURDAY",
+      "SUNDAY"
+    ],
+    "Months": [
+      "JANUARY",
+      "FEBRUARY",
+      "MARCH",
+      "APRIL",
+      "MAY",
+      "JUNE",
+      "JULY",
+      "AUGUST",
+      "SEPTEMBER",
+      "OCTOBER",
+      "NOVEMBER",
+      "DECEMBER"
+    ],
+    "Preference": [
+      "NO_PREFERENCE",
+      "CUSTOM_PREFERENCE"
     ]
   },
   "omics": {
@@ -9829,7 +10158,6 @@
       "standard"
     ]
   },
-  "opsworkscm": {},
   "organizations": {
     "JoinedMethod": [
       "INVITED",
@@ -10112,6 +10440,10 @@
     ]
   },
   "pcs": {
+    "NetworkType": [
+      "IPV4",
+      "IPV6"
+    ],
     "Type": [
       "SLURMCTLD",
       "SLURMDBD"
@@ -10343,6 +10675,10 @@
       "Q_LITE",
       "Q_BUSINESS"
     ],
+    "DataAccessorAuthenticationType": [
+      "AWS_IAM_IDC_TTI",
+      "AWS_IAM_IDC_AUTH_CODE"
+    ],
     "AttributeValueOperator": [
       "DELETE"
     ],
@@ -10402,6 +10738,9 @@
     "Status": [
       "ENABLED",
       "DISABLED"
+    ],
+    "ConditionOperator": [
+      "StringEquals"
     ],
     "APISchemaType": [
       "OPEN_API_V3"
@@ -10925,6 +11264,7 @@
       "UPDATE_IN_PROGRESS",
       "UPDATE_SUCCESSFUL",
       "UPDATE_FAILED",
+      "PENDING_UPDATE",
       "DELETED"
     ],
     "SectionPageBreakStatus": [
@@ -11275,13 +11615,16 @@
       "ORACLE",
       "POSTGRESQL",
       "PRESTO",
+      "QBUSINESS",
       "REDSHIFT",
       "S3",
       "S3_TABLES",
+      "S3_KNOWLEDGE_BASE",
       "SALESFORCE",
       "SERVICENOW",
       "SNOWFLAKE",
       "SPARK",
+      "SPICE",
       "SQLSERVER",
       "TERADATA",
       "TIMESTREAM",
@@ -11295,7 +11638,12 @@
       "DOCUMENTDB",
       "APPFLOW",
       "IMPALA",
-      "GLUE"
+      "GLUE",
+      "GOOGLE_DRIVE",
+      "CONFLUENCE",
+      "SHAREPOINT",
+      "ONE_DRIVE",
+      "WEB_CRAWLER"
     ],
     "StarburstProductType": [
       "GALAXY",
@@ -11686,6 +12034,7 @@
     ],
     "ClientPasswordAuthType": [
       "MYSQL_NATIVE_PASSWORD",
+      "MYSQL_CACHING_SHA2_PASSWORD",
       "POSTGRES_SCRAM_SHA_256",
       "POSTGRES_MD5",
       "SQL_SERVER_AUTHENTICATION"
@@ -11752,6 +12101,14 @@
       "AVAILABLE",
       "MODIFYING",
       "DELETING"
+    ],
+    "SnapshotStatus": [
+      "AVAILABLE",
+      "CREATING",
+      "DELETED",
+      "CANCELLED",
+      "FAILED",
+      "COPYING"
     ],
     "PerformanceTargetStatus": [
       "ENABLED",
@@ -11948,6 +12305,7 @@
       "cn-northwest-1",
       "eu-central-1",
       "eu-central-2",
+      "eu-isoe-west-1",
       "eu-north-1",
       "eu-south-1",
       "eu-south-2",
@@ -12186,9 +12544,21 @@
       "Daily",
       "Weekly"
     ],
+    "ConfigurationState": [
+      "ENABLED",
+      "DISABLED"
+    ],
     "TransitionDefaultMinimumObjectSize": [
       "varies_by_storage_class",
       "all_storage_classes_128K"
+    ],
+    "TableBucketType": [
+      "aws",
+      "customer"
+    ],
+    "SseAlgorithm": [
+      "aws:kms",
+      "AES256"
     ],
     "StorageClass": [
       "DEEP_ARCHIVE",
@@ -12210,6 +12580,10 @@
     "PartitionDateSource": [
       "EventTime",
       "DeliveryTime"
+    ],
+    "Expiration": [
+      "ENABLED",
+      "DISABLED"
     ],
     "Protocol": [
       "http",
@@ -12275,13 +12649,19 @@
     ]
   },
   "s3tables": {
-    "SSEAlgorithm": [
-      "AES256",
-      "aws:kms"
-    ],
     "Status": [
       "Enabled",
       "Disabled"
+    ],
+    "OpenTableFormat": [
+      "ICEBERG"
+    ],
+    "WithoutMetadata": [
+      "Yes"
+    ],
+    "SSEAlgorithm": [
+      "AES256",
+      "aws:kms"
     ]
   },
   "sagemaker": {
@@ -12368,6 +12748,9 @@
       "SystemUpdating",
       "Updating"
     ],
+    "NodeProvisioningMode": [
+      "Continuous"
+    ],
     "NodeRecovery": [
       "Automatic",
       "None"
@@ -12381,8 +12764,8 @@
       "ShardedByS3Key"
     ],
     "S3InputMode": [
-      "Pipe",
-      "File"
+      "File",
+      "Pipe"
     ],
     "S3UploadMode": [
       "Continuous",
@@ -13017,8 +13400,8 @@
       "ml.trn2.48xlarge"
     ],
     "S3DataType": [
-      "S3Prefix",
-      "S3Object"
+      "ManifestFile",
+      "S3Prefix"
     ],
     "CompressionType": [
       "None",
@@ -13181,6 +13564,36 @@
     "AuthType": [
       "IAM"
     ],
+    "ProcessingJobStatus": [
+      "Completed",
+      "InProgress",
+      "Stopping",
+      "Stopped",
+      "Failed"
+    ],
+    "OutputCompression": [
+      "None",
+      "GZIP",
+      "SNAPPY",
+      "ZSTD",
+      "BZIP2"
+    ],
+    "OutputFormat": [
+      "PARQUET",
+      "CSV"
+    ],
+    "DataDistributionType": [
+      "FullyReplicated",
+      "ShardedByS3Key"
+    ],
+    "InputMode": [
+      "File",
+      "Pipe"
+    ],
+    "S3CompressionType": [
+      "None",
+      "Gzip"
+    ],
     "ProjectStatus": [
       "Pending",
       "CreateInProgress",
@@ -13189,6 +13602,14 @@
       "DeleteInProgress",
       "DeleteFailed",
       "DeleteCompleted"
+    ],
+    "RemoteAccess": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "SpaceManagedResources": [
+      "ENABLED",
+      "DISABLED"
     ],
     "SharingType": [
       "Private",
@@ -13722,6 +14143,10 @@
       "INFORMATIONAL",
       "UNSPECIFIED"
     ],
+    "AvailableSecurityUpdatesComplianceStatus": [
+      "NON_COMPLIANT",
+      "COMPLIANT"
+    ],
     "OperatingSystem": [
       "WINDOWS",
       "AMAZON_LINUX",
@@ -13856,6 +14281,9 @@
       "AUTOMATIC",
       "OFF"
     ],
+    "Type": [
+      "LambdaLayer"
+    ],
     "ResourceToTag": [
       "lambda-function"
     ],
@@ -13892,7 +14320,8 @@
       "db.influx.4xlarge",
       "db.influx.8xlarge",
       "db.influx.12xlarge",
-      "db.influx.16xlarge"
+      "db.influx.16xlarge",
+      "db.influx.24xlarge"
     ],
     "DbStorageType": [
       "InfluxIOIncludedT1",
@@ -14033,6 +14462,10 @@
       "API_GATEWAY",
       "AWS_DIRECTORY_SERVICE",
       "AWS_LAMBDA"
+    ],
+    "IpAddressType": [
+      "IPV4",
+      "DUALSTACK"
     ],
     "Protocol": [
       "SFTP",
@@ -14713,6 +15146,20 @@
     "ChannelSubtype": [
       "EMAIL",
       "SMS"
+    ],
+    "ChannelType": [
+      "Chat",
+      "Email"
+    ],
+    "Status": [
+      "CREATE_IN_PROGRESS",
+      "CREATE_FAILED",
+      "CREATED",
+      "DELETE_IN_PROGRESS",
+      "DELETE_FAILED",
+      "DELETED",
+      "UPDATE_IN_PROGRESS",
+      "UPDATE_FAILED"
     ]
   },
   "workspaces": {
@@ -14902,6 +15349,33 @@
     ],
     "RendererType": [
       "AppStream"
+    ],
+    "Event": [
+      "WebsiteInteract",
+      "FileDownloadFromSecureBrowserToRemoteDisk",
+      "FileTransferFromRemoteToLocalDisk",
+      "FileTransferFromLocalToRemoteDisk",
+      "FileUploadFromRemoteDiskToSecureBrowser",
+      "ContentPasteToWebsite",
+      "ContentTransferFromLocalToRemoteClipboard",
+      "ContentCopyFromWebsite",
+      "UrlLoad",
+      "TabOpen",
+      "TabClose",
+      "PrintJobSubmit",
+      "SessionConnect",
+      "SessionStart",
+      "SessionDisconnect",
+      "SessionEnd",
+      "UrlBlockByContentFilter"
+    ],
+    "FolderStructure": [
+      "Flat",
+      "NestedByDate"
+    ],
+    "LogFileFormat": [
+      "JSONLines",
+      "Json"
     ],
     "EnabledType": [
       "Disabled",
