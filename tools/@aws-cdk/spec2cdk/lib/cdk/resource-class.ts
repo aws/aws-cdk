@@ -2,38 +2,38 @@ import { PropertyType, Resource, SpecDatabase } from '@aws-cdk/service-spec-type
 import {
   $E,
   $T,
+  AnonymousInterfaceImplementation,
   Block,
   ClassType,
   code,
-  expr,
-  MemberVisibility,
+  expr, Expression,
+  Initializer,
+  InterfaceType,
   IScope,
+  IsNotNullish,
+  Lambda,
+  MemberVisibility,
+  Module,
+  ObjectLiteral,
+  Stability,
   stmt,
   StructType,
   SuperInitializer,
   TruthyOr,
   Type,
-  Initializer,
-  IsNotNullish,
-  AnonymousInterfaceImplementation,
-  Lambda,
-  Stability,
-  ObjectLiteral,
-  Module,
-  InterfaceType,
 } from '@cdklabs/typewriter';
 import { CDK_CORE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
 import { ResourceDecider, shouldBuildReferenceInterface } from './resource-decider';
 import { TypeConverter } from './type-converter';
 import {
-  classNameFromResource,
-  cloudFormationDocLink,
   cfnParserNameFromType,
-  staticResourceTypeName,
   cfnProducerNameFromType,
+  classNameFromResource,
+  cloudFormationDocLink, propertyNameFromCloudFormation,
   propStructNameFromResource,
   staticRequiredTransform,
+  staticResourceTypeName,
 } from '../naming';
 import { splitDocumentation } from '../util';
 
@@ -50,6 +50,7 @@ export class ResourceClass extends ClassType {
   private readonly decider: ResourceDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
+  private referenceStruct?: StructType;
 
   constructor(
     scope: IScope,
@@ -137,6 +138,7 @@ export class ResourceClass extends ClassType {
     });
 
     this.makeFromCloudFormationFactory();
+    this.makeFromArnFactory();
 
     if (this.resource.cloudFormationTransform) {
       this.addProperty({
@@ -181,7 +183,7 @@ export class ResourceClass extends ClassType {
     }
 
     // BucketRef { bucketName, bucketArn }
-    const refPropsStruct = new StructType(this.scope, {
+    this.referenceStruct = new StructType(this.scope, {
       export: true,
       name: `${this.resource.name}${this.suffix ?? ''}Reference`,
       docs: {
@@ -192,12 +194,12 @@ export class ResourceClass extends ClassType {
 
     // Build the shared interface
     for (const { declaration } of this.decider.referenceProps ?? []) {
-      refPropsStruct.addProperty(declaration);
+      this.referenceStruct.addProperty(declaration);
     }
 
     const refProperty = this.refInterface!.addProperty({
       name: `${this.decider.camelResourceName}Ref`,
-      type: refPropsStruct.type,
+      type: this.referenceStruct.type,
       immutable: true,
       docs: {
         summary: `A reference to a ${this.resource.name} resource.`,
@@ -212,6 +214,82 @@ export class ResourceClass extends ClassType {
       ),
       immutable: true,
     });
+  }
+
+  private makeFromArnFactory() {
+    const arnTemplate = this.resource.identifier?.arnTemplate;
+    if (arnTemplate == null) {
+      return;
+    }
+
+    // Generate the inner class that is returned by the factory
+    const innerClass = new ClassType(this, {
+      name: 'ImportArn',
+      extends: CDK_CORE.Resource,
+      export: true,
+      implements: [this.refInterface?.type].filter(isDefined),
+    });
+
+    const refAttributeName = `${this.decider.camelResourceName}Ref`;
+
+    innerClass.addProperty({
+      name: refAttributeName,
+      type: this.referenceStruct!.type,
+    });
+
+    const init = innerClass.addInitializer({
+      docs: {
+        summary: `Create a new \`${this.resource.cloudFormationType}\`.`,
+      },
+    });
+    const _scope = init.addParameter({
+      name: 'scope',
+      type: CONSTRUCTS.Construct,
+    });
+    const id = init.addParameter({
+      name: 'id',
+      type: Type.STRING,
+    });
+    const arn = init.addParameter({
+      name: 'arn',
+      type: Type.STRING,
+    });
+
+    // Build the reference object
+    const variables = expr.ident('variables');
+    const props = this.decider.referenceProps.map(p => p.declaration.name);
+    const referenceObject: Record<string, Expression> = Object.fromEntries(
+      Object.entries(propsToVars(arnTemplate, props))
+        .map(([prop, variable]) => [prop, expr.directCode(`variables['${variable}']`)]),
+    );
+    const arnProp = props.find(prop => prop.endsWith('Arn'));
+    if (arnProp != null) {
+      referenceObject[arnProp] = arn;
+    }
+
+    // Add the factory method to the outer class
+    const factory = this.addMethod({
+      name: `from${this.resource.name}Arn`,
+      static: true,
+      returnType: this.refInterface?.type,
+      docs: {
+        summary: `Creates a new ${this.refInterface?.name} from an ARN`,
+      },
+    });
+    factory.addParameter({ name: 'scope', type: CONSTRUCTS.Construct });
+    factory.addParameter({ name: 'id', type: Type.STRING });
+    factory.addParameter({ name: 'arn', type: Type.STRING });
+
+    init.addBody(
+      new SuperInitializer(_scope, id),
+      stmt.sep(),
+      stmt.constVar(variables, $T(CDK_CORE.helpers.TemplateStringParser).parse(expr.lit(arnTemplate), arn)),
+      stmt.assign($this[refAttributeName], expr.object(referenceObject)),
+    );
+
+    factory.addBody(
+      stmt.ret(innerClass.newInstance(expr.ident('scope'), expr.ident('id'), expr.ident('arn'))),
+    );
   }
 
   private makeFromCloudFormationFactory() {
@@ -456,4 +534,36 @@ export class ResourceClass extends ClassType {
  */
 function isDefined<T>(x: T | undefined): x is T {
   return x !== undefined;
+}
+
+/**
+ * Given a template like "arn:${Partition}:ec2:${Region}:${Account}:fleet/${FleetId}",
+ * and a list of property names, like ["partition", "region", "account", "fleetId"],
+ * return a mapping from property name to variable name, like:
+ * {
+ *   partition: "Partition",
+ *   region: "Region",
+ *   account: "Account",
+ *   fleetId: "FleetId"
+ * }
+ */
+function propsToVars(template: string, props: string[]): Record<string, string> {
+  const variables = extractVariables(template);
+  const result: Record<string, string> = {};
+
+  for (let prop of props) {
+    for (let variable of variables) {
+      const cfnProperty = propertyNameFromCloudFormation(variable);
+      if (prop === cfnProperty) {
+        result[prop] = variable;
+        break;
+      }
+    }
+  }
+
+  return result;
+}
+
+function extractVariables(template: string): string[] {
+  return (template.match(/\$\{([^}]+)\}/g) || []).map(match => match.slice(2, -1));
 }
