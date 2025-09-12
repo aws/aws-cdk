@@ -1492,13 +1492,13 @@ describe('Topic', () => {
     test('CustomDataIdentifier validates input parameters', () => {
       // Test empty name validation
       expect(() => new sns.CustomDataIdentifier('', 'valid-regex')).toThrow('Custom data identifier name cannot be empty');
-      
+
       // Test whitespace-only name validation
       expect(() => new sns.CustomDataIdentifier('   ', 'valid-regex')).toThrow('Custom data identifier name cannot be empty');
-      
+
       // Test empty regex validation
       expect(() => new sns.CustomDataIdentifier('ValidName', '')).toThrow('Custom data identifier regex cannot be empty');
-      
+
       // Test whitespace-only regex validation
       expect(() => new sns.CustomDataIdentifier('ValidName', '   ')).toThrow('Custom data identifier regex cannot be empty');
     });
@@ -1534,7 +1534,7 @@ describe('Topic', () => {
       });
 
       const template = Template.fromStack(stack);
-      
+
       // Verify topic has all expected properties
       template.hasResourceProperties('AWS::SNS::Topic', {
         'TopicName': 'comprehensive-data-protection-topic',
@@ -1560,7 +1560,7 @@ describe('Topic', () => {
           'arn:aws:dataprotection::aws:data-identifier/PhoneNumber-US',
           'EmployeeId',
           'ProjectCode',
-        ])
+        ]),
       );
 
       // Check custom identifiers configuration
