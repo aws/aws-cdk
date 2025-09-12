@@ -12,8 +12,7 @@ on:
     paths:
       - '**.js.snapshot**'
 
-# For every PR, cancel any previous builds in progress
-# ... but for all other builds we keep them running
+# In each PR, cancel any previous deployment integration test in progress for that PR
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
