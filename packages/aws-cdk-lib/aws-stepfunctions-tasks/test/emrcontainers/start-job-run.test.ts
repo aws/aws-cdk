@@ -1126,7 +1126,7 @@ describe('Custom resource is created that has correct EKS namespace, environment
         },
       ],
       MemorySize: 256,
-      Runtime: lambda.Runtime.PYTHON_LATEST.name,
+      Runtime: 'python3.13',
       Timeout: 30,
     });
   });
@@ -1218,7 +1218,7 @@ describe('Custom resource is created that has correct EKS namespace, environment
         },
       ],
       MemorySize: 256,
-      Runtime: lambda.Runtime.PYTHON_LATEST.name,
+      Runtime: 'python3.13',
       Timeout: 30,
     });
   });

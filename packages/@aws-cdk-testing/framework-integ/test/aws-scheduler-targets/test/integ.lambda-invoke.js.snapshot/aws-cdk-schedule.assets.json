@@ -15,16 +15,16 @@
         }
       }
     },
-    "1e5a835b36879237b49a9d0e329cf7a922c3cf0aae12377331a5ab28c895751a": {
+    "7a44539ca4289805b97195880472c8be6183ee067c3360ca1f3391acfd48b6e3": {
       "displayName": "aws-cdk-schedule Template",
       "source": {
         "path": "aws-cdk-schedule.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-b5f5b318": {
+        "current_account-current_region-f9df2dcd": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1e5a835b36879237b49a9d0e329cf7a922c3cf0aae12377331a5ab28c895751a.json",
+          "objectKey": "7a44539ca4289805b97195880472c8be6183ee067c3360ca1f3391acfd48b6e3.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
