@@ -198,6 +198,7 @@ logGroup.addSubscriptionFilter('AllLogsFilter', {
 
 declare const consumingLambda1: lambda.Function;
 declare const consumingLambda2: lambda.Function;
+declare const consumingLambda3: lambda.Function;
 
 const fieldToFilter = 'exampleField';
 
@@ -226,7 +227,7 @@ topic.addSubscription(
 );
 
 topic.addSubscription(
-  new subscriptions.LambdaSubscription(consumingLambda2, {
+  new subscriptions.LambdaSubscription(consumingLambda3, {
     filterPolicyWithMessageBody: {
       [fieldToFilter]: sns.FilterOrPolicy.filter(
         sns.SubscriptionFilter.stringFilter({
