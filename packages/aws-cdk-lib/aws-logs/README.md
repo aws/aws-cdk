@@ -166,6 +166,78 @@ new logs.SubscriptionFilter(this, 'Subscription', {
 });
 ```
 
+Note that the AWS service quota limit for the number of subscription filters on a single log group is 2.
+This means that if you already have two subscription filters and perform a change that requires replacement of one of these subscription filters,
+Cloudformation will try to create a new filter, exceeding the 2 filter service quota and failing the deployment.
+
+There are two workarounds:
+- Perform two deployments, where you first delete the subscription filter that requires replacement, then create the subscription filter in the next deployment
+- Never exceed 1 subscription filter on a log group so that it may be replaced without exceeding the service quota.
+
+A method to have as many filters on a log group as desired is to publish all logs in a log group to an SNS topic via a Lambda Function,
+then perform filtering using SNS Topic Subscriptions.
+
+Here is an example architecture that allows as many subscriptions as needed on a log group. It performs the following filter logic:
+- Logs with json field `exampleField` with value `value1` get routed to `consumingLambda1`
+- Logs with json field `exampleField` with value `value2` get routed to `consumingLambda2`
+- Logs with json field `exampleField` with value `value3` get routed to `consumingLambda3`
+
+```ts
+import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
+import * as subscriptions from 'aws-cdk-lib/aws-sns-destinations';
+
+declare const logGroup: logs.LogGroup;
+
+const topic = new sns.Topic(this, 'LogTopic');
+
+declare const snsPublishingFunction: lambda.Function; // Contains code to publish to the sns topic above
+logGroup.addSubscriptionFilter('AllLogsFilter', {
+  destination: new destinations.LambdaDestination(snsPublishingFunction),
+  filterPattern: logs.FilterPattern.allEvents(),
+});
+
+declare const consumingLambda1: lambda.Function;
+declare const consumingLambda2: lambda.Function;
+
+const fieldToFilter = 'exampleField';
+
+topic.addSubscription(
+  new subscriptions.LambdaSubscription(consumingLambda1, {
+    filterPolicyWithMessageBody: {
+      [fieldToFilter]: sns.FilterOrPolicy.filter(
+        sns.SubscriptionFilter.stringFilter({
+          allowlist: ["value1"],
+        }),
+      ),
+    },
+  }),
+);
+
+topic.addSubscription(
+  new subscriptions.LambdaSubscription(consumingLambda2, {
+    filterPolicyWithMessageBody: {
+      [fieldToFilter]: sns.FilterOrPolicy.filter(
+        sns.SubscriptionFilter.stringFilter({
+          allowlist: ["value2"],
+        }),
+      ),
+    },
+  }),
+);
+
+topic.addSubscription(
+  new subscriptions.LambdaSubscription(consumingLambda2, {
+    filterPolicyWithMessageBody: {
+      [fieldToFilter]: sns.FilterOrPolicy.filter(
+        sns.SubscriptionFilter.stringFilter({
+          allowlist: ["value3"],
+        }),
+      ),
+    },
+  }),
+);
+```
+
 ## Metric Filters
 
 CloudWatch Logs can extract and emit metrics based on a textual log stream.
