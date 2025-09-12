@@ -1358,7 +1358,7 @@ describe('Topic', () => {
     test('DataProtectionPolicy with CloudWatch Logs audit destination', () => {
       const stack = new cdk.Stack();
       const logGroup = new logs.LogGroup(stack, 'AuditLogGroup', {
-        logGroupName: 'audit-log-group',
+        logGroupName: '/aws/vendedlogs/audit-log-group',
       });
 
       const dataProtectionPolicy = new sns.DataProtectionPolicy({
@@ -1434,7 +1434,7 @@ describe('Topic', () => {
     test('DataProtectionPolicy with multiple audit destinations', () => {
       const stack = new cdk.Stack();
       const logGroup = new logs.LogGroup(stack, 'AuditLogGroup', {
-        logGroupName: 'audit-log-group',
+        logGroupName: '/aws/vendedlogs/audit-log-group',
       });
       const bucket = new s3.Bucket(stack, 'AuditBucket', {
         bucketName: 'audit-bucket',
@@ -1487,6 +1487,26 @@ describe('Topic', () => {
 
       // Verify FindingsDestination is empty when no destinations specified
       expect(policy.Statement[0].Operation.Audit.FindingsDestination).toEqual({});
+    });
+
+    test('DataProtectionPolicy validates CloudWatch log group name prefix', () => {
+      const stack = new cdk.Stack();
+
+      // Create a log group with an invalid name (doesn't start with /aws/sns/)
+      const invalidLogGroup = new logs.LogGroup(stack, 'InvalidLogGroup', {
+        logGroupName: 'invalid-log-group-name',
+      });
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAILADDRESS],
+        logGroupAuditDestination: invalidLogGroup,
+      });
+
+      expect(() => {
+        new sns.Topic(stack, 'MyTopic', {
+          dataProtectionPolicy,
+        });
+      }).toThrow("CloudWatch log group for SNS data protection policy audit destination must start with '/aws/vendedlogs/', got: invalid-log-group-name");
     });
 
     test('CustomDataIdentifier validates input parameters', () => {

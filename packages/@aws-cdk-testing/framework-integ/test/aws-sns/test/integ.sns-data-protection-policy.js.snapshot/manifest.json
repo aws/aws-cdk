@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6fab3b78407b8c9c613a118a75b936ed76952f08cbcc06dc432a1e054cee08a4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9a127c064f7b7eee495f8e9964c16caa05a6ec372006e8edc169c0fa2bbe778b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,10 +37,7 @@
         "/SNSDataProtectionPolicyInteg/TopicWithBasicDataProtectionPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "topicName": "*",
-              "displayName": "*"
-            }
+            "data": "*"
           }
         ],
         "/SNSDataProtectionPolicyInteg/TopicWithBasicDataProtectionPolicy/Resource": [
@@ -52,10 +49,7 @@
         "/SNSDataProtectionPolicyInteg/TopicWithCustomDataProtectionPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "topicName": "*",
-              "displayName": "*"
-            }
+            "data": "*"
           }
         ],
         "/SNSDataProtectionPolicyInteg/TopicWithCustomDataProtectionPolicy/Resource": [
@@ -67,10 +61,7 @@
         "/SNSDataProtectionPolicyInteg/TopicWithCustomOnlyDataProtectionPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "topicName": "*",
-              "displayName": "*"
-            }
+            "data": "*"
           }
         ],
         "/SNSDataProtectionPolicyInteg/TopicWithCustomOnlyDataProtectionPolicy/Resource": [
@@ -82,10 +73,7 @@
         "/SNSDataProtectionPolicyInteg/TopicWithComprehensiveDataProtectionPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "topicName": "*",
-              "displayName": "*"
-            }
+            "data": "*"
           }
         ],
         "/SNSDataProtectionPolicyInteg/TopicWithComprehensiveDataProtectionPolicy/Resource": [
@@ -94,13 +82,46 @@
             "data": "TopicWithComprehensiveDataProtectionPolicy7C435190"
           }
         ],
+        "/SNSDataProtectionPolicyInteg/AuditLogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/SNSDataProtectionPolicyInteg/AuditLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuditLogGroup6D13791A"
+          }
+        ],
+        "/SNSDataProtectionPolicyInteg/AuditBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/SNSDataProtectionPolicyInteg/AuditBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuditBucketB01E0AE8"
+          }
+        ],
+        "/SNSDataProtectionPolicyInteg/TopicWithAuditDestinations": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/SNSDataProtectionPolicyInteg/TopicWithAuditDestinations/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicWithAuditDestinations3C801BA4"
+          }
+        ],
         "/SNSDataProtectionPolicyInteg/TopicWithoutDataProtectionPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "topicName": "*",
-              "displayName": "*"
-            }
+            "data": "*"
           }
         ],
         "/SNSDataProtectionPolicyInteg/TopicWithoutDataProtectionPolicy/Resource": [

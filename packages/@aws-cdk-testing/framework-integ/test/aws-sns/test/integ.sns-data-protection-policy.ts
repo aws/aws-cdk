@@ -74,7 +74,7 @@ class SNSDataProtectionPolicyInteg extends Stack {
 
     // Topic with audit destinations
     const auditLogGroup = new LogGroup(this, 'AuditLogGroup', {
-      logGroupName: '/aws/vendedlogs/sns-data-protection-audit',
+      logGroupName: `/aws/vendedlogs/sns-data-protection-audit-${this.node.addr}`,
     });
 
     const auditBucket = new Bucket(this, 'AuditBucket');
@@ -88,7 +88,6 @@ class SNSDataProtectionPolicyInteg extends Stack {
       ],
       logGroupAuditDestination: auditLogGroup,
       s3BucketAuditDestination: auditBucket,
-      deliveryStreamNameAuditDestination: 'sns-audit-delivery-stream',
     });
 
     new Topic(this, 'TopicWithAuditDestinations', {
