@@ -7,7 +7,7 @@ let stack: Stack;
 
 beforeEach(() => {
   app = new App();
-  new Stack(app, 'Stack', {
+  stack = new Stack(app, 'Stack', {
     env: { account: '1234', region: 'testregion' },
   });
 });
@@ -113,4 +113,29 @@ test.each([
       keepaliveTimeout,
     });
   }).toThrow(/must be a whole number of/);
+});
+
+test.each([
+  cloudfront.OriginIpAddressType.IPV4,
+  cloudfront.OriginIpAddressType.IPV6,
+  cloudfront.OriginIpAddressType.DUALSTACK,
+])('renders with %s address type', (ipAddressType) => {
+  const origin = new HttpOrigin('www.example.com', {
+    ipAddressType,
+  });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
+
+  expect(originBindConfig.originProperty).toEqual({
+    id: 'StackOrigin029E19582',
+    domainName: 'www.example.com',
+    originCustomHeaders: undefined,
+    originPath: undefined,
+    customOriginConfig: {
+      originProtocolPolicy: 'https-only',
+      originSslProtocols: [
+        'TLSv1.2',
+      ],
+      ipAddressType,
+    },
+  });
 });
