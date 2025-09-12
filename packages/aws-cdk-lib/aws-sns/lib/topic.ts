@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { DataProtectionPolicy } from './data-protection-policy';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 import { IRoleRef } from '../../aws-iam';
@@ -110,6 +111,13 @@ export interface TopicProps {
    * @default undefined - SNS default setting is FifoThroughputScope.TOPIC
    */
   readonly fifoThroughputScope?: FifoThroughputScope;
+
+  /**
+   * The data protection policy for the SNS topic.
+   *
+   * @default - No data protection policy
+   */
+  readonly dataProtectionPolicy?: DataProtectionPolicy;
 }
 
 /**
@@ -368,6 +376,16 @@ export class Topic extends TopicBase {
       deliveryStatusLogging: Lazy.any({ produce: () => this.renderLoggingConfigs() }, { omitEmptyArray: true }),
       tracingConfig: props.tracingConfig,
       fifoThroughputScope: props.fifoThroughputScope,
+      dataProtectionPolicy: props.dataProtectionPolicy ? (() => {
+        const bound = props.dataProtectionPolicy._bind(this);
+        return {
+          Name: bound.name,
+          Description: bound.description,
+          Version: bound.version,
+          Statement: bound.statement,
+          Configuration: bound.configuration,
+        };
+      })() : undefined,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {

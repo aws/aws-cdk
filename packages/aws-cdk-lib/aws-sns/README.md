@@ -1,6 +1,5 @@
 # Amazon Simple Notification Service Construct Library
 
-
 Add an SNS Topic to your stack:
 
 ```ts
@@ -33,6 +32,48 @@ const topic = new sns.Topic(this, 'Topic', {
 ```
 
 Note that FIFO topics require a topic name to be provided. The required `.fifo` suffix will be automatically generated and added to the topic name if it is not explicitly provided.
+
+## Data Protection Policy
+
+You can add a data protection policy to your SNS topic to identify and protect sensitive data. The data protection policy uses managed data identifiers and custom data identifiers to detect sensitive information:
+
+```ts
+const topic = new sns.Topic(this, 'MyTopic', {
+  dataProtectionPolicy: new sns.DataProtectionPolicy({
+    name: 'MyDataProtectionPolicy',
+    description: 'Policy to protect sensitive data',
+    identifiers: [
+      sns.DataIdentifier.CREDIT_CARD_NUMBER,
+      sns.DataIdentifier.EMAIL_ADDRESS,
+      sns.DataIdentifier.PHONE_NUMBER_US,
+      // Add custom data identifiers
+      new sns.CustomDataIdentifier({
+        name: 'MyCustomDataIdentifier',
+        regex: 'CustomRegex-\\d{3}-\\d{3}-\\d{4}',
+      }),
+    ],
+  }),
+});
+```
+
+You can also configure audit destinations for data protection findings:
+
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const logGroup: logs.LogGroup;
+declare const bucket: s3.Bucket;
+
+const topic = new sns.Topic(this, 'MyTopic', {
+  dataProtectionPolicy: new sns.DataProtectionPolicy({
+    identifiers: [sns.DataIdentifier.CREDIT_CARD_NUMBER],
+    logGroupAuditDestination: logGroup,
+    s3BucketAuditDestination: bucket,
+    deliveryStreamNameAuditDestination: 'my-delivery-stream',
+  }),
+});
+```
 
 ## Subscriptions
 
