@@ -1159,10 +1159,10 @@ describe('Topic', () => {
       const resources = template.findResources('AWS::SNS::Topic');
       const topicResource = Object.values(resources)[0] as any;
       const policy = topicResource.Properties.DataProtectionPolicy;
-      
+
       // Verify all identifiers are included in the audit statement
       expect(policy.Statement[0].DataIdentifier).toEqual(
-        expect.arrayContaining(expectedDataIdentifiers)
+        expect.arrayContaining(expectedDataIdentifiers),
       );
 
       // Verify custom identifiers configuration if expected
@@ -1242,6 +1242,58 @@ describe('Topic', () => {
           },
         },
       });
+    });
+
+    test('accepts IDataProtectionPolicy interface', () => {
+      const stack = new cdk.Stack();
+
+      // Test that we can pass any implementation of IDataProtectionPolicy
+      const customPolicy: sns.IDataProtectionPolicy = {
+        _bind: () => ({
+          name: 'custom-policy',
+          description: 'Custom implementation for testing',
+          version: '2021-06-01',
+          statement: [
+            {
+              Sid: 'audit-statement-cdk',
+              DataIdentifier: ['arn:aws:dataprotection::aws:data-identifier/EmailAddress'],
+              DataDirection: 'Inbound',
+              Principal: ['*'],
+              Operation: {
+                Audit: {
+                  SampleRate: 99,
+                  FindingsDestination: {},
+                },
+              },
+            },
+          ],
+          configuration: { CustomDataIdentifier: [] },
+        }),
+      };
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy: customPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::SNS::Topic', {
+        'DataProtectionPolicy': {
+          'Name': 'custom-policy',
+          'Description': 'Custom implementation for testing',
+          'Version': '2021-06-01',
+        },
+      });
+    });
+
+    test('DataProtectionPolicy static type check method', () => {
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAILADDRESS],
+      });
+
+      expect(sns.DataProtectionPolicy.isDataProtectionPolicy(dataProtectionPolicy)).toBe(true);
+      expect(sns.DataProtectionPolicy.isDataProtectionPolicy({})).toBe(false);
+      expect(sns.DataProtectionPolicy.isDataProtectionPolicy(null)).toBe(false);
+      expect(sns.DataProtectionPolicy.isDataProtectionPolicy(undefined)).toBe(false);
     });
 
     test('DataProtectionPolicy generates correct CloudFormation structure', () => {

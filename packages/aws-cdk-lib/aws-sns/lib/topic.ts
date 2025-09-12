@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { DataProtectionPolicy } from './data-protection-policy';
+import { IDataProtectionPolicy } from './data-protection-policy';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 import { IRoleRef } from '../../aws-iam';
@@ -117,7 +117,7 @@ export interface TopicProps {
    *
    * @default - No data protection policy
    */
-  readonly dataProtectionPolicy?: DataProtectionPolicy;
+  readonly dataProtectionPolicy?: IDataProtectionPolicy;
 }
 
 /**

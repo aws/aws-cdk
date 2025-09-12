@@ -72,6 +72,39 @@ const topic = new sns.Topic(this, 'MyTopic', {
 });
 ```
 
+For advanced use cases, you can implement custom data protection policies by implementing the `IDataProtectionPolicy` interface:
+
+```ts
+class MyCustomDataProtectionPolicy implements sns.IDataProtectionPolicy {
+  _bind(scope: Construct): sns.DataProtectionPolicyConfig {
+    return {
+      name: 'MyCustomPolicy',
+      description: 'Custom data protection implementation',
+      version: '2021-06-01',
+      statement: [
+        {
+          Sid: 'audit-statement-custom',
+          DataIdentifier: ['arn:aws:dataprotection::aws:data-identifier/EmailAddress'],
+          DataDirection: 'Inbound',
+          Principal: ['*'],
+          Operation: {
+            Audit: {
+              SampleRate: 100,
+              FindingsDestination: {},
+            },
+          },
+        },
+      ],
+      configuration: { CustomDataIdentifier: [] },
+    };
+  }
+}
+
+const topic = new sns.Topic(this, 'MyTopic', {
+  dataProtectionPolicy: new MyCustomDataProtectionPolicy(),
+});
+```
+
 ## Subscriptions
 
 Various subscriptions can be added to the topic by calling the
