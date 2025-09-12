@@ -116,7 +116,7 @@ export class BucketPolicy extends Resource implements IBucketPolicyRef {
     this.bucket = props.bucket;
 
     this.resource = new CfnBucketPolicy(this, 'Resource', {
-      bucket: this.bucket.bucketName,
+      bucket: this.bucket.bucketRef.bucketName,
       policyDocument: this.document,
     });
     this.bucketPolicyRef = this.resource.bucketPolicyRef;
