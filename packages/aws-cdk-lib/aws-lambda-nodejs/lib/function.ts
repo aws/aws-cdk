@@ -203,7 +203,7 @@ function findLockFile(scope: Construct, depsLockFilePath?: string): string {
     LockFile.PNPM,
     LockFile.YARN,
     LockFile.BUN_LOCK,
-    LockFile.BUN_LOCKB,
+    LockFile.BUN,
     LockFile.NPM,
   ]);
 

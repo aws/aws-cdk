@@ -50,7 +50,7 @@ test('from a pnpm-lock.yaml with LogLevel.ERROR', () => {
 
 test('from a bun.lockb', () => {
   const packageManager = PackageManager.fromLockFile('/path/to/bun.lockb');
-  expect(packageManager.lockFile).toEqual(LockFile.BUN_LOCKB);
+  expect(packageManager.lockFile).toEqual(LockFile.BUN);
   expect(packageManager.argsSeparator).toBeUndefined();
   expect(packageManager.installCommand).toEqual(['bun', 'install', '--backend', 'copyfile']);
   expect(packageManager.runCommand).toEqual(['bun', 'run']);

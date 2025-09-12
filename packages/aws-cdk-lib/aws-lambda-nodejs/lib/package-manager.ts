@@ -12,7 +12,7 @@ interface PackageManagerProps {
 export enum LockFile {
   NPM = 'package-lock.json',
   YARN = 'yarn.lock',
-  BUN_LOCKB = 'bun.lockb',
+  BUN = 'bun.lockb',
   BUN_LOCK = 'bun.lock',
   PNPM = 'pnpm-lock.yaml',
 }
@@ -48,7 +48,7 @@ export class PackageManager {
           runCommand: ['pnpm', 'exec'],
           argsSeparator: '--',
         });
-      case LockFile.BUN_LOCKB:
+      case LockFile.BUN:
       case LockFile.BUN_LOCK:
         return new PackageManager({
           lockFile,
