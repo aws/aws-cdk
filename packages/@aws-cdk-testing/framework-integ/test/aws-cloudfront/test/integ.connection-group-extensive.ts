@@ -16,6 +16,7 @@ const anycastIpList = new cloudfront.CfnAnycastIpList(stack, 'anycast', {
 new cloudfront.ConnectionGroup(stack, 'connection-group', {
   connectionGroupName: 'test-group',
   enabled: true,
+  ipv6Enabled: false,
   anycastIpListId: anycastIpList.attrId,
   tags: [
     { key: 'Environment', value: 'test' },

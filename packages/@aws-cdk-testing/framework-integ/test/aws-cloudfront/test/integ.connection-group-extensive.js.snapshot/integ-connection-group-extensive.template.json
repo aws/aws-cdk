@@ -17,6 +17,7 @@
      ]
     },
     "Enabled": true,
+    "Ipv6Enabled": false,
     "Name": "test-group",
     "Tags": [
      {
