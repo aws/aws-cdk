@@ -1924,13 +1924,62 @@ The `volumeInitializationRate` must be:
 
 ### Configuring Instance Metadata Service (IMDS)
 
-#### Toggling IMDSv1
+#### Comprehensive Metadata Options
 
-You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options to either
-allow both IMDSv1 and IMDSv2 or enforce IMDSv2 when interacting with the IMDS.
+You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options using the `metadataOptions` property. This provides comprehensive control over all metadata service settings:
 
-To do this for a single `Instance`, you can use the `requireImdsv2` property.
-The example below demonstrates IMDSv2 being required on a single `Instance`:
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+// Example 1: Enforce IMDSv2 with comprehensive options
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  metadataOptions: {
+    // Enable the metadata endpoint
+    httpEndpoint: true,
+    // Disable IPv6 endpoint for metadata service
+    httpProtocolIpv6: false,
+    // Allow 2 hops for metadata requests
+    httpPutResponseHopLimit: 2,
+    // Require IMDSv2 tokens (secure)
+    httpTokens: ec2.HttpTokens.REQUIRED,
+    // Enable access to instance tags from metadata
+    instanceMetadataTags: true,
+  },
+});
+
+// Example 2: Use CloudFormation defaults with selective overrides
+new ec2.Instance(this, 'DefaultsInstance', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  metadataOptions: {
+    // Only specify what you want to override
+    // Unspecified properties use CloudFormation defaults
+    httpTokens: ec2.HttpTokens.REQUIRED,
+  },
+});
+
+// Example 3: Opt into metadata options with all CloudFormation defaults
+new ec2.Instance(this, 'AllDefaultsInstance', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // Empty object opts into metadata options with CloudFormation defaults
+  metadataOptions: {},
+});
+```
+
+#### Simple IMDSv2 Enforcement
+
+For simple IMDSv2 enforcement without additional configuration, you can use the `requireImdsv2` property:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1942,11 +1991,12 @@ new ec2.Instance(this, 'Instance', {
   instanceType,
   machineImage,
 
-  // ...
-
+  // Simple IMDSv2 enforcement
   requireImdsv2: true,
 });
 ```
+
+#### Applying to Multiple Instances
 
 You can also use the either the `InstanceRequireImdsv2Aspect` for EC2 instances or the `LaunchTemplateRequireImdsv2Aspect` for EC2 launch templates
 to apply the operation to multiple instances or launch templates, respectively.
