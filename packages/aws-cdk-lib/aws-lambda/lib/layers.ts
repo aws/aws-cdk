@@ -79,7 +79,7 @@ export interface ILayerVersion extends IResource, ILayerVersionRef {
   /**
    * The runtimes compatible with this Layer.
    *
-   * @default Runtime.All
+   * @default - All supported runtimes. Setting this to Runtime.ALL is equivalent to leaving it undefined.
    */
   readonly compatibleRuntimes?: Runtime[];
 
@@ -219,7 +219,9 @@ export class LayerVersion extends LayerVersionBase {
     }
 
     const resource: CfnLayerVersion = new CfnLayerVersion(this, 'Resource', {
-      compatibleRuntimes: props.compatibleRuntimes && props.compatibleRuntimes.map(r => r.name),
+      compatibleRuntimes: (props.compatibleRuntimes === Runtime.ALL)
+        ? undefined
+        : props.compatibleRuntimes?.map(r => r.name),
       compatibleArchitectures: props.compatibleArchitectures?.map(a => a.name),
       content: {
         s3Bucket: code.s3Location.bucketName,
