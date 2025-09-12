@@ -1,5 +1,7 @@
 import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { Topic, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier } from 'aws-cdk-lib/aws-sns';
+import { LogGroup } from 'aws-cdk-lib/aws-logs';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
 class SNSDataProtectionPolicyInteg extends Stack {
@@ -68,6 +70,31 @@ class SNSDataProtectionPolicyInteg extends Stack {
       topicName: 'topic-with-comprehensive-data-protection-policy',
       displayName: 'Topic with Comprehensive Data Protection Policy',
       dataProtectionPolicy: comprehensiveDataProtectionPolicy,
+    });
+
+    // Topic with audit destinations
+    const auditLogGroup = new LogGroup(this, 'AuditLogGroup', {
+      logGroupName: '/aws/vendedlogs/sns-data-protection-audit',
+    });
+
+    const auditBucket = new Bucket(this, 'AuditBucket');
+
+    const auditDestinationPolicy = new DataProtectionPolicy({
+      name: 'AuditDestinationPolicy',
+      description: 'Policy with audit destinations for integration test',
+      identifiers: [
+        DataIdentifier.EMAILADDRESS,
+        DataIdentifier.CREDITCARDNUMBER,
+      ],
+      logGroupAuditDestination: auditLogGroup,
+      s3BucketAuditDestination: auditBucket,
+      deliveryStreamNameAuditDestination: 'sns-audit-delivery-stream',
+    });
+
+    new Topic(this, 'TopicWithAuditDestinations', {
+      topicName: 'topic-with-audit-destinations',
+      displayName: 'Topic with Audit Destinations',
+      dataProtectionPolicy: auditDestinationPolicy,
     });
 
     // Topic without DataProtectionPolicy for comparison

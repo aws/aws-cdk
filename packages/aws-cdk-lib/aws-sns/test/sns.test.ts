@@ -2,6 +2,8 @@ import { Template } from '../../assertions';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as logs from '../../aws-logs';
+import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as sns from '../lib';
 
@@ -1351,6 +1353,227 @@ describe('Topic', () => {
         },
         ...expectedProps,
       });
+    });
+
+    test('DataProtectionPolicy with CloudWatch Logs audit destination', () => {
+      const stack = new cdk.Stack();
+      const logGroup = new logs.LogGroup(stack, 'AuditLogGroup', {
+        logGroupName: 'audit-log-group',
+      });
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAILADDRESS],
+        logGroupAuditDestination: logGroup,
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Verify CloudWatch Logs audit destination is configured
+      expect(policy.Statement[0].Operation.Audit.FindingsDestination.CloudWatchLogs).toEqual({
+        LogGroup: { Ref: 'AuditLogGroup6D13791A' },
+      });
+    });
+
+    test('DataProtectionPolicy with S3 audit destination', () => {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'AuditBucket', {
+        bucketName: 'audit-bucket',
+      });
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.CREDITCARDNUMBER],
+        s3BucketAuditDestination: bucket,
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Verify S3 audit destination is configured
+      expect(policy.Statement[0].Operation.Audit.FindingsDestination.S3).toEqual({
+        Bucket: { Ref: 'AuditBucketB01E0AE8' },
+      });
+    });
+
+    test('DataProtectionPolicy with Firehose audit destination', () => {
+      const stack = new cdk.Stack();
+      const deliveryStreamName = 'audit-delivery-stream';
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.SSN_US],
+        deliveryStreamNameAuditDestination: deliveryStreamName,
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Verify Firehose audit destination is configured
+      expect(policy.Statement[0].Operation.Audit.FindingsDestination.Firehose).toEqual({
+        DeliveryStream: deliveryStreamName,
+      });
+    });
+
+    test('DataProtectionPolicy with multiple audit destinations', () => {
+      const stack = new cdk.Stack();
+      const logGroup = new logs.LogGroup(stack, 'AuditLogGroup', {
+        logGroupName: 'audit-log-group',
+      });
+      const bucket = new s3.Bucket(stack, 'AuditBucket', {
+        bucketName: 'audit-bucket',
+      });
+      const deliveryStreamName = 'audit-delivery-stream';
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAILADDRESS, sns.DataIdentifier.PHONENUMBER_US],
+        logGroupAuditDestination: logGroup,
+        s3BucketAuditDestination: bucket,
+        deliveryStreamNameAuditDestination: deliveryStreamName,
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Verify all audit destinations are configured
+      const findingsDestination = policy.Statement[0].Operation.Audit.FindingsDestination;
+      expect(findingsDestination.CloudWatchLogs).toEqual({
+        LogGroup: { Ref: 'AuditLogGroup6D13791A' },
+      });
+      expect(findingsDestination.S3).toEqual({
+        Bucket: { Ref: 'AuditBucketB01E0AE8' },
+      });
+      expect(findingsDestination.Firehose).toEqual({
+        DeliveryStream: deliveryStreamName,
+      });
+    });
+
+    test('DataProtectionPolicy with no audit destinations has empty FindingsDestination', () => {
+      const stack = new cdk.Stack();
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        identifiers: [sns.DataIdentifier.EMAILADDRESS],
+      });
+
+      new sns.Topic(stack, 'MyTopic', {
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Verify FindingsDestination is empty when no destinations specified
+      expect(policy.Statement[0].Operation.Audit.FindingsDestination).toEqual({});
+    });
+
+    test('CustomDataIdentifier validates input parameters', () => {
+      // Test empty name validation
+      expect(() => new sns.CustomDataIdentifier('', 'valid-regex')).toThrow('Custom data identifier name cannot be empty');
+      
+      // Test whitespace-only name validation
+      expect(() => new sns.CustomDataIdentifier('   ', 'valid-regex')).toThrow('Custom data identifier name cannot be empty');
+      
+      // Test empty regex validation
+      expect(() => new sns.CustomDataIdentifier('ValidName', '')).toThrow('Custom data identifier regex cannot be empty');
+      
+      // Test whitespace-only regex validation
+      expect(() => new sns.CustomDataIdentifier('ValidName', '   ')).toThrow('Custom data identifier regex cannot be empty');
+    });
+
+    test('DataProtectionPolicy comprehensive integration test', () => {
+      const stack = new cdk.Stack();
+      const logGroup = new logs.LogGroup(stack, 'AuditLogGroup', {
+        logGroupName: '/aws/vendedlogs/sns-audit',
+      });
+      const bucket = new s3.Bucket(stack, 'AuditBucket');
+
+      const dataProtectionPolicy = new sns.DataProtectionPolicy({
+        name: 'ComprehensiveTestPolicy',
+        description: 'Integration test with all features',
+        identifiers: [
+          // Managed identifiers
+          sns.DataIdentifier.EMAILADDRESS,
+          sns.DataIdentifier.CREDITCARDNUMBER,
+          sns.DataIdentifier.SSN_US,
+          sns.DataIdentifier.PHONENUMBER_US,
+          // Custom identifiers
+          new sns.CustomDataIdentifier('EmployeeId', 'EMP-[0-9]{6}'),
+          new sns.CustomDataIdentifier('ProjectCode', 'PROJ-[A-Z]{3}-[0-9]{4}'),
+        ],
+        logGroupAuditDestination: logGroup,
+        s3BucketAuditDestination: bucket,
+        deliveryStreamNameAuditDestination: 'comprehensive-audit-stream',
+      });
+
+      new sns.Topic(stack, 'ComprehensiveTopic', {
+        topicName: 'comprehensive-data-protection-topic',
+        dataProtectionPolicy,
+      });
+
+      const template = Template.fromStack(stack);
+      
+      // Verify topic has all expected properties
+      template.hasResourceProperties('AWS::SNS::Topic', {
+        'TopicName': 'comprehensive-data-protection-topic',
+        'DataProtectionPolicy': {
+          'Name': 'ComprehensiveTestPolicy',
+          'Description': 'Integration test with all features',
+          'Version': '2021-06-01',
+        },
+      });
+
+      // Verify detailed policy structure
+      const resources = template.findResources('AWS::SNS::Topic');
+      const topicResource = Object.values(resources)[0] as any;
+      const policy = topicResource.Properties.DataProtectionPolicy;
+
+      // Check identifiers include both managed and custom
+      const auditStatement = policy.Statement[0];
+      expect(auditStatement.DataIdentifier).toEqual(
+        expect.arrayContaining([
+          'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
+          'arn:aws:dataprotection::aws:data-identifier/CreditCardNumber',
+          'arn:aws:dataprotection::aws:data-identifier/Ssn-US',
+          'arn:aws:dataprotection::aws:data-identifier/PhoneNumber-US',
+          'EmployeeId',
+          'ProjectCode',
+        ])
+      );
+
+      // Check custom identifiers configuration
+      expect(policy.Configuration.CustomDataIdentifier).toEqual([
+        { Name: 'EmployeeId', Regex: 'EMP-[0-9]{6}' },
+        { Name: 'ProjectCode', Regex: 'PROJ-[A-Z]{3}-[0-9]{4}' },
+      ]);
+
+      // Check all audit destinations
+      const findingsDestination = auditStatement.Operation.Audit.FindingsDestination;
+      expect(findingsDestination.CloudWatchLogs.LogGroup).toEqual({ Ref: 'AuditLogGroup6D13791A' });
+      expect(findingsDestination.S3.Bucket).toEqual({ Ref: expect.stringMatching(/AuditBucket/) });
+      expect(findingsDestination.Firehose.DeliveryStream).toBe('comprehensive-audit-stream');
     });
   });
 });
