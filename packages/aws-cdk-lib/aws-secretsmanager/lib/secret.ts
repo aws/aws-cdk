@@ -376,7 +376,7 @@ abstract class SecretBase extends Resource implements ISecret {
     /**  
      * Ensure imported cross-account secrets work with ECS by directly granting permissions when the standard mechanism fails.
      */
-    if (!this.autoCreatePolicy && (!result.principalStatement || !result.success)) {
+    if (!this.autoCreatePolicy && !result.principalStatement) {
       return iam.Grant.addToPrincipal({
         grantee,
         actions: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
@@ -424,7 +424,7 @@ abstract class SecretBase extends Resource implements ISecret {
      /**  
      * Ensure imported cross-account secrets work with ECS by directly granting permissions when the standard mechanism fails.
      */
-    if (!this.autoCreatePolicy && (!result.principalStatement || !result.success)) {
+     if (!this.autoCreatePolicy && !result.principalStatement) {
       return iam.Grant.addToPrincipal({
         grantee,
         actions: [
