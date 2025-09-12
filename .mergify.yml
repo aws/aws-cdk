@@ -19,6 +19,10 @@ queue_rules:
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
+      - or:
+        - -label~=request-deployment-integ-run
+        - check-success=deployment_integ
+
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -39,6 +43,9 @@ queue_rules:
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
+      - or:
+        - -label~=request-deployment-integ-run
+        - check-success=deployment_integ
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -58,6 +65,9 @@ queue_rules:
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
+      - or:
+        - -label~=request-deployment-integ-run
+        - check-success=deployment_integ
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -90,6 +100,9 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
+      - or:
+        - -label~=request-deployment-integ-run
+        - check-success=deployment_integ
   - name: automatic priority merge
     actions:
       comment:
@@ -111,6 +124,9 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
+      - or:
+        - -label~=request-deployment-integ-run
+        - check-success=deployment_integ
   - name: automatic merge (2+ approvers)
     actions:
       comment:
@@ -132,6 +148,9 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
+      - or:
+        - -label~=request-deployment-integ-run
+        - check-success=deployment_integ
   - name: automatic merge (no-squash)
     actions:
       comment:
@@ -153,6 +172,9 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
+      - or:
+        - -label~=request-deployment-integ-run
+        - check-success=deployment_integ
   - name: remove stale reviews
     actions:
       dismiss_reviews:
@@ -193,6 +215,9 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
+      - or:
+        - -label~=request-deployment-integ-run
+        - check-success=deployment_integ
 priority_rules:
   - name: priority for queue `default-merge`
     conditions:
