@@ -43,14 +43,11 @@ const topic = new sns.Topic(this, 'MyTopic', {
     name: 'MyDataProtectionPolicy',
     description: 'Policy to protect sensitive data',
     identifiers: [
-      sns.DataIdentifier.CREDIT_CARD_NUMBER,
-      sns.DataIdentifier.EMAIL_ADDRESS,
-      sns.DataIdentifier.PHONE_NUMBER_US,
+      sns.DataIdentifier.CREDITCARDNUMBER,
+      sns.DataIdentifier.EMAILADDRESS,
+      sns.DataIdentifier.PHONENUMBER_US,
       // Add custom data identifiers
-      new sns.CustomDataIdentifier({
-        name: 'MyCustomDataIdentifier',
-        regex: 'CustomRegex-\\d{3}-\\d{3}-\\d{4}',
-      }),
+      new sns.CustomDataIdentifier('MyCustomDataIdentifier', 'CustomRegex-\\d{3}-\\d{3}-\\d{4}'),
     ],
   }),
 });
@@ -67,7 +64,7 @@ declare const bucket: s3.Bucket;
 
 const topic = new sns.Topic(this, 'MyTopic', {
   dataProtectionPolicy: new sns.DataProtectionPolicy({
-    identifiers: [sns.DataIdentifier.CREDIT_CARD_NUMBER],
+    identifiers: [sns.DataIdentifier.CREDITCARDNUMBER],
     logGroupAuditDestination: logGroup,
     s3BucketAuditDestination: bucket,
     deliveryStreamNameAuditDestination: 'my-delivery-stream',
