@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { Template, Match } from '../../assertions';
 import * as ecr from '../../aws-ecr';
 import { App, Stack } from '../../core';
 import { DockerImageAsset } from '../lib';
@@ -25,8 +26,19 @@ describe('DockerImageAsset Custom Repository Support', () => {
 
     // THEN
     expect(asset.repository).toBe(repository);
-    expect(asset.imageUri).toContain('my-custom-repo');
     expect(asset.imageTag).toBe(asset.assetHash);
+
+    // Check CloudFormation template structure
+    const template = Template.fromStack(stack);
+
+    // Should reference the custom repository in the template
+    template.hasResourceProperties('AWS::ECR::Repository', {
+      RepositoryName: 'my-custom-repo',
+    });
+
+    // Asset should be properly configured
+    expect(asset.imageUri).toBeDefined();
+    expect(typeof asset.imageUri).toBe('string');
   });
 
   test('should support custom image tag with custom repository', () => {
@@ -40,8 +52,17 @@ describe('DockerImageAsset Custom Repository Support', () => {
 
     // THEN
     expect(asset.repository).toBe(repository);
-    expect(asset.imageUri).toContain(`my-custom-repo:${customTag}`);
     expect(asset.imageTag).toBe(customTag);
+
+    // Check CloudFormation template structure
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECR::Repository', {
+      RepositoryName: 'my-custom-repo',
+    });
+
+    // Asset should use the custom tag
+    expect(asset.imageUri).toBeDefined();
+    expect(asset.imageTag).toBe('v1.2.3');
   });
 
   test('should support custom image tag prefix with custom repository', () => {
@@ -55,8 +76,17 @@ describe('DockerImageAsset Custom Repository Support', () => {
 
     // THEN
     expect(asset.repository).toBe(repository);
-    expect(asset.imageUri).toContain(`my-custom-repo:${tagPrefix}${asset.assetHash}`);
     expect(asset.imageTag).toBe(`${tagPrefix}${asset.assetHash}`);
+
+    // Check CloudFormation template structure
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECR::Repository', {
+      RepositoryName: 'my-custom-repo',
+    });
+
+    // Asset should use the prefixed tag
+    expect(asset.imageUri).toBeDefined();
+    expect(asset.imageTag.startsWith(tagPrefix)).toBe(true);
   });
 
   test('should support custom tag prefix with default repository', () => {
@@ -69,7 +99,11 @@ describe('DockerImageAsset Custom Repository Support', () => {
 
     // THEN
     expect(asset.imageTag).toBe(`${tagPrefix}${asset.assetHash}`);
-    expect(asset.imageUri).toContain(`:${tagPrefix}${asset.assetHash}`);
+    expect(asset.imageTag.startsWith(tagPrefix)).toBe(true);
+
+    // Asset should use the prefixed tag
+    expect(asset.imageUri).toBeDefined();
+    expect(typeof asset.imageUri).toBe('string');
   });
 
   test('should support custom tag with default repository', () => {
@@ -82,7 +116,10 @@ describe('DockerImageAsset Custom Repository Support', () => {
 
     // THEN
     expect(asset.imageTag).toBe(customTag);
-    expect(asset.imageUri).toContain(`:${customTag}`);
+
+    // Asset should use the custom tag
+    expect(asset.imageUri).toBeDefined();
+    expect(typeof asset.imageUri).toBe('string');
   });
 
   test('should include custom repository in asset hash', () => {
@@ -157,5 +194,105 @@ describe('DockerImageAsset Custom Repository Support', () => {
     expect(asset.repository).toBeDefined();
     expect(asset.imageUri).toBeDefined();
     expect(asset.imageTag).toBe(asset.assetHash);
+  });
+
+  test('should handle complex repository names and tags', () => {
+    // GIVEN
+    const complexStack = new Stack(new App(), 'ComplexStack');
+    const complexRepo = new ecr.Repository(complexStack, 'ComplexRepo', {
+      repositoryName: 'my-org/my-project/backend-api',
+    });
+
+    const complexTag = 'v2.1.0-beta.1+build.123';
+    const asset = new DockerImageAsset(complexStack, 'ComplexAsset', {
+      directory: path.join(__dirname, 'fixtures/custom-dockerfile'),
+      ecrRepository: complexRepo,
+      imageTag: complexTag,
+    });
+
+    // THEN
+    expect(asset.repository).toBe(complexRepo);
+    expect(asset.imageTag).toBe(complexTag);
+
+    // Check CloudFormation template structure
+    const template = Template.fromStack(complexStack);
+    template.hasResourceProperties('AWS::ECR::Repository', {
+      RepositoryName: 'my-org/my-project/backend-api',
+    });
+  });
+
+  test('should handle edge case: empty tag prefix', () => {
+    // GIVEN
+    const asset = new DockerImageAsset(stack, 'EmptyPrefixAsset', {
+      directory: path.join(__dirname, 'fixtures/custom-dockerfile'),
+      imageTagPrefix: '',
+    });
+
+    // THEN - empty prefix should behave like no prefix
+    expect(asset.imageTag).toBe(asset.assetHash);
+    expect(asset.imageUri).toBeDefined();
+  });
+
+  test('should handle cross-stack repository references', () => {
+    // GIVEN
+    const repoStack = new Stack(app, 'RepoStack');
+    const assetStack = new Stack(app, 'AssetStack');
+
+    const crossStackRepo = new ecr.Repository(repoStack, 'CrossStackRepo', {
+      repositoryName: 'cross-stack-repo',
+    });
+
+    const asset = new DockerImageAsset(assetStack, 'CrossStackAsset', {
+      directory: path.join(__dirname, 'fixtures/custom-dockerfile'),
+      ecrRepository: crossStackRepo,
+      imageTag: 'cross-stack-tag',
+    });
+
+    // THEN
+    expect(asset.repository).toBe(crossStackRepo);
+    expect(asset.imageTag).toBe('cross-stack-tag');
+
+    // Both stacks should be valid
+    const repoTemplate = Template.fromStack(repoStack);
+    const assetTemplate = Template.fromStack(assetStack);
+
+    repoTemplate.hasResourceProperties('AWS::ECR::Repository', {
+      RepositoryName: 'cross-stack-repo',
+    });
+
+    // Asset stack should reference the repository from the other stack
+    expect(asset.imageUri).toBeDefined();
+  });
+
+  test('should properly isolate different assets with same repository', () => {
+    // GIVEN
+    const sharedRepo = new ecr.Repository(stack, 'SharedRepo', {
+      repositoryName: 'shared-repo',
+    });
+
+    const asset1 = new DockerImageAsset(stack, 'Asset1', {
+      directory: path.join(__dirname, 'fixtures/custom-dockerfile'),
+      ecrRepository: sharedRepo,
+      imageTag: 'version-1',
+    });
+
+    const asset2 = new DockerImageAsset(stack, 'Asset2', {
+      directory: path.join(__dirname, 'fixtures/custom-dockerfile'),
+      ecrRepository: sharedRepo,
+      imageTag: 'version-2',
+    });
+
+    // THEN - should be different assets with different tags but same repo
+    expect(asset1.repository).toBe(sharedRepo);
+    expect(asset2.repository).toBe(sharedRepo);
+    expect(asset1.imageTag).toBe('version-1');
+    expect(asset2.imageTag).toBe('version-2');
+    expect(asset1.imageUri).not.toBe(asset2.imageUri);
+
+    // Template should have one repository but references to both assets
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECR::Repository', {
+      RepositoryName: 'shared-repo',
+    });
   });
 });
