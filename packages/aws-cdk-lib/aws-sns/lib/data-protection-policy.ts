@@ -78,13 +78,19 @@ export class DataProtectionPolicy implements IDataProtectionPolicy {
 
     const findingsDestination: any = {};
     if (this.dataProtectionPolicyProps.logGroupAuditDestination) {
-      const logGroupName = this.dataProtectionPolicyProps.logGroupAuditDestination.logGroupName;
+      const logGroup = this.dataProtectionPolicyProps.logGroupAuditDestination;
+      const logGroupName = logGroup.logGroupName;
+
+      // Try to get the physical name if available (for validation)
+      let nameToValidate = logGroupName;
+      if ('physicalName' in logGroup && logGroup.physicalName && !Token.isUnresolved(logGroup.physicalName)) {
+        nameToValidate = logGroup.physicalName;
+      }
+
       // Only validate if it's not a token (i.e., it's a concrete string value)
-      // Check for tokens using multiple methods to be safe
-      const isToken = Token.isUnresolved(logGroupName) ||
-                     (typeof logGroupName === 'string' && logGroupName.includes('${Token'));
-      if (!isToken && !logGroupName.startsWith('/aws/vendedlogs/')) {
-        throw new UnscopedValidationError(`CloudWatch log group for SNS data protection policy audit destination must start with '/aws/vendedlogs/', got: ${logGroupName}`);
+      const isToken = Token.isUnresolved(nameToValidate);
+      if (!isToken && !nameToValidate.startsWith('/aws/vendedlogs/')) {
+        throw new UnscopedValidationError(`CloudWatch log group for SNS data protection policy audit destination must start with '/aws/vendedlogs/', got: ${nameToValidate}`);
       }
       findingsDestination.CloudWatchLogs = {
         LogGroup: logGroupName,
