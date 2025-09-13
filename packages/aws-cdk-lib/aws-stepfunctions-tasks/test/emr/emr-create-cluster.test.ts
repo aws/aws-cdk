@@ -354,6 +354,26 @@ test('Cluster with invalid release label will throw', async () => {
     stepConcurrencyLevel: 1,
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   })).toThrow('The release label must be in the format \'emr-x.x.x\' but got emr-5.14.0.0');
+
+  expect(() => new EmrCreateCluster(stack, 'Task4', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    releaseLabel: 'emr-5.14.0',
+    ebsRootVolumeIops: 1,
+  })).toThrow(/ebsRootVolumeThroughput and ebsRootVolumeIops are only supported in EMR release version 6.15.0 and above/);
+
+  expect(() => new EmrCreateCluster(stack, 'Task5', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    releaseLabel: 'emr-5.14.0',
+    ebsRootVolumeThroughput: 1,
+  })).toThrow(/ebsRootVolumeThroughput and ebsRootVolumeIops are only supported in EMR release version 6.15.0 and above/);
 });
 
 test('Create Cluster with Tags', () => {
@@ -1842,4 +1862,150 @@ test.each([0, 604801])('Task throws if autoTerminationPolicyIdleTimeout is set t
       autoTerminationPolicyIdleTimeout: cdk.Duration.seconds(idletimeOutSeconds),
     });
   }).toThrow(`\`autoTerminationPolicyIdleTimeout\` must be between 60 and 604800 seconds, got ${idletimeOutSeconds} seconds.`);
+});
+
+test('Create Cluster with EBS settings', () => {
+  // WHEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    ebsRootVolumeSize: cdk.Size.gibibytes(23),
+    ebsRootVolumeIops: 4567,
+    ebsRootVolumeThroughput: 222,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster.sync',
+        ],
+      ],
+    },
+    End: true,
+
+    Parameters: {
+      Name: 'Cluster',
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true,
+      },
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192',
+      },
+      AutoScalingRole: {
+        Ref: 'AutoScalingRole015ADA0A',
+      },
+      EbsRootVolumeSize: 23,
+      EbsRootVolumeIops: 4567,
+      EbsRootVolumeThroughput: 222,
+    },
+  });
+});
+
+test.each([14, 101])('ebsRootVolumeSize cannot be %d', (value) => {
+  expect(() => new EmrCreateCluster(stack, 'Task1', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    ebsRootVolumeSize: cdk.Size.gibibytes(value),
+  })).toThrow(/ebsRootVolumeSize must be between 15 and 100 GiB/);
+});
+
+test.each([-1, 124, 1001])('ebsRootVolumeThroughput cannot be %d', (value) => {
+  expect(() => new EmrCreateCluster(stack, 'Task1', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    ebsRootVolumeThroughput: value,
+  })).toThrow(/ebsRootVolumeThroughput must be between 125 and 1000/);
+});
+
+test.each([-1, 2999, 16001])('ebsRootVolumeIops cannot be %d', (value) => {
+  expect(() => new EmrCreateCluster(stack, 'Task1', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    ebsRootVolumeIops: value,
+  })).toThrow(/ebsRootVolumeIops must be between 3000 and 16000/);
+});
+
+test('Create Cluster with ManagedScalingPolicy', () => {
+  // WHEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    managedScalingPolicy: {
+      computeLimits: {
+        unitType: EmrCreateCluster.ComputeLimitsUnitType.VCPU,
+        minimumCapacityUnits: 2,
+        maximumCapacityUnits: 10,
+        maximumOnDemandCapacityUnits: 5,
+        maximumCoreCapacityUnits: 8,
+      },
+    },
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':states:::elasticmapreduce:createCluster.sync',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: 'Cluster',
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true,
+      },
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192',
+      },
+      AutoScalingRole: {
+        Ref: 'AutoScalingRole015ADA0A',
+      },
+      ManagedScalingPolicy: {
+        ComputeLimits: {
+          UnitType: 'VCPU',
+          MinimumCapacityUnits: 2,
+          MaximumCapacityUnits: 10,
+          MaximumOnDemandCapacityUnits: 5,
+          MaximumCoreCapacityUnits: 8,
+        },
+      },
+    },
+  });
 });
