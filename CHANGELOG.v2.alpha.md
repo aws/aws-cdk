@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.214.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.213.0-alpha.0...v2.214.0-alpha.0) (2025-09-02)
+
+
+### Features
+
+* **bedrock-alpha:** add guardrails l2 construct ([#34765](https://github.com/aws/aws-cdk/issues/34765)) ([b4fdb2b](https://github.com/aws/aws-cdk/commit/b4fdb2b494abf41eccab90cca0d0f64d38009fbe))
+* **eks-v2-alpha:** support eks with k8s 1.33 ([#34713](https://github.com/aws/aws-cdk/issues/34713)) ([c24565e](https://github.com/aws/aws-cdk/commit/c24565e015d692e9a9c5dc9703372ec51b04be6b)), closes [#34520](https://github.com/aws/aws-cdk/issues/34520) [#34911](https://github.com/aws/aws-cdk/issues/34911)
+* **s3tables-alpha:** add TablePolicy support to L2 construct library ([#35223](https://github.com/aws/aws-cdk/issues/35223)) ([2741dfb](https://github.com/aws/aws-cdk/commit/2741dfbf69bbfa3e4353b4b3cbb4423fddc53226)), closes [#33054](https://github.com/aws/aws-cdk/issues/33054)
+
+## [2.213.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.212.0-alpha.0...v2.213.0-alpha.0) (2025-08-27)
+
+
+### Features
+
+* **s3tables-alpha:** add TablePolicy support to L2 construct library ([#35223](https://github.com/aws/aws-cdk/issues/35223)) ([a4aad78](https://github.com/aws/aws-cdk/commit/a4aad78a45fb776f2c2c71cb7818b4f8cbeaadd0)), closes [#33054](https://github.com/aws/aws-cdk/issues/33054)
+
+## [2.212.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.211.0-alpha.0...v2.212.0-alpha.0) (2025-08-20)
+
 ## [2.211.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.210.0-alpha.0...v2.211.0-alpha.0) (2025-08-12)
 
 ## [2.210.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.209.1-alpha.0...v2.210.0-alpha.0) (2025-08-06)

@@ -143,7 +143,15 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
     "Description": {
      "Fn::Join": [
       "",
@@ -193,6 +201,7 @@
     "DestinationBucketName": {
      "Ref": "Destination920A3C57"
     },
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "OutputObjectKeys": true
@@ -432,7 +441,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
+     "S3Key": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip"
     },
     "Environment": {
      "Variables": {
@@ -451,7 +460,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.11",
+    "Runtime": "python3.13",
     "Timeout": 900
    },
    "DependsOn": [
@@ -908,6 +917,7 @@
      "Ref": "Destination920A3C57"
     },
     "DestinationBucketKeyPrefix": "efs/",
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "OutputObjectKeys": true
@@ -1328,7 +1338,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
+     "S3Key": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip"
     },
     "Environment": {
      "Variables": {
@@ -1376,7 +1386,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.11",
+    "Runtime": "python3.13",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -1530,6 +1540,7 @@
      "Ref": "Destination281A09BDF"
     },
     "DestinationBucketKeyPrefix": "deploy/here/",
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "OutputObjectKeys": true
@@ -1657,6 +1668,7 @@
     "DestinationBucketName": {
      "Ref": "Destination3E3DC043D"
     },
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "UserMetadata": {
@@ -1705,6 +1717,7 @@
     "DestinationBucketName": {
      "Ref": "Destination920A3C57"
     },
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": false,
     "OutputObjectKeys": true
@@ -1744,6 +1757,7 @@
     "DestinationBucketName": {
      "Ref": "Destination920A3C57"
     },
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "Exclude": [
@@ -1874,6 +1888,7 @@
     "DestinationBucketName": {
      "Ref": "Destination4368A3649"
     },
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Extract": false,
     "Prune": true,
@@ -2014,6 +2029,7 @@
     "DestinationBucketName": {
      "Ref": "Destination52A57FAA3"
     },
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "OutputObjectKeys": true
@@ -2141,12 +2157,155 @@
     "DestinationBucketName": {
      "Ref": "Destination6420F2C8E"
     },
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "OutputObjectKeys": false
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs22.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-6": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs22.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs22.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs22.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs22.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
+    "value": "nodejs22.x"
+   },
+   "il-central-1": {
+    "value": "nodejs22.x"
+   },
+   "me-central-1": {
+    "value": "nodejs22.x"
+   },
+   "me-south-1": {
+    "value": "nodejs22.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs22.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-east-2": {
+    "value": "nodejs22.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs22.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
+   },
+   "us-west-1": {
+    "value": "nodejs22.x"
+   },
+   "us-west-2": {
+    "value": "nodejs22.x"
+   }
   }
  },
  "Outputs": {

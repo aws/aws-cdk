@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "tls-network-load-balanced-ecs-service/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "16de6b9d8933bc3c72b7c98c56f1ce9201af800e7af59e3a40e91e11fc65d1e3": {
+    "0d1439147ddec8bbc6050bc5d9247d2b821a546a735f7770d149cffe8fc66cb2": {
       "displayName": "tls-network-load-balanced-ecs-service Template",
       "source": {
         "path": "tls-network-load-balanced-ecs-service.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-cca6254a": {
+        "current_account-current_region-23afe3b1": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "16de6b9d8933bc3c72b7c98c56f1ce9201af800e7af59e3a40e91e11fc65d1e3.json",
+          "objectKey": "0d1439147ddec8bbc6050bc5d9247d2b821a546a735f7770d149cffe8fc66cb2.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

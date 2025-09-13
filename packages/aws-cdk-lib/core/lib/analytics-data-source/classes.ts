@@ -3900,6 +3900,22 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'removalPolicy': 'RemovalPolicy'
     },
+    'TablePolicy': {
+      'table': {
+        'tableArn': '*',
+        'tableName': '*',
+        'account': '*',
+        'region': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'resourcePolicy': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
     'Table': {
       'tableName': '*',
       'namespace': {
@@ -10090,6 +10106,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'validationDomains': '*',
       'validationMethod': 'ValidationMethod',
       'validation': '*',
+      'allowExport': 'boolean',
       'transparencyLoggingEnabled': 'boolean',
       'certificateName': '*',
       'keyAlgorithm': '*'
@@ -10132,6 +10149,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'validationDomains': '*',
       'validationMethod': 'ValidationMethod',
       'validation': '*',
+      'allowExport': 'boolean',
       'transparencyLoggingEnabled': 'boolean',
       'certificateName': '*',
       'keyAlgorithm': '*',
@@ -10151,7 +10169,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
-      'keyAlgorithm': '*'
+      'keyAlgorithm': '*',
+      'allowExport': 'boolean'
     }
   },
   'aws-cdk-lib.aws-chatbot': {
@@ -12047,6 +12066,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'idTokenValidity': '*',
       'refreshTokenValidity': '*',
       'accessTokenValidity': '*',
+      'refreshTokenRotationGracePeriod': '*',
       'readAttributes': '*',
       'writeAttributes': '*',
       'enableTokenRevocation': 'boolean',
@@ -12918,6 +12938,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'maxReadRequestUnits': '*',
         'globalSecondaryIndexOptions': '*',
         'contributorInsights': 'boolean',
+        'contributorInsightsSpecification': {
+          'enabled': 'boolean',
+          'mode': 'ContributorInsightsMode'
+        },
         'deletionProtection': 'boolean',
         'pointInTimeRecovery': 'boolean',
         'pointInTimeRecoverySpecification': {
@@ -12978,6 +13002,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'writeUnitsPerSecond': '*'
       },
       'contributorInsights': 'boolean',
+      'contributorInsightsSpecification': {
+        'enabled': 'boolean',
+        'mode': 'ContributorInsightsMode'
+      },
       'deletionProtection': 'boolean',
       'pointInTimeRecovery': 'boolean',
       'pointInTimeRecoverySpecification': {
@@ -13011,6 +13039,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'maxReadRequestUnits': '*',
           'globalSecondaryIndexOptions': '*',
           'contributorInsights': 'boolean',
+          'contributorInsightsSpecification': {
+            'enabled': 'boolean',
+            'mode': 'ContributorInsightsMode'
+          },
           'deletionProtection': 'boolean',
           'pointInTimeRecovery': 'boolean',
           'pointInTimeRecoverySpecification': {
@@ -13124,6 +13156,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'replicationTimeout': '*',
       'waitForReplicationToFinish': 'boolean',
       'contributorInsightsEnabled': 'boolean',
+      'contributorInsightsSpecification': {
+        'enabled': 'boolean',
+        'mode': 'ContributorInsightsMode'
+      },
       'deletionProtection': 'boolean',
       'importSource': {
         'compressionType': 'InputCompressionType',
@@ -13173,6 +13209,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'writeUnitsPerSecond': '*'
           },
           'contributorInsightsEnabled': 'boolean',
+          'contributorInsightsSpecification': {
+            'enabled': 'boolean',
+            'mode': 'ContributorInsightsMode'
+          },
           'indexName': '*',
           'projectionType': 'ProjectionType',
           'nonKeyAttributes': '*',
@@ -16618,7 +16658,17 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'resources': '*',
         'detail': '*'
       },
-      'retention': '*'
+      'retention': '*',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      }
     },
     'Connection': {
       'connectionName': '*',
@@ -20059,7 +20109,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'autoMinorVersionUpgrade': 'boolean',
       'clusterScalabilityType': 'ClusterScalabilityType',
       'clusterScailabilityType': 'ClusterScailabilityType',
-      'engineLifecycleSupport': 'EngineLifecycleSupport'
+      'engineLifecycleSupport': 'EngineLifecycleSupport',
+      'deleteAutomatedBackups': 'boolean'
     },
     'DatabaseClusterFromSnapshot': {
       'snapshotIdentifier': '*',
@@ -20393,7 +20444,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'autoMinorVersionUpgrade': 'boolean',
       'clusterScalabilityType': 'ClusterScalabilityType',
       'clusterScailabilityType': 'ClusterScailabilityType',
-      'engineLifecycleSupport': 'EngineLifecycleSupport'
+      'engineLifecycleSupport': 'EngineLifecycleSupport',
+      'deleteAutomatedBackups': 'boolean'
     },
     'DatabaseSecret': {
       'username': '*',
@@ -24614,6 +24666,22 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'description': '*',
       'actionGroups': '*',
+      'guardrail': {
+        'guardrailArn': '*',
+        'guardrailId': '*',
+        'kmsKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'lastUpdated': '*',
+        'guardrailVersion': '*'
+      },
       'promptOverrideConfiguration': '*',
       'userInputEnabled': 'boolean',
       'codeInterpreterEnabled': 'boolean',
@@ -24621,10 +24689,192 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'memory': '*',
       'agentCollaboration': '*',
       'customOrchestrationExecutor': '*',
+      'addGuardrail': [
+        {
+          'guardrailArn': '*',
+          'guardrailId': '*',
+          'kmsKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            },
+            'node': '*'
+          },
+          'lastUpdated': '*',
+          'guardrailVersion': '*'
+        }
+      ],
       'addActionGroup': [
         '*'
       ],
       'addActionGroups': [
+        '*'
+      ]
+    },
+    'GuardrailVersion': {
+      'guardrail': {
+        'guardrailArn': '*',
+        'guardrailId': '*',
+        'kmsKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'lastUpdated': '*',
+        'guardrailVersion': '*'
+      },
+      'description': '*'
+    },
+    'Guardrail': {
+      'guardrailName': '*',
+      'description': '*',
+      'blockedInputMessaging': '*',
+      'blockedOutputsMessaging': '*',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'contentFilters': {
+        'type': 'ContentFilterType',
+        'inputStrength': 'ContentFilterStrength',
+        'outputStrength': 'ContentFilterStrength',
+        'inputAction': 'GuardrailAction',
+        'inputEnabled': 'boolean',
+        'outputAction': 'GuardrailAction',
+        'outputEnabled': 'boolean',
+        'inputModalities': 'ModalityType',
+        'outputModalities': 'ModalityType'
+      },
+      'contentFiltersTierConfig': 'TierConfig',
+      'deniedTopics': '*',
+      'topicsTierConfig': 'TierConfig',
+      'wordFilters': {
+        'text': '*',
+        'inputAction': 'GuardrailAction',
+        'inputEnabled': 'boolean',
+        'outputAction': 'GuardrailAction',
+        'outputEnabled': 'boolean'
+      },
+      'managedWordListFilters': {
+        'type': 'ManagedWordFilterType',
+        'inputAction': 'GuardrailAction',
+        'inputEnabled': 'boolean',
+        'outputAction': 'GuardrailAction',
+        'outputEnabled': 'boolean'
+      },
+      'piiFilters': {
+        'type': '*',
+        'action': 'GuardrailAction',
+        'inputAction': 'GuardrailAction',
+        'inputEnabled': 'boolean',
+        'outputAction': 'GuardrailAction',
+        'outputEnabled': 'boolean'
+      },
+      'regexFilters': {
+        'name': '*',
+        'description': '*',
+        'action': 'GuardrailAction',
+        'inputAction': 'GuardrailAction',
+        'inputEnabled': 'boolean',
+        'outputAction': 'GuardrailAction',
+        'outputEnabled': 'boolean',
+        'pattern': '*'
+      },
+      'contextualGroundingFilters': {
+        'type': 'ContextualGroundingFilterType',
+        'action': 'GuardrailAction',
+        'enabled': 'boolean',
+        'threshold': '*'
+      },
+      'crossRegionConfig': {
+        'guardrailProfileArn': '*'
+      },
+      'addContentFilter': [
+        {
+          'type': 'ContentFilterType',
+          'inputStrength': 'ContentFilterStrength',
+          'outputStrength': 'ContentFilterStrength',
+          'inputAction': 'GuardrailAction',
+          'inputEnabled': 'boolean',
+          'outputAction': 'GuardrailAction',
+          'outputEnabled': 'boolean',
+          'inputModalities': 'ModalityType',
+          'outputModalities': 'ModalityType'
+        }
+      ],
+      'addPIIFilter': [
+        {
+          'type': '*',
+          'action': 'GuardrailAction',
+          'inputAction': 'GuardrailAction',
+          'inputEnabled': 'boolean',
+          'outputAction': 'GuardrailAction',
+          'outputEnabled': 'boolean'
+        }
+      ],
+      'addRegexFilter': [
+        {
+          'name': '*',
+          'description': '*',
+          'action': 'GuardrailAction',
+          'inputAction': 'GuardrailAction',
+          'inputEnabled': 'boolean',
+          'outputAction': 'GuardrailAction',
+          'outputEnabled': 'boolean',
+          'pattern': '*'
+        }
+      ],
+      'addDeniedTopicFilter': [
+        '*'
+      ],
+      'addContextualGroundingFilter': [
+        {
+          'type': 'ContextualGroundingFilterType',
+          'action': 'GuardrailAction',
+          'enabled': 'boolean',
+          'threshold': '*'
+        }
+      ],
+      'addWordFilter': [
+        {
+          'text': '*',
+          'inputAction': 'GuardrailAction',
+          'inputEnabled': 'boolean',
+          'outputAction': 'GuardrailAction',
+          'outputEnabled': 'boolean'
+        }
+      ],
+      'addWordFilterFromFile': [
+        '*',
+        'GuardrailAction',
+        'GuardrailAction',
+        'boolean',
+        'boolean'
+      ],
+      'addManagedWordListFilter': [
+        {
+          'type': 'ManagedWordFilterType',
+          'inputAction': 'GuardrailAction',
+          'inputEnabled': 'boolean',
+          'outputAction': 'GuardrailAction',
+          'outputEnabled': 'boolean'
+        }
+      ],
+      'createVersion': [
         '*'
       ]
     },
@@ -25995,6 +26245,48 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ]
     },
+    'ApiKey': {
+      'customerId': '*',
+      'enabled': 'boolean',
+      'generateDistinctId': 'boolean',
+      'apiKeyName': '*',
+      'value': '*',
+      'description': '*'
+    },
+    'RateLimitedApiKey': {
+      'apiStages': {
+        'api': {
+          'apiId': '*',
+          'apiEndpoint': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'stage': {
+          'callbackUrl': '*',
+          'stageName': '*',
+          'url': '*'
+        }
+      },
+      'quota': {
+        'limit': '*',
+        'offset': '*',
+        'period': 'Period'
+      },
+      'throttle': {
+        'rateLimit': '*',
+        'burstLimit': '*'
+      },
+      'customerId': '*',
+      'enabled': 'boolean',
+      'generateDistinctId': 'boolean',
+      'apiKeyName': '*',
+      'value': '*',
+      'description': '*'
+    },
     'WebSocketApi': {
       'addRoute': [
         '*',
@@ -26138,6 +26430,55 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'assumeRoleAction': '*',
             'policyFragment': '*',
             'principalAccount': '*'
+          }
+        }
+      ]
+    },
+    'UsagePlan': {
+      'apiStages': {
+        'api': {
+          'apiId': '*',
+          'apiEndpoint': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'stage': {
+          'callbackUrl': '*',
+          'stageName': '*',
+          'url': '*'
+        }
+      },
+      'description': '*',
+      'quota': {
+        'limit': '*',
+        'offset': '*',
+        'period': 'Period'
+      },
+      'throttle': {
+        'rateLimit': '*',
+        'burstLimit': '*'
+      },
+      'usagePlanName': '*',
+      'addApiStage': [
+        {
+          'api': {
+            'apiId': '*',
+            'apiEndpoint': '*',
+            'stack': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            },
+            'node': '*'
+          },
+          'stage': {
+            'callbackUrl': '*',
+            'stageName': '*',
+            'url': '*'
           }
         }
       ]

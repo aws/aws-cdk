@@ -1,4 +1,4 @@
-import { Duration, Stack } from '../../core';
+import { Duration, Stack, UnscopedValidationError } from '../../core';
 import {
   Alarm,
   AlarmWidget,
@@ -6,6 +6,7 @@ import {
   CustomWidget,
   GaugeWidget,
   GraphWidget,
+  GraphWidgetProps,
   GraphWidgetView,
   LegendPosition,
   LogQueryLanguage,
@@ -892,6 +893,52 @@ describe('Graphs', () => {
         },
       },
     }]);
+  });
+
+  test('GraphWidget with displayLabelsOnChart true', () => {
+    // GIVEN
+    const stack = new Stack();
+    const left = [new Metric({ namespace: 'CDK', metricName: 'Test' })];
+
+    // WHEN
+    const widget = new GraphWidget({
+      left: left,
+      view: GraphWidgetView.PIE,
+      displayLabelsOnChart: true,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'pie',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {},
+        labels: {
+          visible: true,
+        },
+      },
+    }]);
+  });
+
+  test('GraphWidget with displayLabelsOnChart true and view not GraphWidgetView.PIE throws validation error', () => {
+    // GIVEN
+    const left = [new Metric({ namespace: 'CDK', metricName: 'Test' })];
+
+    // WHEN
+    const widgetProps: GraphWidgetProps = {
+      left: left,
+      view: GraphWidgetView.BAR,
+      displayLabelsOnChart: true,
+    };
+
+    // THEN
+    expect(() => new GraphWidget(widgetProps)).toThrow(UnscopedValidationError);
   });
 
   test('add setPeriodToTimeRange to GraphWidget', () => {
