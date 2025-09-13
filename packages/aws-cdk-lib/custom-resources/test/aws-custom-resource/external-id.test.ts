@@ -20,14 +20,14 @@ describe('AwsCustomResource External ID Support', () => {
     new AwsCustomResource(stack, 'CustomResource', {
       onCreate: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: role.roleArn,
         externalId: 'test-external-id-123',
         physicalResourceId: PhysicalResourceId.of('test-resource'),
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
+      },
     });
 
     // THEN
@@ -39,14 +39,14 @@ describe('AwsCustomResource External ID Support', () => {
           'Arn',
         ],
       },
-      Create: JSON.stringify({
+      Create: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         externalId: 'test-external-id-123',
         physicalResourceId: { id: 'test-resource' },
         logApiResponseData: true,
-      }),
+      },
     });
   });
 
@@ -55,53 +55,53 @@ describe('AwsCustomResource External ID Support', () => {
     new AwsCustomResource(stack, 'CustomResource', {
       onCreate: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: role.roleArn,
         externalId: 'create-external-id',
         physicalResourceId: PhysicalResourceId.of('test-resource'),
       },
       onUpdate: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: role.roleArn,
         externalId: 'update-external-id',
       },
       onDelete: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: role.roleArn,
         externalId: 'delete-external-id',
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
+      },
     });
 
     // THEN
     const template = Template.fromStack(stack);
     template.hasResourceProperties('Custom::AWS', {
-      Create: JSON.stringify({
+      Create: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         externalId: 'create-external-id',
         physicalResourceId: { id: 'test-resource' },
         logApiResponseData: true,
-      }),
-      Update: JSON.stringify({
+      },
+      Update: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         externalId: 'update-external-id',
         logApiResponseData: true,
-      }),
-      Delete: JSON.stringify({
+      },
+      Delete: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         externalId: 'delete-external-id',
         logApiResponseData: true,
-      }),
+      },
     });
   });
 
@@ -110,25 +110,25 @@ describe('AwsCustomResource External ID Support', () => {
     new AwsCustomResource(stack, 'CustomResource', {
       onCreate: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         externalId: 'test-external-id-123', // This should be ignored without assumedRoleArn
         physicalResourceId: PhysicalResourceId.of('test-resource'),
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
+      },
     });
 
     // THEN
     const template = Template.fromStack(stack);
     template.hasResourceProperties('Custom::AWS', {
-      Create: JSON.stringify({
+      Create: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         externalId: 'test-external-id-123', // Still included in the call, but won't be used by Lambda
         physicalResourceId: { id: 'test-resource' },
         logApiResponseData: true,
-      }),
+      },
     });
   });
 
@@ -137,14 +137,14 @@ describe('AwsCustomResource External ID Support', () => {
     new AwsCustomResource(stack, 'CustomResource', {
       onCreate: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: role.roleArn,
         externalId: 'test-external-id-123',
         physicalResourceId: PhysicalResourceId.of('test-resource'),
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
+      },
     });
 
     // THEN - Should include sts:AssumeRole permission for the specified role
@@ -181,40 +181,40 @@ describe('AwsCustomResource External ID Support', () => {
     new AwsCustomResource(stack, 'CustomResource', {
       onCreate: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: role1.roleArn,
         externalId: 'external-1',
         physicalResourceId: PhysicalResourceId.of('test-resource'),
       },
       onUpdate: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: role2.roleArn,
         externalId: 'external-2',
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
+      },
     });
 
     // THEN
     const template = Template.fromStack(stack);
     template.hasResourceProperties('Custom::AWS', {
-      Create: JSON.stringify({
+      Create: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         externalId: 'external-1',
         physicalResourceId: { id: 'test-resource' },
         logApiResponseData: true,
-      }),
-      Update: JSON.stringify({
+      },
+      Update: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         externalId: 'external-2',
         logApiResponseData: true,
-      }),
+      },
     });
   });
 
@@ -223,26 +223,26 @@ describe('AwsCustomResource External ID Support', () => {
     new AwsCustomResource(stack, 'CustomResource', {
       onCreate: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: role.roleArn,
         // No externalId specified
         physicalResourceId: PhysicalResourceId.of('test-resource'),
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
+      },
     });
 
     // THEN
     const template = Template.fromStack(stack);
     template.hasResourceProperties('Custom::AWS', {
-      Create: JSON.stringify({
+      Create: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         physicalResourceId: { id: 'test-resource' },
         logApiResponseData: true,
-      }),
+      },
     });
   });
 
@@ -251,27 +251,27 @@ describe('AwsCustomResource External ID Support', () => {
     new AwsCustomResource(stack, 'CustomResource', {
       onCreate: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: role.roleArn,
         externalId: '', // Empty string should be preserved
         physicalResourceId: PhysicalResourceId.of('test-resource'),
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
+      },
     });
 
     // THEN
     const template = Template.fromStack(stack);
     template.hasResourceProperties('Custom::AWS', {
-      Create: JSON.stringify({
+      Create: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         externalId: '',
         physicalResourceId: { id: 'test-resource' },
         logApiResponseData: true,
-      }),
+      },
     });
   });
 
@@ -282,27 +282,27 @@ describe('AwsCustomResource External ID Support', () => {
     new AwsCustomResource(stack, 'CustomResource', {
       onCreate: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: role.roleArn,
         externalId: uuidExternalId,
         physicalResourceId: PhysicalResourceId.of('test-resource'),
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
+      },
     });
 
     // THEN
     const template = Template.fromStack(stack);
     template.hasResourceProperties('Custom::AWS', {
-      Create: JSON.stringify({
+      Create: {
         service: 'STS',
-        action: 'GetCallerIdentity',
+        action: 'getCallerIdentity',
         assumedRoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         externalId: uuidExternalId,
         physicalResourceId: { id: 'test-resource' },
         logApiResponseData: true,
-      }),
+      },
     });
   });
 
@@ -333,14 +333,14 @@ describe('AwsCustomResource External ID Support', () => {
           effect: iam.Effect.ALLOW,
           actions: ['sts:AssumeRole'],
           resources: [crossAccountRoleArn],
-        }),
+        },
       ]),
     });
 
     // THEN
     const template = Template.fromStack(stack);
     template.hasResourceProperties('Custom::AWS', {
-      Create: JSON.stringify({
+      Create: {
         service: 'EC2',
         action: 'DescribeVpcs',
         assumedRoleArn: crossAccountRoleArn,
@@ -348,15 +348,15 @@ describe('AwsCustomResource External ID Support', () => {
         region: 'us-west-2',
         physicalResourceId: { id: 'cross-account-vpc-list' },
         logApiResponseData: true,
-      }),
-      Update: JSON.stringify({
+      },
+      Update: {
         service: 'EC2',
         action: 'DescribeVpcs',
         assumedRoleArn: crossAccountRoleArn,
         externalId: secretExternalId,
         region: 'us-west-2',
         logApiResponseData: true,
-      }),
+      },
     });
   });
 });
