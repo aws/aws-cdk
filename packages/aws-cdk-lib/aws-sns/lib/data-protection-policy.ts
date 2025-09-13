@@ -83,7 +83,7 @@ export class DataProtectionPolicy implements IDataProtectionPolicy {
 
       // Try to get the physical name if available (for validation)
       let nameToValidate = logGroupName;
-      if ('physicalName' in logGroup && logGroup.physicalName && !Token.isUnresolved(logGroup.physicalName)) {
+      if ('physicalName' in logGroup && typeof logGroup.physicalName === 'string' && logGroup.physicalName && !Token.isUnresolved(logGroup.physicalName)) {
         nameToValidate = logGroup.physicalName;
       }
 
