@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "086c48edf1e807e7bb4c89914b718fcb02da303f56e78155724be97d73d2c8f7": {
+      "displayName": "aws-sfn-tasks-ecs-fargate-run-tasktask-def Template",
+      "source": {
+        "path": "aws-sfn-tasks-ecs-fargate-run-tasktask-def.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-1659e59c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "086c48edf1e807e7bb4c89914b718fcb02da303f56e78155724be97d73d2c8f7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
