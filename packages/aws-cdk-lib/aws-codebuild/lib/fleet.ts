@@ -57,7 +57,6 @@ export interface FleetProps {
    * For overflow behavior `ON_DEMAND`, overflow builds run on CodeBuild on-demand.
    *
    * @default undefined - AWS CodeBuild default behavior is QUEUE
-   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
    */
   readonly overflowBehavior?: FleetOverflowBehavior;
 }
