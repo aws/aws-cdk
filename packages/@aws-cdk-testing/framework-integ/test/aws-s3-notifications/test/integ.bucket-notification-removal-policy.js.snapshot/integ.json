@@ -1,0 +1,25 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "S3NotificationRemovalPolicyIntegTest/DefaultTest": {
+      "stacks": [
+        "S3NotificationRemovalPolicyStack"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": false
+          }
+        },
+        "destroy": {
+          "args": {
+            "force": true
+          }
+        }
+      },
+      "assertionStack": "S3NotificationRemovalPolicyIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "S3NotificationRemovalPolicyIntegTestDefaultTestDeployAssert67CD335B"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
