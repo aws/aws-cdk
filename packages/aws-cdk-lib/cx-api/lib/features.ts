@@ -77,6 +77,7 @@ export const APIGATEWAY_DISABLE_CLOUDWATCH_ROLE = '@aws-cdk/aws-apigateway:disab
 export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals';
 export const EVENTS_TARGET_QUEUE_SAME_ACCOUNT = '@aws-cdk/aws-events:eventsTargetQueueSameAccount';
 export const ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER = '@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker';
+export const ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER = '@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener';
 export const S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY = '@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy';
 export const ROUTE53_PATTERNS_USE_CERTIFICATE = '@aws-cdk/aws-route53-patters:useCertificate';
 export const AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT = '@aws-cdk/customresources:installLatestAwsSdkDefault';
@@ -160,7 +161,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       This feature flag is needed because enabling it can cause existing signing profiles to be
       replaced during deployment if a \`signingProfileName\` was specified but not previously used
       in the CloudFormation template.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.212.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
   },
@@ -315,6 +316,25 @@ export const FLAGS: Record<string, FlagInfo> = {
     unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'You can pass `desiredCount: 1` explicitly, but you should never need this.',
+  },
+
+  [ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER]: {
+    type: FlagType.ApiDefault,
+    summary: 'Disable implicit openListener when custom security groups are provided',
+    detailsMd: `
+      ApplicationLoadBalancedServiceBase currently defaults openListener to true, which creates
+      security group rules allowing ingress from 0.0.0.0/0. This can be a security risk when
+      users provide custom security groups on their load balancer, expecting those to be the
+      only ingress rules.
+
+      If this flag is not set, openListener will always default to true for backward compatibility.
+      If true, openListener will default to false when custom security groups are detected on the
+      load balancer, and true otherwise. Users can still explicitly set openListener: true to
+      override this behavior.`,
+    introducedIn: { v2: '2.214.0' },
+    unconfiguredBehavesLike: { v2: false },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'You can pass `openListener: true` explicitly to maintain the old behavior.',
   },
 
   //////////////////////////////////////////////////////////////////////

@@ -105,7 +105,8 @@ Flags come in three types:
 | [@aws-cdk/aws-lambda:useCdkManagedLogGroup](#aws-cdkaws-lambdausecdkmanagedloggroup) | When enabled, CDK creates and manages loggroup for the lambda function | 2.200.0 | new default |
 | [@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal](#aws-cdkaws-kmsapplyimportedaliaspermissionstoprincipal) | Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition | 2.202.0 | fix |
 | [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | 2.205.0 | new default |
-| [@aws-cdk/aws-signer:signingProfileNamePassedToCfn](#aws-cdkaws-signersigningprofilenamepassedtocfn) | Pass signingProfileName to CfnSigningProfile | V2NEXT | fix |
+| [@aws-cdk/aws-signer:signingProfileNamePassedToCfn](#aws-cdkaws-signersigningprofilenamepassedtocfn) | Pass signingProfileName to CfnSigningProfile | 2.212.0 | fix |
+| [@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener](#aws-cdkaws-ecs-patternssecgroupsdisablesimplicitopenlistener) | Disable implicit openListener when custom security groups are provided | 2.214.0 | new default |
 
 <!-- END table -->
 
@@ -118,6 +119,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
 {
   "context": {
     "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": true,
+    "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": true,
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,
     "@aws-cdk/core:target-partitions": [
@@ -2247,7 +2249,32 @@ in the CloudFormation template.
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.212.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener
+
+*Disable implicit openListener when custom security groups are provided*
+
+Flag type: New default behavior
+
+ApplicationLoadBalancedServiceBase currently defaults openListener to true, which creates
+security group rules allowing ingress from 0.0.0.0/0. This can be a security risk when
+users provide custom security groups on their load balancer, expecting those to be the
+only ingress rules.
+
+If this flag is not set, openListener will always default to true for backward compatibility.
+If true, openListener will default to false when custom security groups are detected on the
+load balancer, and true otherwise. Users can still explicitly set openListener: true to
+override this behavior.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.214.0 | `false` | `true` |
+
+**Compatibility with old behavior:** You can pass `openListener: true` explicitly to maintain the old behavior.
 
 
 <!-- END details -->

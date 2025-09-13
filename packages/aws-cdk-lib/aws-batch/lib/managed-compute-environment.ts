@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
 import * as ec2 from '../../aws-ec2';
@@ -595,7 +595,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default - no placement group
    */
-  readonly placementGroup?: ec2.IPlacementGroup;
+  readonly placementGroup?: ec2.IPlacementGroupRef;
 }
 
 /**
@@ -650,8 +650,8 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   public readonly instanceRole?: iam.IRole;
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
-  public readonly placementGroup?: ec2.IPlacementGroup;
 
+  private readonly _placementGroup?: ec2.IPlacementGroupRef;
   private readonly instanceProfile: iam.CfnInstanceProfile;
 
   constructor(scope: Construct, id: string, props: ManagedEc2EcsComputeEnvironmentProps) {
@@ -684,7 +684,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
 
     this.launchTemplate = props.launchTemplate;
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
-    this.placementGroup = props.placementGroup;
+    this._placementGroup = props.placementGroup;
 
     validateVCpus(this, this.minvCpus, this.maxvCpus);
     validateSpotConfig(this, this.spot, this.spotBidPercentage, this.spotFleetRole);
@@ -713,7 +713,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
             imageType: image.imageType ?? EcsMachineImageType.ECS_AL2,
           };
         }),
-        placementGroup: this.placementGroup?.placementGroupName,
+        placementGroup: props.placementGroup?.placementGroupRef.groupName,
         tags: this.tags.renderedTags as any,
       },
     });
@@ -726,6 +726,10 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     });
 
     this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
+  }
+
+  public get placementGroup(): ec2.IPlacementGroup | undefined {
+    return this._placementGroup ? asPlacementGroup(this._placementGroup, this) : undefined;
   }
 
   @MethodMetadata()
@@ -984,7 +988,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default - no placement group
    */
-  readonly placementGroup?: ec2.IPlacementGroup;
+  readonly placementGroup?: ec2.IPlacementGroupRef;
 }
 
 /**
@@ -1010,8 +1014,8 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
   public readonly instanceRole?: iam.IRole;
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
-  public readonly placementGroup?: ec2.IPlacementGroup;
 
+  private readonly _placementGroup?: ec2.IPlacementGroupRef;
   private readonly instanceProfile: iam.CfnInstanceProfile;
 
   constructor(scope: Construct, id: string, props: ManagedEc2EksComputeEnvironmentProps) {
@@ -1037,7 +1041,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
 
     this.launchTemplate = props.launchTemplate;
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
-    this.placementGroup = props.placementGroup;
+    this._placementGroup = props.placementGroup;
 
     validateVCpus(this, this.minvCpus, this.maxvCpus);
     validateSpotConfig(this, this.spot, this.spotBidPercentage);
@@ -1067,7 +1071,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
             imageType: image.imageType ?? EksMachineImageType.EKS_AL2,
           };
         }),
-        placementGroup: this.placementGroup?.placementGroupName,
+        placementGroup: props.placementGroup?.placementGroupRef.groupName,
         tags: this.tags.renderedTags as any,
       },
     });
@@ -1080,6 +1084,10 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     });
 
     this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
+  }
+
+  public get placementGroup(): ec2.IPlacementGroup | undefined {
+    return this._placementGroup ? asPlacementGroup(this._placementGroup, this) : undefined;
   }
 
   @MethodMetadata()
@@ -1270,3 +1278,10 @@ function baseManagedResourceProperties(baseComputeEnvironment: ManagedComputeEnv
 
 const DEFAULT_MIN_VCPUS = 0;
 const DEFAULT_MAX_VCPUS = 256;
+
+function asPlacementGroup(x: ec2.IPlacementGroupRef, scope: IConstruct): ec2.IPlacementGroup {
+  if ('placementGroupName' in x) {
+    return x as ec2.IPlacementGroup;
+  }
+  throw new ValidationError(`Provided placement group is not an instance of IPlacementGroup: ${x.constructor.name}`, scope);
+}

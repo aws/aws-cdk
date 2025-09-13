@@ -1591,6 +1591,8 @@ it in the constructor. Then add the Capacity Provider to the cluster. Finally,
 you can refer to the Provider by its name in your service's or task's Capacity
 Provider strategy.
 
+> **Note**: Cross-stack capacity provider registration is not supported. The ECS cluster and its capacity providers must be created in the same stack to avoid circular dependency issues.
+
 By default, Auto Scaling Group Capacity Providers will manage the scale-in and
 scale-out behavior of the auto scaling group based on the load your tasks put on
 the cluster, this is called [Managed Scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html#asg-capacity-providers-managed-scaling). If you'd
@@ -1970,6 +1972,9 @@ const volumeFromSnapshot = new ecs.ServiceManagedVolume(this, 'EBSVolume', {
     snapShotId: 'snap-066877671789bd71b',
     volumeType: ec2.EbsDeviceVolumeType.GP3,
     fileSystemType: ecs.FileSystemType.XFS,
+    // Specifies the Amazon EBS Provisioned Rate for Volume Initialization.
+    // Valid range is between 100 and 300 MiB/s.
+    volumeInitializationRate: Size.mebibytes(200),
   },
 });
 

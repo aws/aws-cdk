@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "InstanceIpv6AddressCountTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "34142660a7ea70cad11cdde504967eef699050ebe9c84136813a12c957f8483e": {
+    "461963a089fcaa11ce2a30800b15d6ce4ab4e1f84e39e64c733df10fea9eee6c": {
       "displayName": "InstanceIpv6AddressCountTestStack Template",
       "source": {
         "path": "InstanceIpv6AddressCountTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-ceab25ff": {
+        "current_account-current_region-679bbd25": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "34142660a7ea70cad11cdde504967eef699050ebe9c84136813a12c957f8483e.json",
+          "objectKey": "461963a089fcaa11ce2a30800b15d6ce4ab4e1f84e39e64c733df10fea9eee6c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

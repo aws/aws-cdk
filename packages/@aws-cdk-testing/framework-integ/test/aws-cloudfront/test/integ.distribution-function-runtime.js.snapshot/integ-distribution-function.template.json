@@ -35,19 +35,13 @@
        {
         "EventType": "viewer-request",
         "FunctionARN": {
-         "Fn::GetAtt": [
-          "FunctionRequest95528B2F",
-          "FunctionARN"
-         ]
+         "Ref": "FunctionRequest95528B2F"
         }
        },
        {
         "EventType": "viewer-response",
         "FunctionARN": {
-         "Fn::GetAtt": [
-          "FunctionResponse4EF2D1D3",
-          "FunctionARN"
-         ]
+         "Ref": "FunctionResponse4EF2D1D3"
         }
        }
       ],

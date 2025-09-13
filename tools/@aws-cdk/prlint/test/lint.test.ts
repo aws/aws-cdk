@@ -1,8 +1,7 @@
 import * as path from 'path';
 import { GitHubFile, GitHubLabel, GitHubPr } from '../github';
-import { CODE_BUILD_CONTEXT, CODECOV_CHECKS } from '../constants';
+import { CODECOV_CHECKS } from '../constants';
 import { PullRequestLinter } from '../lint';
-import { StatusEvent } from '@octokit/webhooks-definitions/schema';
 import { createOctomock, OctoMock } from './octomock';
 
 type GitHubFileName = Omit<GitHubFile, 'deletions' | 'additions'>;
@@ -589,13 +588,22 @@ describe('integration tests required on features', () => {
     });
   });
 
-  describe('assess needs review from status event', () => {
+  describe('assess needs review', () => {
     const pr = {
+      title: 'chore(s3): something',
       draft: false,
       mergeable_state: 'behind',
       number: 1234,
       labels: [{ name: 'p2' }],
     };
+    const files = [
+      {
+        filename: 'some-test.test.ts',
+      },
+      {
+        filename: 'readme.md',
+      },
+    ];
     beforeEach(() => {
       mockListReviews.mockImplementation(() => {
         return {
@@ -606,12 +614,8 @@ describe('integration tests required on features', () => {
 
     test('needs a review', async () => {
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockAddLabel.mock.calls[0][0]).toEqual({
@@ -626,12 +630,8 @@ describe('integration tests required on features', () => {
     test('needs a review and is p1', async () => {
       // WHEN
       pr.labels = [{ name: 'p1' }];
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockAddLabel.mock.calls[0][0]).toEqual({
@@ -657,12 +657,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
@@ -688,12 +684,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockAddLabel.mock.calls[0][0]).toEqual({
@@ -725,12 +717,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
@@ -758,12 +746,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
@@ -791,12 +775,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
@@ -831,12 +811,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
@@ -869,12 +845,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
@@ -899,12 +871,8 @@ describe('integration tests required on features', () => {
       (pr as any).labels = [];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls).toEqual([]);
@@ -927,12 +895,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls).toEqual([]);
@@ -956,12 +920,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
@@ -986,12 +946,8 @@ describe('integration tests required on features', () => {
       (pr as any).labels = [];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls).toEqual([]);
@@ -1019,12 +975,8 @@ describe('integration tests required on features', () => {
       ];
 
       // WHEN
-      const prLinter = configureMock(pr);
-      await legacyValidateStatusEvent(prLinter, {
-        sha: SHA,
-        context: CODE_BUILD_CONTEXT,
-        state: 'success',
-      } as any);
+      const prLinter = configureMock(pr, files);
+      await legacyValidatePullRequestTarget(prLinter);
 
       // THEN
       expect(mockRemoveLabel.mock.calls).toEqual([]);
@@ -1367,12 +1319,6 @@ function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFileName[], existin
   });
   octomock.issues.addLabels = mockAddLabel;
   octomock.issues.removeLabel = mockRemoveLabel;
-  octomock.repos.listCommitStatusesForRef.mockImplementation(() => ({
-    data: [{
-      context: CODE_BUILD_CONTEXT,
-      state: 'success',
-    }],
-  }));
 
   // We need to pretend that all CodeCov checks are passing by default, otherwise
   // the linter will complain about these even in tests that aren't testing for this.
@@ -1382,6 +1328,19 @@ function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFileName[], existin
       conclusion: 'success',
       started_at: '2020-01-01T00:00:00Z',
     })),
+  }));
+
+  // Mock workflow runs to simulate successful CodeBuild jobs
+  octomock.actions.listWorkflowRuns.mockImplementation(() => ({
+    data: {
+      workflow_runs: [
+        {
+          head_sha: SHA,
+          status: 'completed',
+          conclusion: 'success',
+        },
+      ],
+    },
   }));
 
   const linter = new PullRequestLinter({
@@ -1419,14 +1378,4 @@ async function legacyValidatePullRequestTarget(prLinter: PullRequestLinter) {
   const actions = await prLinter.validatePullRequestTarget();
   await prLinter.executeActions(actions);
   prLinter.actionsToException(actions);
-}
-
-/**
- * Same as for validatePullRequesTarget
- *
- * @deprecated Assert on the contents of `LinterActions` instead.
- */
-async function legacyValidateStatusEvent(prLinter: PullRequestLinter, statusEvent: StatusEvent) {
-  const actions = await prLinter.validateStatusEvent(statusEvent);
-  await prLinter.executeActions(actions);
 }
