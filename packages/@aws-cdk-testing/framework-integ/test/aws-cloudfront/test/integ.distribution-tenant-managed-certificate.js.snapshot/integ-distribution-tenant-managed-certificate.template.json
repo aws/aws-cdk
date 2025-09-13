@@ -1,0 +1,168 @@
+{
+ "Resources": {
+  "DistB3B78991": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "ConnectionMode": "tenant-only",
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "integdistributiontenantmanagedcertificateDistOrigin1B13D371F",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only"
+       },
+       "DomainName": "www.example.com",
+       "Id": "integdistributiontenantmanagedcertificateDistOrigin1B13D371F"
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "Record83264F3E"
+   ]
+  },
+  "connectiongroup567F24FE": {
+   "Type": "AWS::CloudFront::ConnectionGroup",
+   "Properties": {
+    "Enabled": true,
+    "Ipv6Enabled": true,
+    "Name": "integ-distribution-tenant-managed-certificateconnection-group"
+   }
+  },
+  "webacl": {
+   "Type": "AWS::WAFv2::WebACL",
+   "Properties": {
+    "DefaultAction": {
+     "Allow": {
+      "CustomRequestHandling": {
+       "InsertHeaders": [
+        {
+         "Name": "X-WebACL-Test",
+         "Value": "test"
+        }
+       ]
+      }
+     }
+    },
+    "Scope": "CLOUDFRONT",
+    "VisibilityConfig": {
+     "CloudWatchMetricsEnabled": false,
+     "MetricName": "test",
+     "SampledRequestsEnabled": false
+    }
+   }
+  },
+  "Record83264F3E": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": "Z23ABC4XYZL05B",
+    "Name": "integ.example.com.",
+    "ResourceRecords": [
+     {
+      "Fn::GetAtt": [
+       "connectiongroup567F24FE",
+       "RoutingEndpoint"
+      ]
+     }
+    ],
+    "TTL": "1800",
+    "Type": "CNAME"
+   }
+  },
+  "disttenant46C455B5": {
+   "Type": "AWS::CloudFront::DistributionTenant",
+   "Properties": {
+    "ConnectionGroupId": {
+     "Ref": "connectiongroup567F24FE"
+    },
+    "Customizations": {
+     "GeoRestrictions": {
+      "Locations": [
+       "US",
+       "CA"
+      ],
+      "RestrictionType": "whitelist"
+     },
+     "WebAcl": {
+      "Action": "override",
+      "Arn": {
+       "Fn::GetAtt": [
+        "webacl",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "DistributionId": {
+     "Ref": "DistB3B78991"
+    },
+    "Domains": [
+     "integ.example.com"
+    ],
+    "Enabled": true,
+    "ManagedCertificateRequest": {
+     "CertificateTransparencyLoggingPreference": "disabled",
+     "PrimaryDomainName": "integ.example.com",
+     "ValidationTokenHost": "cloudfront"
+    },
+    "Name": "test-tenant",
+    "Parameters": [
+     {
+      "Name": "tenantId",
+      "Value": "tenant-123"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "test"
+     }
+    ]
+   },
+   "DependsOn": [
+    "DistB3B78991"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
