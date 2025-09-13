@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "OverflowBehaviorFleetInteg/DefaultTest": {
+      "stacks": [
+        "OverflowBehaviorFleetStack"
+      ],
+      "assertionStack": "OverflowBehaviorFleetInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "OverflowBehaviorFleetIntegDefaultTestDeployAssert36A83E9C"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
