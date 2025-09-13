@@ -807,7 +807,7 @@ You can specify which IP protocol CloudFront uses when connecting to your Lambda
 
 ```ts
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { OriginIpAddressType } from 'aws-cdk-lib/aws-cloudfront-origins';
+import { OriginIpAddressType } from 'aws-cdk-lib/aws-cloudfront';
 
 declare const fn: lambda.Function;
 const fnUrl = fn.addFunctionUrl({ authType: lambda.FunctionUrlAuthType.NONE });
