@@ -81,7 +81,7 @@ export class DataProtectionPolicy implements IDataProtectionPolicy {
       const logGroupName = this.dataProtectionPolicyProps.logGroupAuditDestination.logGroupName;
       // Only validate if it's not a token (i.e., it's a concrete string value)
       // Check for tokens using multiple methods to be safe
-      const isToken = Token.isUnresolved(logGroupName) || 
+      const isToken = Token.isUnresolved(logGroupName) ||
                      (typeof logGroupName === 'string' && logGroupName.includes('${Token'));
       if (!isToken && !logGroupName.startsWith('/aws/vendedlogs/')) {
         throw new UnscopedValidationError(`CloudWatch log group for SNS data protection policy audit destination must start with '/aws/vendedlogs/', got: ${logGroupName}`);
@@ -188,7 +188,7 @@ export interface DataProtectionPolicyProps {
 
   /**
    * CloudWatch Logs log group to send audit findings to. The log group must already exist prior to creating the data protection policy.
-   * 
+   *
    * The log group name must start with '/aws/vendedlogs/' as required by AWS for SNS data protection policy audit destinations.
    *
    * @default - no CloudWatch Logs audit destination
