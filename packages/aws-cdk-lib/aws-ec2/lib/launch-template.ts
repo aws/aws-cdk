@@ -154,6 +154,8 @@ export enum CapacityReservationPreference {
   OPEN = 'open',
   /** Do not launch instances into Capacity Reservations */
   NONE = 'none',
+  /** Only launch instances into Capacity Reservations */
+  CAPACITY_RESERVATIONS_ONLY = 'capacity-reservations-only',
 }
 
 /**
