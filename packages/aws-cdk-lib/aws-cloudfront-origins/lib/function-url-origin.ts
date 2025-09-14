@@ -68,8 +68,6 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
 
     validateSecondsInRangeOrUndefined('readTimeout', 1, 180, props.readTimeout);
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
-
-    // Validate responseCompletionTimeout vs readTimeout relationship
     this.validateResponseCompletionTimeoutWithReadTimeout(props.responseCompletionTimeout, props.readTimeout);
   }
 
