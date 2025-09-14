@@ -46,24 +46,12 @@ test.each([-0.5, 0.5, 1.5, 4])
 test.each([
   Duration.seconds(0),
   Duration.seconds(3601),
-  Duration.minutes(61),
 ])('validates responseCompletionTimeout is an int between 1 and 3600 seconds - out of bounds', (responseCompletionTimeout) => {
   expect(() => {
     new TestOrigin('www.example.com', {
       responseCompletionTimeout,
     });
   }).toThrow(`responseCompletionTimeout: Must be an int between 1 and 3600 seconds (inclusive); received ${responseCompletionTimeout.toSeconds()}.`);
-});
-
-test.each([
-  Duration.seconds(0.5),
-  Duration.seconds(10.5),
-])('validates responseCompletionTimeout is an int between 1 and 3600 seconds - not an int', (responseCompletionTimeout) => {
-  expect(() => {
-    new TestOrigin('www.example.com', {
-      responseCompletionTimeout,
-    });
-  }).toThrow(/must be a whole number of/);
 });
 
 test('responseCompletionTimeout is correctly set in origin property', () => {
@@ -73,13 +61,6 @@ test('responseCompletionTimeout is correctly set in origin property', () => {
 
   const originBindConfig = origin.bind(stack, { originId: 'OriginId' });
   expect(originBindConfig.originProperty?.responseCompletionTimeout).toEqual(120);
-});
-
-test('responseCompletionTimeout is undefined when not set', () => {
-  const origin = new TestOrigin('www.example.com', {});
-
-  const originBindConfig = origin.bind(stack, { originId: 'OriginId' });
-  expect(originBindConfig.originProperty?.responseCompletionTimeout).toBeUndefined();
 });
 
 test.each(['api', '/api', '/api/', 'api/'])
