@@ -36,6 +36,17 @@ new ec2.LaunchTemplate(stack, 'LTWithCapacityReservationPreferenceOnly', {
   },
 });
 
+// Test LaunchTemplate with capacity reservations only preference
+new ec2.LaunchTemplate(stack, 'LTWithCapacityReservationsOnly', {
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  capacityReservationSpecification: {
+    capacityReservationPreference: ec2.CapacityReservationPreference.CAPACITY_RESERVATIONS_ONLY,
+    capacityReservationTarget: {
+      capacityReservationId: 'cr-0987654321fedcba0',
+    },
+  },
+});
+
 new integ.IntegTest(app, 'LaunchTemplateCapacityReservationTest', {
   testCases: [stack],
   diffAssets: true,

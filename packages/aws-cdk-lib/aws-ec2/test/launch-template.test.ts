@@ -1277,6 +1277,7 @@ describe('LaunchTemplate capacityReservationSpecification', () => {
   test.each([
     [CapacityReservationPreference.OPEN, 'open'],
     [CapacityReservationPreference.NONE, 'none'],
+    [CapacityReservationPreference.CAPACITY_RESERVATIONS_ONLY, 'capacity-reservations-only'],
   ])('given capacityReservationPreference %p', (given: CapacityReservationPreference, expected: string) => {
     // WHEN
     new LaunchTemplate(stack, 'Template', {
