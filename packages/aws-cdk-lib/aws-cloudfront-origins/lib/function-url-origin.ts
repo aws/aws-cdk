@@ -68,6 +68,19 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
 
     validateSecondsInRangeOrUndefined('readTimeout', 1, 180, props.readTimeout);
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
+
+    // Validate responseCompletionTimeout vs readTimeout relationship
+    if (props.responseCompletionTimeout && props.readTimeout) {
+      const responseCompletionSec = props.responseCompletionTimeout.toSeconds();
+      const readTimeoutSec = props.readTimeout.toSeconds();
+
+      if (responseCompletionSec < readTimeoutSec) {
+        throw new Error(
+          `responseCompletionTimeout (${responseCompletionSec}s) must be equal to or greater than ` +
+          `readTimeout (${readTimeoutSec}s)`
+        );
+      }
+    }
   }
 
   protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
@@ -98,6 +111,19 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
 
     validateSecondsInRangeOrUndefined('readTimeout', 1, 180, props.readTimeout);
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
+
+    // Validate responseCompletionTimeout vs readTimeout relationship
+    if (props.responseCompletionTimeout && props.readTimeout) {
+      const responseCompletionSec = props.responseCompletionTimeout.toSeconds();
+      const readTimeoutSec = props.readTimeout.toSeconds();
+
+      if (responseCompletionSec < readTimeoutSec) {
+        throw new Error(
+          `responseCompletionTimeout (${responseCompletionSec}s) must be equal to or greater than ` +
+          `readTimeout (${readTimeoutSec}s)`
+        );
+      }
+    }
   }
 
   protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {

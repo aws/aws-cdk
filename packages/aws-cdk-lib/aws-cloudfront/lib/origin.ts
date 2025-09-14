@@ -128,6 +128,24 @@ export interface OriginOptions {
    * @default - no origin access control
    */
   readonly originAccessControlId?: string;
+
+  /**
+   * The time (in seconds) that a request from CloudFront to the origin
+   * can stay open and wait for a response.
+   *
+   * If the complete response isn't received from the origin by this time,
+   * CloudFront ends the connection.
+   *
+   * Valid values are 1-3600 seconds, inclusive.
+   *
+   * Note: If you set a value for `responseCompletionTimeout`, the value must be
+   * equal to or greater than the value for `readTimeout` (if configured).
+   * If you don't set a value, CloudFront doesn't enforce a maximum value.
+   *
+   * @default - CloudFront doesn't enforce a maximum value
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistValuesOrigin.html#response-completion-timeout
+   */
+  readonly responseCompletionTimeout?: Duration;
 }
 
 /**
@@ -176,10 +194,12 @@ export abstract class OriginBase implements IOrigin {
   private readonly originShieldEnabled: boolean;
   private readonly originId?: string;
   private readonly originAccessControlId?: string;
+  private readonly responseCompletionTimeout?: Duration;
 
   protected constructor(domainName: string, props: OriginProps = {}) {
     validateIntInRangeOrUndefined('connectionTimeout', 1, 10, props.connectionTimeout?.toSeconds());
     validateIntInRangeOrUndefined('connectionAttempts', 1, 3, props.connectionAttempts, false);
+    validateIntInRangeOrUndefined('responseCompletionTimeout', 1, 3600, props.responseCompletionTimeout?.toSeconds());
     validateCustomHeaders(props.customHeaders);
 
     this.domainName = domainName;
@@ -191,6 +211,7 @@ export abstract class OriginBase implements IOrigin {
     this.originId = props.originId;
     this.originShieldEnabled = props.originShieldEnabled ?? true;
     this.originAccessControlId = props.originAccessControlId;
+    this.responseCompletionTimeout = props.responseCompletionTimeout;
   }
 
   /**
@@ -218,6 +239,7 @@ export abstract class OriginBase implements IOrigin {
         vpcOriginConfig,
         originShield: this.renderOriginShield(this.originShieldEnabled, this.originShieldRegion),
         originAccessControlId: this.originAccessControlId,
+        responseCompletionTimeout: this.responseCompletionTimeout?.toSeconds(),
       },
     };
   }

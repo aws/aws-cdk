@@ -114,3 +114,67 @@ test.each([
     });
   }).toThrow(/must be a whole number of/);
 });
+
+test('renders responseCompletionTimeout in origin property', () => {
+  const origin = new HttpOrigin('www.example.com', {
+    responseCompletionTimeout: Duration.seconds(120),
+  });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
+
+  expect(originBindConfig.originProperty).toEqual({
+    id: 'StackOrigin029E19582',
+    domainName: 'www.example.com',
+    originCustomHeaders: undefined,
+    originPath: undefined,
+    responseCompletionTimeout: 120,
+    customOriginConfig: {
+      originProtocolPolicy: 'https-only',
+      originSslProtocols: [
+        'TLSv1.2',
+      ],
+    },
+  });
+});
+
+test('validates responseCompletionTimeout >= readTimeout - valid case', () => {
+  expect(() => {
+    new HttpOrigin('www.example.com', {
+      responseCompletionTimeout: Duration.seconds(120),
+      readTimeout: Duration.seconds(60),
+    });
+  }).not.toThrow();
+});
+
+test('validates responseCompletionTimeout >= readTimeout - equal case', () => {
+  expect(() => {
+    new HttpOrigin('www.example.com', {
+      responseCompletionTimeout: Duration.seconds(60),
+      readTimeout: Duration.seconds(60),
+    });
+  }).not.toThrow();
+});
+
+test('validates responseCompletionTimeout >= readTimeout - invalid case', () => {
+  expect(() => {
+    new HttpOrigin('www.example.com', {
+      responseCompletionTimeout: Duration.seconds(30),
+      readTimeout: Duration.seconds(60),
+    });
+  }).toThrow('responseCompletionTimeout (30s) must be equal to or greater than readTimeout (60s)');
+});
+
+test('responseCompletionTimeout without readTimeout should not throw', () => {
+  expect(() => {
+    new HttpOrigin('www.example.com', {
+      responseCompletionTimeout: Duration.seconds(30),
+    });
+  }).not.toThrow();
+});
+
+test('readTimeout without responseCompletionTimeout should not throw', () => {
+  expect(() => {
+    new HttpOrigin('www.example.com', {
+      readTimeout: Duration.seconds(60),
+    });
+  }).not.toThrow();
+});
