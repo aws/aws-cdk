@@ -215,6 +215,31 @@ export abstract class OriginBase implements IOrigin {
   }
 
   /**
+   * Validates that responseCompletionTimeout is greater than or equal to readTimeout
+   * when both are specified. This method should be called by subclasses that support readTimeout.
+   * 
+   * @param responseCompletionTimeout The responseCompletionTimeout value to validate
+   * @param readTimeout The readTimeout value to compare against
+   * @protected
+   */
+  protected validateResponseCompletionTimeoutWithReadTimeout(
+    responseCompletionTimeout?: Duration,
+    readTimeout?: Duration,
+  ): void {
+    if (responseCompletionTimeout && readTimeout) {
+      const responseCompletionSec = responseCompletionTimeout.toSeconds();
+      const readTimeoutSec = readTimeout.toSeconds();
+
+      if (responseCompletionSec < readTimeoutSec) {
+        throw new Error(
+          `responseCompletionTimeout (${responseCompletionSec}s) must be equal to or greater than ` +
+          `readTimeout (${readTimeoutSec}s)`
+        );
+      }
+    }
+  }
+
+  /**
    * Binds the origin to the associated Distribution. Can be used to grant permissions, create dependent resources, etc.
    */
   public bind(scope: Construct, options: OriginBindOptions): OriginBindConfig {

@@ -68,17 +68,7 @@ export class HttpOrigin extends cloudfront.OriginBase {
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
 
     // Validate responseCompletionTimeout vs readTimeout relationship
-    if (props.responseCompletionTimeout && props.readTimeout) {
-      const responseCompletionSec = props.responseCompletionTimeout.toSeconds();
-      const readTimeoutSec = props.readTimeout.toSeconds();
-
-      if (responseCompletionSec < readTimeoutSec) {
-        throw new Error(
-          `responseCompletionTimeout (${responseCompletionSec}s) must be equal to or greater than ` +
-          `readTimeout (${readTimeoutSec}s)`
-        );
-      }
-    }
+    this.validateResponseCompletionTimeoutWithReadTimeout(props.responseCompletionTimeout, props.readTimeout);
   }
 
   protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {

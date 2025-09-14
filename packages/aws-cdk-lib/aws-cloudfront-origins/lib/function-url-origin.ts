@@ -69,16 +69,8 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
     validateSecondsInRangeOrUndefined('readTimeout', 1, 180, props.readTimeout);
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
 
-    if (props.responseCompletionTimeout && props.readTimeout) {
-      const responseCompletionSec = props.responseCompletionTimeout.toSeconds();
-      const readTimeoutSec = props.readTimeout.toSeconds();
-
-      if (responseCompletionSec < readTimeoutSec) {
-        throw new cdk.UnscopedValidationError(
-          `responseCompletionTimeout must be equal to or greater than readTimeout (${readTimeoutSec}s), got: ${responseCompletionSec}s.`,
-        );
-      }
-    }
+    // Validate responseCompletionTimeout vs readTimeout relationship
+    this.validateResponseCompletionTimeoutWithReadTimeout(props.responseCompletionTimeout, props.readTimeout);
   }
 
   protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
