@@ -3,7 +3,6 @@ import * as cloudfront from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
 import { Duration, Stack } from '../../core';
 import { FunctionUrlOrigin } from '../lib';
-import { OriginBindConfig } from '../../aws-cloudfront/lib/origin';
 
 let stack: Stack;
 let otherStack: Stack;
