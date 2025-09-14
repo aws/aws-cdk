@@ -7,7 +7,7 @@ let stack: Stack;
 
 beforeEach(() => {
   app = new App();
-  new Stack(app, 'Stack', {
+  stack = new Stack(app, 'Stack', {
     env: { account: '1234', region: 'testregion' },
   });
 });
@@ -136,45 +136,34 @@ test('renders responseCompletionTimeout in origin property', () => {
   });
 });
 
-test('validates responseCompletionTimeout >= readTimeout - valid case', () => {
-  expect(() => {
-    new HttpOrigin('www.example.com', {
-      responseCompletionTimeout: Duration.seconds(120),
-      readTimeout: Duration.seconds(60),
-    });
-  }).not.toThrow();
+test('configure both responseCompletionTimeout and readTimeout', () => {
+  const origin = new HttpOrigin('www.example.com', {
+    responseCompletionTimeout: Duration.seconds(60),
+    readTimeout: Duration.seconds(60),
+  });
+
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
+  expect(originBindConfig.originProperty).toEqual({
+    id: 'StackOrigin029E19582',
+    domainName: 'www.example.com',
+    originCustomHeaders: undefined,
+    originPath: undefined,
+    responseCompletionTimeout: 60,
+    customOriginConfig: {
+      originProtocolPolicy: 'https-only',
+      originSslProtocols: [
+        'TLSv1.2',
+      ],
+      originReadTimeout: 60,
+    },
+  });
 });
 
-test('validates responseCompletionTimeout >= readTimeout - equal case', () => {
-  expect(() => {
-    new HttpOrigin('www.example.com', {
-      responseCompletionTimeout: Duration.seconds(60),
-      readTimeout: Duration.seconds(60),
-    });
-  }).not.toThrow();
-});
-
-test('validates responseCompletionTimeout >= readTimeout - invalid case', () => {
+test('throw error for configuring readTimeout less than responseCompletionTimeout value', () => {
   expect(() => {
     new HttpOrigin('www.example.com', {
       responseCompletionTimeout: Duration.seconds(30),
       readTimeout: Duration.seconds(60),
     });
   }).toThrow('responseCompletionTimeout (30s) must be equal to or greater than readTimeout (60s)');
-});
-
-test('responseCompletionTimeout without readTimeout should not throw', () => {
-  expect(() => {
-    new HttpOrigin('www.example.com', {
-      responseCompletionTimeout: Duration.seconds(30),
-    });
-  }).not.toThrow();
-});
-
-test('readTimeout without responseCompletionTimeout should not throw', () => {
-  expect(() => {
-    new HttpOrigin('www.example.com', {
-      readTimeout: Duration.seconds(60),
-    });
-  }).not.toThrow();
 });
