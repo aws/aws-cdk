@@ -526,7 +526,6 @@ describe('FunctionUrlOriginAccessControl', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_20_X,
     });
-
     const fnUrl = fn.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.NONE,
     });
