@@ -244,8 +244,6 @@ export abstract class OriginBase implements IOrigin {
       throw new ValidationError('Subclass must override and provide either s3OriginConfig, customOriginConfig or vpcOriginConfig', scope);
     }
 
-    if ()
-
     return {
       originProperty: {
         domainName: this.domainName,
