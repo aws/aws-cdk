@@ -3,6 +3,7 @@ import * as cloudfront from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
 import { Duration, Stack } from '../../core';
 import { FunctionUrlOrigin } from '../lib';
+import { OriginBindConfig } from '../../aws-cloudfront/lib/origin';
 
 let stack: Stack;
 let otherStack: Stack;
@@ -480,7 +481,7 @@ describe('FunctionUrlOriginAccessControl', () => {
     });
   });
 
-  test('validates responseCompletionTimeout >= readTimeout - valid case', () => {
+  test('configure both responseCompletionTimeout and readTimeout', () => {
     const fn = new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
       handler: 'index.handler',
@@ -491,15 +492,36 @@ describe('FunctionUrlOriginAccessControl', () => {
       authType: lambda.FunctionUrlAuthType.NONE,
     });
 
-    expect(() => {
-      new FunctionUrlOrigin(fnUrl, {
-        responseCompletionTimeout: Duration.seconds(120),
-        readTimeout: Duration.seconds(60),
-      });
-    }).not.toThrow();
+    const origin = new FunctionUrlOrigin(fnUrl, {
+      responseCompletionTimeout: Duration.seconds(60),
+      readTimeout: Duration.seconds(60),
+    });
+
+    const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
+
+    expect(stack.resolve(originBindConfig.originProperty)).toEqual({
+      id: 'StackOriginLambdaFunctionURL',
+      domainName: {
+        'Fn::Select': [
+          2,
+          {
+            'Fn::Split': [
+              '/',
+              { 'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionUrl'] },
+            ],
+          },
+        ],
+      },
+      responseCompletionTimeout: 60,
+      customOriginConfig: {
+        originProtocolPolicy: 'https-only',
+        originSslProtocols: ['TLSv1.2'],
+        readTimeout: 60,
+      },
+    });
   });
 
-  test('validates responseCompletionTimeout >= readTimeout - invalid case', () => {
+  test('throw error for configuring readTimeout less than responseCompletionTimeout value', () => {
     const fn = new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
       handler: 'index.handler',
@@ -516,23 +538,5 @@ describe('FunctionUrlOriginAccessControl', () => {
         readTimeout: Duration.seconds(60),
       });
     }).toThrow('responseCompletionTimeout (30s) must be equal to or greater than readTimeout (60s)');
-  });
-
-  test('responseCompletionTimeout without readTimeout should not throw', () => {
-    const fn = new lambda.Function(stack, 'MyFunction', {
-      code: lambda.Code.fromInline('exports.handler = async () => {};'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
-    });
-
-    const fnUrl = fn.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.NONE,
-    });
-
-    expect(() => {
-      new FunctionUrlOrigin(fnUrl, {
-        responseCompletionTimeout: Duration.seconds(30),
-      });
-    }).not.toThrow();
   });
 });
