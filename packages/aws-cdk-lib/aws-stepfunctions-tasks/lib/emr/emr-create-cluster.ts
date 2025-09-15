@@ -12,7 +12,7 @@ import {
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { ValidationError } from '../../../core';
+import { Aws, ValidationError } from '../../../core';
 import { ENABLE_EMR_SERVICE_POLICY_V2 } from '../../../cx-api';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -395,6 +395,24 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         resources: [serviceRole.roleArn, clusterRole.roleArn],
       }),
     );
+
+    // https://docs.aws.amazon.com/emr/latest/ManagementGuide/using-service-linked-roles-cleanup.html#create-service-linked-role
+    policyStatements.push(
+      new iam.PolicyStatement({
+        sid: 'ElasticMapReduceServiceLinkedRole',
+        actions: ['iam:CreateServiceLinkedRole'],
+        resources: [`arn:${Aws.PARTITION}:iam::*:role/aws-service-role/elasticmapreduce.amazonaws.com*/AWSServiceRoleForEMRCleanup*`],
+        conditions: {
+          StringEquals: {
+            'iam:AWSServiceName': [
+              'elasticmapreduce.amazonaws.com',
+              'elasticmapreduce.amazonaws.com.cn',
+            ],
+          },
+        },
+      }),
+    );
+
     if (autoScalingRole !== undefined) {
       policyStatements.push(
         new iam.PolicyStatement({

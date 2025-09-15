@@ -1,15 +1,16 @@
 {
-  "version": "35.0.0",
+  "version": "48.0.0",
   "files": {
-    "9504385e84a440d671819d4acde50cce63d7d62327551a08627bef661a17458a": {
+    "c2beea065f8fff384bbc183cbe84e7d1aa201d6e28e2b0b0e26cd6b6d9c39c0b": {
+      "displayName": "aws-cdk-emr-create-cluster-with-spot-instance-fleet Template",
       "source": {
         "path": "aws-cdk-emr-create-cluster-with-spot-instance-fleet.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-21364de6": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9504385e84a440d671819d4acde50cce63d7d62327551a08627bef661a17458a.json",
+          "objectKey": "c2beea065f8fff384bbc183cbe84e7d1aa201d6e28e2b0b0e26cd6b6d9c39c0b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

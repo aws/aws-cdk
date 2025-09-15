@@ -2009,3 +2009,89 @@ test('Create Cluster with ManagedScalingPolicy', () => {
     },
   });
 });
+
+test('StateMachine get correct permission', () => {
+  // WHEN
+  const step = new EmrCreateCluster(stack, 'Task', {
+    instances: {},
+    name: 'Cluster',
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  });
+
+  new sfn.StateMachine(stack, 'SM', {
+    definition: step,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'elasticmapreduce:RunJobFlow',
+            'elasticmapreduce:DescribeCluster',
+            'elasticmapreduce:TerminateJobFlows',
+            'elasticmapreduce:AddTags',
+          ],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'iam:PassRole',
+          Effect: 'Allow',
+          Resource: [
+            { 'Fn::GetAtt': ['TaskServiceRoleBF55F61E', 'Arn'] },
+            { 'Fn::GetAtt': ['TaskInstanceRoleB72072BF', 'Arn'] },
+          ],
+        },
+        {
+          Sid: 'ElasticMapReduceServiceLinkedRole',
+          Action: 'iam:CreateServiceLinkedRole',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::*:role/aws-service-role/elasticmapreduce.amazonaws.com*/AWSServiceRoleForEMRCleanup*',
+            ]],
+          },
+          Condition: {
+            StringEquals: {
+              'iam:AWSServiceName': [
+                'elasticmapreduce.amazonaws.com',
+                'elasticmapreduce.amazonaws.com.cn',
+              ],
+            },
+          },
+        },
+        {
+          Action: 'iam:PassRole',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': ['TaskAutoScalingRoleD06F8423', 'Arn'],
+          },
+        },
+        {
+          Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':events:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':rule/StepFunctionsGetEventForEMRRunJobFlowRule',
+            ]],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Roles: [
+      {
+        Ref: 'SMRole49C19C48',
+      },
+    ],
+  });
+});
