@@ -154,7 +154,7 @@ export interface BucketDeploymentProps {
    * If you are deploying large files, you will need to increase this number
    * accordingly.
    *
-   * @default 128
+   * @default 512
    */
   readonly memoryLimit?: number;
 
@@ -380,7 +380,7 @@ export class BucketDeployment extends Construct {
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
-      memorySize: props.memoryLimit,
+      memorySize: props.memoryLimit ?? 512,
       ephemeralStorageSize: props.ephemeralStorageSize,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
@@ -596,12 +596,13 @@ export class BucketDeployment extends Construct {
     // if the user specifes a custom memory limit, we define another singleton handler
     // with this configuration. otherwise, it won't be possible to use multiple
     // configurations since we have a singleton.
-    if (memoryLimit) {
-      if (cdk.Token.isUnresolved(memoryLimit)) {
+    const effectiveMemoryLimit = memoryLimit ?? 512;
+    if (effectiveMemoryLimit !== 512) {
+      if (cdk.Token.isUnresolved(effectiveMemoryLimit)) {
         throw new ValidationError("Can't use tokens when specifying 'memoryLimit' since we use it to identify the singleton custom resource handler.", this);
       }
 
-      uuid += `-${memoryLimit.toString()}MiB`;
+      uuid += `-${effectiveMemoryLimit.toString()}MiB`;
     }
 
     // if the user specifies a custom ephemeral storage size, we define another singleton handler
