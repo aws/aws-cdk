@@ -28,7 +28,7 @@
      "PartitionKey": "\"1\""
     },
     "flattenResponse": "false",
-    "salt": "1756990114156"
+    "salt": "1757338610288"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -151,7 +151,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1756990114157"
+    "salt": "1757338610289"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -530,6 +530,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"
