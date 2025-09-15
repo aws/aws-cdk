@@ -282,22 +282,6 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
     this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
 
-    if (this.props.releaseLabel !== undefined && !cdk.Token.isUnresolved(this.props.releaseLabel)) {
-      this.validateReleaseLabel(this.props.releaseLabel);
-    }
-
-    if (this.props.stepConcurrencyLevel !== undefined && !cdk.Token.isUnresolved(this.props.stepConcurrencyLevel)) {
-      if (this.props.stepConcurrencyLevel < 1 || this.props.stepConcurrencyLevel > 256) {
-        throw new ValidationError(`Step concurrency level must be in range [1, 256], but got ${this.props.stepConcurrencyLevel}.`, this);
-      }
-      if (this.props.releaseLabel && this.props.stepConcurrencyLevel !== 1) {
-        const [major, minor] = this.props.releaseLabel.slice(4).split('.');
-        if (Number(major) < 5 || (Number(major) === 5 && Number(minor) < 28)) {
-          throw new ValidationError(`Step concurrency is only supported in EMR release version 5.28.0 and above but got ${this.props.releaseLabel}.`, this);
-        }
-      }
-    }
-
     if (this.props.autoTerminationPolicyIdleTimeout !== undefined && !cdk.Token.isUnresolved(this.props.autoTerminationPolicyIdleTimeout)) {
       const idletimeOutSeconds = this.props.autoTerminationPolicyIdleTimeout.toSeconds();
 
@@ -306,30 +290,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
       }
     }
 
-    // EMR EBS limitations https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-custom-ami-root-volume-size.html#emr-root-volume-overview
-    if (this.props.ebsRootVolumeSize !== undefined &&
-      (this.props.ebsRootVolumeSize.toGibibytes() < 15 || this.props.ebsRootVolumeSize.toGibibytes() > 100)) {
-      throw new ValidationError(
-        `ebsRootVolumeSize must be between 15 and 100 GiB, but got ${this.props.ebsRootVolumeSize.toGibibytes()} GiB.`, this);
-    }
-
-    if (this.props.releaseLabel &&
-      (this.props.ebsRootVolumeThroughput !== undefined || this.props.ebsRootVolumeIops !== undefined)) {
-      const minVersion = '6.15.0';
-      if (semver.lt(this.props.releaseLabel.slice(4), minVersion)) {
-        throw new ValidationError(`ebsRootVolumeThroughput and ebsRootVolumeIops are only supported in EMR release version ${minVersion} and above but got ${this.props.releaseLabel}.`, this);
-      }
-    }
-
-    if (this.props.ebsRootVolumeThroughput !== undefined && (this.props.ebsRootVolumeThroughput < 125 || this.props.ebsRootVolumeThroughput > 1000)) {
-      throw new ValidationError(
-        `ebsRootVolumeThroughput must be between 125 and 1000 MiB/s, but got ${this.props.ebsRootVolumeThroughput} MiB/s.`, this);
-    }
-
-    if (this.props.ebsRootVolumeIops !== undefined && (this.props.ebsRootVolumeIops < 3000 || this.props.ebsRootVolumeIops > 16000)) {
-      throw new ValidationError(
-        `ebsRootVolumeIops must be between 3000 and 16000, but got ${this.props.ebsRootVolumeIops}.`, this);
-    }
+    this.validatePropsRelatedToReleaseLabel();
   }
 
   /**
@@ -547,6 +508,49 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
     function isNotANumber(value: string): boolean {
       return value === '' || isNaN(Number(value));
+    }
+  }
+
+  private validatePropsRelatedToReleaseLabel() {
+    if (this.props.releaseLabel !== undefined && !cdk.Token.isUnresolved(this.props.releaseLabel)) {
+      this.validateReleaseLabel(this.props.releaseLabel);
+    }
+
+    if (this.props.stepConcurrencyLevel !== undefined && !cdk.Token.isUnresolved(this.props.stepConcurrencyLevel)) {
+      if (this.props.stepConcurrencyLevel < 1 || this.props.stepConcurrencyLevel > 256) {
+        throw new ValidationError(`Step concurrency level must be in range [1, 256], but got ${this.props.stepConcurrencyLevel}.`, this);
+      }
+      if (this.props.releaseLabel && this.props.stepConcurrencyLevel !== 1) {
+        const [major, minor] = this.props.releaseLabel.slice(4).split('.');
+        if (Number(major) < 5 || (Number(major) === 5 && Number(minor) < 28)) {
+          throw new ValidationError(`Step concurrency is only supported in EMR release version 5.28.0 and above but got ${this.props.releaseLabel}.`, this);
+        }
+      }
+    }
+
+    // EMR EBS limitations https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-custom-ami-root-volume-size.html#emr-root-volume-overview
+    if (this.props.ebsRootVolumeSize !== undefined &&
+      (this.props.ebsRootVolumeSize.toGibibytes() < 15 || this.props.ebsRootVolumeSize.toGibibytes() > 100)) {
+      throw new ValidationError(
+        `ebsRootVolumeSize must be between 15 and 100 GiB, but got ${this.props.ebsRootVolumeSize.toGibibytes()} GiB.`, this);
+    }
+
+    if (this.props.releaseLabel &&
+      (this.props.ebsRootVolumeThroughput !== undefined || this.props.ebsRootVolumeIops !== undefined)) {
+      const minVersion = '6.15.0';
+      if (semver.lt(this.props.releaseLabel.slice(4), minVersion)) {
+        throw new ValidationError(`ebsRootVolumeThroughput and ebsRootVolumeIops are only supported in EMR release version ${minVersion} and above but got ${this.props.releaseLabel}.`, this);
+      }
+    }
+
+    if (this.props.ebsRootVolumeThroughput !== undefined && (this.props.ebsRootVolumeThroughput < 125 || this.props.ebsRootVolumeThroughput > 1000)) {
+      throw new ValidationError(
+        `ebsRootVolumeThroughput must be between 125 and 1000 MiB/s, but got ${this.props.ebsRootVolumeThroughput} MiB/s.`, this);
+    }
+
+    if (this.props.ebsRootVolumeIops !== undefined && (this.props.ebsRootVolumeIops < 3000 || this.props.ebsRootVolumeIops > 16000)) {
+      throw new ValidationError(
+        `ebsRootVolumeIops must be between 3000 and 16000, but got ${this.props.ebsRootVolumeIops}.`, this);
     }
   }
 }
