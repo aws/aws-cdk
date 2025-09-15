@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as cdk from 'aws-cdk-lib';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-custom-repository');
@@ -80,4 +81,9 @@ new cdk.CfnOutput(stack, 'DefaultRepoPrefixedTag', {
 
 new cdk.CfnOutput(stack, 'PrecedenceTestTag', {
   value: precedenceTest.imageTag,
+});
+
+// Register the integration test
+new IntegTest(app, 'EcrCustomRepositoryTest', {
+  testCases: [stack],
 });
