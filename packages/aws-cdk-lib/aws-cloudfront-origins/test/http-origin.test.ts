@@ -165,5 +165,5 @@ test('throw error for configuring readTimeout less than responseCompletionTimeou
       responseCompletionTimeout: Duration.seconds(30),
       readTimeout: Duration.seconds(60),
     });
-  }).toThrow('responseCompletionTimeout (30s) must be equal to or greater than readTimeout (60s)');
+  }).toThrow('responseCompletionTimeout must be equal to or greater than readTimeout (60s), got: 30s.');
 });
