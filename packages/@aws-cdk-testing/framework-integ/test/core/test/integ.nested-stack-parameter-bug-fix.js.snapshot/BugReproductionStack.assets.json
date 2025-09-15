@@ -1,0 +1,48 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "0d94926290549a70008a6e1e24fe1f1b29c5b53364bc1c09c60ef9cb02f562ca": {
+      "displayName": "BugReproductionStack/ChildStack/AWSCDKCfnUtilsProviderCustomResourceProvider Code",
+      "source": {
+        "path": "asset.0d94926290549a70008a6e1e24fe1f1b29c5b53364bc1c09c60ef9cb02f562ca",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-22f72fad": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0d94926290549a70008a6e1e24fe1f1b29c5b53364bc1c09c60ef9cb02f562ca.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "5c9ef68698a5d32271b9913264e9e94cfaeccee231141aee9475429a545293d5": {
+      "displayName": "ChildStack Nested Stack Template",
+      "source": {
+        "path": "BugReproductionStackChildStackBB903D30.nested.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-ab2e44c5": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5c9ef68698a5d32271b9913264e9e94cfaeccee231141aee9475429a545293d5.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "fd7ac88f80d23cbb2f5419b9e76e4dc5add985e0e231db75ad39b28edd090847": {
+      "displayName": "BugReproductionStack Template",
+      "source": {
+        "path": "BugReproductionStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-ef78e102": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fd7ac88f80d23cbb2f5419b9e76e4dc5add985e0e231db75ad39b28edd090847.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
