@@ -1,12 +1,12 @@
 {
   "version": "48.0.0",
   "testCases": {
-    "AwsCustomResourceExternalIdIntegTest/DefaultTest": {
+    "AwsCustomResourceTest/DefaultTest": {
       "stacks": [
         "aws-custom-resource-external-id-test"
       ],
-      "assertionStack": "AwsCustomResourceExternalIdIntegTest/DefaultTest/DeployAssert",
-      "assertionStackName": "AwsCustomResourceExternalIdIntegTestDefaultTestDeployAssertBBEC4D50"
+      "assertionStack": "AwsCustomResourceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5"
     }
   },
   "minimumCliVersion": "2.1027.0"

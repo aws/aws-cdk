@@ -6,7 +6,7 @@
     "Analytics": "v2:deflate64:H4sIAAAAAAAA/zPQM9AzUEwsL9ZNTsnWzclM0gsuSUzO1snLT0nVyyrWLzO00DM0BirJKs7M1C0qzSvJzE3VC4LQAM+znrw9AAAA"
    },
    "Metadata": {
-    "aws:cdk:path": "AwsCustomResourceExternalIdIntegTest/DefaultTest/DeployAssert/CDKMetadata/Default"
+    "aws:cdk:path": "AwsCustomResourceTest/DefaultTest/DeployAssert/CDKMetadata/Default"
    },
    "Condition": "CDKMetadataAvailable"
   }

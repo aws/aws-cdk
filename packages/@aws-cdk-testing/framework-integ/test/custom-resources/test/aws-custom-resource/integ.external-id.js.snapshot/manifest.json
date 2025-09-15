@@ -107,28 +107,28 @@
       },
       "displayName": "aws-custom-resource-external-id-test"
     },
-    "AwsCustomResourceExternalIdIntegTestDefaultTestDeployAssertBBEC4D50.assets": {
+    "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "AwsCustomResourceExternalIdIntegTestDefaultTestDeployAssertBBEC4D50.assets.json",
+        "file": "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "AwsCustomResourceExternalIdIntegTestDefaultTestDeployAssertBBEC4D50": {
+    "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "AwsCustomResourceExternalIdIntegTestDefaultTestDeployAssertBBEC4D50.template.json",
+        "templateFile": "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1bc827c56aff6550452fc60000b95de446a02ff61bf4da0ac37b5376107442b9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e423e40a713d8f613776177d9ebfd85572c552d583d4fd737949b085efa036a2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "AwsCustomResourceExternalIdIntegTestDefaultTestDeployAssertBBEC4D50.assets"
+          "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -137,35 +137,35 @@
         }
       },
       "dependencies": [
-        "AwsCustomResourceExternalIdIntegTestDefaultTestDeployAssertBBEC4D50.assets"
+        "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5.assets"
       ],
       "metadata": {
-        "/AwsCustomResourceExternalIdIntegTest/DefaultTest/DeployAssert/CDKMetadata/Default": [
+        "/AwsCustomResourceTest/DefaultTest/DeployAssert/CDKMetadata/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CDKMetadata"
           }
         ],
-        "/AwsCustomResourceExternalIdIntegTest/DefaultTest/DeployAssert/CDKMetadata/Condition": [
+        "/AwsCustomResourceTest/DefaultTest/DeployAssert/CDKMetadata/Condition": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CDKMetadataAvailable"
           }
         ],
-        "/AwsCustomResourceExternalIdIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/AwsCustomResourceTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/AwsCustomResourceExternalIdIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/AwsCustomResourceTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "AwsCustomResourceExternalIdIntegTest/DefaultTest/DeployAssert"
+      "displayName": "AwsCustomResourceTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

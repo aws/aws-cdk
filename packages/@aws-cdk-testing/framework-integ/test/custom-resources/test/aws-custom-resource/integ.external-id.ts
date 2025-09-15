@@ -52,6 +52,6 @@ new AwsCustomResource(stack, 'ExternalIdTest', {
   policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: [] }),
 });
 
-new IntegTest(app, 'AwsCustomResourceExternalIdIntegTest', {
+new IntegTest(app, 'AwsCustomResourceTest', {
   testCases: [stack],
 });
