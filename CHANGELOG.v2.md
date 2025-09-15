@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.215.0](https://github.com/aws/aws-cdk/compare/v2.214.0...v2.215.0) (2025-09-15)
+
+
+### Features
+
+* **33270:** support new bun lock file ([#34873](https://github.com/aws/aws-cdk/issues/34873)) ([0a55ed1](https://github.com/aws/aws-cdk/commit/0a55ed1a01009d28739e8f081b1ce0ad78eac73d)), closes [#33270](https://github.com/aws/aws-cdk/issues/33270)
+* **codebuild:** support remote Docker server ([#34976](https://github.com/aws/aws-cdk/issues/34976)) ([eb8e74b](https://github.com/aws/aws-cdk/commit/eb8e74b8146d57a6f85484a2db053e1bfc27864e)), closes [#34494](https://github.com/aws/aws-cdk/issues/34494)
+* update L1 CloudFormation resource definitions ([#35435](https://github.com/aws/aws-cdk/issues/35435)) ([d7f211f](https://github.com/aws/aws-cdk/commit/d7f211fe7b6134c1f1f95561f352cb7e66a7d387))
+* **batch:** ecs execute command ([#35341](https://github.com/aws/aws-cdk/issues/35341)) ([30722f2](https://github.com/aws/aws-cdk/commit/30722f28e5b9f9fd1ce9e06450a076c7b5356c4e))
+* **custom-resource:** upgrade to python runtime 3.13 for custom resources ([#35342](https://github.com/aws/aws-cdk/issues/35342)) ([3db140e](https://github.com/aws/aws-cdk/commit/3db140e63518dc1deeff3881e72e2fb0512c330e))
+* **rds:** add DatabaseProxyEndpoint L2 construct ([#35064](https://github.com/aws/aws-cdk/issues/35064)) ([04d8a95](https://github.com/aws/aws-cdk/commit/04d8a9538296a61829f15686a4310d6278065645)), closes [#14186](https://github.com/aws/aws-cdk/issues/14186)
+* **stepfunctions-tasks:** add Node.js 22 support to EvaluateExpression ([#35370](https://github.com/aws/aws-cdk/issues/35370)) ([640821d](https://github.com/aws/aws-cdk/commit/640821d8229c85fbb716b62abc452d85745ab79e)), closes [#35353](https://github.com/aws/aws-cdk/issues/35353)
+* **synthetics:** browser type for canary ([#35423](https://github.com/aws/aws-cdk/issues/35423)) ([fe0708b](https://github.com/aws/aws-cdk/commit/fe0708bb97aedc29ecbd7137e2086ab845cd886f))
+* new resource interfaces shared by both L1s and L2s ([#35032](https://github.com/aws/aws-cdk/issues/35032)) ([5e8c0d5](https://github.com/aws/aws-cdk/commit/5e8c0d5665f97d37f58271b972e4fe384278c1ee))
+
+
+### Bug Fixes
+
+* correct typo 'notfication' to 'notification' in Stack docstring ([#35455](https://github.com/aws/aws-cdk/issues/35455)) ([bfb54b0](https://github.com/aws/aws-cdk/commit/bfb54b003125d57a9ec287e4a44eaf5dc8038ad1)), closes [#35433](https://github.com/aws/aws-cdk/issues/35433)
+* **ecr-assets:** `TarballImageAsset` respects CDK_DOCKER environment variable ([#35344](https://github.com/aws/aws-cdk/issues/35344)) ([8bf6b00](https://github.com/aws/aws-cdk/commit/8bf6b00e1d6235f1e47617ab66484effaefce411)), closes [#35336](https://github.com/aws/aws-cdk/issues/35336)
+* **s3:** scope BucketNotificationsHandler IAM permissions to specific bucket ARNs ([#35334](https://github.com/aws/aws-cdk/issues/35334)) ([c0300d2](https://github.com/aws/aws-cdk/commit/c0300d266a80b5aa16caeb5c71d4f76357892ee1)), closes [#35331](https://github.com/aws/aws-cdk/issues/35331)
+* **stepfunctions:** incorrect/missing permissions to run/redrive DistributedMap in state machine ([#34760](https://github.com/aws/aws-cdk/issues/34760)) ([bbebb79](https://github.com/aws/aws-cdk/commit/bbebb793565381ff2fb113595bd37848011307fb)), closes [#35390](https://github.com/aws/aws-cdk/issues/35390) [/github.com/aws/aws-cdk/issues/28820#issuecomment-2065316882](https://github.com/aws//github.com/aws/aws-cdk/issues/28820/issues/issuecomment-2065316882) [/github.com/aws/aws-cdk/blob/aea1372ab7bc68c489cea5ee5e499233755910e8/packages/aws-cdk-lib/aws-stepfunctions/lib/state-graph.ts#L178-L180](https://github.com/aws//github.com/aws/aws-cdk/blob/aea1372ab7bc68c489cea5ee5e499233755910e8/packages/aws-cdk-lib/aws-stepfunctions/lib/state-graph.ts/issues/L178-L180)
+* **stepfunctions:** unable to run distributed map when only defined in nested StateGraphs ([#35417](https://github.com/aws/aws-cdk/issues/35417)) ([036b413](https://github.com/aws/aws-cdk/commit/036b413f9f2af39506b7e7335a6fa2822cb9c658)), closes [#35391](https://github.com/aws/aws-cdk/issues/35391) [/github.com/aws/aws-cdk/pull/34760#discussion_r2313620609](https://github.com/aws//github.com/aws/aws-cdk/pull/34760/issues/discussion_r2313620609)
+
 ## [2.214.0](https://github.com/aws/aws-cdk/compare/v2.213.0...v2.214.0) (2025-09-02)
 
 
