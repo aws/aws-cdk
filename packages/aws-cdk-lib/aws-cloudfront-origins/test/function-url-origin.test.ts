@@ -515,7 +515,7 @@ describe('FunctionUrlOriginAccessControl', () => {
       customOriginConfig: {
         originProtocolPolicy: 'https-only',
         originSslProtocols: ['TLSv1.2'],
-        readTimeout: 60,
+        originReadTimeout: 60,
       },
     });
   });
@@ -535,6 +535,6 @@ describe('FunctionUrlOriginAccessControl', () => {
         responseCompletionTimeout: Duration.seconds(30),
         readTimeout: Duration.seconds(60),
       });
-    }).toThrow('responseCompletionTimeout (30s) must be equal to or greater than readTimeout (60s)');
+    }).toThrow('responseCompletionTimeout must be equal to or greater than readTimeout (60s), got: 30s.');
   });
 });
