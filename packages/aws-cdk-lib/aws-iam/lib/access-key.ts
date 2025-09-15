@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnAccessKey } from './iam.generated';
+import { AccessKeyReference, CfnAccessKey, IAccessKeyRef } from './iam.generated';
 import { IUser } from './user';
 import { IResource, Resource, SecretValue } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -18,6 +18,11 @@ export enum AccessKeyStatus {
    * An inactive access key. An inactive key cannot be used to make API calls.
    */
   INACTIVE = 'Inactive',
+
+  /**
+   * An expired access key.
+   */
+  EXPIRED = 'Expired',
 }
 
 /**
@@ -25,7 +30,7 @@ export enum AccessKeyStatus {
  *
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
  */
-export interface IAccessKey extends IResource {
+export interface IAccessKey extends IResource, IAccessKeyRef {
   /**
    * The Access Key ID.
    *
@@ -79,6 +84,7 @@ export interface AccessKeyProps {
 export class AccessKey extends Resource implements IAccessKey {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.AccessKey';
+  public readonly accessKeyRef: AccessKeyReference;
   public readonly accessKeyId: string;
   public readonly secretAccessKey: SecretValue;
 
@@ -93,6 +99,7 @@ export class AccessKey extends Resource implements IAccessKey {
     });
 
     this.accessKeyId = accessKey.ref;
+    this.accessKeyRef = accessKey.accessKeyRef;
 
     this.secretAccessKey = SecretValue.resourceAttribute(accessKey.attrSecretAccessKey);
   }

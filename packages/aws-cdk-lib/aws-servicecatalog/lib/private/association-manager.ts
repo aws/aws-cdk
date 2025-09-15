@@ -100,9 +100,9 @@ export class AssociationManager {
     }
   }
 
-  public static setLaunchRole(portfolio: IPortfolio, product: IProduct, launchRole: iam.IRole, options: CommonConstraintOptions): void {
+  public static setLaunchRole(portfolio: IPortfolio, product: IProduct, launchRole: iam.IRoleRef, options: CommonConstraintOptions): void {
     this.setLaunchRoleConstraint(portfolio, product, options, {
-      roleArn: launchRole.roleArn,
+      roleArn: launchRole.roleRef.roleArn,
     });
   }
 
@@ -128,7 +128,7 @@ export class AssociationManager {
         productId: product.productId,
         accountList: options.accounts,
         regionList: options.regions,
-        adminRole: options.adminRole.roleArn,
+        adminRole: options.adminRole.roleRef.roleArn,
         executionRole: options.executionRoleName,
         stackInstanceControl: options.allowStackSetInstanceOperations ? 'ALLOWED' : 'NOT_ALLOWED',
       });

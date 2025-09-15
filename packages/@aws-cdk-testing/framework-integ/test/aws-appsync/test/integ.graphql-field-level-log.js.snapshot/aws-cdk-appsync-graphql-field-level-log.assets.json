@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "c9e084a249774d97a978bed2e1976874a70517128a904136b8737f0792322c1f": {
       "displayName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "c151c8e356f539cbb336e940d9eb862fb149c57721c034c791a55f13510a6b93": {
+    "0dd27c17df68118e2fd43095912154aed537fd5d7c137ccfabadc6fdf7605a0f": {
       "displayName": "aws-cdk-appsync-graphql-field-level-log Template",
       "source": {
         "path": "aws-cdk-appsync-graphql-field-level-log.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-4f253afb": {
+        "current_account-current_region-00bc7686": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c151c8e356f539cbb336e940d9eb862fb149c57721c034c791a55f13510a6b93.json",
+          "objectKey": "0dd27c17df68118e2fd43095912154aed537fd5d7c137ccfabadc6fdf7605a0f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "LambdaAllowAllIpv6Outbound/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "b246f2b6c814abb03af9db2e8eec7d679731a60f4d3fd24be5715e4a798d43c5": {
+    "e4d61f6be56bfcd7eddfd793468ec612f5f2c73a472e4137c057158143df1e46": {
       "displayName": "LambdaAllowAllIpv6Outbound Template",
       "source": {
         "path": "LambdaAllowAllIpv6Outbound.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-70b7eaca": {
+        "current_account-current_region-d12bb803": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b246f2b6c814abb03af9db2e8eec7d679731a60f4d3fd24be5715e4a798d43c5.json",
+          "objectKey": "e4d61f6be56bfcd7eddfd793468ec612f5f2c73a472e4137c057158143df1e46.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

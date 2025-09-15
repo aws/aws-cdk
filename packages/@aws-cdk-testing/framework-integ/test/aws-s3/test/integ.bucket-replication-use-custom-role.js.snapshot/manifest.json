@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3d713a3c32d4a365903294c1781a5c69584eb4583b09296467f48383aa45c236.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/500c3f2025ae6dd0f0b8ec49508708520c3094eb8d34bd2754e7d68b7befebad.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -74,6 +74,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DestinationBucketAutoDeleteObjectsCustomResource8ECA4428"
+          }
+        ],
+        "/BucketReplicationTestStack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/BucketReplicationTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
@@ -365,7 +371,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cefb2320f0b1fe88a11de1c4fb5f8549c1d13e6b916fefae0aa3a4ec930bf75e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d18cbcb4807dbb101f512c5f5922834008d9f66aeb81b4393813d142f17abf14.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -428,6 +434,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/ReplicationInteg/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
@@ -624,57 +636,48 @@
       "properties": {
         "module": "aws-cdk-lib",
         "flags": {
-          "@aws-cdk/core:enableStackNameDuplicates": {
+          "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
             "recommendedValue": true,
-            "explanation": "Allow multiple stacks with the same name"
-          },
-          "aws-cdk:enableDiffNoFail": {
-            "recommendedValue": true,
-            "explanation": "Make `cdk diff` not fail when there are differences"
+            "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
           "@aws-cdk/core:newStyleStackSynthesis": {
             "recommendedValue": true,
-            "explanation": "Switch to new stack synthesis method which enables CI/CD"
+            "explanation": "Switch to new stack synthesis method which enables CI/CD",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           },
           "@aws-cdk/core:stackRelativeExports": {
             "recommendedValue": true,
-            "explanation": "Name exports based on the construct paths relative to the stack, rather than the global construct path"
+            "explanation": "Name exports based on the construct paths relative to the stack, rather than the global construct path",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           },
-          "@aws-cdk/aws-ecr-assets:dockerIgnoreSupport": {
+          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
             "recommendedValue": true,
-            "explanation": "DockerImageAsset properly supports `.dockerignore` files by default"
-          },
-          "@aws-cdk/aws-secretsmanager:parseOwnedSecretName": {
-            "recommendedValue": true,
-            "explanation": "Fix the referencing of SecretsManager names from ARNs"
-          },
-          "@aws-cdk/aws-kms:defaultKeyPolicies": {
-            "recommendedValue": true,
-            "explanation": "Tighten default KMS key policies"
-          },
-          "@aws-cdk/aws-s3:grantWriteWithoutAcl": {
-            "recommendedValue": true,
-            "explanation": "Remove `PutObjectAcl` from Bucket.grantWrite"
-          },
-          "@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount": {
-            "recommendedValue": true,
-            "explanation": "Do not specify a default DesiredCount for ECS services"
+            "explanation": "Disable implicit openListener when custom security groups are provided"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
-            "explanation": "Force lowercasing of RDS Cluster names in CDK"
+            "explanation": "Force lowercasing of RDS Cluster names in CDK",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           },
           "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": {
             "recommendedValue": true,
-            "explanation": "Allow adding/removing multiple UsagePlanKeys independently"
-          },
-          "@aws-cdk/aws-efs:defaultEncryptionAtRest": {
-            "recommendedValue": true,
-            "explanation": "Enable this feature flag to have elastic file systems encrypted at rest by default."
+            "explanation": "Allow adding/removing multiple UsagePlanKeys independently",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           },
           "@aws-cdk/aws-lambda:recognizeVersionProps": {
             "recommendedValue": true,
-            "explanation": "Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`."
+            "explanation": "Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           },
           "@aws-cdk/aws-lambda:recognizeLayerVersion": {
             "userValue": true,
@@ -683,7 +686,10 @@
           },
           "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": {
             "recommendedValue": true,
-            "explanation": "Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default."
+            "explanation": "Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           },
           "@aws-cdk/core:checkSecretUsage": {
             "userValue": true,
@@ -904,7 +910,10 @@
           },
           "@aws-cdk/pipelines:reduceAssetRoleTrustScope": {
             "recommendedValue": true,
-            "explanation": "Remove the root account principal from PipelineAssetsFileRole trust policy"
+            "explanation": "Remove the root account principal from PipelineAssetsFileRole trust policy",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           },
           "@aws-cdk/aws-eks:nodegroupNameAttribute": {
             "userValue": true,
@@ -933,7 +942,10 @@
           },
           "@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask": {
             "recommendedValue": true,
-            "explanation": "When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model."
+            "explanation": "When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           },
           "@aws-cdk/core:explicitStackTags": {
             "userValue": true,
@@ -997,7 +1009,10 @@
           },
           "@aws-cdk/core:aspectStabilization": {
             "recommendedValue": true,
-            "explanation": "When enabled, a stabilization loop will be run when invoking Aspects during synthesis."
+            "explanation": "When enabled, a stabilization loop will be run when invoking Aspects during synthesis.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           },
           "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": {
             "userValue": true,
@@ -1031,7 +1046,10 @@
           },
           "@aws-cdk/pipelines:reduceStageRoleTrustScope": {
             "recommendedValue": true,
-            "explanation": "Remove the root account principal from Stage addActions trust policy"
+            "explanation": "Remove the root account principal from Stage addActions trust policy",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           },
           "@aws-cdk/aws-events:requireEventBusPolicySid": {
             "userValue": true,
@@ -1054,7 +1072,10 @@
           },
           "@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope": {
             "recommendedValue": true,
-            "explanation": "When enabled, scopes down the trust policy for the cross-account action role"
+            "explanation": "When enabled, scopes down the trust policy for the cross-account action role",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           },
           "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": {
             "userValue": true,
@@ -1089,5 +1110,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1023.0"
+  "minimumCliVersion": "2.1027.0"
 }

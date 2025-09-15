@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "vpc-dual-stack-ec2/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -16,7 +16,7 @@
       }
     },
     "5ebd9f9364eb30f85504de10c76efc8130bce55a23bc8e9aa3b169938de90d6b": {
-      "displayName": "15ef704257c2c618ca2b199ecb5decec--app--webserver.zipAsset",
+      "displayName": "936f942e853e44b4f129cc9a61b8a64b--app--webserver.zipAsset",
       "source": {
         "path": "asset.5ebd9f9364eb30f85504de10c76efc8130bce55a23bc8e9aa3b169938de90d6b.assets",
         "packaging": "zip"
@@ -29,16 +29,16 @@
         }
       }
     },
-    "1f5b2349d8be55b5c1d06bacac5940ec8a5f65ea222a6aa73b93fbeabf3aa0fe": {
+    "a0b5af2e8a3e078ee3b3b604ddc696b8749bd2cd92abd0066562ed74dcbba5a0": {
       "displayName": "vpc-dual-stack-ec2 Template",
       "source": {
         "path": "vpc-dual-stack-ec2.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-80931fcf": {
+        "current_account-current_region-cfc34069": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1f5b2349d8be55b5c1d06bacac5940ec8a5f65ea222a6aa73b93fbeabf3aa0fe.json",
+          "objectKey": "a0b5af2e8a3e078ee3b3b604ddc696b8749bd2cd92abd0066562ed74dcbba5a0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

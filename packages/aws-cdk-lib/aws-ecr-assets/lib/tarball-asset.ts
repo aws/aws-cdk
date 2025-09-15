@@ -107,7 +107,7 @@ export class TarballImageAsset extends Construct implements IAsset {
       executable: [
         'sh',
         '-c',
-        `docker load -i ${relativePathInOutDir} | tail -n 1 | sed "${DOCKER_LOAD_OUTPUT_REGEX}"`,
+        `${process.env.CDK_DOCKER ?? 'docker'} load -i ${relativePathInOutDir} | tail -n 1 | sed "${DOCKER_LOAD_OUTPUT_REGEX}"`,
       ],
       displayName: props.displayName ?? Names.stackRelativeConstructPath(this),
     });

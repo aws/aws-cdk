@@ -28,7 +28,7 @@
     "Role": {
      "Ref": "referencetoawscdkeksclusteripv6testClusterKubectlHandlerRoleCDF70F2CArn"
     },
-    "Runtime": "python3.11",
+    "Runtime": "python3.13",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [

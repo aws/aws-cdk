@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d03e83372ebc05e2d4a84e507293142a0467a9a30f2bc3e3a2637732fa42a0aa.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/68199b8da60c8d236b460972c5ae3d890340440d9def682fedac87881393bb27.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -73,6 +73,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DestinationAutoDeleteObjectsCustomResource15E926BA"
+          }
+        ],
+        "/test-bucket-deployment-signobject/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/test-bucket-deployment-signobject/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
@@ -407,6 +413,10 @@
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "recommendedValue": true,
+            "explanation": "Disable implicit openListener when custom security groups are provided"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
@@ -860,5 +870,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1024.0"
+  "minimumCliVersion": "2.1027.0"
 }

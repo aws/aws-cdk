@@ -1,0 +1,36 @@
+{
+  "inputs": {
+    "packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ-handlers/util.ts": {
+      "bytes": 142,
+      "imports": [],
+      "format": "esm"
+    },
+    "packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ-handlers/whitespace path/ts-handler.ts": {
+      "bytes": 145,
+      "imports": [
+        {
+          "path": "packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ-handlers/util.ts",
+          "kind": "import-statement",
+          "original": "../util"
+        }
+      ],
+      "format": "esm"
+    }
+  },
+  "outputs": {
+    "packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js.snapshot/bundling-temp-e6ee8b74a17d602092193f7e4b6092c958723984a97b79a221b4c3a09e246a13-building/index.js": {
+      "imports": [],
+      "exports": [],
+      "entryPoint": "packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ-handlers/whitespace path/ts-handler.ts",
+      "inputs": {
+        "packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ-handlers/whitespace path/ts-handler.ts": {
+          "bytesInOutput": 196
+        },
+        "packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ-handlers/util.ts": {
+          "bytesInOutput": 40
+        }
+      },
+      "bytes": 1471
+    }
+  }
+}

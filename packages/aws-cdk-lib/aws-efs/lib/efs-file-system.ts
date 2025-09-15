@@ -230,7 +230,7 @@ export interface FileSystemProps {
    *
    * @default - if 'encrypted' is true, the default key for EFS (/aws/elasticfilesystem) is used
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 
   /**
    * A policy used by EFS lifecycle management to transition files to the Infrequent Access (IA) storage class.
@@ -803,7 +803,7 @@ export class FileSystem extends FileSystemBase {
 
     this._resource = new CfnFileSystem(this, 'Resource', {
       encrypted: encrypted,
-      kmsKeyId: props.kmsKey?.keyArn,
+      kmsKeyId: props.kmsKey?.keyRef.keyArn,
       lifecyclePolicies: lifecyclePolicies.length > 0 ? lifecyclePolicies : undefined,
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,

@@ -22,7 +22,7 @@ test('a security configuration with encryption configuration requiring kms key a
     },
   });
 
-  expect(securityConfiguration.cloudWatchEncryptionKey?.keyArn).toEqual(keyArn);
+  expect(securityConfiguration.cloudWatchEncryptionKey?.keyRef.keyArn).toEqual(keyArn);
   expect(securityConfiguration.jobBookmarksEncryptionKey).toBeUndefined();
   expect(securityConfiguration.s3EncryptionKey).toBeUndefined();
 
@@ -57,7 +57,7 @@ test('a security configuration with an encryption configuration requiring kms ke
     EncryptionConfiguration: {
       CloudWatchEncryption: {
         CloudWatchEncryptionMode: 'SSE-KMS',
-        KmsKeyArn: stack.resolve(securityConfiguration.cloudWatchEncryptionKey?.keyArn),
+        KmsKeyArn: stack.resolve(securityConfiguration.cloudWatchEncryptionKey?.keyRef.keyArn),
       },
     },
   });
@@ -82,7 +82,7 @@ test('a security configuration with all encryption configs and mixed kms key inp
   });
 
   expect(securityConfiguration.cloudWatchEncryptionKey).toBeDefined();
-  expect(securityConfiguration.jobBookmarksEncryptionKey?.keyArn).toEqual(keyArn);
+  expect(securityConfiguration.jobBookmarksEncryptionKey?.keyRef.keyArn).toEqual(keyArn);
   expect(securityConfiguration.s3EncryptionKey).toBeUndefined();
 
   Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
@@ -93,7 +93,7 @@ test('a security configuration with all encryption configs and mixed kms key inp
       CloudWatchEncryption: {
         CloudWatchEncryptionMode: 'SSE-KMS',
         // auto-created kms key
-        KmsKeyArn: stack.resolve(securityConfiguration.cloudWatchEncryptionKey?.keyArn),
+        KmsKeyArn: stack.resolve(securityConfiguration.cloudWatchEncryptionKey?.keyRef.keyArn),
       },
       JobBookmarksEncryption: {
         JobBookmarksEncryptionMode: 'CSE-KMS',

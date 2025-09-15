@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/712735aa952366481d47027aacb5aa5a1d7095c12c51d548c533708ff812e07b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/48d9778aaff956b680c38503982580f6f201a275e0dc81e409b9ad5b995c164c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -936,6 +936,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "NodeProxyAgentLayer924C1971"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler": [
@@ -2005,6 +2011,12 @@
             "data": "ProviderframeworkonEvent83C1D0A7"
           }
         ],
+        "/aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/awscdkeksclusteralbcontrollerawscdkawseksKubectlProviderframeworkonEvent17CBA575Arn": [
           {
             "type": "aws:cdk:logicalId",
@@ -2410,6 +2422,12 @@
             "data": "awscdkeksclusteralbcontrollerCluster0686D58BAlbController2EB2FB81"
           }
         ],
+        "/aws-cdk-eks-cluster-alb-controller/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/aws-cdk-eks-cluster-alb-controller/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
@@ -2767,6 +2785,10 @@
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "recommendedValue": true,
+            "explanation": "Disable implicit openListener when custom security groups are provided"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
@@ -3220,5 +3242,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1023.0"
+  "minimumCliVersion": "2.1027.0"
 }

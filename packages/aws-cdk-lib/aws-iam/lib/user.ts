@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IGroup } from './group';
-import { CfnUser, CfnUserToGroupAddition } from './iam.generated';
+import { CfnUser, CfnUserToGroupAddition, IUserRef, UserReference } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
@@ -16,7 +16,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  *
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html
  */
-export interface IUser extends IIdentity {
+export interface IUser extends IIdentity, IUserRef {
   /**
    * The user's name
    * @attribute
@@ -215,7 +215,7 @@ export class User extends Resource implements IIdentity, IUser {
 
       public addToGroup(group: IGroup): void {
         new CfnUserToGroupAddition(Stack.of(group), `${this.userName}Group${this.groupId}`, {
-          groupName: group.groupName,
+          groupName: group.groupRef.groupName,
           users: [this.userName],
         });
         this.groupId += 1;
@@ -228,6 +228,13 @@ export class User extends Resource implements IIdentity, IUser {
 
       public addManagedPolicy(_policy: IManagedPolicy): void {
         throw new ValidationError('Cannot add managed policy to imported User', this);
+      }
+
+      public get userRef(): UserReference {
+        return {
+          userName: this.userName,
+          userArn: this.userArn,
+        };
       }
     }
 
@@ -295,6 +302,13 @@ export class User extends Resource implements IIdentity, IUser {
     if (props.groups) {
       props.groups.forEach(g => this.addToGroup(g));
     }
+  }
+
+  public get userRef(): UserReference {
+    return {
+      userName: this.userName,
+      userArn: this.userArn,
+    };
   }
 
   /**

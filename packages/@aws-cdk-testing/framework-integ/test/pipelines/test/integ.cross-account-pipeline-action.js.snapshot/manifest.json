@@ -25,7 +25,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-test-region/5035e53acbfc8c110e7714d36624e93aa200f85d9e93b0eadf7198f3018696f9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-test-region/b5f4c0547489f25e12f2da31435bf14b73b2b547d98c7ba0217c9d9a98ad2322.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1542,6 +1542,10 @@
               "v2": true
             }
           },
+          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "recommendedValue": true,
+            "explanation": "Disable implicit openListener when custom security groups are provided"
+          },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
             "explanation": "Force lowercasing of RDS Cluster names in CDK",
@@ -1995,5 +1999,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1024.0"
+  "minimumCliVersion": "2.1025.0"
 }

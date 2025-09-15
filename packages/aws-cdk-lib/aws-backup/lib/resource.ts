@@ -72,11 +72,11 @@ export class BackupResource {
   /**
    * An EC2 instance
    */
-  public static fromEc2Instance(instance: ec2.IInstance) {
+  public static fromEc2Instance(instance: ec2.IInstanceRef) {
     return BackupResource.fromArn(Stack.of(instance).formatArn({
       service: 'ec2',
       resource: 'instance',
-      resourceName: instance.instanceId,
+      resourceName: instance.instanceRef.instanceId,
     }));
   }
 

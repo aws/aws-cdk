@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "integ-apprunner-vpc-ingress-connection/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "994f59fc3da5446f96494cbfd8eaf3458fe8d2c4ea22e3ca5206406e3805d571": {
+    "fe565388ffded3a823c687eb5a397d320428bc2c2e3b865db679cf8c415ea14d": {
       "displayName": "integ-apprunner-vpc-ingress-connection Template",
       "source": {
         "path": "integ-apprunner-vpc-ingress-connection.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-313177bb": {
+        "current_account-current_region-501f8164": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "994f59fc3da5446f96494cbfd8eaf3458fe8d2c4ea22e3ca5206406e3805d571.json",
+          "objectKey": "fe565388ffded3a823c687eb5a397d320428bc2c2e3b865db679cf8c415ea14d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

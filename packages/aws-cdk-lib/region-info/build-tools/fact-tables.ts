@@ -40,6 +40,8 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'us-west-1': 'Z2F56UZL2M1ACD',
   'us-west-2': 'Z3BJ6K6RIION7M',
   'ap-east-2': 'Z064739330DAH7WJVOO93',
+  'us-isof-south-1': 'Z03376072I8GXC2DXUFXI',
+  'us-isof-east-1': 'Z03373031FTGQH4MNG6ST',
 };
 
 /**
@@ -121,7 +123,7 @@ export const LATEST_NODE_RUNTIME_MAP: Record<Partition, string> = {
   [Partition.Cn]: Runtime.NODE_22,
   [Partition.UsGov]: Runtime.NODE_22,
   [Partition.UsIso]: Runtime.NODE_22,
-  [Partition.UsIsoB]: Runtime.NODE_22,
+  [Partition.UsIsoB]: Runtime.NODE_18,
   [Partition.UsIsoF]: Runtime.NODE_22,
   [Partition.EuIsoE]: Runtime.NODE_22,
   [Partition.Eusc]: Runtime.NODE_22,
@@ -160,6 +162,8 @@ export const ELBV2_ACCOUNTS: { [region: string]: string } = {
   'us-iso-west-1': '121062877647',
   'us-west-1': '027434742980',
   'us-west-2': '797873946194',
+  'us-isof-south-1': '412137745753',
+  'us-isof-east-1': '091100254016',
 };
 
 // https://docs.aws.amazon.com/deep-learning-containers/latest/devguide/deep-learning-containers-images.html
@@ -195,6 +199,8 @@ export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
   'us-west-2': '763104351884',
   'ap-east-2': '975050140332',
   'eusc-de-east-1': '204133271717',
+  'us-isof-south-1': '454834333376',
+  'us-isof-east-1': '303241398832',
 };
 
 // https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html

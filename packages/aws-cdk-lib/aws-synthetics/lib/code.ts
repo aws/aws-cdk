@@ -45,7 +45,7 @@ export abstract class Code {
    *
    * @returns `S3Code` associated with the specified S3 object.
    */
-  public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
+  public static fromBucket(bucket: s3.IBucketRef, key: string, objectVersion?: string): S3Code {
     return new S3Code(bucket, key, objectVersion);
   }
 
@@ -194,14 +194,14 @@ export class InlineCode extends Code {
  * S3 bucket path to the code zip file
  */
 export class S3Code extends Code {
-  public constructor(private bucket: s3.IBucket, private key: string, private objectVersion?: string) {
+  public constructor(private bucket: s3.IBucketRef, private key: string, private objectVersion?: string) {
     super();
   }
 
   public bind(_scope: Construct, _handler: string, _family: RuntimeFamily, _runtimeName?: string): CodeConfig {
     return {
       s3Location: {
-        bucketName: this.bucket.bucketName,
+        bucketName: this.bucket.bucketRef.bucketName,
         objectKey: this.key,
         objectVersion: this.objectVersion,
       },

@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "3bbaa4a6ad9dab22284496cb250a9e77fb2f26bc181f35610877275058a4f160": {
       "displayName": "aws-ecr-integ-stack/Custom::ECRAutoDeleteImagesCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "08faa5914f855eac6b1b7006dd4ddb43c55cdac3e52c98a77127a2bdb26490a3": {
+    "2ca4214546cb88ec8c56be7918a0ebaf126e45a5d24dc18591bac69030795b59": {
       "displayName": "aws-ecr-integ-stack Template",
       "source": {
         "path": "aws-ecr-integ-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-6eb7ec21": {
+        "current_account-current_region-79815e41": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "08faa5914f855eac6b1b7006dd4ddb43c55cdac3e52c98a77127a2bdb26490a3.json",
+          "objectKey": "2ca4214546cb88ec8c56be7918a0ebaf126e45a5d24dc18591bac69030795b59.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

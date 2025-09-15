@@ -761,7 +761,7 @@ export interface ServiceProps {
    *
    * @default - Use an AWS managed key
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 
   /**
    * The IP address type for your incoming public network configuration.
@@ -1338,7 +1338,7 @@ export class Service extends cdk.Resource implements IService, iam.IGrantable {
           undefined,
       },
       encryptionConfiguration: this.props.kmsKey ? {
-        kmsKey: this.props.kmsKey.keyArn,
+        kmsKey: this.props.kmsKey.keyRef.keyArn,
       } : undefined,
       autoScalingConfigurationArn: this.props.autoScalingConfiguration?.autoScalingConfigurationArn,
       networkConfiguration: {

@@ -5,7 +5,7 @@ import { ISchema, SchemaFile } from './schema';
 import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
 import { ICertificate } from '../../aws-certificatemanager';
 import { IUserPool } from '../../aws-cognito';
-import { ManagedPolicy, Role, IRole, ServicePrincipal } from '../../aws-iam';
+import { ManagedPolicy, Role, IRole, ServicePrincipal, IRoleRef } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token, ValidationError } from '../../core';
@@ -231,7 +231,7 @@ export interface LogConfig {
    *
    * @default - None
    */
-  readonly role?: IRole;
+  readonly role?: IRoleRef;
 
   /**
    * The number of days log events are kept in CloudWatch Logs.
@@ -865,7 +865,7 @@ export class GraphqlApi extends GraphqlApiBase {
 
   private setupLogConfig(config?: LogConfig) {
     if (!config) return undefined;
-    const logsRoleArn: string = config.role?.roleArn ?? new Role(this, 'ApiLogsRole', {
+    const logsRoleArn: string = config.role?.roleRef.roleArn ?? new Role(this, 'ApiLogsRole', {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
       managedPolicies: [
         ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),

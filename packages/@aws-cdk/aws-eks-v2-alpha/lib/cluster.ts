@@ -371,7 +371,7 @@ export interface ClusterCommonOptions {
    *            all etcd volumes used by Amazon EKS are encrypted at the disk-level
    *            using AWS-Managed encryption keys.
    */
-  readonly secretsEncryptionKey?: kms.IKey;
+  readonly secretsEncryptionKey?: kms.IKeyRef;
 
   /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
@@ -1214,7 +1214,7 @@ export class Cluster extends ClusterBase {
       ...(props.secretsEncryptionKey ? {
         encryptionConfig: [{
           provider: {
-            keyArn: props.secretsEncryptionKey.keyArn,
+            keyArn: props.secretsEncryptionKey.keyRef.keyArn,
           },
           resources: ['secrets'],
         }],

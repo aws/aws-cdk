@@ -144,27 +144,41 @@ describe('State Machine', () => {
     });
   }),
 
-  test('Instantiate State Machine With Distributed Map State', () => {
+  test('Instantiate State Machine With Single Unlabeled Distributed Map State', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
     const map = new sfn.DistributedMap(stack, 'Map State');
     map.itemProcessor(new sfn.Pass(stack, 'Pass'));
-    new sfn.StateMachine(stack, 'MyStateMachine', {
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
       stateMachineName: 'MyStateMachine',
-      definition: map,
+      definitionBody: sfn.DefinitionBody.fromChainable(map),
     });
+    const stateMachineLogicalId = stack.getLogicalId(stateMachine.node.defaultChild as sfn.CfnStateMachine);
+    const stateMachineRoleLogicalId = stack.getLogicalId(stateMachine.role.node.defaultChild as iam.CfnRole);
+    const stateMachineNameTemplate = {
+      'Fn::Select': [
+        6,
+        {
+          'Fn::Split': [
+            ':',
+            {
+              Ref: stateMachineLogicalId,
+            },
+          ],
+        },
+      ],
+    };
 
     // THEN
-    stack;
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'states:StartExecution',
             Effect: 'Allow',
-            Resource: { Ref: 'MyStateMachine6C968CA5' },
+            Resource: { Ref: stateMachineLogicalId },
           },
           {
             Action: [
@@ -173,18 +187,441 @@ describe('State Machine', () => {
             ],
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', [{ Ref: 'MyStateMachine6C968CA5' }, ':*']],
+              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
+            },
+          },
+          {
+            Action: 'states:RedriveExecution',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/*:*'])],
             },
           },
         ],
         Version: '2012-10-17',
       },
-      PolicyName: 'MyStateMachineDistributedMapPolicy11E47E72',
       Roles: [
         {
-          Ref: 'MyStateMachineRoleD59FFEBC',
+          Ref: stateMachineRoleLogicalId,
         },
       ],
+    });
+  }),
+
+  test('Instantiate State Machine With Single Labeled Distributed Map State', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new sfn.DistributedMap(stack, 'Map State', {
+      label: 'myLabel',
+    });
+    map.itemProcessor(new sfn.Pass(stack, 'Pass'));
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(map),
+    });
+    const stateMachineLogicalId = stack.getLogicalId(stateMachine.node.defaultChild as sfn.CfnStateMachine);
+    const stateMachineRoleLogicalId = stack.getLogicalId(stateMachine.role.node.defaultChild as iam.CfnRole);
+    const stateMachineNameTemplate = {
+      'Fn::Select': [
+        6,
+        {
+          'Fn::Split': [
+            ':',
+            {
+              Ref: stateMachineLogicalId,
+            },
+          ],
+        },
+      ],
+    };
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:StartExecution',
+            Effect: 'Allow',
+            Resource: { Ref: stateMachineLogicalId },
+          },
+          {
+            Action: [
+              'states:DescribeExecution',
+              'states:StopExecution',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
+            },
+          },
+          {
+            Action: 'states:RedriveExecution',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/myLabel:*'])],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: stateMachineRoleLogicalId,
+        },
+      ],
+    });
+  }),
+
+  test('Instantiate State Machine With Many Labeled Distributed Map State', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map1 = new sfn.DistributedMap(stack, 'Map State 1', {
+      label: 'myLabel1',
+    }).itemProcessor(new sfn.Pass(stack, 'Pass 1'));
+    const map2 = new sfn.DistributedMap(stack, 'Map State 2', {
+      label: 'myLabel2',
+    }).itemProcessor(new sfn.Pass(stack, 'Pass 2'));
+    const map3 = new sfn.DistributedMap(stack, 'Map State 3', {
+      label: 'myLabel3',
+    }).itemProcessor(new sfn.Pass(stack, 'Pass 3'));
+    const chain = map1.next(map2).next(map3);
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(chain),
+    });
+    const stateMachineLogicalId = stack.getLogicalId(stateMachine.node.defaultChild as sfn.CfnStateMachine);
+    const stateMachineRoleLogicalId = stack.getLogicalId(stateMachine.role.node.defaultChild as iam.CfnRole);
+    const stateMachineNameTemplate = {
+      'Fn::Select': [
+        6,
+        {
+          'Fn::Split': [
+            ':',
+            {
+              Ref: stateMachineLogicalId,
+            },
+          ],
+        },
+      ],
+    };
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:StartExecution',
+            Effect: 'Allow',
+            Resource: { Ref: stateMachineLogicalId },
+          },
+          {
+            Action: [
+              'states:DescribeExecution',
+              'states:StopExecution',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
+            },
+          },
+          {
+            Action: 'states:RedriveExecution',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/myLabel1:*'])],
+              },
+              {
+                'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/myLabel2:*'])],
+              },
+              {
+                'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/myLabel3:*'])],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: stateMachineRoleLogicalId,
+        },
+      ],
+    });
+  }),
+
+  test('Instantiate State Machine With Many Labeled And One Unlabeled Distributed Map State', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map1 = new sfn.DistributedMap(stack, 'Map State 1', {
+      label: 'myLabel',
+    }).itemProcessor(new sfn.Pass(stack, 'Pass 1'));
+    const map2 = new sfn.DistributedMap(stack, 'Map State 2', {
+      label: 'myLabel2',
+    }).itemProcessor(new sfn.Pass(stack, 'Pass 2'));
+    const map3 = new sfn.DistributedMap(stack, 'Map State 3', {
+      label: 'myLabel3',
+    }).itemProcessor(new sfn.Pass(stack, 'Pass 3'));
+
+    const unlabeledMap4 = new sfn.DistributedMap(stack, 'Unlabeled Map State');
+    unlabeledMap4.itemProcessor(new sfn.Pass(stack, 'Pass 4'));
+
+    const chain = map1.next(map2).next(map3).next(unlabeledMap4);
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(chain),
+    });
+    const stateMachineLogicalId = stack.getLogicalId(stateMachine.node.defaultChild as sfn.CfnStateMachine);
+    const stateMachineRoleLogicalId = stack.getLogicalId(stateMachine.role.node.defaultChild as iam.CfnRole);
+    const stateMachineNameTemplate = {
+      'Fn::Select': [
+        6,
+        {
+          'Fn::Split': [
+            ':',
+            {
+              Ref: stateMachineLogicalId,
+            },
+          ],
+        },
+      ],
+    };
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:StartExecution',
+            Effect: 'Allow',
+            Resource: { Ref: stateMachineLogicalId },
+          },
+          {
+            Action: [
+              'states:DescribeExecution',
+              'states:StopExecution',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
+            },
+          },
+          {
+            Action: 'states:RedriveExecution',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/*:*'])],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: stateMachineRoleLogicalId,
+        },
+      ],
+    });
+  }),
+
+  // Test to make sure there is no infinite loop when finding all DistributedMap states
+  test('Instantiate State Machine With Self Referencing Distributed Map State', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new sfn.DistributedMap(stack, 'Map State');
+    map.itemProcessor(new sfn.Pass(stack, 'Pass'));
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(map.next(map)),
+    });
+    const stateMachineLogicalId = stack.getLogicalId(stateMachine.node.defaultChild as sfn.CfnStateMachine);
+    const stateMachineRoleLogicalId = stack.getLogicalId(stateMachine.role.node.defaultChild as iam.CfnRole);
+    const stateMachineNameTemplate = {
+      'Fn::Select': [
+        6,
+        {
+          'Fn::Split': [
+            ':',
+            {
+              Ref: stateMachineLogicalId,
+            },
+          ],
+        },
+      ],
+    };
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:StartExecution',
+            Effect: 'Allow',
+            Resource: { Ref: stateMachineLogicalId },
+          },
+          {
+            Action: [
+              'states:DescribeExecution',
+              'states:StopExecution',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
+            },
+          },
+          {
+            Action: 'states:RedriveExecution',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/*:*'])],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: stateMachineRoleLogicalId,
+        },
+      ],
+    });
+  }),
+
+  test('Instantiate State Machine With Distributed Map State in Branch state', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new sfn.DistributedMap(stack, 'Map State');
+    map.itemProcessor(new sfn.Pass(stack, 'Pass'));
+    const parallel = new sfn.Parallel(stack, 'Parallel', {
+      resultPath: '$.result',
+    });
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(parallel.branch(map)),
+    });
+    const stateMachineLogicalId = stack.getLogicalId(stateMachine.node.defaultChild as sfn.CfnStateMachine);
+    const stateMachineRoleLogicalId = stack.getLogicalId(stateMachine.role.node.defaultChild as iam.CfnRole);
+    const stateMachineNameTemplate = {
+      'Fn::Select': [
+        6,
+        {
+          'Fn::Split': [
+            ':',
+            {
+              Ref: stateMachineLogicalId,
+            },
+          ],
+        },
+      ],
+    };
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:StartExecution',
+            Effect: 'Allow',
+            Resource: { Ref: stateMachineLogicalId },
+          },
+          {
+            Action: [
+              'states:DescribeExecution',
+              'states:StopExecution',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
+            },
+          },
+          {
+            Action: 'states:RedriveExecution',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/*:*'])],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: stateMachineRoleLogicalId,
+        },
+      ],
+    });
+  }),
+
+  test('Instantiate State Machine Finds all Distributed Map States in Nested Branch StateGraphs', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map1 = new sfn.DistributedMap(stack, 'Map 1', { label: 'map1' }).itemProcessor(new sfn.Pass(stack, 'Pass 1'));
+    const map2 = new sfn.DistributedMap(stack, 'Map 2', { label: 'map2' }).itemProcessor(new sfn.Pass(stack, 'Pass 2'));
+    const map3 = new sfn.DistributedMap(stack, 'Map 3', { label: 'map3' }).itemProcessor(new sfn.Pass(stack, 'Pass 3'));
+    const map4 = new sfn.DistributedMap(stack, 'Map 4', { label: 'map4' }).itemProcessor(new sfn.Pass(stack, 'Pass 4'));
+    const map5 = new sfn.DistributedMap(stack, 'Map 5', { label: 'map5' }).itemProcessor(new sfn.Pass(stack, 'Pass 5'));
+    const parallel1 = new sfn.Parallel(stack, 'Parallel 1');
+    const parallel2 = new sfn.Parallel(stack, 'Parallel 2');
+    const parallel3 = new sfn.Parallel(stack, 'Parallel 3');
+
+    const chain = sfn.Chain
+      .start(map1)
+      .next(parallel1
+        .branch(map2)
+        .branch(parallel2
+          .branch(map3.next(parallel3
+            .branch(map4)))
+          .branch(map5),
+        ),
+      );
+
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(chain),
+    });
+    const stateMachineLogicalId = stack.getLogicalId(stateMachine.node.defaultChild as sfn.CfnStateMachine);
+    const stateMachineNameTemplate = {
+      'Fn::Select': [
+        6,
+        {
+          'Fn::Split': [
+            ':',
+            {
+              Ref: stateMachineLogicalId,
+            },
+          ],
+        },
+      ],
+    };
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: 'states:RedriveExecution',
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/map1:*'])] },
+              { 'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/map5:*'])] },
+              { 'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/map4:*'])] },
+              { 'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/map3:*'])] },
+              { 'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, '/map2:*'])] },
+            ],
+          },
+        ]),
+      },
     });
   }),
 

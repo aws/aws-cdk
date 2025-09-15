@@ -79,6 +79,9 @@ export class ResourceReflection {
 
   /**
    * Attribute properties are all the properties that begin with the type name (e.g. bucketXxx).
+   *
+   * We are adding a `bucketRef` property as well that we don't necessarily want to hold to the same linter
+   * rules as the other attributes, so we don't consider it an attribute.
    */
   private findAttributeProperties(): Attribute[] {
     const result = new Array<Attribute>();
@@ -86,6 +89,9 @@ export class ResourceReflection {
     for (const p of this.construct.classType.allProperties) {
       if (p.protected) {
         continue; // skip any protected properties
+      }
+      if (p.name.endsWith('Ref')) {
+        continue; // skip any "Ref" properties, these are not attributes
       }
 
       const basename = camelize(this.cfn.basename);

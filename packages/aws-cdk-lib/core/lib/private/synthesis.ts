@@ -183,9 +183,6 @@ const CUSTOM_SYNTHESIS_SYM = Symbol.for('@aws-cdk/core:customSynthesis');
 
 /**
  * Interface for constructs that want to do something custom during synthesis
- *
- * This feature is intended for use by official AWS CDK libraries only; 3rd party
- * library authors and CDK users should not use this function.
  */
 export interface ICustomSynthesis {
   /**

@@ -19,7 +19,7 @@ interface SageMakerCreateEndpointConfigOptions {
    *
    * @default - None
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 
   /**
    * An list of ProductionVariant objects, one for each model that you want to host at this endpoint.
@@ -121,7 +121,7 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
     return {
       EndpointConfigName: this.props.endpointConfigName,
       Tags: this.props.tags?.value,
-      KmsKeyId: this.props.kmsKey?.keyId,
+      KmsKeyId: this.props.kmsKey?.keyRef.keyId,
       ProductionVariants: this.props.productionVariants.map((variant) => ({
         InitialInstanceCount: variant.initialInstanceCount ? variant.initialInstanceCount : 1,
         InstanceType: isJsonPathOrJsonataExpression(variant.instanceType.toString())

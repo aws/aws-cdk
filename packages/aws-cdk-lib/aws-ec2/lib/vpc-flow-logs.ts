@@ -1,10 +1,20 @@
 import { Construct } from 'constructs';
-import { CfnFlowLog } from './ec2.generated';
-import { ISubnet, IVpc } from './vpc';
+import { CfnFlowLog, FlowLogReference, IFlowLogRef, ISubnetRef } from './ec2.generated';
+import { IVpc } from './vpc';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
-import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, Tags, CfnResource, ValidationError } from '../../core';
+import {
+  CfnResource,
+  FeatureFlags,
+  IResource,
+  PhysicalName,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Tags,
+  ValidationError,
+} from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
@@ -17,7 +27,7 @@ const NAME_TAG: string = 'Name';
 /**
  * A FlowLog
  */
-export interface IFlowLog extends IResource {
+export interface IFlowLog extends IResource, IFlowLogRef {
   /**
    * The Id of the VPC Flow Log
    *
@@ -73,10 +83,10 @@ export abstract class FlowLogResourceType {
   /**
    * The subnet to attach the Flow Log to
    */
-  public static fromSubnet(subnet: ISubnet): FlowLogResourceType {
+  public static fromSubnet(subnet: ISubnetRef): FlowLogResourceType {
     return {
       resourceType: 'Subnet',
-      resourceId: subnet.subnetId,
+      resourceId: subnet.subnetRef.subnetId,
     };
   }
 
@@ -804,6 +814,12 @@ abstract class FlowLogBase extends Resource implements IFlowLog {
    * @attribute
    */
   public abstract readonly flowLogId: string;
+
+  public get flowLogRef(): FlowLogReference {
+    return {
+      flowLogId: this.flowLogId,
+    };
+  }
 }
 
 /**

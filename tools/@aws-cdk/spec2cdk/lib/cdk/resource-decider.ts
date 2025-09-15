@@ -4,11 +4,27 @@ import { CDK_CORE } from './cdk';
 import { PropertyMapping } from './cloudformation-mapping';
 import { NON_RESOLVABLE_PROPERTY_NAMES, TaggabilityStyle, resourceTaggabilityStyle } from './tagging';
 import { TypeConverter } from './type-converter';
-import { attributePropertyName, cloudFormationDocLink, propertyNameFromCloudFormation } from '../naming';
+import { attributePropertyName, camelcasedResourceName, cloudFormationDocLink, propertyNameFromCloudFormation, referencePropertyName } from '../naming';
 import { splitDocumentation } from '../util';
 
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
+
+interface ReferenceProp {
+  readonly declaration: PropertySpec;
+  readonly cfnValue: Expression;
+}
+
+// We temporarily only do this for a few services, to experiment
+const REFERENCE_PROP_SERVICES = [
+  'iam',
+  'apigateway',
+  'ec2',
+  'cloudfront',
+  'kms',
+  's3',
+  'lambda',
+];
 
 /**
  * Decide how properties get mapped between model types, Typescript types, and CloudFormation
@@ -25,15 +41,20 @@ export class ResourceDecider {
 
   private readonly taggability?: TaggabilityStyle;
 
+  public readonly referenceProps = new Array<ReferenceProp>();
   public readonly propsProperties = new Array<PropsProperty>();
   public readonly classProperties = new Array<ClassProperty>();
   public readonly classAttributeProperties = new Array<ClassAttributeProperty>();
+  public readonly camelResourceName: string;
 
   constructor(private readonly resource: Resource, private readonly converter: TypeConverter) {
+    this.camelResourceName = camelcasedResourceName(resource);
     this.taggability = resourceTaggabilityStyle(this.resource);
 
     this.convertProperties();
     this.convertAttributes();
+
+    this.convertReferenceProps();
 
     this.propsProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
     this.classProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
@@ -56,6 +77,70 @@ export class ResourceDecider {
       }
 
       this.handlePropertyDefault(name, prop);
+    }
+  }
+
+  /**
+   * Find an ARN property for this resource
+   *
+   * Returns `undefined` if no ARN property is found, or if the ARN property is already
+   * included in the primary identifier.
+   */
+  private findArnProperty() {
+    const possibleArnNames = ['Arn', `${this.resource.name}Arn`];
+    for (const name of possibleArnNames) {
+      const prop = this.resource.attributes[name];
+      if (prop && !this.resource.primaryIdentifier?.includes(name)) {
+        return name;
+      }
+    }
+    return undefined;
+  }
+
+  private convertReferenceProps() {
+    // Primary identifier. We assume all parts are strings.
+    const primaryIdentifier = this.resource.primaryIdentifier ?? [];
+    if (primaryIdentifier.length === 1) {
+      this.referenceProps.push({
+        declaration: {
+          name: referencePropertyName(primaryIdentifier[0], this.resource.name),
+          type: Type.STRING,
+          immutable: true,
+          docs: {
+            summary: `The ${primaryIdentifier[0]} of the ${this.resource.name} resource.`,
+          },
+        },
+        cfnValue: $this.ref,
+      });
+    } else if (primaryIdentifier.length > 1) {
+      for (const [i, cfnName] of enumerate(primaryIdentifier)) {
+        this.referenceProps.push({
+          declaration: {
+            name: referencePropertyName(cfnName, this.resource.name),
+            type: Type.STRING,
+            immutable: true,
+            docs: {
+              summary: `The ${cfnName} of the ${this.resource.name} resource.`,
+            },
+          },
+          cfnValue: splitSelect('|', i, $this.ref),
+        });
+      }
+    }
+
+    const arnProp = this.findArnProperty();
+    if (arnProp) {
+      this.referenceProps.push({
+        declaration: {
+          name: referencePropertyName(arnProp, this.resource.name),
+          type: Type.STRING,
+          immutable: true,
+          docs: {
+            summary: `The ARN of the ${this.resource.name} resource.`,
+          },
+        },
+        cfnValue: $this[attributePropertyName(arnProp)],
+      });
     }
   }
 
@@ -329,10 +414,18 @@ export class ResourceDecider {
         return CDK_CORE.TagType.AUTOSCALING_GROUP;
       case 'map':
         return CDK_CORE.TagType.MAP;
+      default:
+        assertNever(variant);
     }
-
-    throw new Error(`Unknown variant: ${this.resource.tagInformation?.variant}`);
   }
+}
+
+/**
+ * Utility function to ensure exhaustive checks for never type.
+ */
+function assertNever(x: never): never {
+  // eslint-disable-next-line @cdklabs/no-throw-default-error
+  throw new Error(`Unexpected object: ${x}`);
 }
 
 export interface PropsProperty {
@@ -371,4 +464,16 @@ export function deprecationMessage(property: Property): string | undefined {
   }
 
   return undefined;
+}
+
+function splitSelect(sep: string, n: number, base: Expression) {
+  return CDK_CORE.Fn.select(expr.lit(n), CDK_CORE.Fn.split(expr.lit(sep), base));
+}
+
+function enumerate<A>(xs: A[]): Array<[number, A]> {
+  return xs.map((x, i) => [i, x]);
+}
+
+export function shouldBuildReferenceInterface(resource: Resource) {
+  return true || REFERENCE_PROP_SERVICES.some(s => resource.cloudFormationType.toLowerCase().startsWith(`aws::${s}::`));
 }

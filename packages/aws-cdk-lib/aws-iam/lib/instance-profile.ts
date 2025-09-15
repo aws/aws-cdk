@@ -1,15 +1,15 @@
 import { Construct } from 'constructs';
-import { CfnInstanceProfile } from './iam.generated';
+import { CfnInstanceProfile, IInstanceProfileRef, InstanceProfileReference } from './iam.generated';
 import { ServicePrincipal } from './principals';
 import { IRole, Role } from './role';
-import { Resource, Arn, Stack, IResource, PhysicalName } from '../../core';
+import { Arn, IResource, PhysicalName, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents an IAM Instance Profile
  */
-export interface IInstanceProfile extends IResource {
+export interface IInstanceProfile extends IResource, IInstanceProfileRef {
   /**
    * The InstanceProfile's name.
    * @attribute
@@ -98,6 +98,13 @@ abstract class InstanceProfileBase extends Resource implements IInstanceProfile 
    */
   public get role(): IRole | undefined {
     return this._role;
+  }
+
+  public get instanceProfileRef(): InstanceProfileReference {
+    return {
+      instanceProfileName: this.instanceProfileName,
+      instanceProfileArn: this.instanceProfileArn,
+    };
   }
 }
 

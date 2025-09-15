@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "displayName": "canary-artifact-s3-encryption/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
@@ -43,16 +43,16 @@
         }
       }
     },
-    "58dcbccc42c9f039d4f0eea1edefbc3f62cc859215f3c6506ceb7a0e50016833": {
+    "c3a8a17b896ae419aa2c11f16e85473ed3dec4936629fc13a8bdaeb277963abf": {
       "displayName": "canary-artifact-s3-encryption Template",
       "source": {
         "path": "canary-artifact-s3-encryption.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d60dcbfd": {
+        "current_account-current_region-6603f794": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "58dcbccc42c9f039d4f0eea1edefbc3f62cc859215f3c6506ceb7a0e50016833.json",
+          "objectKey": "c3a8a17b896ae419aa2c11f16e85473ed3dec4936629fc13a8bdaeb277963abf.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -62,7 +62,7 @@ export interface TrackerProps {
    *
    * @default - Use an AWS managed key
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 
   /**
    * Whether to opt-in to the Bounding Polygon Queries feature with customer managed key
@@ -210,7 +210,7 @@ export class Tracker extends Resource implements ITracker {
       description: props.description,
       eventBridgeEnabled: props.eventBridgeEnabled,
       kmsKeyEnableGeospatialQueries: props.kmsKeyEnableGeospatialQueries,
-      kmsKeyId: props.kmsKey?.keyArn,
+      kmsKeyId: props.kmsKey?.keyRef.keyArn,
       positionFiltering: props.positionFiltering,
     });
 

@@ -1,30 +1,30 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
-    "2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a": {
+    "4e81d1590504dce642b87042b0999db745220956ae69e7441a66475972723162": {
       "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
       "source": {
-        "path": "asset.2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a",
+        "path": "asset.4e81d1590504dce642b87042b0999db745220956ae69e7441a66475972723162",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-5b9f8ae5": {
+        "current_account-current_region-29dbdb89": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a.zip",
+          "objectKey": "4e81d1590504dce642b87042b0999db745220956ae69e7441a66475972723162.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "f486fff01f2d38bf2da407b9e7b3c94af97ee20a3cb1d86933891b118be4e8d3": {
+    "98f46b0c1903a5e7673fe84475a7aa4ff5e6455e16a3ef72314135a334443cd6": {
       "displayName": "aws-iot-opensearch-integ-stack Template",
       "source": {
         "path": "aws-iot-opensearch-integ-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-e13c7976": {
+        "current_account-current_region-c92f6edb": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f486fff01f2d38bf2da407b9e7b3c94af97ee20a3cb1d86933891b118be4e8d3.json",
+          "objectKey": "98f46b0c1903a5e7673fe84475a7aa4ff5e6455e16a3ef72314135a334443cd6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

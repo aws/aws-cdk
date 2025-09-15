@@ -1,5 +1,6 @@
 import { Match, Template, Annotations } from '../../assertions';
 import * as iam from '../../aws-iam';
+import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as s3 from '../lib';
@@ -92,11 +93,15 @@ describe('notification', () => {
         Statement: [{
           Action: 's3:PutBucketNotification',
           Effect: 'Allow',
-          Resource: '*',
+          Resource: {
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::foo-bar']],
+          },
         }, {
           Action: 's3:GetBucketNotification',
           Effect: 'Allow',
-          Resource: '*',
+          Resource: {
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::foo-bar']],
+          },
         }],
       },
     });
@@ -196,11 +201,15 @@ describe('notification', () => {
         Statement: [{
           Action: 's3:PutBucketNotification',
           Effect: 'Allow',
-          Resource: '*',
+          Resource: {
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::foo-bar']],
+          },
         }, {
           Action: 's3:GetBucketNotification',
           Effect: 'Allow',
-          Resource: '*',
+          Resource: {
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::foo-bar']],
+          },
         }],
       },
     });
@@ -445,12 +454,16 @@ describe('notification', () => {
           {
             Action: 's3:PutBucketNotification',
             Effect: 'Allow',
-            Resource: '*',
+            Resource: {
+              'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
+            },
           },
           {
             Action: 's3:GetBucketNotification',
             Effect: 'Allow',
-            Resource: '*',
+            Resource: {
+              'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -476,7 +489,7 @@ describe('notification', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: 'python3.11',
+      Runtime: 'python3.13',
     });
   });
 
@@ -542,6 +555,59 @@ describe('notification', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
       SkipDestinationValidation: false,
+    });
+  });
+
+  test('multiple buckets in same stack result in consolidated policy with all bucket ARNs', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const bucket1 = new s3.Bucket(stack, 'Bucket1');
+    const bucket2 = new s3.Bucket(stack, 'Bucket2');
+    const bucket3 = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+      bucketName: 'imported-bucket',
+    });
+
+    bucket1.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN1',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    bucket2.addEventNotification(s3.EventType.OBJECT_REMOVED, {
+      bind: () => ({
+        arn: 'ARN2',
+        type: s3.BucketNotificationDestinationType.QUEUE,
+      }),
+    });
+
+    bucket3.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN3',
+        type: s3.BucketNotificationDestinationType.LAMBDA,
+      }),
+    });
+
+    // THEN - Should have single policy with all bucket ARNs
+    const template = Template.fromStack(stack);
+
+    // Verify we have exactly one IAM policy for the notifications handler
+    const allPolicies = template.findResources('AWS::IAM::Policy');
+    expect(Object.keys(allPolicies)).toHaveLength(1);
+
+    // Verify the policy contains scoped permissions (not wildcards)
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: 's3:PutBucketNotification',
+            Effect: 'Allow',
+            Resource: Match.not('*'), // Should NOT be wildcard
+          },
+        ]),
+      },
     });
   });
 });

@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "testCases": {
     "test-aurora-pub-sn-cluster/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "testaurorapubsnclusterDefaultTestDeployAssert6E7F54F3"
     }
   },
-  "minimumCliVersion": "2.1020.2"
+  "minimumCliVersion": "2.1027.0"
 }
