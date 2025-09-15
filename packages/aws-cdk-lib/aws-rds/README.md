@@ -1166,6 +1166,26 @@ const proxy = dbInstance.addProxy('proxy', {
 });
 ```
 
+### Proxy Endpoint
+The following example add additional endpoint to RDS Proxy.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const secrets: secretsmanager.Secret[];
+declare const dbInstance: rds.DatabaseInstance;
+
+const proxy = dbInstance.addProxy('Proxy', {
+  secrets,
+  vpc,
+});
+
+// Add a reader endpoint
+proxy.addEndpoint('ProxyEndpoint', {
+  vpc,
+  targetRole: rds.ProxyEndpointTargetRole.READ_ONLY,
+});
+```
+
 ## Exporting Logs
 
 You can publish database logs to Amazon CloudWatch Logs. With CloudWatch Logs, you can perform real-time analysis of the log data,

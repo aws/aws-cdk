@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { Grant } from './grant';
+import { RoleReference } from './iam.generated';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
@@ -97,6 +98,10 @@ export class LazyRole extends cdk.Resource implements IRole {
    */
   public get roleArn(): string {
     return this.instantiate().roleArn;
+  }
+
+  public get roleRef(): RoleReference {
+    return this.instantiate().roleRef;
   }
 
   /**
