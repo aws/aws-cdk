@@ -38,6 +38,10 @@ export enum ClientPasswordAuthType {
    * MySQL Caching SHA2 Password client authentication type.
    */
   MYSQL_CACHING_SHA2_PASSWORD = 'MYSQL_CACHING_SHA2_PASSWORD',
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  MYSQL_CACHING_SHA2_PASSWORD = 'MYSQL_CACHING_SHA2_PASSWORD',
 }
 
 /**
