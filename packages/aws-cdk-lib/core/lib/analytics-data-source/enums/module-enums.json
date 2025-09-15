@@ -931,7 +931,9 @@
       "nodejs18.x",
       "python3.9",
       "python3.10",
-      "python3.11"
+      "python3.11",
+      "python3.13",
+      "python3.13"
     ],
     "ComponentType": [
       "Function",
@@ -1635,7 +1637,8 @@
   },
   "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/job-queue.ts": {
     "JobStateTimeLimitActionsAction": [
-      "CANCEL"
+      "CANCEL",
+      "TERMINATE"
     ],
     "JobStateTimeLimitActionsReason": [
       "CAPACITY:INSUFFICIENT_INSTANCE_CAPACITY",
@@ -1766,7 +1769,8 @@
       "TLSv1.1_2016",
       "TLSv1.2_2018",
       "TLSv1.2_2019",
-      "TLSv1.2_2021"
+      "TLSv1.2_2021",
+      "TLSv1.3_2025"
     ],
     "LambdaEdgeEventType": [
       "origin-request",
@@ -2053,6 +2057,13 @@
       "BUILD_LAMBDA_8GB",
       "BUILD_LAMBDA_10GB",
       "ATTRIBUTE_BASED_COMPUTE"
+    ],
+    "DockerServerComputeType": [
+      "BUILD_GENERAL1_SMALL",
+      "BUILD_GENERAL1_MEDIUM",
+      "BUILD_GENERAL1_LARGE",
+      "BUILD_GENERAL1_XLARGE",
+      "BUILD_GENERAL1_2XLARGE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/environment-type.ts": {
@@ -2612,6 +2623,10 @@
       "r7i",
       "memory7-intel",
       "r7iz",
+      "memory8-intel-base",
+      "r8i",
+      "memory8-intel-flex",
+      "r8i-flex",
       "memory7-amd",
       "r7a",
       "memory8-graviton",
@@ -2698,6 +2713,8 @@
       "i7i",
       "storage8-graviton",
       "i8g",
+      "storage8-graviton-storage-optimized",
+      "i8ge",
       "burstable2",
       "t2",
       "burstable3",
@@ -2784,6 +2801,10 @@
       "m7gd",
       "standard8-graviton4-nvme-drive",
       "m8gd",
+      "standard8-intel",
+      "m8i",
+      "standard8-intel-flex",
+      "m8i-flex",
       "standard7-intel",
       "m7i",
       "standard7-intel-flex",
@@ -4332,7 +4353,8 @@
   "aws-cdk/packages/aws-cdk-lib/aws-iam/lib/access-key.ts": {
     "AccessKeyStatus": [
       "Active",
-      "Inactive"
+      "Inactive",
+      "Expired"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy-statement.ts": {
@@ -4404,6 +4426,7 @@
       "package-lock.json",
       "yarn.lock",
       "bun.lockb",
+      "bun.lock",
       "pnpm-lock.yaml"
     ]
   },
@@ -4751,12 +4774,19 @@
       "open-source-rds-extended-support-disabled"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy-endpoint.ts": {
+    "ProxyEndpointTargetRole": [
+      "READ_WRITE",
+      "READ_ONLY"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.ts": {
     "ClientPasswordAuthType": [
       "MYSQL_NATIVE_PASSWORD",
       "POSTGRES_SCRAM_SHA_256",
       "POSTGRES_MD5",
-      "SQL_SERVER_AUTHENTICATION"
+      "SQL_SERVER_AUTHENTICATION",
+      "MYSQL_CACHING_SHA2_PASSWORD"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/serverless-cluster.ts": {
@@ -5476,6 +5506,10 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts": {
+    "BrowserType": [
+      "CHROME",
+      "FIREFOX"
+    ],
     "Cleanup": [
       "nothing",
       "lambda"
