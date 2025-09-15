@@ -211,10 +211,6 @@ export abstract class OriginBase implements IOrigin {
   /**
    * Validates that responseCompletionTimeout is greater than or equal to readTimeout
    * when both are specified. This method should be called by subclasses that support readTimeout.
-   *
-   * @param responseCompletionTimeout The responseCompletionTimeout value to validate
-   * @param readTimeout The readTimeout value to compare against
-   * @protected
    */
   protected validateResponseCompletionTimeoutWithReadTimeout(
     responseCompletionTimeout?: Duration,
