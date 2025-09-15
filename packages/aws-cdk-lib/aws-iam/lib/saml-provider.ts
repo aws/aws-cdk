@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { Construct } from 'constructs';
-import { CfnSAMLProvider } from './iam.generated';
+import { CfnSAMLProvider, ISAMLProviderRef, SAMLProviderReference } from './iam.generated';
 import { IResource, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -8,7 +8,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A SAML provider
  */
-export interface ISamlProvider extends IResource {
+export interface ISamlProvider extends IResource, ISAMLProviderRef {
   /**
    * The Amazon Resource Name (ARN) of the provider
    *
@@ -83,6 +83,7 @@ export class SamlProvider extends Resource implements ISamlProvider {
   public static fromSamlProviderArn(scope: Construct, id: string, samlProviderArn: string): ISamlProvider {
     class Import extends Resource implements ISamlProvider {
       public readonly samlProviderArn = samlProviderArn;
+      public samlProviderRef: SAMLProviderReference = { samlProviderArn };
     }
     return new Import(scope, id);
   }
@@ -104,5 +105,11 @@ export class SamlProvider extends Resource implements ISamlProvider {
     });
 
     this.samlProviderArn = samlProvider.ref;
+  }
+
+  public get samlProviderRef(): SAMLProviderReference {
+    return {
+      samlProviderArn: this.samlProviderArn,
+    };
   }
 }

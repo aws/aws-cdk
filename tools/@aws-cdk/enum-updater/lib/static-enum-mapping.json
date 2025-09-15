@@ -849,6 +849,18 @@
       "sdk_enum_name": "AttributeType",
       "match_percentage": 1
     },
+    "ContributorInsightsMode": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts",
+      "sdk_service": "dynamodb",
+      "sdk_enum_name": "Mode",
+      "match_percentage": 1
+    },
+    "MultiRegionConsistency": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts",
+      "sdk_service": "dynamodb",
+      "sdk_enum_name": "MultiRegionConsistency",
+      "match_percentage": 1
+    },
     "ApproximateCreationDateTimePrecision": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.ts",
       "sdk_service": "dynamodb",
@@ -881,6 +893,12 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts",
       "sdk_service": "ecs",
       "sdk_enum_name": "RequiresCompatibilities",
+      "match_percentage": 1
+    },
+    "DeploymentStrategy": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts",
+      "sdk_service": "ecs",
+      "sdk_enum_name": "Strategy",
       "match_percentage": 1
     },
     "FileSystemType": {
@@ -941,6 +959,12 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts",
       "sdk_service": "ecs",
       "sdk_enum_name": "VersionConsistency",
+      "match_percentage": 1
+    },
+    "DeploymentLifecycleStage": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/deployment-lifecycle-hook-target.ts",
+      "sdk_service": "ecs",
+      "sdk_enum_name": "LifecycleStages",
       "match_percentage": 1
     },
     "DevicePermission": {

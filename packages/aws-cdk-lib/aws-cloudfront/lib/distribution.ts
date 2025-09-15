@@ -1,21 +1,38 @@
 import { Construct } from 'constructs';
-import { ICachePolicy } from './cache-policy';
-import { CfnDistribution, CfnMonitoringSubscription } from './cloudfront.generated';
+import {
+  CfnDistribution,
+  CfnMonitoringSubscription,
+  DistributionReference,
+  ICachePolicyRef,
+  IDistributionRef,
+  IKeyGroupRef,
+  IOriginRequestPolicyRef,
+  IRealtimeLogConfigRef,
+  IResponseHeadersPolicyRef,
+} from './cloudfront.generated';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
-import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
-import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
 import { formatDistributionArn, grant } from './private/utils';
-import { IRealtimeLogConfig } from './realtime-log-config';
-import { IResponseHeadersPolicy } from './response-headers-policy';
 import * as acm from '../../aws-certificatemanager';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations, ValidationError } from '../../core';
+import {
+  Annotations,
+  ArnFormat,
+  Duration,
+  FeatureFlags,
+  IResource,
+  Lazy,
+  Names,
+  Resource,
+  Stack,
+  Token,
+  ValidationError,
+} from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
@@ -23,7 +40,7 @@ import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
 /**
  * Interface for CloudFront distributions
  */
-export interface IDistribution extends IResource {
+export interface IDistribution extends IResource, IDistributionRef {
   /**
    * The domain name of the Distribution, such as d111111abcdef8.cloudfront.net.
    *
@@ -297,6 +314,9 @@ export class Distribution extends Resource implements IDistribution {
       public readonly domainName: string;
       public readonly distributionDomainName: string;
       public readonly distributionId: string;
+      public readonly distributionRef = {
+        distributionId: attrs.distributionId,
+      };
 
       constructor() {
         super(scope, id);
@@ -320,6 +340,7 @@ export class Distribution extends Resource implements IDistribution {
   public readonly domainName: string;
   public readonly distributionDomainName: string;
   public readonly distributionId: string;
+  public readonly distributionRef: DistributionReference;
 
   private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;
@@ -396,6 +417,7 @@ export class Distribution extends Resource implements IDistribution {
       },
     });
 
+    this.distributionRef = distribution.distributionRef;
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
@@ -931,6 +953,7 @@ export enum SecurityPolicyProtocol {
   TLS_V1_2_2018 = 'TLSv1.2_2018',
   TLS_V1_2_2019 = 'TLSv1.2_2019',
   TLS_V1_2_2021 = 'TLSv1.2_2021',
+  TLS_V1_3_2025 = 'TLSv1.3_2025',
 }
 
 /**
@@ -1073,7 +1096,7 @@ export interface AddBehaviorOptions {
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html.
    * @default CachePolicy.CACHING_OPTIMIZED
    */
-  readonly cachePolicy?: ICachePolicy;
+  readonly cachePolicy?: ICachePolicyRef;
 
   /**
    * Whether you want CloudFront to automatically compress certain files for this cache behavior.
@@ -1090,21 +1113,21 @@ export interface AddBehaviorOptions {
    *
    * @default - none
    */
-  readonly originRequestPolicy?: IOriginRequestPolicy;
+  readonly originRequestPolicy?: IOriginRequestPolicyRef;
 
   /**
    * The real-time log configuration to be attached to this cache behavior.
    *
    * @default - none
    */
-  readonly realtimeLogConfig?: IRealtimeLogConfig;
+  readonly realtimeLogConfig?: IRealtimeLogConfigRef;
 
   /**
    * The response headers policy for this behavior. The response headers policy determines which headers are included in responses
    *
    * @default - none
    */
-  readonly responseHeadersPolicy?: IResponseHeadersPolicy;
+  readonly responseHeadersPolicy?: IResponseHeadersPolicyRef;
 
   /**
    * Set this to true to indicate you want to distribute media files in the Microsoft Smooth Streaming format using this behavior.
@@ -1141,7 +1164,7 @@ export interface AddBehaviorOptions {
    * @default - no KeyGroups are associated with cache behavior
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
    */
-  readonly trustedKeyGroups?: IKeyGroup[];
+  readonly trustedKeyGroups?: IKeyGroupRef[];
 
   /**
    * Enables your CloudFront distribution to receive gRPC requests and to proxy them directly to your origins.

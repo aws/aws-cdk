@@ -3,6 +3,7 @@ import { IDatabaseCluster } from './cluster-ref';
 import { IEngine } from './engine';
 import { IDatabaseInstance } from './instance';
 import { engineDescription } from './private/util';
+import { DatabaseProxyEndpoint, DatabaseProxyEndpointOptions, IDatabaseProxyEndpoint } from './proxy-endpoint';
 import { CfnDBProxy, CfnDBProxyTargetGroup, CfnDBInstance } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -33,6 +34,10 @@ export enum ClientPasswordAuthType {
    * SQL Server Authentication client authentication type.
    */
   SQL_SERVER_AUTHENTICATION = 'SQL_SERVER_AUTHENTICATION',
+  /**
+   * MySQL Caching SHA2 Password client authentication type.
+   */
+  MYSQL_CACHING_SHA2_PASSWORD = 'MYSQL_CACHING_SHA2_PASSWORD',
 }
 
 /**
@@ -452,6 +457,7 @@ export class DatabaseProxy extends DatabaseProxyBase
 
   private readonly secrets: secretsmanager.ISecret[];
   private readonly resource: CfnDBProxy;
+  private readonly vpc: ec2.IVpc;
 
   constructor(scope: Construct, id: string, props: DatabaseProxyProps) {
     super(scope, id);
@@ -513,6 +519,7 @@ export class DatabaseProxy extends DatabaseProxyBase
     this.dbProxyName = this.resource.ref;
     this.dbProxyArn = this.resource.attrDbProxyArn;
     this.endpoint = this.resource.attrEndpoint;
+    this.vpc = props.vpc;
 
     let dbInstanceIdentifiers: string[] | undefined;
     if (bindResult.dbInstances) {
@@ -560,6 +567,18 @@ export class DatabaseProxy extends DatabaseProxyBase
       if (clusterResource && cdk.CfnResource.isCfnResource(clusterResource)) {
         proxyTargetGroup.addDependency(clusterResource);
       }
+    });
+  }
+
+  /**
+   * Add an Endpoint to this DB Proxy
+   */
+  @MethodMetadata()
+  public addEndpoint(id: string, options? : DatabaseProxyEndpointOptions): IDatabaseProxyEndpoint {
+    return new DatabaseProxyEndpoint(this, id, {
+      dbProxy: this,
+      vpc: this.vpc,
+      ...options,
     });
   }
 

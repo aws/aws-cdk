@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "LimitlessClusterStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "c75ae97c5e91615e7c2b2d9cdea340095ef73978d033bb898ab9fbc67c9b343b": {
+    "5378c37ae77055f43f47291d9de03a98506a1964777ee9155e3ac4200becb805": {
       "displayName": "LimitlessClusterStack Template",
       "source": {
         "path": "LimitlessClusterStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-93b0bd3b": {
+        "current_account-current_region-83c0043a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c75ae97c5e91615e7c2b2d9cdea340095ef73978d033bb898ab9fbc67c9b343b.json",
+          "objectKey": "5378c37ae77055f43f47291d9de03a98506a1964777ee9155e3ac4200becb805.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
