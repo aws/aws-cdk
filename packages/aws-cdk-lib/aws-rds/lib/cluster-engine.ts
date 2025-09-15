@@ -1257,6 +1257,9 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_16_8_LIMITLESS = AuroraPostgresEngineVersion.of('16.8-limitless', '16', { s3Import: true, s3Export: true });
   /** Version "16.9". */
   public static readonly VER_16_9 = AuroraPostgresEngineVersion.of('16.9', '16', { s3Import: true, s3Export: true });
+  /** Version "16.9 limitless" */
+  public static readonly VER_16_9_LIMITLESS = AuroraPostgresEngineVersion.of('16.9-limitless', '16', { s3Import: true, s3Export: true });
+
   /**
    * Version "17.1"
    * @deprecated Version 17.1 is no longer supported by Amazon RDS.

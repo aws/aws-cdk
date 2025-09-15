@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "integ-ec2-multiple-instances-in-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -16,7 +16,7 @@
       }
     },
     "b9ca21e9930115b91ab7e6877bec3bc97b410a6d41fd58816b56aba6db2643bd": {
-      "displayName": "9765cd68daf64b350a75502a51fcf08f--target--path--config.jsonAsset",
+      "displayName": "f27b09f58ee912006330da522f9e1af7--target--path--config.jsonAsset",
       "source": {
         "path": "asset.b9ca21e9930115b91ab7e6877bec3bc97b410a6d41fd58816b56aba6db2643bd",
         "packaging": "file"
@@ -30,7 +30,7 @@
       }
     },
     "04c44be8722f4360fe0830af22298ad0870480310d7bd6eedbbd2391aecf59a8": {
-      "displayName": "fb677242c476036ca1f54bfb6b6ae839--target--path--config.jsonAsset",
+      "displayName": "bf770f8524a622af39b03870b0984704--target--path--config.jsonAsset",
       "source": {
         "path": "asset.04c44be8722f4360fe0830af22298ad0870480310d7bd6eedbbd2391aecf59a8",
         "packaging": "file"
@@ -43,16 +43,16 @@
         }
       }
     },
-    "ab393762e6d4a8a27004db84177e430a5e2b84e1db4d0e9e71f8b2cdcb20dddf": {
+    "2aeaf111da288785b07c041625e8904062820d67b6f7244328766fed0a23a3d3": {
       "displayName": "integ-ec2-multiple-instances-in-stack Template",
       "source": {
         "path": "integ-ec2-multiple-instances-in-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-13a62370": {
+        "current_account-current_region-1b3b5f94": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ab393762e6d4a8a27004db84177e430a5e2b84e1db4d0e9e71f8b2cdcb20dddf.json",
+          "objectKey": "2aeaf111da288785b07c041625e8904062820d67b6f7244328766fed0a23a3d3.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "c9e084a249774d97a978bed2e1976874a70517128a904136b8737f0792322c1f": {
       "displayName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "c183d394ef906ff2e85930c6ad8fdf6a3e9e9a2cf78d49586aff787cd9542207": {
+    "3565ab645ed77d647c73c1f4edb388fdf0d7b707d50505e8507eb5b84c48000e": {
       "displayName": "AppSyncLogMetrics Template",
       "source": {
         "path": "AppSyncLogMetrics.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-5c97b716": {
+        "current_account-current_region-b07c5c67": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c183d394ef906ff2e85930c6ad8fdf6a3e9e9a2cf78d49586aff787cd9542207.json",
+          "objectKey": "3565ab645ed77d647c73c1f4edb388fdf0d7b707d50505e8507eb5b84c48000e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

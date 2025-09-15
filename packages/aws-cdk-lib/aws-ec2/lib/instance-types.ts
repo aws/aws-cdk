@@ -913,6 +913,16 @@ export enum InstanceClass {
   I8G = 'i8g',
 
   /**
+   * Storage optimized instances powered by Graviton4 processor, 8th generation
+   */
+  STORAGE8_GRAVITON_STORAGE_OPTIMIZED = 'storage8-graviton-storage-optimized',
+
+  /**
+   * Storage optimized instances powered by Graviton4 processor, 8th generation
+   */
+  I8GE = 'i8ge',
+
+  /**
    * Burstable instances, 2nd generation
    */
   BURSTABLE2 = 'burstable2',
@@ -1921,6 +1931,8 @@ export class InstanceType {
       [InstanceClass.I7I]: 'i7i',
       [InstanceClass.STORAGE8_GRAVITON]: 'i8g',
       [InstanceClass.I8G]: 'i8g',
+      [InstanceClass.STORAGE8_GRAVITON_STORAGE_OPTIMIZED]: 'i8ge',
+      [InstanceClass.I8GE]: 'i8ge',
       [InstanceClass.BURSTABLE2]: 't2',
       [InstanceClass.T2]: 't2',
       [InstanceClass.BURSTABLE3]: 't3',

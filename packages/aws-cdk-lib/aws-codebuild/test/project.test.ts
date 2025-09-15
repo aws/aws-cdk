@@ -1200,6 +1200,39 @@ describe('Environment', () => {
       });
     }).toThrow('The environment type of the fleet (LINUX_CONTAINER) must match the environment type of the build image (WINDOWS_SERVER_2019_CONTAINER)');
   });
+
+  test('can enable docker server by setting docker server compute type', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      environment: {
+        dockerServer: {
+          computeType: codebuild.DockerServerComputeType.SMALL,
+          securityGroups: [securityGroup],
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        DockerServer: {
+          ComputeType: 'BUILD_GENERAL1_SMALL',
+          SecurityGroupIds: [{
+            'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
+          }],
+        },
+      }),
+    });
+  });
 });
 
 describe('EnvironmentVariables', () => {

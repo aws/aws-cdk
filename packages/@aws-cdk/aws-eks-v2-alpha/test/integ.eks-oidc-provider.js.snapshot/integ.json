@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "testCases": {
     "aws-cdk-eks-oidc-provider/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "awscdkeksoidcproviderDefaultTestDeployAssert0BFFC9B9"
     }
   },
-  "minimumCliVersion": "2.1020.2"
+  "minimumCliVersion": "2.1027.0"
 }

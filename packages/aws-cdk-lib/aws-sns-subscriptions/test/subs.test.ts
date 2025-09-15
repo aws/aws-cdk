@@ -1295,7 +1295,15 @@ test('lambda subscription', () => {
               'Arn',
             ],
           },
-          'Runtime': lambda.Runtime.NODEJS_LATEST.name,
+          'Runtime': {
+            'Fn::FindInMap': [
+              'LatestNodeRuntimeMap',
+              {
+                'Ref': 'AWS::Region',
+              },
+              'value',
+            ],
+          },
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',
@@ -1399,7 +1407,15 @@ test('lambda subscription, cross region env agnostic', () => {
             ],
           },
           'Handler': 'index.handler',
-          'Runtime': lambda.Runtime.NODEJS_LATEST.name,
+          'Runtime': {
+            'Fn::FindInMap': [
+              'LatestNodeRuntimeMap',
+              {
+                'Ref': 'AWS::Region',
+              },
+              'value',
+            ],
+          },
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',
@@ -1862,7 +1878,15 @@ test('multiple subscriptions', () => {
               'Arn',
             ],
           },
-          'Runtime': lambda.Runtime.NODEJS_LATEST.name,
+          'Runtime': {
+            'Fn::FindInMap': [
+              'LatestNodeRuntimeMap',
+              {
+                'Ref': 'AWS::Region',
+              },
+              'value',
+            ],
+          },
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',

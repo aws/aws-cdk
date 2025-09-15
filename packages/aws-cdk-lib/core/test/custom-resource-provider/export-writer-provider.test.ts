@@ -3,9 +3,6 @@ import { ExportWriter } from '../../lib/custom-resource-provider/cross-region-ex
 import { toCloudFormation } from '../util';
 
 describe('export writer provider', () => {
-  // Since all regions now have the same latest Node.js runtime (nodejs22.x),
-  // the CDK optimizes by using the literal value instead of creating a mapping
-
   test('basic configuration', () => {
     // GIVEN
     const app = new App();
@@ -34,6 +31,148 @@ describe('export writer provider', () => {
       ],
     });
     expect(cfn).toEqual({
+      Mappings: {
+        LatestNodeRuntimeMap: {
+          'af-south-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-east-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-east-2': {
+            value: 'nodejs22.x',
+          },
+          'ap-northeast-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-northeast-2': {
+            value: 'nodejs22.x',
+          },
+          'ap-northeast-3': {
+            value: 'nodejs22.x',
+          },
+          'ap-south-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-south-2': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-2': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-3': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-4': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-5': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-6': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-7': {
+            value: 'nodejs22.x',
+          },
+          'ca-central-1': {
+            value: 'nodejs22.x',
+          },
+          'ca-west-1': {
+            value: 'nodejs22.x',
+          },
+          'cn-north-1': {
+            value: 'nodejs22.x',
+          },
+          'cn-northwest-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-central-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-central-2': {
+            value: 'nodejs22.x',
+          },
+          'eu-isoe-west-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-north-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-south-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-south-2': {
+            value: 'nodejs22.x',
+          },
+          'eu-west-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-west-2': {
+            value: 'nodejs22.x',
+          },
+          'eu-west-3': {
+            value: 'nodejs22.x',
+          },
+          'eusc-de-east-1': {
+            value: 'nodejs22.x',
+          },
+          'il-central-1': {
+            value: 'nodejs22.x',
+          },
+          'me-central-1': {
+            value: 'nodejs22.x',
+          },
+          'me-south-1': {
+            value: 'nodejs22.x',
+          },
+          'mx-central-1': {
+            value: 'nodejs22.x',
+          },
+          'sa-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-east-2': {
+            value: 'nodejs22.x',
+          },
+          'us-gov-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-gov-west-1': {
+            value: 'nodejs22.x',
+          },
+          'us-iso-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-iso-west-1': {
+            value: 'nodejs22.x',
+          },
+          'us-isob-east-1': {
+            value: 'nodejs18.x',
+          },
+          'us-isob-west-1': {
+            value: 'nodejs18.x',
+          },
+          'us-isof-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-isof-south-1': {
+            value: 'nodejs22.x',
+          },
+          'us-west-1': {
+            value: 'nodejs22.x',
+          },
+          'us-west-2': {
+            value: 'nodejs22.x',
+          },
+        },
+      },
       Resources: {
         MyResource: {
           Type: 'Custom::MyResource',
@@ -137,7 +276,15 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs22.x',
+            Runtime: {
+              'Fn::FindInMap': [
+                'LatestNodeRuntimeMap',
+                {
+                  Ref: 'AWS::Region',
+                },
+                'value',
+              ],
+            },
           },
           DependsOn: [
             'CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1',
@@ -146,6 +293,148 @@ describe('export writer provider', () => {
       },
     });
     expect(stack2Cfn).toEqual({
+      Mappings: {
+        LatestNodeRuntimeMap: {
+          'af-south-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-east-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-east-2': {
+            value: 'nodejs22.x',
+          },
+          'ap-northeast-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-northeast-2': {
+            value: 'nodejs22.x',
+          },
+          'ap-northeast-3': {
+            value: 'nodejs22.x',
+          },
+          'ap-south-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-south-2': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-2': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-3': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-4': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-5': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-6': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-7': {
+            value: 'nodejs22.x',
+          },
+          'ca-central-1': {
+            value: 'nodejs22.x',
+          },
+          'ca-west-1': {
+            value: 'nodejs22.x',
+          },
+          'cn-north-1': {
+            value: 'nodejs22.x',
+          },
+          'cn-northwest-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-central-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-central-2': {
+            value: 'nodejs22.x',
+          },
+          'eu-isoe-west-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-north-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-south-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-south-2': {
+            value: 'nodejs22.x',
+          },
+          'eu-west-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-west-2': {
+            value: 'nodejs22.x',
+          },
+          'eu-west-3': {
+            value: 'nodejs22.x',
+          },
+          'eusc-de-east-1': {
+            value: 'nodejs22.x',
+          },
+          'il-central-1': {
+            value: 'nodejs22.x',
+          },
+          'me-central-1': {
+            value: 'nodejs22.x',
+          },
+          'me-south-1': {
+            value: 'nodejs22.x',
+          },
+          'mx-central-1': {
+            value: 'nodejs22.x',
+          },
+          'sa-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-east-2': {
+            value: 'nodejs22.x',
+          },
+          'us-gov-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-gov-west-1': {
+            value: 'nodejs22.x',
+          },
+          'us-iso-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-iso-west-1': {
+            value: 'nodejs22.x',
+          },
+          'us-isob-east-1': {
+            value: 'nodejs18.x',
+          },
+          'us-isob-west-1': {
+            value: 'nodejs18.x',
+          },
+          'us-isof-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-isof-south-1': {
+            value: 'nodejs22.x',
+          },
+          'us-west-1': {
+            value: 'nodejs22.x',
+          },
+          'us-west-2': {
+            value: 'nodejs22.x',
+          },
+        },
+      },
       Resources: {
         CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
           DependsOn: [
@@ -166,7 +455,15 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs22.x',
+            Runtime: {
+              'Fn::FindInMap': [
+                'LatestNodeRuntimeMap',
+                {
+                  Ref: 'AWS::Region',
+                },
+                'value',
+              ],
+            },
             Timeout: 900,
           },
           Type: 'AWS::Lambda::Function',
@@ -394,6 +691,148 @@ describe('export writer provider', () => {
       'Fn::GetAtt': ['ExportsReader8B249524', '/cdk/exports/MyResourceName'],
     });
     expect(cfn).toEqual({
+      Mappings: {
+        LatestNodeRuntimeMap: {
+          'af-south-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-east-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-east-2': {
+            value: 'nodejs22.x',
+          },
+          'ap-northeast-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-northeast-2': {
+            value: 'nodejs22.x',
+          },
+          'ap-northeast-3': {
+            value: 'nodejs22.x',
+          },
+          'ap-south-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-south-2': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-2': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-3': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-4': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-5': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-6': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-7': {
+            value: 'nodejs22.x',
+          },
+          'ca-central-1': {
+            value: 'nodejs22.x',
+          },
+          'ca-west-1': {
+            value: 'nodejs22.x',
+          },
+          'cn-north-1': {
+            value: 'nodejs22.x',
+          },
+          'cn-northwest-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-central-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-central-2': {
+            value: 'nodejs22.x',
+          },
+          'eu-isoe-west-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-north-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-south-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-south-2': {
+            value: 'nodejs22.x',
+          },
+          'eu-west-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-west-2': {
+            value: 'nodejs22.x',
+          },
+          'eu-west-3': {
+            value: 'nodejs22.x',
+          },
+          'eusc-de-east-1': {
+            value: 'nodejs22.x',
+          },
+          'il-central-1': {
+            value: 'nodejs22.x',
+          },
+          'me-central-1': {
+            value: 'nodejs22.x',
+          },
+          'me-south-1': {
+            value: 'nodejs22.x',
+          },
+          'mx-central-1': {
+            value: 'nodejs22.x',
+          },
+          'sa-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-east-2': {
+            value: 'nodejs22.x',
+          },
+          'us-gov-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-gov-west-1': {
+            value: 'nodejs22.x',
+          },
+          'us-iso-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-iso-west-1': {
+            value: 'nodejs22.x',
+          },
+          'us-isob-east-1': {
+            value: 'nodejs18.x',
+          },
+          'us-isob-west-1': {
+            value: 'nodejs18.x',
+          },
+          'us-isof-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-isof-south-1': {
+            value: 'nodejs22.x',
+          },
+          'us-west-1': {
+            value: 'nodejs22.x',
+          },
+          'us-west-2': {
+            value: 'nodejs22.x',
+          },
+        },
+      },
       Resources: {
         MyResource: {
           Type: 'Custom::MyResource',
@@ -498,7 +937,15 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs22.x',
+            Runtime: {
+              'Fn::FindInMap': [
+                'LatestNodeRuntimeMap',
+                {
+                  Ref: 'AWS::Region',
+                },
+                'value',
+              ],
+            },
           },
           DependsOn: [
             'CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1',
@@ -507,6 +954,148 @@ describe('export writer provider', () => {
       },
     });
     expect(stack2Cfn).toEqual({
+      Mappings: {
+        LatestNodeRuntimeMap: {
+          'af-south-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-east-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-east-2': {
+            value: 'nodejs22.x',
+          },
+          'ap-northeast-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-northeast-2': {
+            value: 'nodejs22.x',
+          },
+          'ap-northeast-3': {
+            value: 'nodejs22.x',
+          },
+          'ap-south-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-south-2': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-1': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-2': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-3': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-4': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-5': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-6': {
+            value: 'nodejs22.x',
+          },
+          'ap-southeast-7': {
+            value: 'nodejs22.x',
+          },
+          'ca-central-1': {
+            value: 'nodejs22.x',
+          },
+          'ca-west-1': {
+            value: 'nodejs22.x',
+          },
+          'cn-north-1': {
+            value: 'nodejs22.x',
+          },
+          'cn-northwest-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-central-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-central-2': {
+            value: 'nodejs22.x',
+          },
+          'eu-isoe-west-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-north-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-south-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-south-2': {
+            value: 'nodejs22.x',
+          },
+          'eu-west-1': {
+            value: 'nodejs22.x',
+          },
+          'eu-west-2': {
+            value: 'nodejs22.x',
+          },
+          'eu-west-3': {
+            value: 'nodejs22.x',
+          },
+          'eusc-de-east-1': {
+            value: 'nodejs22.x',
+          },
+          'il-central-1': {
+            value: 'nodejs22.x',
+          },
+          'me-central-1': {
+            value: 'nodejs22.x',
+          },
+          'me-south-1': {
+            value: 'nodejs22.x',
+          },
+          'mx-central-1': {
+            value: 'nodejs22.x',
+          },
+          'sa-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-east-2': {
+            value: 'nodejs22.x',
+          },
+          'us-gov-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-gov-west-1': {
+            value: 'nodejs22.x',
+          },
+          'us-iso-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-iso-west-1': {
+            value: 'nodejs22.x',
+          },
+          'us-isob-east-1': {
+            value: 'nodejs18.x',
+          },
+          'us-isob-west-1': {
+            value: 'nodejs18.x',
+          },
+          'us-isof-east-1': {
+            value: 'nodejs22.x',
+          },
+          'us-isof-south-1': {
+            value: 'nodejs22.x',
+          },
+          'us-west-1': {
+            value: 'nodejs22.x',
+          },
+          'us-west-2': {
+            value: 'nodejs22.x',
+          },
+        },
+      },
       Resources: {
         CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
           DependsOn: [
@@ -527,7 +1116,15 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs22.x',
+            Runtime: {
+              'Fn::FindInMap': [
+                'LatestNodeRuntimeMap',
+                {
+                  Ref: 'AWS::Region',
+                },
+                'value',
+              ],
+            },
             Timeout: 900,
           },
           Type: 'AWS::Lambda::Function',

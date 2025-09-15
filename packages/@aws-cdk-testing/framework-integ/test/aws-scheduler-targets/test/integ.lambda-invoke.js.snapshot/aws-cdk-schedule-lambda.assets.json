@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "76aaa1aab948866cf6d338d2356acc99c7f0ca1a620bd5045bf5bfbd1f7b4863": {
       "displayName": "MyLambda/Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "61cd1a01794ff96e0b408cc4b1ba2a2fbd634b0fef76ee1fdb118ce07ef81a59": {
+    "949215157eb1395dc7bab3db92c2352918cd71536b4aa9aa8c1f91b68fcd037b": {
       "displayName": "aws-cdk-schedule-lambda Template",
       "source": {
         "path": "aws-cdk-schedule-lambda.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-1832e3bc": {
+        "current_account-current_region-e463c139": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "61cd1a01794ff96e0b408cc4b1ba2a2fbd634b0fef76ee1fdb118ce07ef81a59.json",
+          "objectKey": "949215157eb1395dc7bab3db92c2352918cd71536b4aa9aa8c1f91b68fcd037b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "efsReplication/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "1c1668c6802707f0dbb94bd8ba11e94e7a236a8718c83294dbdf1bc62fc95dea": {
+    "e06f13a4e8c422a223816fe92149a7f82f1d064391f0a9832a5425066d6c70fe": {
       "displayName": "efsReplication Template",
       "source": {
         "path": "efsReplication.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-b65412bf": {
+        "current_account-current_region-0d4a07d7": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1c1668c6802707f0dbb94bd8ba11e94e7a236a8718c83294dbdf1bc62fc95dea.json",
+          "objectKey": "e06f13a4e8c422a223816fe92149a7f82f1d064391f0a9832a5425066d6c70fe.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

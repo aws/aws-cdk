@@ -1,16 +1,16 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
-    "adfdd027b6a79d3597e0f272dd09ac1e2dc8b66cc961802b3c55e227c248b86e": {
+    "a69d132923121b268e2ca7f63184b1886d02248ca6ebc344c7858a993d54f54a": {
       "displayName": "InvokeFunctionAssertions Template",
       "source": {
         "path": "InvokeFunctionAssertions.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-c0d2dd47": {
+        "current_account-current_region-b512dd7c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "adfdd027b6a79d3597e0f272dd09ac1e2dc8b66cc961802b3c55e227c248b86e.json",
+          "objectKey": "a69d132923121b268e2ca7f63184b1886d02248ca6ebc344c7858a993d54f54a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

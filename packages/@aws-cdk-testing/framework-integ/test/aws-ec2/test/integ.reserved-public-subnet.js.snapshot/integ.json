@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "testCases": {
     "integ-aws-cdk-ec2-vpc-reserved-public-subnet/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "integawscdkec2vpcreservedpublicsubnetDefaultTestDeployAssert469B3DFB"
     }
   },
-  "minimumCliVersion": "2.1020.2"
+  "minimumCliVersion": "2.1027.0"
 }
