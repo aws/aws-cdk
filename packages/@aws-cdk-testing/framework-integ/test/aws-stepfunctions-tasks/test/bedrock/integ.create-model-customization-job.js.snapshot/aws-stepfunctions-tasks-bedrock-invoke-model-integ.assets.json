@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -29,16 +29,16 @@
         }
       }
     },
-    "2aaaf7608b39f55eb27c7fa05b4c2a47e084307d669b4890fda8402465bfa18b": {
+    "3eea2fa0883ac7fd7d6ef2b276140b3666136cf98f8228f5cfbb88d70a27f310": {
       "displayName": "aws-stepfunctions-tasks-bedrock-invoke-model-integ Template",
       "source": {
         "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-1619a873": {
+        "current_account-current_region-058d5fbb": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2aaaf7608b39f55eb27c7fa05b4c2a47e084307d669b4890fda8402465bfa18b.json",
+          "objectKey": "3eea2fa0883ac7fd7d6ef2b276140b3666136cf98f8228f5cfbb88d70a27f310.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
