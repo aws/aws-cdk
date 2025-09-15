@@ -1,5 +1,4 @@
 import { Construct } from 'constructs';
-import { CfnParameter } from '../cfn-parameter';
 import { CustomResource } from '../custom-resource';
 import { CfnUtilsResourceType } from './cfn-utils-provider/consts';
 import { CfnUtilsProvider as _CfnUtilsProvider } from '../dist/core/cfn-utils-provider.generated';
@@ -89,7 +88,7 @@ function isInvalidParameterReference(parameterLogicalId: string, currentStack: S
 
   // Look for the parameter in the parent stack
   const parentStack = currentStack.nestedStackParent;
-  const parameter = parentStack.node.tryFindChild(parameterLogicalId) as CfnParameter;
+  const parameter = parentStack.node.tryFindChild(parameterLogicalId);
   // Filtering based on 'referenceto' prefix
-  return parameter instanceof CfnParameter && !parameterLogicalId.includes('referenceto');
+  return !!(parameter && parameter.constructor.name === 'CfnParameter' && !parameterLogicalId.includes('referenceto'));
 }
