@@ -332,6 +332,12 @@ export interface SpecRestApiProps extends RestApiBaseProps {
    * @default - `merge` for REST APIs created after March 29, 2021, otherwise `overwrite`
    */
   readonly mode?: RestApiMode;
+  /**
+   * The list of binary media types supported by the RestApi. By default, the RestApi supports only UTF-8-encoded text payloads.
+   *
+   * @default - RestApi supports only UTF-8-encoded text payloads.
+   */
+  readonly binaryMediaTypes?: string[];
 }
 
 /**
@@ -802,6 +808,7 @@ export class SpecRestApi extends RestApiBase {
       policy: Lazy.any({ produce: () => this.resourcePolicy }),
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minCompressionSize?.toBytes(),
+      binaryMediaTypes: props.binaryMediaTypes,
       body: apiDefConfig.inlineDefinition ?? undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
       endpointConfiguration: this._configureEndpoints(props),
