@@ -301,6 +301,14 @@ export interface SpecRestApiProps extends RestApiBaseProps {
   readonly apiDefinition: ApiDefinition;
 
   /**
+   * The list of binary media mime-types that are supported by the RestApi
+   * resource, such as "image/png" or "application/octet-stream"
+   *
+   * @default - RestApi supports only UTF-8-encoded text payloads.
+   */
+  readonly binaryMediaTypes?: string[];
+
+  /**
    * A Size(in bytes, kibibytes, mebibytes etc) that is used to enable compression (with non-negative
    * between 0 and 10485760 (10M) bytes, inclusive) or disable compression
    * (when undefined) on an API. When compression is enabled, compression or
@@ -332,12 +340,6 @@ export interface SpecRestApiProps extends RestApiBaseProps {
    * @default - `merge` for REST APIs created after March 29, 2021, otherwise `overwrite`
    */
   readonly mode?: RestApiMode;
-  /**
-   * The list of binary media types supported by the RestApi. By default, the RestApi supports only UTF-8-encoded text payloads.
-   *
-   * @default - RestApi supports only UTF-8-encoded text payloads.
-   */
-  readonly binaryMediaTypes?: string[];
 }
 
 /**
