@@ -2448,4 +2448,69 @@ describe('NetworkLoadBalancedFargateService', () => {
       },
     });
   });
+
+  test('target group has different logical ID for public vs private load balancer', () => {
+    // GIVEN
+    const stack1 = new cdk.Stack();
+    const stack2 = new cdk.Stack();
+
+    // WHEN - Create public load balancer service
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack1, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      publicLoadBalancer: true,
+    });
+
+    // WHEN - Create private load balancer service
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack2, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      publicLoadBalancer: false,
+    });
+
+    // THEN - Target groups should have different logical IDs
+    const template1 = Template.fromStack(stack1);
+    const template2 = Template.fromStack(stack2);
+
+    // Public load balancer should create target group with 'ECS' suffix
+    template1.hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
+      Protocol: 'HTTP',
+      TargetType: 'ip',
+    });
+
+    // Private load balancer should create target group with 'ECSPrivate' suffix
+    template2.hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
+      Protocol: 'HTTP',
+      TargetType: 'ip',
+    });
+
+    // Verify the logical IDs are different by checking the generated CloudFormation
+    const resources1 = template1.toJSON().Resources;
+    const resources2 = template2.toJSON().Resources;
+
+    const targetGroup1Keys = Object.keys(resources1).filter(key =>
+      resources1[key].Type === 'AWS::ElasticLoadBalancingV2::TargetGroup',
+    );
+    const targetGroup2Keys = Object.keys(resources2).filter(key =>
+      resources2[key].Type === 'AWS::ElasticLoadBalancingV2::TargetGroup',
+    );
+
+    // Should have exactly one target group each
+    expect(targetGroup1Keys).toHaveLength(1);
+    expect(targetGroup2Keys).toHaveLength(1);
+
+    // The logical IDs should be different
+    expect(targetGroup1Keys[0]).not.toEqual(targetGroup2Keys[0]);
+
+    // Public should contain 'ECS' but not 'ECSPrivate'
+    expect(targetGroup1Keys[0]).toContain('ECS');
+    expect(targetGroup1Keys[0]).not.toContain('ECSPrivate');
+
+    // Private should contain 'ECSPrivate'
+    expect(targetGroup2Keys[0]).toContain('ECSPrivate');
+  });
 });
