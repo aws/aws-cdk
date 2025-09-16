@@ -82,6 +82,40 @@ To set the amount of memory (in MiB) to provide to the container, you can use th
 
 If you need to encrypt the traffic between the load balancer and the ECS tasks, you can set the `targetProtocol` to `HTTPS`.
 
+### Blue/Green Deployments
+
+To configure blue/green deployments for your ApplicationLoadBalanced services, you can use the `blueGreenDeployment` property. This enables zero-downtime deployments by routing traffic between two identical environments.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const alternateTargetGroup: elbv2.ApplicationTargetGroup;
+declare const productionListener: elbv2.ApplicationListenerRule;
+declare const testListener: elbv2.ApplicationListenerRule;
+
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  blueGreenDeployment: {
+    alternateTargetGroup,
+    productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(productionListener),
+    testListener: ecs.ListenerRuleConfiguration.applicationListenerRule(testListener), // optional
+    // role: customRole, // optional - a role will be created if not provided
+  },
+});
+```
+
+The blue/green deployment configuration requires:
+- `alternateTargetGroup`: The target group for the "green" environment
+- `productionListener`: The listener rule that routes production traffic
+- `testListener`: (Optional) The listener rule for testing the green environment before switching traffic
+- `role`: (Optional) IAM role for the deployment - one will be created automatically if not provided
+
+This feature leverages AWS ECS blue/green deployment capabilities and generates the necessary CloudFormation `AdvancedConfiguration` for your ECS service.
+
 Additionally, if more than one application target group are needed, instantiate one of the following:
 
 * `ApplicationMultipleTargetGroupsEc2Service`
