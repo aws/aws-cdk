@@ -795,6 +795,10 @@
         "r7i",
         "memory7-intel",
         "r7iz",
+        "memory8-intel-base",
+        "r8i",
+        "memory8-intel-flex",
+        "r8i-flex",
         "memory7-amd",
         "r7a",
         "memory8-graviton",
@@ -881,6 +885,8 @@
         "i7i",
         "storage8-graviton",
         "i8g",
+        "storage8-graviton-storage-optimized",
+        "i8ge",
         "burstable2",
         "t2",
         "burstable3",
@@ -967,6 +973,10 @@
         "m7gd",
         "standard8-graviton4-nvme-drive",
         "m8gd",
+        "standard8-intel",
+        "m8i",
+        "standard8-intel-flex",
+        "m8i-flex",
         "standard7-intel",
         "m7i",
         "standard7-intel-flex",
@@ -3861,7 +3871,9 @@
         "nodejs18.x",
         "python3.9",
         "python3.10",
-        "python3.11"
+        "python3.11",
+        "python3.13",
+        "python3.13"
       ]
     },
     "ComponentType": {
@@ -4989,7 +5001,8 @@
       "path": "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/job-queue.ts",
       "enumLike": false,
       "values": [
-        "CANCEL"
+        "CANCEL",
+        "TERMINATE"
       ]
     },
     "JobStateTimeLimitActionsReason": {
@@ -5193,7 +5206,8 @@
         "TLSv1.1_2016",
         "TLSv1.2_2018",
         "TLSv1.2_2019",
-        "TLSv1.2_2021"
+        "TLSv1.2_2021",
+        "TLSv1.3_2025"
       ]
     },
     "LambdaEdgeEventType": {
@@ -5696,6 +5710,17 @@
         "BUILD_LAMBDA_8GB",
         "BUILD_LAMBDA_10GB",
         "ATTRIBUTE_BASED_COMPUTE"
+      ]
+    },
+    "DockerServerComputeType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/compute-type.ts",
+      "enumLike": false,
+      "values": [
+        "BUILD_GENERAL1_SMALL",
+        "BUILD_GENERAL1_MEDIUM",
+        "BUILD_GENERAL1_LARGE",
+        "BUILD_GENERAL1_XLARGE",
+        "BUILD_GENERAL1_2XLARGE"
       ]
     },
     "EnvironmentType": {
@@ -8226,7 +8251,8 @@
       "enumLike": false,
       "values": [
         "Active",
-        "Inactive"
+        "Inactive",
+        "Expired"
       ]
     },
     "Effect": {
@@ -8341,6 +8367,7 @@
         "package-lock.json",
         "yarn.lock",
         "bun.lockb",
+        "bun.lock",
         "pnpm-lock.yaml"
       ]
     },
@@ -8743,7 +8770,12 @@
       "values": [
         "BASIC_AUTH",
         "CLIENT_CERTIFICATE_TLS_AUTH",
-        "SERVER_ROOT_CA_CERTIFICATE"
+        "SERVER_ROOT_CA_CERTIFICATE",
+        "VIRTUAL_HOST",
+        "SASL_SCRAM_256_AUTH",
+        "SASL_SCRAM_512_AUTH",
+        "VPC_SECURITY_GROUP",
+        "VPC_SUBNET"
       ]
     },
     "KafkaSchemaValidationAttribute": {
@@ -9221,6 +9253,14 @@
         "open-source-rds-extended-support-disabled"
       ]
     },
+    "ProxyEndpointTargetRole": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy-endpoint.ts",
+      "enumLike": false,
+      "values": [
+        "READ_WRITE",
+        "READ_ONLY"
+      ]
+    },
     "ClientPasswordAuthType": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.ts",
       "enumLike": false,
@@ -9228,7 +9268,8 @@
         "MYSQL_NATIVE_PASSWORD",
         "POSTGRES_SCRAM_SHA_256",
         "POSTGRES_MD5",
-        "SQL_SERVER_AUTHENTICATION"
+        "SQL_SERVER_AUTHENTICATION",
+        "MYSQL_CACHING_SHA2_PASSWORD"
       ]
     },
     "AuroraCapacityUnit": {
@@ -9501,6 +9542,7 @@
         "VER_16_8",
         "VER_16_8_LIMITLESS",
         "VER_16_9",
+        "VER_16_9_LIMITLESS",
         "VER_17_1",
         "VER_17_2",
         "VER_17_4",
@@ -9628,7 +9670,8 @@
         "VER_11_4_3",
         "VER_11_4_4",
         "VER_11_4_5",
-        "VER_11_4_7"
+        "VER_11_4_7",
+        "VER_11_8_3"
       ]
     },
     "MysqlEngineVersion": {
@@ -9860,6 +9903,7 @@
         "VER_13_19",
         "VER_13_20",
         "VER_13_21",
+        "VER_13_22",
         "VER_14",
         "VER_14_1",
         "VER_14_2",
@@ -9879,6 +9923,7 @@
         "VER_14_16",
         "VER_14_17",
         "VER_14_18",
+        "VER_14_19",
         "VER_15",
         "VER_15_2",
         "VER_15_3",
@@ -9892,6 +9937,7 @@
         "VER_15_11",
         "VER_15_12",
         "VER_15_13",
+        "VER_15_14",
         "VER_16",
         "VER_16_1",
         "VER_16_2",
@@ -9902,12 +9948,14 @@
         "VER_16_7",
         "VER_16_8",
         "VER_16_9",
+        "VER_16_10",
         "VER_17",
         "VER_17_1",
         "VER_17_2",
         "VER_17_3",
         "VER_17_4",
-        "VER_17_5"
+        "VER_17_5",
+        "VER_17_6"
       ]
     },
     "OracleLegacyEngineVersion": {
@@ -10026,6 +10074,7 @@
         "VER_19_0_0_0_2024_07_R1",
         "VER_19_0_0_0_2024_10_R1",
         "VER_19_0_0_0_2025_01_R1",
+        "VER_19_0_0_0_2025_07_R1",
         "VER_21",
         "VER_21_0_0_0_2022_01_R1",
         "VER_21_0_0_0_2022_04_R1",
@@ -10040,7 +10089,8 @@
         "VER_21_0_0_0_2024_04_R1",
         "VER_21_0_0_0_2024_07_R1",
         "VER_21_0_0_0_2024_10_R1",
-        "VER_21_0_0_0_2025_01_R1"
+        "VER_21_0_0_0_2025_01_R1",
+        "VER_21_0_0_0_2025_07_R1"
       ]
     },
     "SqlServerEngineVersion": {
@@ -10087,6 +10137,7 @@
         "VER_13_00_6450_1_V1",
         "VER_13_00_6455_2_V1",
         "VER_13_00_6460_7_V1",
+        "VER_13_00_6465_1_V1",
         "VER_14",
         "VER_14_00_1000_169_V1",
         "VER_14_00_3015_40_V1",
@@ -10108,6 +10159,7 @@
         "VER_14_00_3480_1_V1",
         "VER_14_00_3485_1_V1",
         "VER_14_00_3495_9_V1",
+        "VER_14_00_3500_1_V1",
         "VER_15",
         "VER_15_00_4043_16_V1",
         "VER_15_00_4355_3_V1",
@@ -10132,6 +10184,7 @@
         "VER_15_00_4420_2_V1",
         "VER_15_00_4430_1_V1",
         "VER_15_00_4435_7_V1",
+        "VER_15_00_4440_1_V1",
         "VER_16",
         "VER_16_00_4085_2_V1",
         "VER_16_00_4095_4_V1",
@@ -10147,7 +10200,8 @@
         "VER_16_00_4175_1_V1",
         "VER_16_00_4185_3_V1",
         "VER_16_00_4195_2_V1",
-        "VER_16_00_4205_1_V1"
+        "VER_16_00_4205_1_V1",
+        "VER_16_00_4210_1_V1"
       ]
     },
     "DatabaseInstanceEngine": {
@@ -11298,6 +11352,14 @@
     }
   },
   "synthetics": {
+    "BrowserType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
+      "enumLike": false,
+      "values": [
+        "CHROME",
+        "FIREFOX"
+      ]
+    },
     "Cleanup": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
       "enumLike": false,
@@ -11350,8 +11412,11 @@
         "SYNTHETICS_NODEJS_PUPPETEER_8_0",
         "SYNTHETICS_NODEJS_PUPPETEER_9_0",
         "SYNTHETICS_NODEJS_PUPPETEER_9_1",
+        "SYNTHETICS_NODEJS_PUPPETEER_10_0",
+        "SYNTHETICS_NODEJS_PUPPETEER_11_0",
         "SYNTHETICS_NODEJS_PLAYWRIGHT_1_0",
         "SYNTHETICS_NODEJS_PLAYWRIGHT_2_0",
+        "SYNTHETICS_NODEJS_PLAYWRIGHT_3_0",
         "SYNTHETICS_PYTHON_SELENIUM_1_0",
         "SYNTHETICS_PYTHON_SELENIUM_1_1",
         "SYNTHETICS_PYTHON_SELENIUM_1_2",
@@ -12191,7 +12256,8 @@
         "V1_4_2_0",
         "V1_4_3_0",
         "V1_4_4_0",
-        "V1_4_5_0"
+        "V1_4_5_0",
+        "V1_4_5_1"
       ]
     },
     "LogType": {
