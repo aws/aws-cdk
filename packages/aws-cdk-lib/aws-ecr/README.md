@@ -180,17 +180,21 @@ repository.addLifecycleRule({ tagPatternList: ['prod*'], maxImageCount: 9999 });
 For use cases requiring L1 constructs (such as `CfnRepositoryCreationTemplate`), you can use the `LifecycleRuleClass` which provides JSON serialization capability:
 
 ```ts
+declare const stack: Stack;
+
 const lifecycleRule = new ecr.LifecycleRuleClass({
   maxImageCount: 5,
   tagStatus: ecr.TagStatus.TAGGED,
   tagPrefixList: ['prod']
 });
 
-// Use with L1 constructs
-const template = new ecr.CfnRepositoryCreationTemplate(this, 'Template', {
-  lifecyclePolicy: {
+// Use with L1 constructs - lifecyclePolicy expects a JSON string
+const template = new ecr.CfnRepositoryCreationTemplate(stack, 'Template', {
+  appliedFor: ['PULL_THROUGH_CACHE'],
+  prefix: 'my-prefix',
+  lifecyclePolicy: JSON.stringify({
     rules: [lifecycleRule.toJSON()]
-  }
+  })
 });
 ```
 

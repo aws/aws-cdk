@@ -110,6 +110,8 @@ export interface LifecycleRuleProps extends LifecycleRule {}
  *
  * @example
  * // For use with L1 constructs
+ * declare const stack: Stack;
+ *
  * const lifecycleRule = new ecr.LifecycleRuleClass({
  *   maxImageCount: 5,
  *   tagStatus: ecr.TagStatus.TAGGED,
@@ -117,9 +119,11 @@ export interface LifecycleRuleProps extends LifecycleRule {}
  * });
  *
  * const template = new ecr.CfnRepositoryCreationTemplate(stack, 'Template', {
- *   lifecyclePolicy: {
+ *   appliedFor: ['PULL_THROUGH_CACHE'],
+ *   prefix: 'my-prefix',
+ *   lifecyclePolicy: JSON.stringify({
  *     rules: [lifecycleRule.toJSON()]
- *   }
+ *   })
  * });
  */
 export class LifecycleRuleClass {
