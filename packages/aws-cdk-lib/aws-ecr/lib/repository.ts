@@ -1093,12 +1093,12 @@ export enum TagMutability {
 
 
   /**
-   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   * all image tags within the repository will be immutable, while allowing you to define some filters for tags that can be changed.
    */
   IMMUTABLE_WITH_EXCLUSION = 'IMMUTABLE_WITH_EXCLUSION',
 
   /**
-   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   * allow image tags to be overwritten while allowing you to define some filters for tags that should remain unchanged.
    */
   MUTABLE_WITH_EXCLUSION = 'MUTABLE_WITH_EXCLUSION',
 }
