@@ -11,9 +11,11 @@ import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { BucketDeploymentSingletonFunction } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated';
+import * as cxapi from '../../cx-api';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
 // tag key has a limit of 128 characters
@@ -154,7 +156,7 @@ export interface BucketDeploymentProps {
    * If you are deploying large files, you will need to increase this number
    * accordingly.
    *
-   * @default 512
+   * @default 512 when feature flag `@aws-cdk/aws-s3-deployment:defaultMemoryLimit` is enabled, otherwise 128
    */
   readonly memoryLimit?: number;
 
@@ -380,7 +382,7 @@ export class BucketDeployment extends Construct {
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
-      memorySize: props.memoryLimit ?? 512,
+      memorySize: props.memoryLimit ?? (FeatureFlags.of(this).isEnabled(cxapi.S3_DEPLOYMENT_DEFAULT_MEMORY_LIMIT) ? 512 : 128),
       ephemeralStorageSize: props.ephemeralStorageSize,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,

@@ -794,7 +794,7 @@ test('lambda execution role gets putObjectAcl permission when deploying with acc
   });
 });
 
-test('default memory limit is 512MB when not specified', () => {
+test('default memory limit is 128MB when feature flag is disabled', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -803,7 +803,24 @@ test('default memory limit is 512MB when not specified', () => {
   new s3deploy.BucketDeployment(stack, 'Deploy', {
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
     destinationBucket: bucket,
-    // memoryLimit not specified - should default to 512MB
+    // memoryLimit not specified - should default to 128MB when feature flag is disabled
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 128 });
+});
+
+test('default memory limit is 512MB when feature flag is enabled', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  stack.node.setContext('@aws-cdk/aws-s3-deployment:defaultMemoryLimit', true);
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    // memoryLimit not specified - should default to 512MB when feature flag is enabled
   });
 
   // THEN
