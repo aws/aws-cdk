@@ -1,0 +1,36 @@
+{
+  "Resources": {
+    "PrivateALBFargateServiceLB": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "Scheme": "internal",
+        "Type": "application"
+      }
+    },
+    "PrivateALBFargateServiceTargetGroup": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "Name": "ECSPrivate",
+        "Port": 80,
+        "Protocol": "HTTP",
+        "TargetType": "ip"
+      }
+    },
+    "PublicALBFargateServiceLB": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer", 
+      "Properties": {
+        "Scheme": "internet-facing",
+        "Type": "application"
+      }
+    },
+    "PublicALBFargateServiceTargetGroup": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "Name": "ECS",
+        "Port": 80,
+        "Protocol": "HTTP",
+        "TargetType": "ip"
+      }
+    }
+  }
+}
