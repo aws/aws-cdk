@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "7c795e08e6e22e85845a64220688c5940a8492cc0b718363c72ed9e6fe0f2296": {
+      "displayName": "ApiCalleeStack Template",
+      "source": {
+        "path": "ApiCalleeStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "234567890123-us-east-2-34dd6170": {
+          "bucketName": "cdk-hnb659fds-assets-234567890123-us-east-2",
+          "objectKey": "7c795e08e6e22e85845a64220688c5940a8492cc0b718363c72ed9e6fe0f2296.json",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-us-east-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

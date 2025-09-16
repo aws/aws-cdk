@@ -1,6 +1,8 @@
+import * as cdk from 'aws-cdk-lib';
 import { App, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
+import { executionSync } from '../../../aws-stepfunctions/test/util';
 import * as dynamodb from '../../../../../../aws-cdk-lib/aws-dynamodb';
 import * as iam from '../../../../../../aws-cdk-lib/aws-iam';
 import * as sfn from '../../../../../../aws-cdk-lib/aws-stepfunctions';
@@ -40,10 +42,12 @@ class ApiCalleeStack extends Stack {
     super(scope, id, props);
 
     this.role = new iam.Role(this, 'Role', {
+      roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.AccountPrincipal(account),
     });
 
     this.table = new dynamodb.Table(this, 'Table', {
+      tableName: cdk.PhysicalName.GENERATE_IF_NEEDED,
       partitionKey: { name: 'PK', type: dynamodb.AttributeType.STRING },
     });
 
@@ -57,23 +61,26 @@ interface StateMachineStackProps extends StackProps {
 }
 
 class StateMachineStack extends Stack {
+  public readonly stateMachine: sfn.IStateMachine;
   constructor(scope: Construct, id: string, props: StateMachineStackProps) {
     super(scope, id, props);
 
-    const task = new tasks.CallAwsServiceCrossRegion(this, 'GetObject', {
+    const task = new tasks.CallAwsServiceCrossRegion(this, 'DescribeTable', {
       service: 'dynamodb',
       action: 'describeTable',
       parameters: {
         TableName: props.table.tableName,
       },
-      region: 'us-east-1',
+      region: 'us-east-2',
       iamResources: ['*'],
       awsSdkCredentials: {
         role: sfn.TaskRole.fromRole(props.role),
       },
+      outputPath: '$.Table.TableName',
     });
 
-    new sfn.StateMachine(this, 'StateMachine', {
+    this.stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+      stateMachineName: cdk.PhysicalName.GENERATE_IF_NEEDED,
       definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
   }
@@ -91,6 +98,16 @@ const stateMachineStack = new StateMachineStack(app, 'StateMachineStack', {
   table: apiCalleeStack.table,
 });
 
-new integ.IntegTest(app, 'CallAwsServiceCrossRegionCrossAccountInteg', {
+const testCase = new integ.IntegTest(app, 'CallAwsServiceCrossRegionCrossAccountInteg', {
   testCases: [apiCalleeStack, stateMachineStack],
+});
+
+const result = executionSync(testCase, stateMachineStack.stateMachine, { });
+
+result.expect(integ.ExpectedResult.objectLike({
+  status: 'SUCCEEDED',
+  output: `\"${apiCalleeStack.table.tableName}\"`,
+})).waitForAssertions({
+  interval: cdk.Duration.seconds(10),
+  totalTimeout: cdk.Duration.minutes(2),
 });
