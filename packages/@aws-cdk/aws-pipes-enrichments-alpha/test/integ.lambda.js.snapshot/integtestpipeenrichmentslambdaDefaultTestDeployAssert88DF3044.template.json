@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallSQSsendMessage95556a1265f5a4193fdb4474d8845aef": {
+  "AwsApiCallSQSsendMessage36210d9c2119ce7a85af8972638df200": {
    "Type": "Custom::DeployAssert@SdkCallSQSsendMessage",
    "Properties": {
     "ServiceToken": {
@@ -24,10 +24,10 @@
        ]
       ]
      },
-     "MessageBody": "\"08bd121c-97ae-4372-9468-e4d041cc9de8\""
+     "MessageBody": "\"3008a011-c049-4471-927c-ee3a98fb81f0\""
     },
     "flattenResponse": "false",
-    "salt": "1757082032529"
+    "salt": "1757337796431"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -130,7 +130,7 @@
     },
     "service": "SQS",
     "api": "receiveMessage",
-    "expected": "{\"$ObjectLike\":{\"Messages\":[{\"Body\":\"08bd121c-97ae-4372-9468-e4d041cc9de8-enriched\"}]}}",
+    "expected": "{\"$ObjectLike\":{\"Messages\":[{\"Body\":\"3008a011-c049-4471-927c-ee3a98fb81f0-enriched\"}]}}",
     "stateMachineArn": {
      "Ref": "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitFor296E8BCE"
     },
@@ -149,10 +149,10 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1757082032531"
+    "salt": "1757337796433"
    },
    "DependsOn": [
-    "AwsApiCallSQSsendMessage95556a1265f5a4193fdb4474d8845aef"
+    "AwsApiCallSQSsendMessage36210d9c2119ce7a85af8972638df200"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -175,7 +175,7 @@
     }
    },
    "DependsOn": [
-    "AwsApiCallSQSsendMessage95556a1265f5a4193fdb4474d8845aef"
+    "AwsApiCallSQSsendMessage36210d9c2119ce7a85af8972638df200"
    ]
   },
   "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitForTimeoutProviderInvokeD92624FF": {
@@ -196,7 +196,7 @@
     }
    },
    "DependsOn": [
-    "AwsApiCallSQSsendMessage95556a1265f5a4193fdb4474d8845aef"
+    "AwsApiCallSQSsendMessage36210d9c2119ce7a85af8972638df200"
    ]
   },
   "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitForRoleF8FA8111": {
@@ -244,7 +244,7 @@
     ]
    },
    "DependsOn": [
-    "AwsApiCallSQSsendMessage95556a1265f5a4193fdb4474d8845aef"
+    "AwsApiCallSQSsendMessage36210d9c2119ce7a85af8972638df200"
    ]
   },
   "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitFor296E8BCE": {
@@ -281,7 +281,7 @@
    },
    "DependsOn": [
     "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitForRoleF8FA8111",
-    "AwsApiCallSQSsendMessage95556a1265f5a4193fdb4474d8845aef"
+    "AwsApiCallSQSsendMessage36210d9c2119ce7a85af8972638df200"
    ]
   },
   "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
@@ -531,6 +531,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"
