@@ -2051,7 +2051,9 @@ test('StateMachine get correct permission', () => {
             'Fn::Join': ['', [
               'arn:',
               { Ref: 'AWS::Partition' },
-              ':iam::*:role/aws-service-role/elasticmapreduce.amazonaws.com*/AWSServiceRoleForEMRCleanup*',
+              ':iam::',
+              { Ref: 'AWS::AccountId' },
+              ':role/aws-service-role/elasticmapreduce.amazonaws.com*/AWSServiceRoleForEMRCleanup*',
             ]],
           },
           Condition: {

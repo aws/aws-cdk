@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "fe0fbc7a3d7444923e9e3d44f3454e5d262cb021d21a1afb4edb28bdc162b7c3": {
+    "00772b5a8ba7a6c7d03ccb9e350b200192623b3815858a83a1116b64a2d9c649": {
       "displayName": "aws-cdk-emr-create-cluster-tags Template",
       "source": {
         "path": "aws-cdk-emr-create-cluster-tags.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-9df0eb6e": {
+        "current_account-current_region-ff2e46d0": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "fe0fbc7a3d7444923e9e3d44f3454e5d262cb021d21a1afb4edb28bdc162b7c3.json",
+          "objectKey": "00772b5a8ba7a6c7d03ccb9e350b200192623b3815858a83a1116b64a2d9c649.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
