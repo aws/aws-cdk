@@ -50,7 +50,7 @@
        },
        {
         "Name": "OTEL_PROPAGATORS",
-        "Value": "tracecontext,baggage,b3,xray"
+        "Value": "tracecontext,baggage,xray"
        },
        {
         "Name": "JAVA_TOOL_OPTIONS",
