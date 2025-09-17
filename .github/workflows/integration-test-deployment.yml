@@ -45,6 +45,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r '.Credentials.SecretAccessKey')
           AWS_SESSION_TOKEN=$(echo $CREDS | jq -r '.Credentials.SessionToken')
 
+          # Hide the values of these variables in future logs (does not affect past output)
           echo "::add-mask::$AWS_ACCESS_KEY_ID"
           echo "::add-mask::$AWS_SECRET_ACCESS_KEY"
           echo "::add-mask::$AWS_SESSION_TOKEN"
@@ -85,7 +86,7 @@ jobs:
             ~/.s3buildcache
           key: s3buildcache-${{ runner.os }}
 
-        # Increasing vm.max_map_count for running build in docker
+        #raise vm.max_map_count to avoid mmap (memory-map) limit errors in containers (e.g., Elasticsearch)
       - name: Configure system settings for 
         run: |
           (command -v sysctl || sudo apt-get update && sudo apt-get install -y procps) && \
@@ -95,7 +96,7 @@ jobs:
         run: /bin/bash ./build.sh --ci --skip-test --skip-prereqs --skip-compat
 
       - name: Run deployment integration tests
-        run: node tools/@aws-cdk/deployment-integ/bin/deployment-integ.js
+        run: yarn deployment-integ
         env:
           CDK_ATMOSPHERE_ENDPOINT: ${{ vars.CDK_ATMOSPHERE_ENDPOINT }}
           CDK_ATMOSPHERE_POOL: ${{ vars.CDK_ATMOSPHERE_POOL}}

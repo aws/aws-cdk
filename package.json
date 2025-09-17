@@ -12,7 +12,8 @@
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
     "bump": "./bump.sh",
-    "build-all": "tsc -b"
+    "build-all": "tsc -b",
+    "deployment-integ": "deployment-integ"
   },
   "devDependencies": {
     "@nx/workspace": "^20",
