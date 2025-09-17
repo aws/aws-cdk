@@ -342,7 +342,7 @@ export interface SubnetSelection {
   /**
    * Select all subnets of the given type
    *
-   * At most one of `subnetType` and `subnetGroupName` can be supplied.
+   * Can be combined with `subnetGroupName` to select subnets that match both criteria.
    *
    * @default SubnetType.PRIVATE_WITH_EGRESS (or ISOLATED or PUBLIC if there are no PRIVATE_WITH_EGRESS subnets)
    */
@@ -367,7 +367,7 @@ export interface SubnetSelection {
    * share the given subnet group name. This is the name supplied in
    * `subnetConfiguration`.
    *
-   * At most one of `subnetType` and `subnetGroupName` can be supplied.
+   * Can be combined with `subnetType` to select subnets that match both criteria.
    *
    * @default - Selection by type instead of by name
    */
@@ -646,9 +646,14 @@ abstract class VpcBase extends Resource implements IVpc {
 
     let subnets;
 
-    if (selection.subnetGroupName !== undefined) { // Select by name
+    if (selection.subnetGroupName !== undefined && selection.subnetType !== undefined) {
+      // Select by both type and name
+      subnets = this.selectSubnetObjectsByTypeAndName(selection.subnetType, selection.subnetGroupName);
+    } else if (selection.subnetGroupName !== undefined) {
+      // Select by name only
       subnets = this.selectSubnetObjectsByName(selection.subnetGroupName);
-    } else { // Or specify by type
+    } else {
+      // Select by type only
       const type = selection.subnetType || SubnetType.PRIVATE_WITH_EGRESS;
       subnets = this.selectSubnetObjectsByType(type);
     }
@@ -703,6 +708,22 @@ abstract class VpcBase extends Resource implements IVpc {
     return subnets;
   }
 
+  private selectSubnetObjectsByTypeAndName(subnetType: SubnetType, groupName: string) {
+    // First get all subnets of the specified type
+    const subnetsByType = this.selectSubnetObjectsByType(subnetType);
+
+    // Then filter by group name
+    const subnets = subnetsByType.filter(s => subnetGroupNameFromConstructId(s) === groupName);
+
+    if (subnets.length === 0 && !this.incompleteSubnetDefinition) {
+      // Get available group names for this subnet type
+      const availableNames = Array.from(new Set(subnetsByType.map(subnetGroupNameFromConstructId)));
+      throw new ValidationError(`There are no subnet groups with name '${groupName}' and type '${subnetType}' in this VPC. Available names for ${subnetType}: ${availableNames}`, this);
+    }
+
+    return subnets;
+  }
+
   /**
    * Validate the fields in a SubnetSelection object, and reify defaults if necessary
    *
@@ -719,10 +740,12 @@ abstract class VpcBase extends Resource implements IVpc {
       placement = { ...placement, subnetGroupName: placement.subnetName };
     }
 
-    const exclusiveSelections: Array<keyof SubnetSelection> = ['subnets', 'subnetType', 'subnetGroupName'];
-    const providedSelections = exclusiveSelections.filter(key => placement[key] !== undefined);
-    if (providedSelections.length > 1) {
-      throw new ValidationError(`Only one of '${providedSelections}' can be supplied to subnet selection.`, this);
+    // Validate that 'subnets' is not combined with other selection methods
+    if (placement.subnets !== undefined && (placement.subnetType !== undefined || placement.subnetGroupName !== undefined)) {
+      const conflictingSelections = ['subnets'];
+      if (placement.subnetType !== undefined) conflictingSelections.push('subnetType');
+      if (placement.subnetGroupName !== undefined) conflictingSelections.push('subnetGroupName');
+      throw new ValidationError(`Cannot specify 'subnets' together with other subnet selection criteria. Provided: ${conflictingSelections}`, this);
     }
 
     if (placement.subnetType === undefined && placement.subnetGroupName === undefined && placement.subnets === undefined) {

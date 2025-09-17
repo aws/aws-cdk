@@ -150,16 +150,34 @@ new ec2.InterfaceVpcEndpoint(this, 'VPC Endpoint', {
 });
 ```
 
+For VPCs with multiple subnet groups of the same type, you can combine `subnetType` and `subnetGroupName` for precise selection:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new ec2.InterfaceVpcEndpoint(this, 'VPC Endpoint', {
+  vpc,
+  service: new ec2.InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+  subnets: {
+    subnetType: ec2.SubnetType.PUBLIC,
+    subnetGroupName: 'DMZ'  // Select only public subnets from the 'DMZ' group
+  }
+});
+```
+
 Which subnets are selected is evaluated as follows:
 
 * `subnets`: if specific subnet objects are supplied, these are selected, and no other
   logic is used.
 * `subnetType`/`subnetGroupName`: otherwise, a set of subnets is selected by
-  supplying either type or name:
+  supplying type, name, or both:
   * `subnetType` will select all subnets of the given type.
   * `subnetGroupName` should be used to distinguish between multiple groups of subnets of
     the same type (for example, you may want to separate your application instances and your
     RDS instances into two distinct groups of Isolated subnets).
+  * Both `subnetType` and `subnetGroupName` can be specified together to select subnets
+    from a specific group that match a specific type. This is useful when you have multiple
+    subnet groups of the same type and need to target a particular group.
   * If neither are given, the first available subnet group of a given type that
     exists in the VPC will be used, in this order: Private, then Isolated, then Public.
     In short: by default ENIs will preferentially be placed in subnets not connected to
