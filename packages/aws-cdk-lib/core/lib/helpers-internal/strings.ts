@@ -12,7 +12,7 @@ export class TemplateStringParser {
    * @throws UnscopedValidationError if the input does not match the template
    */
   public static parse(template: string, input: string): Record<string, string> {
-    const templateParts = template.split(/(\$\{[^}]+\})/);
+    const templateParts = template.split(/(\$\{[^{}]+})/);
     const result: Record<string, string> = {};
 
     let inputIndex = 0;

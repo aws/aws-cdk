@@ -55,6 +55,19 @@ describe('TemplateStringParser', () => {
       const result = TemplateStringParser.parse('${greeting}, world!', 'Hi, world!');
       expect(result).toEqual({ greeting: 'Hi' });
     });
+
+    it('parses complex template correctly', () => {
+      const result = TemplateStringParser.parse(
+        'arn:${Partition}:dynamodb:${Region}:${Account}:table/${TableName}',
+        'arn:aws:dynamodb:us-east-1:12345:table/MyTable',
+      );
+      expect(result).toEqual({
+        Partition: 'aws',
+        Region: 'us-east-1',
+        Account: '12345',
+        TableName: 'MyTable',
+      });
+    });
   });
 
   describe('interpolate', () => {

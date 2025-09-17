@@ -6,6 +6,7 @@ import {
   Block,
   ClassType,
   code,
+  DummyScope,
   expr, Expression,
   Initializer,
   InterfaceType,
@@ -19,8 +20,10 @@ import {
   stmt,
   StructType,
   SuperInitializer,
+  ThingSymbol,
   TruthyOr,
   Type,
+  TypeDeclarationStatement,
 } from '@cdklabs/typewriter';
 import { CDK_CORE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
@@ -246,14 +249,7 @@ export class ResourceClass extends ClassType {
       return;
     }
 
-    // Generate the inner class that is returned by the factory
-    const innerClass = new ClassType(this, {
-      name: 'ImportArn',
-      extends: CDK_CORE.Resource,
-      export: true,
-      implements: [this.refInterface?.type].filter(isDefined),
-    });
-
+    const innerClass = mkImportClass(this.scope);
     const refAttributeName = `${this.decider.camelResourceName}Ref`;
 
     innerClass.addProperty({
@@ -305,6 +301,7 @@ export class ResourceClass extends ClassType {
     init.addBody(...initBodyStatements);
 
     factory.addBody(
+      new TypeDeclarationStatement(innerClass),
       stmt.ret(innerClass.newInstance(expr.ident('scope'), expr.ident('id'), expr.ident('arn'))),
     );
   }
@@ -333,12 +330,7 @@ export class ResourceClass extends ClassType {
       return;
     }
 
-    // Generate the inner class
-    const innerClass = new ClassType(this, {
-      name: 'ImportName',
-      extends: CDK_CORE.Resource,
-      export: true,
-    });
+    const innerClass = mkImportClass(this.scope);
 
     const refAttributeName = `${this.decider.camelResourceName}Ref`;
     innerClass.addProperty({
@@ -398,6 +390,7 @@ export class ResourceClass extends ClassType {
     factory.addParameter({ name: propName, type: Type.STRING });
 
     factory.addBody(
+      new TypeDeclarationStatement(innerClass),
       stmt.ret(innerClass.newInstance(expr.ident('scope'), expr.ident('id'), expr.ident(propName))),
     );
   }
@@ -692,4 +685,15 @@ function mkId(init: Initializer) {
 function setEqual<A>(a: A[], b: A[]) {
   const bSet = new Set(b);
   return a.length === b.length && a.every(k => bSet.has(k));
+}
+
+function mkImportClass(largerScope: IScope): ClassType {
+  const scope = new DummyScope();
+  const className = 'Import';
+  const innerClass = new ClassType(scope, {
+    name: className,
+    extends: CDK_CORE.Resource,
+  });
+  largerScope.linkSymbol(new ThingSymbol(className, scope), expr.ident(className));
+  return innerClass;
 }
