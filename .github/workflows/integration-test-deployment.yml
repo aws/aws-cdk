@@ -1,4 +1,4 @@
-name: Codebuild PR Deployment Integration Test
+name: Integration Test deployment
 
 permissions:
   id-token: write
@@ -85,7 +85,8 @@ jobs:
             ~/.s3buildcache
           key: s3buildcache-${{ runner.os }}
 
-      - name: Configure system settings
+        # Increasing vm.max_map_count for running build in docker
+      - name: Configure system settings for 
         run: |
           (command -v sysctl || sudo apt-get update && sudo apt-get install -y procps) && \
           sudo sysctl -w vm.max_map_count=2251954
@@ -98,10 +99,9 @@ jobs:
         env:
           CDK_ATMOSPHERE_ENDPOINT: ${{ vars.CDK_ATMOSPHERE_ENDPOINT }}
           CDK_ATMOSPHERE_POOL: ${{ vars.CDK_ATMOSPHERE_POOL}}
-          BASE_COMMIT: ${{ github.event.pull_request.base.sha }}
-          HEAD_COMMIT: ${{ github.event.pull_request.head.sha }}
+          TARGET_BRANCH_COMMIT: ${{ github.event.pull_request.base.sha }}
+          SOURCE_BRANCH_COMMIT: ${{ github.event.pull_request.head.sha }}
           
-
       - name: Export Docker images
         if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
         run: docker image save --output ~/.docker-images.tar $(docker image list --format '{{ if ne .Repository "<none>" }}{{ .Repository }}{{ if ne .Tag "<none>" }}:{{ .Tag }}{{ end }}{{ else }}{{ .ID }}{{ end }}')

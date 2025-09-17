@@ -1,7 +1,7 @@
 import { describe, expect, jest, test, beforeEach } from '@jest/globals';
-import { getChangedSnapshots } from '../lib/main';
+import { getChangedSnapshots } from '../lib/utils';
 import { gitDiffMock } from './git-mock';
-import { gitDiff } from '../lib/git';
+import { gitDiff } from '../lib/utils';
 import { expectedChangedSnapshots } from './git-diff-expected-changed-snapshots';
 
 jest.mock('../lib/git.ts');

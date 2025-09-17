@@ -1,5 +1,27 @@
 import { Allocation } from '@cdklabs/cdk-atmosphere-client';
 import { spawn } from 'child_process';
+import { AtmosphereAllocation } from './atmosphere';
+import { getChangedSnapshots } from './utils';
+
+export const deployInegTestsWithAtmosphere = async ({ endpoint, pool }: {endpoint: string; pool: string}) => {
+  const allocation = await AtmosphereAllocation.acquire({ endpoint, pool });
+  let outcome = 'failure';
+
+  try {
+    const changedSnapshots = await getChangedSnapshots();
+    console.log(`Detected changed snapshots:\n${changedSnapshots.join('\n')}`);
+    await runInteg(changedSnapshots, allocation.allocation);
+    outcome = 'success';
+  } catch (e) {
+    console.error(e);
+  } finally {
+    await allocation.release(outcome);
+  }
+
+  if (outcome == 'failure') {
+    throw Error('Deployment integration test did not pass');
+  }
+};
 
 export const runInteg = async (paths: string[], allocation: Allocation) => {
   if (paths.length == 0) {

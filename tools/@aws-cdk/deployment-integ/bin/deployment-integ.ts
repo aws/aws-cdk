@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { main } from '../lib/main';
+import { deployInegTestsWithAtmosphere } from '../lib/integ-run';
 
 const endpoint = process.env.CDK_ATMOSPHERE_ENDPOINT;
 const pool = process.env.CDK_ATMOSPHERE_POOL;
@@ -12,4 +12,4 @@ if (!pool) {
   throw new Error('CDK_ATMOSPHERE_POOL environment variable is required');
 }
 
-main({ endpoint, pool });
+deployInegTestsWithAtmosphere({ endpoint, pool });

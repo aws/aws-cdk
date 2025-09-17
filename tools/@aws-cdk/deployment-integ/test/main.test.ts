@@ -1,9 +1,9 @@
 import { describe, expect, jest, test, beforeEach } from '@jest/globals';
-import { main } from '../lib/main';
+import { deployInegTestsWithAtmosphere } from '../lib/integ-run';
 import { AtmosphereAllocationMock } from './atmosphere-mock';
 import { AtmosphereAllocation } from '../lib/atmosphere';
 import { gitDiffMock } from './git-mock';
-import { gitDiff } from '../lib/git';
+import { gitDiff } from '../lib/utils';
 import { runInteg } from '../lib/integ-run';
 import { expectedChangedSnapshots } from './git-diff-expected-changed-snapshots';
 
@@ -31,7 +31,7 @@ describe('main', () => {
     const endpoint = 'https://test-endpoint.com';
     const pool = 'test-pool';
 
-    await main({ endpoint, pool });
+    await deployInegTestsWithAtmosphere({ endpoint, pool });
     expect(AtmosphereAllocation.acquire).toHaveBeenCalled();
     expect(runInteg).toHaveBeenCalledWith(
       expect.arrayContaining(expectedChangedSnapshots),
@@ -59,7 +59,7 @@ describe('main', () => {
     const endpoint = 'https://test-endpoint.com';
     const pool = 'test-pool';
 
-    await expect(main({ endpoint, pool })).rejects.toThrow(
+    await expect(deployInegTestsWithAtmosphere({ endpoint, pool })).rejects.toThrow(
       'Deployment integration test did not pass',
     );
     expect(AtmosphereAllocation.acquire).toHaveBeenCalled();
