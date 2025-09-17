@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
-import { Duration, Token, UnscopedValidationError, ValidationError } from '../../core';
+import { Duration, Token, UnscopedValidationError, ValidationError, withResolved } from '../../core';
 
 /**
  * The selection criteria for the origin group.
@@ -216,16 +216,18 @@ export abstract class OriginBase implements IOrigin {
     responseCompletionTimeout?: Duration,
     readTimeout?: Duration,
   ): void {
-    if (responseCompletionTimeout && readTimeout) {
-      const responseCompletionSec = responseCompletionTimeout.toSeconds();
-      const readTimeoutSec = readTimeout.toSeconds();
+    withResolved(responseCompletionTimeout, readTimeout, () => {
+      if (responseCompletionTimeout && readTimeout) {
+        const responseCompletionSec = responseCompletionTimeout.toSeconds();
+        const readTimeoutSec = readTimeout.toSeconds();
 
-      if (responseCompletionSec < readTimeoutSec) {
-        throw new UnscopedValidationError(
-          `responseCompletionTimeout must be equal to or greater than readTimeout (${readTimeoutSec}s), got: ${responseCompletionSec}s.`,
-        );
+        if (responseCompletionSec < readTimeoutSec) {
+          throw new UnscopedValidationError(
+            `responseCompletionTimeout must be equal to or greater than readTimeout (${readTimeoutSec}s), got: ${responseCompletionSec}s.`,
+          );
+        }
       }
-    }
+    });
   }
 
   /**
