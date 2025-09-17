@@ -1,5 +1,6 @@
 import { Template, Match } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
+import { OriginIpAddressType } from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
 import { Duration, Stack } from '../../core';
 import { FunctionUrlOrigin } from '../lib';
@@ -440,5 +441,60 @@ describe('FunctionUrlOriginAccessControl', () => {
         },
       });
     }).toThrow('The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.');
+  });
+});
+
+describe('ipAddressType', () => {
+  test.each([OriginIpAddressType.DUALSTACK, OriginIpAddressType.IPV4, OriginIpAddressType.IPV6])('Correctly sets ipAddressType to %s', (ipAddressType) => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+    const origin = new FunctionUrlOrigin(fnUrl, {
+      ipAddressType,
+    });
+    const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
+    expect(stack.resolve(originBindConfig.originProperty)).toMatchObject({
+      customOriginConfig: {
+        ipAddressType,
+      },
+    });
+  });
+
+  test('Correctly sets ipAddressType with OAC', () => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.AWS_IAM,
+    });
+
+    new cloudfront.Distribution(stack, 'MyDistribution', {
+      defaultBehavior: {
+        origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
+          ipAddressType: OriginIpAddressType.DUALSTACK,
+        }),
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Origins: Match.arrayWith([
+          Match.objectLike({
+            CustomOriginConfig: Match.objectLike({
+              IpAddressType: OriginIpAddressType.DUALSTACK,
+            }),
+          }),
+        ]),
+      },
+    });
   });
 });
