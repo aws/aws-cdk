@@ -53,7 +53,7 @@ export class TemplateStringParser {
   }
 
   public static interpolate(template: string, variables: Record<string, string>): string {
-    return template.replace(/\$\{([^}]+)\}/g, (_, varName) => {
+    return template.replace(/\${([^{}]+)}/g, (_, varName) => {
       if (variables[varName] === undefined) {
         throw new UnscopedValidationError(`Variable ${varName} not provided for template interpolation`);
       }

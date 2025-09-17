@@ -218,7 +218,7 @@ export class ResourceClass extends ClassType {
   }
 
   private makeFromArnFactory() {
-    const arnTemplate = this.resource.identifier?.arnTemplate;
+    const arnTemplate = this.resource.arnTemplate;
     if (!(arnTemplate && this.refInterface && this.referenceStruct)) {
       // We don't have enough information to build this factory
       return;
@@ -310,7 +310,7 @@ export class ResourceClass extends ClassType {
   }
 
   private makeFromNameFactory() {
-    const arnTemplate = this.resource.identifier?.arnTemplate;
+    const arnTemplate = this.resource.arnTemplate;
     if (!(arnTemplate && this.refInterface && this.referenceStruct)) {
       // We don't have enough information to build this factory
       return;
@@ -667,7 +667,7 @@ function propsToVars(template: string, props: string[]): Record<string, string> 
 }
 
 function extractVariables(template: string): string[] {
-  return (template.match(/\$\{([^}]+)\}/g) || []).map(match => match.slice(2, -1));
+  return (template.match(/\${([^{}]+)}/g) || []).map(match => match.slice(2, -1));
 }
 
 function mkScope(init: Initializer) {

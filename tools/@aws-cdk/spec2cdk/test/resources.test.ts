@@ -56,10 +56,7 @@ test('resource with arnTemplate', () => {
       },
     },
     cloudFormationType: 'AWS::Some::Resource',
-    identifier: {
-      $id: '42',
-      arnTemplate: 'arn:${Partition}:some:${Region}:${Account}:resource/${ResourceId}',
-    },
+    arnTemplate: 'arn:${Partition}:some:${Region}:${Account}:resource/${ResourceId}',
   });
   db.link('hasResource', service, resource);
 
