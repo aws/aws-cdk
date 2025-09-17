@@ -8,7 +8,7 @@ import { PerformanceInsightRetention } from './props';
 import { CfnDBInstance } from './rds.generated';
 import { ISubnetGroup } from './subnet-group';
 import * as ec2 from '../../aws-ec2';
-import { IRole } from '../../aws-iam';
+import { IRoleRef } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { IResource, Resource, Duration, RemovalPolicy, ArnFormat, FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -33,7 +33,7 @@ export interface ClusterInstanceBindOptions {
    *
    * @default - A role is automatically created for you
    */
-  readonly monitoringRole?: IRole;
+  readonly monitoringRole?: IRoleRef;
 
   /**
    * The removal policy on the cluster
@@ -578,7 +578,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         dbSubnetGroupName: props.isFromLegacyInstanceProps ? props.subnetGroup?.subnetGroupName : undefined,
         dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
         monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
-        monitoringRoleArn: props.monitoringRole && props.monitoringRole.roleArn,
+        monitoringRoleArn: props.monitoringRole?.roleRef.roleArn,
         autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
         allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
         caCertificateIdentifier: props.caCertificate && props.caCertificate.toString(),

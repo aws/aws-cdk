@@ -1260,3 +1260,90 @@ test('resourcesToReplicateTags can be empty array', () => {
     ResourcesToReplicateTags: [],
   });
 });
+
+describe('Browser configurations', () => {
+  test('can set multiple browser configs', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      canaryName: 'mycanary',
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0,
+      browserConfigs: [
+        synthetics.BrowserType.CHROME,
+        synthetics.BrowserType.FIREFOX,
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      BrowserConfigs: [
+        { BrowserType: 'CHROME' },
+        { BrowserType: 'FIREFOX' },
+      ],
+    });
+  });
+
+  test('throws error when more than 2 browser configs', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN/THEN
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary', {
+        canaryName: 'mycanary',
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1,
+        browserConfigs: [
+          synthetics.BrowserType.CHROME,
+          synthetics.BrowserType.FIREFOX,
+          synthetics.BrowserType.CHROME, // 3rd config
+        ],
+      });
+    }).toThrow('You can specify up to 2 browser configurations, got: 3.');
+  });
+
+  test('throws error when empty array', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN/THEN
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary', {
+        canaryName: 'mycanary',
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1,
+        browserConfigs: [],
+      });
+    }).toThrow('browserConfigs must contain at least one browser type if specified.');
+  });
+
+  test('throws error when Firefox is used with Python Selenium runtime', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN/THEN
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary', {
+        canaryName: 'mycanary',
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_6_0,
+        browserConfigs: [synthetics.BrowserType.FIREFOX],
+      });
+    }).toThrow('Firefox browser is not supported with Python Selenium runtimes. Use Chrome instead or switch to a Node.js runtime with Puppeteer or Playwright.');
+  });
+});

@@ -102,6 +102,7 @@ function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
   const lambdaPurpose = 'Eval';
 
   const nodeJsGuids = {
+    [lambda.Runtime.NODEJS_22_X.name]: 'b64e1fb8-9c89-4f7d-8a34-2e2a1c5f6d7e',
     [lambda.Runtime.NODEJS_20_X.name]: '9757c267-6d7c-45c2-af77-37a30d93d2c6',
     [lambda.Runtime.NODEJS_18_X.name]: '078d40d3-fb4e-4d53-94a7-9c46fc11fe02',
     [lambda.Runtime.NODEJS_16_X.name]: '2a430b68-eb4b-4026-9232-ee39b71c1db8',

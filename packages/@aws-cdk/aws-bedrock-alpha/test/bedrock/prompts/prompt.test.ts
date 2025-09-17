@@ -155,32 +155,32 @@ describe('Prompt', () => {
       });
     });
 
-    test('validates prompt name pattern - invalid names', () => {
-      const invalidNames = [
-        '-invalid', // starts with hyphen
-        'invalid-', // ends with hyphen
-        'a'.repeat(101), // too long
-        '', // empty
-        'invalid name', // contains space
-        'invalid@name', // contains special character
-      ];
-
-      invalidNames.forEach((name, index) => {
-        expect(() => {
-          new bedrock.Prompt(stack, `TestPrompt${index}`, {
-            promptName: name,
-          });
-        }).not.toThrow(); // Validation happens at synthesis time, not construction time
+    test.each([
+      ['-invalid', 'starts with hyphen'],
+      ['a'.repeat(101), 'too long'],
+      ['', 'empty'],
+      ['invalid name', 'contains space'],
+      ['invalid@name', 'contains special character'],
+    ])('validates prompt name pattern - %s (%s)', (invalidName, _description) => {
+      new bedrock.Prompt(stack, 'TestPrompt', {
+        promptName: invalidName,
       });
+
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/Valid characters are a-z, A-Z, 0-9, _ \(underscore\) and - \(hyphen\). Must not begin with a hyphen and must be 1-100 characters long/);
     });
 
     test('validates description length', () => {
+      new bedrock.Prompt(stack, 'TestPrompt', {
+        promptName: 'test-prompt',
+        description: 'a'.repeat(251), // too long
+      });
+
+      // Validation happens at synthesis time, not construction time
       expect(() => {
-        new bedrock.Prompt(stack, 'TestPrompt', {
-          promptName: 'test-prompt',
-          description: 'a'.repeat(251), // too long
-        });
-      }).not.toThrow(); // Validation happens at synthesis time, not construction time
+        Template.fromStack(stack);
+      }).toThrow(/Description must be 200 characters or less/);
     });
 
     test('validates maximum number of variants', () => {
@@ -192,12 +192,15 @@ describe('Prompt', () => {
         }),
       );
 
+      new bedrock.Prompt(stack, 'TestPrompt', {
+        promptName: 'test-prompt',
+        variants,
+      });
+
+      // Validation happens at synthesis time, not construction time
       expect(() => {
-        new bedrock.Prompt(stack, 'TestPrompt', {
-          promptName: 'test-prompt',
-          variants,
-        });
-      }).not.toThrow(); // Validation happens at synthesis time, not construction time
+        Template.fromStack(stack);
+      }).toThrow(/Too many variants specified/);
     });
 
     test('validates unique variant names', () => {
@@ -213,12 +216,30 @@ describe('Prompt', () => {
         promptText: 'Text 2',
       });
 
+      new bedrock.Prompt(stack, 'TestPrompt', {
+        promptName: 'test-prompt',
+        variants: [variant1, variant2],
+      });
+
+      // Validation happens at synthesis time, not construction time
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/Duplicate variant names found/);
+    });
+
+    test('validates default variant is added to variants array', () => {
+      const defaultVariant = bedrock.PromptVariant.text({
+        variantName: 'default-variant',
+        model: foundationModel,
+        promptText: 'Text',
+      });
+
       expect(() => {
         new bedrock.Prompt(stack, 'TestPrompt', {
-          promptName: 'test-prompt',
-          variants: [variant1, variant2],
+          promptName: 'my-test-prompt',
+          defaultVariant: defaultVariant,
         });
-      }).not.toThrow(); // Validation happens at synthesis time, not construction time
+      }).toThrow('The \'defaultVariant\' needs to be included in the \'variants\' array.');
     });
   });
 

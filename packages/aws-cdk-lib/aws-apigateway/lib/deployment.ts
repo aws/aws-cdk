@@ -1,6 +1,6 @@
 import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
 import { Construct } from 'constructs';
-import { CfnDeployment } from './apigateway.generated';
+import { CfnDeployment, IRestApiRef } from './apigateway.generated';
 import { Method } from './method';
 import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
 import { Lazy, RemovalPolicy, Resource, CfnResource } from '../../core';
@@ -153,19 +153,19 @@ export class Deployment extends Resource {
 
 interface LatestDeploymentResourceProps {
   readonly description?: string;
-  readonly restApi: IRestApi;
+  readonly restApi: IRestApiRef;
   readonly stageName?: string;
 }
 
 class LatestDeploymentResource extends CfnDeployment {
   private readonly hashComponents = new Array<any>();
   private readonly originalLogicalId: string;
-  private readonly api: IRestApi;
+  private readonly api: IRestApiRef;
 
   constructor(scope: Construct, id: string, props: LatestDeploymentResourceProps) {
     super(scope, id, {
       description: props.description,
-      restApiId: props.restApi.restApiId,
+      restApiId: props.restApi.restApiRef.restApiId,
       stageName: props.stageName,
     });
 

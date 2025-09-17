@@ -1,5 +1,9 @@
 import { Construct } from 'constructs';
-import { CfnCloudFrontOriginAccessIdentity } from './cloudfront.generated';
+import {
+  CfnCloudFrontOriginAccessIdentity,
+  CloudFrontOriginAccessIdentityReference,
+  ICloudFrontOriginAccessIdentityRef,
+} from './cloudfront.generated';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -20,7 +24,7 @@ export interface OriginAccessIdentityProps {
 /**
  * Interface for CloudFront OriginAccessIdentity
  */
-export interface IOriginAccessIdentity extends cdk.IResource, iam.IGrantable {
+export interface IOriginAccessIdentity extends cdk.IResource, iam.IGrantable, ICloudFrontOriginAccessIdentityRef {
   /**
    * The Origin Access Identity Id (physical id)
    * It is misnamed and superseded by the correctly named originAccessIdentityId
@@ -108,6 +112,9 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
       public readonly originAccessIdentityId = originAccessIdentityId;
       public readonly originAccessIdentityName = originAccessIdentityId;
       public readonly grantPrincipal = new iam.ArnPrincipal(this.arn());
+      public readonly cloudFrontOriginAccessIdentityRef = {
+        cloudFrontOriginAccessIdentityId: originAccessIdentityId,
+      };
       constructor(s: Construct, i: string) {
         super(s, i, { physicalName: originAccessIdentityId });
       }
@@ -149,6 +156,8 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
    */
   public readonly originAccessIdentityId: string;
 
+  public readonly cloudFrontOriginAccessIdentityRef: CloudFrontOriginAccessIdentityReference;
+
   /**
    * CDK L1 resource
    */
@@ -164,6 +173,7 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
     this.resource = new CfnCloudFrontOriginAccessIdentity(this, 'Resource', {
       cloudFrontOriginAccessIdentityConfig: { comment },
     });
+    this.cloudFrontOriginAccessIdentityRef = this.resource.cloudFrontOriginAccessIdentityRef;
     // physical id - OAI Id
     this.originAccessIdentityId = this.getResourceNameAttribute(this.resource.ref);
 

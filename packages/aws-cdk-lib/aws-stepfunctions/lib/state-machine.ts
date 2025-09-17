@@ -301,7 +301,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Grant the given identity permission to redrive the execution of the state machine
    */
-  public grantRedriveExecution(identity: iam.IGrantable) {
+  public grantRedriveExecution(identity: iam.IGrantable): iam.Grant {
     return this.grantExecution(identity, 'states:RedriveExecution');
   }
 
@@ -701,6 +701,13 @@ export interface IStateMachine extends IResource, iam.IGrantable {
    * @param actions The list of desired actions
    */
   grantExecution(identity: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Grant the given identity permission to redrive the execution of the state machine
+   *
+   * @param identity The principal
+   */
+  grantRedriveExecution(identity: iam.IGrantable): iam.Grant;
 
   /**
    * Grant the given identity custom permissions

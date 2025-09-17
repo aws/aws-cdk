@@ -712,6 +712,27 @@ describe('cluster new api', () => {
         PreferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
       }));
     });
+
+    test.each([true, false])('deleteAutomatedBackups set to %s', (deleteAutomatedBackups) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        instanceProps: {
+          vpc,
+        },
+        deleteAutomatedBackups,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', Match.objectLike({
+        DeleteAutomatedBackups: deleteAutomatedBackups,
+      }));
+    });
   });
 
   describe('migrate from instanceProps', () => {

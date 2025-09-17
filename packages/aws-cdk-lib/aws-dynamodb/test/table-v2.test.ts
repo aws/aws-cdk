@@ -7,6 +7,7 @@ import {
   AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, TableV2,
   LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
   MultiRegionConsistency,
+  ContributorInsightsMode,
 } from '../lib';
 
 describe('table', () => {
@@ -3339,6 +3340,7 @@ describe('MRSC global tables', () => {
     });
   });
 });
+
 describe('MRSC global tables validation', () => {
   test('throws when witness region is used with eventual consistency', () => {
     // GIVEN
@@ -3410,3 +3412,167 @@ describe('MRSC global tables validation', () => {
     });
   });
 });
+
+test('Contributor Insights Specification - tableV2', () => {
+  const stack = new Stack();
+
+  const table = new TableV2(stack, 'TableV2', {
+    partitionKey: { name: 'hashKey', type: AttributeType.STRING },
+    sortKey: { name: 'sortKey', type: AttributeType.NUMBER },
+    contributorInsightsSpecification: {
+      enabled: true,
+      mode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable',
+    {
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+        { AttributeName: 'sortKey', AttributeType: 'N' },
+      ],
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
+      ],
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          ContributorInsightsSpecification: {
+            Enabled: true,
+            Mode: 'ACCESSED_AND_THROTTLED_KEYS',
+          },
+        },
+      ],
+    },
+  );
+});
+
+test('Contributor Insights Specification - tableV2 - without mode', () => {
+  const stack = new Stack();
+
+  const table = new TableV2(stack, 'TableV2', {
+    partitionKey: { name: 'hashKey', type: AttributeType.STRING },
+    sortKey: { name: 'sortKey', type: AttributeType.NUMBER },
+    contributorInsightsSpecification: {
+      enabled: true,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable',
+    {
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+        { AttributeName: 'sortKey', AttributeType: 'N' },
+      ],
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
+      ],
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          ContributorInsightsSpecification: {
+            Enabled: true,
+          },
+        },
+      ],
+    },
+  );
+});
+
+test('Contributor Insights Specification - index', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
+
+  const table = new TableV2(stack, 'TableV2', {
+    partitionKey: { name: 'hashKey', type: AttributeType.STRING },
+    sortKey: { name: 'sortKey', type: AttributeType.NUMBER },
+    globalSecondaryIndexes: [
+      {
+        indexName: 'gsi1',
+        partitionKey: { name: 'gsiHashKey', type: AttributeType.STRING },
+      },
+    ],
+    contributorInsightsSpecification: {
+      enabled: true,
+      mode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+    },
+    replicas: [
+      {
+        region: 'eu-west-2',
+        contributorInsightsSpecification: {
+          enabled: false,
+        },
+        globalSecondaryIndexOptions: {
+          gsi1: {
+            contributorInsightsSpecification: {
+              enabled: true,
+              mode: ContributorInsightsMode.THROTTLED_KEYS,
+            },
+          },
+        },
+      },
+    ],
+  });
+
+  Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', {
+    Properties: Match.objectLike({
+      Replicas: Match.arrayWith([
+        Match.objectLike({
+          Region: 'eu-west-2',
+          ContributorInsightsSpecification: {
+            Enabled: false,
+          },
+          GlobalSecondaryIndexes: Match.arrayWith([
+            Match.objectLike({
+              IndexName: 'gsi1',
+              ContributorInsightsSpecification: {
+                Enabled: true,
+                Mode: 'THROTTLED_KEYS',
+              },
+            }),
+          ]),
+        }),
+        Match.objectLike({
+          Region: 'eu-west-1',
+          ContributorInsightsSpecification: {
+            Enabled: true,
+            Mode: 'ACCESSED_AND_THROTTLED_KEYS',
+          },
+          GlobalSecondaryIndexes: Match.arrayWith([
+            Match.objectLike({
+              IndexName: 'gsi1',
+              ContributorInsightsSpecification: {
+                Enabled: true,
+                Mode: 'ACCESSED_AND_THROTTLED_KEYS',
+              },
+            }),
+          ]),
+        }),
+      ]),
+    }),
+  });
+});
+
+test('ContributorInsightsSpecification && ContributorInsights - v2', () => {
+  const stack = new Stack();
+
+  expect(() => {
+    const table = new TableV2(stack, 'Tablev2', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      sortKey: { name: 'sk', type: AttributeType.STRING },
+      contributorInsights: true,
+      contributorInsightsSpecification: {
+        enabled: true,
+        mode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+      },
+    });
+
+    Template.fromStack(stack);
+  }).toThrow('`contributorInsightsSpecification` and `contributorInsights` are set. Use `contributorInsightsSpecification` only.');
+});
+

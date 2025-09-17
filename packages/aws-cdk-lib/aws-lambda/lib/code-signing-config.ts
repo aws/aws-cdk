@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnCodeSigningConfig } from './lambda.generated';
+import { CfnCodeSigningConfig, CodeSigningConfigReference, ICodeSigningConfigRef } from './lambda.generated';
 import { ISigningProfile } from '../../aws-signer';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -25,7 +25,7 @@ export enum UntrustedArtifactOnDeployment {
 /**
  * A Code Signing Config
  */
-export interface ICodeSigningConfig extends IResource {
+export interface ICodeSigningConfig extends IResource, ICodeSigningConfigRef {
   /**
    * The ARN of Code Signing Config
    * @attribute
@@ -100,6 +100,12 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
       constructor() {
         super(scope, id);
       }
+
+      public get codeSigningConfigRef(): CodeSigningConfigReference {
+        return {
+          codeSigningConfigArn: this.codeSigningConfigArn,
+        };
+      }
     }
     return new Import();
   }
@@ -127,5 +133,11 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
     });
     this.codeSigningConfigArn = resource.attrCodeSigningConfigArn;
     this.codeSigningConfigId = resource.attrCodeSigningConfigId;
+  }
+
+  public get codeSigningConfigRef(): CodeSigningConfigReference {
+    return {
+      codeSigningConfigArn: this.codeSigningConfigArn,
+    };
   }
 }

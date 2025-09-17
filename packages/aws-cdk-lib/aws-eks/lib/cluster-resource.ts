@@ -21,7 +21,7 @@ export interface ClusterResourceProps {
   readonly vpc: ec2.IVpc;
   readonly environment?: { [key: string]: string };
   readonly subnets?: ec2.ISubnet[];
-  readonly secretsEncryptionKey?: kms.IKey;
+  readonly secretsEncryptionKey?: kms.IKeyRef;
   readonly onEventLayer?: lambda.ILayerVersion;
   readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
   readonly tags?: { [key: string]: string };
@@ -212,7 +212,7 @@ export class ClusterResource extends Construct {
           'kms:DescribeKey',
           'kms:CreateGrant',
         ],
-        resources: [props.secretsEncryptionKey.keyArn],
+        resources: [props.secretsEncryptionKey.keyRef.keyArn],
       }));
     }
 

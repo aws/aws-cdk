@@ -150,7 +150,7 @@ new iot.AccountAuditConfiguration(this, 'AuditConfiguration', {
   checkConfiguration: {
     deviceCertificateAgeCheck: true,
     // The default value is 365 days
-    // Valid values range from 30 days (minimum) to 3652 days (10 years, maximum)
+    // Valid values range from 30 days (minimum) to 3650 days (10 years, maximum)
     deviceCertificateAgeCheckDuration: Duration.days(365),
   },
 });

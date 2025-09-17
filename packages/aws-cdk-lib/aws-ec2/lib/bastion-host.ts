@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { InstanceArchitecture, InstanceClass, InstanceSize, InstanceType } from '.';
+import { InstanceArchitecture, InstanceClass, InstanceReference, InstanceSize, InstanceType } from '.';
 import { CloudFormationInit } from './cfn-init';
 import { Connections } from './connections';
 import { ApplyCloudFormationInitOptions, IInstance, Instance } from './instance';
@@ -240,6 +240,12 @@ export class BastionHostLinux extends Resource implements IInstance {
       description: 'Instance ID of the bastion host. Use this to connect via SSM Session Manager',
       value: this.instanceId,
     });
+  }
+
+  public get instanceRef(): InstanceReference {
+    return {
+      instanceId: this.instanceId,
+    };
   }
 
   /**

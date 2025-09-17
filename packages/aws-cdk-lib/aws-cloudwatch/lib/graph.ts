@@ -59,14 +59,14 @@ export interface YAxisProps {
   /**
    * The min value
    *
-   * @default 0
+   * @default - Auto
    */
   readonly min?: number;
 
   /**
    * The max value
    *
-   * @default - No maximum value
+   * @default - Auto
    */
   readonly max?: number;
 
@@ -175,7 +175,7 @@ export interface GaugeWidgetProps extends MetricWidgetProps {
   /**
    * Left Y axis
    *
-   * @default - None
+   * @default {min:0,max:100}
    */
   readonly leftYAxis?: YAxisProps;
 
@@ -273,11 +273,6 @@ export class GaugeWidget extends ConcreteWidget {
 
   public toJson(): any[] {
     const metrics = allMetricsGraphJson(this.metrics, []);
-    const leftYAxis = {
-      ...this.props.leftYAxis,
-      min: this.props.leftYAxis?.min ?? 0,
-      max: this.props.leftYAxis?.max ?? 100,
-    };
     return [{
       type: 'metric',
       width: this.width,
@@ -291,7 +286,11 @@ export class GaugeWidget extends ConcreteWidget {
         metrics: metrics.length > 0 ? metrics : undefined,
         annotations: (this.props.annotations ?? []).length > 0 ? { horizontal: this.props.annotations } : undefined,
         yAxis: {
-          left: leftYAxis ?? undefined,
+          left: {
+            min: 0,
+            max: 100,
+            ...this.props.leftYAxis,
+          },
         },
         legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
         liveData: this.props.liveData,
@@ -381,6 +380,13 @@ export interface GraphWidgetProps extends MetricWidgetProps {
   readonly liveData?: boolean;
 
   /**
+   * Whether the graph should show labels on the chart. Currently only applicable for Pie charts.
+   *
+   * @default false
+   */
+  readonly displayLabelsOnChart?: boolean;
+
+  /**
    * Display this metric
    *
    * @default TimeSeries
@@ -467,6 +473,10 @@ export class GraphWidget extends ConcreteWidget {
     if (props.end !== undefined && props.start === undefined) {
       throw new cdk.UnscopedValidationError('If you specify a value for end, you must also specify a value for start.');
     }
+
+    if (props.displayLabelsOnChart && props.view !== GraphWidgetView.PIE) {
+      throw new cdk.UnscopedValidationError('displayLabelsOnChart can currently only be set to true if view is GraphWidgetView.PIE');
+    }
   }
 
   /**
@@ -514,6 +524,7 @@ export class GraphWidget extends ConcreteWidget {
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
         stacked: this.props.stacked,
+        labels: this.props.displayLabelsOnChart ? { visible: true } : undefined,
         metrics: metrics.length > 0 ? metrics : undefined,
         annotations,
         yAxis: {

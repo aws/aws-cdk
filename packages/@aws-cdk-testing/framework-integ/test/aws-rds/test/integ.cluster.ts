@@ -63,6 +63,7 @@ class TestStack extends cdk.Stack {
       parameterGroup: params,
       storageEncryptionKey: kmsKey,
       autoMinorVersionUpgrade: false,
+      deleteAutomatedBackups: false,
     });
 
     cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
@@ -100,4 +101,3 @@ const stackWithFeatureFlag = new TestStack(appWithFeatureFlag, 'aws-cdk-rds-inte
 new IntegTest(appWithFeatureFlag, 'test-rds-cluster-with-feature-flag', {
   testCases: [stackWithFeatureFlag],
 });
-appWithFeatureFlag.synth();

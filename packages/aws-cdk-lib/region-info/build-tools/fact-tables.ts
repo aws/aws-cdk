@@ -40,6 +40,8 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'us-west-1': 'Z2F56UZL2M1ACD',
   'us-west-2': 'Z3BJ6K6RIION7M',
   'ap-east-2': 'Z064739330DAH7WJVOO93',
+  'us-isof-south-1': 'Z03376072I8GXC2DXUFXI',
+  'us-isof-east-1': 'Z03373031FTGQH4MNG6ST',
 };
 
 /**
@@ -57,10 +59,13 @@ export const EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS: { [region: string]: string } = {
   'ap-southeast-1': 'Z16FZ9L249IFLT',
   'ap-southeast-2': 'Z2PCDNR3VC2G1N',
   'ap-southeast-3': 'Z05913172VM7EAZB40TA8',
+  'ap-southeast-5': 'Z18NTBI3Y7N9TZ',
+  'ap-southeast-7': 'Z1R25G3KIG2GBW',
   'ca-central-1': 'ZJFCZL7SSZB5I',
   'eu-central-1': 'Z1FRNW7UH4DEZJ',
   'eu-north-1': 'Z23GO28BZ5AETM',
   'eu-south-1': 'Z10VDYYOA2JFKM',
+  'eu-south-2': 'Z23GO28BZ5AETM',
   'eu-west-1': 'Z2NYPWQ7DFZAZH',
   'eu-west-2': 'Z1GKAAAUGATPF1',
   'eu-west-3': 'Z5WN6GAYWG5OB',
@@ -118,7 +123,7 @@ export const LATEST_NODE_RUNTIME_MAP: Record<Partition, string> = {
   [Partition.Cn]: Runtime.NODE_22,
   [Partition.UsGov]: Runtime.NODE_22,
   [Partition.UsIso]: Runtime.NODE_22,
-  [Partition.UsIsoB]: Runtime.NODE_22,
+  [Partition.UsIsoB]: Runtime.NODE_18,
   [Partition.UsIsoF]: Runtime.NODE_22,
   [Partition.EuIsoE]: Runtime.NODE_22,
   [Partition.Eusc]: Runtime.NODE_22,
@@ -157,6 +162,8 @@ export const ELBV2_ACCOUNTS: { [region: string]: string } = {
   'us-iso-west-1': '121062877647',
   'us-west-1': '027434742980',
   'us-west-2': '797873946194',
+  'us-isof-south-1': '412137745753',
+  'us-isof-east-1': '091100254016',
 };
 
 // https://docs.aws.amazon.com/deep-learning-containers/latest/devguide/deep-learning-containers-images.html
@@ -192,6 +199,8 @@ export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
   'us-west-2': '763104351884',
   'ap-east-2': '975050140332',
   'eusc-de-east-1': '204133271717',
+  'us-isof-south-1': '454834333376',
+  'us-isof-east-1': '303241398832',
 };
 
 // https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
