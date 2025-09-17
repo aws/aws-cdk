@@ -659,6 +659,8 @@ export enum CacheConfigType {
 
 /**
  * Specifies the size of the build instance.
+ *
+ * @link https://docs.aws.amazon.com/amplify/latest/userguide/custom-build-instance.html
  */
 export enum BuildComputeType {
   /**
@@ -672,7 +674,7 @@ export enum BuildComputeType {
   LARGE_16GB = 'LARGE_16GB',
 
   /**
-   * vCPUs: 36, Memory: 72 GiB, Disk space: 128 GB
+   * vCPUs: 36, Memory: 72 GiB, Disk space: 256 GB
    */
   XLARGE_72GB = 'XLARGE_72GB',
 }

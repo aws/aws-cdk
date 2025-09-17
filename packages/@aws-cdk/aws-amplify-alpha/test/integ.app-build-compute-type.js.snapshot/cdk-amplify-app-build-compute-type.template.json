@@ -109,6 +109,41 @@
    }
   }
  },
+ "Outputs": {
+  "ExportsOutputFnGetAttAppStandard64C25109AppIdBE983227": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AppStandard64C25109",
+     "AppId"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-amplify-app-build-compute-type:ExportsOutputFnGetAttAppStandard64C25109AppIdBE983227"
+   }
+  },
+  "ExportsOutputFnGetAttAppLarge1965F25EAppId897B576A": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AppLarge1965F25E",
+     "AppId"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-amplify-app-build-compute-type:ExportsOutputFnGetAttAppLarge1965F25EAppId897B576A"
+   }
+  },
+  "ExportsOutputFnGetAttAppXLarge0552F577AppId0884C532": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AppXLarge0552F577",
+     "AppId"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-amplify-app-build-compute-type:ExportsOutputFnGetAttAppXLarge0552F577AppId0884C532"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

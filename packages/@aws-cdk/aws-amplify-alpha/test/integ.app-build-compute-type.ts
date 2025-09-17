@@ -1,21 +1,24 @@
 import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as amplify from '../lib';
 
 class TestStack extends Stack {
+  readonly standardApp: amplify.App;
+  readonly largeApp: amplify.App;
+  readonly xLargeApp: amplify.App;
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    new amplify.App(this, 'AppStandard', {
+    this.standardApp = new amplify.App(this, 'AppStandard', {
       buildComputeType: amplify.BuildComputeType.STANDARD_8GB,
     });
 
-    new amplify.App(this, 'AppLarge', {
+    this.largeApp = new amplify.App(this, 'AppLarge', {
       buildComputeType: amplify.BuildComputeType.LARGE_16GB,
     });
 
-    new amplify.App(this, 'AppXLarge', {
+    this.xLargeApp = new amplify.App(this, 'AppXLarge', {
       buildComputeType: amplify.BuildComputeType.XLARGE_72GB,
     });
   }
@@ -24,7 +27,40 @@ class TestStack extends Stack {
 const app = new App();
 const stack = new TestStack(app, 'cdk-amplify-app-build-compute-type');
 
-new IntegTest(app, 'cdk-amplify-app-build-compute-type-integ', {
+const test = new IntegTest(app, 'cdk-amplify-app-build-compute-type-integ', {
   testCases: [stack],
   stackUpdateWorkflow: false,
 });
+
+test.assertions.awsApiCall('amplify', 'GetAppCommand', {
+  appId: stack.standardApp.appId,
+})
+  .expect(ExpectedResult.objectLike({
+    app: {
+      jobConfig: {
+        buildComputeType: 'STANDARD_8GB',
+      },
+    },
+  }));
+
+test.assertions.awsApiCall('amplify', 'GetAppCommand', {
+  appId: stack.largeApp.appId,
+})
+  .expect(ExpectedResult.objectLike({
+    app: {
+      jobConfig: {
+        buildComputeType: 'LARGE_16GB',
+      },
+    },
+  }));
+
+test.assertions.awsApiCall('amplify', 'GetAppCommand', {
+  appId: stack.xLargeApp.appId,
+})
+  .expect(ExpectedResult.objectLike({
+    app: {
+      jobConfig: {
+        buildComputeType: 'XLARGE_72GB',
+      },
+    },
+  }));
