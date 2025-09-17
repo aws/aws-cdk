@@ -326,7 +326,8 @@
      "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
     },
     "Timeout": 900,
-    "MemorySize": 128,
+Updated BucketDeployment Lambda in packages/@aws-cdk-testing/framework-integ/test/aws-servicecatalog/test/integ.product.encrypted.asset.js.snapshot/integ-servicecatalog-product-encrypted-asset.template.json
+    "MemorySize": 512,
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [

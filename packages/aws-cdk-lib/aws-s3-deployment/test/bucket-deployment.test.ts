@@ -807,7 +807,18 @@ test('default memory limit is 128MB when feature flag is disabled', () => {
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 128 });
+  // When feature flag is disabled, MemorySize should not be set (defaults to 128MB)
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::Lambda::Function', {
+    // MemorySize should not be present - it defaults to 128MB
+  });
+
+  // Verify that MemorySize is not explicitly set
+  const lambdaResources = template.findResources('AWS::Lambda::Function');
+  const bucketDeploymentLambda = Object.values(lambdaResources).find(resource =>
+    JSON.stringify(resource).includes('CustomCDKBucketDeployment'),
+  );
+  expect(bucketDeploymentLambda?.Properties?.MemorySize).toBeUndefined();
 });
 
 test('default memory limit is 512MB when feature flag is enabled', () => {

@@ -979,7 +979,8 @@
      "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
     },
     "Timeout": 900,
-    "MemorySize": 128,
+Updated BucketDeployment Lambda in packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.alb-mtls.js.snapshot/alb-mtls-test-stack.template.json
+    "MemorySize": 512,
     "Handler": "__entrypoint__.handler",
     "Role": {
      "Fn::GetAtt": [

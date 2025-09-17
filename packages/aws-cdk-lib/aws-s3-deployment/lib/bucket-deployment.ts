@@ -382,7 +382,7 @@ export class BucketDeployment extends Construct {
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
-      memorySize: props.memoryLimit ?? (FeatureFlags.of(this).isEnabled(cxapi.S3_DEPLOYMENT_DEFAULT_512_MEMORY_LIMIT) ? 512 : 128),
+      memorySize: props.memoryLimit ?? (FeatureFlags.of(this).isEnabled(cxapi.S3_DEPLOYMENT_DEFAULT_512_MEMORY_LIMIT) ? 512 : undefined),
       ephemeralStorageSize: props.ephemeralStorageSize,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,

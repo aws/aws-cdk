@@ -59,7 +59,7 @@
       "Ref": "KubectlLayer600207B5"
      }
     ],
-    "MemorySize": 512,
+    "MemorySize": 128,
     "Role": {
      "Fn::GetAtt": [
       "Lambdapython39ServiceRoleE2CFED77",
@@ -278,7 +278,7 @@
       "Ref": "KubectlLayer600207B5"
      }
     ],
-    "MemorySize": 512,
+    "MemorySize": 128,
     "Role": {
      "Fn::GetAtt": [
       "Lambdapython310ServiceRoleD185E0B6",
