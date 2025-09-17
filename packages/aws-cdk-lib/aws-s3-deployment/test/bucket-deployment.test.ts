@@ -813,7 +813,7 @@ test('default memory limit is 128MB when feature flag is disabled', () => {
 test('default memory limit is 512MB when feature flag is enabled', () => {
   // GIVEN
   const stack = new cdk.Stack();
-  stack.node.setContext('@aws-cdk/aws-s3-deployment:defaultMemoryLimit', true);
+  stack.node.setContext('@aws-cdk/aws-s3-deployment:default512MemoryLimit', true);
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN

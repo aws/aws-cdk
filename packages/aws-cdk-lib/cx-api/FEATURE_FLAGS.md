@@ -107,7 +107,7 @@ Flags come in three types:
 | [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | 2.205.0 | new default |
 | [@aws-cdk/aws-signer:signingProfileNamePassedToCfn](#aws-cdkaws-signersigningprofilenamepassedtocfn) | Pass signingProfileName to CfnSigningProfile | 2.212.0 | fix |
 | [@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener](#aws-cdkaws-ecs-patternssecgroupsdisablesimplicitopenlistener) | Disable implicit openListener when custom security groups are provided | 2.214.0 | new default |
-| [@aws-cdk/aws-s3-deployment:defaultMemoryLimit](#aws-cdkaws-s3-deploymentdefaultmemorylimit) | Use 512MB memory for BucketDeployment Lambda function instead of 128MB | V2NEXT | new default |
+| [@aws-cdk/aws-s3-deployment:default512MemoryLimit](#aws-cdkaws-s3-deploymentdefault512memorylimit) | Use 512MB memory for BucketDeployment Lambda function instead of 128MB | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -198,7 +198,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
-    "@aws-cdk/aws-s3-deployment:defaultMemoryLimit": true,
+    "@aws-cdk/aws-s3-deployment:default512MemoryLimit": true,
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true
   }
 }
@@ -2279,7 +2279,7 @@ override this behavior.
 **Compatibility with old behavior:** You can pass `openListener: true` explicitly to maintain the old behavior.
 
 
-### @aws-cdk/aws-s3-deployment:defaultMemoryLimit
+### @aws-cdk/aws-s3-deployment:default512MemoryLimit
 
 *Use 512MB memory for BucketDeployment Lambda function instead of 128MB*
 

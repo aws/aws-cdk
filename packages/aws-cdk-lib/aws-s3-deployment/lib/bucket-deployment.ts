@@ -156,7 +156,7 @@ export interface BucketDeploymentProps {
    * If you are deploying large files, you will need to increase this number
    * accordingly.
    *
-   * @default 512 when feature flag `@aws-cdk/aws-s3-deployment:defaultMemoryLimit` is enabled, otherwise 128
+   * @default 512
    */
   readonly memoryLimit?: number;
 
@@ -382,7 +382,7 @@ export class BucketDeployment extends Construct {
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
-      memorySize: props.memoryLimit ?? (FeatureFlags.of(this).isEnabled(cxapi.S3_DEPLOYMENT_DEFAULT_MEMORY_LIMIT) ? 512 : 128),
+      memorySize: props.memoryLimit ?? (FeatureFlags.of(this).isEnabled(cxapi.S3_DEPLOYMENT_DEFAULT_512_MEMORY_LIMIT) ? 512 : 128),
       ephemeralStorageSize: props.ephemeralStorageSize,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
