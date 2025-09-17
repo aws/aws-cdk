@@ -37,6 +37,12 @@ class EcsStack extends cdk.Stack {
         ecs.PlacementStrategy.packedByMemory(),
       ],
     });
+
+    new ecs.Ec2Service(this, 'Test_Empty', {
+      cluster,
+      taskDefinition,
+      placementStrategies: [],
+    });
   }
 }
 
