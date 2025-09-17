@@ -8,6 +8,10 @@ const stack = new cdk.Stack(app, 'aws-cdk-aws-apigatewayv2');
 
 new apigw.WebSocketApi(stack, 'WebSocketApi');
 
+new apigw.WebSocketApi(stack, 'WebSocketApiWithProps', {
+  disableSchemaValidation: true,
+});
+
 new IntegTest(app, 'web-socket-api', {
   testCases: [stack],
 });
