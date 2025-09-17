@@ -1,5 +1,6 @@
-import * as cdk from '../../core';
-import * as ec2 from '../lib';
+import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -34,7 +35,10 @@ new ec2.Instance(stack, 'InstanceInPublicGroup2', {
     subnetType: ec2.SubnetType.PUBLIC,
     subnetGroupName: 'PublicGroup2',
   },
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.T3,
+    ec2.InstanceSize.MICRO,
+  ),
   machineImage: new ec2.AmazonLinuxImage(),
   associatePublicIpAddress: true, // This should work with combined selection
 });
@@ -46,7 +50,10 @@ new ec2.Instance(stack, 'InstanceInPrivateGroup1', {
     subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     subnetGroupName: 'PrivateGroup1',
   },
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.T3,
+    ec2.InstanceSize.MICRO,
+  ),
   machineImage: new ec2.AmazonLinuxImage(),
 });
 
@@ -56,7 +63,10 @@ new ec2.Instance(stack, 'InstanceTypeOnly', {
   vpcSubnets: {
     subnetType: ec2.SubnetType.PUBLIC,
   },
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.T3,
+    ec2.InstanceSize.MICRO,
+  ),
   machineImage: new ec2.AmazonLinuxImage(),
 });
 
@@ -66,27 +76,43 @@ new ec2.Instance(stack, 'InstanceNameOnly', {
   vpcSubnets: {
     subnetGroupName: 'PublicGroup1',
   },
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.T3,
+    ec2.InstanceSize.MICRO,
+  ),
   machineImage: new ec2.AmazonLinuxImage(),
 });
 
 // Output subnet information for verification
 new cdk.CfnOutput(stack, 'PublicGroup1Subnets', {
-  value: vpc.selectSubnets({ subnetGroupName: 'PublicGroup1' }).subnetIds.join(','),
+  value: vpc
+    .selectSubnets({ subnetGroupName: 'PublicGroup1' })
+    .subnetIds.join(','),
   description: 'Subnet IDs for PublicGroup1',
 });
 
 new cdk.CfnOutput(stack, 'PublicGroup2Subnets', {
-  value: vpc.selectSubnets({ subnetGroupName: 'PublicGroup2' }).subnetIds.join(','),
+  value: vpc
+    .selectSubnets({ subnetGroupName: 'PublicGroup2' })
+    .subnetIds.join(','),
   description: 'Subnet IDs for PublicGroup2',
 });
 
 new cdk.CfnOutput(stack, 'CombinedSelectionSubnets', {
-  value: vpc.selectSubnets({
-    subnetType: ec2.SubnetType.PUBLIC,
-    subnetGroupName: 'PublicGroup2',
-  }).subnetIds.join(','),
-  description: 'Subnet IDs for combined type+name selection (PUBLIC + PublicGroup2)',
+  value: vpc
+    .selectSubnets({
+      subnetType: ec2.SubnetType.PUBLIC,
+      subnetGroupName: 'PublicGroup2',
+    })
+    .subnetIds.join(','),
+  description:
+    'Subnet IDs for combined type+name selection (PUBLIC + PublicGroup2)',
+});
+
+// Create the integration test
+new IntegTest(app, 'SubnetSelectionCombinedIntegTest', {
+  testCases: [stack],
+  diffAssets: true,
 });
 
 app.synth();
