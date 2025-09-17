@@ -663,7 +663,7 @@
               ":",
               {
                "Fn::GetAtt": [
-                "DeployMe5CustomResource44BEE629",
+                "DeployMe7CustomResource6980A485",
                 "DestinationBucketArn"
                ]
               }
