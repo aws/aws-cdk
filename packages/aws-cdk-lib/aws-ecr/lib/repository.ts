@@ -1091,7 +1091,6 @@ export enum TagMutability {
    */
   IMMUTABLE = 'IMMUTABLE',
 
-
   /**
    * all image tags within the repository will be immutable, while allowing you to define some filters for tags that can be changed.
    */
