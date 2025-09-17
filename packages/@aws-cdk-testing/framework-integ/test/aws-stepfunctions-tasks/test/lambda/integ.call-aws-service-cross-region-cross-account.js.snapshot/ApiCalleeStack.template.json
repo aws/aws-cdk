@@ -79,8 +79,8 @@
     },
     "TableName": "apicalleestackcalleestacktable6f33c5cf13c7b48d9e98"
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {

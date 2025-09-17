@@ -49,6 +49,7 @@ class ApiCalleeStack extends Stack {
     this.table = new dynamodb.Table(this, 'Table', {
       tableName: cdk.PhysicalName.GENERATE_IF_NEEDED,
       partitionKey: { name: 'PK', type: dynamodb.AttributeType.STRING },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     this.table.grantReadData(this.role);
