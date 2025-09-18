@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "CfnIncludeNoValueBooleanTest/DefaultTest": {
+      "stacks": [
+        "integ-cfninclude-novalue-boolean"
+      ],
+      "assertionStack": "CfnIncludeNoValueBooleanTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CfnIncludeNoValueBooleanTestDefaultTestDeployAssert806459F3"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
