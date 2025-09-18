@@ -3,10 +3,10 @@ import { App, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import { executionSync } from '../../../aws-stepfunctions/test/util';
-import * as dynamodb from '../../../../../../aws-cdk-lib/aws-dynamodb';
-import * as iam from '../../../../../../aws-cdk-lib/aws-iam';
-import * as sfn from '../../../../../../aws-cdk-lib/aws-stepfunctions';
-import * as tasks from '../../../../../../aws-cdk-lib/aws-stepfunctions-tasks';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
+import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
 /**
  * Notes on how to run this integ test
