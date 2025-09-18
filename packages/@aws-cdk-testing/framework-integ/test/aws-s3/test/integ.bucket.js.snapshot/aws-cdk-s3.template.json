@@ -176,6 +176,20 @@
      }
     ]
    }
+  },
+  "TestSecurityGroup880B57C0": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Test security group with invalid VPC",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": "vpc-nonexistent123"
+   }
   }
  },
  "Parameters": {
