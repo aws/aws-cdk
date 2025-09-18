@@ -1264,10 +1264,25 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   /**
-   * Creates a new IResourceRef from an ARN
+   * Creates a new IResourceRef from a resourceId
    */
-  public static fromResourceArn(scope: constructs.Construct, id: string, arn: string): IResourceRef {
-    return new CfnResource.ImportArn(scope, id, arn);
+  public static fromResourceId(scope: constructs.Construct, id: string, resourceId: string): IResourceRef {
+    class Import extends cdk.Resource {
+      public resourceRef: ResourceReference;
+
+      /**
+       * @param scope Scope in which this resource is defined
+       * @param id Construct identifier for this resource (unique in its scope)
+       */
+      public constructor(scope: constructs.Construct, id: string, resourceId: string) {
+        super(scope, id);
+
+        this.resourceRef = {
+          "resourceId": resourceId
+        };
+      }
+    }
+    return new Import(scope, id, resourceId);
   }
 
   /**
@@ -1313,21 +1328,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   protected renderProperties(props: Record<string, any>): Record<string, any> {
     return convertCfnResourcePropsToCloudFormation(props);
-  }
-}
-
-export namespace CfnResource {
-  export class ImportArn extends cdk.Resource implements IResourceRef {
-    public resourceRef: ResourceReference;
-
-    public constructor(scope: constructs.Construct, id: string, arn: string) {
-      super(scope, id);
-
-      const variables = cfn_parse.TemplateStringParser.parse("arn:\${Partition}:some:\${Region}:\${Account}:resource/\${ResourceId}", arn);
-      this.resourceRef = {
-        "resourceId": variables['ResourceId']
-      };
-    }
   }
 }
 
