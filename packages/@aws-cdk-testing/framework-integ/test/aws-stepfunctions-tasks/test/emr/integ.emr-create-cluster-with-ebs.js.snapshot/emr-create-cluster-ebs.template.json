@@ -9,8 +9,12 @@
     "InstanceTenancy": "default",
     "Tags": [
      {
+      "Key": "for-use-with-amazon-emr-managed-policies",
+      "Value": "true"
+     },
+     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-v1-policy/Vpc"
+      "Value": "emr-create-cluster-ebs/Vpc"
      }
     ]
    }
@@ -38,8 +42,12 @@
       "Value": "Public"
      },
      {
+      "Key": "for-use-with-amazon-emr-managed-policies",
+      "Value": "true"
+     },
+     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-v1-policy/Vpc/PublicSubnet1"
+      "Value": "emr-create-cluster-ebs/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -52,8 +60,12 @@
    "Properties": {
     "Tags": [
      {
+      "Key": "for-use-with-amazon-emr-managed-policies",
+      "Value": "true"
+     },
+     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-v1-policy/Vpc/PublicSubnet1"
+      "Value": "emr-create-cluster-ebs/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -93,8 +105,12 @@
     "Domain": "vpc",
     "Tags": [
      {
+      "Key": "for-use-with-amazon-emr-managed-policies",
+      "Value": "true"
+     },
+     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-v1-policy/Vpc/PublicSubnet1"
+      "Value": "emr-create-cluster-ebs/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -113,8 +129,12 @@
     },
     "Tags": [
      {
+      "Key": "for-use-with-amazon-emr-managed-policies",
+      "Value": "true"
+     },
+     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-v1-policy/Vpc/PublicSubnet1"
+      "Value": "emr-create-cluster-ebs/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -146,8 +166,12 @@
       "Value": "Public"
      },
      {
+      "Key": "for-use-with-amazon-emr-managed-policies",
+      "Value": "true"
+     },
+     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-v1-policy/Vpc/PublicSubnet2"
+      "Value": "emr-create-cluster-ebs/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -160,8 +184,12 @@
    "Properties": {
     "Tags": [
      {
+      "Key": "for-use-with-amazon-emr-managed-policies",
+      "Value": "true"
+     },
+     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-v1-policy/Vpc/PublicSubnet2"
+      "Value": "emr-create-cluster-ebs/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -201,8 +229,12 @@
     "Domain": "vpc",
     "Tags": [
      {
+      "Key": "for-use-with-amazon-emr-managed-policies",
+      "Value": "true"
+     },
+     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-v1-policy/Vpc/PublicSubnet2"
+      "Value": "emr-create-cluster-ebs/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -221,8 +253,12 @@
     },
     "Tags": [
      {
+      "Key": "for-use-with-amazon-emr-managed-policies",
+      "Value": "true"
+     },
+     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-v1-policy/Vpc/PublicSubnet2"
+      "Value": "emr-create-cluster-ebs/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -254,8 +290,12 @@
       "Value": "Private"
      },
      {
+      "Key": "for-use-with-amazon-emr-managed-policies",
+      "Value": "true"
+     },
+     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-v1-policy/Vpc/PrivateSubnet1"
+      "Value": "emr-create-cluster-ebs/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -268,8 +308,12 @@
    "Properties": {
     "Tags": [
      {
+      "Key": "for-use-with-amazon-emr-managed-policies",
+      "Value": "true"
+     },
+     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-v1-policy/Vpc/PrivateSubnet1"
+      "Value": "emr-create-cluster-ebs/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -323,8 +367,12 @@
       "Value": "Private"
      },
      {
+      "Key": "for-use-with-amazon-emr-managed-policies",
+      "Value": "true"
+     },
+     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-v1-policy/Vpc/PrivateSubnet2"
+      "Value": "emr-create-cluster-ebs/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -337,8 +385,12 @@
    "Properties": {
     "Tags": [
      {
+      "Key": "for-use-with-amazon-emr-managed-policies",
+      "Value": "true"
+     },
+     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-v1-policy/Vpc/PrivateSubnet2"
+      "Value": "emr-create-cluster-ebs/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -374,8 +426,12 @@
    "Properties": {
     "Tags": [
      {
+      "Key": "for-use-with-amazon-emr-managed-policies",
+      "Value": "true"
+     },
+     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-v1-policy/Vpc"
+      "Value": "emr-create-cluster-ebs/Vpc"
      }
     ]
    }
@@ -611,7 +667,7 @@
        {
         "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
        },
-       "\",\"InstanceFleets\":[{\"InstanceFleetType\":\"MASTER\",\"InstanceTypeConfigs\":[{\"InstanceType\":\"m5.xlarge\"}],\"TargetOnDemandCapacity\":1}],\"KeepJobFlowAliveWhenNoSteps\":true},\"JobFlowRole\":\"",
+       "\",\"InstanceFleets\":[{\"InstanceFleetType\":\"CORE\",\"InstanceTypeConfigs\":[{\"InstanceType\":\"m5.xlarge\"}],\"TargetOnDemandCapacity\":1},{\"InstanceFleetType\":\"MASTER\",\"InstanceTypeConfigs\":[{\"InstanceType\":\"m5.xlarge\"}],\"TargetOnDemandCapacity\":1}],\"KeepJobFlowAliveWhenNoSteps\":true},\"JobFlowRole\":\"",
        {
         "Ref": "EmrCreateClusterInstanceRoleC80466F5"
        },
@@ -619,7 +675,7 @@
        {
         "Ref": "EmrCreateClusterServiceRole5251910D"
        },
-       "\",\"ReleaseLabel\":\"emr-6.15.0\",\"Tags\":[{\"Key\":\"for-use-with-amazon-emr-managed-policies\",\"Value\":\"true\"}],\"VisibleToAllUsers\":true}}}}"
+       "\",\"EbsRootVolumeSize\":20,\"EbsRootVolumeIops\":4000,\"EbsRootVolumeThroughput\":200,\"ManagedScalingPolicy\":{\"ComputeLimits\":{\"UnitType\":\"InstanceFleetUnits\",\"MinimumCapacityUnits\":1,\"MaximumCapacityUnits\":4,\"MaximumOnDemandCapacityUnits\":4,\"MaximumCoreCapacityUnits\":2}},\"ReleaseLabel\":\"emr-7.10.0\",\"Tags\":[{\"Key\":\"for-use-with-amazon-emr-managed-policies\",\"Value\":\"true\"}],\"VisibleToAllUsers\":true}}}}"
       ]
      ]
     },
@@ -636,6 +692,16 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefSM934E715A7A92A8D9": {
+   "Value": {
+    "Ref": "SM934E715A"
+   },
+   "Export": {
+    "Name": "emr-create-cluster-ebs:ExportsOutputRefSM934E715A7A92A8D9"
+   }
   }
  },
  "Parameters": {
