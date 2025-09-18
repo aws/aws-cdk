@@ -34,6 +34,13 @@ export interface AstBuilderProps {
    * Append a suffix at the end of generated names.
    */
   readonly nameSuffix?: string;
+
+  /**
+   * Mark everything in the service as deprecated using the provided deprecation message.
+   *
+   * @default - not deprecated
+   */
+  readonly deprecated?: string;
 }
 
 export class AstBuilder<T extends Module> {
@@ -77,6 +84,7 @@ export class AstBuilder<T extends Module> {
    */
   public readonly resources: Record<string, string> = {};
   private nameSuffix?: string;
+  private deprecated?: string;
 
   protected constructor(
     public readonly module: T,
@@ -86,6 +94,7 @@ export class AstBuilder<T extends Module> {
   ) {
     this.db = props.db;
     this.nameSuffix = props.nameSuffix;
+    this.deprecated = props.deprecated;
 
     CDK_CORE.import(this.module, 'cdk', { fromLocation: props.importLocations?.core });
     CONSTRUCTS.import(this.module, 'constructs');
@@ -94,7 +103,10 @@ export class AstBuilder<T extends Module> {
   }
 
   public addResource(resource: Resource) {
-    const resourceClass = new ResourceClass(this.module, this.db, resource, this.nameSuffix);
+    const resourceClass = new ResourceClass(this.module, this.db, resource, {
+      suffix: this.nameSuffix,
+      deprecated: this.deprecated,
+    });
     this.resources[resource.cloudFormationType] = resourceClass.spec.name;
 
     resourceClass.build();
