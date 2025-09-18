@@ -165,6 +165,11 @@ new ec2.InterfaceVpcEndpoint(this, 'VPC Endpoint', {
 });
 ```
 
+**Note**: Consider simpler alternatives when possible:
+- Use `subnetGroupName` alone if the group name uniquely identifies your target subnets
+- Use `subnetType` alone if you don't need group-specific selection
+- Use `subnetFilters: [SubnetFilter.byIds(['subnet-1', 'subnet-2'])]` for explicit subnet selection
+
 Which subnets are selected is evaluated as follows:
 
 * `subnets`: if specific subnet objects are supplied, these are selected, and no other

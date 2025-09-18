@@ -368,6 +368,10 @@ export interface SubnetSelection {
    * `subnetConfiguration`.
    *
    * Can be combined with `subnetType` to select subnets that match both criteria.
+   * However, consider simpler alternatives:
+   * - Use `subnetGroupName` alone if the group name uniquely identifies your target subnets
+   * - Use `subnetType` alone if you don't need group-specific selection
+   * - Use `SubnetFilter.byIds()` for explicit subnet selection
    *
    * @default - Selection by type instead of by name
    */
@@ -708,6 +712,18 @@ abstract class VpcBase extends Resource implements IVpc {
     return subnets;
   }
 
+  /**
+   * Select subnets by both type and group name for precise subnet targeting.
+   * 
+   * @internal This is an internal implementation method. Consider using simpler alternatives:
+   * - Use `subnetGroupName` alone if you don't need type filtering
+   * - Use `subnetType` alone if you don't need group-specific selection
+   * - Use `SubnetFilter.byIds()` for explicit subnet selection
+   * 
+   * @param subnetType The subnet type to filter by
+   * @param groupName The subnet group name to filter by
+   * @returns Array of subnets matching both type and group name
+   */
   private selectSubnetObjectsByTypeAndName(subnetType: SubnetType, groupName: string) {
     // First get all subnets of the specified type
     const subnetsByType = this.selectSubnetObjectsByType(subnetType);
