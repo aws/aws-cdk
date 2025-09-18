@@ -714,6 +714,9 @@
   "aws-simspaceweaver": [
     "AWS::SimSpaceWeaver"
   ],
+  "aws-smsvoice": [
+    "AWS::SMSVOICE"
+  ],
   "aws-sns": [
     "AWS::SNS"
   ],
