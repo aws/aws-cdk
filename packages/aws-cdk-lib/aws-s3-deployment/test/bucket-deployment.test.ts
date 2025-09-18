@@ -1299,7 +1299,7 @@ test('resource id includes memory when feature flag is enabled', () => {
   const template = Template.fromStack(stack);
   const customResources = template.findResources('Custom::CDKBucketDeployment');
   const resourceName = Object.keys(customResources)[0];
-  
+
   // Verify the resource name includes the 512MiB suffix
   expect(resourceName).toContain('512MiB');
 });
@@ -1329,12 +1329,12 @@ test('resource id differentiates between feature flag and explicit memory', () =
   // The UUID logic should treat feature flag 512MB and explicit 512MB as the same
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 512 });
-  
+
   // Both custom resources should have the same UUID suffix (512MiB)
   const template = Template.fromStack(stack);
   const customResources = template.findResources('Custom::CDKBucketDeployment');
   const resourceNames = Object.keys(customResources);
-  
+
   // Both should contain 512MiB in their names
   expect(resourceNames[0]).toContain('512MiB');
   expect(resourceNames[1]).toContain('512MiB');
@@ -1345,7 +1345,7 @@ test('different memory configurations create separate singleton handlers', () =>
   const stack1 = new cdk.Stack(undefined, 'Stack1');
   const stack2 = new cdk.Stack(undefined, 'Stack2');
   stack2.node.setContext('@aws-cdk/aws-s3-deployment:default512MemoryLimit', true);
-  
+
   const bucket1 = new s3.Bucket(stack1, 'Dest1');
   const bucket2 = new s3.Bucket(stack2, 'Dest2');
 
@@ -1373,14 +1373,14 @@ test('different memory configurations create separate singleton handlers', () =>
 
   // Stack2 should have explicit 512MB
   Template.fromStack(stack2).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 512 });
-  
+
   // The UUIDs should be different (one with no suffix, one with -512MiB)
   const customResource1 = template1.findResources('Custom::CDKBucketDeployment');
   const customResource2 = Template.fromStack(stack2).findResources('Custom::CDKBucketDeployment');
-  
+
   const cr1Name = Object.keys(customResource1)[0];
   const cr2Name = Object.keys(customResource2)[0];
-  
+
   // One should have no memory suffix, the other should have -512MiB
   expect(cr1Name.includes('512MiB')).toBe(false);
   expect(cr2Name.includes('512MiB')).toBe(true);
