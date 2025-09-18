@@ -196,12 +196,12 @@ describe('Subnet V2 with custom IP and routing', () => {
         TestIpamPublicPool0588A338B: {
           Type: 'AWS::EC2::IPAMPool',
           Properties:
-                    {
-                      AddressFamily: 'ipv6',
-                      IpamScopeId: {
-                        'Fn::GetAtt': ['TestIpamDBF92BA8', 'PublicDefaultScopeId'],
-                      },
-                    },
+          {
+            AddressFamily: 'ipv6',
+            IpamScopeId: {
+              'Fn::GetAtt': ['TestIpamDBF92BA8', 'PublicDefaultScopeId'],
+            },
+          },
         },
         TestVPCD26570D8: { Type: 'AWS::EC2::VPC' },
         TestVPCipv6IpamFF061725: { Type: 'AWS::EC2::VPCCidrBlock' },
@@ -397,6 +397,162 @@ describe('Subnet V2 with custom IP and routing', () => {
         Ref: 'TestSubnet2A4BE4CA',
       },
       RouteTableId: { 'Fn::GetAtt': ['TestSubnetRouteTable5AF4379E', 'RouteTableId'] },
+    });
+  });
+
+  test('should create a subnet with availabilityZoneId', () => {
+    const testVpc = new vpc.VpcV2(stack, 'TestVPC', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+    });
+
+    new subnet.SubnetV2(stack, 'TestSubnet', {
+      vpc: testVpc,
+      availabilityZoneId: 'use1-az1',
+      ipv4CidrBlock: new subnet.IpCidr('10.1.0.0/24'),
+      subnetType: SubnetType.PUBLIC,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      CidrBlock: '10.1.0.0/24',
+      AvailabilityZoneId: 'use1-az1',
+      VpcId: {
+        'Fn::GetAtt': [
+          'TestVPCD26570D8',
+          'VpcId',
+        ],
+      },
+    });
+  });
+
+  test('should throw error when both availabilityZone and availabilityZoneId are provided', () => {
+    const testVpc = new vpc.VpcV2(stack, 'TestVPC', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+    });
+
+    expect(() => new subnet.SubnetV2(stack, 'TestSubnet', {
+      vpc: testVpc,
+      availabilityZone: 'us-east-1a',
+      availabilityZoneId: 'use1-az1',
+      ipv4CidrBlock: new subnet.IpCidr('10.1.0.0/24'),
+      subnetType: SubnetType.PUBLIC,
+    })).toThrow('Cannot specify both availabilityZone and availabilityZoneId. Use either availabilityZone or availabilityZoneId');
+  });
+
+  test('should throw error when neither availabilityZone nor availabilityZoneId are provided', () => {
+    const testVpc = new vpc.VpcV2(stack, 'TestVPC', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+    });
+
+    expect(() => new subnet.SubnetV2(stack, 'TestSubnet', {
+      vpc: testVpc,
+      ipv4CidrBlock: new subnet.IpCidr('10.1.0.0/24'),
+      subnetType: SubnetType.PUBLIC,
+    })).toThrow('Either availabilityZone or availabilityZoneId must be specified');
+  });
+
+  test('should create subnet with availabilityZoneId and IPv6', () => {
+    const testVpc = new vpc.VpcV2(stack, 'TestVPC', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6({
+        cidrBlockName: 'AmazonIpv6',
+      })],
+    });
+
+    new subnet.SubnetV2(stack, 'TestSubnet', {
+      vpc: testVpc,
+      availabilityZoneId: 'use1-az1',
+      ipv4CidrBlock: new subnet.IpCidr('10.1.0.0/24'),
+      ipv6CidrBlock: new subnet.IpCidr('2001:db8:1::/64'),
+      subnetType: SubnetType.PUBLIC,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      CidrBlock: '10.1.0.0/24',
+      AvailabilityZoneId: 'use1-az1',
+      Ipv6CidrBlock: '2001:db8:1::/64',
+      VpcId: {
+        'Fn::GetAtt': [
+          'TestVPCD26570D8',
+          'VpcId',
+        ],
+      },
+    });
+  });
+
+  test('should not set AvailabilityZone property when using availabilityZoneId', () => {
+    const testVpc = new vpc.VpcV2(stack, 'TestVPC', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+    });
+
+    new subnet.SubnetV2(stack, 'TestSubnet', {
+      vpc: testVpc,
+      availabilityZoneId: 'use1-az1',
+      ipv4CidrBlock: new subnet.IpCidr('10.1.0.0/24'),
+      subnetType: SubnetType.PUBLIC,
+    });
+
+    const template = Template.fromStack(stack);
+    const subnetResource = template.findResources('AWS::EC2::Subnet');
+    const subnetProps = Object.values(subnetResource)[0].Properties;
+
+    expect(subnetProps.AvailabilityZoneId).toBe('use1-az1');
+    expect(subnetProps.AvailabilityZone).toBeUndefined();
+  });
+
+  test('should handle different availabilityZoneId formats', () => {
+    const testVpc = new vpc.VpcV2(stack, 'TestVPC', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+    });
+
+    // Test with different region AZ ID formats
+    const testCases = [
+      { id: 'use1-az1', region: 'us-east-1' },
+      { id: 'usw2-az1', region: 'us-west-2' },
+      { id: 'euw1-az1', region: 'eu-west-1' },
+    ];
+
+    // Create all subnets first
+    testCases.forEach((testCase, index) => {
+      new subnet.SubnetV2(stack, `TestSubnet${index}`, {
+        vpc: testVpc,
+        availabilityZoneId: testCase.id,
+        ipv4CidrBlock: new subnet.IpCidr(`10.1.${index}.0/24`),
+        subnetType: SubnetType.PUBLIC,
+      });
+    });
+
+    // Then verify all subnets in a single template synthesis
+    const template = Template.fromStack(stack);
+    testCases.forEach((testCase, index) => {
+      template.hasResourceProperties('AWS::EC2::Subnet', {
+        AvailabilityZoneId: testCase.id,
+        CidrBlock: `10.1.${index}.0/24`,
+      });
+    });
+  });
+
+  test('should create multiple subnets with different availabilityZoneIds', () => {
+    const testVpc = new vpc.VpcV2(stack, 'TestVPC', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+    });
+
+    const azIds = ['use1-az1', 'use1-az2', 'use1-az3'];
+
+    azIds.forEach((azId, index) => {
+      new subnet.SubnetV2(stack, `MultiAzSubnet${index}`, {
+        vpc: testVpc,
+        availabilityZoneId: azId,
+        ipv4CidrBlock: new subnet.IpCidr(`10.1.${index}.0/24`),
+        subnetType: SubnetType.PRIVATE_ISOLATED,
+      });
+    });
+
+    // Verify all subnets were created with correct AZ IDs
+    azIds.forEach((azId, index) => {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        AvailabilityZoneId: azId,
+        CidrBlock: `10.1.${index}.0/24`,
+      });
     });
   });
 });
