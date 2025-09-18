@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "Stack.assets": {
+    "integ-cloudfront-response-completion-timeout.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "Stack.assets.json",
+        "file": "integ-cloudfront-response-completion-timeout.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "Stack": {
+    "integ-cloudfront-response-completion-timeout": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "Stack.template.json",
+        "templateFile": "integ-cloudfront-response-completion-timeout.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5884b9ddea03cd5fb1b10d061feb1df00ddf0b1aab1c8001f1aecf0f6329f96d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fce5ba9671d1ea9abce1ac791616e045bbd5e41cedf0132dabd628463a77f4f2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "Stack.assets"
+          "integ-cloudfront-response-completion-timeout.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,134 +31,117 @@
         }
       },
       "dependencies": [
-        "Stack.assets"
+        "integ-cloudfront-response-completion-timeout.assets"
       ],
       "metadata": {
-        "/Stack/DLQ": [
+        "/integ-cloudfront-response-completion-timeout/Function": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/Stack/DLQ/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DLQ581697C4"
-          }
-        ],
-        "/Stack/EventBusRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "description": "*",
-              "roleName": "*"
-            }
-          }
-        ],
-        "/Stack/EventBusRole/ImportEventBusRole": [
+        "/integ-cloudfront-response-completion-timeout/Function/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/Stack/EventBusRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventBusRole24766622"
-          }
-        ],
-        "/Stack/Bus": [
+        "/integ-cloudfront-response-completion-timeout/Function/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {}
+            "data": "*"
+          }
+        ],
+        "/integ-cloudfront-response-completion-timeout/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FunctionServiceRole675BB04A"
+          }
+        ],
+        "/integ-cloudfront-response-completion-timeout/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Function76856677"
+          }
+        ],
+        "/integ-cloudfront-response-completion-timeout/Function/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-cloudfront-response-completion-timeout/Function/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FunctionLogGroup55B80E27"
+          }
+        ],
+        "/integ-cloudfront-response-completion-timeout/Function/FunctionUrl": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-cloudfront-response-completion-timeout/Function/FunctionUrl/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FunctionFunctionUrl08F79AC9"
+          }
+        ],
+        "/integ-cloudfront-response-completion-timeout/Function/invoke-function-url": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FunctioninvokefunctionurlA70D8F37"
+          }
+        ],
+        "/integ-cloudfront-response-completion-timeout/Distribution": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToResourcePolicy": [
-                {}
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToResourcePolicy": [
-                {}
-              ]
-            }
+            "data": "*"
           }
         ],
-        "/Stack/Bus/Resource": [
+        "/integ-cloudfront-response-completion-timeout/Distribution/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BusEA82B648"
+            "data": "Distribution830FAC52"
           }
         ],
-        "/Stack/Bus/cdk-Statement1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "eventBus": "*",
-              "statement": "*",
-              "statementId": "*"
-            }
-          }
-        ],
-        "/Stack/Bus/cdk-Statement1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BuscdkStatement1D7D87B9D"
-          }
-        ],
-        "/Stack/Bus/cdk-Statement2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "eventBus": "*",
-              "statement": "*",
-              "statementId": "*"
-            }
-          }
-        ],
-        "/Stack/Bus/cdk-Statement2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BuscdkStatement2341A5B58"
-          }
-        ],
-        "/Stack/BootstrapVersion": [
+        "/integ-cloudfront-response-completion-timeout/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/Stack/CheckBootstrapVersion": [
+        "/integ-cloudfront-response-completion-timeout/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "Stack"
+      "displayName": "integ-cloudfront-response-completion-timeout"
     },
-    "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets": {
+    "CloudFrontResponseCompletionTimeoutTestDefaultTestDeployAssert28BE7FDC.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets.json",
+        "file": "CloudFrontResponseCompletionTimeoutTestDefaultTestDeployAssert28BE7FDC.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9": {
+    "CloudFrontResponseCompletionTimeoutTestDefaultTestDeployAssert28BE7FDC": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.template.json",
+        "templateFile": "CloudFrontResponseCompletionTimeoutTestDefaultTestDeployAssert28BE7FDC.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -167,7 +150,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets"
+          "CloudFrontResponseCompletionTimeoutTestDefaultTestDeployAssert28BE7FDC.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -176,23 +159,23 @@
         }
       },
       "dependencies": [
-        "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets"
+        "CloudFrontResponseCompletionTimeoutTestDefaultTestDeployAssert28BE7FDC.assets"
       ],
       "metadata": {
-        "/IntegTest-EventBusStack/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/CloudFrontResponseCompletionTimeoutTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/IntegTest-EventBusStack/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/CloudFrontResponseCompletionTimeoutTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "IntegTest-EventBusStack/DefaultTest/DeployAssert"
+      "displayName": "CloudFrontResponseCompletionTimeoutTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -205,6 +188,10 @@
       "properties": {
         "module": "aws-cdk-lib",
         "flags": {
+          "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "recommendedValue": true,
+            "explanation": "Pass signingProfileName to CfnSigningProfile"
+          },
           "@aws-cdk/core:newStyleStackSynthesis": {
             "recommendedValue": true,
             "explanation": "Switch to new stack synthesis method which enables CI/CD",
@@ -218,6 +205,10 @@
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "recommendedValue": true,
+            "explanation": "Disable implicit openListener when custom security groups are provided"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
@@ -671,5 +662,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1023.0"
+  "minimumCliVersion": "2.1027.0"
 }
