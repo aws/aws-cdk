@@ -1195,7 +1195,9 @@
     }
   ],
   "aws-smsvoice": [
-    "AWS::SMSVOICE"
+    {
+      "namespace": "AWS::SMSVOICE"
+    }
   ],
   "aws-sns": [
     {
