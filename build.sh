@@ -113,8 +113,8 @@ if [ "$ci" == "true" ]; then
 fi
 
 echo "============================================================================================="
-echo "building..."
-time npx lerna run $bail --concurrency=$concurrency $runtarget $flags || fail
+echo "building... 2"
+time npx lerna run $bail --concurrency=2 $runtarget $flags || fail
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh
