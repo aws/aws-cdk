@@ -600,6 +600,19 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
 }));
 ```
 
+The `displayLabelsOnChart` property can be set to `true` to show labels on the chart. Note that this only has an effect when the `view` property is set to `cloudwatch.GraphWidgetView.PIE`.
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
+  // ...
+
+  view: cloudwatch.GraphWidgetView.PIE,
+  displayLabelsOnChart: true,
+}));
+```
+
 The `start` and `end` properties can be used to specify the time range for each graph widget independently from those of the dashboard.
 The parameters can be specified at `GraphWidget`, `GaugeWidget`, and `SingleValueWidget`.
 

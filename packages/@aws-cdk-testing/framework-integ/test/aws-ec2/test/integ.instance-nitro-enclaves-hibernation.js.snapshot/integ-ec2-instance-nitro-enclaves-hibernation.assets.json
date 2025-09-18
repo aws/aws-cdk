@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "integ-ec2-instance-nitro-enclaves-hibernation/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "dd63a9d6c650c111517afa61fb89e7cd70c43ed31a7d4acbf801545652236727": {
+    "33fc7b10027d143a3d0d556213069b3a2a06aebbd2ae6596902ce802eab04e36": {
       "displayName": "integ-ec2-instance-nitro-enclaves-hibernation Template",
       "source": {
         "path": "integ-ec2-instance-nitro-enclaves-hibernation.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-4237d7bf": {
+        "current_account-current_region-77a1f859": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "dd63a9d6c650c111517afa61fb89e7cd70c43ed31a7d4acbf801545652236727.json",
+          "objectKey": "33fc7b10027d143a3d0d556213069b3a2a06aebbd2ae6596902ce802eab04e36.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

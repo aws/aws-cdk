@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "integ-bastionhost-disable-al2023-feature-flag/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "2dcf3b5336e2537d2f788f56bdb98cccb2d0ac53a8fdb95409cf428d669d187e": {
+    "9d688ecf0852058458e3b03b2d479bd82745ea115df281cb48aa67b938b244b6": {
       "displayName": "integ-bastionhost-disable-al2023-feature-flag Template",
       "source": {
         "path": "integ-bastionhost-disable-al2023-feature-flag.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-4c7a4e3d": {
+        "current_account-current_region-8cfa156d": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2dcf3b5336e2537d2f788f56bdb98cccb2d0ac53a8fdb95409cf428d669d187e.json",
+          "objectKey": "9d688ecf0852058458e3b03b2d479bd82745ea115df281cb48aa67b938b244b6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

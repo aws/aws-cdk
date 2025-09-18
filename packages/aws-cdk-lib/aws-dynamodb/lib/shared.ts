@@ -1,7 +1,8 @@
+import { Construct } from 'constructs';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { IResource } from '../../core';
+import { IResource, ValidationError } from '../../core';
 
 /**
  * Supported DynamoDB table operations.
@@ -158,6 +159,38 @@ export enum BillingMode {
 }
 
 /**
+ * DynamoDB's Contributor Insights Mode
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-dynamodb-table-contributorinsightsspecification.html
+ */
+export enum ContributorInsightsMode {
+  /**
+   * Emits metrics for all read and write requests, whether successful or throttled.
+   */
+  ACCESSED_AND_THROTTLED_KEYS = 'ACCESSED_AND_THROTTLED_KEYS',
+
+  /**
+   * Emits metrics for read and write requests that were throttled.
+   */
+  THROTTLED_KEYS = 'THROTTLED_KEYS',
+}
+
+/**
+ * Reference to ContributorInsightsSpecification
+ */
+export interface ContributorInsightsSpecification {
+  /**
+   * Indicates whether contributor insights is enabled.
+   * @default false
+   */
+  readonly enabled: boolean;
+  /**
+   * Indicates the type of metrics captured by contributor insights.
+   * @default ACCESSED_AND_THROTTLED_KEYS
+   */
+  readonly mode?: ContributorInsightsMode;
+}
+
+/**
  * The set of attributes that are projected into the index
  *
  * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Projection.html
@@ -196,6 +229,23 @@ export enum TableClass {
    * standard tables.
    */
   STANDARD_INFREQUENT_ACCESS = 'STANDARD_INFREQUENT_ACCESS',
+}
+
+/**
+ * Global table multi-region consistency mode.
+ *
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_HowItWorks.html#V2globaltables_HowItWorks.consistency-modes-mrsc
+ */
+export enum MultiRegionConsistency {
+  /**
+   * Default consistency mode for Global Tables.
+   * Multi-region eventual consistency.
+   */
+  EVENTUAL = 'EVENTUAL',
+  /**
+   * Multi-region strong consistency.
+   */
+  STRONG = 'STRONG',
 }
 
 /**
@@ -477,4 +527,18 @@ export interface ITable extends IResource {
    *
    */
   metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+}
+
+export function validateContributorInsights(
+  contributorInsights: boolean | undefined,
+  contributorInsightsSpecification: ContributorInsightsSpecification | undefined,
+  deprecatedPropertyName: string,
+  construct: Construct,
+): ContributorInsightsSpecification | undefined {
+  if (contributorInsightsSpecification !== undefined && contributorInsights !== undefined) {
+    throw new ValidationError(`\`contributorInsightsSpecification\` and \`${deprecatedPropertyName}\` are set. Use \`contributorInsightsSpecification\` only.`, construct);
+  }
+
+  return contributorInsightsSpecification ??
+    (contributorInsights !== undefined ? { enabled: contributorInsights } : undefined);
 }

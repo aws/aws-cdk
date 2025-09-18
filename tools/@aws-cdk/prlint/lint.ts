@@ -3,8 +3,7 @@ import { findModulePath, moduleStability } from './module';
 import { breakingModules } from './parser';
 import { CheckRun, GitHubFile, GitHubPr, Review, sumChanges, summarizeRunConclusions } from "./github";
 import { TestResult, ValidationCollector } from './results';
-import { CODE_BUILD_CONTEXT, CODECOV_CHECKS, Exemption } from './constants';
-import { StatusEvent } from '@octokit/webhooks-definitions/schema';
+import { CODE_BUILD_WORKFLOW_FILE, CODECOV_CHECKS, Exemption } from './constants';
 import { LinterActions, mergeLinterActions, PR_FROM_MAIN_ERROR, PullRequestLinterBase } from './linter-base';
 
 /**
@@ -20,21 +19,15 @@ export class PullRequestLinter extends PullRequestLinterBase {
    * @param sha the commit sha to evaluate
    */
   private async codeBuildJobSucceeded(sha: string): Promise<boolean> {
-    const statuses = await this.client.repos.listCommitStatusesForRef({
+    const statuses = await this.client.actions.listWorkflowRuns({
       owner: this.prParams.owner,
       repo: this.prParams.repo,
-      ref: sha,
+      head_sha: sha,
+      workflow_id: CODE_BUILD_WORKFLOW_FILE,
     });
-    let status = statuses.data.filter(status => status.context === CODE_BUILD_CONTEXT).map(status => status.state);
-    console.log("CodeBuild Commit Statuses: ", status);
-    return statuses.data.some(status => status.context === CODE_BUILD_CONTEXT && status.state === 'success');
-  }
-
-  public async validateStatusEvent(status: StatusEvent): Promise<LinterActions> {
-    if (status.context === CODE_BUILD_CONTEXT && status.state === 'success') {
-      return this.assessNeedsReview();
-    }
-    return {};
+    let conclusions = statuses.data.workflow_runs.filter(run => run.status === 'completed').map(run => run.conclusion);
+    console.log("CodeBuild Commit Conclusions: ", conclusions);
+    return conclusions.some(conclusion => conclusion === 'success');
   }
 
   /**

@@ -386,4 +386,56 @@ describe('Job', () => {
       }).toThrow(new Error('Ray jobs only support Z.2X worker type'));
     });
   });
+
+  describe('Create new Ray Job with metrics control', () => {
+    test('Default behavior should include metrics (backward compatibility)', () => {
+      new glue.RayJob(stack, 'RayJob', {
+        role,
+        script,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({
+          '--enable-metrics': '',
+          '--enable-observability-metrics': 'true',
+        }),
+      });
+    });
+
+    test('Should exclude metrics when enableMetrics is false', () => {
+      new glue.RayJob(stack, 'RayJob', {
+        role,
+        script,
+        enableMetrics: false,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({
+          '--enable-observability-metrics': 'true',
+        }),
+      });
+
+      // Verify that --enable-metrics is NOT present
+      const template = Template.fromStack(stack);
+      const jobs = template.findResources('AWS::Glue::Job');
+      const jobResource = Object.values(jobs)[0] as any;
+      expect(jobResource.Properties.DefaultArguments).not.toHaveProperty('--enable-metrics');
+    });
+
+    test('Should exclude both metrics when both are disabled', () => {
+      new glue.RayJob(stack, 'RayJob', {
+        role,
+        script,
+        enableMetrics: false,
+        enableObservabilityMetrics: false,
+      });
+
+      // Verify that neither metrics argument is present
+      const template = Template.fromStack(stack);
+      const jobs = template.findResources('AWS::Glue::Job');
+      const jobResource = Object.values(jobs)[0] as any;
+      expect(jobResource.Properties.DefaultArguments).not.toHaveProperty('--enable-metrics');
+      expect(jobResource.Properties.DefaultArguments).not.toHaveProperty('--enable-observability-metrics');
+    });
+  });
 });

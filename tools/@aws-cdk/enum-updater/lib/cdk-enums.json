@@ -194,6 +194,85 @@
         "KNOWLEDGE_BASE_RESPONSE_GENERATION"
       ]
     },
+    "GuardrailAction": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts",
+      "enumLike": false,
+      "values": [
+        "BLOCK",
+        "ANONYMIZE",
+        "NONE"
+      ]
+    },
+    "TierConfig": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts",
+      "enumLike": false,
+      "values": [
+        "CLASSIC",
+        "STANDARD"
+      ]
+    },
+    "ContentFilterStrength": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts",
+      "enumLike": false,
+      "values": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH"
+      ]
+    },
+    "ModalityType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts",
+      "enumLike": false,
+      "values": [
+        "TEXT",
+        "IMAGE"
+      ]
+    },
+    "ContentFilterType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts",
+      "enumLike": false,
+      "values": [
+        "SEXUAL",
+        "VIOLENCE",
+        "HATE",
+        "INSULTS",
+        "MISCONDUCT",
+        "PROMPT_ATTACK"
+      ]
+    },
+    "ManagedWordFilterType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts",
+      "enumLike": false,
+      "values": [
+        "PROFANITY"
+      ]
+    },
+    "ContextualGroundingFilterType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts",
+      "enumLike": false,
+      "values": [
+        "GROUNDING",
+        "RELEVANCE"
+      ]
+    },
+    "CrossRegionInferenceProfileRegion": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/cross-region-inference-profile.ts",
+      "enumLike": false,
+      "values": [
+        "eu",
+        "us",
+        "apac"
+      ]
+    },
+    "InferenceProfileType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/inference-profile.ts",
+      "enumLike": false,
+      "values": [
+        "SYSTEM_DEFINED",
+        "APPLICATION"
+      ]
+    },
     "VectorType": {
       "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts",
       "enumLike": false,
@@ -238,6 +317,92 @@
       "enumLike": true,
       "values": [
         "SESSION_SUMMARY"
+      ]
+    },
+    "Topic": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts",
+      "enumLike": true,
+      "values": [
+        "FINANCIAL_ADVICE",
+        "INAPPROPRIATE_CONTENT",
+        "LEGAL_ADVICE",
+        "MEDICAL_ADVICE",
+        "POLITICAL_ADVICE"
+      ]
+    },
+    "GeneralPIIType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts",
+      "enumLike": true,
+      "values": [
+        "ADDRESS",
+        "AGE",
+        "DRIVER_ID",
+        "EMAIL",
+        "LICENSE_PLATE",
+        "NAME",
+        "PASSWORD",
+        "PHONE",
+        "USERNAME",
+        "VEHICLE_IDENTIFICATION_NUMBER"
+      ]
+    },
+    "FinancePIIType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts",
+      "enumLike": true,
+      "values": [
+        "CREDIT_DEBIT_CARD_CVV",
+        "CREDIT_DEBIT_CARD_EXPIRY",
+        "CREDIT_DEBIT_CARD_NUMBER",
+        "PIN",
+        "SWIFT_CODE",
+        "INTERNATIONAL_BANK_ACCOUNT_NUMBER"
+      ]
+    },
+    "InformationTechnologyPIIType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts",
+      "enumLike": true,
+      "values": [
+        "URL",
+        "IP_ADDRESS",
+        "MAC_ADDRESS",
+        "AWS_ACCESS_KEY",
+        "AWS_SECRET_KEY"
+      ]
+    },
+    "USASpecificPIIType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts",
+      "enumLike": true,
+      "values": [
+        "US_BANK_ACCOUNT_NUMBER",
+        "US_BANK_ROUTING_NUMBER",
+        "US_INDIVIDUAL_TAX_IDENTIFICATION_NUMBER",
+        "US_PASSPORT_NUMBER",
+        "US_SOCIAL_SECURITY_NUMBER"
+      ]
+    },
+    "CanadaSpecificPIIType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts",
+      "enumLike": true,
+      "values": [
+        "CA_HEALTH_NUMBER",
+        "CA_SOCIAL_INSURANCE_NUMBER"
+      ]
+    },
+    "UKSpecificPIIType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts",
+      "enumLike": true,
+      "values": [
+        "UK_NATIONAL_HEALTH_SERVICE_NUMBER",
+        "UK_NATIONAL_INSURANCE_NUMBER",
+        "UK_UNIQUE_TAXPAYER_REFERENCE_NUMBER"
+      ]
+    },
+    "DefaultPromptRouterIdentifier": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/prompt-router.ts",
+      "enumLike": true,
+      "values": [
+        "ANTHROPIC_CLAUDE_V1",
+        "META_LLAMA_3_1"
       ]
     },
     "BedrockFoundationModel": {
@@ -366,6 +531,7 @@
         "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_28K",
         "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_200K",
         "ANTHROPIC_CLAUDE_OPUS_4_20250514_V1_0",
+        "ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0",
         "ANTHROPIC_CLAUDE_INSTANT_V1",
         "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
         "COHERE_COMMAND_V14",
@@ -380,6 +546,8 @@
         "COHERE_EMBED_MULTILINGUAL_V3",
         "COHERE_EMBED_MULTILINGUAL_V3_0_512",
         "DEEP_SEEK_R1_V1_0",
+        "OPENAI_GPT_OSS_120B_1",
+        "OPENAI_GPT_OSS_20B_1",
         "LUMA_RAY_V2_0",
         "META_LLAMA_2_13B_V1",
         "META_LLAMA_2_13B_V1_0_4K",
@@ -627,6 +795,10 @@
         "r7i",
         "memory7-intel",
         "r7iz",
+        "memory8-intel-base",
+        "r8i",
+        "memory8-intel-flex",
+        "r8i-flex",
         "memory7-amd",
         "r7a",
         "memory8-graviton",
@@ -713,6 +885,8 @@
         "i7i",
         "storage8-graviton",
         "i8g",
+        "storage8-graviton-storage-optimized",
+        "i8ge",
         "burstable2",
         "t2",
         "burstable3",
@@ -799,6 +973,10 @@
         "m7gd",
         "standard8-graviton4-nvme-drive",
         "m8gd",
+        "standard8-intel",
+        "m8i",
+        "standard8-intel-flex",
+        "m8i-flex",
         "standard7-intel",
         "m7i",
         "standard7-intel-flex",
@@ -2480,7 +2658,8 @@
         "V1_29",
         "V1_30",
         "V1_31",
-        "V1_32"
+        "V1_32",
+        "V1_33"
       ]
     }
   },
@@ -2543,8 +2722,14 @@
         "G.2X",
         "G.4X",
         "G.8X",
+        "G.12X",
+        "G.16X",
         "G.025X",
-        "Z.2X"
+        "Z.2X",
+        "R.1X",
+        "R.2X",
+        "R.4X",
+        "R.8X"
       ]
     },
     "JobState": {
@@ -3519,6 +3704,21 @@
         "aws:kms",
         "AES256"
       ]
+    },
+    "OpenTableFormat": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts",
+      "enumLike": false,
+      "values": [
+        "ICEBERG"
+      ]
+    },
+    "Status": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts",
+      "enumLike": false,
+      "values": [
+        "enabled",
+        "disabled"
+      ]
     }
   },
   "sagemaker": {
@@ -3671,7 +3871,8 @@
         "nodejs18.x",
         "python3.9",
         "python3.10",
-        "python3.11"
+        "python3.11",
+        "python3.13"
       ]
     },
     "ComponentType": {
@@ -4057,6 +4258,22 @@
         "WHEN_NO_MATCH",
         "NEVER",
         "WHEN_NO_TEMPLATES"
+      ]
+    },
+    "Period": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/usage-plan.ts",
+      "enumLike": false,
+      "values": [
+        "DAY",
+        "WEEK",
+        "MONTH"
+      ]
+    },
+    "UsagePlanKeyType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/usage-plan.ts",
+      "enumLike": false,
+      "values": [
+        "API_KEY"
       ]
     },
     "PayloadFormatVersion": {
@@ -4783,7 +5000,8 @@
       "path": "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/job-queue.ts",
       "enumLike": false,
       "values": [
-        "CANCEL"
+        "CANCEL",
+        "TERMINATE"
       ]
     },
     "JobStateTimeLimitActionsReason": {
@@ -4987,7 +5205,8 @@
         "TLSv1.1_2016",
         "TLSv1.2_2018",
         "TLSv1.2_2019",
-        "TLSv1.2_2021"
+        "TLSv1.2_2021",
+        "TLSv1.3_2025"
       ]
     },
     "LambdaEdgeEventType": {
@@ -5490,6 +5709,17 @@
         "BUILD_LAMBDA_8GB",
         "BUILD_LAMBDA_10GB",
         "ATTRIBUTE_BASED_COMPUTE"
+      ]
+    },
+    "DockerServerComputeType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/compute-type.ts",
+      "enumLike": false,
+      "values": [
+        "BUILD_GENERAL1_SMALL",
+        "BUILD_GENERAL1_MEDIUM",
+        "BUILD_GENERAL1_LARGE",
+        "BUILD_GENERAL1_XLARGE",
+        "BUILD_GENERAL1_2XLARGE"
       ]
     },
     "EnvironmentType": {
@@ -6770,6 +7000,14 @@
         "PROVISIONED"
       ]
     },
+    "ContributorInsightsMode": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts",
+      "enumLike": false,
+      "values": [
+        "ACCESSED_AND_THROTTLED_KEYS",
+        "THROTTLED_KEYS"
+      ]
+    },
     "ProjectionType": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts",
       "enumLike": false,
@@ -6785,6 +7023,14 @@
       "values": [
         "STANDARD",
         "STANDARD_INFREQUENT_ACCESS"
+      ]
+    },
+    "MultiRegionConsistency": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts",
+      "enumLike": false,
+      "values": [
+        "EVENTUAL",
+        "STRONG"
       ]
     },
     "TableEncryption": {
@@ -6945,6 +7191,14 @@
         "EXTERNAL"
       ]
     },
+    "DeploymentStrategy": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts",
+      "enumLike": false,
+      "values": [
+        "ROLLING",
+        "BLUE_GREEN"
+      ]
+    },
     "PropagatedTagSource": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts",
       "enumLike": false,
@@ -7089,6 +7343,19 @@
       "values": [
         "enabled",
         "disabled"
+      ]
+    },
+    "DeploymentLifecycleStage": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/deployment-lifecycle-hook-target.ts",
+      "enumLike": false,
+      "values": [
+        "RECONCILE_SERVICE",
+        "PRE_SCALE_UP",
+        "POST_SCALE_UP",
+        "TEST_TRAFFIC_SHIFT",
+        "POST_TEST_TRAFFIC_SHIFT",
+        "PRODUCTION_TRAFFIC_SHIFT",
+        "POST_PRODUCTION_TRAFFIC_SHIFT"
       ]
     },
     "EnvironmentFileType": {
@@ -7983,7 +8250,8 @@
       "enumLike": false,
       "values": [
         "Active",
-        "Inactive"
+        "Inactive",
+        "Expired"
       ]
     },
     "Effect": {
@@ -8061,7 +8329,10 @@
         "HMAC_256",
         "HMAC_384",
         "HMAC_512",
-        "SM2"
+        "SM2",
+        "ML_DSA_44",
+        "ML_DSA_65",
+        "ML_DSA_87"
       ]
     },
     "KeyUsage": {
@@ -8095,6 +8366,7 @@
         "package-lock.json",
         "yarn.lock",
         "bun.lockb",
+        "bun.lock",
         "pnpm-lock.yaml"
       ]
     },
@@ -8420,7 +8692,9 @@
         "VERSION_1_0_275_0",
         "VERSION_1_0_295_0",
         "VERSION_1_0_317_0",
-        "VERSION_1_0_333_0"
+        "VERSION_1_0_333_0",
+        "VERSION_1_0_391_0",
+        "VERSION_1_0_404_0"
       ]
     },
     "RuntimeManagementMode": {
@@ -8495,7 +8769,12 @@
       "values": [
         "BASIC_AUTH",
         "CLIENT_CERTIFICATE_TLS_AUTH",
-        "SERVER_ROOT_CA_CERTIFICATE"
+        "SERVER_ROOT_CA_CERTIFICATE",
+        "VIRTUAL_HOST",
+        "SASL_SCRAM_256_AUTH",
+        "SASL_SCRAM_512_AUTH",
+        "VPC_SECURITY_GROUP",
+        "VPC_SUBNET"
       ]
     },
     "KafkaSchemaValidationAttribute": {
@@ -8973,6 +9252,14 @@
         "open-source-rds-extended-support-disabled"
       ]
     },
+    "ProxyEndpointTargetRole": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy-endpoint.ts",
+      "enumLike": false,
+      "values": [
+        "READ_WRITE",
+        "READ_ONLY"
+      ]
+    },
     "ClientPasswordAuthType": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.ts",
       "enumLike": false,
@@ -8980,7 +9267,8 @@
         "MYSQL_NATIVE_PASSWORD",
         "POSTGRES_SCRAM_SHA_256",
         "POSTGRES_MD5",
-        "SQL_SERVER_AUTHENTICATION"
+        "SQL_SERVER_AUTHENTICATION",
+        "MYSQL_CACHING_SHA2_PASSWORD"
       ]
     },
     "AuroraCapacityUnit": {
@@ -9132,7 +9420,8 @@
         "VER_3_08_0",
         "VER_3_08_1",
         "VER_3_08_2",
-        "VER_3_09_0"
+        "VER_3_09_0",
+        "VER_3_10_0"
       ]
     },
     "AuroraPostgresEngineVersion": {
@@ -9213,6 +9502,7 @@
         "VER_13_17",
         "VER_13_18",
         "VER_13_20",
+        "VER_13_21",
         "VER_14_3",
         "VER_14_4",
         "VER_14_5",
@@ -9227,6 +9517,7 @@
         "VER_14_14",
         "VER_14_15",
         "VER_14_17",
+        "VER_14_18",
         "VER_15_2",
         "VER_15_3",
         "VER_15_4",
@@ -9237,6 +9528,7 @@
         "VER_15_9",
         "VER_15_10",
         "VER_15_12",
+        "VER_15_13",
         "VER_16_0",
         "VER_16_1",
         "VER_16_2",
@@ -9248,6 +9540,8 @@
         "VER_16_6_LIMITLESS",
         "VER_16_8",
         "VER_16_8_LIMITLESS",
+        "VER_16_9",
+        "VER_16_9_LIMITLESS",
         "VER_17_1",
         "VER_17_2",
         "VER_17_4",
@@ -9375,7 +9669,8 @@
         "VER_11_4_3",
         "VER_11_4_4",
         "VER_11_4_5",
-        "VER_11_4_7"
+        "VER_11_4_7",
+        "VER_11_8_3"
       ]
     },
     "MysqlEngineVersion": {
@@ -9460,9 +9755,11 @@
         "VER_8_0_40",
         "VER_8_0_41",
         "VER_8_0_42",
+        "VER_8_0_43",
         "VER_8_4_3",
         "VER_8_4_4",
-        "VER_8_4_5"
+        "VER_8_4_5",
+        "VER_8_4_6"
       ]
     },
     "PostgresEngineVersion": {
@@ -9605,6 +9902,7 @@
         "VER_13_19",
         "VER_13_20",
         "VER_13_21",
+        "VER_13_22",
         "VER_14",
         "VER_14_1",
         "VER_14_2",
@@ -9624,6 +9922,7 @@
         "VER_14_16",
         "VER_14_17",
         "VER_14_18",
+        "VER_14_19",
         "VER_15",
         "VER_15_2",
         "VER_15_3",
@@ -9637,6 +9936,7 @@
         "VER_15_11",
         "VER_15_12",
         "VER_15_13",
+        "VER_15_14",
         "VER_16",
         "VER_16_1",
         "VER_16_2",
@@ -9647,12 +9947,14 @@
         "VER_16_7",
         "VER_16_8",
         "VER_16_9",
+        "VER_16_10",
         "VER_17",
         "VER_17_1",
         "VER_17_2",
         "VER_17_3",
         "VER_17_4",
-        "VER_17_5"
+        "VER_17_5",
+        "VER_17_6"
       ]
     },
     "OracleLegacyEngineVersion": {
@@ -9771,6 +10073,7 @@
         "VER_19_0_0_0_2024_07_R1",
         "VER_19_0_0_0_2024_10_R1",
         "VER_19_0_0_0_2025_01_R1",
+        "VER_19_0_0_0_2025_07_R1",
         "VER_21",
         "VER_21_0_0_0_2022_01_R1",
         "VER_21_0_0_0_2022_04_R1",
@@ -9785,7 +10088,8 @@
         "VER_21_0_0_0_2024_04_R1",
         "VER_21_0_0_0_2024_07_R1",
         "VER_21_0_0_0_2024_10_R1",
-        "VER_21_0_0_0_2025_01_R1"
+        "VER_21_0_0_0_2025_01_R1",
+        "VER_21_0_0_0_2025_07_R1"
       ]
     },
     "SqlServerEngineVersion": {
@@ -9831,6 +10135,8 @@
         "VER_13_00_6445_1_V1",
         "VER_13_00_6450_1_V1",
         "VER_13_00_6455_2_V1",
+        "VER_13_00_6460_7_V1",
+        "VER_13_00_6465_1_V1",
         "VER_14",
         "VER_14_00_1000_169_V1",
         "VER_14_00_3015_40_V1",
@@ -9851,6 +10157,8 @@
         "VER_14_00_3475_1_V1",
         "VER_14_00_3480_1_V1",
         "VER_14_00_3485_1_V1",
+        "VER_14_00_3495_9_V1",
+        "VER_14_00_3500_1_V1",
         "VER_15",
         "VER_15_00_4043_16_V1",
         "VER_15_00_4355_3_V1",
@@ -9874,6 +10182,8 @@
         "VER_15_00_4415_2_V1",
         "VER_15_00_4420_2_V1",
         "VER_15_00_4430_1_V1",
+        "VER_15_00_4435_7_V1",
+        "VER_15_00_4440_1_V1",
         "VER_16",
         "VER_16_00_4085_2_V1",
         "VER_16_00_4095_4_V1",
@@ -9887,7 +10197,10 @@
         "VER_16_00_4150_1_V1",
         "VER_16_00_4165_4_V1",
         "VER_16_00_4175_1_V1",
-        "VER_16_00_4185_3_V1"
+        "VER_16_00_4185_3_V1",
+        "VER_16_00_4195_2_V1",
+        "VER_16_00_4205_1_V1",
+        "VER_16_00_4210_1_V1"
       ]
     },
     "DatabaseInstanceEngine": {
@@ -11038,6 +11351,14 @@
     }
   },
   "synthetics": {
+    "BrowserType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
+      "enumLike": false,
+      "values": [
+        "CHROME",
+        "FIREFOX"
+      ]
+    },
     "Cleanup": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
       "enumLike": false,
@@ -11090,8 +11411,11 @@
         "SYNTHETICS_NODEJS_PUPPETEER_8_0",
         "SYNTHETICS_NODEJS_PUPPETEER_9_0",
         "SYNTHETICS_NODEJS_PUPPETEER_9_1",
+        "SYNTHETICS_NODEJS_PUPPETEER_10_0",
+        "SYNTHETICS_NODEJS_PUPPETEER_11_0",
         "SYNTHETICS_NODEJS_PLAYWRIGHT_1_0",
         "SYNTHETICS_NODEJS_PLAYWRIGHT_2_0",
+        "SYNTHETICS_NODEJS_PLAYWRIGHT_3_0",
         "SYNTHETICS_PYTHON_SELENIUM_1_0",
         "SYNTHETICS_PYTHON_SELENIUM_1_1",
         "SYNTHETICS_PYTHON_SELENIUM_1_2",
@@ -11931,7 +12255,8 @@
         "V1_4_2_0",
         "V1_4_3_0",
         "V1_4_4_0",
-        "V1_4_5_0"
+        "V1_4_5_0",
+        "V1_4_5_1"
       ]
     },
     "LogType": {
