@@ -14,16 +14,16 @@
         }
       }
     },
-    "961a0daaa29ff530e921554142e2e2395bd88ca5a627e43ed6fe659d08ad57cc": {
-      "displayName": "EmrCreateClusterTestAutoDeletionPolicyIdleTimeoutDefaultTestDeployAssert01F5278A Template",
+    "4c8bc90d1e709cfa7b8bba13f20662da6bbfa2e6e05019475606cded83bcd0e1": {
+      "displayName": "emrcreateclusterebsintegDefaultTestDeployAssert7DC4C06C Template",
       "source": {
-        "path": "EmrCreateClusterTestAutoDeletionPolicyIdleTimeoutDefaultTestDeployAssert01F5278A.template.json",
+        "path": "emrcreateclusterebsintegDefaultTestDeployAssert7DC4C06C.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-9cf09e7a": {
+        "current_account-current_region-708bf0c1": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "961a0daaa29ff530e921554142e2e2395bd88ca5a627e43ed6fe659d08ad57cc.json",
+          "objectKey": "4c8bc90d1e709cfa7b8bba13f20662da6bbfa2e6e05019475606cded83bcd0e1.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
