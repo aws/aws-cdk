@@ -96,7 +96,7 @@ jobs:
         run: /bin/bash ./build.sh --ci --skip-test --skip-prereqs --skip-compat
 
       - name: Run deployment integration tests
-        run: yarn deployment-integ
+        run: node tools/@aws-cdk/deployment-integ/bin/deployment-integ.js
         env:
           CDK_ATMOSPHERE_ENDPOINT: ${{ vars.CDK_ATMOSPHERE_ENDPOINT }}
           CDK_ATMOSPHERE_POOL: ${{ vars.CDK_ATMOSPHERE_POOL}}

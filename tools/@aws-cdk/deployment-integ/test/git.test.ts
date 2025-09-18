@@ -6,7 +6,7 @@ import { expectedChangedSnapshots } from './git-diff-expected-changed-snapshots'
 
 jest.mock('../lib/git.ts');
 
-describe('main', () => {
+describe('Ingreation Test Snapshot', () => {
   beforeEach(() => {
     (gitDiff as jest.Mock).mockImplementation(gitDiffMock);
   });

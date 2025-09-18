@@ -32,8 +32,7 @@ export const runInteg = async () => {
   console.log(`Detected changed snapshots:\n${changedSnapshotPaths.join('\n')}`);
 
   if (changedSnapshotPaths.length == 0) {
-    console.log('No snapshots changes were made, skipping deployment integ test.');
-    return;
+    throw new Error('No snapshots changed, skipping deployment integ test.');
   }
 
   const spawnProcess = spawn('yarn', ['integ-runner', '--directory', 'packages', '--force', ...changedSnapshotPaths], {

@@ -11,7 +11,7 @@ jest.mock('../lib/atmosphere');
 jest.mock('../lib/git.ts');
 jest.mock('../lib/integ-run');
 
-describe('main', () => {
+describe('Atmosphere Allocation', () => {
   let mockAtmosphereAllocation: AtmosphereAllocationMock;
 
   beforeEach(() => {
