@@ -26,11 +26,19 @@ jobs:
       PR_BUILD: true
 
     steps:
-      - name: Checkout code 
+      - name: Checkout BASE
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+          path: base
+
+      - name: Checkout HEAD
         uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
+          path: head
       
       - name: Assume Atmosphere Role
         id: creds
@@ -92,11 +100,17 @@ jobs:
           (command -v sysctl || sudo apt-get update && sudo apt-get install -y procps) && \
           sudo sysctl -w vm.max_map_count=2251954
 
-      - name: Build
+      - name: Build BASE
         run: /bin/bash ./build.sh --ci --skip-test --skip-prereqs --skip-compat
+        working-directory: base
 
-      - name: Run deployment integration tests
-        run: node tools/@aws-cdk/deployment-integ/bin/deployment-integ.js
+      - name: Build HEAD
+        run: /bin/bash ./build.sh --ci --skip-test --skip-prereqs --skip-compat
+        working-directory: head
+
+      - name: Run integ from BASE on HEAD tests
+        run: node ../base/tools/@aws-cdk/deployment-integ/bin/deployment-integ.js
+        working-directory: head
         env:
           CDK_ATMOSPHERE_ENDPOINT: ${{ vars.CDK_ATMOSPHERE_ENDPOINT }}
           CDK_ATMOSPHERE_POOL: ${{ vars.CDK_ATMOSPHERE_POOL}}
