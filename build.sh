@@ -114,7 +114,7 @@ fi
 
 echo "============================================================================================="
 echo "building... 2"
-time npx lerna run $bail --concurrency=2 $runtarget $flags || fail
+time npx lerna run $bail --concurrency=10 $runtarget $flags || fail
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh
