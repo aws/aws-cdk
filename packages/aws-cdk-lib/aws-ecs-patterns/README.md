@@ -87,6 +87,8 @@ If you need to encrypt the traffic between the load balancer and the ECS tasks, 
 To configure blue/green deployments for your ApplicationLoadBalanced services, you can use the `blueGreenDeployment` property. This enables zero-downtime deployments by routing traffic between two identical environments.
 
 ```ts
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+
 declare const cluster: ecs.Cluster;
 declare const alternateTargetGroup: elbv2.ApplicationTargetGroup;
 declare const productionListener: elbv2.ApplicationListenerRule;
