@@ -598,13 +598,16 @@ export class BucketDeployment extends Construct {
     // if the user specifes a custom memory limit, we define another singleton handler
     // with this configuration. otherwise, it won't be possible to use multiple
     // configurations since we have a singleton.
-    const effectiveMemoryLimit = memoryLimit ?? 512;
-    if (effectiveMemoryLimit !== 512) {
-      if (cdk.Token.isUnresolved(effectiveMemoryLimit)) {
+    if (memoryLimit) {
+      if (cdk.Token.isUnresolved(memoryLimit)) {
         throw new ValidationError("Can't use tokens when specifying 'memoryLimit' since we use it to identify the singleton custom resource handler.", this);
       }
 
-      uuid += `-${effectiveMemoryLimit.toString()}MiB`;
+      uuid += `-${memoryLimit.toString()}MiB`;
+    } else if (FeatureFlags.of(this).isEnabled(cxapi.S3_DEPLOYMENT_DEFAULT_512_MEMORY_LIMIT)) {
+      // When feature flag is enabled and no explicit memory limit is set, we use 512MB
+      // This needs to be reflected in the UUID to ensure proper singleton behavior
+      uuid += '-512MiB';
     }
 
     // if the user specifies a custom ephemeral storage size, we define another singleton handler

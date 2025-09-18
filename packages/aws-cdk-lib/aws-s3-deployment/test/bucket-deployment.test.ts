@@ -1281,6 +1281,111 @@ test('resource id includes memory and vpc', () => {
   });
 });
 
+test('resource id includes memory when feature flag is enabled', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  stack.node.setContext('@aws-cdk/aws-s3-deployment:default512MemoryLimit', true);
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'DeployWithFeatureFlag', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    // No explicit memoryLimit - should use 512MB from feature flag
+  });
+
+  // THEN
+  // When feature flag is enabled, the UUID should include -512MiB suffix
+  const template = Template.fromStack(stack);
+  const customResources = template.findResources('Custom::CDKBucketDeployment');
+  const resourceName = Object.keys(customResources)[0];
+  
+  // Verify the resource name includes the 512MiB suffix
+  expect(resourceName).toContain('512MiB');
+});
+
+test('resource id differentiates between feature flag and explicit memory', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  stack.node.setContext('@aws-cdk/aws-s3-deployment:default512MemoryLimit', true);
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  // Deploy with feature flag (implicit 512MB)
+  new s3deploy.BucketDeployment(stack, 'DeployFeatureFlag', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  // Deploy with explicit 512MB
+  new s3deploy.BucketDeployment(stack, 'DeployExplicit', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    memoryLimit: 512,
+  });
+
+  // THEN
+  // Should create only ONE Lambda function since both use 512MB
+  // The UUID logic should treat feature flag 512MB and explicit 512MB as the same
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 512 });
+  
+  // Both custom resources should have the same UUID suffix (512MiB)
+  const template = Template.fromStack(stack);
+  const customResources = template.findResources('Custom::CDKBucketDeployment');
+  const resourceNames = Object.keys(customResources);
+  
+  // Both should contain 512MiB in their names
+  expect(resourceNames[0]).toContain('512MiB');
+  expect(resourceNames[1]).toContain('512MiB');
+});
+
+test('different memory configurations create separate singleton handlers', () => {
+  // GIVEN
+  const stack1 = new cdk.Stack(undefined, 'Stack1');
+  const stack2 = new cdk.Stack(undefined, 'Stack2');
+  stack2.node.setContext('@aws-cdk/aws-s3-deployment:default512MemoryLimit', true);
+  
+  const bucket1 = new s3.Bucket(stack1, 'Dest1');
+  const bucket2 = new s3.Bucket(stack2, 'Dest2');
+
+  // WHEN
+  // Deploy without feature flag (implicit 128MB via undefined)
+  new s3deploy.BucketDeployment(stack1, 'Deploy128', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket1,
+  });
+
+  // Deploy with feature flag (explicit 512MB)
+  new s3deploy.BucketDeployment(stack2, 'Deploy512', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket2,
+  });
+
+  // THEN
+  // Stack1 should have undefined MemorySize (AWS default 128MB)
+  const template1 = Template.fromStack(stack1);
+  const lambdaResources1 = template1.findResources('AWS::Lambda::Function');
+  const bucketDeploymentLambda1 = Object.values(lambdaResources1).find(resource =>
+    JSON.stringify(resource).includes('CustomCDKBucketDeployment'),
+  );
+  expect(bucketDeploymentLambda1?.Properties?.MemorySize).toBeUndefined();
+
+  // Stack2 should have explicit 512MB
+  Template.fromStack(stack2).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 512 });
+  
+  // The UUIDs should be different (one with no suffix, one with -512MiB)
+  const customResource1 = template1.findResources('Custom::CDKBucketDeployment');
+  const customResource2 = Template.fromStack(stack2).findResources('Custom::CDKBucketDeployment');
+  
+  const cr1Name = Object.keys(customResource1)[0];
+  const cr2Name = Object.keys(customResource2)[0];
+  
+  // One should have no memory suffix, the other should have -512MiB
+  expect(cr1Name.includes('512MiB')).toBe(false);
+  expect(cr2Name.includes('512MiB')).toBe(true);
+});
+
 test('bucket includes custom resource owner tag', () => {
   // GIVEN
   const stack = new cdk.Stack();
