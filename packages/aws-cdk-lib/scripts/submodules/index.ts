@@ -22,7 +22,7 @@ async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
   // README.md
   const readmePath = path.join(modulePath, 'README.md');
   if (!fs.existsSync(readmePath)) {
-    await createLibraryReadme(submodule.scopes[0], readmePath);
+    await createLibraryReadme(submodule.scopes[0].namespace, readmePath);
   }
 
   // index.ts
@@ -34,7 +34,7 @@ async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
   // lib/index.ts
   const sourcePath = path.join(modulePath, 'lib');
   if (!fs.existsSync(path.join(sourcePath, 'index.ts'))) {
-    const lines = submodule.scopes.map((s: string) => `// ${s} Cloudformation Resources`);
+    const lines = submodule.scopes.map(({ namespace }) => `// ${namespace} Cloudformation Resources`);
     lines.push(...submodule.files
       .map((f) => {
         // New codegen uses absolute paths
