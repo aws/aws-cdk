@@ -8,6 +8,7 @@ const stack = new cdk.Stack(app, 'integ-cfninclude-novalue-boolean');
 
 const templateFile = path.join(__dirname, 'test-templates', 'novalue-boolean.json');
 
+// Include a template that has a AWS::NoValue property in place of a boolean
 const cfnInclude = new CfnInclude(stack, 'Template', {
   templateFile,
 });
