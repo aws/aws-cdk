@@ -21,6 +21,7 @@ import {
   ObjectLiteral,
   Module,
   InterfaceType,
+  DocsSpec,
 } from '@cdklabs/typewriter';
 import { CDK_CORE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
@@ -44,6 +45,11 @@ export interface ITypeHost {
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
 
+export interface ResourceClassProps {
+  readonly suffix?: string;
+  readonly deprecated?: string;
+}
+
 export class ResourceClass extends ClassType {
   private readonly propsType: StructType;
   private readonly refInterface?: InterfaceType;
@@ -55,25 +61,26 @@ export class ResourceClass extends ClassType {
     scope: IScope,
     private readonly db: SpecDatabase,
     private readonly resource: Resource,
-    private readonly suffix?: string,
+    private readonly props: ResourceClassProps = {},
   ) {
     let refInterface: InterfaceType | undefined;
     if (shouldBuildReferenceInterface(resource)) {
       // IBucketRef { bucketRef: BucketRef }
       refInterface = new InterfaceType(scope, {
         export: true,
-        name: `I${resource.name}${suffix ?? ''}Ref`,
+        name: `I${resource.name}${props.suffix ?? ''}Ref`,
         extends: [CONSTRUCTS.IConstruct],
         docs: {
           summary: `Indicates that this resource can be referenced as a ${resource.name}.`,
           stability: Stability.Experimental,
+          ...maybeDeprecated(props.deprecated),
         },
       });
     }
 
     super(scope, {
       export: true,
-      name: classNameFromResource(resource, suffix),
+      name: classNameFromResource(resource, props.suffix),
       docs: {
         ...splitDocumentation(resource.documentation),
         stability: Stability.External,
@@ -81,6 +88,7 @@ export class ResourceClass extends ClassType {
         see: cloudFormationDocLink({
           resourceType: resource.cloudFormationType,
         }),
+        ...maybeDeprecated(props.deprecated),
       },
       extends: CDK_CORE.CfnResource,
       implements: [CDK_CORE.IInspectable, refInterface?.type, ...ResourceDecider.taggabilityInterfaces(resource)].filter(isDefined),
@@ -91,13 +99,14 @@ export class ResourceClass extends ClassType {
 
     this.propsType = new StructType(this.scope, {
       export: true,
-      name: propStructNameFromResource(this.resource, this.suffix),
+      name: propStructNameFromResource(this.resource, this.props.suffix),
       docs: {
         summary: `Properties for defining a \`${classNameFromResource(this.resource)}\``,
         stability: Stability.External,
         see: cloudFormationDocLink({
           resourceType: this.resource.cloudFormationType,
         }),
+        ...maybeDeprecated(props.deprecated),
       },
     });
 
@@ -183,10 +192,11 @@ export class ResourceClass extends ClassType {
     // BucketRef { bucketName, bucketArn }
     const refPropsStruct = new StructType(this.scope, {
       export: true,
-      name: `${this.resource.name}${this.suffix ?? ''}Reference`,
+      name: `${this.resource.name}${this.props.suffix ?? ''}Reference`,
       docs: {
         summary: `A reference to a ${this.resource.name} resource.`,
         stability: Stability.External,
+        ...maybeDeprecated(this.props.deprecated),
       },
     });
 
@@ -456,4 +466,28 @@ export class ResourceClass extends ClassType {
  */
 function isDefined<T>(x: T | undefined): x is T {
   return x !== undefined;
+}
+
+/**
+ * Compute stability taking into account deprecation status.
+ */
+function stability(isDeprecated: boolean = false, defaultStability: Stability = Stability.External): Stability {
+  if (isDeprecated) {
+    return Stability.Deprecated;
+  }
+  return defaultStability;
+}
+
+/**
+ * Returns deprecation props if deprecated.
+ */
+function maybeDeprecated(deprecationNotice?: string, defaultStability: Stability = Stability.External): Pick<DocsSpec, 'deprecated' | 'stability'> {
+  if (deprecationNotice) {
+    return {
+      deprecated: deprecationNotice,
+      stability: stability(Boolean(deprecationNotice), defaultStability),
+    };
+  }
+
+  return {};
 }
