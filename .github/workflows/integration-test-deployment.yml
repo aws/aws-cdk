@@ -118,7 +118,7 @@ jobs:
       
       - name: Build framework-integ (HEAD)
         working-directory: head
-        run: yarn --cwd packages/@aws-cdk-testing/framework-integ build
+        run: npx lerna run build --scope=@aws-cdk-testing/framework-integ 
 
       - name: Run integ from BASE on HEAD tests
         run: node ../base/tools/@aws-cdk/deployment-integ/bin/deployment-integ.js
