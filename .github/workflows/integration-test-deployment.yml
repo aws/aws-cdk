@@ -103,9 +103,14 @@ jobs:
           (command -v sysctl || sudo apt-get update && sudo apt-get install -y procps) && \
           sudo sysctl -w vm.max_map_count=2251954
 
-      - name: Build BASE
-        run: /bin/bash ./build.sh --ci --skip-test --skip-prereqs --skip-compat
+      # --- BASE: only what we need ---
+      - name: Install deps (BASE)
         working-directory: base
+        run: yarn install --frozen-lockfile
+      
+      - name: Build deployment-integ (BASE)
+        working-directory: base
+        run: yarn --cwd tools/@aws-cdk/deployment-integ build
 
       - name: Build HEAD
         run: /bin/bash ./build.sh --ci --skip-test --skip-prereqs --skip-compat
