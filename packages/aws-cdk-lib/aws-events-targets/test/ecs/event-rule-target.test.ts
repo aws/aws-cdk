@@ -1263,8 +1263,6 @@ test('it can override all possible ecs task properties via the input property', 
   }));
 
   // THEN
-  const template = Template.fromStack(stack);
-  debugger;
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
@@ -1289,14 +1287,14 @@ test('it can override all possible ecs task properties via the input property', 
             'Fn::Join': [
               '',
               [
-                '{"containerOverrides":[{"name":"TheContainer","command":["echo",<detail-event>]}],"cpu":"1024","ephemeralStorage":{"sizeInGiB":100},"executionRole":"',
+                '{"containerOverrides":[{"name":"TheContainer","command":["echo",<detail-event>]}],"cpu":"1024","ephemeralStorage":{"sizeInGiB":100},"executionRoleArn":"',
                 {
                   'Fn::GetAtt': [
                     'ExecutionRoleOverrideE576BCB8',
                     'Arn',
                   ],
                 },
-                '","inferenceAcceleratorOverrides":[{"deviceName":"device-name","deviceType":"device-type"}],"memory":"2048","taskRole":"',
+                '","inferenceAcceleratorOverrides":[{"deviceName":"device-name","deviceType":"device-type"}],"memory":"2048","taskRoleArn":"',
                 {
                   'Fn::GetAtt': [
                     'TaskRoleOverride9910DE20',
