@@ -2,19 +2,33 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as core from '@actions/core';
 
+// Extensible exemption rules for different AWS resources
+const EXEMPTION_RULES = {
+  'AWS::KMS::Key': {
+    docs: 'https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default',
+    isDefaultPolicy: (statement: any) => (
+      statement.Sid === 'Enable IAM User Permissions' &&
+      statement.Effect === 'Allow' &&
+      statement.Action === 'kms:*' &&
+      statement.Resource === '*'
+    )
+  }
+  // Add more resources here as needed:
+  // 'AWS::S3::Bucket': { ... },
+  // 'AWS::SNS::Topic': { ... }
+};
+
 export async function runScan(dataDir: string) {
   let issuesFound = 0;
-  let matches: Array<{ filePath: string, statements: any[] }> = [];
+  let matches: Array<{ filePath: string, statements: any[], resourceType?: string }> = [];
   let totalFiles = 0;
 
-  function isRootPrincipal(statement: any): boolean {
-    if (typeof statement !== 'object' || statement == null) return false;
-    if (statement.Effect !== 'Allow') return false;
-
-    const principal = statement.Principal;
+  function hasRootPrincipal(principal: any): boolean {
     if (typeof principal !== 'object' || principal == null) return false;
-
+    
     const awsPrincipal = principal.AWS;
+    
+    // Check Fn::Join patterns
     if (typeof awsPrincipal === 'object' && awsPrincipal['Fn::Join']) {
       const joinArgs = awsPrincipal['Fn::Join'];
       if (Array.isArray(joinArgs) && joinArgs.length === 2) {
@@ -25,28 +39,98 @@ export async function runScan(dataDir: string) {
         }
       }
     }
-
+    
+    // Check direct string patterns
+    if (typeof awsPrincipal === 'string') {
+      return awsPrincipal.includes(':root');
+    }
+    
+    // Check arrays
+    if (Array.isArray(awsPrincipal)) {
+      return awsPrincipal.some(p => typeof p === 'string' && p.includes(':root'));
+    }
+    
     return false;
   }
 
-  function findMatchingStatements(obj: any): any[] {
+  function hasCrossAccountWildcard(principal: any): boolean {
+    if (typeof principal !== 'object' || principal == null) return false;
+    
+    const awsPrincipal = principal.AWS;
+    
+    // Check for cross-account wildcards like "arn:aws:iam::*:root" or "*"
+    if (typeof awsPrincipal === 'string') {
+      return awsPrincipal === '*' || awsPrincipal.includes('arn:aws:iam::*');
+    }
+    
+    if (Array.isArray(awsPrincipal)) {
+      return awsPrincipal.some(p => 
+        typeof p === 'string' && (p === '*' || p.includes('arn:aws:iam::*'))
+      );
+    }
+    
+    return false;
+  }
+
+  function shouldExemptStatement(statement: any, resourceType: string): boolean {
+    const rule = EXEMPTION_RULES[resourceType as keyof typeof EXEMPTION_RULES];
+    if (!rule) return false;
+    
+    if (rule.isDefaultPolicy(statement) && hasRootPrincipal(statement.Principal)) {
+      core.info(`Exempting ${resourceType} default policy (see: ${rule.docs})`);
+      return true;
+    }
+    
+    return false;
+  }
+
+  function isDangerousRootAccess(statement: any, resourceType?: string): boolean {
+    if (typeof statement !== 'object' || statement == null) return false;
+    if (statement.Effect !== 'Allow') return false;
+    if (!statement.Principal) return false;
+
+    // Always flag cross-account wildcards - these are dangerous
+    if (hasCrossAccountWildcard(statement.Principal)) {
+      return true;
+    }
+
+    // Check for root access
+    if (!hasRootPrincipal(statement.Principal)) {
+      return false;
+    }
+
+    // Apply exemptions for known safe default policies
+    if (resourceType && shouldExemptStatement(statement, resourceType)) {
+      return false;
+    }
+
+    // Flag all other root access
+    return true;
+  }
+
+  function findMatchingStatements(obj: any, resourceType?: string): any[] {
     const results: any[] = [];
 
     if (Array.isArray(obj)) {
       for (const item of obj) {
-        results.push(...findMatchingStatements(item));
+        results.push(...findMatchingStatements(item, resourceType));
       }
     } else if (typeof obj === 'object' && obj !== null) {
+      // Detect resource type from CloudFormation template structure
+      if (obj.Type && typeof obj.Type === 'string') {
+        resourceType = obj.Type;
+      }
+      
       for (const [key, value] of Object.entries(obj)) {
         if (key === 'Statement') {
           const stmts = Array.isArray(value) ? value : [value];
           for (const stmt of stmts) {
-            if (isRootPrincipal(stmt)) {
-              results.push(stmt);
+            if (isDangerousRootAccess(stmt, resourceType)) {
+              results.push({ statement: stmt, resourceType });
             }
           }
         } else {
-          results.push(...findMatchingStatements(value));
+          results.push(...findMatchingStatements(value, resourceType));
         }
       }
     }
@@ -85,7 +169,12 @@ export async function runScan(dataDir: string) {
     const found = findMatchingStatements(data);
     if (found.length > 0) {
       core.info(`Match found in: ${filePath} (statements: ${found.length})`);
-      matches.push({ filePath, statements: found });
+      
+      // Extract statements and resource types
+      const statements = found.map(f => f.statement || f);
+      const resourceType = found.find(f => f.resourceType)?.resourceType;
+      
+      matches.push({ filePath, statements, resourceType });
       issuesFound += found.length;
     }
   });
@@ -93,7 +182,12 @@ export async function runScan(dataDir: string) {
   // Build human-readable detailed output
   let detailedOutput = '';
   for (const match of matches) {
-    detailedOutput += `File: ${match.filePath}\n`;
+    detailedOutput += `File: ${match.filePath}`;
+    if (match.resourceType) {
+      detailedOutput += ` (Resource: ${match.resourceType})`;
+    }
+    detailedOutput += '\n';
+    
     for (const stmt of match.statements) {
       detailedOutput += `${JSON.stringify(stmt, null, 2)} |n| `;
     }

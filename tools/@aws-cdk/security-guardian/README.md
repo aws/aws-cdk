@@ -4,6 +4,8 @@ A GitHub Action and CLI tool that helps detect broadly scoped IAM principals in 
 
 - Validating **changed** `*.template.json` files in pull requests using custom [cfn-guard v3](https://github.com/aws-cloudformation/cloudformation-guard) rules.
 - Detecting **broadly scoped IAM principals** using CloudFormation **intrinsic functions** (e.g., `Fn::Join` with `:root`).
+- **Cross-account wildcard detection** - Flags dangerous patterns like `"*"` or `"arn:aws:iam::*:root"`.
+- **Extensible exemption system** - Smart exemptions for AWS service default policies.
 
 ---
 
@@ -12,8 +14,35 @@ A GitHub Action and CLI tool that helps detect broadly scoped IAM principals in 
  Validates **only changed** templates in a PR  
  Supports **cfn-guard v3** with rule sets  
  Scans for **broad IAM principals using intrinsics**  
+ **Flags cross-account wildcards** - Always dangerous  
+ **Extensible exemptions** for AWS service defaults  
+ **Future-proof validation** - Detects when AWS changes default policies  
  Runs locally and in GitHub Actions  
  Outputs human-readable and machine-parsable summaries
+
+---
+
+## Security Checks
+
+### Always Flagged (High Risk)
+- **Cross-account wildcards**: `"*"` or `"arn:aws:iam::*:root"`
+- **Custom policies with root access**: Non-default policies granting root
+- **Broad principals in sensitive resources**: IAM roles, S3 buckets, etc.
+
+### Smart Exemptions (Configurable)
+- **AWS KMS default policies**: Standard root access for IAM integration
+- **Extensible for other services**: Easy to add S3, SNS, etc.
+
+### Adding New Exemptions
+```typescript
+const EXEMPTION_RULES = {
+  'AWS::KMS::Key': { /* existing */ },
+  'AWS::S3::Bucket': {
+    docs: 'https://docs.aws.amazon.com/s3/latest/userguide/bucket-policies.html',
+    isDefaultPolicy: (statement) => /* your logic */
+  }
+};
+```
 
 ---
 

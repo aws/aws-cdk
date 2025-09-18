@@ -2,9 +2,12 @@ name: 'Security Guardian'
 description: 'Security Guardian for custom or granular guard rules'
 
 inputs:
-  data_directory:
-    description: "Path to CloudFormation templates"
-    required: true
+  base_sha:
+    description: "Base commit id"
+    required: false
+  head_sha:
+    description: "Current changes commit id"
+    required: false
   rule_set_path:
     description: "Path to a single .guard file locally"
     required: true
