@@ -18,6 +18,7 @@ new cdk.CfnOutput(stack, 'BucketName', {
   value: bucket.ref,
 });
 
+// The fact that synthesis is successful means that AWS::NoValue is evaluated correctly.
 new IntegTest(app, 'CfnIncludeNoValueBooleanTest', {
   testCases: [stack],
 });
