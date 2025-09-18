@@ -55,6 +55,8 @@ function getInput(name: string, options?: { required?: boolean, default?: string
 async function run(): Promise<void> {
   const errors: string[] = [];
   let workingDir: string = './changed_templates';
+  let cfnGuardFailures = 0;
+  let intrinsicScannerFailures = 0;
 
   try {
     const ruleSetPath = getInput('rule_set_path', { default: './rules' });
@@ -72,6 +74,7 @@ async function run(): Promise<void> {
 
     if (!ruleSetPath) throw new Error("Input 'rule_set_path' must be provided.");
 
+    // Run CFN-Guard validation
     core.info(`Running cfn-guard with rule set: ${ruleSetPath}`);
     try {
       await exec.exec('cfn-guard', [
@@ -81,31 +84,50 @@ async function run(): Promise<void> {
         '--show-summary', showSummary,
         '--output-format', outputFormat
       ]);
+      core.info('✅ CFN-Guard validation passed');
     } catch (err) {
-      const message = `cfn-guard validation failed: ${(err as Error).message}`;
+      cfnGuardFailures = 1; // CFN-Guard returns non-zero exit code on failures
+      const message = `CFN-Guard validation failed: ${(err as Error).message}`;
       core.warning(message);
       errors.push(message);
     }
 
-    core.info(`Running scanner for intrinsics`);
+    // Run Intrinsic Scanner
+    core.info(`Running intrinsic scanner`);
     try {
       const issuesFound = await runScan(workingDir);
+      intrinsicScannerFailures = issuesFound;
       if (issuesFound > 0) {
-        const msg = `Intrinsic scan found ${issuesFound} issue(s).`;
+        const msg = `Intrinsic scanner found ${issuesFound} issue(s)`;
         core.warning(msg);
-        core.setOutput('issues_found', issuesFound);
         errors.push(msg);
+      } else {
+        core.info('✅ Intrinsic scanner passed');
       }
     } catch (err) {
-      const message = `Intrinsic scan failed: ${(err as Error).message}`;
+      const message = `Intrinsic scanner failed: ${(err as Error).message}`;
       core.warning(message);
       errors.push(message);
     }
 
+    // Generate Summary Report
+    core.info('\n' + '='.repeat(60));
+    core.info('🛡️  SECURITY GUARDIAN SUMMARY REPORT');
+    core.info('='.repeat(60));
+    core.info(`📊 CFN-Guard Failures: ${cfnGuardFailures > 0 ? '❌ ' + cfnGuardFailures : '✅ 0'}`);
+    core.info(`📊 Intrinsic Scanner Failures: ${intrinsicScannerFailures > 0 ? '❌ ' + intrinsicScannerFailures : '✅ 0'}`);
+    core.info(`📊 Total Issues Found: ${cfnGuardFailures + intrinsicScannerFailures}`);
+    core.info('='.repeat(60));
+
+    // Set outputs for GitHub Actions
+    core.setOutput('cfn_guard_failures', cfnGuardFailures);
+    core.setOutput('intrinsic_scanner_failures', intrinsicScannerFailures);
+    core.setOutput('total_failures', cfnGuardFailures + intrinsicScannerFailures);
+
     if (errors.length > 0) {
-      core.setFailed(`Action completed with issues: ${errors}`);
+      core.setFailed(`Security validation failed with ${cfnGuardFailures + intrinsicScannerFailures} total issues`);
     } else {
-      core.info('All validations passed.');
+      core.info('🎉 All security validations passed!');
     }
 
   } catch (fatal) {

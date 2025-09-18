@@ -10,26 +10,12 @@
 #   1. Use of account root in AWS principals
 #   2. Use of wildcards in AWS principals
 #   3. Use of wildcards as entire principal
-#   4. Allows specific role ARNs that are not root
-#   5. Catches use of !Join function to construct root ARNs
 #
 # Reports on:
 #    AWS::IAM::Role
 #
 # Evaluates:
 #    AWS CloudFormation
-#
-# Rule Parameters:
-#    None
-#
-# Scenarios:
-# a) SKIP: when there are no IAM Role resources
-# b) SKIP: when IAM Role resources only have service principals
-# c) PASS: when IAM Role resources with AWS principals use specific ARNs (not root or wildcards)
-# d) PASS: when IAM Role resources with AWS principals use specific role ARNs
-# e) FAIL: when any IAM Role resource uses account root in AWS principal
-# f) FAIL: when any IAM Role resource uses wildcard in AWS principal
-# g) FAIL: when any IAM Role resource uses wildcard as entire principal
 
 #
 # Select all IAM Role resources from incoming template
@@ -41,19 +27,92 @@ let iam_roles_no_broad_principals = Resources.*[ Type == 'AWS::IAM::Role'
 
 rule IAM_ROLE_NO_BROAD_PRINCIPALS when %iam_roles_no_broad_principals !empty {
     %iam_roles_no_broad_principals.Properties.AssumeRolePolicyDocument.Statement[*] {
-        when Principal exists {
-            # Check for wildcard as entire principal
-            when Principal is_string {
-              Principal != "*"
+        # Only check Allow statements - Deny statements with broad principals are actually secure
+        when Effect == "Allow" {
+            when Principal exists {
+                # Check for wildcard as entire principal
+                when Principal is_string {
+                  Principal != "*"
+                }
+                # Check if AWS principal exists
+                when Principal.AWS exists {
+                    # Check if AWS is a string
+                    when Principal.AWS is_string {
+                      Principal.AWS != "*"
+                      Principal.AWS != /(?i):root/
+                      Principal.AWS != /arn:aws:iam::\*:/
+                    }
+                    # Check if AWS is an array - only check string items
+                    when Principal.AWS is_list {
+                      when Principal.AWS[*] is_string {
+                          Principal.AWS[*] != "*"
+                          Principal.AWS[*] != /(?i):root/
+                          Principal.AWS[*] != /arn:aws:iam::\*:/
+                      } 
+                    }
+                }
             }
-          # Check if AWS principal exists
-          when Principal.AWS exists {
-            # Check if AWS is a string
-            when Principal.AWS is_string {
-              Principal.AWS != "*"
-              Principal.AWS != /(?i):root/
-            }
-          }
+        }
     }
-  }
+}
+
+#
+#####################################
+##        IAM POLICY RULES        ##
+#####################################
+# Rule Identifier:
+#    IAM_POLICY_NO_BROAD_PRINCIPALS
+#
+# Description:
+#   Checks CUSTOMER-MANAGED IAM policies for overly permissive principals.
+#   AWS Managed Policies are excluded as they're controlled by AWS.
+#   Only checks policies with PolicyDocument (customer-defined content).
+#
+# Reports on:
+#    AWS::IAM::Policy, AWS::IAM::ManagedPolicy (with custom PolicyDocument)
+#
+# Evaluates:
+#    AWS CloudFormation
+
+#
+# Select customer-managed IAM Policy resources (those with PolicyDocument)
+# AWS managed policies are referenced by ARN and don't have PolicyDocument in templates
+#
+let iam_policies_no_broad_principals = Resources.*[ 
+  Type in ['AWS::IAM::Policy', 'AWS::IAM::ManagedPolicy']
+  # Only check policies with PolicyDocument (customer-defined content)
+  Properties.PolicyDocument exists
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "IAM_POLICY_NO_BROAD_PRINCIPALS"
+]
+
+rule IAM_POLICY_NO_BROAD_PRINCIPALS when %iam_policies_no_broad_principals !empty {
+    %iam_policies_no_broad_principals.Properties.PolicyDocument.Statement[*] {
+        # Only check Allow statements - Deny statements with broad principals are secure
+        when Effect == "Allow" {
+            when Principal exists {
+                # Check for wildcard as entire principal
+                when Principal is_string {
+                  Principal != "*"
+                }
+                # Check if AWS principal exists
+                when Principal.AWS exists {
+                    # Check if AWS is a string
+                    when Principal.AWS is_string {
+                        Principal.AWS != "*"
+                        Principal.AWS != /(?i):root/
+                        Principal.AWS != /arn:aws:iam::\*:/
+                    }
+                    # Check if AWS is an array - only check string items
+                    when Principal.AWS is_list {
+                      when Principal.AWS[*] is_string {
+                          Principal.AWS[*] != "*"
+                          Principal.AWS[*] != /(?i):root/
+                          Principal.AWS[*] != /arn:aws:iam::\*:/
+                      } 
+                    }
+                }
+            }
+        }
+    }
 }

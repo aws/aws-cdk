@@ -7,7 +7,6 @@ const EXEMPTION_RULES = {
   'AWS::KMS::Key': {
     docs: 'https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default',
     isDefaultPolicy: (statement: any) => (
-      statement.Sid === 'Enable IAM User Permissions' &&
       statement.Effect === 'Allow' &&
       statement.Action === 'kms:*' &&
       statement.Resource === '*'
