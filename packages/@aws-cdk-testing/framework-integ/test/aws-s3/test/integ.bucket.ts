@@ -15,7 +15,7 @@ const bucket = new s3.Bucket(stack, 'MyBucket', {
 
 bucket.encryptionKey?.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
-const otherwiseEncryptedBucket = new s3.Bucket(stack, 'MyOtherBucket', {
+const otherwiseEncryptedBucket = new s3.Bucket(stack, 'MyOhMyGodOtherBucket', {
   encryption: s3.BucketEncryption.S3_MANAGED,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
