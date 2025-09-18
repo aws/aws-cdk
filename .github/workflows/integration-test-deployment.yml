@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   deployment_integ:
-    runs-on: codebuild-aws-cdk-github-actions-deployment-integ-runner-${{ github.run_id }}-${{ github.run_attempt }}
+    runs-on: codebuild-aws-cdk-github-actions-deployment-integ-runnerr-${{ github.run_id }}-${{ github.run_attempt }}
     environment: deployment-integ-test
 
     env:
