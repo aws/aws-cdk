@@ -1,6 +1,5 @@
 # Amazon Simple Notification Service Construct Library
 
-
 Add an SNS Topic to your stack:
 
 ```ts
@@ -33,6 +32,108 @@ const topic = new sns.Topic(this, 'Topic', {
 ```
 
 Note that FIFO topics require a topic name to be provided. The required `.fifo` suffix will be automatically generated and added to the topic name if it is not explicitly provided.
+
+## Data Protection Policy
+
+You can add a data protection policy to your SNS topic to automatically identify and protect sensitive data in messages. The data protection policy scans messages for personally identifiable information (PII) and other sensitive data, then audits findings and optionally redacts the data before delivery to subscribers.
+
+The policy uses both AWS-managed data identifiers (like email addresses, credit card numbers, SSNs) and custom regex-based identifiers to detect sensitive information:
+
+```ts
+const topic = new sns.Topic(this, 'MyTopic', {
+  dataProtectionPolicy: new sns.DataProtectionPolicy({
+    name: 'MyDataProtectionPolicy',
+    description: 'Policy to protect sensitive data',
+    identifiers: [
+      sns.DataIdentifier.CREDITCARDNUMBER,
+      sns.DataIdentifier.EMAILADDRESS,
+      sns.DataIdentifier.PHONENUMBER_US,
+      // Add custom data identifiers
+      new sns.CustomDataIdentifier('MyCustomDataIdentifier', 'CustomRegex-\\d{3}-\\d{3}-\\d{4}'),
+    ],
+  }),
+});
+```
+
+### Available Data Identifiers
+
+The CDK provides over 90 managed data identifiers for common sensitive data types:
+
+```ts
+// Common identifiers
+sns.DataIdentifier.EMAILADDRESS
+sns.DataIdentifier.CREDITCARDNUMBER
+sns.DataIdentifier.SSN_US
+sns.DataIdentifier.PHONENUMBER_US
+sns.DataIdentifier.ADDRESS
+sns.DataIdentifier.AWSSECRETKEY
+
+// International identifiers
+sns.DataIdentifier.DRIVERSLICENSE_GB
+sns.DataIdentifier.PASSPORTNUMBER_CA
+sns.DataIdentifier.BANKACCOUNTNUMBER_DE
+// ... and many more
+
+// Custom identifiers with regex patterns
+new sns.CustomDataIdentifier('EmployeeId', 'EMP-[0-9]{6}')
+new sns.CustomDataIdentifier('ProjectCode', 'PROJ-[A-Z]{2}-[0-9]{4}')
+```
+
+### Audit Destinations
+
+You can configure audit destinations to receive detailed findings about detected sensitive data. This allows you to monitor and track PII exposure across your SNS topics:
+
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const logGroup: logs.LogGroup;
+declare const bucket: s3.Bucket;
+
+const topic = new sns.Topic(this, 'MyTopic', {
+  dataProtectionPolicy: new sns.DataProtectionPolicy({
+    identifiers: [sns.DataIdentifier.CREDITCARDNUMBER],
+    logGroupAuditDestination: logGroup,
+    s3BucketAuditDestination: bucket,
+    deliveryStreamNameAuditDestination: 'my-delivery-stream',
+  }),
+});
+```
+
+### Advanced Custom Policies
+
+For advanced use cases, you can implement custom data protection policies by implementing the `IDataProtectionPolicy` interface. This allows you to create complex policies with custom logic:
+
+```ts
+class MyCustomDataProtectionPolicy implements sns.IDataProtectionPolicy {
+  _bind(scope: Construct): sns.DataProtectionPolicyConfig {
+    return {
+      name: 'MyCustomPolicy',
+      description: 'Custom data protection implementation',
+      version: '2021-06-01',
+      statement: [
+        {
+          Sid: 'audit-statement-custom',
+          DataIdentifier: ['arn:aws:dataprotection::aws:data-identifier/EmailAddress'],
+          DataDirection: 'Inbound',
+          Principal: ['*'],
+          Operation: {
+            Audit: {
+              SampleRate: 100,
+              FindingsDestination: {},
+            },
+          },
+        },
+      ],
+      configuration: { CustomDataIdentifier: [] },
+    };
+  }
+}
+
+const topic = new sns.Topic(this, 'MyTopic', {
+  dataProtectionPolicy: new MyCustomDataProtectionPolicy(),
+});
+```
 
 ## Subscriptions
 
