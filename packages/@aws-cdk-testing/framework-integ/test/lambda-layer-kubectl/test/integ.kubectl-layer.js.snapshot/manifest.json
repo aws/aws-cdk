@@ -1085,6 +1085,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined."
           },
+          "@aws-cdk/aws-s3-deployment:default512MemoryLimit": {
+            "recommendedValue": true,
+            "explanation": "Use 512MB memory for BucketDeployment Lambda function instead of 128MB"
+          },
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
             "userValue": false,
             "recommendedValue": true,
