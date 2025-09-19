@@ -1,0 +1,33 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238": {
+      "source": {
+        "path": "asset.53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-4d6ddfe7": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "bfded6126c446a2b8a7effb3013e5ac28f5f8cc55a80441ebc43a0761bfc3da3": {
+      "displayName": "cdkamplifyappbuildcomputetypeintegDefaultTestDeployAssert0B375296 Template",
+      "source": {
+        "path": "cdkamplifyappbuildcomputetypeintegDefaultTestDeployAssert0B375296.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-d1cf924c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bfded6126c446a2b8a7effb3013e5ac28f5f8cc55a80441ebc43a0761bfc3da3.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
