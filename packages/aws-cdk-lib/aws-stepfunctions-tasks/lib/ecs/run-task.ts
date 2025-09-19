@@ -5,7 +5,7 @@ import * as ecs from '../../../aws-ecs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { ValidationError } from '../../../core';
+import { AssumptionError, ValidationError } from '../../../core';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY } from '../../../cx-api';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
@@ -18,14 +18,25 @@ interface EcsRunTaskOptions {
 
   /**
    * [disable-awslint:ref-via-interface]
-   * Task Definition used for running tasks in the service.
+   * Task Definition used for running tasks in the service. Cannot be used
+   * with `taskDefinitionInput`.
    *
    * Note: this must be TaskDefinition, and not ITaskDefinition,
    * as it requires properties that are not known for imported task definitions
    * If you want to run a RunTask with an imported task definition,
    * consider using CustomState
+   *
+   * @default $
    */
-  readonly taskDefinition: ecs.TaskDefinition;
+  readonly taskDefinition?: ecs.TaskDefinition;
+
+  /**
+   * The family and revision (family:revision) or full ARN of the task
+   * definition to run. Cannot be used with `taskDefinition`.
+   *
+   * @default $
+   */
+  readonly taskDefinitionInput?: sfn.TaskInput;
 
   /**
    * The revision number of ECS task definition family
@@ -56,6 +67,27 @@ interface EcsRunTaskOptions {
    * @default - A new security group is created
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * The ECS task networking mode.
+   *
+   * @default $
+   */
+  readonly networkMode?: ecs.NetworkMode;
+
+  /**
+   * The ECS task role.
+   *
+   * @default $
+   */
+  readonly taskRole?: iam.IRole;
+
+  /**
+   * The ECS task execution role.
+   *
+   * @default $
+   */
+  readonly taskExecutionRole?: iam.IRole;
 
   /**
    * Assign public IP addresses to each task
@@ -123,8 +155,10 @@ export interface IEcsLaunchTarget {
 export interface LaunchTargetBindOptions {
   /**
    * Task definition to run Docker containers in Amazon ECS
+   *
+   * @default $
    */
-  readonly taskDefinition: ecs.ITaskDefinition;
+  readonly taskDefinition?: ecs.ITaskDefinition;
 
   /**
    * A regional grouping of one or more container instances on which you can run
@@ -191,7 +225,7 @@ export class EcsFargateLaunchTarget implements IEcsLaunchTarget {
    * Called when the Fargate launch type configured on RunTask
    */
   public bind(task: EcsRunTask, launchTargetOptions: LaunchTargetBindOptions): EcsLaunchTargetConfig {
-    if (!launchTargetOptions.taskDefinition.isFargateCompatible) {
+    if (launchTargetOptions.taskDefinition !== undefined && !launchTargetOptions.taskDefinition.isFargateCompatible) {
       throw new ValidationError('Supplied TaskDefinition is not compatible with Fargate', task);
     }
 
@@ -215,7 +249,7 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
    * Called when the EC2 launch type is configured on RunTask
    */
   public bind(task: EcsRunTask, launchTargetOptions: LaunchTargetBindOptions): EcsLaunchTargetConfig {
-    if (!launchTargetOptions.taskDefinition.isEc2Compatible) {
+    if (launchTargetOptions.taskDefinition !== undefined && !launchTargetOptions.taskDefinition.isEc2Compatible) {
       throw new ValidationError('Supplied TaskDefinition is not compatible with EC2', task);
     }
 
@@ -327,24 +361,49 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       throw new ValidationError('Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.', this);
     }
 
-    if (!this.props.taskDefinition.defaultContainer) {
-      throw new ValidationError('A TaskDefinition must have at least one essential container', this);
+    if ((this.props.taskDefinition !== undefined && this.props.taskDefinitionInput !== undefined) ||
+      (this.props.taskDefinition === undefined && this.props.taskDefinitionInput === undefined)) {
+      throw new ValidationError('Exactly one of \'taskDefinition\' or \'taskDefinitionInput\' must be provided.', this);
     }
 
-    if (this.props.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC) {
+    if (this.props.taskDefinitionInput !== undefined && this.props.revisionNumber !== undefined) {
+      throw new ValidationError('Cannot supply \'revisionNumber\' when using \'taskDefinitionInput\'.', this);
+    }
+
+    if (this.props.taskDefinition !== undefined && this.props.networkMode !== undefined) {
+      throw new ValidationError('Cannot supply \'networkMode\' when using \'taskDefinition\'.', this);
+    }
+
+    if (this.props.taskDefinition !== undefined && this.props.taskRole !== undefined) {
+      throw new ValidationError('Cannot supply \'taskRole\' when using \'taskDefinition\'.', this);
+    }
+
+    if (this.props.taskDefinition !== undefined && this.props.taskExecutionRole !== undefined) {
+      throw new ValidationError('Cannot supply \'taskExecutionRole\' when using \'taskDefinition\'.', this);
+    }
+
+    const taskNetworkMode = this.props.taskDefinition?.networkMode ?? this.props.networkMode;
+
+    if (taskNetworkMode === ecs.NetworkMode.AWS_VPC) {
       this.configureAwsVpcNetworking();
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
-      this.validateNoNetworkingProps();
+      this.validateNoNetworkingProps(taskNetworkMode);
       this.connections.addSecurityGroup(...this.props.cluster.connections.securityGroups);
     }
 
-    for (const override of this.props.containerOverrides ?? []) {
-      const name = override.containerDefinition.containerName;
-      if (!cdk.Token.isUnresolved(name)) {
-        const cont = this.props.taskDefinition.findContainer(name);
-        if (!cont) {
-          throw new ValidationError(`Overrides mention container with name '${name}', but no such container in task definition`, this);
+    if (this.props.taskDefinition !== undefined) {
+      if (!this.props.taskDefinition.defaultContainer) {
+        throw new ValidationError('A TaskDefinition must have at least one essential container', this);
+      }
+
+      for (const override of this.props.containerOverrides ?? []) {
+        const name = override.containerDefinition.containerName;
+        if (!cdk.Token.isUnresolved(name)) {
+          const cont = this.props.taskDefinition.findContainer(name);
+          if (!cont) {
+            throw new ValidationError(`Overrides mention container with name '${name}', but no such container in task definition`, this);
+          }
         }
       }
     }
@@ -361,7 +420,11 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       Resource: integrationResourceArn('ecs', 'runTask', this.integrationPattern),
       ...this._renderParametersOrArguments({
         Cluster: this.props.cluster.clusterArn,
-        TaskDefinition: this.props.revisionNumber === undefined ? this.props.taskDefinition.family : `${this.props.taskDefinition.family}:${this.props.revisionNumber.toString()}`,
+        TaskDefinition: renderTaskDefinition({
+          taskDefinition: this.props.taskDefinition,
+          taskDefinitionInput: this.props.taskDefinitionInput,
+          revisionNumber: this.props.revisionNumber,
+        }),
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(
           {
@@ -393,31 +456,102 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     this.connections.addSecurityGroup(...this.securityGroups);
   }
 
-  private validateNoNetworkingProps() {
+  private validateNoNetworkingProps(networkMode: ecs.NetworkMode | undefined) {
     if (this.props.subnets !== undefined || this.props.securityGroups !== undefined) {
+      // Condition on the taskDefinition to set the message to maintain backwards
+      // compatibility
+      const validationErrorMsg = this.props.taskDefinition !== undefined
+        ? `Supplied TaskDefinition must have 'networkMode' of 'AWS_VPC' to use 'vpcSubnets' and 'securityGroup'. Received: ${this.props.taskDefinition.networkMode}`
+        : `A 'networkMode' of 'AWS_VPC' is required to use 'vpcSubnets' and 'securityGroup'. Received: ${networkMode}.`;
       throw new ValidationError(
-        `Supplied TaskDefinition must have 'networkMode' of 'AWS_VPC' to use 'vpcSubnets' and 'securityGroup'. Received: ${this.props.taskDefinition.networkMode}`, this,
+        validationErrorMsg, this,
       );
     }
   }
 
-  private makePolicyStatements(): iam.PolicyStatement[] {
-    const stack = cdk.Stack.of(this);
+  private makeEcsPolicyStatements(): iam.PolicyStatement[] {
+    const policyStatements: Array<iam.PolicyStatement> = [];
 
-    const policyStatements = [
-      new iam.PolicyStatement({
-        actions: ['ecs:RunTask'],
-        resources: [cdk.FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY) ? this.getTaskDefinitionArn() : this.getTaskDefinitionFamilyArn() + ':*'],
-      }),
+    if (this.props.taskDefinition !== undefined) {
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['ecs:RunTask'],
+          resources: [cdk.FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY)
+            ? this.getTaskDefinitionArn(this.props.taskDefinition)
+            : this.getTaskDefinitionFamilyArn(this.props.taskDefinition) + ':*'],
+        }),
+      );
+    } else if (this.props.taskDefinitionInput !== undefined) {
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['ecs:RunTask'],
+          // Allow any resource since the taskDefinitionInput may be a JSONPath/JSONata expression
+          resources: ['*'],
+          conditions: {
+            ArnLike: {
+              'ecs:cluster': this.props.cluster.clusterArn,
+            },
+          },
+        }),
+      );
+    }
+
+    policyStatements.push(
       new iam.PolicyStatement({
         actions: ['ecs:StopTask', 'ecs:DescribeTasks'],
         resources: ['*'],
       }),
-      new iam.PolicyStatement({
-        actions: ['iam:PassRole'],
-        resources: this.taskExecutionRoles().map((r) => r.roleArn),
-      }),
-    ];
+    );
+
+    return policyStatements;
+  }
+
+  private makeIamPassRolePolicyStatements(): iam.PolicyStatement[] {
+    const policyStatements: Array<iam.PolicyStatement> = [];
+
+    if (this.props.taskDefinition !== undefined) {
+      // Need to be able to pass both Task and Execution role
+      const rolesRequiringPassRole = new Array<iam.IRole>();
+      rolesRequiringPassRole.push(this.props.taskDefinition.taskRole);
+      if (this.props.taskDefinition.executionRole) {
+        rolesRequiringPassRole.push(this.props.taskDefinition.executionRole);
+      }
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['iam:PassRole'],
+          resources: rolesRequiringPassRole.map((r) => r.roleArn),
+        }),
+      );
+    } else if (this.props.taskDefinitionInput !== undefined) {
+      // Need to be able to pass both task and execution role
+      const rolesRequiringPassRole = new Array<iam.IRole>();
+      if (this.props.taskRole !== undefined) {
+        rolesRequiringPassRole.push(this.props.taskRole);
+      }
+      if (this.props.taskExecutionRole !== undefined) {
+        rolesRequiringPassRole.push(this.props.taskExecutionRole);
+      }
+      if (rolesRequiringPassRole.length > 0) {
+        policyStatements.push(
+          new iam.PolicyStatement({
+            actions: ['iam:PassRole'],
+            resources: rolesRequiringPassRole.map((r) => r.roleArn),
+            conditions: {
+              StringEquals: {
+                'iam:PassedToService': 'ecs-tasks.amazonaws.com',
+              },
+            },
+          }),
+        );
+      }
+    }
+
+    return policyStatements;
+  }
+
+  private makeEventBridgePolicyStatements(): iam.PolicyStatement[] {
+    const stack = cdk.Stack.of(this);
+    const policyStatements: Array<iam.PolicyStatement> = [];
 
     if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
       policyStatements.push(
@@ -437,8 +571,16 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     return policyStatements;
   }
 
-  private getTaskDefinitionArn(): string {
-    return this.props.taskDefinition.taskDefinitionArn;
+  private makePolicyStatements(): iam.PolicyStatement[] {
+    return [
+      ...this.makeEcsPolicyStatements(),
+      ...this.makeIamPassRolePolicyStatements(),
+      ...this.makeEventBridgePolicyStatements(),
+    ];
+  }
+
+  private getTaskDefinitionArn(taskDefinition: ecs.TaskDefinition): string {
+    return taskDefinition.taskDefinitionArn;
   }
 
   /**
@@ -447,8 +589,8 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
    * Before - arn:aws:ecs:us-west-2:123456789012:task-definition/hello_world:8
    * After - arn:aws:ecs:us-west-2:123456789012:task-definition/hello_world
    */
-  private getTaskDefinitionFamilyArn(): string {
-    const arnComponents = cdk.Stack.of(this).splitArn(this.props.taskDefinition.taskDefinitionArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
+  private getTaskDefinitionFamilyArn(taskDefinition: ecs.TaskDefinition): string {
+    const arnComponents = cdk.Stack.of(this).splitArn(taskDefinition.taskDefinitionArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
     let { resourceName } = arnComponents;
 
     if (resourceName) {
@@ -465,16 +607,26 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       resourceName,
     });
   }
+}
 
-  private taskExecutionRoles(): iam.IRole[] {
-    // Need to be able to pass both Task and Execution role, apparently
-    const ret = new Array<iam.IRole>();
-    ret.push(this.props.taskDefinition.taskRole);
-    if (this.props.taskDefinition.executionRole) {
-      ret.push(this.props.taskDefinition.executionRole);
-    }
-    return ret;
+interface TaskDefinitionProps {
+  taskDefinition?: ecs.TaskDefinition;
+  taskDefinitionInput?: sfn.TaskInput;
+  revisionNumber?: number;
+}
+
+function renderTaskDefinition(props: TaskDefinitionProps): string {
+  if (props.taskDefinition !== undefined) {
+    return (
+      props.revisionNumber === undefined
+        ? props.taskDefinition.family
+        : `${props.taskDefinition.family}:${props.revisionNumber.toString()}`
+    );
+  } else if (props.taskDefinitionInput !== undefined) {
+    return props.taskDefinitionInput.value;
   }
+
+  throw new AssumptionError('At least one of \'taskDefinition\' or \'taskDefinitionInput\' should be defined.');
 }
 
 interface OverrideProps {
