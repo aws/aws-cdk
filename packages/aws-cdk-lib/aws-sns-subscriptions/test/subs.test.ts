@@ -2160,3 +2160,22 @@ test('sms subscription with unresolved', () => {
     },
   });
 });
+
+test('throws error when restrictSqsDescryption flag is enabled and same KMS key is used for SNS and SQS', () => {
+  const stackUnderTest = new Stack(
+    new App({
+      context: restrictSqsDescryption,
+    }),
+  );
+  const key = new kms.Key(stackUnderTest, 'SharedKey');
+  const topicUnderTest = new sns.Topic(stackUnderTest, 'MyTopic', { masterKey: key });
+  const queue = new sqs.Queue(stackUnderTest, 'MyQueue', {
+    encryption: sqs.QueueEncryption.KMS,
+    encryptionMasterKey: key,
+  });
+
+  expect(() => {
+    topicUnderTest.addSubscription(new subs.SqsSubscription(queue));
+  }).toThrow(/Cannot use restrictSqsDescryption flag with shared KMS key/);
+});
+
