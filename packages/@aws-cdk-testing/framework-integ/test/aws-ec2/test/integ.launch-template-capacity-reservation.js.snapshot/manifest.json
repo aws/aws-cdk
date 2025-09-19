@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bb6e4282a8f7bd64236dfd022b23e7458e6c757ed4bf807ea3d28c95bbdcfe10.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d48ba927664cc17a9b7e61a31aa783d4318144d57e8874e242f9cda278dd3535.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -68,7 +68,7 @@
             "data": "LTWithCapacityReservationGroup61C23D0A"
           }
         ],
-        "/aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationPreferenceOnly": [
+        "/aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationOpen": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -76,10 +76,38 @@
             }
           }
         ],
-        "/aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationPreferenceOnly/Resource": [
+        "/aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationOpen/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LTWithCapacityReservationPreferenceOnly6A6E4EF7"
+            "data": "LTWithCapacityReservationOpen90EFD9F1"
+          }
+        ],
+        "/aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationNone": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "machineImage": "*"
+            }
+          }
+        ],
+        "/aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationNone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LTWithCapacityReservationNone7805578E"
+          }
+        ],
+        "/aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationsOnly": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "machineImage": "*"
+            }
+          }
+        ],
+        "/aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationsOnly/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LTWithCapacityReservationsOnlyEB21E304"
           }
         ],
         "/aws-cdk-ec2-lt-capacity-reservation/BootstrapVersion": [

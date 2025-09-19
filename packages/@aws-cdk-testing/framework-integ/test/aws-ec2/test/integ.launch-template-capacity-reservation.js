@@ -6,33 +6,41 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-ec2-lt-capacity-reservation');
 
-// Test LaunchTemplate with capacity reservation specification
+// Test LaunchTemplate with capacity reservation ID (requires CAPACITY_RESERVATIONS_ONLY)
 new ec2.LaunchTemplate(stack, 'LTWithCapacityReservation', {
   machineImage: ec2.MachineImage.latestAmazonLinux2023(),
   capacityReservationSpecification: {
-    capacityReservationPreference: ec2.CapacityReservationPreference.OPEN,
+    capacityReservationPreference: ec2.CapacityReservationPreference.CAPACITY_RESERVATIONS_ONLY,
     capacityReservationTarget: {
       capacityReservationId: 'cr-1234567890abcdef0',
     },
   },
 });
 
-// Test LaunchTemplate with capacity reservation resource group
+// Test LaunchTemplate with capacity reservation resource group (requires CAPACITY_RESERVATIONS_ONLY)
 new ec2.LaunchTemplate(stack, 'LTWithCapacityReservationGroup', {
   machineImage: ec2.MachineImage.latestAmazonLinux2023(),
   capacityReservationSpecification: {
-    capacityReservationPreference: ec2.CapacityReservationPreference.NONE,
+    capacityReservationPreference: ec2.CapacityReservationPreference.CAPACITY_RESERVATIONS_ONLY,
     capacityReservationTarget: {
       capacityReservationResourceGroupArn: 'arn:aws:resource-groups:us-west-2:123456789012:group/my-group',
     },
   },
 });
 
-// Test LaunchTemplate with only capacity reservation preference
-new ec2.LaunchTemplate(stack, 'LTWithCapacityReservationPreferenceOnly', {
+// Test LaunchTemplate with OPEN preference (no target allowed)
+new ec2.LaunchTemplate(stack, 'LTWithCapacityReservationOpen', {
   machineImage: ec2.MachineImage.latestAmazonLinux2023(),
   capacityReservationSpecification: {
     capacityReservationPreference: ec2.CapacityReservationPreference.OPEN,
+  },
+});
+
+// Test LaunchTemplate with NONE preference (no target allowed)
+new ec2.LaunchTemplate(stack, 'LTWithCapacityReservationNone', {
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  capacityReservationSpecification: {
+    capacityReservationPreference: ec2.CapacityReservationPreference.NONE,
   },
 });
 

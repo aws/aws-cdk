@@ -5,7 +5,7 @@
    "Properties": {
     "LaunchTemplateData": {
      "CapacityReservationSpecification": {
-      "CapacityReservationPreference": "open",
+      "CapacityReservationPreference": "capacity-reservations-only",
       "CapacityReservationTarget": {
        "CapacityReservationId": "cr-1234567890abcdef0"
       }
@@ -55,7 +55,7 @@
    "Properties": {
     "LaunchTemplateData": {
      "CapacityReservationSpecification": {
-      "CapacityReservationPreference": "none",
+      "CapacityReservationPreference": "capacity-reservations-only",
       "CapacityReservationTarget": {
        "CapacityReservationResourceGroupArn": "arn:aws:resource-groups:us-west-2:123456789012:group/my-group"
       }
@@ -100,7 +100,7 @@
     ]
    }
   },
-  "LTWithCapacityReservationPreferenceOnly6A6E4EF7": {
+  "LTWithCapacityReservationOpen90EFD9F1": {
    "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
     "LaunchTemplateData": {
@@ -116,7 +116,7 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationPreferenceOnly"
+         "Value": "aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationOpen"
         }
        ]
       },
@@ -125,7 +125,7 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationPreferenceOnly"
+         "Value": "aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationOpen"
         }
        ]
       }
@@ -140,7 +140,104 @@
       "Tags": [
        {
         "Key": "Name",
-        "Value": "aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationPreferenceOnly"
+        "Value": "aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationOpen"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "LTWithCapacityReservationNone7805578E": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "CapacityReservationSpecification": {
+      "CapacityReservationPreference": "none"
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationNone"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationNone"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationNone"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "LTWithCapacityReservationsOnlyEB21E304": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "CapacityReservationSpecification": {
+      "CapacityReservationPreference": "capacity-reservations-only",
+      "CapacityReservationTarget": {
+       "CapacityReservationId": "cr-0987654321fedcba0"
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationsOnly"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationsOnly"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-ec2-lt-capacity-reservation/LTWithCapacityReservationsOnly"
        }
       ]
      }
