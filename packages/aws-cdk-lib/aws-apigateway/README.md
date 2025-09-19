@@ -1652,6 +1652,15 @@ const api = new apigateway.SpecRestApi(this, 'books-api', {
 });
 ```
 
+`SpecRestApi` also supports binary media types, similar to `RestApi`:
+
+```ts
+const api = new apigateway.SpecRestApi(this, 'books-api', {
+  apiDefinition: apigateway.ApiDefinition.fromAsset('path-to-file.json'),
+  binaryMediaTypes: ['image/png', 'application/pdf']
+});
+```
+
 ### Endpoint configuration
 
 By default, `SpecRestApi` will create an edge optimized endpoint.
