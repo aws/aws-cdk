@@ -1194,6 +1194,11 @@
       "namespace": "AWS::SimSpaceWeaver"
     }
   ],
+  "aws-smsvoice": [
+    {
+      "namespace": "AWS::SMSVOICE"
+    }
+  ],
   "aws-sns": [
     {
       "namespace": "AWS::SNS"

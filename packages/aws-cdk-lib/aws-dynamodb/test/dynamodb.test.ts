@@ -7,7 +7,7 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
-import { App, Aws, CfnDeletionPolicy, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
+import { App, ArnFormat, Aws, CfnDeletionPolicy, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
 import * as cr from '../../custom-resources';
 import * as cxapi from '../../cx-api';
 import {
@@ -393,6 +393,38 @@ describe('default properties', () => {
     // so the name should not be filled
     Template.fromStack(stack).hasResource('AWS::DynamoDB::Table', {
       TableName: Match.absent(),
+    });
+  });
+});
+
+describe('L1 static factory methods', () => {
+  test('fromTableArn', () => {
+    const stack = new Stack();
+    const table = CfnTable.fromTableArn(stack, 'MyBucket', 'arn:aws:dynamodb:eu-west-1:123456789012:table/MyTable');
+    expect(table.tableRef.tableName).toEqual('MyTable');
+    expect(table.tableRef.tableArn).toEqual('arn:aws:dynamodb:eu-west-1:123456789012:table/MyTable');
+  });
+
+  test('fromTableName', () => {
+    const app = new App();
+    const stack = new Stack(app, 'MyStack', {
+      env: { account: '23432424', region: 'us-east-1' },
+    });
+
+    const table = CfnTable.fromTableName(stack, 'Table', 'MyTable');
+    const arnComponents = stack.splitArn(table.tableRef.tableArn, ArnFormat.SLASH_RESOURCE_NAME);
+
+    expect(table.tableRef.tableName).toEqual('MyTable');
+    expect(arnComponents).toMatchObject({
+      account: '23432424',
+      region: 'us-east-1',
+      resource: 'table',
+      resourceName: 'MyTable',
+      service: 'dynamodb',
+    });
+
+    expect(stack.resolve(arnComponents.partition)).toEqual({
+      Ref: 'AWS::Partition',
     });
   });
 });
