@@ -136,7 +136,7 @@
   },
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
-    "@aws-cdk/aws-service-spec": "^0.1.95",
+    "@aws-cdk/aws-service-spec": "^0.1.96",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -479,6 +479,7 @@
     "./aws-shield": "./aws-shield/index.js",
     "./aws-signer": "./aws-signer/index.js",
     "./aws-simspaceweaver": "./aws-simspaceweaver/index.js",
+    "./aws-smsvoice": "./aws-smsvoice/index.js",
     "./aws-sns": "./aws-sns/index.js",
     "./aws-sns-subscriptions": "./aws-sns-subscriptions/index.js",
     "./aws-sqs": "./aws-sqs/index.js",
