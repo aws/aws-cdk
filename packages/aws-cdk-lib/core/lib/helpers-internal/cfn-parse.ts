@@ -843,7 +843,8 @@ export class CfnParser {
       case 'AWS::NotificationARNs': return Aws.NOTIFICATION_ARNS;
       case 'AWS::StackId': return Aws.STACK_ID;
       case 'AWS::StackName': return Aws.STACK_NAME;
-      case 'AWS::NoValue': return Aws.NO_VALUE;
+      // AWS.NO_VALUE is defined as a string, however NoValue should be able to use any type
+      case 'AWS::NoValue': return Token.asAny(Aws.NO_VALUE);
       default: return undefined;
     }
   }
