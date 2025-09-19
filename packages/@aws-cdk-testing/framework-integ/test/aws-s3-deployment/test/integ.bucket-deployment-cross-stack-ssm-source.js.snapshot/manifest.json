@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/753b13e8da3999209de581b8b73613830baf58b98082be25e2d376f1a86849b4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e2f7de9109d689af718afafc5fc2c3385ed0be69d3eebd1b5928b554f3566a35.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -101,6 +101,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ReproBucketAutoDeleteObjectsCustomResource3655A94E"
+          }
+        ],
+        "/integ-bucket-deployment-cross-stack-ssm/S3Stack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/integ-bucket-deployment-cross-stack-ssm/S3Stack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
@@ -971,6 +977,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined."
           },
+          "@aws-cdk/aws-s3-deployment:default512MemoryLimit": {
+            "recommendedValue": true,
+            "explanation": "Use 512MB memory for BucketDeployment Lambda function instead of 128MB"
+          },
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
             "userValue": true,
             "recommendedValue": true,
@@ -980,5 +990,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1025.0"
+  "minimumCliVersion": "2.1027.0"
 }
