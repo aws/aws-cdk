@@ -10,39 +10,39 @@ ci="false"
 scope=""
 concurrency=""
 while [[ "${1:-}" != "" ]]; do
-    case $1 in
-        -h|--help)
-            echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test] [--skip-prereqs] [--skip-compat]"
-            exit 1
-            ;;
-        --no-bail)
-            bail="--no-bail"
-            ;;
-        -f|--force)
-            export CDK_BUILD="--force"
-            ;;
-        --skip-test|--skip-tests)
-            run_tests="false"
-            ;;
-        --skip-prereqs)
-            check_prereqs="false"
-            ;;
-        --skip-compat)
-            check_compat="false"
-            ;;
-        --ci)
-          ci=true
-          ;;
-        -c|--concurrency)
-            concurrency="$2"
-            shift
-            ;;
-        *)
-            echo "Unrecognized parameter: $1"
-            exit 1
-            ;;
-    esac
+  case $1 in
+  -h | --help)
+    echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test] [--skip-prereqs] [--skip-compat]"
+    exit 1
+    ;;
+  --no-bail)
+    bail="--no-bail"
+    ;;
+  -f | --force)
+    export CDK_BUILD="--force"
+    ;;
+  --skip-test | --skip-tests)
+    run_tests="false"
+    ;;
+  --skip-prereqs)
+    check_prereqs="false"
+    ;;
+  --skip-compat)
+    check_compat="false"
+    ;;
+  --ci)
+    ci=true
+    ;;
+  -c | --concurrency)
+    concurrency="$2"
     shift
+    ;;
+  *)
+    echo "Unrecognized parameter: $1"
+    exit 1
+    ;;
+  esac
+  shift
 done
 
 export NODE_OPTIONS="--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
@@ -88,22 +88,22 @@ fi
 node ./scripts/check-yarn-lock.js
 
 # Prepare for build with references
-/bin/bash scripts/generate-aggregate-tsconfig.sh > tsconfig.json
+/bin/bash scripts/generate-aggregate-tsconfig.sh >tsconfig.json
 
 BUILD_INDICATOR=".BUILD_COMPLETED"
 rm -rf $BUILD_INDICATOR
 
 if [ "$run_tests" == "true" ]; then
-    runtarget="$runtarget,test"
+  runtarget="$runtarget,test"
 fi
 
 if [[ "$concurrency" == "" ]]; then
-    # Auto-limit top-level concurrency to:
-    # - available CPUs - 1 to limit CPU load
-    # - total memory / 4GB  (N.B: constant here may need to be tweaked, configurable with $CDKBUILD_MEM_PER_PROCESS)
-    mem_per_process=${CDKBUILD_MEM_PER_PROCESS:-4_000_000_000}
-    concurrency=$(node -p "Math.max(1, Math.min(require('os').cpus().length - 1, Math.round(require('os').totalmem() / $mem_per_process)))")
-    echo "Concurrency: $concurrency"
+  # Auto-limit top-level concurrency to:
+  # - available CPUs - 1 to limit CPU load
+  # - total memory / 4GB  (N.B: constant here may need to be tweaked, configurable with $CDKBUILD_MEM_PER_PROCESS)
+  mem_per_process=${CDKBUILD_MEM_PER_PROCESS:-4_000_000_000}
+  concurrency=$(node -p "Math.max(1, Math.min(require('os').cpus().length - 1, Math.round(require('os').totalmem() / $mem_per_process)))")
+  echo "Concurrency: $concurrency"
 fi
 
 flags=""
@@ -113,7 +113,7 @@ if [ "$ci" == "true" ]; then
 fi
 
 echo "============================================================================================="
-echo "building..."
+echo "building...2"
 time npx lerna run $bail --concurrency=$concurrency $runtarget $flags || fail
 
 if [ "$check_compat" == "true" ]; then
@@ -124,7 +124,7 @@ fi
 # Skip this step for a "bump candidate" build, where a new, fake version number has been created
 # without any corresponding changelog entries.
 if ! ${BUMP_CANDIDATE:-false}; then
-    node ./scripts/create-release-notes.js
+  node ./scripts/create-release-notes.js
 fi
 
 touch $BUILD_INDICATOR

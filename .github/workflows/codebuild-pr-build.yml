@@ -7,8 +7,7 @@ on:
     branches:
       - main
       - v2-release
-  pull_request: {}
-  pull_request_target:
+  pull_request:
     branches:
       - v2-release
     types:
@@ -24,8 +23,8 @@ concurrency:
 
 jobs:
   build:
+    environment: deployment-integ-test
     runs-on: codebuild-aws-cdk-github-actions-runner-${{ github.run_id }}-${{ github.run_attempt }}
-
     env:
       PR_BUILD: true
 
@@ -63,6 +62,7 @@ jobs:
 
       - name: Configure system settings
         run: |
+          echo "Hello New change"
           (command -v sysctl || sudo apt-get update && sudo apt-get install -y procps) && \
           sudo sysctl -w vm.max_map_count=2251954
 
