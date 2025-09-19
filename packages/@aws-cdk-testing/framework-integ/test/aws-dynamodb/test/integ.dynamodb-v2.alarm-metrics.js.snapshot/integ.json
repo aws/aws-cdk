@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "dynamodb-v2-alarm-metrics-integ/DefaultTest": {
+      "stacks": [
+        "dynamodb-v2-alarm-metrics"
+      ],
+      "assertionStack": "dynamodb-v2-alarm-metrics-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "dynamodbv2alarmmetricsintegDefaultTestDeployAssertB90FF3E9"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

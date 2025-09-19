@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "16eeee5deacf6a6bb26d41bcb2dc6dfa76dd2c105f34eac7b0223b309a93dd01": {
+      "displayName": "dynamodb-v2-alarm-metrics Template",
+      "source": {
+        "path": "dynamodb-v2-alarm-metrics.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-65ac10da": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "16eeee5deacf6a6bb26d41bcb2dc6dfa76dd2c105f34eac7b0223b309a93dd01.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
