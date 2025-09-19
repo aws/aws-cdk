@@ -634,7 +634,7 @@ export class Instance extends Resource implements IInstance {
     }
 
     if (!hasPublic && props.associatePublicIpAddress) {
-      throw new ValidationError("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })", this);
+      throw new ValidationError("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC } or { subnetType: SubnetType.PUBLIC, subnetGroupName: 'YourGroupName' })", this);
     }
 
     this.osType = imageConfig.osType;
