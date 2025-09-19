@@ -58,7 +58,7 @@
       "Ref": "NodeProxyAgentLayer924C1971"
      }
     ],
-    "MemorySize": 128,
+    "MemorySize": 512,
     "Role": {
      "Fn::GetAtt": [
       "LambdaNodeServiceRole22807D7A",
