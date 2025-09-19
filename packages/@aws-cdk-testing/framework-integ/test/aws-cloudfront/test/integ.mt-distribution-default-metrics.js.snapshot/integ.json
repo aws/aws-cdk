@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "integ-mt-distribution-default-metrics-test/DefaultTest": {
+      "stacks": [
+        "integ-mt-distribution-default-metrics"
+      ],
+      "assertionStack": "integ-mt-distribution-default-metrics-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integmtdistributiondefaultmetricstestDefaultTestDeployAssert3223C549"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}
