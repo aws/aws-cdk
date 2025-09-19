@@ -12,6 +12,7 @@ import { CfnElement } from '../cfn-element';
 import { Fn } from '../cfn-fn';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
+import { CfnResource } from '../cfn-resource';
 import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { Names } from '../names';
@@ -167,6 +168,11 @@ function findAllReferences(root: IConstruct) {
       for (const token of tokens) {
         // include only CfnReferences (i.e. "Ref" and "Fn::GetAtt")
         if (!CfnReference.isCfnReference(token)) {
+          continue;
+        }
+
+        // Filter out invalid nested stack references
+        if (isInvalidNestedStackReference(consumer, token)) {
           continue;
         }
 
@@ -387,4 +393,38 @@ function isNested(nested: Stack, parent: Stack): boolean {
 function generateUniqueId(stack: Stack, ref: Reference, prefix = '') {
   // we call "resolve()" to ensure that tokens do not creep in (for example, if the reference display name includes tokens)
   return stack.resolve(`${prefix}${Names.nodeUniqueId(ref.target.node)}${ref.displayName}`);
+}
+
+/**
+ * Filter invalid nested stack references
+ */
+export function isInvalidNestedStackReference(consumer: CfnElement, reference: CfnReference): boolean {
+  const consumerStack = Stack.of(consumer);
+  const producerStack = Stack.of(reference.target);
+
+  // Filter for nested stack to parent stack references
+  if (consumerStack.nestedStackParent !== producerStack) {
+    return false;
+  }
+
+  // Check if this is a CfnParameter in the parent stack
+  if (!(reference.target instanceof CfnParameter)) {
+    return false;
+  }
+
+  // Check if this is a CfnJsonStringify resource
+  if (CfnResource.isCfnResource(consumer) && consumer.cfnResourceType === 'Custom::AWSCDKCfnJsonStringify') {
+    const parameterLogicalId = reference.target.logicalId;
+    const refValue = reference.toString();
+    const shouldFilter = refValue.includes(`"Ref":"${parameterLogicalId}"`) && !parameterLogicalId.includes('referenceto');
+
+    return shouldFilter;
+  }
+
+  // Skip a reference that uses the raw parameter name instead of a nested stack parameter
+  const refValue = reference.toString();
+  const parameterLogicalId = reference.target.logicalId;
+  const shouldFilter = refValue.includes(`"Ref":"${parameterLogicalId}"`) && !refValue.includes('referenceto');
+
+  return shouldFilter;
 }

@@ -1,0 +1,85 @@
+{
+ "Parameters": {
+  "PrivateSubnetIds": {
+   "Type": "String",
+   "Default": ""
+  },
+  "AvailabilityZones": {
+   "Type": "String",
+   "Default": ""
+  },
+  "VpcId": {
+   "Type": "String",
+   "Default": ""
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Resources": {
+  "ChildStackNestedStackChildStackNestedStackResource5C8C90CA": {
+   "Type": "AWS::CloudFormation::Stack",
+   "Properties": {
+    "Parameters": {
+     "referencetoBugReproductionStackVpcIdFA37D6EARef": {
+      "Ref": "VpcId"
+     },
+     "referencetoBugReproductionStackPrivateSubnetIds843357B4Ref": {
+      "Ref": "PrivateSubnetIds"
+     }
+    },
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/",
+       {
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+       },
+       "/5c9ef68698a5d32271b9913264e9e94cfaeccee231141aee9475429a545293d5.json"
+      ]
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
