@@ -10,6 +10,61 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
 /**
+ *  Whether EventBridge include detailed event information in the records it generates.
+ *  Detailed data can be useful for troubleshooting and debugging.
+ *  This information includes details of the event itself, as well as target details.
+ */
+export enum IncludeDetail {
+  /**
+   * FULL: Include all details related to event itself and the request EventBridge sends to the target.
+   * Detailed data can be useful for troubleshooting and debugging.
+   */
+  FULL = 'FULL',
+  /**
+   * NONE: Does not include any details.
+   */
+  NONE = 'NONE',
+}
+
+/**
+ * The level of logging detail to include. This applies to all log destinations for the event bus.
+ */
+export enum Level {
+  /**
+   * INFO: EventBridge sends any logs related to errors, as well as major steps performed during event processing
+   */
+  INFO = 'INFO',
+  /**
+   * ERROR: EventBridge sends any logs related to errors generated during event processing and target delivery.
+   */
+  ERROR = 'ERROR',
+  /**
+   * TRACE: EventBridge sends any logs generated during all steps in the event processing.
+   */
+  TRACE = 'TRACE',
+  /**
+   *  OFF: EventBridge does not send any logs. This is the default.
+   */
+  OFF = 'OFF',
+}
+
+/**
+ *  Interface for Logging Configuration of the Event Bus
+ */
+export interface LogConfig {
+  /**
+   * Whether EventBridge include detailed event information in the records it generates.
+   * @default no details
+   */
+  readonly includeDetail?: IncludeDetail;
+  /**
+   * Logging level
+   * @default OFF
+   */
+  readonly level?: Level;
+}
+
+/**
  * Interface which all EventBus based classes MUST implement
  */
 export interface IEventBus extends IResource {
@@ -112,6 +167,11 @@ export interface EventBusProps {
    * @default - Use an AWS managed key
    */
   readonly kmsKey?: kms.IKey;
+  /**
+   * The Logging Configuration of the Èvent Bus.
+   *  @default - no logging
+   */
+  readonly logConfig?: LogConfig;
 }
 
 /**
@@ -405,6 +465,7 @@ export class EventBus extends EventBusBase {
       } : undefined,
       description: props?.description,
       kmsKeyIdentifier: props?.kmsKey?.keyArn,
+      logConfig: props?.logConfig,
     });
 
     this.eventBusArn = this.getResourceArnAttribute(eventBus.attrArn, {

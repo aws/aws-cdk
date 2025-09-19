@@ -746,6 +746,27 @@ const ipv6NetworkTargetGroup = new elbv2.NetworkTargetGroup(this, 'Ipv6NetworkTa
 });
 ```
 
+### Target Group level health setting for Application Load Balancers and Network Load Balancers
+
+You can set target group health setting at target group level by setting `targetGroupHealth` property.
+
+For more information, see [How Elastic Load Balancing works](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-attributes).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const targetGroup = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
+  vpc,
+  port: 80,
+  targetGroupHealth: {
+    dnsMinimumHealthyTargetCount: 3,
+    dnsMinimumHealthyTargetPercentage: 70,
+    routingMinimumHealthyTargetCount: 2,
+    routingMinimumHealthyTargetPercentage: 50,
+  },
+});
+```
+
 ## Using Lambda Targets
 
 To use a Lambda Function as a target, use the integration class in the

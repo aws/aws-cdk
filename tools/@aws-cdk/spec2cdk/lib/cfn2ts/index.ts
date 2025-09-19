@@ -3,7 +3,7 @@ import { Service } from '@aws-cdk/service-spec-types';
 import * as fs from 'fs-extra';
 import * as pLimit from 'p-limit';
 import * as pkglint from './pkglint';
-import { CodeGeneratorOptions, GenerateAllOptions, ModuleMap } from './types';
+import { CodeGeneratorOptions, GenerateAllOptions, ModuleMap, ModuleMapScope } from './types';
 import type { ModuleImportLocations } from '../cdk/cdk';
 import { generate as generateModules } from '../generate';
 import { log } from '../util';
@@ -17,13 +17,13 @@ interface GenerateOutput {
 
 let serviceCache: Service[];
 
-async function getAllScopes(field: keyof Service = 'name') {
+async function getAllScopes(field: keyof Service = 'name'): Promise<ModuleMapScope[]> {
   if (!serviceCache) {
     const db = await loadAwsServiceSpec();
     serviceCache = db.all('service');
   }
 
-  return serviceCache.map((s) => s[field]);
+  return serviceCache.map((s) => ({ namespace: s[field] }));
 }
 
 export default async function generate(
@@ -32,18 +32,18 @@ export default async function generate(
   options: CodeGeneratorOptions = {},
 ): Promise<GenerateOutput> {
   const coreImport = options.coreImport ?? 'aws-cdk-lib';
+  let moduleScopes: ModuleMapScope[] = [];
   if (scopes === '*') {
-    scopes = await getAllScopes('cloudFormationNamespace');
+    moduleScopes = await getAllScopes('cloudFormationNamespace');
   } else if (typeof scopes === 'string') {
-    scopes = [scopes];
+    moduleScopes = [{ namespace: scopes }];
   }
 
-  log.info(`cfn-resources: ${scopes.join(', ')}`);
+  log.info(`cfn-resources: ${moduleScopes.map(s => s.namespace).join(', ')}`);
   const generated = await generateModules(
     {
       'aws-cdk-lib': {
-        services: scopes,
-        serviceSuffixes: computeServiceSuffixes(scopes),
+        services: options.autoGenerateSuffixes ? computeServiceSuffixes(moduleScopes) : moduleScopes,
       },
     },
     {
@@ -68,13 +68,20 @@ export default async function generate(
 /**
  * Maps suffixes to services used to generated class names, given all the scopes that share the same package.
  */
-function computeServiceSuffixes(scopes: string[] = []): Record<string, string> {
-  return scopes.reduce(
-    (suffixes, scope) => ({
-      ...suffixes,
-      [scope]: computeSuffix(scope, scopes),
-    }),
-    {},
+function computeServiceSuffixes(scopes: ModuleMapScope[] = []): ModuleMapScope[] {
+  const allScopes = scopes.map((scope) => scope.namespace);
+  return scopes.map(
+    (scope) => {
+      // don't change if provided
+      if (scope.suffix) {
+        return scope;
+      }
+
+      return {
+        ...scope,
+        suffix: computeSuffix(scope.namespace, allScopes),
+      };
+    },
   );
 }
 
@@ -112,16 +119,18 @@ export async function generateAll(
   { scopeMapPath, skippedServices, ...options }: GenerateAllOptions,
 ): Promise<ModuleMap> {
   const allScopes = await getAllScopes('cloudFormationNamespace');
-  const scopes = skippedServices? allScopes.filter((scope) => !skippedServices.includes(scope)) : allScopes;
+  const scopes = skippedServices ? allScopes.filter((scope) => !skippedServices.includes(scope.namespace)) : allScopes;
   const moduleMap = await readScopeMap(scopeMapPath);
 
   // Make sure all scopes have their own dedicated package/namespace.
   // Adds new submodules for new namespaces.
   for (const scope of scopes) {
-    const moduleDefinition = pkglint.createModuleDefinitionFromCfnNamespace(scope);
+    const moduleDefinition = pkglint.createModuleDefinitionFromCfnNamespace(scope.namespace);
     const currentScopes = moduleMap[moduleDefinition.moduleName]?.scopes ?? [];
-    // remove dupes
-    const newScopes = [...new Set([...currentScopes, scope])];
+    // remove dupes, give precedence to data from module map
+    const newScopes = Array.from(
+      new Map([scope, ...currentScopes].map(s => [s.namespace, s])).values(),
+    );
 
     // Add new modules to module map and return to caller
     moduleMap[moduleDefinition.moduleName] = {
@@ -146,7 +155,6 @@ export async function generateAll(
         moduleName,
         {
           services,
-          serviceSuffixes: computeServiceSuffixes(services),
           moduleImportLocations: moduleName === coreModule ? coreImportLocations : undefined,
         },
       ]),
@@ -183,13 +191,21 @@ export async function generateAll(
  * Reads the scope map from a file and transforms it into the type we need.
  */
 async function readScopeMap(filepath: string): Promise<ModuleMap> {
-  const scopeMap: Record<string, string[]> = await fs.readJson(filepath);
-  return Object.entries(scopeMap).reduce((accum, [name, moduleScopes]) => {
+  const scopeMap: Record<string, string[] | Array<ModuleMapScope>> = await fs.readJson(filepath);
+  return Object.entries(scopeMap).reduce((moduleMap, [name, moduleScopes]) => {
     return {
-      ...accum,
+      ...moduleMap,
       [name]: {
         name,
-        scopes: moduleScopes,
+        scopes: moduleScopes.map(s => {
+          if (typeof s === 'string') {
+            return {
+              namespace: s,
+            };
+          }
+
+          return s;
+        }),
         resources: {},
         files: [],
       },
