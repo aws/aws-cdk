@@ -141,6 +141,17 @@ The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, only runtimes
 of the Node.js family are supported.
 
+The `EvaluateExpression` also supports an `architecture` prop to specify the Lambda
+architecture. This can be useful when migrating to ARM64 or when running integration
+tests on ARM64 systems.
+
+```ts
+const convertToSecondsArm64 = new tasks.EvaluateExpression(this, 'Convert to seconds', {
+  expression: '$.waitMilliseconds / 1000',
+  architecture: lambda.Architecture.ARM_64,
+});
+```
+
 ## API Gateway
 
 Step Functions supports [API Gateway](https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html) through the service integration pattern.
