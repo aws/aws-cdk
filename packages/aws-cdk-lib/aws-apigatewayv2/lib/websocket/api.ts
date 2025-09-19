@@ -101,6 +101,16 @@ export interface WebSocketApiProps {
    * @default false
    */
   readonly disableSchemaValidation?: boolean;
+
+  /**
+   * Specifies whether clients can invoke your API using the default endpoint.
+   * By default, clients can invoke your API with the default
+   * `https://{api_id}.execute-api.{region}.amazonaws.com` endpoint. Set this to
+   * true if you would like clients to use your custom domain name.
+   *
+   * @default false execute-api endpoint enabled.
+   */
+  readonly disableExecuteApiEndpoint?: boolean;
 }
 
 /**
@@ -148,12 +158,17 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
   }
 
   public readonly apiId: string;
-  public readonly apiEndpoint: string;
+  private readonly _apiEndpoint: string;
 
   /**
    * A human friendly name for this WebSocket API. Note that this is different from `webSocketApiId`.
    */
   public readonly webSocketApiName?: string;
+
+  /**
+   * Specifies whether clients can invoke this HTTP API by using the default execute-api endpoint.
+   */
+  public readonly disableExecuteApiEndpoint?: boolean;
 
   constructor(scope: Construct, id: string, props?: WebSocketApiProps) {
     super(scope, id);
@@ -161,6 +176,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
     addConstructMetadata(this, props);
 
     this.webSocketApiName = props?.apiName ?? id;
+    this.disableExecuteApiEndpoint = props?.disableExecuteApiEndpoint;
 
     const resource = new CfnApi(this, 'Resource', {
       name: this.webSocketApiName,
@@ -170,9 +186,10 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
       routeSelectionExpression: props?.routeSelectionExpression ?? '$request.body.action',
       ipAddressType: props?.ipAddressType,
       disableSchemaValidation: props?.disableSchemaValidation,
+      disableExecuteApiEndpoint: this.disableExecuteApiEndpoint,
     });
     this.apiId = resource.ref;
-    this.apiEndpoint = resource.attrApiEndpoint;
+    this._apiEndpoint = resource.attrApiEndpoint;
 
     if (props?.connectRouteOptions) {
       this.addRoute('$connect', props.connectRouteOptions);
@@ -183,6 +200,16 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
     if (props?.defaultRouteOptions) {
       this.addRoute('$default', props.defaultRouteOptions);
     }
+  }
+
+  /**
+   * Get the default endpoint for this API.
+   */
+  public get apiEndpoint(): string {
+    if (this.disableExecuteApiEndpoint) {
+      throw new ValidationError('apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.', this);
+    }
+    return this._apiEndpoint;
   }
 
   /**
