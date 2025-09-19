@@ -96,13 +96,13 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
   readonly subnetMappings?: SubnetMapping[];
 
   /**
-   * Whether to create a Network Load Balancer without security groups.
+   * Create a Network Load Balancer without security groups.
    *
-   * This property is only applicable when the `@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault` feature flag is enabled.
+   * When true, creates an NLB that cannot have security groups attached.
+   * This is useful when you need to create a traditional NLB without security group associations.
    *
-   * If the feature flag is disabled, this property has no effect.
-   * If the feature flag is enabled, this property defaults to `false`, meaning that a security group will be created for the load balancer.
-   * If set to `true`, the load balancer will be created without a security group.
+   * This property only takes effect when the feature flag
+   * `@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault` is enabled.
    *
    * @default false
    */
