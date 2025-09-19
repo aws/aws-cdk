@@ -1,10 +1,11 @@
 import { Construct } from 'constructs';
 import { UserEngine } from './common';
-import { CfnUser } from './elasticache.generated';
+import { CfnUser } from 'aws-cdk-lib/aws-elasticache';
 import { UserBase, UserBaseProps } from './user-base';
-import * as iam from '../../aws-iam';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { ValidationError } from 'aws-cdk-lib/core';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 const ELASTICACHE_IAMUSER_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.IamUser');
 
@@ -14,8 +15,10 @@ const ELASTICACHE_IAMUSER_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.IamUser'
 export interface IamUserProps extends UserBaseProps {
   /**
    * The name of the user.
+   *
+   * @default - Same as userId.
    */
-  readonly userName: string;
+  readonly userName?: string;
 }
 
 /**
@@ -82,8 +85,12 @@ export class IamUser extends UserBase {
 
     this.engine = props.engine ?? UserEngine.VALKEY;
     this.userId = props.userId;
-    this.userName = props.userName;
+    this.userName = props.userName ?? props.userId;
     this.accessString = props.accessControl.accessString;
+
+    if (this.userName !== this.userId) {
+      throw new ValidationError('For IAM authentication, userName must be equal to userId.', this);
+    }
 
     this.resource = new CfnUser(this, 'Resource', {
       engine: this.engine,

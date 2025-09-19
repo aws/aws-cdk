@@ -1,42 +1,47 @@
 import { Construct } from 'constructs';
 import { UserEngine } from './common';
-import { CfnUser } from './elasticache.generated';
+import { CfnUser } from 'aws-cdk-lib/aws-elasticache';
 import { UserBase, UserBaseProps } from './user-base';
-import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { SecretValue, ValidationError } from 'aws-cdk-lib/core';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
-const ELASTICACHE_NOPASSWORDUSER_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.NoPasswordUser');
+const ELASTICACHE_PASSWORDUSER_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.PasswordUser');
 
 /**
- * Properties for defining an ElastiCache user with no password authentication.
+ * Properties for defining an ElastiCache user with password authentication.
  */
-export interface NoPasswordUserProps extends UserBaseProps {
+export interface PasswordUserProps extends UserBaseProps {
   /**
    * The name of the user.
    *
    * @default - Same as userId.
    */
   readonly userName?: string;
+  /**
+   * The passwords for the user.
+   * Password authentication requires using 1-2 passwords.
+   */
+  readonly passwords: SecretValue[];
 }
 
 /**
- * Define an ElastiCache user with no password authentication.
+ * Define an ElastiCache user with password authentication.
  *
  * @resource AWS::ElastiCache::User
  */
 @propertyInjectable
-export class NoPasswordUser extends UserBase {
+export class PasswordUser extends UserBase {
   /**
    * Uniquely identifies this class.
    */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticache.NoPasswordUser';
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticache.PasswordUser';
 
   /**
-   * Return whether the given object is a `NoPasswordUser`.
+   * Return whether the given object is a `PasswordUser`.
    */
-  public static isNoPasswordUser(x: any) : x is NoPasswordUser {
-    return x !== null && typeof(x) === 'object' && ELASTICACHE_NOPASSWORDUSER_SYMBOL in x;
+  public static isPasswordUser(x: any) : x is PasswordUser {
+    return x !== null && typeof(x) === 'object' && ELASTICACHE_PASSWORDUSER_SYMBOL in x;
   }
 
   /**
@@ -75,7 +80,7 @@ export class NoPasswordUser extends UserBase {
 
   private readonly resource: CfnUser;
 
-  constructor(scope: Construct, id: string, props: NoPasswordUserProps) {
+  constructor(scope: Construct, id: string, props: PasswordUserProps) {
     super(scope, id);
 
     // Enhanced CDK Analytics Telemetry
@@ -86,8 +91,8 @@ export class NoPasswordUser extends UserBase {
     this.userName = props.userName ?? props.userId;
     this.accessString = props.accessControl.accessString;
 
-    if (this.engine === UserEngine.VALKEY ) {
-      throw new ValidationError('Valkey engine does not support no-password authentication.', this);
+    if (props.passwords.length > 2) {
+      throw new ValidationError('Password authentication requires 1-2 passwords.', this);
     }
 
     this.resource = new CfnUser(this, 'Resource', {
@@ -96,15 +101,16 @@ export class NoPasswordUser extends UserBase {
       userName: this.userName,
       accessString: this.accessString,
       authenticationMode: {
-        Type: 'no-password-required',
+        Type: 'password',
+        Passwords: props.passwords.map(p => p.unsafeUnwrap()),
       },
-      noPasswordRequired: true,
+      noPasswordRequired: false,
       passwords: undefined,
     });
 
     this.userArn = this.resource.attrArn;
     this.userStatus = this.resource.attrStatus;
 
-    Object.defineProperty(this, ELASTICACHE_NOPASSWORDUSER_SYMBOL, { value: true });
+    Object.defineProperty(this, ELASTICACHE_PASSWORDUSER_SYMBOL, { value: true });
   }
 }

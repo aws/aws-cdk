@@ -1,11 +1,10 @@
 import { Construct } from 'constructs';
 import { UserEngine } from './common';
-import { CfnUser, CfnUserGroup } from './elasticache.generated';
+import { CfnUser, CfnUserGroup } from 'aws-cdk-lib/aws-elasticache';
 import { IUserBase } from './user-base';
-import { IResource, Resource, ArnFormat, Stack, Lazy } from '../../core';
-import { ValidationError, UnscopedValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IResource, Resource, ArnFormat, Stack, Lazy, ValidationError, UnscopedValidationError } from 'aws-cdk-lib/core';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 const ELASTICACHE_USERGROUP_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.UserGroup');
 
