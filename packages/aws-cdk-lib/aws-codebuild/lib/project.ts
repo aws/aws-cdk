@@ -1477,6 +1477,10 @@ export class Project extends ProjectBase {
 
     if (!props.vpc) { return undefined; }
 
+    if (props.environment?.fleet) {
+      throw new ValidationError('Cannot configure \'vpc\' on a project using a Fleet. Configure the VPC on the fleet instead.', this);
+    }
+
     if ((props.securityGroups && props.securityGroups.length > 0) && props.allowAllOutbound !== undefined) {
       throw new ValidationError('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.', this);
     }
