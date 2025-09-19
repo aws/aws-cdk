@@ -158,6 +158,8 @@
     "props-physical-name:aws-cdk-lib.aws_route53.RecordSetProps",
     "props-physical-name:aws-cdk-lib.aws_route53.SrvRecordProps",
     "props-physical-name:aws-cdk-lib.aws_route53.TxtRecordProps",
+    "props-physical-name:aws-cdk-lib.aws_route53.SvcbRecordProps",
+    "props-physical-name:aws-cdk-lib.aws_route53.HttpsRecordProps",
     "props-physical-name:aws-cdk-lib.aws_route53.ZoneDelegationRecordProps",
     "props-physical-name:aws-cdk-lib.aws_s3.BucketPolicyProps",
     "props-physical-name:aws-cdk-lib.aws_secretsmanager.ResourcePolicyProps",

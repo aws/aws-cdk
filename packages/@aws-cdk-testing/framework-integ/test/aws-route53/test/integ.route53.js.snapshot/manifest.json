@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-route53-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1e880e43b77aa38d085edaa0d9718a0b2d38584b11562fbbfc3c259c42b9d8b1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/23b0aec821d6dfeb47618bd28562c83bbf0f68ffb66281d1cd4111a698f5b922.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,55 @@
         "aws-cdk-route53-integ.assets"
       ],
       "metadata": {
+        "/aws-cdk-route53-integ/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*",
+              "restrictDefaultSecurityGroup": false
+            }
+          }
+        ],
         "/aws-cdk-route53-integ/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/aws-cdk-route53-integ/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-route53-integ/VPC/PublicSubnet1/Subnet": [
@@ -76,6 +121,34 @@
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
+        "/aws-cdk-route53-integ/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/aws-cdk-route53-integ/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -112,10 +185,50 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
+        "/aws-cdk-route53-integ/PrivateZone": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*",
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*",
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/aws-cdk-route53-integ/PrivateZone/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PrivateZone27242E85"
+          }
+        ],
+        "/aws-cdk-route53-integ/PrivateZone/TXT": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "values": "*",
+              "ttl": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "values": "*",
+              "ttl": "*"
+            }
           }
         ],
         "/aws-cdk-route53-integ/PrivateZone/TXT/Resource": [
@@ -124,10 +237,54 @@
             "data": "PrivateZoneTXT83BB83CE"
           }
         ],
+        "/aws-cdk-route53-integ/PublicZone": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addDelegation": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/aws-cdk-route53-integ/PublicZone/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PublicZone2E1C4E34"
+          }
+        ],
+        "/aws-cdk-route53-integ/PublicZone/cdk.test -> sub.cdk.test": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "nameServers": "*",
+              "comment": "*",
+              "ttl": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "nameServers": "*",
+              "comment": "*",
+              "ttl": "*"
+            }
           }
         ],
         "/aws-cdk-route53-integ/PublicZone/cdk.test -> sub.cdk.test/Resource": [
@@ -136,10 +293,40 @@
             "data": "PublicZonecdktestsubcdktest83558650"
           }
         ],
+        "/aws-cdk-route53-integ/PublicSubZone": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          }
+        ],
         "/aws-cdk-route53-integ/PublicSubZone/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PublicSubZoneDBD26A0A"
+          }
+        ],
+        "/aws-cdk-route53-integ/PublicZoneWithDot": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*",
+              "addTrailingDot": false
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*",
+              "addTrailingDot": false
+            }
           }
         ],
         "/aws-cdk-route53-integ/PublicZoneWithDot/Resource": [
@@ -148,10 +335,46 @@
             "data": "PublicZoneWithDotAE1455DD"
           }
         ],
+        "/aws-cdk-route53-integ/CNAME": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "domainName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "domainName": "*"
+            }
+          }
+        ],
         "/aws-cdk-route53-integ/CNAME/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CNAMEC70A2D52"
+          }
+        ],
+        "/aws-cdk-route53-integ/A": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*"
+            }
           }
         ],
         "/aws-cdk-route53-integ/A/Resource": [
@@ -160,10 +383,50 @@
             "data": "ACCC8ACD5"
           }
         ],
+        "/aws-cdk-route53-integ/GeoLocationContinent": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*",
+              "geoLocation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*",
+              "geoLocation": "*"
+            }
+          }
+        ],
         "/aws-cdk-route53-integ/GeoLocationContinent/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "GeoLocationContinentAEA331ED"
+          }
+        ],
+        "/aws-cdk-route53-integ/GeoLocationCountry": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*",
+              "geoLocation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*",
+              "geoLocation": "*"
+            }
           }
         ],
         "/aws-cdk-route53-integ/GeoLocationCountry/Resource": [
@@ -172,10 +435,48 @@
             "data": "GeoLocationCountry523431F6"
           }
         ],
+        "/aws-cdk-route53-integ/GeoLocationSubDividion": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*",
+              "geoLocation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*",
+              "geoLocation": "*"
+            }
+          }
+        ],
         "/aws-cdk-route53-integ/GeoLocationSubDividion/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "GeoLocationSubDividion2CB12CFC"
+          }
+        ],
+        "/aws-cdk-route53-integ/GeoLocationSubDividionUA": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "target": "*",
+              "geoLocation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "target": "*",
+              "geoLocation": "*"
+            }
           }
         ],
         "/aws-cdk-route53-integ/GeoLocationSubDividionUA/Resource": [
@@ -184,10 +485,50 @@
             "data": "GeoLocationSubDividionUA778564B1"
           }
         ],
+        "/aws-cdk-route53-integ/GeoLocationDefault": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*",
+              "geoLocation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "recordName": "*",
+              "target": "*",
+              "geoLocation": "*"
+            }
+          }
+        ],
         "/aws-cdk-route53-integ/GeoLocationDefault/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "GeoLocationDefaultF2DE9058"
+          }
+        ],
+        "/aws-cdk-route53-integ/CaaAmazon": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*"
+            }
           }
         ],
         "/aws-cdk-route53-integ/CaaAmazon/Resource": [
@@ -196,10 +537,122 @@
             "data": "CaaAmazon40DF725F"
           }
         ],
+        "/aws-cdk-route53-integ/TXT": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "values": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zone": "*",
+              "values": "*"
+            }
+          }
+        ],
         "/aws-cdk-route53-integ/TXT/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TXT0D5C5ACF"
+          }
+        ],
+        "/aws-cdk-route53-integ/SVCB-AliasMode": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-route53-integ/SVCB-AliasMode/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SVCBAliasMode14980106"
+          }
+        ],
+        "/aws-cdk-route53-integ/SVCB-ServiceMode": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-route53-integ/SVCB-ServiceMode/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SVCBServiceModeA5C8E204"
+          }
+        ],
+        "/aws-cdk-route53-integ/SVCB-ServiceMode-FullParams": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-route53-integ/SVCB-ServiceMode-FullParams/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SVCBServiceModeFullParams290CA5CF"
+          }
+        ],
+        "/aws-cdk-route53-integ/HTTPS-AliasMode": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-route53-integ/HTTPS-AliasMode/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HTTPSAliasMode30A55431"
+          }
+        ],
+        "/aws-cdk-route53-integ/HTTPS-ServiceMode": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-route53-integ/HTTPS-ServiceMode/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HTTPSServiceModeAAE2849D"
+          }
+        ],
+        "/aws-cdk-route53-integ/HTTPS-ServiceMode-FullParams": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-route53-integ/HTTPS-ServiceMode-FullParams/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HTTPSServiceModeFullParamsDAC39E4A"
           }
         ],
         "/aws-cdk-route53-integ/PrivateZoneId": [
@@ -235,5 +688,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
