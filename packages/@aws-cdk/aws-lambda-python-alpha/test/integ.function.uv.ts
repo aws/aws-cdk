@@ -53,6 +53,13 @@ const pythonFunction313 = new lambda.PythonFunction(stack, 'my_handler_inline_py
 });
 functionNames.push(pythonFunction313.functionName);
 
+const pythonDepsFunction313 = new lambda.PythonFunction(stack, 'my_handler_inline_python_deps_313', {
+  entry: path.join(__dirname, 'lambda-handler-uv'),
+  index: 'dependency_versions.py',
+  runtime: Runtime.PYTHON_3_13,
+});
+functionNames.push(pythonDepsFunction313.functionName);
+
 const integTest = new IntegTest(app, 'integ-lambda-python-uv-test', {
   testCases: [stack],
   // disabling update workflow because we don't want to include the assets in the snapshot
