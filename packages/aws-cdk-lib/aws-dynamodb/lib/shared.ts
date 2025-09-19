@@ -527,6 +527,42 @@ export interface ITable extends IResource {
    *
    */
   metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the successful request latency for GetItem operations
+   *
+   * @param props properties of a metric
+   */
+  metricSuccessfulRequestLatencyForGetItem?(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the successful request latency for PutItem operations
+   *
+   * @param props properties of a metric
+   */
+  metricSuccessfulRequestLatencyForPutItem?(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the successful request latency for Query operations
+   *
+   * @param props properties of a metric
+   */
+  metricSuccessfulRequestLatencyForQuery?(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the successful request latency for Scan operations
+   *
+   * @param props properties of a metric
+   */
+  metricSuccessfulRequestLatencyForScan?(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the successful request latency for a specific operation
+   *
+   * @param operation The DynamoDB operation to get metrics for
+   * @param props properties of a metric
+   */
+  metricSuccessfulRequestLatencyForOperation?(operation: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 export function validateContributorInsights(

@@ -959,6 +959,47 @@ const barStack = new BarStack(app, 'BarStack', {
 });
 ```
 
+### SuccessfulRequestLatency Metrics
+
+For `SuccessfulRequestLatency` metrics, you can use operation-specific convenience methods that automatically handle the required `Operation` dimension. This is particularly useful for cross-language CDK usage where providing complex dimension objects can be challenging:
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+});
+
+// Operation-specific convenience methods
+const getItemLatency = table.metricSuccessfulRequestLatencyForGetItem();
+const putItemLatency = table.metricSuccessfulRequestLatencyForPutItem();
+const queryLatency = table.metricSuccessfulRequestLatencyForQuery();
+const scanLatency = table.metricSuccessfulRequestLatencyForScan();
+
+// For custom operations
+const batchGetLatency = table.metricSuccessfulRequestLatencyForOperation('BatchGetItem');
+
+// Create alarms with custom thresholds
+new cloudwatch.Alarm(this, 'GetItemLatencyAlarm', {
+  metric: getItemLatency,
+  threshold: 100, // 100ms
+  evaluationPeriods: 2,
+});
+
+new cloudwatch.Alarm(this, 'QueryLatencyAlarm', {
+  metric: queryLatency,
+  threshold: 200, // 200ms
+  evaluationPeriods: 1,
+});
+```
+
+You can also customize the metric properties:
+
+```ts
+const customLatencyMetric = table.metricSuccessfulRequestLatencyForGetItem({
+  statistic: 'Maximum',
+  period: Duration.minutes(5),
+});
+```
+
 ## import from S3 Bucket
 You can import data in S3 when creating a Table using the `Table` construct.
 To import data into DynamoDB, it is required that your data is in a CSV, DynamoDB JSON, or Amazon Ion format within an Amazon S3 bucket.
