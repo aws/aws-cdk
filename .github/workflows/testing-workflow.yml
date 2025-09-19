@@ -1,0 +1,18 @@
+name: Dummy PR Workflow
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  print-stuff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print hello
+        run: echo "Hello from GitHub Actions!"
+        
+      - name: Print PR info
+        run: |
+          echo "Pull request number: ${{ github.event.pull_request.number }}"
+          echo "Pull request title: ${{ github.event.pull_request.title }}"
+          echo "Branch: ${{ github.head_ref }}"
