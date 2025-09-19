@@ -727,7 +727,29 @@ export abstract class BaseService extends Resource
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
-      loadBalancers: Lazy.any({ produce: () => this.loadBalancers }, { omitEmptyArray: true }),
+      loadBalancers: Lazy.any({
+        produce: () => {
+          // Filter out orphaned target group references during CloudFormation generation
+          return this.loadBalancers.filter(lb => {
+            try {
+              // Check if the target group ARN references an existing construct
+              const targetGroupArn = lb.targetGroupArn;
+              if (!targetGroupArn || Token.isUnresolved(targetGroupArn)) {
+                // If it's undefined or a token, we can't validate at synthesis time, so keep it
+                return true;
+              }
+
+              // For resolved ARNs, check if the construct still exists in the tree
+              const stack = Stack.of(this);
+              const found = this.findTargetGroupInStack(stack, targetGroupArn);
+              return found;
+            } catch (error) {
+              // If we can't determine the validity, keep the reference to be safe
+              return true;
+            }
+          });
+        },
+      }, { omitEmptyArray: true }),
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
@@ -859,6 +881,33 @@ export abstract class BaseService extends Resource
     }
 
     this.node.defaultChild = this.resource;
+  }
+
+  /**
+   * Helper method to find if a target group with the given ARN exists in the stack
+   * @param stack The stack to search in
+   * @param targetGroupArn The target group ARN to find
+   * @returns true if the target group is found, false otherwise
+   */
+  private findTargetGroupInStack(stack: Stack, targetGroupArn: string): boolean {
+    // Walk through all constructs in the stack to find target groups
+    const found = stack.node.findAll().some(construct => {
+      // Check if this construct is a target group with matching ARN
+      if (construct.constructor.name.includes('TargetGroup')) {
+        try {
+          // Try to access the targetGroupArn property if it exists
+          const tg = construct as any;
+          if (tg.targetGroupArn && tg.targetGroupArn === targetGroupArn) {
+            return true;
+          }
+        } catch (error) {
+          // Ignore errors when checking construct properties
+        }
+      }
+      return false;
+    });
+
+    return found;
   }
 
   /**
