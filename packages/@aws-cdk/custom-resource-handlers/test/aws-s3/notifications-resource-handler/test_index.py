@@ -504,5 +504,131 @@ class CfnResponsesTest(unittest.TestCase):
         self.assertEqual(submit.call_args_list[0][0][2], "FAILED")
 
 
+class NoSuchBucketHandlingTest(unittest.TestCase):
+    """Test proper handling of NoSuchBucket errors during delete operations"""
+
+    @patch('index.s3')
+    @patch("index.submit_response")
+    def test_delete_unmanaged_bucket_not_found_on_get_notification(self, submit_mock: MagicMock, mock_s3: MagicMock):
+        """Test that delete succeeds gracefully when bucket doesn't exist during get_bucket_notification"""
+        from botocore.exceptions import ClientError
+        
+        event = make_event("Delete", False)
+        
+        # Simulate bucket already deleted - get_bucket_notification_configuration raises NoSuchBucket
+        mock_s3.get_bucket_notification_configuration.side_effect = ClientError(
+            error_response={'Error': {'Code': 'NoSuchBucket', 'Message': 'The specified bucket does not exist'}},
+            operation_name='GetBucketNotificationConfiguration'
+        )
+        
+        index.handler(event, {})
+        
+        # Should call put_bucket_notification_configuration with empty external notifications
+        # (which includes empty arrays for each configuration type)
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket="BucketName",
+            NotificationConfiguration={
+                'TopicConfigurations': [],
+                'QueueConfigurations': [], 
+                'LambdaFunctionConfigurations': []
+            },
+            SkipDestinationValidation=False,
+        )
+        
+        # Should report success
+        submit_mock.assert_called_once()
+        self.assertEqual(submit_mock.call_args_list[0][0][2], "SUCCESS")
+
+    @patch('index.s3')
+    @patch("index.submit_response")
+    def test_delete_unmanaged_bucket_not_found_on_put_notification(self, submit_mock: MagicMock, mock_s3: MagicMock):
+        """Test that delete succeeds gracefully when bucket doesn't exist during put_bucket_notification"""
+        from botocore.exceptions import ClientError
+        
+        event = make_event("Delete", False)
+        
+        # get_bucket_notification_configuration succeeds (bucket exists initially)
+        mock_s3.get_bucket_notification_configuration.return_value = {}
+        
+        # put_bucket_notification_configuration raises NoSuchBucket (bucket deleted between calls)
+        mock_s3.put_bucket_notification_configuration.side_effect = ClientError(
+            error_response={'Error': {'Code': 'NoSuchBucket', 'Message': 'The specified bucket does not exist'}},
+            operation_name='PutBucketNotificationConfiguration'
+        )
+        
+        index.handler(event, {})
+        
+        # Should report success since delete is the desired end state
+        submit_mock.assert_called_once()
+        self.assertEqual(submit_mock.call_args_list[0][0][2], "SUCCESS")
+
+    @patch('index.s3')
+    @patch("index.submit_response")
+    def test_delete_managed_bucket_not_found(self, submit_mock: MagicMock, mock_s3: MagicMock):
+        """Test that delete of managed bucket succeeds gracefully when bucket doesn't exist"""
+        from botocore.exceptions import ClientError
+        
+        event = make_event("Delete", True)
+        
+        # put_bucket_notification_configuration raises NoSuchBucket
+        mock_s3.put_bucket_notification_configuration.side_effect = ClientError(
+            error_response={'Error': {'Code': 'NoSuchBucket', 'Message': 'The specified bucket does not exist'}},
+            operation_name='PutBucketNotificationConfiguration'
+        )
+        
+        index.handler(event, {})
+        
+        # Should report success since delete is the desired end state
+        submit_mock.assert_called_once()
+        self.assertEqual(submit_mock.call_args_list[0][0][2], "SUCCESS")
+
+    @patch('index.s3')
+    @patch("index.submit_response")
+    def test_create_bucket_not_found_fails(self, submit_mock: MagicMock, mock_s3: MagicMock):
+        """Test that create operation fails appropriately when bucket doesn't exist"""
+        from botocore.exceptions import ClientError
+        
+        event = make_event("Create", False)
+        
+        # get_bucket_notification_configuration succeeds 
+        mock_s3.get_bucket_notification_configuration.return_value = {}
+        
+        # put_bucket_notification_configuration raises NoSuchBucket using proper ClientError
+        mock_s3.put_bucket_notification_configuration.side_effect = ClientError(
+            error_response={'Error': {'Code': 'NoSuchBucket', 'Message': 'The specified bucket does not exist'}},
+            operation_name='PutBucketNotificationConfiguration'
+        )
+        
+        index.handler(event, {})
+        
+        # Should report failure for create operation
+        submit_mock.assert_called_once()
+        self.assertEqual(submit_mock.call_args_list[0][0][2], "FAILED")
+
+    @patch('index.s3')
+    @patch("index.submit_response")
+    def test_update_bucket_not_found_fails(self, submit_mock: MagicMock, mock_s3: MagicMock):
+        """Test that update operation fails appropriately when bucket doesn't exist"""
+        from botocore.exceptions import ClientError
+        
+        event = make_event("Update", False)
+        event["OldResourceProperties"] = {"NotificationConfiguration": {}}
+        
+        # get_bucket_notification_configuration succeeds
+        mock_s3.get_bucket_notification_configuration.return_value = {}
+        
+        # put_bucket_notification_configuration raises NoSuchBucket using proper ClientError
+        mock_s3.put_bucket_notification_configuration.side_effect = ClientError(
+            error_response={'Error': {'Code': 'NoSuchBucket', 'Message': 'The specified bucket does not exist'}},
+            operation_name='PutBucketNotificationConfiguration'
+        )
+        
+        index.handler(event, {})
+        
+        # Should report failure for update operation
+        submit_mock.assert_called_once()
+        self.assertEqual(submit_mock.call_args_list[0][0][2], "FAILED")
+
+
 if __name__ == "__main__":
     unittest.main()
