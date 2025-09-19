@@ -10,6 +10,9 @@ jobs:
     steps:
       - name: Print hello
         run: echo "Hello from GitHub Actions!"
+
+      - name: Print hello and more
+        run: echo "Hello from GitHub Actions!"
         
       - name: Print PR info
         run: |
