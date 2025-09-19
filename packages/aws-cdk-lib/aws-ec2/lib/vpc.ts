@@ -714,12 +714,12 @@ abstract class VpcBase extends Resource implements IVpc {
 
   /**
    * Select subnets by both type and group name for precise subnet targeting.
-   * 
+   *
    * @internal This is an internal implementation method. Consider using simpler alternatives:
    * - Use `subnetGroupName` alone if you don't need type filtering
    * - Use `subnetType` alone if you don't need group-specific selection
    * - Use `SubnetFilter.byIds()` for explicit subnet selection
-   * 
+   *
    * @param subnetType The subnet type to filter by
    * @param groupName The subnet group name to filter by
    * @returns Array of subnets matching both type and group name
