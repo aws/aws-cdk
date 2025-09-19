@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
 import { UserEngine } from './common';
-import { IResource, Resource, ArnFormat, Stack } from '../../core';
-import { ValidationError } from '../../core/lib/errors';
+import { IResource, Resource, ArnFormat, Stack, ValidationError } from 'aws-cdk-lib/core';
 
 /**
  * Access control configuration for ElastiCache users.

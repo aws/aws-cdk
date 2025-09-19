@@ -1,22 +1,21 @@
 import { Construct } from 'constructs';
 import { UserEngine } from './common';
-import { CfnServerlessCache, CfnUserGroup } from './elasticache.generated';
+import { CfnServerlessCache, CfnUserGroup } from 'aws-cdk-lib/aws-elasticache';
 import { IServerlessCache, ServerlessCacheBase, CacheEngine } from './serverless-cache-base';
 import { IUserGroup } from './user-group';
-import * as ec2 from '../../aws-ec2';
-import * as events from '../../aws-events';
-import * as kms from '../../aws-kms';
-import { ArnFormat, Stack, Size, Lazy } from '../../core';
-import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import { ArnFormat, Stack, Size, Lazy, ValidationError } from 'aws-cdk-lib/core';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 const ELASTICACHE_SERVERLESSCACHE_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.ServerlessCache');
 
 /**
  * Unit types for data storage usage limits
  */
-export enum DataStorageUnit {
+enum DataStorageUnit {
   /**
    * Gigabytes
    */
