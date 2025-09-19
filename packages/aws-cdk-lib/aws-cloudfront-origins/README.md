@@ -577,6 +577,7 @@ const origin = new origins.LoadBalancerV2Origin(loadBalancer, {
   connectionAttempts: 3,
   connectionTimeout: Duration.seconds(5),
   readTimeout: Duration.seconds(45),
+  responseCompletionTimeout: Duration.seconds(120),
   keepaliveTimeout: Duration.seconds(45),
   protocolPolicy: cloudfront.OriginProtocolPolicy.MATCH_VIEWER,
 });
@@ -609,6 +610,22 @@ new cloudfront.Distribution(this, 'Distribution', {
 ```
 
 The `ipAddressType` property allows you to specify whether CloudFront should use IPv4, IPv6, or both (dual-stack) when connecting to your origin.
+
+The origin can be customized with timeout settings to handle different response scenarios:
+
+```ts
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('api.example.com', {
+      readTimeout: Duration.seconds(60),
+      responseCompletionTimeout: Duration.seconds(120),
+      keepaliveTimeout: Duration.seconds(45),
+    }),
+  },
+});
+```
+
+The `responseCompletionTimeout` property specifies the time that a request from CloudFront to the origin can stay open and wait for a response. If the complete response isn't received from the origin by this time, CloudFront ends the connection. Valid values are 1-3600 seconds, and if set, the value must be equal to or greater than the `readTimeout` value.
 
 See the documentation of `aws-cdk-lib/aws-cloudfront` for more information.
 
@@ -812,6 +829,25 @@ const fnUrl = fn.addFunctionUrl({ authType: lambda.FunctionUrlAuthType.NONE });
 
 new cloudfront.Distribution(this, 'Distribution', {
   defaultBehavior: { origin: new origins.FunctionUrlOrigin(fnUrl) },
+});
+```
+
+You can also configure timeout settings for Lambda Function URL origins:
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const fn: lambda.Function;
+const fnUrl = fn.addFunctionUrl({ authType: lambda.FunctionUrlAuthType.NONE });
+
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: {
+    origin: new origins.FunctionUrlOrigin(fnUrl, {
+      readTimeout: Duration.seconds(30),
+      responseCompletionTimeout: Duration.seconds(90),
+      keepaliveTimeout: Duration.seconds(45),
+    }),
+  },
 });
 ```
 

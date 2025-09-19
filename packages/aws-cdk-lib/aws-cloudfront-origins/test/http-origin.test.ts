@@ -139,3 +139,56 @@ test.each([
     },
   });
 });
+
+test('renders responseCompletionTimeout in origin property', () => {
+  const origin = new HttpOrigin('www.example.com', {
+    responseCompletionTimeout: Duration.seconds(120),
+  });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
+
+  expect(originBindConfig.originProperty).toEqual({
+    id: 'StackOrigin029E19582',
+    domainName: 'www.example.com',
+    originCustomHeaders: undefined,
+    originPath: undefined,
+    responseCompletionTimeout: 120,
+    customOriginConfig: {
+      originProtocolPolicy: 'https-only',
+      originSslProtocols: [
+        'TLSv1.2',
+      ],
+    },
+  });
+});
+
+test('configure both responseCompletionTimeout and readTimeout', () => {
+  const origin = new HttpOrigin('www.example.com', {
+    responseCompletionTimeout: Duration.seconds(60),
+    readTimeout: Duration.seconds(60),
+  });
+
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
+  expect(originBindConfig.originProperty).toEqual({
+    id: 'StackOrigin029E19582',
+    domainName: 'www.example.com',
+    originCustomHeaders: undefined,
+    originPath: undefined,
+    responseCompletionTimeout: 60,
+    customOriginConfig: {
+      originProtocolPolicy: 'https-only',
+      originSslProtocols: [
+        'TLSv1.2',
+      ],
+      originReadTimeout: 60,
+    },
+  });
+});
+
+test('throw error for configuring readTimeout less than responseCompletionTimeout value', () => {
+  expect(() => {
+    new HttpOrigin('www.example.com', {
+      responseCompletionTimeout: Duration.seconds(30),
+      readTimeout: Duration.seconds(60),
+    });
+  }).toThrow('responseCompletionTimeout must be equal to or greater than readTimeout (60s), got: 30s.');
+});
