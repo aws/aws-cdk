@@ -1306,6 +1306,22 @@ const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
 });
 ```
 
+To control whether clients are automatically disconnected when the maximum session duration is reached, use the `disconnectOnSessionTimeout` prop.
+By default (`true`), clients are disconnected and must manually reconnect.
+Set to `false` to allow automatic reconnection attempts:
+
+```ts fixture=client-vpn
+const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
+  cidr: '10.100.0.0/16',
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
+  clientCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/client-certificate-id',
+  sessionTimeoutHours: 8,
+  disconnectOnSessionTimeout: false, // Allow automatic reconnection attempts
+});
+```
+
+Detail information about maximum VPN session duration timeout can be found in the [AWS documentation](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-max-duration.html).
+
 ## Instances
 
 You can use the `Instance` class to start up a single EC2 instance. For production setups, we recommend
