@@ -3,9 +3,9 @@
   "Parameter9E1B4FBA": {
    "Type": "AWS::SSM::Parameter",
    "Properties": {
+    "Name": "email_url_Stack2",
     "Type": "String",
-    "Value": "api.example.com",
-    "Name": "email_url_Stack2"
+    "Value": "api.example.com"
    }
   },
   "MySecret8FE80B51": {
@@ -108,21 +108,15 @@
   "MyFunc8A243A2C": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b375dfd7699947c404936c2d1c4a0b91bd2bb49158ce52f6064bda6d3a7e0ead.zip"
+     "S3Key": "cdc12f174e7505909ed092d9a0b412b01c86d11714993bb9654bf1497c1ef169.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "MyFuncServiceRole54065130",
-      "Arn"
-     ]
-    },
-    "Architectures": [
-     "arm64"
-    ],
     "Environment": {
      "Variables": {
       "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
@@ -148,6 +142,12 @@
       ]
      }
     ],
+    "Role": {
+     "Fn::GetAtt": [
+      "MyFuncServiceRole54065130",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [
