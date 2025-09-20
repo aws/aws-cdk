@@ -203,6 +203,16 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
    * @default false
    */
   readonly updateToLatestImageVersion?: boolean;
+
+  /**
+   * Use batch's default instance types.
+   * A simpler way to choose up-to-date instance classes based on region
+   * instead of specifying exact instance classes.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/instance-type-compute-table.html
+   * @default - choose from instanceTypes and instanceClasses
+   */
+  readonly defaultInstanceClasses?: DefaultInstanceClass[];
 }
 
 /**
@@ -482,6 +492,23 @@ export enum AllocationStrategy {
 }
 
 /**
+ * Batch default instances types
+ *
+ * @see https://docs.aws.amazon.com/batch/latest/userguide/instance-type-compute-table.html
+ */
+export enum DefaultInstanceClass {
+  /**
+   * x86 based instance types (from the m6i, c6i, r6i, and c7i instance families)
+   */
+  X86_64 = 'default_x86_64',
+
+  /**
+   * ARM64 based instance types (from the m6g, c6g, r6g, and c7g instance families)
+   */
+  ARM64 = 'default_arm64',
+}
+
+/**
  * Props for a ManagedEc2EcsComputeEnvironment
  */
 export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvironmentProps {
@@ -659,6 +686,10 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    if (props.defaultInstanceClasses && props.useOptimalInstanceClasses) {
+      throw new ValidationError('cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`. Please remove deprecated `useOptimalInstanceClasses`', this);
+    }
+
     this.images = props.images;
     this.allocationStrategy = determineAllocationStrategy(this, props.allocationStrategy, this.spot);
     this.spotBidPercentage = props.spotBidPercentage;
@@ -698,7 +729,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
         minvCpus: this.minvCpus,
         instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
         instanceTypes: Lazy.list({
-          produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
+          produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses, props.defaultInstanceClasses),
         }),
         type: this.spot ? 'SPOT' : 'EC2',
         spotIamFleetRole: this.spotFleetRole?.roleArn,
@@ -1023,6 +1054,10 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    if (props.defaultInstanceClasses && props.useOptimalInstanceClasses) {
+      throw new ValidationError('cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`. Please remove deprecated `useOptimalInstanceClasses`', this);
+    }
+
     this.kubernetesNamespace = props.kubernetesNamespace;
     this.eksCluster = props.eksCluster;
 
@@ -1058,7 +1093,9 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
         ...baseManagedResourceProperties(this, subnetIds).computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         minvCpus: this.minvCpus,
         instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
-        instanceTypes: Lazy.list({ produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) }),
+        instanceTypes: Lazy.list({
+          produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses, props.defaultInstanceClasses),
+        }),
         type: this.spot ? 'SPOT' : 'EC2',
         allocationStrategy: this.allocationStrategy,
         bidPercentage: this.spotBidPercentage,
@@ -1167,7 +1204,11 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
   }
 }
 
-function renderInstances(types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
+function renderInstances(
+  types?: ec2.InstanceType[],
+  classes?: ec2.InstanceClass[],
+  useOptimalInstanceClasses?: boolean,
+  defaultInstanceClasses?: DefaultInstanceClass[]): string[] {
   const instances = [];
 
   for (const instanceType of types ?? []) {
@@ -1176,7 +1217,9 @@ function renderInstances(types?: ec2.InstanceType[], classes?: ec2.InstanceClass
   for (const instanceClass of classes ?? []) {
     instances.push(instanceClass);
   }
-  if (useOptimalInstanceClasses || useOptimalInstanceClasses === undefined) {
+  if (defaultInstanceClasses?.length) {
+    instances.push(...defaultInstanceClasses);
+  } else if (useOptimalInstanceClasses || useOptimalInstanceClasses === undefined) {
     instances.push('optimal');
   }
 
@@ -1217,9 +1260,13 @@ function determineAllocationStrategy(scope: Construct, allocationStrategy?: Allo
   return result;
 }
 
-function validateInstances(types?: ec2.InstanceType[], classes?: ec2.InstanceClass[], useOptimalInstanceClasses?: boolean): string[] {
-  if (renderInstances(types, classes, useOptimalInstanceClasses).length === 0) {
-    return ["Specifies 'useOptimalInstanceClasses: false' without specifying any instance types or classes"];
+function validateInstances(
+  types?: ec2.InstanceType[],
+  classes?: ec2.InstanceClass[],
+  useOptimalInstanceClasses?: boolean,
+  defaultInstanceClasses?: DefaultInstanceClass[]): string[] {
+  if (renderInstances(types, classes, useOptimalInstanceClasses, defaultInstanceClasses).length === 0) {
+    return ["'defaultInstanceClasses' undefined without specifying any instance types or classes"];
   }
 
   return [];
