@@ -220,7 +220,10 @@ export class Alias extends AliasBase {
       }
 
       public get keyRef(): KeyReference {
-        return this.aliasTargetKey.keyRef;
+        return {
+          keyArn: this.keyArn,
+          keyId: this.keyId,
+        };
       }
 
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
