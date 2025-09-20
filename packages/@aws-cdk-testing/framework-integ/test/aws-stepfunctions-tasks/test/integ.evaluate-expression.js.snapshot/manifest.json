@@ -41,6 +41,7 @@
               "uuid": "*",
               "lambdaPurpose": "*",
               "runtime": "*",
+              "architecture": "*",
               "code": "*",
               "handler": "*"
             }
@@ -75,6 +76,7 @@
             "type": "aws:cdk:analytics:construct",
             "data": {
               "runtime": "*",
+              "architecture": "*",
               "code": "*",
               "handler": "*"
             }
@@ -129,6 +131,7 @@
               "uuid": "*",
               "lambdaPurpose": "*",
               "runtime": "*",
+              "architecture": "*",
               "code": "*",
               "handler": "*"
             }
@@ -157,6 +160,7 @@
             "type": "aws:cdk:analytics:construct",
             "data": {
               "runtime": "*",
+              "architecture": "*",
               "code": "*",
               "handler": "*"
             }
@@ -219,6 +223,7 @@
               "uuid": "*",
               "lambdaPurpose": "*",
               "runtime": "*",
+              "architecture": "*",
               "code": "*",
               "handler": "*"
             }

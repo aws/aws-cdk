@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eca4982a276d079249089dca10ba754e93da4eb19b08812c0fc249936f128786.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a5f7c7795b022bd6c6e8253750b84218e9bf8a895e356955999218f6fceff332.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -71,7 +71,7 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-arm64-integ/Eval41256dc5445742738ed917bc818694e5": [
+        "/aws-cdk-sfn-evaluate-expression-arm64-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -90,7 +90,7 @@
             "data": 0
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-arm64-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole": [
+        "/aws-cdk-sfn-evaluate-expression-arm64-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -106,25 +106,25 @@
             }
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-arm64-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole/ImportServiceRole": [
+        "/aws-cdk-sfn-evaluate-expression-arm64-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-arm64-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole/Resource": [
+        "/aws-cdk-sfn-evaluate-expression-arm64-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027"
+            "data": "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10ServiceRole037E5D29"
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-arm64-integ/Eval41256dc5445742738ed917bc818694e5/Resource": [
+        "/aws-cdk-sfn-evaluate-expression-arm64-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Eval41256dc5445742738ed917bc818694e54EB1134F"
+            "data": "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f1028726088"
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-arm64-integ/Eval41256dc5445742738ed917bc818694e5/LogGroup": [
+        "/aws-cdk-sfn-evaluate-expression-arm64-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -132,10 +132,10 @@
             }
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-arm64-integ/Eval41256dc5445742738ed917bc818694e5/LogGroup/Resource": [
+        "/aws-cdk-sfn-evaluate-expression-arm64-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Eval41256dc5445742738ed917bc818694e5LogGroup308B9405"
+            "data": "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10LogGroup29F31548"
           }
         ],
         "/aws-cdk-sfn-evaluate-expression-arm64-integ/StateMachine": [
@@ -261,6 +261,33 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Eval41256dc5445742738ed917bc818694e54EB1134F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Eval41256dc5445742738ed917bc818694e54EB1134F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Eval41256dc5445742738ed917bc818694e5LogGroup308B9405": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Eval41256dc5445742738ed917bc818694e5LogGroup308B9405",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-sfn-evaluate-expression-arm64-integ"
@@ -325,7 +352,6 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -799,5 +825,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1029.0"
+  "minimumCliVersion": "2.1027.0"
 }

@@ -1,148 +1,6 @@
 {
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-6": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs22.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs22.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs22.x"
-   },
-   "eusc-de-east-1": {
-    "value": "nodejs22.x"
-   },
-   "il-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-south-1": {
-    "value": "nodejs22.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs22.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-2": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isof-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-isof-south-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-2": {
-    "value": "nodejs22.x"
-   }
-  }
- },
  "Resources": {
-  "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10ServiceRole037E5D29": {
+  "Eval105f0693c0824e9b83f39007507676f0ServiceRole491BADB0": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -173,7 +31,7 @@
     ]
    }
   },
-  "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f1028726088": {
+  "Eval105f0693c0824e9b83f39007507676f0117865DA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Architectures": [
@@ -188,25 +46,17 @@
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
-      "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10ServiceRole037E5D29",
+      "Eval105f0693c0824e9b83f39007507676f0ServiceRole491BADB0",
       "Arn"
      ]
     },
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    }
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
-    "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10ServiceRole037E5D29"
+    "Eval105f0693c0824e9b83f39007507676f0ServiceRole491BADB0"
    ]
   },
-  "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10LogGroup29F31548": {
+  "Eval105f0693c0824e9b83f39007507676f0LogGroup0E8B881F": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "LogGroupName": {
@@ -215,7 +65,82 @@
       [
        "/aws/lambda/",
        {
-        "Ref": "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f1028726088"
+        "Ref": "Eval105f0693c0824e9b83f39007507676f0117865DA"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "Eval9757c2676d7c45c2af7737a30d93d2c6ServiceRole39BD4915": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "Eval9757c2676d7c45c2af7737a30d93d2c64B038159": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "b8cec122f25692e8b194663d25a2ee5e0b65e55df966120791d6a3ddc08fc136.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "Eval9757c2676d7c45c2af7737a30d93d2c6ServiceRole39BD4915",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x"
+   },
+   "DependsOn": [
+    "Eval9757c2676d7c45c2af7737a30d93d2c6ServiceRole39BD4915"
+   ]
+  },
+  "Eval9757c2676d7c45c2af7737a30d93d2c6LogGroup3CE9BC8F": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "Eval9757c2676d7c45c2af7737a30d93d2c64B038159"
        }
       ]
      ]
@@ -253,7 +178,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f1028726088",
+          "Eval105f0693c0824e9b83f39007507676f0117865DA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "Eval9757c2676d7c45c2af7737a30d93d2c64B038159",
           "Arn"
          ]
         },
@@ -263,7 +194,21 @@
           [
            {
             "Fn::GetAtt": [
-             "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f1028726088",
+             "Eval105f0693c0824e9b83f39007507676f0117865DA",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Eval9757c2676d7c45c2af7737a30d93d2c64B038159",
              "Arn"
             ]
            },
@@ -291,14 +236,21 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"EvaluateExpression\",\"States\":{\"EvaluateExpression\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"a\":3,\"b\":4},\"Next\":\"ParallelEval\"},\"ParallelEval\":{\"Type\":\"Parallel\",\"End\":true,\"Branches\":[{\"StartAt\":\"EvalExpressionArm\",\"States\":{\"EvalExpressionArm\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
-         "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f1028726088",
+         "Eval105f0693c0824e9b83f39007507676f0117865DA",
          "Arn"
         ]
        },
-       "\",\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}}}},\"TimeoutSeconds\":30}"
+       "\",\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}}}}},{\"StartAt\":\"EvalExpressionX86\",\"States\":{\"EvalExpressionX86\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "Eval9757c2676d7c45c2af7737a30d93d2c64B038159",
+         "Arn"
+        ]
+       },
+       "\",\"Parameters\":{\"expression\":\"$.a * $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}}}}}]}}}"
       ]
      ]
     },
@@ -315,13 +267,6 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  }
- },
- "Outputs": {
-  "stateMachineArn": {
-   "Value": {
-    "Ref": "StateMachine2E01A3A5"
-   }
   }
  },
  "Parameters": {
