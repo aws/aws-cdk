@@ -278,7 +278,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/91d41b1edb1902e1210c6afbb231d027e31de216159cd24f0422de9ea1e85922.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d487d99eeb20983f8318578f02b8a1e4f0bd57de9d3e64cc60b38cf2e094bdef.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -854,6 +854,10 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined."
+          },
+          "@aws-cdk/aws-s3-deployment:default512MemoryLimit": {
+            "recommendedValue": true,
+            "explanation": "Use 512MB memory for BucketDeployment Lambda function instead of 128MB"
           },
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
             "userValue": false,
