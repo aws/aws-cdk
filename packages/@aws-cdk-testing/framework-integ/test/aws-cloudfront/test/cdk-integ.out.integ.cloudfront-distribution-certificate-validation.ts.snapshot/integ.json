@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "cloudfront-distribution-certificate-validation-test/DefaultTest": {
+      "stacks": [
+        "cloudfront-distribution-certificate-validation"
+      ],
+      "assertionStack": "cloudfront-distribution-certificate-validation-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cloudfrontdistributioncertificatevalidationtestDefaultTestDeployAssert9555EA04"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}
