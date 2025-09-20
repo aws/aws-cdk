@@ -300,12 +300,50 @@
      }
     ],
     "Scheme": "internal",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "NlbWithSecurityGroup11C7D70D",
+       "GroupId"
+      ]
+     }
+    ],
     "Subnets": [
      {
       "Ref": "StackIsolatedSubnet1Subnet2151DD06"
      }
     ],
     "Type": "network"
+   }
+  },
+  "NlbWithSecurityGroup11C7D70D": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB NlbSecurityGroupStackNlbWithSecurityGroupDC50C5CD",
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    }
+   }
+  },
+  "NlbWithSecurityGrouptoNlbSecurityGroupStackSecurityGroup8C77E7851229778883C8": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "to NlbSecurityGroupStackSecurityGroup8C77E785:1229",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "SecurityGroupDD263621",
+      "GroupId"
+     ]
+    },
+    "FromPort": 1229,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "NlbWithSecurityGroup11C7D70D",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 1229
    }
   },
   "SecurityGroupDD263621": {
@@ -322,6 +360,27 @@
     "VpcId": {
      "Ref": "Stack8A423254"
     }
+   }
+  },
+  "SecurityGroupfromNlbSecurityGroupStackNlbWithSecurityGroupD9AAE7DE12296F676D9E": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "from NlbSecurityGroupStackNlbWithSecurityGroupD9AAE7DE:1229",
+    "FromPort": 1229,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "SecurityGroupDD263621",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "NlbWithSecurityGroup11C7D70D",
+      "GroupId"
+     ]
+    },
+    "ToPort": 1229
    }
   },
   "NlbWithSecurityGroup235636123": {
