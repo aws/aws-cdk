@@ -1315,7 +1315,6 @@ const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
   cidr: '10.100.0.0/16',
   serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
   clientCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/client-certificate-id',
-  sessionTimeoutHours: 8,
   disconnectOnSessionTimeout: false, // Allow automatic reconnection attempts
 });
 ```
