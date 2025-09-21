@@ -5,7 +5,7 @@ import * as ec2 from '../../aws-ec2';
 import * as eks from '../../aws-eks';
 import { ArnPrincipal, Role, ServicePrincipal } from '../../aws-iam';
 import { Stack, Duration, Tags, CfnParameter } from '../../core';
-import { AllocationStrategy, CfnComputeEnvironmentProps, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps, FargateComputeEnvironment, EcsMachineImageType, EksMachineImageType } from '../lib';
+import { AllocationStrategy, CfnComputeEnvironmentProps, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps, FargateComputeEnvironment, EcsMachineImageType, EksMachineImageType, DefaultInstanceClass } from '../lib';
 
 const defaultExpectedEcsProps: CfnComputeEnvironmentProps = {
   type: 'managed',
@@ -710,7 +710,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
 
     expect(() => {
       Template.fromStack(stack);
-    }).toThrow(/Specifies 'useOptimalInstanceClasses: false' without specifying any instance types or classes/);
+    }).toThrow(/'defaultInstanceClasses' undefined without specifying any instance types or classes/);
   });
 
   test('throws error when AllocationStrategy.SPOT_CAPACITY_OPTIMIZED is used without specfiying spot', () => {
@@ -1007,6 +1007,35 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
         SpotIamFleetRole: { 'Fn::GetAtt': ['MyCESpotFleetRole70BE30A0', 'Arn'] },
       },
     });
+  });
+
+  test('can use default instance classes', () => {
+    // WHEN
+    new ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
+      defaultInstanceClasses: [DefaultInstanceClass.ARM64],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...pascalCaseExpectedEcsProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        InstanceTypes: ['default_arm64'],
+      },
+    });
+  });
+
+  test('throws when using defaultInstanceClasses and useOptimalInstanceClasses', () => {
+    // WHEN
+    expect(() => {
+      new ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+        ...defaultEcsProps,
+        defaultInstanceClasses: [DefaultInstanceClass.ARM64],
+        useOptimalInstanceClasses: true,
+      });
+    }).toThrow(/cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`/);
   });
 
   test('throws when spotFleetRole is specified without spot', () => {
