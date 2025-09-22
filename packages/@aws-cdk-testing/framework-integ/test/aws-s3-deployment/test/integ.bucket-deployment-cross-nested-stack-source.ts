@@ -43,7 +43,11 @@ class MainStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-s3-deployment:defaultMemoryLimit': true,
+  },
+});
 const stack = new MainStack(app, 'MainStack');
 
 const integTest = new integ.IntegTest(app, 'integ-cross-nested-stack-source', {

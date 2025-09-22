@@ -38,6 +38,7 @@ const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+    '@aws-cdk/aws-s3-deployment:defaultMemoryLimit': true,
   },
 });
 

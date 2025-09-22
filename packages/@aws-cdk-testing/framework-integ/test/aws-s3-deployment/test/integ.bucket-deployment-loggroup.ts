@@ -29,7 +29,11 @@ class TestBucketDeployment extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-s3-deployment:defaultMemoryLimit': true,
+  },
+});
 const testCase = new TestBucketDeployment(app, 'test-bucket-deployment-loggroup');
 
 new integ.IntegTest(app, 'integ-test-bucket-deployment-loggroup', {

@@ -13,6 +13,7 @@ import * as os from 'os';
 const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+    '@aws-cdk/aws-s3-deployment:defaultMemoryLimit': true,
   },
 });
 const stack = new Stack(app, 'TestBucketDeploymentLargeFile');

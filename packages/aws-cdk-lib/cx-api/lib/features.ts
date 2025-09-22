@@ -145,7 +145,7 @@ export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-c
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
-export const S3_DEPLOYMENT_DEFAULT_MEMORY_LIMIT = '@aws-cdk/aws-s3-deployment:defaultMemoryLimit';
+export const S3_DEPLOYMENT_USE_512MB_MEMORY = '@aws-cdk/aws-s3-deployment:use512MbMemory';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1696,19 +1696,19 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
-  [S3_DEPLOYMENT_DEFAULT_MEMORY_LIMIT]: {
+  [S3_DEPLOYMENT_USE_512MB_MEMORY]: {
     type: FlagType.ApiDefault,
-    summary: 'Use 512MB memory for BucketDeployment Lambda function instead of 128MB',
+    summary: 'Use 512MB memory for BucketDeployment Lambda function',
     detailsMd: `
-      When this feature flag is enabled, the BucketDeployment construct will use 512MB of memory
-      for the deployment Lambda function instead of the previous default of 128MB.
+      When this feature flag is enabled, the BucketDeployment construct will explicitly use 512MB 
+      of memory for the deployment Lambda function, providing significantly better performance 
+      for S3 sync operations.
       
-      This provides significantly better performance for S3 sync operations, with improvements
-      from KB/s to MB/s transfer rates, which eliminates timeout issues for typical static
-      website deployments. However, it does increase the cost per invocation.
+      This improves transfer rates from KB/s to MB/s, which eliminates timeout issues for typical 
+      static website deployments. However, it does increase the cost per invocation.
       
-      When disabled, the previous behavior of using 128MB memory is maintained for backward
-      compatibility.
+      When disabled, no explicit memory limit is set, allowing the Lambda function to use its 
+      default memory allocation (128MB) for backward compatibility.
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,

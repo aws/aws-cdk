@@ -30,7 +30,11 @@ class Stack1 extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-s3-deployment:defaultMemoryLimit': true,
+  },
+});
 const stack2 = new Stack2(app, 'stack2');
 const stack1 = new Stack1(app, 'stack1', { userPool: stack2.userPool });
 
