@@ -11,6 +11,76 @@ holds multiple versions of a single container image.
 const repository = new ecr.Repository(this, 'Repository');
 ```
 
+## IPv6 Dual-Stack Endpoint Support
+
+Amazon ECR supports IPv6 dual-stack endpoints that enable IPv6-only infrastructure to access ECR repositories without requiring VPC endpoints. By default, CDK generates IPv4-only ECR endpoints, but you can enable dual-stack endpoints either globally via environment variable or per-repository via the `useDualStackEndpoint` property.
+
+### Enabling IPv6 Dual-Stack Endpoints
+
+#### Repository-Level Configuration (Recommended)
+
+You can enable dual-stack endpoints for specific repositories:
+
+```ts
+const repository = new ecr.Repository(this, 'MyRepo', {
+  useDualStackEndpoint: true,
+});
+```
+
+#### Global Configuration via Environment Variable
+
+Alternatively, set the environment variable to enable dual-stack endpoints for all ECR repositories:
+
+```bash
+export AWS_USE_DUALSTACK_ENDPOINT=true
+cdk deploy
+```
+
+**Priority**: Repository-level `useDualStackEndpoint` property takes precedence over the environment variable.
+
+When enabled, ECR repository URIs will use the dual-stack format:
+- **IPv4-only (default)**: `123456789012.dkr.ecr.us-east-1.amazonaws.com`
+- **IPv6 dual-stack**: `123456789012.dkr-ecr.us-east-1.on.aws`
+
+### Usage with Container Services
+
+The dual-stack endpoint support works seamlessly with all AWS container services:
+
+```ts
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+
+const repository = new ecr.Repository(this, 'MyRepo', {
+  useDualStackEndpoint: true, // Enable IPv6 dual-stack for this repository
+});
+
+// ECS task definition automatically uses the correct endpoint format
+const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('MyContainer', {
+  image: ecs.ContainerImage.fromEcrRepository(repository, 'latest'),
+  memoryLimitMiB: 512,
+});
+```
+
+### Docker Image Assets
+
+Docker image assets also respect the dual-stack endpoint setting:
+
+```ts
+import * as assets from 'aws-cdk-lib/aws-ecr-assets';
+
+// This asset will be pushed to the appropriate endpoint format
+const asset = new assets.DockerImageAsset(this, 'MyDockerAsset', {
+  directory: './my-docker-app',
+});
+```
+
+### Backward Compatibility
+
+This feature maintains 100% backward compatibility:
+- Existing CDK applications continue to work without modification
+- IPv4-only endpoints remain the default behavior
+- No breaking changes to any APIs
+
 ## Image scanning
 
 Amazon ECR image scanning helps in identifying software vulnerabilities in your container images.
