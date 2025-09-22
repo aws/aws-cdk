@@ -16,7 +16,8 @@
     "composite": true,
     "incremental": true,
     "moduleResolution": "node",
-    "types": ["node"]
+    "types": ["node"],
+    "outDir": "."
   },
   "include": ["**/*.ts"],
   "exclude": ["**/*.d.ts"]

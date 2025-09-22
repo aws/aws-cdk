@@ -1,9 +1,9 @@
 {
-  "name": "@aws-cdk/deployment-integ",
+  "name": "@aws-cdk/integration-test-deployment",
   "version": "0.0.0",
   "private": true,
   "bin": {
-    "deployment-integ": "bin/deployment-integ.ts"
+    "integration-test-deployment": "bin/index.js"
   },
   "scripts": {
     "build": "tsc --build",
@@ -12,7 +12,8 @@
     "package": "mkdir -p dist/js && mv $(npm pack) dist/js/",
     "test": "jest --passWithNoTests --updateSnapshot --coverage=false",
     "test:watch": "jest --watch",
-    "watch": "tsc --build -w tsconfig.json"
+    "watch": "tsc --build -w tsconfig.json",
+    "integration-test-deployment": "node bin/index.js"
   },
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
