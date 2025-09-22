@@ -1626,6 +1626,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ECR_PUBLIC",
     "ECR"
   ],
+  "IncludeDetail": [
+    "FULL",
+    "NONE"
+  ],
   "IncludeExecutionData": [
     "ALL"
   ],
@@ -2256,6 +2260,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "bottom",
     "right",
     "hidden"
+  ],
+  "Level": [
+    "INFO",
+    "ERROR",
+    "TRACE",
+    "OFF"
   ],
   "LicenseModel": [
     "license-included",
@@ -3602,7 +3612,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "TagMutability": [
     "MUTABLE",
-    "IMMUTABLE"
+    "IMMUTABLE",
+    "IMMUTABLE_WITH_EXCLUSION",
+    "MUTABLE_WITH_EXCLUSION"
   ],
   "TagOperation": [
     "STRINGEQUALS",
