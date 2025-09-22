@@ -642,8 +642,8 @@ new CfnOutput(this, 'TheUrl', {
 });
 ```
 
-### Important Function URL Permission Update - Sep 2025
-Starting Sep 2025, Function URL invocation will require two permissions
+### Important Function URL Permission Update - Oct 2025
+Starting Oct 2025, Function URL invocation will require two permissions
 - lambda:InvokeFunctionUrl
 - lambda:InvokeFunction (New)
 
