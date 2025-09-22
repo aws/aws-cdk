@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { UserEngine } from './common';
 import { CfnUser, CfnUserGroup } from 'aws-cdk-lib/aws-elasticache';
 import { IUserBase } from './user-base';
-import { IResource, Resource, ArnFormat, Stack, Lazy, ValidationError, UnscopedValidationError } from 'aws-cdk-lib/core';
+import { IResource, Resource, ArnFormat, Stack, Lazy, ValidationError, UnscopedValidationError, Names } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
@@ -146,8 +146,8 @@ export class UserGroup extends UserGroupBase {
   /**
    * Return whether the given object is a `UserGroup`
    */
-  public static isUserGroup(x: any) : x is UserGroup {
-    return x !== null && typeof(x) === 'object' && ELASTICACHE_USERGROUP_SYMBOL in x;
+  public static isUserGroup(x: any): x is UserGroup {
+    return x !== null && typeof (x) === 'object' && ELASTICACHE_USERGROUP_SYMBOL in x;
   }
 
   /**
@@ -247,7 +247,7 @@ export class UserGroup extends UserGroupBase {
 
   constructor(scope: Construct, id: string, props: UserGroupProps = {}) {
     super(scope, id, {
-      physicalName: props.userGroupName,
+      physicalName: props.userGroupName ?? Lazy.string({ produce: () => Names.uniqueId(this).toLocaleLowerCase() }),
     });
 
     // Enhanced CDK Analytics Telemetry
@@ -258,14 +258,6 @@ export class UserGroup extends UserGroupBase {
 
     if (props.users) {
       this._users.push(...props.users);
-    }
-
-    if (this.engine === UserEngine.REDIS) {
-      this._users.forEach(user => {
-        if (user.engine !== UserEngine.REDIS) {
-          throw new ValidationError(`Redis user group can only contain Redis users. User ${user.userId} has engine ${user.engine}.`, this);
-        }
-      });
     }
 
     this.resource = new CfnUserGroup(this, 'Resource', {
@@ -293,10 +285,7 @@ export class UserGroup extends UserGroupBase {
    * Add a CloudFormation dependency on the user resource to ensure proper creation order.
    */
   private addUserDependency(user: IUserBase): void {
-    const userResource = user.node.tryFindChild('Resource') as CfnUser;
-    if (userResource) {
-      this.resource.addDependency(userResource);
-    }
+    this.resource.node.addDependency(user);
   }
 
   /**
@@ -320,6 +309,11 @@ export class UserGroup extends UserGroupBase {
     }
 
     if (this.engine === UserEngine.REDIS) {
+      this._users.forEach(user => {
+        if (user.engine !== UserEngine.REDIS) {
+          throw new ValidationError('Redis user group can only contain Redis users.', this);
+        }
+      });
       const hasDefaultUser = this._users.some(user => user.userName === 'default');
       if (!hasDefaultUser) {
         throw new ValidationError('Redis user groups need to contain a user with the user name "default".', this);
@@ -335,9 +329,6 @@ export class UserGroup extends UserGroupBase {
   public addUser(user: IUserBase): void {
     if (this._users.find(u => u.userId === user.userId)) {
       return;
-    }
-    if (this.engine === UserEngine.REDIS && user.engine !== UserEngine.REDIS) {
-      throw new ValidationError(`Redis user group can only contain Redis users. User ${user.userId} has engine ${user.engine}.`, this);
     }
     this._users.push(user);
     this.addUserDependency(user);

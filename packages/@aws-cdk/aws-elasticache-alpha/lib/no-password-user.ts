@@ -35,8 +35,8 @@ export class NoPasswordUser extends UserBase {
   /**
    * Return whether the given object is a `NoPasswordUser`.
    */
-  public static isNoPasswordUser(x: any) : x is NoPasswordUser {
-    return x !== null && typeof(x) === 'object' && ELASTICACHE_NOPASSWORDUSER_SYMBOL in x;
+  public static isNoPasswordUser(x: any): x is NoPasswordUser {
+    return x !== null && typeof (x) === 'object' && ELASTICACHE_NOPASSWORDUSER_SYMBOL in x;
   }
 
   /**
@@ -81,12 +81,12 @@ export class NoPasswordUser extends UserBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.engine = props.engine ?? UserEngine.VALKEY;
+    this.engine = props.engine ?? UserEngine.REDIS;
     this.userId = props.userId;
     this.userName = props.userName ?? props.userId;
     this.accessString = props.accessControl.accessString;
 
-    if (this.engine === UserEngine.VALKEY ) {
+    if (this.engine === UserEngine.VALKEY) {
       throw new ValidationError('Valkey engine does not support no-password authentication.', this);
     }
 

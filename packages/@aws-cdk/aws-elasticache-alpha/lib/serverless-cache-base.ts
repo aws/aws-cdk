@@ -11,24 +11,29 @@ import { IResource, Resource, Duration } from 'aws-cdk-lib/core';
 export enum CacheEngine {
   /**
    * Valkey engine, latest version available
+   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
-  VALKEY_DEFAULT = 'valkey',
+  VALKEY_LATEST = 'valkey',
   /**
    * Valkey engine, version 7
+   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   VALKEY_7 = 'valkey_7',
   /**
    * Valkey engine, version 8
+   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   VALKEY_8 = 'valkey_8',
   /**
    * Redis engine, latest version available
+   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
-  REDIS_DEFAULT = 'redis',
+  REDIS_LATEST = 'redis',
   /**
    * Memcached engine, latest version available
+   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
-  MEMCACHED_DEFAULT = 'memcached',
+  MEMCACHED_LATEST = 'memcached',
 }
 
 /**
@@ -108,7 +113,7 @@ export interface IServerlessCache extends IResource, ec2.IConnectable {
   /**
    * Metric for ECPUs consumed
    */
-  metricECPUsConsumed(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metricProcessingUnitsConsumed(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
   /**
    * Metric for network bytes in
    */
@@ -196,10 +201,10 @@ export abstract class ServerlessCacheBase extends Resource implements IServerles
    * Metric for cache hit count
    *
    * @param props Additional properties which will be merged with the default metric
-   * @default Average over 5 minutes
+   * @default Sum over 5 minutes
    */
   public metricCacheHitCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('CacheHits', props);
+    return this.metric('CacheHits', { statistic: 'Sum', ...props });
   }
   /**
    * Metric for cache miss count
@@ -234,7 +239,7 @@ export abstract class ServerlessCacheBase extends Resource implements IServerles
    * @param props Additional properties which will be merged with the default metric
    * @default Average over 5 minutes
    */
-  public metricECPUsConsumed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metricProcessingUnitsConsumed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('ElastiCacheProcessingUnits', props);
   }
   /**
