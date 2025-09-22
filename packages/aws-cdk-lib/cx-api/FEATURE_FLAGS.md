@@ -107,7 +107,7 @@ Flags come in three types:
 | [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | 2.205.0 | new default |
 | [@aws-cdk/aws-signer:signingProfileNamePassedToCfn](#aws-cdkaws-signersigningprofilenamepassedtocfn) | Pass signingProfileName to CfnSigningProfile | 2.212.0 | fix |
 | [@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener](#aws-cdkaws-ecs-patternssecgroupsdisablesimplicitopenlistener) | Disable implicit openListener when custom security groups are provided | 2.214.0 | new default |
-| [@aws-cdk/aws-s3-deployment:defaultMemoryLimit](#aws-cdkaws-s3-deploymentdefaultmemorylimit) | Use 512MB memory for BucketDeployment Lambda function instead of 128MB | V2NEXT | new default |
+| [@aws-cdk/aws-s3-deployment:use512MbMemory](#aws-cdkaws-s3-deploymentuse512mbmemory) | Use 512MB memory for BucketDeployment Lambda function | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -198,7 +198,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
-    "@aws-cdk/aws-s3-deployment:defaultMemoryLimit": true,
+    "@aws-cdk/aws-s3-deployment:use512MbMemory": true,
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true
   }
 }
@@ -2279,21 +2279,21 @@ override this behavior.
 **Compatibility with old behavior:** You can pass `openListener: true` explicitly to maintain the old behavior.
 
 
-### @aws-cdk/aws-s3-deployment:defaultMemoryLimit
+### @aws-cdk/aws-s3-deployment:use512MbMemory
 
-*Use 512MB memory for BucketDeployment Lambda function instead of 128MB*
+*Use 512MB memory for BucketDeployment Lambda function*
 
 Flag type: New default behavior
 
-When this feature flag is enabled, the BucketDeployment construct will use 512MB of memory
-for the deployment Lambda function instead of the previous default of 128MB.
+When this feature flag is enabled, the BucketDeployment construct will explicitly use 512MB 
+of memory for the deployment Lambda function, providing significantly better performance 
+for S3 sync operations.
 
-This provides significantly better performance for S3 sync operations, with improvements
-from KB/s to MB/s transfer rates, which eliminates timeout issues for typical static
-website deployments. However, it does increase the cost per invocation.
+This improves transfer rates from KB/s to MB/s, which eliminates timeout issues for typical 
+static website deployments. However, it does increase the cost per invocation.
 
-When disabled, the previous behavior of using 128MB memory is maintained for backward
-compatibility.
+When disabled, no explicit memory limit is set, allowing the Lambda function to use its 
+default memory allocation (128MB) for backward compatibility.
 
 
 | Since | Unset behaves like | Recommended value |
