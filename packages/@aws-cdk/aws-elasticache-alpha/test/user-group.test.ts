@@ -28,6 +28,7 @@ describe('UserGroup', () => {
           engine,
           users: [user],
         });
+        Template.fromStack(stack);
       }).toThrow(errorMessage);
     });
 
@@ -151,7 +152,11 @@ describe('UserGroup', () => {
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       });
 
-      expect(() => userGroup.addUser(valkeyUser)).toThrow('Redis user group can only contain Redis users.');
+      expect(() => {
+        userGroup.addUser(valkeyUser);
+        Template.fromStack(stack);
+      },
+      ).toThrow('Redis user group can only contain Redis users.');
     });
   });
 
@@ -167,7 +172,7 @@ describe('UserGroup', () => {
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::ElastiCache::UserGroup', {
         Engine: 'valkey',
-        UserGroupId: Match.anyValue(),
+        UserGroupId: 'TestUserGroup',
       });
     });
 
@@ -186,7 +191,7 @@ describe('UserGroup', () => {
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::ElastiCache::UserGroup', {
         Engine: 'redis',
-        UserGroupId: Match.anyValue(),
+        UserGroupId: 'TestUserGroup',
         UserIds: [user.userId],
       });
     });
@@ -304,7 +309,7 @@ describe('UserGroup', () => {
       expect(userGroup.userGroupName).toMatch(/\$\{Token/);
 
       const resolved = stack.resolve(userGroup.userGroupName);
-      expect(resolved).toBeUndefined();
+      expect(resolved).toEqual('TestUserGroup');
     });
   });
 

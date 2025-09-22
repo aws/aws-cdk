@@ -1,6 +1,6 @@
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { Stack } from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IamUser, AccessControl, UserEngine } from '../lib';
 
 describe('IamUser', () => {
@@ -170,7 +170,7 @@ describe('IamUser', () => {
   describe('IAM permissions', () => {
     let stack: Stack;
     let user: IamUser;
-    let role: iam.Role;
+    let role: Role;
 
     beforeEach(() => {
       stack = new Stack();
@@ -178,8 +178,8 @@ describe('IamUser', () => {
         userId: 'test-user',
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       });
-      role = new iam.Role(stack, 'TestRole', {
-        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      role = new Role(stack, 'TestRole', {
+        assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
       });
     });
 

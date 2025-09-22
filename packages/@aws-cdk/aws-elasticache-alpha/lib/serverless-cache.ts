@@ -6,7 +6,7 @@ import { IUserGroup } from './user-group';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import { ArnFormat, Stack, Size, Lazy, ValidationError } from 'aws-cdk-lib/core';
+import { ArnFormat, Stack, Size, Lazy, ValidationError, Names, Token } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
@@ -244,8 +244,8 @@ export class ServerlessCache extends ServerlessCacheBase {
   /**
    * Return whether the given object is a `ServerlessCache`
    */
-  public static isServerlessCache(x: any) : x is ServerlessCache {
-    return x !== null && typeof(x) === 'object' && ELASTICACHE_SERVERLESSCACHE_SYMBOL in x;
+  public static isServerlessCache(x: any): x is ServerlessCache {
+    return x !== null && typeof (x) === 'object' && ELASTICACHE_SERVERLESSCACHE_SYMBOL in x;
   }
 
   /**
@@ -325,13 +325,13 @@ export class ServerlessCache extends ServerlessCacheBase {
         if (this.engine) {
           let defaultPort: ec2.Port;
           switch (this.engine) {
-            case CacheEngine.VALKEY_DEFAULT:
+            case CacheEngine.VALKEY_LATEST:
             case CacheEngine.VALKEY_7:
             case CacheEngine.VALKEY_8:
-            case CacheEngine.REDIS_DEFAULT:
+            case CacheEngine.REDIS_LATEST:
               defaultPort = ec2.Port.tcp(6379);
               break;
-            case CacheEngine.MEMCACHED_DEFAULT:
+            case CacheEngine.MEMCACHED_LATEST:
               defaultPort = ec2.Port.tcp(11211);
               break;
             default:
@@ -407,13 +407,13 @@ export class ServerlessCache extends ServerlessCacheBase {
 
   constructor(scope: Construct, id: string, props: ServerlessCacheProps) {
     super(scope, id, {
-      physicalName: props.serverlessCacheName,
+      physicalName: props.serverlessCacheName ?? Lazy.string({ produce: () => Names.uniqueId(this) }),
     });
 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.engine = props.engine ?? CacheEngine.VALKEY_DEFAULT;
+    this.engine = props.engine ?? CacheEngine.VALKEY_LATEST;
     this.serverlessCacheName = this.physicalName;
     this.kmsKey = props.kmsKey;
     this.vpc = props.vpc;
@@ -433,7 +433,7 @@ export class ServerlessCache extends ServerlessCacheBase {
     const securityGroupIds = securityGroupConfig.securityGroupIds;
     this.securityGroups = securityGroupConfig.securityGroups;
 
-    const { engine, version } = this.parseEngine(this.engine);
+    const [engine, version] = this.engine.split('_');
 
     const resource = new CfnServerlessCache(this, 'Resource', {
       engine: engine,
@@ -498,17 +498,17 @@ export class ServerlessCache extends ServerlessCacheBase {
     if (!limits) return;
 
     if (limits.dataStorageMinimumSize && !limits.dataStorageMinimumSize.isUnresolved() &&
-        (limits.dataStorageMinimumSize.toGibibytes() < DATA_STORAGE_MIN_GB || limits.dataStorageMinimumSize.toGibibytes() > DATA_STORAGE_MAX_GB)) {
+      (limits.dataStorageMinimumSize.toGibibytes() < DATA_STORAGE_MIN_GB || limits.dataStorageMinimumSize.toGibibytes() > DATA_STORAGE_MAX_GB)) {
       throw new ValidationError('Data storage minimum must be between 1 and 5000 GB.', this);
     }
     if (limits.dataStorageMaximumSize && !limits.dataStorageMaximumSize.isUnresolved() &&
-        (limits.dataStorageMaximumSize.toGibibytes() < DATA_STORAGE_MIN_GB || limits.dataStorageMaximumSize.toGibibytes() > DATA_STORAGE_MAX_GB)) {
+      (limits.dataStorageMaximumSize.toGibibytes() < DATA_STORAGE_MIN_GB || limits.dataStorageMaximumSize.toGibibytes() > DATA_STORAGE_MAX_GB)) {
       throw new ValidationError('Data storage maximum must be between 1 and 5000 GB.', this);
     }
 
     if (limits.dataStorageMinimumSize && limits.dataStorageMaximumSize &&
-        !limits.dataStorageMinimumSize.isUnresolved() && !limits.dataStorageMaximumSize.isUnresolved() &&
-        limits.dataStorageMinimumSize.toGibibytes() > limits.dataStorageMaximumSize.toGibibytes()) {
+      !limits.dataStorageMinimumSize.isUnresolved() && !limits.dataStorageMaximumSize.isUnresolved() &&
+      limits.dataStorageMinimumSize.toGibibytes() > limits.dataStorageMaximumSize.toGibibytes()) {
       throw new ValidationError('Data storage minimum cannot be greater than maximum', this);
     }
   }
@@ -522,16 +522,16 @@ export class ServerlessCache extends ServerlessCacheBase {
     if (!limits) return;
 
     if (limits.requestRateLimitMinimum !== undefined &&
-        (limits.requestRateLimitMinimum < REQUEST_RATE_MIN_ECPU || limits.requestRateLimitMinimum > REQUEST_RATE_MAX_ECPU)) {
+      (limits.requestRateLimitMinimum < REQUEST_RATE_MIN_ECPU || limits.requestRateLimitMinimum > REQUEST_RATE_MAX_ECPU)) {
       throw new ValidationError('Request rate minimum must be between 1,000 and 15,000,000 ECPUs per second', this);
     }
     if (limits.requestRateLimitMaximum !== undefined &&
-        (limits.requestRateLimitMaximum < REQUEST_RATE_MIN_ECPU || limits.requestRateLimitMaximum > REQUEST_RATE_MAX_ECPU)) {
+      (limits.requestRateLimitMaximum < REQUEST_RATE_MIN_ECPU || limits.requestRateLimitMaximum > REQUEST_RATE_MAX_ECPU)) {
       throw new ValidationError('Request rate maximum must be between 1,000 and 15,000,000 ECPUs per second', this);
     }
 
     if (limits.requestRateLimitMinimum !== undefined && limits.requestRateLimitMaximum !== undefined &&
-        limits.requestRateLimitMinimum > limits.requestRateLimitMaximum) {
+      limits.requestRateLimitMinimum > limits.requestRateLimitMaximum) {
       throw new ValidationError('Request rate minimum cannot be greater than maximum', this);
     }
   }
@@ -542,14 +542,14 @@ export class ServerlessCache extends ServerlessCacheBase {
    * @param backup The backup settings to validate
    */
   private validateBackupSettings(backup?: BackupSettings): void {
-    if (backup?.backupRetentionLimit !== undefined) {
+    if (!Token.isUnresolved(backup?.backupRetentionLimit) && backup?.backupRetentionLimit !== undefined) {
       const limit = backup.backupRetentionLimit;
       if (limit < 1 || limit > 35) {
         throw new ValidationError('Backup retention limit must be between 1 and 35 days', this);
       }
     }
 
-    if (backup?.backupNameBeforeDeletion !== undefined) {
+    if (!Token.isUnresolved(backup?.backupNameBeforeDeletion) && backup?.backupNameBeforeDeletion !== undefined) {
       const name = backup.backupNameBeforeDeletion;
 
       if (!/^[a-zA-Z]/.test(name)) {
@@ -579,11 +579,11 @@ export class ServerlessCache extends ServerlessCacheBase {
   private validateUserGroupCompatibility(engine: CacheEngine, userGroup?: IUserGroup): void {
     if (!userGroup) return;
 
-    if (engine === CacheEngine.MEMCACHED_DEFAULT) {
+    if (engine === CacheEngine.MEMCACHED_LATEST) {
       throw new ValidationError('User groups cannot be used with Memcached engines. Only Redis and Valkey engines support user groups.', this);
     }
 
-    if (engine === CacheEngine.REDIS_DEFAULT && userGroup.engine !== UserEngine.REDIS) {
+    if (engine === CacheEngine.REDIS_LATEST && userGroup.engine !== UserEngine.REDIS) {
       throw new ValidationError('Redis cache can only use Redis user groups.', this);
     }
   }
@@ -681,19 +681,5 @@ export class ServerlessCache extends ServerlessCacheBase {
       return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
     }
     throw new ValidationError('Invalid schedule format for backup time', this);
-  }
-
-  /**
-   * Parse engine string to extract engine name and version
-   *
-   * @param eng The cache engine enum value
-   * @returns Object with engine name and optional version
-   */
-  private parseEngine(eng: CacheEngine): {engine: string; version?: string} {
-    const parts = eng.split('_');
-    const engine = parts[0];
-    const version = parts.length > 1 ? parts[1] : undefined;
-
-    return { engine, version };
   }
 }

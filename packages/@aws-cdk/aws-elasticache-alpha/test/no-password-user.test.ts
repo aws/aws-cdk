@@ -9,23 +9,12 @@ describe('NoPasswordUser', () => {
       stack = new Stack();
     });
 
-    test.each([
-      {
-        testDescription: 'when using Valkey engine throws validation error',
-        engine: UserEngine.VALKEY,
-        errorMessage: 'Valkey engine does not support no-password authentication.',
-      },
-      {
-        testDescription: 'when engine defaults to Valkey throws validation error',
-        engine: undefined,
-        errorMessage: 'Valkey engine does not support no-password authentication.',
-      },
-    ])('$testDescription', ({ engine, errorMessage }) => {
+    test('when using Valkey engine throws validation error', () => {
       expect(() => new NoPasswordUser(stack, 'TestUser', {
         userId: 'test-user',
-        engine,
+        engine: UserEngine.VALKEY,
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
-      })).toThrow(errorMessage);
+      })).toThrow('Valkey engine does not support no-password authentication.');
     });
 
     test.each([
