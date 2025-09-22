@@ -920,10 +920,7 @@ describe('with CloudFront functions', () => {
             {
               EventType: 'viewer-request',
               FunctionARN: {
-                'Fn::GetAtt': [
-                  'TestFunction22AD90FC',
-                  'FunctionARN',
-                ],
+                Ref: 'TestFunction22AD90FC',
               },
             },
           ],

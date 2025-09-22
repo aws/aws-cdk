@@ -1,4 +1,4 @@
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 import { SecretValue, Stack } from 'aws-cdk-lib';
 import { AccessControl, IamUser, NoPasswordUser, PasswordUser, UserEngine, UserGroup } from '../lib';
 

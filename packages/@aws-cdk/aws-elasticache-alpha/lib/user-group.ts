@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { UserEngine } from './common';
-import { CfnUser, CfnUserGroup } from 'aws-cdk-lib/aws-elasticache';
+import { CfnUserGroup } from 'aws-cdk-lib/aws-elasticache';
 import { IUserBase } from './user-base';
 import { IResource, Resource, ArnFormat, Stack, Lazy, ValidationError, UnscopedValidationError, Names } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
