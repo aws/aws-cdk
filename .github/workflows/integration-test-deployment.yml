@@ -87,25 +87,17 @@ jobs:
         run: |
           (command -v sysctl || sudo apt-get update && sudo apt-get install -y procps) && \
           sudo sysctl -w vm.max_map_count=2251954
-
-      - name: Install dependencies (BASE)
-        working-directory: base
-        run: yarn install --frozen-lockfile
       
       - name: Build deployment-integ (BASE)
         working-directory: base
-        run: yarn --cwd tools/@aws-cdk/deployment-integ build
-
-      - name: Install dependencies (HEAD)
-        working-directory: head
-        run: yarn install --frozen-lockfile
+        run: yarn --cwd tools/@aws-cdk/integration_test_deployment build
       
       - name: Build framework-integ (HEAD)
         working-directory: head
         run: npx lerna run build --scope=@aws-cdk-testing/framework-integ 
 
       - name: Run integration tests from HEAD using script from BASE
-        run: node ../base/tools/@aws-cdk/integration-test-deployment/bin/index.js
+        run: node yarn --cwd ../base/tools/@aws-cdk/integration-test-deployment/ integration_test_deployment
         working-directory: head
         env:
           CDK_ATMOSPHERE_ENDPOINT: ${{ vars.CDK_ATMOSPHERE_ENDPOINT }}

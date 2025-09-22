@@ -6,6 +6,7 @@
     "integration-test-deployment": "bin/index.js"
   },
   "scripts": {
+    "clean": "tsc --build --clean",
     "build": "tsc --build",
     "build+test": "npm run build && npm run test",
     "lint": "eslint --ext .ts,.tsx --fix --no-error-on-unmatched-pattern lib bin test",
