@@ -1,17 +1,13 @@
 import { describe, expect, jest, test, beforeEach } from '@jest/globals';
-import { deployInegTestsWithAtmosphere } from '../lib/integ-run';
 import { AtmosphereAllocationMock } from './atmosphere-mock';
 import { AtmosphereAllocation } from '../lib/atmosphere';
 import { gitDiffMock } from './git-mock';
-import { gitDiff } from '../lib/utils';
-import { runInteg } from '../lib/integ-run';
-import { expectedChangedSnapshots } from './git-diff-expected-changed-snapshots';
+import * as utils from '../lib/utils';
+import * as integRun from '../lib/integ-run';
 
 jest.mock('../lib/atmosphere');
-jest.mock('../lib/git.ts');
-jest.mock('../lib/integ-run');
 
-describe('Atmosphere Allocation', () => {
+describe('Run Inegration Tests with Atmosphere', () => {
   let mockAtmosphereAllocation: AtmosphereAllocationMock;
 
   beforeEach(() => {
@@ -19,65 +15,47 @@ describe('Atmosphere Allocation', () => {
     jest.spyOn(AtmosphereAllocation, 'acquire').mockImplementation(async () => {
       return mockAtmosphereAllocation as any;
     });
-    (gitDiff as jest.Mock).mockImplementation(gitDiffMock);
+    jest.spyOn(utils, 'gitDiff').mockImplementation(gitDiffMock);
     jest.spyOn(mockAtmosphereAllocation, 'release');
+    jest.spyOn(integRun, 'runInteg').mockImplementation(async () => {});
   });
 
   test('successful integration test', async () => {
-    (runInteg as jest.Mock).mockImplementation(async () => {
-      return;
-    });
-
     const endpoint = 'https://test-endpoint.com';
     const pool = 'test-pool';
 
-    await deployInegTestsWithAtmosphere({ endpoint, pool });
+    await integRun.deployInegTestsWithAtmosphere({ endpoint, pool });
     expect(AtmosphereAllocation.acquire).toHaveBeenCalled();
-    expect(runInteg).toHaveBeenCalledWith(
-      expect.arrayContaining(expectedChangedSnapshots),
-      {
-        id: `allocation-for-pool-${pool}`,
-        environment: {
-          account: '123456789',
-          region: 'us-east-1',
-        },
-        credentials: {
-          accessKeyId: 'XXXXXXXXXXXXX',
-          secretAccessKey: '123456789',
-          sessionToken: '123456789',
-        },
-      },
-    );
+    expect(integRun.runInteg).toHaveBeenCalledWith(expect.objectContaining({
+      AWS_ACCESS_KEY_ID: 'XXXXXXXXXXXXX',
+      AWS_SECRET_ACCESS_KEY: '123456789',
+      AWS_SESSION_TOKEN: '123456789',
+      AWS_REGION: 'us-east-1',
+      AWS_ACCOUNT_ID: '123456789',
+    }));
     expect(mockAtmosphereAllocation.release).toHaveBeenCalled();
   });
 
   test('failed integration test', async () => {
-    (runInteg as jest.Mock).mockImplementation(() => {
+    jest.spyOn(integRun, 'runInteg').mockImplementation(() => {
       return Promise.reject(new Error('Integration tests failed with exit code 1'));
     });
 
     const endpoint = 'https://test-endpoint.com';
     const pool = 'test-pool';
 
-    await expect(deployInegTestsWithAtmosphere({ endpoint, pool })).rejects.toThrow(
+    await expect(integRun.deployInegTestsWithAtmosphere({ endpoint, pool })).rejects.toThrow(
       'Deployment integration test did not pass',
     );
+
     expect(AtmosphereAllocation.acquire).toHaveBeenCalled();
-    expect(runInteg).toHaveBeenCalledWith(
-      expect.arrayContaining(expectedChangedSnapshots),
-      {
-        id: `allocation-for-pool-${pool}`,
-        environment: {
-          account: '123456789',
-          region: 'us-east-1',
-        },
-        credentials: {
-          accessKeyId: 'XXXXXXXXXXXXX',
-          secretAccessKey: '123456789',
-          sessionToken: '123456789',
-        },
-      },
-    );
+    expect(integRun.runInteg).toHaveBeenCalledWith(expect.objectContaining({
+      AWS_ACCESS_KEY_ID: 'XXXXXXXXXXXXX',
+      AWS_SECRET_ACCESS_KEY: '123456789',
+      AWS_SESSION_TOKEN: '123456789',
+      AWS_REGION: 'us-east-1',
+      AWS_ACCOUNT_ID: '123456789',
+    }));
     expect(mockAtmosphereAllocation.release).toHaveBeenCalled();
   });
 });

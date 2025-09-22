@@ -1,18 +1,14 @@
-import { describe, expect, jest, test, beforeEach } from '@jest/globals';
-import { getChangedSnapshots } from '../lib/utils';
+import { describe, expect, jest, test } from '@jest/globals';
 import { gitDiffMock } from './git-mock';
-import { gitDiff } from '../lib/utils';
 import { expectedChangedSnapshots } from './git-diff-expected-changed-snapshots';
+import * as utils from '../lib/utils';
 
-jest.mock('../lib/git.ts');
+jest.spyOn(utils, 'gitDiff').mockImplementation(gitDiffMock);
 
 describe('Ingreation Test Snapshot', () => {
-  beforeEach(() => {
-    (gitDiff as jest.Mock).mockImplementation(gitDiffMock);
-  });
 
   test('git diff provides correct snapshot changes', async () => {
-    const changedSnapshots = await getChangedSnapshots();
+    const changedSnapshots = await utils.getChangedSnapshots();
 
     expect(changedSnapshots.length).toBe(expectedChangedSnapshots.length);
     expect(changedSnapshots).toEqual(expect.arrayContaining(expectedChangedSnapshots));

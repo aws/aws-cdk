@@ -6,7 +6,7 @@ permissions:
 on:
   workflow_dispatch: {}
   merge_group: {}
-  pull_request:
+  pull_request_target:
     branches:
       - main
     paths:

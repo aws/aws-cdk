@@ -7,14 +7,16 @@ export const deployInegTestsWithAtmosphere = async ({ endpoint, pool }: {endpoin
   let outcome = 'failure';
 
   try {
-    // Set credentials in environment
-    process.env.AWS_ACCESS_KEY_ID = allocation.allocation.credentials.accessKeyId;
-    process.env.AWS_SECRET_ACCESS_KEY = allocation.allocation.credentials.secretAccessKey;
-    process.env.AWS_SESSION_TOKEN = allocation.allocation.credentials.sessionToken;
-    process.env.AWS_REGION = allocation.allocation.environment.region;
-    process.env.AWS_ACCOUNT_ID = allocation.allocation.environment.account;
+    const env = {
+      ...process.env,
+      AWS_ACCESS_KEY_ID: allocation.allocation.credentials.accessKeyId,
+      AWS_SECRET_ACCESS_KEY: allocation.allocation.credentials.secretAccessKey,
+      AWS_SESSION_TOKEN: allocation.allocation.credentials.sessionToken,
+      AWS_REGION: allocation.allocation.environment.region,
+      AWS_ACCOUNT_ID: allocation.allocation.environment.account,
+    };
 
-    await runInteg();
+    await runInteg(env);
     outcome = 'success';
   } catch (e) {
     console.error(e);
@@ -27,7 +29,7 @@ export const deployInegTestsWithAtmosphere = async ({ endpoint, pool }: {endpoin
   }
 };
 
-export const runInteg = async () => {
+export const runInteg = async (env: NodeJS.ProcessEnv) => {
   const changedSnapshotPaths = await getChangedSnapshots();
   console.log(`Detected changed snapshots:\n${changedSnapshotPaths.join('\n')}`);
 
@@ -37,9 +39,7 @@ export const runInteg = async () => {
 
   const spawnProcess = spawn('yarn', ['integ-runner', '--directory', 'packages', '--force', ...changedSnapshotPaths], {
     stdio: ['ignore', 'inherit', 'inherit'],
-    env: {
-      ...process.env,
-    },
+    env,
   });
 
   return new Promise<void>((resolve, reject) => spawnProcess.on('close', (code) => {

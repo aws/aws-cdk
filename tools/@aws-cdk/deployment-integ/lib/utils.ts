@@ -18,7 +18,13 @@ export const gitDiff = async (): Promise<string> => {
 };
 
 // Get file paths for .integ.*.js files that were modified between the source and target branches
-export const getChangedSnapshots = async (): Promise<string[]> => [...new Set(
-  (await gitDiff()).split('\n').map(
-    val => val.match(/^.*integ\.[^/]*\.js/)?.[0] || null,
-  ).filter(val => val !== null))];
+export const getChangedSnapshots = async (): Promise<string[]> => [
+  ...new Set(
+    (await gitDiff()).split('\n')
+      .map(val => {
+        const match = val.match(/^.*integ\.[^/]*\.js/);
+        return match ? match[0].replace(/(\.js).*$/, '$1') : null;
+      })
+      .filter(val => val !== null)
+  ),
+];
