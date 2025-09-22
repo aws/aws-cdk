@@ -83,11 +83,7 @@ export class MainStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App({
-  postCliContext: {
-    '@aws-cdk/aws-s3-deployment:defaultMemoryLimit': true,
-  },
-});
+const app = new cdk.App();
 const stack = new MainStack(app, 'integ-bucket-deployment-cross-stack-ssm');
 
 new integ.IntegTest(app, 'integ-bucket-deployment-cross-stack-ssm-source', {
