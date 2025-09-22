@@ -91,7 +91,7 @@ export class PasswordUser extends UserBase {
     this.userName = props.userName ?? props.userId;
     this.accessString = props.accessControl.accessString;
 
-    if (props.passwords.length > 2) {
+    if (props.passwords.length < 1 || props.passwords.length > 2) {
       throw new ValidationError('Password authentication requires 1-2 passwords.', this);
     }
 

@@ -263,7 +263,7 @@ export class UserGroup extends UserGroupBase {
     if (this.engine === UserEngine.REDIS) {
       this._users.forEach(user => {
         if (user.engine !== UserEngine.REDIS) {
-          throw new ValidationError(`Redis user group can only contain Redis users. User ${user.userId} has engine ${user.engine}.`, this);
+          throw new ValidationError('Redis user group can only contain Redis users.', this);
         }
       });
     }
@@ -337,7 +337,7 @@ export class UserGroup extends UserGroupBase {
       return;
     }
     if (this.engine === UserEngine.REDIS && user.engine !== UserEngine.REDIS) {
-      throw new ValidationError(`Redis user group can only contain Redis users. User ${user.userId} has engine ${user.engine}.`, this);
+      throw new ValidationError('Redis user group can only contain Redis users.', this);
     }
     this._users.push(user);
     this.addUserDependency(user);
