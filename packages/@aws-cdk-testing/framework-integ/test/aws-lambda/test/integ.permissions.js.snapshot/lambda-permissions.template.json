@@ -188,6 +188,32 @@
        "Effect": "Allow",
        "Resource": [
         {
+         "Fn::GetAtt": [
+          "MyLambdaCCE802FB",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyLambdaCCE802FB",
+             "Arn"
+            ]
+           },
+           ":",
+           {
+            "Fn::GetAtt": [
+             "v192FF9954",
+             "Version"
+            ]
+           }
+          ]
+         ]
+        },
+        {
          "Fn::Join": [
           "",
           [
@@ -200,38 +226,8 @@
            ":$LATEST"
           ]
          ]
-        },
-        {
-         "Fn::GetAtt": [
-          "MyLambdaCCE802FB",
-          "Arn"
-         ]
         }
        ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          {
-           "Fn::GetAtt": [
-            "MyLambdaCCE802FB",
-            "Arn"
-           ]
-          },
-          ":",
-          {
-           "Fn::GetAtt": [
-            "v192FF9954",
-            "Version"
-           ]
-          }
-         ]
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
