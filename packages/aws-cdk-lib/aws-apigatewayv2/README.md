@@ -524,6 +524,14 @@ const arn = api.arnForExecuteApiV2('$connect', 'dev');
 
 For a detailed explanation of this function, including usage and examples, please refer to the [Generating ARN for Execute API](#generating-arn-for-execute-api) section under HTTP API.
 
+To disable schema validation, set `disableSchemaValidation` to true.
+
+```ts
+new apigwv2.WebSocketApi(this, 'api', {
+  disableSchemaValidation: true,
+});
+```
+
 You can configure IP address type for the API endpoint using `ipAddressType` property.
 Valid values are `IPV4` (default) and `DUAL_STACK`.
 
