@@ -964,6 +964,9 @@ const barStack = new BarStack(app, 'BarStack', {
 For `SuccessfulRequestLatency` metrics, you can use operation-specific convenience methods that automatically handle the required `Operation` dimension. This is particularly useful for cross-language CDK usage where providing complex dimension objects can be challenging:
 
 ```ts
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+
 const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
 });
@@ -994,6 +997,13 @@ new cloudwatch.Alarm(this, 'QueryLatencyAlarm', {
 You can also customize the metric properties:
 
 ```ts
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import { Duration } from 'aws-cdk-lib';
+
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+});
+
 const customLatencyMetric = table.metricSuccessfulRequestLatencyForGetItem({
   statistic: 'Maximum',
   period: Duration.minutes(5),
