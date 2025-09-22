@@ -1,0 +1,12 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "TestBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "ObjectLockEnabled": { "Ref": "AWS::NoValue" },
+        "BucketName": "test-novalue-boolean-bucket"
+      }
+    }
+  }
+}

@@ -134,6 +134,30 @@ new route53.AaaaRecord(this, 'Alias', {
 });
 ```
 
+To add an HTTPS record:
+
+``` ts
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+
+declare const myZone: route53.HostedZone;
+declare const distribution: cloudfront.CloudFrontWebDistribution;
+// Alias to CloudFront target
+new route53.HttpsRecord(this, 'HttpsRecord-CloudFrontAlias', {
+  zone: myZone,
+  target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+});
+// ServiceMode (priority >= 1)
+new route53.HttpsRecord(this, 'HttpsRecord-ServiceMode', {
+  zone: myZone,
+  values: [route53.HttpsRecordValue.service({ alpn: [route53.Alpn.H3, route53.Alpn.H2] })],
+});
+// AliasMode (priority = 0)
+new route53.HttpsRecord(this, 'HttpsRecord-AliasMode', {
+  zone: myZone,
+  values: [route53.HttpsRecordValue.alias('service.example.com')],
+});
+```
+
 [Geolocation routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geo.html) can be enabled for continent, country or subdivision:
 
 ```ts

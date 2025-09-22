@@ -159,7 +159,7 @@ describe('default tests', () => {
       });
 
       expect(app.synth().getStackByName(stack.stackName).template).toEqual(expect.objectContaining({
-        Transform: 'AWS::SecretsManager-2020-07-23',
+        Transform: 'AWS::SecretsManager-2024-09-16',
       }));
 
       Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {

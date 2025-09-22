@@ -986,6 +986,33 @@ describe('subscription filter', () => {
   });
 });
 
+test('encrypting log group with referenced alias', () => {
+  const stack = new Stack();
+
+  const alias = kms.Alias.fromAliasName(stack, 'KmsAlias', 'alias/some-alias');
+
+  new LogGroup(stack, 'LogGroup', {
+    encryptionKey: alias,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+    KmsKeyId: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':kms:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':alias/some-alias',
+        ],
+      ],
+    },
+  });
+});
+
 test('create a Add Key transformer against a log group', () => {
   // GIVEN
   const stack = new Stack();
