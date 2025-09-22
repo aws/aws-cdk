@@ -3,7 +3,7 @@ import { AtmosphereAllocationMock } from './atmosphere-mock';
 import { AtmosphereAllocation } from '../lib/atmosphere';
 import { gitDiffMock } from './git-mock';
 import * as utils from '../lib/utils';
-import * as integRun from '../lib/integ-run';
+import * as integRun from '../lib/integration-test-runner';
 
 jest.mock('../lib/atmosphere');
 

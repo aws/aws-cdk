@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deployment_integ:
+  integration_test_deployment:
     runs-on: codebuild-aws-cdk-github-actions-deployment-integ-runner-${{ github.run_id }}-${{ github.run_attempt }}
     environment: deployment-integ-test
 
@@ -105,7 +105,7 @@ jobs:
         run: npx lerna run build --scope=@aws-cdk-testing/framework-integ 
 
       - name: Run integration tests from HEAD using script from BASE
-        run: node ../base/tools/@aws-cdk/deployment-integ/bin/deployment-integ.js
+        run: node ../base/tools/@aws-cdk/integration-test-deployment/bin/index.js
         working-directory: head
         env:
           CDK_ATMOSPHERE_ENDPOINT: ${{ vars.CDK_ATMOSPHERE_ENDPOINT }}

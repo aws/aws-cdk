@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { deployInegTestsWithAtmosphere } from '../lib/integ-run';
+import { deployInegTestsWithAtmosphere } from '../lib/integration-test-runner';
 
 const endpoint = process.env.CDK_ATMOSPHERE_ENDPOINT;
 const pool = process.env.CDK_ATMOSPHERE_POOL;
