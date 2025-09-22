@@ -21212,6 +21212,75 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'cidrRoutingConfig': '*'
     },
+    'SvcbRecord': {
+      'values': '*',
+      'zone': {
+        'hostedZoneId': '*',
+        'zoneName': '*',
+        'hostedZoneArn': '*',
+        'hostedZoneNameServers': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'geoLocation': '*',
+      'recordName': '*',
+      'ttl': '*',
+      'comment': '*',
+      'deleteExisting': 'boolean',
+      'weight': '*',
+      'region': '*',
+      'multiValueAnswer': 'boolean',
+      'setIdentifier': '*',
+      'healthCheck': {
+        'healthCheckId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'cidrRoutingConfig': '*'
+    },
+    'HttpsRecord': {
+      'values': '*',
+      'target': '*',
+      'zone': {
+        'hostedZoneId': '*',
+        'zoneName': '*',
+        'hostedZoneArn': '*',
+        'hostedZoneNameServers': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'geoLocation': '*',
+      'recordName': '*',
+      'ttl': '*',
+      'comment': '*',
+      'deleteExisting': 'boolean',
+      'weight': '*',
+      'region': '*',
+      'multiValueAnswer': 'boolean',
+      'setIdentifier': '*',
+      'healthCheck': {
+        'healthCheckId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'cidrRoutingConfig': '*'
+    },
     'ZoneDelegationRecord': {
       'nameServers': '*',
       'zone': {
