@@ -1,7 +1,8 @@
 {
-  "version": "36.0.5",
+  "version": "44.0.0",
   "files": {
-    "1e880e43b77aa38d085edaa0d9718a0b2d38584b11562fbbfc3c259c42b9d8b1": {
+    "23b0aec821d6dfeb47618bd28562c83bbf0f68ffb66281d1cd4111a698f5b922": {
+      "displayName": "aws-cdk-route53-integ Template",
       "source": {
         "path": "aws-cdk-route53-integ.template.json",
         "packaging": "file"
@@ -9,7 +10,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1e880e43b77aa38d085edaa0d9718a0b2d38584b11562fbbfc3c259c42b9d8b1.json",
+          "objectKey": "23b0aec821d6dfeb47618bd28562c83bbf0f68ffb66281d1cd4111a698f5b922.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
