@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "48.0.0",
   "testCases": {
     "integtest-endpointconfig/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "integtest-endpointconfig/DefaultTest/DeployAssert",
       "assertionStackName": "integtestendpointconfigDefaultTestDeployAssert8D52A281"
     }
-  }
+  },
+  "minimumCliVersion": "2.1027.0"
 }
