@@ -1755,31 +1755,9 @@ export class Table extends TableBase {
     const onEventHandlerPolicy = new SourceTableAttachedPolicy(this, provider.onEventHandler.role!);
     const isCompleteHandlerPolicy = new SourceTableAttachedPolicy(this, provider.isCompleteHandler.role!);
 
-    // Permissions in the source region - add directly to role policies to avoid circular dependencies
-    // Instead of using this.grant() which adds to resource policy, add permissions directly to Lambda roles
-    (onEventHandlerPolicy.policy as iam.ManagedPolicy).addStatements(new iam.PolicyStatement({
-      actions: ['dynamodb:*'],
-      resources: [
-        this.tableArn,
-        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
-        ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.string({
-          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-        })),
-      ],
-    }));
-
-    (isCompleteHandlerPolicy.policy as iam.ManagedPolicy).addStatements(new iam.PolicyStatement({
-      actions: ['dynamodb:DescribeTable'],
-      resources: [
-        this.tableArn,
-        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
-        ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.string({
-          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-        })),
-      ],
-    }));
+    // Permissions in the source region
+    this.grant(onEventHandlerPolicy, 'dynamodb:*');
+    this.grant(isCompleteHandlerPolicy, 'dynamodb:DescribeTable');
 
     let previousRegion: CustomResource | undefined;
     let previousRegionCondition: CfnCondition | undefined;
