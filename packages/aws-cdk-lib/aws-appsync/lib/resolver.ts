@@ -68,7 +68,7 @@ export interface BaseResolverProps {
   readonly code?: Code;
 
   /**
-   * The whether to enable enhanced metrics
+   * Whether to enable enhanced metrics
    * Value will be ignored, if `enhancedMetricsConfig.resolverLevelMetricsBehavior` on AppSync GraphqlApi construct is set to `FULL_REQUEST_RESOLVER_METRICS`
    *
    * @default - Enhance metrics are disabled
