@@ -56,15 +56,15 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   public abstract readonly encryptionKey?: IKey;
 
   /**
-   * The ARN to use in policy resource statements for this table.
-   * This ARN includes CloudFormation intrinsic functions for region and account ID.
-   */
-  public abstract readonly policyResourceArn: string;
-
-  /**
    * The resource policy for the table
    */
   public abstract resourcePolicy?: PolicyDocument;
+
+  /**
+   * The ARN to use in policy resource statements for this table.
+   * This ARN includes CloudFormation intrinsic functions for region and account ID.
+   */
+  protected abstract get policyResourceArn(): string;
 
   protected abstract readonly region: string;
 
@@ -470,15 +470,16 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   }
 
   /**
-   * Adds a statement to the resource policy associated with this file system.
+   * Adds a statement to the resource policy associated with this table.
    * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
    *
-   * Note that this does not work with imported file systems.
+   * Note that this does not work with imported tables.
    *
    * @param statement The policy statement to add
    */
   public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
     this.resourcePolicy = this.resourcePolicy ?? new PolicyDocument({ statements: [] });
+
     this.resourcePolicy.addStatements(statement);
     return {
       statementAdded: true,

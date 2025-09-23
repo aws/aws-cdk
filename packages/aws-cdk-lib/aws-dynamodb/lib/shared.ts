@@ -361,12 +361,6 @@ export interface ITable extends IResource {
   readonly tableStreamArn?: string;
 
   /**
-   * The ARN to use in policy resource statements for this table.
-   * This ARN includes CloudFormation intrinsic functions for region and account ID.
-   */
-  readonly policyResourceArn: string;
-
-  /**
    *
    * Optional KMS encryption key associated with this table.
    */

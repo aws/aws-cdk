@@ -502,7 +502,7 @@ export class TableV2 extends TableBaseV2 {
       public readonly encryptionKey?: IKey;
       public readonly resourcePolicy?: PolicyDocument;
 
-      public get policyResourceArn(): string {
+      protected get policyResourceArn(): string {
         // For imported tables, we can't use CloudFormation intrinsic functions
         // since we don't have access to the CfnTable resource, so we return the tableArn
         return this.tableArn;
@@ -587,7 +587,7 @@ export class TableV2 extends TableBaseV2 {
    * The ARN to use in policy resource statements for this table.
    * This ARN includes CloudFormation intrinsic functions for region and account ID.
    */
-  public get policyResourceArn(): string {
+  protected get policyResourceArn(): string {
     return Stack.of(this).formatArn({
       service: 'dynamodb',
       resource: 'table',

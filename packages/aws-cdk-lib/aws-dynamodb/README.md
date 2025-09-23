@@ -816,6 +816,35 @@ Using `resourcePolicy` you can add a [resource policy](https://docs.aws.amazon.c
     });
 ```
 
+### Adding Resource Policy Statements Dynamically
+
+You can also add resource policy statements to a table after it's created using the `addToResourcePolicy` method. Following the same pattern as KMS, you must explicitly specify resources to avoid circular dependencies:
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+});
+
+// Basic resource policy (following KMS pattern)
+table.addToResourcePolicy(new iam.PolicyStatement({
+  actions: ['dynamodb:GetItem', 'dynamodb:PutItem'],
+  principals: [new iam.AccountRootPrincipal()],
+  resources: ['*'], // Explicit resources required to avoid circular dependencies
+}));
+
+// Scoped resource policy (for advanced use cases)
+table.addToResourcePolicy(new iam.PolicyStatement({
+  actions: ['dynamodb:Query'],
+  principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
+  resources: [
+    "arn:aws:dynamodb:us-east-1:123456789012:table/MusicCollection",
+    "arn:aws:dynamodb:us-east-1:123456789012:table/MusicCollection/index/GSI1", // Scoped to specific Global Secondary Index
+  ],
+}));
+```
+
+**Important:** Resources must be explicitly specified in the policy statement. Using `table.tableArn` would create a circular dependency since the table references its own resource policy. Following the KMS pattern, use wildcards (`'*'`) or manually constructed ARNs to avoid this issue.
+
 TableV2 doesn’t support creating a replica and adding a resource-based policy to that replica in the same stack update in Regions other than the Region where you deploy the stack update.
 To incorporate a resource-based policy into a replica, you'll need to initially deploy the replica without the policy, followed by a subsequent update to include the desired policy.
 

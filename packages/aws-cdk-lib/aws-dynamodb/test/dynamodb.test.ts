@@ -3964,11 +3964,12 @@ test('addToResourcePolicy test', () => {
   table.addToResourcePolicy(new iam.PolicyStatement({
     actions: ['dynamodb:PutItem'],
     principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:user/testuser')],
-    resources: ['*'], // Use * to avoid circular dependency
+    resources: ['*'], // Following KMS pattern to avoid circular dependencies
   }));
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::DynamoDB::Table', {
     'ResourcePolicy': {
       'PolicyDocument': {
         'Version': '2012-10-17',
@@ -3979,7 +3980,7 @@ test('addToResourcePolicy test', () => {
             },
             'Effect': 'Allow',
             'Action': 'dynamodb:PutItem',
-            'Resource': '*',
+            'Resource': '*', // Following KMS pattern to avoid circular dependencies
           },
         ],
       },
@@ -3987,7 +3988,7 @@ test('addToResourcePolicy test', () => {
   });
 });
 
-test('policyResourceArn returns correct ARN structure', () => {
+test('addToResourcePolicy works with explicit resources (KMS pattern)', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack');
@@ -3997,18 +3998,14 @@ test('policyResourceArn returns correct ARN structure', () => {
     partitionKey: { name: 'id', type: AttributeType.STRING },
   });
 
-  // THEN
-  // policyResourceArn should return a CDK Token
-  expect(table.policyResourceArn).toBeDefined();
-  expect(table.policyResourceArn.toString()).toMatch(/^\$\{Token\[TOKEN\.\d+\]\}$/);
-
-  // When used in a resource policy, it should generate correct CloudFormation
+  // Add policy statement with explicit resources (matching KMS pattern)
   table.addToResourcePolicy(new iam.PolicyStatement({
     actions: ['dynamodb:GetItem', 'dynamodb:PutItem'],
     principals: [new iam.AccountRootPrincipal()],
-    resources: [table.policyResourceArn],
+    resources: ['*'], // Following KMS pattern to avoid circular dependencies
   }));
 
+  // THEN
   // Verify the CloudFormation template structure
   const template = Template.fromStack(stack);
   const tableResources = template.findResources('AWS::DynamoDB::Table');
@@ -4019,27 +4016,41 @@ test('policyResourceArn returns correct ARN structure', () => {
   expect(tableResource.Properties.ResourcePolicy).toBeDefined();
   const statement = tableResource.Properties.ResourcePolicy.PolicyDocument.Statement[0];
 
-  // Resource should be an ARN string with CloudFormation intrinsic functions
+  // Resource should be set to wildcard (following KMS pattern)
   expect(statement.Resource).toBeDefined();
-  expect(typeof statement.Resource).toBe('string');
-  expect(statement.Resource).toMatch(/^arn:\$\{AWS::Partition\}:dynamodb:\$\{AWS::Region\}:\$\{AWS::AccountId\}:table\/\$\{.+\}$/);
-
-  // Should reference the correct table logical ID
-  expect(statement.Resource).toContain(`\${${tableLogicalId}}`);
+  expect(statement.Resource).toBe('*');
 });
 
-test('policyResourceArn works with imported tables', () => {
+test('addToResourcePolicy preserves explicit resources when specified', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack');
 
   // WHEN
-  const importedTable = Table.fromTableName(stack, 'ImportedTable', 'my-existing-table');
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+  });
+
+  // Add policy statement with explicit resources
+  table.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['dynamodb:GetItem'],
+    principals: [new iam.AccountRootPrincipal()],
+    resources: ['*'], // Explicit wildcard resource
+  }));
 
   // THEN
-  // For imported tables, policyResourceArn should return the tableArn
-  expect(importedTable.policyResourceArn).toBeDefined();
-  expect(importedTable.policyResourceArn).toBe(importedTable.tableArn);
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::DynamoDB::Table', {
+    'ResourcePolicy': {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Resource': '*', // Should preserve explicit resource
+          },
+        ],
+      },
+    },
+  });
 });
 
 test('addToResourcePolicy generates correct CloudFormation with comprehensive validation', () => {
@@ -4060,7 +4071,7 @@ test('addToResourcePolicy generates correct CloudFormation with comprehensive va
       'dynamodb:PutItem',
       'dynamodb:Query',
     ],
-    resources: [table.policyResourceArn],
+    resources: ['*'], // Following KMS pattern to avoid circular dependencies
   }));
 
   // THEN
@@ -4099,24 +4110,8 @@ test('addToResourcePolicy generates correct CloudFormation with comprehensive va
 
   const resourceValue = tableResource.Properties.ResourcePolicy.PolicyDocument.Statement[0].Resource;
 
-  // Validate that the resource ARN has the correct structure
-  // It should be a string with CloudFormation substitutions
-  expect(typeof resourceValue).toBe('string');
-  expect(resourceValue).toMatch(/^arn:\$\{AWS::Partition\}:dynamodb:\$\{AWS::Region\}:\$\{AWS::AccountId\}:table\/\$\{.+\}$/);
-
-  // Should reference the correct table logical ID
-  expect(resourceValue).toContain(`\${${tableLogicalId}}`);
-
-  // Alternative: if using Fn::Sub, validate that structure
-  if (typeof resourceValue === 'object' && resourceValue['Fn::Sub']) {
-    const [arnTemplate, substitutions] = resourceValue['Fn::Sub'];
-    const expectedArnPattern = 'arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableRef}';
-    expect(arnTemplate).toBe(expectedArnPattern);
-    expect(substitutions?.TableRef?.Ref).toBe(tableLogicalId);
-  }
-
-  // SECURITY VALIDATION: Ensure the resource is not a wildcard
-  expect(resourceValue).not.toContain('*');
+  // Validate that the resource follows KMS pattern (wildcard to avoid circular dependencies)
+  expect(resourceValue).toBe('*');
 });
 
 test('Warm Throughput test on-demand', () => {

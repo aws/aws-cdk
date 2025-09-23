@@ -640,15 +640,15 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
   public abstract readonly tableStreamArn?: string;
 
   /**
+   * KMS encryption key, if this table uses a customer-managed encryption key.
+   */
+  public abstract readonly encryptionKey?: kms.IKey;
+
+  /**
    * The ARN to use in policy resource statements for this table.
    * This ARN includes CloudFormation intrinsic functions for region and account ID.
    */
   public abstract readonly policyResourceArn: string;
-
-  /**
-   * KMS encryption key, if this table uses a customer-managed encryption key.
-   */
-  public abstract readonly encryptionKey?: kms.IKey;
 
   /**
    * Resource policy to assign to table.
@@ -1313,7 +1313,7 @@ export class Table extends TableBase {
       kinesisStreamSpecification: kinesisStreamSpecification,
       deletionProtectionEnabled: props.deletionProtection,
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
-      warmThroughput: props.warmThroughput?? undefined,
+      warmThroughput: props.warmThroughput ?? undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
@@ -1362,6 +1362,7 @@ export class Table extends TableBase {
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
+
     this.resourcePolicy.addStatements(statement);
 
     // Update the CfnTable resourcePolicy property
@@ -1639,8 +1640,8 @@ export class Table extends TableBase {
     nonKeyAttributes.forEach(att => this.nonKeyAttributes.add(att));
   }
 
-  private validatePitr (props: TableProps): PointInTimeRecoverySpecification | undefined {
-    if (props.pointInTimeRecoverySpecification !==undefined && props.pointInTimeRecovery !== undefined) {
+  private validatePitr(props: TableProps): PointInTimeRecoverySpecification | undefined {
+    if (props.pointInTimeRecoverySpecification !== undefined && props.pointInTimeRecovery !== undefined) {
       throw new ValidationError('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.', this);
     }
 
@@ -1650,7 +1651,7 @@ export class Table extends TableBase {
       throw new ValidationError('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.', this);
     }
 
-    if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35 )) {
+    if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35)) {
       throw new ValidationError('`recoveryPeriodInDays` must be a value between `1` and `35`.', this);
     }
 
@@ -1769,9 +1770,31 @@ export class Table extends TableBase {
     const onEventHandlerPolicy = new SourceTableAttachedPolicy(this, provider.onEventHandler.role!);
     const isCompleteHandlerPolicy = new SourceTableAttachedPolicy(this, provider.isCompleteHandler.role!);
 
-    // Permissions in the source region
-    this.grant(onEventHandlerPolicy, 'dynamodb:*');
-    this.grant(isCompleteHandlerPolicy, 'dynamodb:DescribeTable');
+    // Permissions in the source region - add directly to role policies to avoid circular dependencies
+    // Instead of using this.grant() which adds to resource policy, add permissions directly to Lambda roles
+    (onEventHandlerPolicy.policy as iam.ManagedPolicy).addStatements(new iam.PolicyStatement({
+      actions: ['dynamodb:*'],
+      resources: [
+        this.tableArn,
+        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        ...this.regionalArns,
+        ...this.regionalArns.map(arn => Lazy.string({
+          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
+        })),
+      ],
+    }));
+
+    (isCompleteHandlerPolicy.policy as iam.ManagedPolicy).addStatements(new iam.PolicyStatement({
+      actions: ['dynamodb:DescribeTable'],
+      resources: [
+        this.tableArn,
+        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        ...this.regionalArns,
+        ...this.regionalArns.map(arn => Lazy.string({
+          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
+        })),
+      ],
+    }));
 
     let previousRegion: CustomResource | undefined;
     let previousRegionCondition: CfnCondition | undefined;
