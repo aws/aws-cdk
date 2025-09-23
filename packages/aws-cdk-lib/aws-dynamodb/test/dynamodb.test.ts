@@ -403,6 +403,12 @@ describe('L1 static factory methods', () => {
     const table = CfnTable.fromTableArn(stack, 'MyBucket', 'arn:aws:dynamodb:eu-west-1:123456789012:table/MyTable');
     expect(table.tableRef.tableName).toEqual('MyTable');
     expect(table.tableRef.tableArn).toEqual('arn:aws:dynamodb:eu-west-1:123456789012:table/MyTable');
+
+    const env = stack.resolve((table as unknown as Resource).env);
+    expect(env).toEqual({
+      region: 'eu-west-1',
+      account: '123456789012',
+    });
   });
 
   test('fromTableName', () => {
@@ -425,6 +431,12 @@ describe('L1 static factory methods', () => {
 
     expect(stack.resolve(arnComponents.partition)).toEqual({
       Ref: 'AWS::Partition',
+    });
+
+    const env = stack.resolve((table as unknown as Resource).env);
+    expect(env).toEqual({
+      region: 'us-east-1',
+      account: '23432424',
     });
   });
 });

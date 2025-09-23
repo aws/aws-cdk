@@ -297,13 +297,15 @@ export class ResourceClass extends ClassType {
     factory.addParameter({ name: 'arn', type: Type.STRING });
 
     const initBodyStatements: Statement[] = [
-      new SuperInitializer(_scope, id),
+      new SuperInitializer(_scope, id, expr.object({
+        environmentFromArn: arn,
+      })),
       stmt.sep(),
     ];
 
     if (hasNonArnProps) {
       initBodyStatements.push(
-        stmt.constVar(variables, $T(CDK_CORE.helpers.TemplateStringParser).parse(expr.lit(arnTemplate), arn)),
+        stmt.constVar(variables, CDK_CORE.helpers.TemplateString.newInstance(expr.lit(arnTemplate)).prop('parse').call(arn)),
       );
     }
     initBodyStatements.push(stmt.assign($this[refAttributeName], expr.object(referenceObject)));
@@ -360,10 +362,11 @@ export class ResourceClass extends ClassType {
       type: Type.STRING,
     });
 
-    const interpolateArn = $T(CDK_CORE.helpers.TemplateStringParser).interpolate(expr.lit(arnTemplate), expr.object({
-      Partition: $T(CDK_CORE.Stack).of(_scope).prop('partition'),
-      Region: $T(CDK_CORE.Stack).of(_scope).prop('region'),
-      Account: $T(CDK_CORE.Stack).of(_scope).prop('account'),
+    const stackOfScope = $T(CDK_CORE.Stack).of(_scope);
+    const interpolateArn = CDK_CORE.helpers.TemplateString.newInstance(expr.lit(arnTemplate)).prop('interpolate').call(expr.object({
+      Partition: stackOfScope.prop('partition'),
+      Region: stackOfScope.prop('region'),
+      Account: stackOfScope.prop('account'),
       [variableName]: name,
     }));
 
@@ -371,17 +374,20 @@ export class ResourceClass extends ClassType {
       [propName]: name,
     };
 
-    const initBodyStatements: Statement[] = [
-      new SuperInitializer(_scope, id),
-      stmt.sep(),
-    ];
+    const initBodyStatements: Statement[] = [];
 
     const arnPropName = this.referenceStruct.properties.map(p => p.name).find(n => n.endsWith('Arn'));
     const arn = expr.ident('arn');
     if (arnPropName != null) {
       refenceObject[arnPropName] = arn;
       initBodyStatements.push(stmt.constVar(arn, interpolateArn));
+      initBodyStatements.push(new SuperInitializer(_scope, id, expr.object({
+        environmentFromArn: arn,
+      })));
+    } else {
+      initBodyStatements.push(new SuperInitializer(_scope, id));
     }
+    initBodyStatements.push(stmt.sep());
     initBodyStatements.push(stmt.assign($this[refAttributeName], expr.object(refenceObject)));
 
     init.addBody(...initBodyStatements);
