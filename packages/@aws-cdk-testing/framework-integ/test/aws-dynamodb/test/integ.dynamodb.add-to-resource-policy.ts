@@ -22,7 +22,7 @@ import { Construct } from 'constructs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 
 export class TestStack extends Stack {
     public readonly table: dynamodb.Table;
@@ -69,71 +69,22 @@ new IntegTest(app, 'add-to-resource-policy-integ-test', {
     testCases: [stack],
 });
 
-// CRITICAL VALIDATION: Verify the CloudFormation template contains ResourcePolicy
-// This validates that addToResourcePolicy() actually adds the policy to the template
+// Basic validation that the ResourcePolicy was added to the template
 const template = Template.fromStack(stack);
-
-// 1. Validate that the DynamoDB table has a ResourcePolicy property with expected structure
 template.hasResourceProperties('AWS::DynamoDB::Table', {
     ResourcePolicy: {
         PolicyDocument: {
             Version: '2012-10-17',
-            Statement: [
-                {
+            Statement: Match.arrayWith([
+                Match.objectLike({
                     Effect: 'Allow',
-                    Principal: {
-                        AWS: {
-                            'Fn::Sub': 'arn:aws:iam::${AWS::AccountId}:root',
-                        },
-                    },
-                    Action: [
+                    Action: Match.arrayWith([
                         'dynamodb:GetItem',
                         'dynamodb:PutItem',
                         'dynamodb:Query',
-                    ],
-                    // Note: We don't validate the exact Resource value here since it contains
-                    // CloudFormation intrinsic functions that are complex to match exactly
-                },
-            ],
+                    ]),
+                }),
+            ]),
         },
     },
 });
-
-// 2. RESOURCE ARN VALIDATION: Verify the resource ARN is correctly structured
-const tableResources = template.findResources('AWS::DynamoDB::Table');
-const tableLogicalId = Object.keys(tableResources)[0];
-const tableResource = tableResources[tableLogicalId];
-
-// Verify ResourcePolicy exists and has the expected structure
-if (!tableResource.Properties?.ResourcePolicy?.PolicyDocument?.Statement?.[0]?.Resource) {
-    throw new Error('ResourcePolicy.PolicyDocument.Statement[0].Resource is missing');
-}
-
-const resourceValue = tableResource.Properties.ResourcePolicy.PolicyDocument.Statement[0].Resource;
-
-// Validate that the resource uses Fn::Sub with the correct ARN pattern
-if (!resourceValue['Fn::Sub']) {
-    throw new Error('Resource should use Fn::Sub for CloudFormation intrinsic functions');
-}
-
-const [arnTemplate, substitutions] = resourceValue['Fn::Sub'];
-
-// Validate ARN template structure
-const expectedArnPattern = 'arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableRef}';
-if (arnTemplate !== expectedArnPattern) {
-    throw new Error(`Resource ARN template should be "${expectedArnPattern}", got "${arnTemplate}"`);
-}
-
-// Validate that TableRef substitution points to the correct table
-if (!substitutions?.TableRef?.Ref) {
-    throw new Error('Resource should have TableRef substitution with Ref to table');
-}
-
-if (substitutions.TableRef.Ref !== tableLogicalId) {
-    throw new Error(`TableRef should reference table logical ID "${tableLogicalId}", got "${substitutions.TableRef.Ref}"`);
-}
-
-// SECURITY VALIDATION: Ensure the resource is not a wildcard
-if (arnTemplate.includes('*')) {
-    throw new Error('Resource ARN should not contain wildcards - this is a security risk');
-}

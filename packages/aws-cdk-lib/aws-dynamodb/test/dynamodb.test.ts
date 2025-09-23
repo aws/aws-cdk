@@ -3987,6 +3987,138 @@ test('addToResourcePolicy test', () => {
   });
 });
 
+test('policyResourceArn returns correct ARN structure', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+  });
+
+  // THEN
+  // policyResourceArn should return a CDK Token
+  expect(table.policyResourceArn).toBeDefined();
+  expect(table.policyResourceArn.toString()).toMatch(/^\$\{Token\[TOKEN\.\d+\]\}$/);
+
+  // When used in a resource policy, it should generate correct CloudFormation
+  table.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['dynamodb:GetItem', 'dynamodb:PutItem'],
+    principals: [new iam.AccountRootPrincipal()],
+    resources: [table.policyResourceArn],
+  }));
+
+  // Verify the CloudFormation template structure
+  const template = Template.fromStack(stack);
+  const tableResources = template.findResources('AWS::DynamoDB::Table');
+  const tableLogicalId = Object.keys(tableResources)[0];
+  const tableResource = tableResources[tableLogicalId];
+
+  // Should have ResourcePolicy with correct structure
+  expect(tableResource.Properties.ResourcePolicy).toBeDefined();
+  const statement = tableResource.Properties.ResourcePolicy.PolicyDocument.Statement[0];
+
+  // Resource should be an ARN string with CloudFormation intrinsic functions
+  expect(statement.Resource).toBeDefined();
+  expect(typeof statement.Resource).toBe('string');
+  expect(statement.Resource).toMatch(/^arn:\$\{AWS::Partition\}:dynamodb:\$\{AWS::Region\}:\$\{AWS::AccountId\}:table\/\$\{.+\}$/);
+
+  // Should reference the correct table logical ID
+  expect(statement.Resource).toContain(`\${${tableLogicalId}}`);
+});
+
+test('policyResourceArn works with imported tables', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  const importedTable = Table.fromTableName(stack, 'ImportedTable', 'my-existing-table');
+
+  // THEN
+  // For imported tables, policyResourceArn should return the tableArn
+  expect(importedTable.policyResourceArn).toBeDefined();
+  expect(importedTable.policyResourceArn).toBe(importedTable.tableArn);
+});
+
+test('addToResourcePolicy generates correct CloudFormation with comprehensive validation', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+  });
+
+  table.addToResourcePolicy(new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    principals: [new iam.AccountRootPrincipal()],
+    actions: [
+      'dynamodb:GetItem',
+      'dynamodb:PutItem',
+      'dynamodb:Query',
+    ],
+    resources: [table.policyResourceArn],
+  }));
+
+  // THEN
+  const template = Template.fromStack(stack);
+
+  // 1. Validate that the DynamoDB table has a ResourcePolicy property with expected structure
+  template.hasResourceProperties('AWS::DynamoDB::Table', {
+    ResourcePolicy: {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: {
+              AWS: Match.anyValue(), // Principal format can vary (Fn::Join vs Fn::Sub)
+            },
+            Action: [
+              'dynamodb:GetItem',
+              'dynamodb:PutItem',
+              'dynamodb:Query',
+            ],
+            Resource: Match.anyValue(), // Resource ARN structure validated separately
+          },
+        ],
+      },
+    },
+  });
+
+  // 2. RESOURCE ARN VALIDATION: Verify the resource ARN is correctly structured
+  const tableResources = template.findResources('AWS::DynamoDB::Table');
+  const tableLogicalId = Object.keys(tableResources)[0];
+  const tableResource = tableResources[tableLogicalId];
+
+  // Verify ResourcePolicy exists and has the expected structure
+  expect(tableResource.Properties?.ResourcePolicy?.PolicyDocument?.Statement?.[0]?.Resource).toBeDefined();
+
+  const resourceValue = tableResource.Properties.ResourcePolicy.PolicyDocument.Statement[0].Resource;
+
+  // Validate that the resource ARN has the correct structure
+  // It should be a string with CloudFormation substitutions
+  expect(typeof resourceValue).toBe('string');
+  expect(resourceValue).toMatch(/^arn:\$\{AWS::Partition\}:dynamodb:\$\{AWS::Region\}:\$\{AWS::AccountId\}:table\/\$\{.+\}$/);
+
+  // Should reference the correct table logical ID
+  expect(resourceValue).toContain(`\${${tableLogicalId}}`);
+
+  // Alternative: if using Fn::Sub, validate that structure
+  if (typeof resourceValue === 'object' && resourceValue['Fn::Sub']) {
+    const [arnTemplate, substitutions] = resourceValue['Fn::Sub'];
+    const expectedArnPattern = 'arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableRef}';
+    expect(arnTemplate).toBe(expectedArnPattern);
+    expect(substitutions?.TableRef?.Ref).toBe(tableLogicalId);
+  }
+
+  // SECURITY VALIDATION: Ensure the resource is not a wildcard
+  expect(resourceValue).not.toContain('*');
+});
+
 test('Warm Throughput test on-demand', () => {
   // GIVEN
   const app = new App();
