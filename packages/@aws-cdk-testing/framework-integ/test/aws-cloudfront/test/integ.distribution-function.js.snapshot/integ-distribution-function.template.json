@@ -26,7 +26,8 @@
          "Fn::GetAtt": [
           "Function76856677",
           "FunctionARN"
-         ]        }
+         ]
+        }
        }
       ],
       "TargetOriginId": "integdistributionfunctionDistOrigin1D1E9DF17",

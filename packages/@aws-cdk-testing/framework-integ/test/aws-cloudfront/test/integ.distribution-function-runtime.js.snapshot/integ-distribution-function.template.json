@@ -38,7 +38,8 @@
          "Fn::GetAtt": [
           "FunctionRequest95528B2F",
           "FunctionARN"
-         ]        }
+         ]
+        }
        },
        {
         "EventType": "viewer-response",
@@ -46,7 +47,8 @@
          "Fn::GetAtt": [
           "FunctionResponse4EF2D1D3",
           "FunctionARN"
-         ]        }
+         ]
+        }
        }
       ],
       "TargetOriginId": "integdistributionfunctionDistOrigin1D1E9DF17",
