@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/36d3563271e8b5d86dd98efb87f0e4742d762d54ab8773779a291f3242fc08df.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cd9c63111d91fd1b2f1428793fbb64374db7c9eddb53b1a96feea5933be52faa.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,7 +34,7 @@
         "add-to-resource-policy-test-stack.assets"
       ],
       "metadata": {
-        "/add-to-resource-policy-test-stack/TestTable": [
+        "/add-to-resource-policy-test-stack/WildcardTable": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -46,13 +46,44 @@
             }
           }
         ],
-        "/add-to-resource-policy-test-stack/TestTable/Resource": [
+        "/add-to-resource-policy-test-stack/WildcardTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestTable5769773A"
+            "data": "WildcardTableE075CD4D"
           }
         ],
-        "/add-to-resource-policy-test-stack/TestTable/ScalingRole": [
+        "/add-to-resource-policy-test-stack/WildcardTable/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/add-to-resource-policy-test-stack/ScopedTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "tableName": "*",
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "removalPolicy": "destroy"
+            }
+          },
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "ScopedTableC019D4A1"
+            }
+          }
+        ],
+        "/add-to-resource-policy-test-stack/ScopedTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScopedTableC019D4A1"
+          }
+        ],
+        "/add-to-resource-policy-test-stack/ScopedTable/ScalingRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -68,6 +99,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "TestTable5769773A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestTable5769773A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
