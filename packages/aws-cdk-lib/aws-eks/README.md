@@ -147,6 +147,21 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
+You can control what happens to the resources created by the cluster when they are no longer managed by CloudFormation by specifying a `removalPolicy`.
+
+This affects the EKS cluster itself, associated IAM roles, node groups, security groups, VPC and any other CloudFormation resources managed by this construct.
+
+```ts
+import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
+import * as core from 'aws-cdk-lib/core';
+
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_33,
+  kubectlLayer: new KubectlV33Layer(this, 'kubectl'),
+  removalPolicy: core.RemovalPolicy.RETAIN, // Keep all resources when stack is deleted
+});
+```
+
 You can also use `FargateCluster` to provision a cluster that uses only fargate workers.
 
 ```ts

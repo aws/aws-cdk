@@ -125,6 +125,21 @@ describe('cluster', () => {
     }).toThrow(/Cluster name cannot be more than 100 characters/);
   });
 
+  test('can configure cluster with retain removal policy', () => {
+    const { stack } = testFixture();
+
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    const cfnResources = stack.node.findAll().filter(child => child instanceof cdk.CfnResource);
+    cfnResources.forEach(resource => {
+      expect((resource as cdk.CfnResource).cfnOptions.deletionPolicy).toEqual(cdk.CfnDeletionPolicy.RETAIN);
+    });
+  });
+
   describe('imported Vpc from unparseable list tokens', () => {
     let stack: cdk.Stack;
     let vpc: ec2.IVpc;

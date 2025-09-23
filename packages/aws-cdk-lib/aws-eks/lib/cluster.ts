@@ -26,7 +26,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as ssm from '../../aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ValidationError, UnscopedValidationError } from '../../core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ValidationError, UnscopedValidationError, RemovalPolicy, RemovalPolicies } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -876,6 +876,15 @@ export interface ClusterProps extends ClusterOptions {
    * @default - none
    */
   readonly tags?: { [key: string]: string };
+  /**
+   * The removal policy applied to all CloudFormation resources created by this construct.
+   *
+   * This affects the EKS cluster itself, associated IAM roles, node groups, security groups, VPC
+   * and any other CloudFormation resources managed by this construct.
+   *
+   * @default - Resources will follow their default removal policies
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -1898,6 +1907,11 @@ export class Cluster extends ClusterBase {
     }
 
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
+
+    // Apply removal policy to all CFN resources created under this construct.
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
   }
 
   /**
