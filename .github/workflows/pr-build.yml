@@ -27,6 +27,9 @@ jobs:
       PR_BUILD: true
 
     steps:
+      - name: test
+        id: test
+        run: echo "test"
       - name: Checkout code
         uses: actions/checkout@v5
 
