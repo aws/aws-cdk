@@ -60,7 +60,7 @@ export interface UserBaseProps {
 /**
  * Represents an ElastiCache base user.
  */
-export interface IUserBase extends IResource {
+export interface IUser extends IResource {
   /**
    * The user's ID.
    *
@@ -121,7 +121,7 @@ export interface UserBaseAttributes {
 /**
  * Base class for ElastiCache users.
  */
-export abstract class UserBase extends Resource implements IUserBase {
+export abstract class UserBase extends Resource implements IUser {
   /**
    * Import an existing user by ID.
    *
@@ -129,7 +129,7 @@ export abstract class UserBase extends Resource implements IUserBase {
    * @param id The construct's name.
    * @param userId The ID of the existing user.
    */
-  public static fromUserId(scope: Construct, id: string, userId: string): IUserBase {
+  public static fromUserId(scope: Construct, id: string, userId: string): IUser {
     return UserBase.fromUserAttributes(scope, id, { userId });
   }
 
@@ -140,7 +140,7 @@ export abstract class UserBase extends Resource implements IUserBase {
    * @param id The construct's name.
    * @param userArn The ARN of the existing user.
    */
-  public static fromUserArn(scope: Construct, id: string, userArn: string): IUserBase {
+  public static fromUserArn(scope: Construct, id: string, userArn: string): IUser {
     return UserBase.fromUserAttributes(scope, id, { userArn });
   }
 
@@ -151,7 +151,7 @@ export abstract class UserBase extends Resource implements IUserBase {
    * @param id The construct's name.
    * @param attrs A `UserBaseAttributes` object.
    */
-  public static fromUserAttributes(scope: Construct, id: string, attrs: UserBaseAttributes): IUserBase {
+  public static fromUserAttributes(scope: Construct, id: string, attrs: UserBaseAttributes): IUser {
     let userId: string;
     let userArn: string;
     const stack = Stack.of(scope);
@@ -178,7 +178,7 @@ export abstract class UserBase extends Resource implements IUserBase {
       throw new ValidationError('One of userId or userArn is required.', scope);
     }
 
-    class Import extends Resource implements IUserBase {
+    class Import extends Resource implements IUser {
       public readonly engine?: UserEngine;
       public readonly userId: string;
       public readonly userArn: string;

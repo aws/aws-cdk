@@ -333,20 +333,31 @@ describe('UserGroup', () => {
 
       expect(userGroup.users).toHaveLength(1);
       expect(userGroup.users![0].userId).toBe(user.userId);
-    }); // add one more test: initially have one user then add another one
+    });
 
-    test('does not add duplicate users', () => {
-      const userGroup = new UserGroup(stack, 'TestUserGroup');
-      const user = new NoPasswordUser(stack, 'TestUser', {
-        userId: 'test-user',
+    test('adds second user to group that already has one user', () => {
+      const existingUser = new NoPasswordUser(stack, 'ExistingUser', {
+        userId: 'existing-user',
         engine: UserEngine.REDIS,
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       });
 
-      userGroup.addUser(user);
-      userGroup.addUser(user);
+      const userGroup = new UserGroup(stack, 'TestUserGroup', {
+        engine: UserEngine.VALKEY,
+        users: [existingUser],
+      });
 
-      expect(userGroup.users).toHaveLength(1);
+      const newUser = new NoPasswordUser(stack, 'NewUser', {
+        userId: 'new-user',
+        engine: UserEngine.REDIS,
+        accessControl: AccessControl.fromAccessString('on ~* +@all'),
+      });
+
+      userGroup.addUser(newUser);
+
+      expect(userGroup.users).toHaveLength(2);
+      expect(userGroup.users![0].userId).toBe('existing-user');
+      expect(userGroup.users![1].userId).toBe('new-user');
     });
   });
 

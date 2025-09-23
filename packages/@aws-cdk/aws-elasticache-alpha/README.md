@@ -59,7 +59,7 @@ For more infomation, see [Setting scaling limits to manage costs](https://docs.a
 declare const vpc: ec2.Vpc;
  
 const serverlessCache = new elasticache.ServerlessCache(this, 'ServerlessCache', {
-  engine: elasticache.CacheEngine.VALKEY_DEFAULT,
+  engine: elasticache.CacheEngine.VALKEY_LATEST,
   vpc,
   cacheUsageLimits: {
     // cache data storage limits (GB)
@@ -103,11 +103,11 @@ const serverlessCache = new elasticache.ServerlessCache(this, 'ServerlessCache',
 
 You can create a final backup by setting `backupNameBeforeDeletion` property.
 
-```ts
+```ts 
 declare const vpc: ec2.Vpc;
  
 const serverlessCache = new elasticache.ServerlessCache(this, 'ServerlessCache', {
-  engine: elasticache.CacheEngine.VALKEY_DEFAULT,
+  engine: elasticache.CacheEngine.VALKEY_LATEST,
   backup: {
     // set a backup name before deleting a cache
     backupNameBeforeDeletion: "my-final-backup-name",
@@ -122,7 +122,7 @@ You can restore from backups by setting snapshot ARNs to `backupArnsToRestore` p
 declare const vpc: ec2.Vpc;
  
 const serverlessCache = new elasticache.ServerlessCache(this, 'ServerlessCache', {
-  engine: elasticache.CacheEngine.VALKEY_DEFAULT,
+  engine: elasticache.CacheEngine.VALKEY_LATEST,
   backup: {
     // set the backup(s) to restore
     backupArnsToRestore: ['arn:aws:elasticache:us-east-1:123456789012:serverlesscachesnapshot:my-final-backup-name'],
@@ -146,7 +146,7 @@ declare const kmsKey: Key;
 declare const vpc: ec2.Vpc;
  
 const serverlessCache = new elasticache.ServerlessCache(this, 'ServerlessCache', {
-  engine: elasticache.CacheEngine.VALKEY_DEFAULT,
+  engine: elasticache.CacheEngine.VALKEY_LATEST,
   serverlessCacheName: 'my-serverless-cache',
   vpc,
   // set Customer Managed Key
@@ -170,7 +170,7 @@ const cacheHits = serverlessCache.metricCacheHitCount();
 const bytesUsedForCache = serverlessCache.metricDataStored();
  
 // The 5 minutes average of the total number of ElastiCacheProcessingUnits (ECPUs) consumed by the requests executed on the cache.
-const elastiCacheProcessingUnits = serverlessCache.metricECPUsConsumed();
+const elastiCacheProcessingUnits = serverlessCache.metricProcessingUnitsConsumed();
  
 // Create an alarm for ECPUs.
 elastiCacheProcessingUnits.createAlarm(this, 'ElastiCacheProcessingUnitsAlarm', {
@@ -335,9 +335,9 @@ Next, use the `UserGroup` construct to create a user group and add users to it.
 Ensure that you include either the original default user or a new default user:
 
 ```ts
-declare const newDefaultUser: elasticache.IUserBase;
-declare const user: elasticache.IUserBase;
-declare const anotherUser: elasticache.IUserBase;
+declare const newDefaultUser: elasticache.IUser;
+declare const user: elasticache.IUser;
+declare const anotherUser: elasticache.IUser;
  
 const userGroup = new elasticache.UserGroup(this, 'UserGroup', {
   // add users including default user
@@ -357,7 +357,7 @@ declare const vpc: ec2.Vpc;
 declare const userGroup: elasticache.UserGroup;
  
 const serverlessCache = new elasticache.ServerlessCache(this, 'ServerlessCache', {
-  engine: elasticache.CacheEngine.VALKEY_DEFAULT,
+  engine: elasticache.CacheEngine.VALKEY_LATEST,
   serverlessCacheName: 'my-serverless-cache',
   vpc,
   // assign User Group

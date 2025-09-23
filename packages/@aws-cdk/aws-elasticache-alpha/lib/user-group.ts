@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { UserEngine } from './common';
 import { CfnUserGroup } from 'aws-cdk-lib/aws-elasticache';
-import { IUserBase } from './user-base';
+import { IUser } from './user-base';
 import { IResource, Resource, ArnFormat, Stack, Lazy, ValidationError, UnscopedValidationError, Names } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -29,7 +29,7 @@ export interface UserGroupProps {
    *
    * @default - no users
    */
-  readonly users?: IUserBase[];
+  readonly users?: IUser[];
 }
 
 /**
@@ -49,7 +49,7 @@ export interface IUserGroup extends IResource {
   /**
    * List of users in the user group
    */
-  readonly users?: IUserBase[];
+  readonly users?: IUser[];
   /**
    * The ARN of the user group
    *
@@ -61,7 +61,7 @@ export interface IUserGroup extends IResource {
    *
    * @param user The user to add
    */
-  addUser(user: IUserBase): void;
+  addUser(user: IUser): void;
 }
 
 /**
@@ -81,7 +81,7 @@ export abstract class UserGroupBase extends Resource implements IUserGroup {
   /**
    * List of users in the user group
    */
-  public abstract readonly users?: IUserBase[];
+  public abstract readonly users?: IUser[];
   /**
    * The ARN of the user group
    * @attribute
@@ -92,7 +92,7 @@ export abstract class UserGroupBase extends Resource implements IUserGroup {
    *
    * @param _user The user to add
    */
-  public addUser(_user: IUserBase): void {
+  public addUser(_user: IUser): void {
     throw new UnscopedValidationError('Cannot add users to an imported UserGroup. Only UserGroups created in this stack can be modified.');
   }
 }
@@ -120,7 +120,7 @@ export interface UserGroupAttributes {
    *
    * @default - users are unknown
    */
-  readonly users?: IUserBase[];
+  readonly users?: IUser[];
   /**
    * The ARN of the user group
    *
@@ -211,7 +211,7 @@ export class UserGroup extends UserGroupBase {
       public readonly userGroupName: string;
       public readonly userGroupArn: string;
 
-      public get users(): IUserBase[] | undefined {
+      public get users(): IUser[] | undefined {
         return attrs.users ? [...attrs.users] : undefined;
       }
 
@@ -228,7 +228,7 @@ export class UserGroup extends UserGroupBase {
 
   public readonly engine?: UserEngine;
   public readonly userGroupName: string;
-  private readonly _users: IUserBase[] = [];
+  private readonly _users: IUser[] = [];
   /**
    * The ARN of the user group
    *
@@ -285,7 +285,7 @@ export class UserGroup extends UserGroupBase {
   /**
    * Add a CloudFormation dependency on the user resource to ensure proper creation order.
    */
-  private addUserDependency(user: IUserBase): void {
+  private addUserDependency(user: IUser): void {
     this.resource.node.addDependency(user);
   }
 
@@ -295,7 +295,7 @@ export class UserGroup extends UserGroupBase {
    * Do not push directly to this array.
    * Use addUser() instead to ensure proper validation and dependency management.
    */
-  public get users(): IUserBase[] | undefined {
+  public get users(): IUser[] | undefined {
     return this._users;
   }
 
@@ -327,10 +327,7 @@ export class UserGroup extends UserGroupBase {
    *
    * @param user The user to add to the group
    */
-  public addUser(user: IUserBase): void {
-    if (this._users.find(u => u.userId === user.userId)) {
-      return;
-    }
+  public addUser(user: IUser): void {
     this._users.push(user);
     this.addUserDependency(user);
   }
