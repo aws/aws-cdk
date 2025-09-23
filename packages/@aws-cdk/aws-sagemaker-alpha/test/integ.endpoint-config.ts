@@ -8,8 +8,7 @@ import * as sagemaker from '../lib';
  * Stack verification steps:
  * aws sagemaker describe-endpoint-config --endpoint-config-name <endpoint config name>
  *
- * The above command will result in the following output.
- *
+ * For instance-based endpoint config, the above command will result in the following output:
  *   {
  *     "EndpointConfigName": "EndpointConfig...",
  *     "EndpointConfigArn": "arn:aws:sagemaker:...",
@@ -34,6 +33,25 @@ import * as sagemaker from '../lib';
  *             "InitialInstanceCount": 1,
  *             "InstanceType": "ml.t2.medium",
  *             "InitialVariantWeight": 2.0
+ *         }
+ *     ],
+ *     "CreationTime": "..."
+ *   }
+ *
+ * For serverless endpoint config, the command will show:
+ *   {
+ *     "EndpointConfigName": "ServerlessEndpointConfig...",
+ *     "EndpointConfigArn": "arn:aws:sagemaker:...",
+ *     "ProductionVariants": [
+ *         {
+ *             "VariantName": "serverlessVariant",
+ *             "ModelName": "ModelWithoutArtifactAndVpcModel...",
+ *             "InitialVariantWeight": 1.0,
+ *             "ServerlessConfig": {
+ *                 "MaxConcurrency": 10,
+ *                 "MemorySizeInMB": 2048,
+ *                 "ProvisionedConcurrency": 5
+ *             }
  *         }
  *     ],
  *     "CreationTime": "..."
