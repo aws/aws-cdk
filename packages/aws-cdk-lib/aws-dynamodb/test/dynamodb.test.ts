@@ -7,7 +7,7 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
-import { App, Aws, CfnDeletionPolicy, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
+import { App, Aws, CfnDeletionPolicy, Duration, Fn, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
 import * as cr from '../../custom-resources';
 import * as cxapi from '../../cx-api';
 import {
@@ -3961,14 +3961,11 @@ test('addToResourcePolicy test', () => {
     partitionKey: { name: 'id', type: AttributeType.STRING },
   });
 
-  // Get CloudFormation logical ID to construct ARN without circular dependencies
-  const cfnTable1 = table.node.defaultChild as Table['table'];
-  const tableLogicalId1 = cfnTable1.logicalId;
-
+  // Use wildcard resource to avoid circular dependency (matches KMS pattern)
   table.addToResourcePolicy(new iam.PolicyStatement({
     actions: ['dynamodb:PutItem'],
     principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:user/testuser')],
-    resources: [`arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${${tableLogicalId1}}`],
+    resources: ['*'], // Wildcard avoids circular dependency - standard pattern for resource policies
   }));
 
   // THEN
@@ -3984,7 +3981,7 @@ test('addToResourcePolicy test', () => {
             },
             'Effect': 'Allow',
             'Action': 'dynamodb:PutItem',
-            'Resource': Match.stringLikeRegexp('arn:aws:dynamodb:\\$\\{AWS::Region\\}:\\$\\{AWS::AccountId\\}:table/\\$\\{.*\\}'),
+            'Resource': '*', // Wildcard resource in resource policy
           },
         ],
       },
@@ -3992,7 +3989,7 @@ test('addToResourcePolicy test', () => {
   });
 });
 
-test('addToResourcePolicy works with explicit resources (KMS pattern)', () => {
+test('addToResourcePolicy works with wildcard resources (KMS pattern)', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack');
@@ -4002,31 +3999,43 @@ test('addToResourcePolicy works with explicit resources (KMS pattern)', () => {
     partitionKey: { name: 'id', type: AttributeType.STRING },
   });
 
-  // Get CloudFormation logical ID to construct ARN without circular dependencies
-  const cfnTable2 = table.node.defaultChild as Table['table'];
-  const tableLogicalId2 = cfnTable2.logicalId;
-
-  // Add policy statement with explicit resources using proper ARN construction
+  // Use wildcard resource following KMS pattern to avoid circular dependency
   table.addToResourcePolicy(new iam.PolicyStatement({
     actions: ['dynamodb:GetItem', 'dynamodb:PutItem'],
     principals: [new iam.AccountRootPrincipal()],
-    resources: [`arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${${tableLogicalId2}}`],
+    resources: ['*'], // Wildcard avoids circular dependency - same pattern as KMS
   }));
 
   // THEN
-  // Verify the CloudFormation template structure
   const template = Template.fromStack(stack);
-  const tableResources = template.findResources('AWS::DynamoDB::Table');
-  const tableLogicalId = Object.keys(tableResources)[0];
-  const tableResource = tableResources[tableLogicalId];
-
-  // Should have ResourcePolicy with correct structure
-  expect(tableResource.Properties.ResourcePolicy).toBeDefined();
-  const statement = tableResource.Properties.ResourcePolicy.PolicyDocument.Statement[0];
-
-  // Resource should be set to the properly constructed table ARN
-  expect(statement.Resource).toBeDefined();
-  expect(statement.Resource).toMatch(/^arn:aws:dynamodb:\$\{AWS::Region\}:\$\{AWS::AccountId\}:table\/\$\{.+\}$/);
+  template.hasResourceProperties('AWS::DynamoDB::Table', {
+    'ResourcePolicy': {
+      'PolicyDocument': {
+        'Version': '2012-10-17',
+        'Statement': [
+          {
+            'Principal': {
+              'AWS': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { 'Ref': 'AWS::Partition' },
+                    ':iam::',
+                    { 'Ref': 'AWS::AccountId' },
+                    ':root',
+                  ],
+                ],
+              },
+            },
+            'Effect': 'Allow',
+            'Action': ['dynamodb:GetItem', 'dynamodb:PutItem'],
+            'Resource': '*', // Wildcard resource
+          },
+        ],
+      },
+    },
+  });
 });
 
 test('addToResourcePolicy preserves explicit resources when specified', () => {
@@ -4071,10 +4080,7 @@ test('addToResourcePolicy generates correct CloudFormation with comprehensive va
     partitionKey: { name: 'id', type: AttributeType.STRING },
   });
 
-  // Get CloudFormation logical ID to construct ARN without circular dependencies
-  const cfnTable3 = table.node.defaultChild as CfnTable;
-  const tableLogicalId3 = cfnTable3.logicalId;
-
+  // Use wildcard resource to avoid circular dependency
   table.addToResourcePolicy(new iam.PolicyStatement({
     effect: iam.Effect.ALLOW,
     principals: [new iam.AccountRootPrincipal()],
@@ -4083,13 +4089,13 @@ test('addToResourcePolicy generates correct CloudFormation with comprehensive va
       'dynamodb:PutItem',
       'dynamodb:Query',
     ],
-    resources: [`arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${${tableLogicalId3}}`],
+    resources: ['*'], // Wildcard avoids circular dependency
   }));
 
   // THEN
   const template = Template.fromStack(stack);
 
-  // 1. Validate that the DynamoDB table has a ResourcePolicy property with expected structure
+  // Validate that the DynamoDB table has a ResourcePolicy property with expected structure
   template.hasResourceProperties('AWS::DynamoDB::Table', {
     ResourcePolicy: {
       PolicyDocument: {
@@ -4105,25 +4111,93 @@ test('addToResourcePolicy generates correct CloudFormation with comprehensive va
               'dynamodb:PutItem',
               'dynamodb:Query',
             ],
-            Resource: Match.anyValue(), // Resource ARN structure validated separately
+            Resource: '*', // Wildcard resource to avoid circular dependency
           },
         ],
       },
     },
   });
+});
 
-  // 2. RESOURCE ARN VALIDATION: Verify the resource ARN is correctly structured
-  const tableResources = template.findResources('AWS::DynamoDB::Table');
-  const tableLogicalId = Object.keys(tableResources)[0];
-  const tableResource = tableResources[tableLogicalId];
+test('addToResourcePolicy with explicit table name allows scoped resources', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
 
-  // Verify ResourcePolicy exists and has the expected structure
-  expect(tableResource.Properties?.ResourcePolicy?.PolicyDocument?.Statement?.[0]?.Resource).toBeDefined();
+  // WHEN - Create table with explicit name (enables scoped resource policies)
+  const table = new Table(stack, 'Table', {
+    tableName: 'my-explicit-table-name', // Explicit name enables scoped ARN construction
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+  });
 
-  const resourceValue = tableResource.Properties.ResourcePolicy.PolicyDocument.Statement[0].Resource;
+  // With explicit table name, we can use scoped resources without circular dependency
+  table.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['dynamodb:GetItem', 'dynamodb:Query'],
+    principals: [new iam.AccountRootPrincipal()],
+    resources: [
+      // This works because table name is known at synthesis time
+      Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/my-explicit-table-name'),
+    ],
+  }));
 
-  // Validate that the resource is properly constructed table ARN
-  expect(resourceValue).toMatch(/^arn:aws:dynamodb:\$\{AWS::Region\}:\$\{AWS::AccountId\}:table\/\$\{.+\}$/);
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::DynamoDB::Table', {
+    TableName: 'my-explicit-table-name',
+    ResourcePolicy: {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: Match.anyValue(),
+            Action: ['dynamodb:GetItem', 'dynamodb:Query'],
+            Resource: {
+              'Fn::Sub': 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/my-explicit-table-name',
+            },
+          },
+        ],
+      },
+    },
+  });
+});
+
+test('addToResourcePolicy limitation: cannot use scoped resources with auto-generated table names', () => {
+  // This test documents the fundamental limitation of resource policies with auto-generated names
+  
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+    // No explicit tableName - CDK will generate unique name
+  });
+
+  // LIMITATION: Cannot use table.tableArn or construct scoped ARN because it creates circular dependency
+  // This would fail: resources: [table.tableArn] 
+  // This would also fail: resources: [Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableRef}', { TableRef: cfnTable.ref })]
+  
+  // WORKAROUND: Must use wildcard resource (same pattern as KMS)
+  table.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['dynamodb:GetItem'],
+    principals: [new iam.AccountRootPrincipal()],
+    resources: ['*'], // Only option for auto-generated table names
+  }));
+
+  // THEN - Verify wildcard is preserved
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::DynamoDB::Table', {
+    ResourcePolicy: {
+      PolicyDocument: {
+        Statement: [
+          {
+            Resource: '*', // Wildcard is the only way to avoid circular dependency
+          },
+        ],
+      },
+    },
+  });
 });
 
 test('Warm Throughput test on-demand', () => {

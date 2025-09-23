@@ -41,17 +41,18 @@ export class TestStack extends Stack {
 
         // Add resource policy using addToResourcePolicy() method
         // This is the CORE functionality being tested for issue #35062
-        // Get CloudFormation logical ID to construct ARN without circular dependencies
-        const cfnTable = this.table.node.defaultChild as dynamodb.CfnTable;
-        const tableLogicalId = cfnTable.logicalId;
 
+        // Add resource policy using addToResourcePolicy() method
         this.table.addToResourcePolicy(new iam.PolicyStatement({
             actions: ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:Query'],
             principals: [new iam.AccountRootPrincipal()],
-            resources: [`arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${${tableLogicalId}}`],
+            resources: ['*'], // Use wildcard to avoid circular dependency - standard pattern for resource policies
         }));
 
-        // VALIDATION: Resources are properly scoped using CloudFormation logical ID to avoid circular dependencies
+        // LIMITATION ACKNOWLEDGMENT:
+        // - Wildcard ('*') is required for auto-generated table names to avoid circular dependency
+        // - This matches the KMS pattern and is the standard approach for resource policies
+        // - For scoped resources, specify an explicit tableName (see unit tests for examples)
     }
 }
 
