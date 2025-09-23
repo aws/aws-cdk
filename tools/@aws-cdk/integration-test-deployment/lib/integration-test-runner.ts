@@ -8,15 +8,16 @@ export const deployInegTestsWithAtmosphere = async ({ endpoint, pool }: {endpoin
 
   try {
     const env = {
-      ...process.env,
       AWS_ACCESS_KEY_ID: allocation.allocation.credentials.accessKeyId,
       AWS_SECRET_ACCESS_KEY: allocation.allocation.credentials.secretAccessKey,
       AWS_SESSION_TOKEN: allocation.allocation.credentials.sessionToken,
       AWS_REGION: allocation.allocation.environment.region,
       AWS_ACCOUNT_ID: allocation.allocation.environment.account,
+      TARGET_BRANCH_COMMIT: process.env.TARGET_BRANCH_COMMIT,
+      SOURCE_BRANCH_COMMIT: process.env.SOURCE_BRANCH_COMMIT,
     };
 
-    await runInteg(env);
+    await deployIntegrationTests(env);
     outcome = 'success';
   } catch (e) {
     console.error(e);
@@ -29,7 +30,7 @@ export const deployInegTestsWithAtmosphere = async ({ endpoint, pool }: {endpoin
   }
 };
 
-export const runInteg = async (env: NodeJS.ProcessEnv) => {
+export const deployIntegrationTests = async (env: NodeJS.ProcessEnv) => {
   const changedSnapshotPaths = await getChangedSnapshots();
   console.log(`Detected changed snapshots:\n${changedSnapshotPaths.join('\n')}`);
 

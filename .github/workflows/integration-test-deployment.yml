@@ -47,10 +47,6 @@ jobs:
           role-session-name: run-tests@aws-cdk-deployment-integ
           aws-region: us-east-1
 
-      - name: Confirm that the atmosphere role has been assumed
-        run: |
-          aws sts get-caller-identity   
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -82,7 +78,7 @@ jobs:
             ~/.s3buildcache
           key: s3buildcache-${{ runner.os }}
 
-        #raise vm.max_map_count to avoid mmap (memory-map) limit errors in containers (e.g., Elasticsearch)
+        #Increases vm.max_map_count for memory intensive jobs
       - name: Configure system settings for 
         run: |
           (command -v sysctl || sudo apt-get update && sudo apt-get install -y procps) && \
@@ -96,11 +92,11 @@ jobs:
         working-directory: base
         run: yarn --cwd tools/@aws-cdk/integration-test-deployment build
         
-      - name: Install dependencies for framework-integ (HEAD)
+      - name: Install dependencies for Integration Tests (HEAD)
         working-directory: head
         run: yarn install 
         
-      - name: Build framework-integ (HEAD)
+      - name: Build Integration Tests (HEAD)
         working-directory: head
         run: npx lerna run build --scope=@aws-cdk-testing/framework-integ 
 
