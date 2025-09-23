@@ -247,6 +247,14 @@ const importedAttributeGroup = appreg.AttributeGroup.fromAttributeGroupArn(
   'MyImportedAttrGroup',
   'arn:aws:servicecatalog:us-east-1:012345678910:/attribute-groups/0aqmvxvgmry0ecc4mjhwypun6i',
 );
+
+
+const importedAttributeGroupWithAttrs = appreg.AttributeGroup.fromAttributeGroupArn(
+  this,
+  'MyImportedAttrGroupWithAttrs',
+  'arn:aws:servicecatalog:us-east-1:012345678910:/attribute-groups/0aqmvxvgmry0ecc4mjhwypun6i',
+  { key1: 'value1', key2: 'value2' }
+);
 ```
 
 ## Associations
