@@ -223,7 +223,6 @@ export class Function extends Resource implements IFunction {
       name: this.functionName,
     });
 
-    this.functionRef = resource.functionRef;
     this.functionArn = resource.attrFunctionArn;
     this.functionStage = resource.attrStage;
     this.functionRef = {
