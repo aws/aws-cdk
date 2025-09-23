@@ -56,6 +56,12 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   public abstract readonly encryptionKey?: IKey;
 
   /**
+   * The ARN to use in policy resource statements for this table.
+   * This ARN includes CloudFormation intrinsic functions for region and account ID.
+   */
+  public abstract readonly policyResourceArn: string;
+
+  /**
    * The resource policy for the table
    */
   public abstract resourcePolicy?: PolicyDocument;
