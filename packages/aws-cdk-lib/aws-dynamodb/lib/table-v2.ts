@@ -526,7 +526,7 @@ export class TableV2 extends TableBaseV2 {
 
       /**
        * Adds a statement to the resource policy associated with this table.
-       * 
+       *
        * Note: This is a no-op for imported tables since resource policies cannot be modified.
        *
        * @param _statement The policy statement to add

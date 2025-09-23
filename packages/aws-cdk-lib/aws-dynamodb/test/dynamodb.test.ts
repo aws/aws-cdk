@@ -4007,7 +4007,7 @@ test('addToResourcePolicy requires wildcard resources with auto-generated table 
   });
 
   // LIMITATION: Cannot use table.tableArn or construct scoped ARN because it creates circular dependency
-  // This would fail: resources: [table.tableArn] 
+  // This would fail: resources: [table.tableArn]
   // This would also fail: resources: [Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableRef}', { TableRef: cfnTable.ref })]
 
   // WORKAROUND: Must use wildcard resource (same pattern as KMS)
