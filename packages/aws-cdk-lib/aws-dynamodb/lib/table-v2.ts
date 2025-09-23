@@ -502,8 +502,6 @@ export class TableV2 extends TableBaseV2 {
       public readonly encryptionKey?: IKey;
       public readonly resourcePolicy?: PolicyDocument;
 
-
-
       protected readonly region: string;
       protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
         (attrs.globalIndexes ?? []).length > 0 ||
@@ -593,8 +591,6 @@ export class TableV2 extends TableBaseV2 {
 
   public readonly encryptionKey?: IKey;
 
-
-
   /**
    * @attribute
    */
@@ -679,7 +675,7 @@ export class TableV2 extends TableBaseV2 {
       keySchema: this.keySchema,
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
       replicas: Lazy.any({ produce: () => this.renderReplicaTables() }),
-      globalTableWitnesses: props.witnessRegion ? [{ region: props.witnessRegion }] : undefined,
+      globalTableWitnesses: props.witnessRegion? [{ region: props.witnessRegion }] : undefined,
       multiRegionConsistency: props.multiRegionConsistency ? props.multiRegionConsistency : undefined,
       globalSecondaryIndexes: Lazy.any({ produce: () => this.renderGlobalIndexes() }, { omitEmptyArray: true }),
       localSecondaryIndexes: Lazy.any({ produce: () => this.renderLocalIndexes() }, { omitEmptyArray: true }),
@@ -698,8 +694,6 @@ export class TableV2 extends TableBaseV2 {
       warmThroughput: props.warmThroughput ?? undefined,
     });
     resource.applyRemovalPolicy(props.removalPolicy);
-
-
 
     this.tableArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'dynamodb',
@@ -1147,7 +1141,7 @@ export class TableV2 extends TableBaseV2 {
       throw new ValidationError('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.', this);
     }
 
-    if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35)) {
+    if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35 )) {
       throw new ValidationError('`recoveryPeriodInDays` must be a value between `1` and `35`.', this);
     }
   }
