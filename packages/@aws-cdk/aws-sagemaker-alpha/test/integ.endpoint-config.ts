@@ -73,6 +73,22 @@ endpointConfig.addInstanceProductionVariant({
   initialVariantWeight: 2.0,
 });
 
+// Test serverless endpoint configuration
+const serverlessEndpointConfig = new sagemaker.EndpointConfig(stack, 'ServerlessEndpointConfig', {
+  serverlessProductionVariant: {
+    model: modelWithoutArtifactAndVpc,
+    variantName: 'serverlessVariant',
+    maxConcurrency: 10,
+    memorySizeInMB: 2048,
+    provisionedConcurrency: 5,
+  },
+});
+
+// Ensure serverless endpoint config is used
+serverlessEndpointConfig.node.addValidation({
+  validate: () => [],
+});
+
 new IntegTest(app, 'integtest-endpointconfig', {
   testCases: [stack],
 });
