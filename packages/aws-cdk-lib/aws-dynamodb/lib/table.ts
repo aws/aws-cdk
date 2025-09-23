@@ -653,6 +653,11 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
   protected readonly regionalArns = new Array<string>();
 
   /**
+   * Adds a statement to the resource policy associated with this table.
+   */
+  public abstract addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
+
+  /**
    * Adds an IAM policy statement associated with this table to an IAM
    * principal's policy.
    *
@@ -788,23 +793,6 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
   public grantFullAccess(grantee: iam.IGrantable) {
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
     return this.combinedGrant(grantee, { keyActions, tableActions: ['dynamodb:*'] });
-  }
-
-  /**
-   * Adds a statement to the resource policy associated with this file system.
-   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
-   *
-   * Note that this does not work with imported file systems.
-   *
-   * @param statement The policy statement to add
-   */
-  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
-    this.resourcePolicy.addStatements(statement);
-    return {
-      statementAdded: true,
-      policyDependable: this,
-    };
   }
 
   /**
@@ -1159,6 +1147,11 @@ export class Table extends TableBase {
         this.tableStreamArn = tableStreamArn;
         this.encryptionKey = attrs.encryptionKey;
       }
+
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+        // Imported tables cannot have resource policies modified
+        return { statementAdded: false };
+      }
     }
 
     let name: string;
@@ -1214,7 +1207,7 @@ export class Table extends TableBase {
    */
   public readonly tableStreamArn: string | undefined;
 
-  private readonly table: CfnTable;
+  protected readonly table: CfnTable;
 
   private readonly keySchema = new Array<CfnTable.KeySchemaProperty>();
   private readonly attributeDefinitions = new Array<CfnTable.AttributeDefinitionProperty>();
@@ -1240,6 +1233,8 @@ export class Table extends TableBase {
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    this.resourcePolicy = props.resourcePolicy;
 
     const { sseSpecification, encryptionKey } = this.parseEncryption(props);
 
@@ -1297,12 +1292,14 @@ export class Table extends TableBase {
       kinesisStreamSpecification: kinesisStreamSpecification,
       deletionProtectionEnabled: props.deletionProtection,
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
-      resourcePolicy: props.resourcePolicy
-        ? { policyDocument: props.resourcePolicy }
-        : undefined,
       warmThroughput: props.warmThroughput?? undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
+
+    // Set up dynamic resourcePolicy that can be modified by addToResourcePolicy
+    if (this.resourcePolicy) {
+      this.table.resourcePolicy = { policyDocument: this.resourcePolicy };
+    }
 
     this.encryptionKey = encryptionKey;
 
@@ -1332,6 +1329,27 @@ export class Table extends TableBase {
     }
 
     this.node.addValidation({ validate: () => this.validateTable() });
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this table.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported tables.
+   *
+   * @param statement The policy statement to add
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
+    this.resourcePolicy.addStatements(statement);
+
+    // Update the CfnTable resourcePolicy property
+    this.table.resourcePolicy = { policyDocument: this.resourcePolicy };
+
+    return {
+      statementAdded: true,
+      policyDependable: this,
+    };
   }
 
   /**

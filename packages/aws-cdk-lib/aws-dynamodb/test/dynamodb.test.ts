@@ -3951,6 +3951,42 @@ test('Resource policy test', () => {
   });
 });
 
+test('addToResourcePolicy test', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+  });
+
+  table.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['dynamodb:PutItem'],
+    principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:user/testuser')],
+    resources: ['*'], // Use * to avoid circular dependency
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    'ResourcePolicy': {
+      'PolicyDocument': {
+        'Version': '2012-10-17',
+        'Statement': [
+          {
+            'Principal': {
+              'AWS': 'arn:aws:iam::111122223333:user/testuser',
+            },
+            'Effect': 'Allow',
+            'Action': 'dynamodb:PutItem',
+            'Resource': '*',
+          },
+        ],
+      },
+    },
+  });
+});
+
 test('Warm Throughput test on-demand', () => {
   // GIVEN
   const app = new App();
