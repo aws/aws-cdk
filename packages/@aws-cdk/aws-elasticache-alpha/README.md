@@ -154,7 +154,7 @@ const serverlessCache = new elasticache.ServerlessCache(this, 'ServerlessCache',
 });
 ```
 
-### Metrics
+### Metrics and monitoring
 
 You can monitor your serverless cache using CloudWatch Metrics via the `metric` method.
 
@@ -267,8 +267,10 @@ const user = new elasticache.PasswordUser(this, 'User', {
  
   // set up to two passwords
   passwords: [
-    SecretValue.secretsManager('adminUserPassword123'),
-    SecretValue.secretsManager('anotherAdminUserPassword123'),
+    // "SecretIdForPassword" is the secret id for the password
+    SecretValue.secretsManager('SecretIdForPassword'),
+    // "AnotherSecretIdForPassword" is the secret id for the password
+    SecretValue.secretsManager('AnotherSecretIdForPassword'),
   ],
 });
 ```

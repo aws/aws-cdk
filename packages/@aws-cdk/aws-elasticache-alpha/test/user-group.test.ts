@@ -1,4 +1,4 @@
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 import { SecretValue, Stack } from 'aws-cdk-lib';
 import { AccessControl, IamUser, NoPasswordUser, PasswordUser, UserEngine, UserGroup } from '../lib';
 
@@ -172,7 +172,7 @@ describe('UserGroup', () => {
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::ElastiCache::UserGroup', {
         Engine: 'valkey',
-        UserGroupId: 'TestUserGroup',
+        UserGroupId: 'testusergroup',
       });
     });
 
@@ -191,7 +191,7 @@ describe('UserGroup', () => {
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::ElastiCache::UserGroup', {
         Engine: 'redis',
-        UserGroupId: 'TestUserGroup',
+        UserGroupId: 'testusergroup',
         UserIds: [user.userId],
       });
     });
@@ -309,7 +309,7 @@ describe('UserGroup', () => {
       expect(userGroup.userGroupName).toMatch(/\$\{Token/);
 
       const resolved = stack.resolve(userGroup.userGroupName);
-      expect(resolved).toEqual('TestUserGroup');
+      expect(resolved).toEqual('testusergroup');
     });
   });
 

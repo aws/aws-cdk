@@ -30,6 +30,11 @@ export enum CacheEngine {
    */
   REDIS_LATEST = 'redis',
   /**
+   * Redis engine, version 7
+   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
+   */
+  REDIS_7 = 'redis_7',
+  /**
    * Memcached engine, latest version available
    * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */

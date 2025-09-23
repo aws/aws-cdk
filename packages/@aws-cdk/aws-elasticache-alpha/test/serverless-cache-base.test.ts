@@ -2,7 +2,7 @@ import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Stack } from 'aws-cdk-lib';
 import { ServerlessCache } from '../lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
-import { Alarm, ComparisonOperator, Metric } from 'aws-cdk-lib/aws-cloudwatch';
+import { Alarm, ComparisonOperator } from 'aws-cdk-lib/aws-cloudwatch';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
 describe('serverless cache base', () => {

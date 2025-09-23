@@ -329,9 +329,13 @@ export class ServerlessCache extends ServerlessCacheBase {
             case CacheEngine.VALKEY_7:
             case CacheEngine.VALKEY_8:
             case CacheEngine.REDIS_LATEST:
+              // Document showing the default port
+              // https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/set-up.html#elasticache-install-grant-access-VPN
               defaultPort = ec2.Port.tcp(6379);
               break;
             case CacheEngine.MEMCACHED_LATEST:
+              // Document showing the default port
+              // https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/set-up.html#elasticache-install-grant-access-VPN
               defaultPort = ec2.Port.tcp(11211);
               break;
             default:
@@ -406,15 +410,13 @@ export class ServerlessCache extends ServerlessCacheBase {
   public readonly connections: ec2.Connections;
 
   constructor(scope: Construct, id: string, props: ServerlessCacheProps) {
-    super(scope, id, {
-      physicalName: props.serverlessCacheName ?? Lazy.string({ produce: () => Names.uniqueId(this) }),
-    });
+    super(scope, id, {});
 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     this.engine = props.engine ?? CacheEngine.VALKEY_LATEST;
-    this.serverlessCacheName = this.physicalName;
+    this.serverlessCacheName = props.serverlessCacheName ?? Lazy.string({ produce: () => Names.uniqueId(this) });
     this.kmsKey = props.kmsKey;
     this.vpc = props.vpc;
     this.userGroup = props.userGroup;
@@ -438,7 +440,7 @@ export class ServerlessCache extends ServerlessCacheBase {
     const resource = new CfnServerlessCache(this, 'Resource', {
       engine: engine,
       majorEngineVersion: version,
-      serverlessCacheName: this.physicalName,
+      serverlessCacheName: this.serverlessCacheName,
       description: props.description,
       cacheUsageLimits: this.renderCacheUsageLimits(props.cacheUsageLimits),
       dailySnapshotTime: props.backup?.backupTime ? this.formatBackupTime(props.backup.backupTime) : undefined,
@@ -478,7 +480,7 @@ export class ServerlessCache extends ServerlessCacheBase {
    * @param description The description to validate
    */
   private validateDescription(description?: string): void {
-    if (!description) return;
+    if (!description || Token.isUnresolved(description)) return;
 
     if (description.length > 255) {
       throw new ValidationError(`Description must not exceed 255 characters, currently has ${description.length}`, this);
@@ -521,16 +523,17 @@ export class ServerlessCache extends ServerlessCacheBase {
   private validateRequestRateLimits(limits?: CacheUsageLimitsProperty): void {
     if (!limits) return;
 
-    if (limits.requestRateLimitMinimum !== undefined &&
+    if (limits.requestRateLimitMinimum !== undefined && !Token.isUnresolved(limits.requestRateLimitMinimum) &&
       (limits.requestRateLimitMinimum < REQUEST_RATE_MIN_ECPU || limits.requestRateLimitMinimum > REQUEST_RATE_MAX_ECPU)) {
       throw new ValidationError('Request rate minimum must be between 1,000 and 15,000,000 ECPUs per second', this);
     }
-    if (limits.requestRateLimitMaximum !== undefined &&
+    if (limits.requestRateLimitMaximum !== undefined && !Token.isUnresolved(limits.requestRateLimitMaximum) &&
       (limits.requestRateLimitMaximum < REQUEST_RATE_MIN_ECPU || limits.requestRateLimitMaximum > REQUEST_RATE_MAX_ECPU)) {
       throw new ValidationError('Request rate maximum must be between 1,000 and 15,000,000 ECPUs per second', this);
     }
 
-    if (limits.requestRateLimitMinimum !== undefined && limits.requestRateLimitMaximum !== undefined &&
+    if (!Token.isUnresolved(limits.requestRateLimitMinimum) && !Token.isUnresolved(limits.requestRateLimitMaximum) &&
+      limits.requestRateLimitMinimum !== undefined && limits.requestRateLimitMaximum !== undefined &&
       limits.requestRateLimitMinimum > limits.requestRateLimitMaximum) {
       throw new ValidationError('Request rate minimum cannot be greater than maximum', this);
     }
@@ -670,16 +673,20 @@ export class ServerlessCache extends ServerlessCacheBase {
    * @returns Time string in HH:MM format
    */
   private formatBackupTime(schedule: events.Schedule): string {
-    const cronOptions = (schedule as any).cronOptions;
-    if (cronOptions) {
-      if (cronOptions.day || cronOptions.month || cronOptions.year || cronOptions.weekDay) {
-        throw new ValidationError('For now, only daily backup time is available (supports just hour and minute). Day, month, year, and weekDay are not allowed', this);
-      }
+    const WILD_CARD = "*";
+    const [
+      minuteExpression, hourExpression,
+      dayExpression, monthExpression,
+      weekDayExpression, yearExpression
+    ] = schedule.expressionString.substr(5).slice(0, -1).split(' ')
 
-      const hour = cronOptions.hour || '0';
-      const minute = cronOptions.minute || '0';
-      return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
+    if (dayExpression != WILD_CARD || monthExpression != WILD_CARD || yearExpression != WILD_CARD || weekDayExpression != "?") {
+      throw new ValidationError('For now, only daily backup time is available (supports just hour and minute). Day, month, year, and weekDay are not allowed', this);
     }
-    throw new ValidationError('Invalid schedule format for backup time', this);
+
+    const hour = hourExpression == WILD_CARD ? '0' : hourExpression;
+    const minute = minuteExpression == WILD_CARD ? '0' : minuteExpression;
+    console.log("last string: ", `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`)
+    return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
   }
 }
