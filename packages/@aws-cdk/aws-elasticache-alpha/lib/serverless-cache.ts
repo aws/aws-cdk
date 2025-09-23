@@ -673,20 +673,20 @@ export class ServerlessCache extends ServerlessCacheBase {
    * @returns Time string in HH:MM format
    */
   private formatBackupTime(schedule: events.Schedule): string {
-    const WILD_CARD = "*";
+    const WILD_CARD = '*';
     const [
       minuteExpression, hourExpression,
       dayExpression, monthExpression,
-      weekDayExpression, yearExpression
-    ] = schedule.expressionString.substr(5).slice(0, -1).split(' ')
+      weekDayExpression, yearExpression,
+    ] = schedule.expressionString.substr(5).slice(0, -1).split(' ');
 
-    if (dayExpression != WILD_CARD || monthExpression != WILD_CARD || yearExpression != WILD_CARD || weekDayExpression != "?") {
+    if (dayExpression != WILD_CARD || monthExpression != WILD_CARD || yearExpression != WILD_CARD || weekDayExpression != '?') {
       throw new ValidationError('For now, only daily backup time is available (supports just hour and minute). Day, month, year, and weekDay are not allowed', this);
     }
 
     const hour = hourExpression == WILD_CARD ? '0' : hourExpression;
     const minute = minuteExpression == WILD_CARD ? '0' : minuteExpression;
-    console.log("last string: ", `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`)
+
     return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
   }
 }
