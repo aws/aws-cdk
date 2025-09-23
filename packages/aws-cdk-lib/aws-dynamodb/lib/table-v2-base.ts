@@ -60,11 +60,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public abstract resourcePolicy?: PolicyDocument;
 
-  /**
-   * The ARN to use in policy resource statements for this table.
-   * This ARN includes CloudFormation intrinsic functions for region and account ID.
-   */
-  protected abstract get policyResourceArn(): string;
+
 
   protected abstract readonly region: string;
 

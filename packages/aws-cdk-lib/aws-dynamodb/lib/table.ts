@@ -644,11 +644,7 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    */
   public abstract readonly encryptionKey?: kms.IKey;
 
-  /**
-   * The ARN to use in policy resource statements for this table.
-   * This ARN includes CloudFormation intrinsic functions for region and account ID.
-   */
-  public abstract readonly policyResourceArn: string;
+
 
   /**
    * Resource policy to assign to table.
@@ -1146,11 +1142,7 @@ export class Table extends TableBase {
         (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
 
-      public get policyResourceArn(): string {
-        // For imported tables, we can't use CloudFormation intrinsic functions
-        // since we don't have access to the CfnTable resource, so we return the tableArn
-        return this.tableArn;
-      }
+
 
       constructor(_tableArn: string, tableName: string, tableStreamArn?: string) {
         super(scope, id);
@@ -1219,14 +1211,7 @@ export class Table extends TableBase {
    */
   public readonly tableStreamArn: string | undefined;
 
-  /**
-   * The ARN to use in policy resource statements for this table.
-   * This ARN includes CloudFormation intrinsic functions for partition, region and account ID
-   * and uses the table's logical ID to avoid circular dependencies.
-   */
-  public get policyResourceArn(): string {
-    return `arn:\${AWS::Partition}:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${${this.table.logicalId}}`;
-  }
+
 
   protected readonly table: CfnTable;
 
