@@ -602,8 +602,6 @@ export class TableV2 extends TableBaseV2 {
 
   protected readonly region: string;
 
-  protected readonly globalTable: CfnGlobalTable;
-
   protected readonly tags: TagManager;
 
   private readonly billingMode: string;
@@ -673,7 +671,10 @@ export class TableV2 extends TableBaseV2 {
       throw new ValidationError('Witness region cannot be specified for a Multi-Region Eventual Consistency (MREC) Global Table - Witness regions are only supported for Multi-Region Strong Consistency (MRSC) Global Tables.', this);
     }
 
-    this.globalTable = new CfnGlobalTable(this, 'Resource', {
+    // Initialize resourcePolicy from props or create empty one (KMS pattern)
+    this.resourcePolicy = props.resourcePolicy;
+
+    const resource = new CfnGlobalTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
@@ -696,18 +697,18 @@ export class TableV2 extends TableBaseV2 {
         : undefined,
       warmThroughput: props.warmThroughput ?? undefined,
     });
-    this.globalTable.applyRemovalPolicy(props.removalPolicy);
+    resource.applyRemovalPolicy(props.removalPolicy);
 
 
 
-    this.tableArn = this.getResourceArnAttribute(this.globalTable.attrArn, {
+    this.tableArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'dynamodb',
       resource: 'table',
       resourceName: this.physicalName,
     });
-    this.tableName = this.getResourceNameAttribute(this.globalTable.ref);
-    this.tableId = this.globalTable.attrTableId;
-    this.tableStreamArn = this.globalTable.attrStreamArn;
+    this.tableName = this.getResourceNameAttribute(resource.ref);
+    this.tableId = resource.attrTableId;
+    this.tableStreamArn = resource.attrStreamArn;
 
     props.replicas?.forEach(replica => this.addReplica(replica));
 
@@ -726,16 +727,15 @@ export class TableV2 extends TableBaseV2 {
    */
   public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
     // Initialize resourcePolicy if it doesn't exist
-    if (!this.tableOptions.resourcePolicy) {
-      // We need to modify tableOptions, but it's readonly, so we'll use a type assertion
-      (this.tableOptions as any).resourcePolicy = new PolicyDocument({ statements: [] });
+    if (!this.resourcePolicy) {
+      this.resourcePolicy = new PolicyDocument({ statements: [] });
     }
 
-    this.tableOptions.resourcePolicy!.addStatements(statement);
+    this.resourcePolicy.addStatements(statement);
 
     return {
       statementAdded: true,
-      policyDependable: this,
+      policyDependable: this.resourcePolicy,
     };
   }
 
@@ -852,8 +852,8 @@ export class TableV2 extends TableBaseV2 {
     * @see https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/FEATURE_FLAGS.md
     */
     const resourcePolicy = FeatureFlags.of(this).isEnabled(cxapi.DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA)
-      ? (props.region === this.region ? this.tableOptions.resourcePolicy : props.resourcePolicy) || undefined
-      : props.resourcePolicy ?? this.tableOptions.resourcePolicy;
+      ? (props.region === this.region ? this.resourcePolicy : props.resourcePolicy) || undefined
+      : props.resourcePolicy ?? this.resourcePolicy;
 
     const propTags: Record<string, string> = (props.tags ?? []).reduce((p, item) =>
       ({ ...p, [item.key]: item.value }), {},

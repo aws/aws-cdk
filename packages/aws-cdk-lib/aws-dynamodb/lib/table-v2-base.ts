@@ -60,8 +60,6 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public abstract resourcePolicy?: PolicyDocument;
 
-
-
   protected abstract readonly region: string;
 
   protected abstract get hasIndex(): boolean;
