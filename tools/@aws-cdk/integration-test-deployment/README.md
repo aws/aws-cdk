@@ -1,4 +1,4 @@
-# CDK Deployment Integration Test
+# CDK Integration Test Deployment
 
 A tool for running AWS CDK integration tests against changed snapshots using AWS Atmosphere for environment allocation.
 
@@ -6,18 +6,18 @@ A tool for running AWS CDK integration tests against changed snapshots using AWS
 
 This tool automatically detects changed integration test snapshots in the CDK repository and runs them against real AWS environments managed by Atmosphere. It ensures that CDK changes don't break existing functionality by testing them in isolated AWS accounts.
 
-This tool is used by the [deployment integration test workflow](../../../.github/workflows/codebuild-pr-deployment-integ.yml).
+This tool is used by the [Integration Test Deployment workflow](../../../.github/workflows/codebuild-pr-deployment-integ.yml).
 
 ## Features
 
-- **Automatic Change Detection**: Uses Git diff to identify modified integration test files
+- **Automatic Change Detection**: Filters through the changed file to detect the integration tests
 - **AWS Environment Management**: Integrates with AWS Atmosphere for temporary AWS account allocation
 - **Isolated Testing**: Each test run gets its own AWS environment with proper credentials
 - **Cleanup**: Automatically releases AWS resources after test completion
 
 ## Prerequisites
 
-Assuming an IAM role authorized by the Atmosphere system is required to run this tool.
+Authenticating to assume atmosphere role through OIDC token.
 
 ## Environment Variables
 
@@ -25,6 +25,22 @@ Assuming an IAM role authorized by the Atmosphere system is required to run this
 |----------|-------------
 | `CDK_ATMOSPHERE_ENDPOINT` | AWS Atmosphere service endpoint
 | `CDK_ATMOSPHERE_POOL` | AWS account pool name for allocation
+
+## Development 
+
+```bash
+# Directory of the tool
+cd tools/@aws-cdk/integration-test-deployment/
+
+# Install dependencies
+yarn install
+
+# Build
+yarn build
+
+# Run tests
+yarn test
+```
 
 ## Usage
 
@@ -34,7 +50,7 @@ export CDK_ATMOSPHERE_ENDPOINT="https://your-atmosphere-endpoint"
 export CDK_ATMOSPHERE_POOL="your-pool-name"
 
 # Run the tool
-node bin/deployment.js
+yarn --cwd tools/@aws-cdk/integration-test-deployment/ integration-test-deployment
 ```
 
 ## How It Works
@@ -45,21 +61,6 @@ node bin/deployment.js
 4. **Cleanup**: Releases AWS environment regardless of test outcome
 5. **Result**: Exits with success/failure based on test results
 
-## Development
-
-```bash
-# Install dependencies
-npm install
-
-# Build
-npm run build
-
-# Run tests
-npm test
-
-# Watch mode
-npm run watch
-```
 
 ## License
 

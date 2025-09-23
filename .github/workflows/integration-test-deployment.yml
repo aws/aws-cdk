@@ -87,17 +87,25 @@ jobs:
         run: |
           (command -v sysctl || sudo apt-get update && sudo apt-get install -y procps) && \
           sudo sysctl -w vm.max_map_count=2251954
+
+      - name: Install dependencies for integration-test-deployment (BASE)
+        working-directory: base
+        run: yarn --cwd tools/@aws-cdk/integration-test-deployment install
       
       - name: Build deployment-integ (BASE)
         working-directory: base
-        run: yarn --cwd tools/@aws-cdk/integration_test_deployment build
-      
+        run: yarn --cwd tools/@aws-cdk/integration-test-deployment build
+        
+      - name: Install dependencies for framework-integ (HEAD)
+        working-directory: head
+        run: yarn install 
+        
       - name: Build framework-integ (HEAD)
         working-directory: head
         run: npx lerna run build --scope=@aws-cdk-testing/framework-integ 
 
-      - name: Run integration tests from HEAD using script from BASE
-        run: node yarn --cwd ../base/tools/@aws-cdk/integration-test-deployment/ integration_test_deployment
+      - name: Run integration tests from HEAD using integration-test-deployment script from BASE
+        run: yarn --cwd ../base/tools/@aws-cdk/integration-test-deployment/ integration-test-deployment
         working-directory: head
         env:
           CDK_ATMOSPHERE_ENDPOINT: ${{ vars.CDK_ATMOSPHERE_ENDPOINT }}
