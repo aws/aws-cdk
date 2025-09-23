@@ -1625,7 +1625,7 @@ export class Table extends TableBase {
     nonKeyAttributes.forEach(att => this.nonKeyAttributes.add(att));
   }
 
-  private validatePitr(props: TableProps): PointInTimeRecoverySpecification | undefined {
+  private validatePitr (props: TableProps): PointInTimeRecoverySpecification | undefined {
     if (props.pointInTimeRecoverySpecification !== undefined && props.pointInTimeRecovery !== undefined) {
       throw new ValidationError('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.', this);
     }
@@ -1636,7 +1636,7 @@ export class Table extends TableBase {
       throw new ValidationError('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.', this);
     }
 
-    if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35)) {
+    if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35 )) {
       throw new ValidationError('`recoveryPeriodInDays` must be a value between `1` and `35`.', this);
     }
 
