@@ -60,6 +60,7 @@ jobs:
 
       - name: Configure system settings
         run: |
+          echo "Hello New change"
           (command -v sysctl || sudo apt-get update && sudo apt-get install -y procps) && \
           sudo sysctl -w vm.max_map_count=2251954
 
