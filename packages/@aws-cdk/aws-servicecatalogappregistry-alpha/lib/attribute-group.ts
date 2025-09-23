@@ -27,6 +27,8 @@ export interface IAttributeGroup extends cdk.IResource {
    */
   readonly attributeGroupId: string;
 
+  readonly attributes?: { [key: string]: any };
+
   /**
    * Share the attribute group resource with other IAM entities, accounts, or OUs.
    *
@@ -67,6 +69,7 @@ export interface AttributeGroupProps {
 abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGroup {
   public abstract readonly attributeGroupArn: string;
   public abstract readonly attributeGroupId: string;
+  public abstract readonly attributes?: { [key: string]: any };
   private readonly associatedApplications: Set<string> = new Set();
 
   public associateWith(application: IApplication): void {
@@ -121,14 +124,7 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-servicecatalogappregistry-alpha.AttributeGroup';
 
-  /**
-   * Imports an attribute group construct that represents an external attribute group.
-   *
-   * @param scope The parent creating construct (usually `this`).
-   * @param id The construct's name.
-   * @param attributeGroupArn the Amazon Resource Name of the existing AppRegistry attribute group
-   */
-  public static fromAttributeGroupArn(scope: Construct, id: string, attributeGroupArn: string): IAttributeGroup {
+  public static fromAttributeGroupArn(scope: Construct, id: string, attributeGroupArn: string, attributes?: { [key: string]: any }): IAttributeGroup {
     const arn = cdk.Stack.of(scope).splitArn(attributeGroupArn, cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME);
     const attributeGroupId = arn.resourceName;
 
@@ -139,6 +135,7 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
     class Import extends AttributeGroupBase {
       public readonly attributeGroupArn = attributeGroupArn;
       public readonly attributeGroupId = attributeGroupId!;
+      public readonly attributes = attributes;
 
       protected generateUniqueHash(resourceAddress: string): string {
         return hashValues(this.attributeGroupArn, resourceAddress);
@@ -152,11 +149,11 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
 
   public readonly attributeGroupArn: string;
   public readonly attributeGroupId: string;
+  public readonly attributes: { [key: string]: any };
   private readonly nodeAddress: string;
 
   constructor(scope: Construct, id: string, props: AttributeGroupProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     this.validateAttributeGroupProps(props);
@@ -169,6 +166,7 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
 
     this.attributeGroupArn = attributeGroup.attrArn;
     this.attributeGroupId = attributeGroup.attrId;
+    this.attributes = props.attributes;
     this.nodeAddress = cdk.Names.nodeUniqueId(attributeGroup.node);
   }
 
