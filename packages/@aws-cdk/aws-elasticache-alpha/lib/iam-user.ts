@@ -36,8 +36,8 @@ export class IamUser extends UserBase {
   /**
    * Return whether the given object is an `IamUser`.
    */
-  public static isIamUser(x: any) : x is IamUser {
-    return x !== null && typeof(x) === 'object' && ELASTICACHE_IAMUSER_SYMBOL in x;
+  public static isIamUser(x: any): x is IamUser {
+    return x !== null && typeof (x) === 'object' && ELASTICACHE_IAMUSER_SYMBOL in x;
   }
 
   /**

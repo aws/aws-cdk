@@ -16,26 +16,6 @@ describe('NoPasswordUser', () => {
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       })).toThrow('Valkey engine does not support no-password authentication.');
     });
-
-    test.each([
-      {
-        testDescription: 'when passing both userId and userArn throws validation error',
-        userArn: 'arn:aws:elasticache:us-east-1:999999999999:user:test-user',
-        userId: 'test-user',
-        errorMessage: 'Only one of userArn or userId can be provided.',
-      },
-      {
-        testDescription: 'when passing neither userId nor userArn throws validation error',
-        errorMessage: 'One of userId or userArn is required.',
-      },
-      {
-        testDescription: 'when passing invalid userArn (no user id) throws validation error',
-        userArn: 'arn:aws:elasticache:us-east-1:999999999999:user',
-        errorMessage: 'Unable to extract user id from ARN.',
-      },
-    ])('$testDescription', ({ userArn, userId, errorMessage }) => {
-      expect(() => NoPasswordUser.fromUserAttributes(stack, 'ImportedUser', { userArn, userId })).toThrow(errorMessage);
-    });
   });
 
   describe('constructor', () => {
@@ -250,6 +230,26 @@ describe('NoPasswordUser', () => {
       expect(user.userArn).toBe(arn);
       expect(user.userName).toBe(undefined);
       expect(user.engine).toBe(undefined);
+    });
+
+    test.each([
+      {
+        testDescription: 'when passing both userId and userArn throws validation error',
+        userArn: 'arn:aws:elasticache:us-east-1:999999999999:user:test-user',
+        userId: 'test-user',
+        errorMessage: 'Only one of userArn or userId can be provided.',
+      },
+      {
+        testDescription: 'when passing neither userId nor userArn throws validation error',
+        errorMessage: 'One of userId or userArn is required.',
+      },
+      {
+        testDescription: 'when passing invalid userArn (no user id) throws validation error',
+        userArn: 'arn:aws:elasticache:us-east-1:999999999999:user',
+        errorMessage: 'Unable to extract user id from ARN.',
+      },
+    ])('$testDescription', ({ userArn, userId, errorMessage }) => {
+      expect(() => NoPasswordUser.fromUserAttributes(stack, 'ImportedUser', { userArn, userId })).toThrow(errorMessage);
     });
   });
 });

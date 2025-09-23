@@ -246,15 +246,16 @@ export class UserGroup extends UserGroupBase {
   private readonly resource: CfnUserGroup;
 
   constructor(scope: Construct, id: string, props: UserGroupProps = {}) {
-    super(scope, id, {
-      physicalName: props.userGroupName ?? Lazy.string({ produce: () => Names.uniqueId(this).toLocaleLowerCase() }),
-    });
+    super(scope, id, {});
 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     this.engine = props.engine ?? UserEngine.VALKEY;
-    this.userGroupName = this.physicalName;
+    this.userGroupName = props.userGroupName ?? Lazy.string({
+      // Elasticache not allowing uppercase user group id
+      produce: () => Names.uniqueId(this).toLocaleLowerCase(),
+    });
 
     if (props.users) {
       this._users.push(...props.users);
@@ -262,7 +263,7 @@ export class UserGroup extends UserGroupBase {
 
     this.resource = new CfnUserGroup(this, 'Resource', {
       engine: this.engine,
-      userGroupId: this.physicalName,
+      userGroupId: this.userGroupName,
       userIds: Lazy.list({
         produce: () => {
           this.validateUsers();

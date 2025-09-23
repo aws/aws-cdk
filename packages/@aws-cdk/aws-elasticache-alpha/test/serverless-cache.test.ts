@@ -37,8 +37,6 @@ describe('serverless cache', () => {
         backup: {
           backupRetentionLimit: 2,
           backupNameBeforeDeletion: 'last-snapshot-name',
-          backupArnsToRestore: ['arn:aws:elasticache:us-east-1:123456789012:serverlesscachesnapshot:my-final-backup-name'],
-
         },
         cacheUsageLimits: {
           dataStorageMinimumSize: Size.gibibytes(1),
@@ -60,9 +58,8 @@ describe('serverless cache', () => {
         },
         FinalSnapshotName: 'last-snapshot-name',
         ServerlessCacheName: 'serverelessCache',
-        SnapshotArnsToRestore: ['arn:aws:elasticache:us-east-1:123456789012:serverlesscachesnapshot:my-final-backup-name'],
         SnapshotRetentionLimit: 2,
-        UserGroupId: 'UserGroup',
+        UserGroupId: 'usergroup',
         CacheUsageLimits: {
           DataStorage: {
             Minimum: 1,
