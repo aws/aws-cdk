@@ -20,7 +20,7 @@ import {
   validateContributorInsights,
 } from './shared';
 import { ITableV2, TableBaseV2 } from './table-v2-base';
-import { PolicyDocument } from '../../aws-iam';
+import { AddToResourcePolicyResult, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { IStream } from '../../aws-kinesis';
 import { IKey, Key } from '../../aws-kms';
 import {
@@ -525,6 +525,20 @@ export class TableV2 extends TableBaseV2 {
         this.encryptionKey = attrs.encryptionKey;
         this.resourcePolicy = resourcePolicy;
       }
+
+      /**
+       * Adds a statement to the resource policy associated with this table.
+       * 
+       * Note: This is a no-op for imported tables since resource policies cannot be modified.
+       *
+       * @param _statement The policy statement to add
+       */
+      public addToResourcePolicy(_statement: PolicyStatement): AddToResourcePolicyResult {
+        // No-op for imported tables - resource policies cannot be modified
+        return {
+          statementAdded: false,
+        };
+      }
     }
 
     let tableName: string;
@@ -587,6 +601,8 @@ export class TableV2 extends TableBaseV2 {
   public resourcePolicy?: PolicyDocument;
 
   protected readonly region: string;
+
+  protected readonly globalTable: CfnGlobalTable;
 
   protected readonly tags: TagManager;
 
@@ -657,12 +673,12 @@ export class TableV2 extends TableBaseV2 {
       throw new ValidationError('Witness region cannot be specified for a Multi-Region Eventual Consistency (MREC) Global Table - Witness regions are only supported for Multi-Region Strong Consistency (MRSC) Global Tables.', this);
     }
 
-    const resource = new CfnGlobalTable(this, 'Resource', {
+    this.globalTable = new CfnGlobalTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
       replicas: Lazy.any({ produce: () => this.renderReplicaTables() }),
-      globalTableWitnesses: props.witnessRegion? [{ region: props.witnessRegion }] : undefined,
+      globalTableWitnesses: props.witnessRegion ? [{ region: props.witnessRegion }] : undefined,
       multiRegionConsistency: props.multiRegionConsistency ? props.multiRegionConsistency : undefined,
       globalSecondaryIndexes: Lazy.any({ produce: () => this.renderGlobalIndexes() }, { omitEmptyArray: true }),
       localSecondaryIndexes: Lazy.any({ produce: () => this.renderLocalIndexes() }, { omitEmptyArray: true }),
@@ -680,22 +696,47 @@ export class TableV2 extends TableBaseV2 {
         : undefined,
       warmThroughput: props.warmThroughput ?? undefined,
     });
-    resource.applyRemovalPolicy(props.removalPolicy);
+    this.globalTable.applyRemovalPolicy(props.removalPolicy);
 
-    this.tableArn = this.getResourceArnAttribute(resource.attrArn, {
+
+
+    this.tableArn = this.getResourceArnAttribute(this.globalTable.attrArn, {
       service: 'dynamodb',
       resource: 'table',
       resourceName: this.physicalName,
     });
-    this.tableName = this.getResourceNameAttribute(resource.ref);
-    this.tableId = resource.attrTableId;
-    this.tableStreamArn = resource.attrStreamArn;
+    this.tableName = this.getResourceNameAttribute(this.globalTable.ref);
+    this.tableId = this.globalTable.attrTableId;
+    this.tableStreamArn = this.globalTable.attrStreamArn;
 
     props.replicas?.forEach(replica => this.addReplica(replica));
 
     if (props.tableName) {
       this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName);
     }
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this table.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported tables.
+   *
+   * @param statement The policy statement to add
+   */
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    // Initialize resourcePolicy if it doesn't exist
+    if (!this.tableOptions.resourcePolicy) {
+      // We need to modify tableOptions, but it's readonly, so we'll use a type assertion
+      (this.tableOptions as any).resourcePolicy = new PolicyDocument({ statements: [] });
+    }
+
+    this.tableOptions.resourcePolicy!.addStatements(statement);
+
+    return {
+      statementAdded: true,
+      policyDependable: this,
+    };
   }
 
   /**
@@ -1106,7 +1147,7 @@ export class TableV2 extends TableBaseV2 {
       throw new ValidationError('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.', this);
     }
 
-    if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35 )) {
+    if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35)) {
       throw new ValidationError('`recoveryPeriodInDays` must be a value between `1` and `35`.', this);
     }
   }

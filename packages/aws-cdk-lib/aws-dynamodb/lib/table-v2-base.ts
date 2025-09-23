@@ -473,13 +473,5 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    *
    * @param statement The policy statement to add
    */
-  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
-    this.resourcePolicy = this.resourcePolicy ?? new PolicyDocument({ statements: [] });
-
-    this.resourcePolicy.addStatements(statement);
-    return {
-      statementAdded: true,
-      policyDependable: this,
-    };
-  }
+  public abstract addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult;
 }

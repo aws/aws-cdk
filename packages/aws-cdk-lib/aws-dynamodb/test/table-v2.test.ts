@@ -1,5 +1,6 @@
 import { Match, Template } from '../../assertions';
 import { ArnPrincipal, PolicyDocument, PolicyStatement } from '../../aws-iam';
+import * as iam from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
 import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
@@ -3410,6 +3411,49 @@ describe('MRSC global tables validation', () => {
         { Region: 'us-east-2' },
       ],
     });
+  });
+});
+
+test('TableV2 addToResourcePolicy works with wildcard resources', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['dynamodb:GetItem', 'dynamodb:PutItem'],
+    principals: [new iam.AccountRootPrincipal()],
+    resources: ['*'], // Wildcard avoids circular dependency - same pattern as KMS
+  }));
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: {
+          Ref: 'AWS::Region',
+        },
+        ResourcePolicy: {
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Principal: {
+                  AWS: Match.anyValue(),
+                },
+                Action: ['dynamodb:GetItem', 'dynamodb:PutItem'],
+                Resource: '*',
+              },
+            ],
+          },
+        },
+      },
+    ],
   });
 });
 
