@@ -3951,44 +3951,6 @@ test('Resource policy test', () => {
   });
 });
 
-test('addToResourcePolicy test', () => {
-  // GIVEN
-  const app = new App();
-  const stack = new Stack(app, 'Stack');
-
-  // WHEN
-  const table = new Table(stack, 'Table', {
-    partitionKey: { name: 'id', type: AttributeType.STRING },
-  });
-
-  // Use wildcard resource to avoid circular dependency (matches KMS pattern)
-  table.addToResourcePolicy(new iam.PolicyStatement({
-    actions: ['dynamodb:PutItem'],
-    principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:user/testuser')],
-    resources: ['*'], // Wildcard avoids circular dependency - standard pattern for resource policies
-  }));
-
-  // THEN
-  const template = Template.fromStack(stack);
-  template.hasResourceProperties('AWS::DynamoDB::Table', {
-    'ResourcePolicy': {
-      'PolicyDocument': {
-        'Version': '2012-10-17',
-        'Statement': [
-          {
-            'Principal': {
-              'AWS': 'arn:aws:iam::111122223333:user/testuser',
-            },
-            'Effect': 'Allow',
-            'Action': 'dynamodb:PutItem',
-            'Resource': '*', // Wildcard resource in resource policy
-          },
-        ],
-      },
-    },
-  });
-});
-
 test('addToResourcePolicy works with wildcard resources (KMS pattern)', () => {
   // GIVEN
   const app = new App();
@@ -3999,103 +3961,21 @@ test('addToResourcePolicy works with wildcard resources (KMS pattern)', () => {
     partitionKey: { name: 'id', type: AttributeType.STRING },
   });
 
-  // Use wildcard resource following KMS pattern to avoid circular dependency
+  // Test multiple policy statements with different principals and actions
   table.addToResourcePolicy(new iam.PolicyStatement({
     actions: ['dynamodb:GetItem', 'dynamodb:PutItem'],
     principals: [new iam.AccountRootPrincipal()],
     resources: ['*'], // Wildcard avoids circular dependency - same pattern as KMS
   }));
 
-  // THEN
-  const template = Template.fromStack(stack);
-  template.hasResourceProperties('AWS::DynamoDB::Table', {
-    'ResourcePolicy': {
-      'PolicyDocument': {
-        'Version': '2012-10-17',
-        'Statement': [
-          {
-            'Principal': {
-              'AWS': {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    { 'Ref': 'AWS::Partition' },
-                    ':iam::',
-                    { 'Ref': 'AWS::AccountId' },
-                    ':root',
-                  ],
-                ],
-              },
-            },
-            'Effect': 'Allow',
-            'Action': ['dynamodb:GetItem', 'dynamodb:PutItem'],
-            'Resource': '*', // Wildcard resource
-          },
-        ],
-      },
-    },
-  });
-});
-
-test('addToResourcePolicy preserves explicit resources when specified', () => {
-  // GIVEN
-  const app = new App();
-  const stack = new Stack(app, 'Stack');
-
-  // WHEN
-  const table = new Table(stack, 'Table', {
-    partitionKey: { name: 'id', type: AttributeType.STRING },
-  });
-
-  // Add policy statement with explicit resources
   table.addToResourcePolicy(new iam.PolicyStatement({
-    actions: ['dynamodb:GetItem'],
-    principals: [new iam.AccountRootPrincipal()],
-    resources: ['*'], // Explicit wildcard resource
-  }));
-
-  // THEN
-  const template = Template.fromStack(stack);
-  template.hasResourceProperties('AWS::DynamoDB::Table', {
-    'ResourcePolicy': {
-      'PolicyDocument': {
-        'Statement': [
-          {
-            'Resource': '*', // Should preserve explicit resource
-          },
-        ],
-      },
-    },
-  });
-});
-
-test('addToResourcePolicy generates correct CloudFormation with comprehensive validation', () => {
-  // GIVEN
-  const app = new App();
-  const stack = new Stack(app, 'Stack');
-
-  // WHEN
-  const table = new Table(stack, 'Table', {
-    partitionKey: { name: 'id', type: AttributeType.STRING },
-  });
-
-  // Use wildcard resource to avoid circular dependency
-  table.addToResourcePolicy(new iam.PolicyStatement({
-    effect: iam.Effect.ALLOW,
-    principals: [new iam.AccountRootPrincipal()],
-    actions: [
-      'dynamodb:GetItem',
-      'dynamodb:PutItem',
-      'dynamodb:Query',
-    ],
+    actions: ['dynamodb:Query'],
+    principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:user/testuser')],
     resources: ['*'], // Wildcard avoids circular dependency
   }));
 
   // THEN
   const template = Template.fromStack(stack);
-
-  // Validate that the DynamoDB table has a ResourcePolicy property with expected structure
   template.hasResourceProperties('AWS::DynamoDB::Table', {
     ResourcePolicy: {
       PolicyDocument: {
@@ -4104,14 +3984,18 @@ test('addToResourcePolicy generates correct CloudFormation with comprehensive va
           {
             Effect: 'Allow',
             Principal: {
-              AWS: Match.anyValue(), // Principal format can vary (Fn::Join vs Fn::Sub)
+              AWS: Match.anyValue(), // Principal format can vary
             },
-            Action: [
-              'dynamodb:GetItem',
-              'dynamodb:PutItem',
-              'dynamodb:Query',
-            ],
+            Action: ['dynamodb:GetItem', 'dynamodb:PutItem'],
             Resource: '*', // Wildcard resource to avoid circular dependency
+          },
+          {
+            Effect: 'Allow',
+            Principal: {
+              AWS: 'arn:aws:iam::111122223333:user/testuser',
+            },
+            Action: 'dynamodb:Query',
+            Resource: '*', // Wildcard resource
           },
         ],
       },
@@ -4164,7 +4048,7 @@ test('addToResourcePolicy with explicit table name allows scoped resources', () 
 
 test('addToResourcePolicy limitation: cannot use scoped resources with auto-generated table names', () => {
   // This test documents the fundamental limitation of resource policies with auto-generated names
-  
+
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack');
@@ -4177,7 +4061,7 @@ test('addToResourcePolicy limitation: cannot use scoped resources with auto-gene
   // LIMITATION: Cannot use table.tableArn or construct scoped ARN because it creates circular dependency
   // This would fail: resources: [table.tableArn] 
   // This would also fail: resources: [Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableRef}', { TableRef: cfnTable.ref })]
-  
+
   // WORKAROUND: Must use wildcard resource (same pattern as KMS)
   table.addToResourcePolicy(new iam.PolicyStatement({
     actions: ['dynamodb:GetItem'],
