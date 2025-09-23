@@ -19,7 +19,6 @@ queue_rules:
       - "#changes-requested-reviews-by=0"
       - check-success=validate-pr
       - check-success=build
-
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
