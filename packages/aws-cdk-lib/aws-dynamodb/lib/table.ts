@@ -644,8 +644,6 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    */
   public abstract readonly encryptionKey?: kms.IKey;
 
-
-
   /**
    * Resource policy to assign to table.
    * @attribute
@@ -1142,8 +1140,6 @@ export class Table extends TableBase {
         (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
 
-
-
       constructor(_tableArn: string, tableName: string, tableStreamArn?: string) {
         super(scope, id);
         this.tableArn = _tableArn;
@@ -1210,8 +1206,6 @@ export class Table extends TableBase {
    * @attribute
    */
   public readonly tableStreamArn: string | undefined;
-
-
 
   protected readonly table: CfnTable;
 
@@ -1626,7 +1620,7 @@ export class Table extends TableBase {
   }
 
   private validatePitr (props: TableProps): PointInTimeRecoverySpecification | undefined {
-    if (props.pointInTimeRecoverySpecification !== undefined && props.pointInTimeRecovery !== undefined) {
+    if (props.pointInTimeRecoverySpecification !==undefined && props.pointInTimeRecovery !== undefined) {
       throw new ValidationError('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.', this);
     }
 
