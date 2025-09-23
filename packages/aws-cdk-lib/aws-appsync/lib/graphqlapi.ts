@@ -982,8 +982,7 @@ export class GraphqlApi extends GraphqlApiBase {
       ?? DataSourceLevelMetricsBehavior.PER_DATA_SOURCE_METRICS;
     const operationLevelMetricsEnabled = config.operationLevelMetricsEnabled
       ? 'ENABLED' : 'DISABLED';
-    const resolverLevelMetricsBehavior = config.resolverLevelMetricsBehavior
-      ?? ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS;
+    const resolverLevelMetricsBehavior = config.resolverLevelMetricsBehavior;
     return {
       dataSourceLevelMetricsBehavior: dataSourceLevelMetricsBehavior,
       operationLevelMetricsConfig: operationLevelMetricsEnabled,
