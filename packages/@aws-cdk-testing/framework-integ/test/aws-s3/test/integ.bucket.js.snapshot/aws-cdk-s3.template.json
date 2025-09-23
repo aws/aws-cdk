@@ -59,7 +59,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MyOhMyGodOtherBucketF59BCD83": {
+  "MyOtherBucket543F3540": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
     "BucketEncryption": {
@@ -146,7 +146,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "MyOhMyGodOtherBucketF59BCD83",
+          "MyOtherBucket543F3540",
           "Arn"
          ]
         },
@@ -156,7 +156,7 @@
           [
            {
             "Fn::GetAtt": [
-             "MyOhMyGodOtherBucketF59BCD83",
+             "MyOtherBucket543F3540",
              "Arn"
             ]
            },

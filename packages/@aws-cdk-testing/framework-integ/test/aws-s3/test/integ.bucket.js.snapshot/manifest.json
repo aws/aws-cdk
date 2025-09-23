@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d2e4d188eb6d81336ebccea492940a5ce0b027f75a710a235e8ca6c58865f698.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/de79a27645479e4cbb257a8fd7ca9556fd3b17c4ac162e5499b12bfc6e2dc04d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -64,7 +64,7 @@
             "data": "MyBucketF68F3FF0"
           }
         ],
-        "/aws-cdk-s3/MyOhMyGodOtherBucket": [
+        "/aws-cdk-s3/MyOtherBucket": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -73,10 +73,10 @@
             }
           }
         ],
-        "/aws-cdk-s3/MyOhMyGodOtherBucket/Resource": [
+        "/aws-cdk-s3/MyOtherBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyOhMyGodOtherBucketF59BCD83"
+            "data": "MyOtherBucket543F3540"
           }
         ],
         "/aws-cdk-s3/MyUser": [
@@ -187,10 +187,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "MyOtherBucket543F3540": [
+        "MyOhMyGodOtherBucketF59BCD83": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyOtherBucket543F3540",
+            "data": "MyOhMyGodOtherBucketF59BCD83",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
