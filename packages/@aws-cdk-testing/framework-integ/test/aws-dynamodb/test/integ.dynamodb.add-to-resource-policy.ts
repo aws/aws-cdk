@@ -25,31 +25,34 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 
 export class TestStack extends Stack {
-  public readonly table: dynamodb.Table;
+    public readonly table: dynamodb.Table;
 
-  constructor(scope: Construct, id: string, props?: StackProps) {
-    super(scope, id, props);
+    constructor(scope: Construct, id: string, props?: StackProps) {
+        super(scope, id, props);
 
-    // Create a DynamoDB table WITHOUT an initial resource policy
-    this.table = new dynamodb.Table(this, 'TestTable', {
-      partitionKey: {
-        name: 'id',
-        type: dynamodb.AttributeType.STRING,
-      },
-      removalPolicy: RemovalPolicy.DESTROY,
-    });
+        // Create a DynamoDB table WITHOUT an initial resource policy
+        this.table = new dynamodb.Table(this, 'TestTable', {
+            partitionKey: {
+                name: 'id',
+                type: dynamodb.AttributeType.STRING,
+            },
+            removalPolicy: RemovalPolicy.DESTROY,
+        });
 
-    // Add resource policy using addToResourcePolicy() method
-    // This is the CORE functionality being tested for issue #35062
-    // Resources must be explicitly specified (matching KMS pattern)
-    this.table.addToResourcePolicy(new iam.PolicyStatement({
-      actions: ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:Query'],
-      principals: [new iam.AccountRootPrincipal()],
-      resources: ['*'], // Following KMS pattern to avoid circular dependencies
-    }));
+        // Add resource policy using addToResourcePolicy() method
+        // This is the CORE functionality being tested for issue #35062
+        // Get CloudFormation logical ID to construct ARN without circular dependencies
+        const cfnTable = this.table.node.defaultChild as dynamodb.CfnTable;
+        const tableLogicalId = cfnTable.logicalId;
 
-    // VALIDATION: Resources are explicitly specified to avoid circular dependencies
-  }
+        this.table.addToResourcePolicy(new iam.PolicyStatement({
+            actions: ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:Query'],
+            principals: [new iam.AccountRootPrincipal()],
+            resources: [`arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${${tableLogicalId}}`],
+        }));
+
+        // VALIDATION: Resources are properly scoped using CloudFormation logical ID to avoid circular dependencies
+    }
 }
 
 // Test Setup
@@ -58,25 +61,25 @@ const stack = new TestStack(app, 'add-to-resource-policy-test-stack');
 
 // Integration Test Configuration
 new IntegTest(app, 'add-to-resource-policy-integ-test', {
-  testCases: [stack],
+    testCases: [stack],
 });
 
 // Basic validation that the ResourcePolicy was added to the template
 const template = Template.fromStack(stack);
 template.hasResourceProperties('AWS::DynamoDB::Table', {
-  ResourcePolicy: {
-    PolicyDocument: {
-      Version: '2012-10-17',
-      Statement: Match.arrayWith([
-        Match.objectLike({
-          Effect: 'Allow',
-          Action: Match.arrayWith([
-            'dynamodb:GetItem',
-            'dynamodb:PutItem',
-            'dynamodb:Query',
-          ]),
-        }),
-      ]),
+    ResourcePolicy: {
+        PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: Match.arrayWith([
+                Match.objectLike({
+                    Effect: 'Allow',
+                    Action: Match.arrayWith([
+                        'dynamodb:GetItem',
+                        'dynamodb:PutItem',
+                        'dynamodb:Query',
+                    ]),
+                }),
+            ]),
+        },
     },
-  },
 });

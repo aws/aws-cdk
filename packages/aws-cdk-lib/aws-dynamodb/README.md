@@ -825,11 +825,14 @@ const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
 });
 
-// Basic resource policy (following KMS pattern)
+// Basic resource policy with proper ARN construction
+const cfnTable = table.node.defaultChild as dynamodb.CfnTable;
+const tableLogicalId = cfnTable.logicalId;
+
 table.addToResourcePolicy(new iam.PolicyStatement({
   actions: ['dynamodb:GetItem', 'dynamodb:PutItem'],
   principals: [new iam.AccountRootPrincipal()],
-  resources: ['*'], // Explicit resources required to avoid circular dependencies
+  resources: [`arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${${tableLogicalId}}`],
 }));
 
 // Scoped resource policy (for advanced use cases)

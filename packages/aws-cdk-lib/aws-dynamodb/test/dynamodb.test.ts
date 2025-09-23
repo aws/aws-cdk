@@ -3961,10 +3961,14 @@ test('addToResourcePolicy test', () => {
     partitionKey: { name: 'id', type: AttributeType.STRING },
   });
 
+  // Get CloudFormation logical ID to construct ARN without circular dependencies
+  const cfnTable1 = table.node.defaultChild as Table['table'];
+  const tableLogicalId1 = cfnTable1.logicalId;
+
   table.addToResourcePolicy(new iam.PolicyStatement({
     actions: ['dynamodb:PutItem'],
     principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:user/testuser')],
-    resources: ['*'], // Following KMS pattern to avoid circular dependencies
+    resources: [`arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${${tableLogicalId1}}`],
   }));
 
   // THEN
@@ -3980,7 +3984,7 @@ test('addToResourcePolicy test', () => {
             },
             'Effect': 'Allow',
             'Action': 'dynamodb:PutItem',
-            'Resource': '*', // Following KMS pattern to avoid circular dependencies
+            'Resource': Match.stringLikeRegexp('arn:aws:dynamodb:\\$\\{AWS::Region\\}:\\$\\{AWS::AccountId\\}:table/\\$\\{.*\\}'),
           },
         ],
       },
@@ -3998,11 +4002,15 @@ test('addToResourcePolicy works with explicit resources (KMS pattern)', () => {
     partitionKey: { name: 'id', type: AttributeType.STRING },
   });
 
-  // Add policy statement with explicit resources (matching KMS pattern)
+  // Get CloudFormation logical ID to construct ARN without circular dependencies
+  const cfnTable2 = table.node.defaultChild as Table['table'];
+  const tableLogicalId2 = cfnTable2.logicalId;
+
+  // Add policy statement with explicit resources using proper ARN construction
   table.addToResourcePolicy(new iam.PolicyStatement({
     actions: ['dynamodb:GetItem', 'dynamodb:PutItem'],
     principals: [new iam.AccountRootPrincipal()],
-    resources: ['*'], // Following KMS pattern to avoid circular dependencies
+    resources: [`arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${${tableLogicalId2}}`],
   }));
 
   // THEN
@@ -4016,9 +4024,9 @@ test('addToResourcePolicy works with explicit resources (KMS pattern)', () => {
   expect(tableResource.Properties.ResourcePolicy).toBeDefined();
   const statement = tableResource.Properties.ResourcePolicy.PolicyDocument.Statement[0];
 
-  // Resource should be set to wildcard (following KMS pattern)
+  // Resource should be set to the properly constructed table ARN
   expect(statement.Resource).toBeDefined();
-  expect(statement.Resource).toBe('*');
+  expect(statement.Resource).toMatch(/^arn:aws:dynamodb:\$\{AWS::Region\}:\$\{AWS::AccountId\}:table\/\$\{.+\}$/);
 });
 
 test('addToResourcePolicy preserves explicit resources when specified', () => {
@@ -4063,6 +4071,10 @@ test('addToResourcePolicy generates correct CloudFormation with comprehensive va
     partitionKey: { name: 'id', type: AttributeType.STRING },
   });
 
+  // Get CloudFormation logical ID to construct ARN without circular dependencies
+  const cfnTable3 = table.node.defaultChild as CfnTable;
+  const tableLogicalId3 = cfnTable3.logicalId;
+
   table.addToResourcePolicy(new iam.PolicyStatement({
     effect: iam.Effect.ALLOW,
     principals: [new iam.AccountRootPrincipal()],
@@ -4071,7 +4083,7 @@ test('addToResourcePolicy generates correct CloudFormation with comprehensive va
       'dynamodb:PutItem',
       'dynamodb:Query',
     ],
-    resources: ['*'], // Following KMS pattern to avoid circular dependencies
+    resources: [`arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${${tableLogicalId3}}`],
   }));
 
   // THEN
@@ -4110,8 +4122,8 @@ test('addToResourcePolicy generates correct CloudFormation with comprehensive va
 
   const resourceValue = tableResource.Properties.ResourcePolicy.PolicyDocument.Statement[0].Resource;
 
-  // Validate that the resource follows KMS pattern (wildcard to avoid circular dependencies)
-  expect(resourceValue).toBe('*');
+  // Validate that the resource is properly constructed table ARN
+  expect(resourceValue).toMatch(/^arn:aws:dynamodb:\$\{AWS::Region\}:\$\{AWS::AccountId\}:table\/\$\{.+\}$/);
 });
 
 test('Warm Throughput test on-demand', () => {
