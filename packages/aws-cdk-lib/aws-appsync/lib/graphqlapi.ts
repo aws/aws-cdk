@@ -283,7 +283,7 @@ export interface EnhancedMetricsConfig {
   /**
    * Controls how operation metrics will be emitted to CloudWatch.
    *
-   * @default - disabled
+   * @default disabled
    */
   readonly operationLevelMetricsEnabled?: boolean;
   /**
