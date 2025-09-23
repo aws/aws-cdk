@@ -215,10 +215,10 @@ export abstract class ServerlessCacheBase extends Resource implements IServerles
    * Metric for cache miss count
    *
    * @param props Additional properties which will be merged with the default metric
-   * @default Average over 5 minutes
+   * @default Sum over 5 minutes
    */
   public metricCacheMissCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('CacheMisses', props);
+    return this.metric('CacheMisses', { statistic: 'Sum', ...props });
   }
   /**
    * Metric for cache hit rate
@@ -233,10 +233,10 @@ export abstract class ServerlessCacheBase extends Resource implements IServerles
    * Metric for data stored in the cache
    *
    * @param props Additional properties which will be merged with the default metric
-   * @default Average over 5 minutes
+   * @default Maximum over 5 minutes
    */
   public metricDataStored(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('BytesUsedForCache', props);
+    return this.metric('BytesUsedForCache', { statistic: 'Maximum', ...props });
   }
   /**
    * Metric for ECPUs consumed
@@ -251,28 +251,28 @@ export abstract class ServerlessCacheBase extends Resource implements IServerles
    * Metric for network bytes in
    *
    * @param props Additional properties which will be merged with the default metric
-   * @default Average over 5 minutes
+   * @default Sum over 5 minutes
    */
   public metricNetworkBytesIn(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('NetworkBytesIn', props);
+    return this.metric('NetworkBytesIn', { statistic: 'Sum', ...props });
   }
   /**
    * Metric for network bytes out
    *
    * @param props Additional properties which will be merged with the default metric
-   * @default Average over 5 minutes
+   * @default Sum over 5 minutes
    */
   public metricNetworkBytesOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('NetworkBytesOut', props);
+    return this.metric('NetworkBytesOut', { statistic: 'Sum', ...props });
   }
   /**
    * Metric for active connections
    *
    * @param props Additional properties which will be merged with the default metric
-   * @default Average over 5 minutes
+   * @default Maximum over 5 minutes
    */
   public metricActiveConnections(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('CurrConnections', props);
+    return this.metric('CurrConnections', { statistic: 'Maximum', ...props });
   }
   /**
    * Metric for write request latency
