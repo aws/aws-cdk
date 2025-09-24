@@ -433,6 +433,90 @@
     "TTL": "1800",
     "Type": "TXT"
    }
+  },
+  "SVCBAliasMode14980106": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "PublicZone2E1C4E34"
+    },
+    "Name": "_8080._svcb-alias.cdk.test.",
+    "ResourceRecords": [
+     "0 service.example.com"
+    ],
+    "TTL": "1800",
+    "Type": "SVCB"
+   }
+  },
+  "SVCBServiceModeA5C8E204": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "PublicZone2E1C4E34"
+    },
+    "Name": "_8080._svcb-service.cdk.test.",
+    "ResourceRecords": [
+     "1 . alpn=\"h3,h2\""
+    ],
+    "TTL": "1800",
+    "Type": "SVCB"
+   }
+  },
+  "SVCBServiceModeFullParams290CA5CF": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "PublicZone2E1C4E34"
+    },
+    "Name": "_8080._svcb-service-fullparams.cdk.test.",
+    "ResourceRecords": [
+     "2 service.example.com mandatory=\"alpn\" alpn=\"h3,h2,http1.1,h3-29\" no-default-alpn port=8443 ipv4hint=\"127.0.0.1\" ipv6hint=\"::1\""
+    ],
+    "TTL": "1800",
+    "Type": "SVCB"
+   }
+  },
+  "HTTPSAliasMode30A55431": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "PublicZone2E1C4E34"
+    },
+    "Name": "https-alias.cdk.test.",
+    "ResourceRecords": [
+     "0 service.example.com"
+    ],
+    "TTL": "1800",
+    "Type": "HTTPS"
+   }
+  },
+  "HTTPSServiceModeAAE2849D": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "PublicZone2E1C4E34"
+    },
+    "Name": "https-service.cdk.test.",
+    "ResourceRecords": [
+     "1 . alpn=\"h3,h2\""
+    ],
+    "TTL": "1800",
+    "Type": "HTTPS"
+   }
+  },
+  "HTTPSServiceModeFullParamsDAC39E4A": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "PublicZone2E1C4E34"
+    },
+    "Name": "https-service-fullparams.cdk.test.",
+    "ResourceRecords": [
+     "2 service.example.com mandatory=\"alpn\" alpn=\"h3,h2,http1.1,h3-29\" no-default-alpn port=8443 ipv4hint=\"127.0.0.1\" ipv6hint=\"::1\""
+    ],
+    "TTL": "1800",
+    "Type": "HTTPS"
+   }
   }
  },
  "Outputs": {
