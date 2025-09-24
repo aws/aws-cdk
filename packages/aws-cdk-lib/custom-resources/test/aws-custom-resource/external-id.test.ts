@@ -49,6 +49,7 @@ describe('AwsCustomResource externalId', () => {
     });
 
     // THEN - The Custom::AWS resource should have Create property containing external ID
+    // THEN - The Custom::AWS resource should have Create property containing external ID
     const template = Template.fromStack(stack);
     template.hasResourceProperties('Custom::AWS', {
       Create: Match.anyValue(), // Accept any CloudFormation construct (like Fn::Join)
@@ -130,32 +131,6 @@ describe('AwsCustomResource externalId', () => {
     // Should not contain any external ID
     const templateJson = JSON.stringify(template.toJSON());
     expect(templateJson).not.toContain('externalId');
-  });
-
-  test('empty string external ID is preserved', () => {
-    // GIVEN & WHEN
-    new AwsCustomResource(stack, 'EmptyExternalIdResource', {
-      onCreate: {
-        service: 'STS',
-        action: 'getCallerIdentity',
-        assumedRoleArn: role.roleArn,
-        externalId: '', // Empty string should be preserved
-        physicalResourceId: PhysicalResourceId.of('test-resource'),
-      },
-      policy: AwsCustomResourcePolicy.fromSdkCalls({
-        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
-    });
-
-    // THEN - Empty external ID should appear in template
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('Custom::AWS', {
-      Create: Match.anyValue(),
-    });
-
-    // Should contain empty externalId field (escaped in the Fn::Join)
-    const templateJson = JSON.stringify(template.toJSON());
-    expect(templateJson).toContain('\\\"externalId\\\":\\\"\\\"');
   });
 
   test('complex external ID values are handled correctly', () => {

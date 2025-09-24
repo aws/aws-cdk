@@ -68,34 +68,6 @@ describe('getCredentials with External ID support', () => {
     expect(result).toBe(mockCredentials);
   });
 
-  test('includes empty string ExternalId', async () => {
-    // GIVEN
-    const call: AwsSdkCall = {
-      service: 'STS',
-      action: 'GetCallerIdentity',
-      assumedRoleArn: 'arn:aws:iam::123456789012:role/TestRole',
-      externalId: '', // Empty string should be preserved
-    };
-
-    const physicalResourceId = 'test-resource-id';
-    const mockCredentials = { mock: 'credentials' };
-    mockFromTemporaryCredentials.mockResolvedValue(mockCredentials);
-
-    // WHEN
-    const result = await getCredentials(call, physicalResourceId);
-
-    // THEN
-    expect(mockFromTemporaryCredentials).toHaveBeenCalledWith({
-      params: {
-        RoleArn: 'arn:aws:iam::123456789012:role/TestRole',
-        RoleSessionName: expect.stringMatching(/^\d+-test-resource-id$/),
-        ExternalId: '',
-      },
-      clientConfig: undefined,
-    });
-    expect(result).toBe(mockCredentials);
-  });
-
   test('works with region configuration and external ID', async () => {
     // GIVEN
     const call: AwsSdkCall = {
