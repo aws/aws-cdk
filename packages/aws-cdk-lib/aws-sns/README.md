@@ -114,6 +114,12 @@ const topic = new sns.Topic(this, 'MyTopic', {
 Here's a comprehensive example showing different types of data identifiers:
 
 ```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const logGroup: logs.LogGroup;
+declare const bucket: s3.Bucket;
+
 const topic = new sns.Topic(this, 'ComprehensiveTopic', {
   dataProtectionPolicy: new sns.DataProtectionPolicy({
     name: 'ComprehensiveDataProtectionPolicy',
