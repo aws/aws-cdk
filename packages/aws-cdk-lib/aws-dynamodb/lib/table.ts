@@ -1749,9 +1749,44 @@ export class Table extends TableBase {
     const onEventHandlerPolicy = new SourceTableAttachedPolicy(this, provider.onEventHandler.role!);
     const isCompleteHandlerPolicy = new SourceTableAttachedPolicy(this, provider.isCompleteHandler.role!);
 
-    // Permissions in the source region
-    this.grant(onEventHandlerPolicy, 'dynamodb:*');
-    this.grant(isCompleteHandlerPolicy, 'dynamodb:DescribeTable');
+    // IMPORTANT: Add permissions directly to Lambda role policies instead of using this.grant()
+    //
+    // WHY NOT this.grant()?
+    // - this.grant() uses Grant.addToPrincipalOrResource() which has decision logic
+    // - For cross-stack scenarios (nested stack Lambda roles), it falls back to resource policy
+    // - Resource policy tries to reference this.tableArn, creating circular dependency:
+    //   Table → ResourcePolicy → Table ARN → Table (CIRCULAR!)
+    // - This causes CloudFormation deployment to fail
+    //
+    // WHY DIRECT POLICY STATEMENTS?
+    // - Bypasses Grant decision logic entirely
+    // - Adds permissions directly to Lambda role policies (no resource policy)
+    // - Avoids circular dependency while ensuring Lambda functions have required permissions
+    // - Separates internal permission management from user-facing addToResourcePolicy()
+
+    (onEventHandlerPolicy.policy as iam.ManagedPolicy).addStatements(new iam.PolicyStatement({
+      actions: ['dynamodb:*'],
+      resources: [
+        this.tableArn,
+        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        ...this.regionalArns,
+        ...this.regionalArns.map(arn => Lazy.string({
+          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
+        })),
+      ],
+    }));
+
+    (isCompleteHandlerPolicy.policy as iam.ManagedPolicy).addStatements(new iam.PolicyStatement({
+      actions: ['dynamodb:DescribeTable'],
+      resources: [
+        this.tableArn,
+        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        ...this.regionalArns,
+        ...this.regionalArns.map(arn => Lazy.string({
+          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
+        })),
+      ],
+    }));
 
     let previousRegion: CustomResource | undefined;
     let previousRegionCondition: CfnCondition | undefined;
