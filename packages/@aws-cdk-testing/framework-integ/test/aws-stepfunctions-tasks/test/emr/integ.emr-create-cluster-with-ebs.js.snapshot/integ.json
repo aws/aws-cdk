@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "emr-create-cluster-ebs-integ/DefaultTest": {
+      "stacks": [
+        "emr-create-cluster-ebs"
+      ],
+      "assertionStack": "emr-create-cluster-ebs-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "emrcreateclusterebsintegDefaultTestDeployAssert7DC4C06C"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
