@@ -27,9 +27,10 @@
  * │    └── Validates multiple custom identifiers                                  │
  * │                                                                                 │
  * │ 4. Comprehensive Policy (All Features)                                         │
- * │    ├── Multiple managed identifiers (Email, CC, SSN, Phone, Address)          │
+ * │    ├── Multiple managed identifiers (Email, CC, Address)                      │
+ * │    ├── Factory method identifiers (socialSecurityNumber, phoneNumber)        │
  * │    ├── Multiple custom identifiers (Employee ID, Project Code)                │
- * │    └── Tests maximum complexity scenario                                       │
+ * │    └── Tests maximum complexity scenario with all identifier types            │
  * │                                                                                 │
  * │ 5. Audit Destinations Policy                                                   │
  * │    ├── CloudWatch Logs audit destination                                       │
@@ -67,12 +68,14 @@
  *
  * What This Test Validates:
  * • ✅ CDK constructs generate correct CloudFormation templates
+ * • ✅ Factory method API provides type-safe, validated data identifiers
  * • ✅ Managed data identifiers are converted to proper ARN format
  * • ✅ Custom data identifiers are included in Configuration section
  * • ✅ Policy statements have correct structure (audit + redaction)
  * • ✅ Audit destinations are properly configured when specified
  * • ✅ Integration with other AWS resources (CloudWatch Logs, S3)
  * • ✅ No regressions in standard SNS topic functionality
+ * • ✅ Factory methods (driversLicense, phoneNumber, etc.) work correctly
  */
 
 import { App, Stack, StackProps } from 'aws-cdk-lib';
