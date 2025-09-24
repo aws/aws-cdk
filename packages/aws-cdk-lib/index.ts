@@ -262,6 +262,7 @@ export * as aws_ses_actions from './aws-ses-actions';
 export * as aws_shield from './aws-shield';
 export * as aws_signer from './aws-signer';
 export * as aws_simspaceweaver from './aws-simspaceweaver';
+export * as aws_smsvoice from './aws-smsvoice';
 export * as aws_sns from './aws-sns';
 export * as aws_sns_subscriptions from './aws-sns-subscriptions';
 export * as aws_sqs from './aws-sqs';
