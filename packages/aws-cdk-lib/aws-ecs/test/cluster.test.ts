@@ -2933,7 +2933,6 @@ describe('cluster', () => {
         infrastructureRole,
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
-        capacityOptionType: ecs.CapacityOptionType.SPOT,
       });
 
       // THEN
@@ -2958,7 +2957,6 @@ describe('cluster', () => {
                 { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
               ],
             },
-            CapacityOptionType: 'SPOT',
           },
         },
       });

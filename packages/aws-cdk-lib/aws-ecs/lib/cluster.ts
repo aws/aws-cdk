@@ -1732,9 +1732,6 @@ export class ManagedInstancesCapacityProvider extends Construct {
         ...(props.monitoring && {
           monitoring: props.monitoring,
         }),
-        ...(props.capacityOptionType && {
-          capacityOptionType: props.capacityOptionType,
-        }),
         ...(props.instanceRequirements && {
           instanceRequirements: renderInstanceRequirements(props.instanceRequirements),
         }),

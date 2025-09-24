@@ -97,13 +97,6 @@
                 },
                 "InstanceRequirements": {
                     "$ref": "#/definitions/InstanceRequirementsRequest"
-                },
-                "CapacityOptionType": {
-                    "type": "string",
-                    "enum": [
-                        "ON_DEMAND",
-                        "SPOT"
-                    ]
                 }
             },
             "additionalProperties": false,
@@ -111,7 +104,6 @@
                 "Ec2InstanceProfileArn",
                 "NetworkConfiguration"
             ]
-
         },
         "ManagedInstancesNetworkConfiguration": {
             "type": "object",
@@ -129,6 +121,9 @@
                     }
                 }
             },
+            "required": [
+                "Subnets"
+            ],
             "additionalProperties": false
         },
         "ManagedInstancesStorageConfiguration": {
@@ -138,6 +133,9 @@
                     "type": "integer"
                 }
             },
+            "required": [
+                "StorageSizeGiB"
+            ],
             "additionalProperties": false
         },
         "ManagedInstancesMonitoringOptions": {
@@ -331,7 +329,10 @@
                 "Max": {
                     "type": "integer"
                 }
-            }
+            },
+            "required": [
+                "Min"
+            ]
         },
         "MemoryMiBRequest": {
             "type": "object",
@@ -343,7 +344,10 @@
                 "Max": {
                     "type": "integer"
                 }
-            }
+            },
+            "required": [
+                "Min"
+            ]
         },
         "MemoryGiBPerVCpuRequest": {
             "type": "object",
@@ -444,23 +448,8 @@
             "additionalProperties": false
         }
     },
-    "nonPublicProperties": ["/properties/ECSEndpoint", "/properties/ManagedInstancesProvider", "/properties/ClusterName"],
-    "nonPublicDefinitions": [
-        "/definitions/ManagedInstancesProvider",
-        "/definitions/InstanceLaunchTemplate",
-        "/definitions/ManagedInstancesStorageConfiguration",
-        "/definitions/ManagedInstancesMonitoringOptions",
-        "/definitions/ManagedInstancesNetworkConfiguration",
-        "/definitions/InstanceRequirementsRequest",
-        "/definitions/VCpuCountRangeRequest",
-        "/definitions/MemoryMiBRequest",
-        "/definitions/MemoryGiBPerVCpuRequest",
-        "/definitions/NetworkBandwidthGbpsRequest",
-        "/definitions/NetworkInterfaceCountRequest",
-        "/definitions/TotalLocalStorageGBRequest",
-        "/definitions/BaselineEbsBandwidthMbpsRequest",
-        "/definitions/AcceleratorCountRequest",
-        "/definitions/AcceleratorTotalMemoryMiBRequest"
+    "nonPublicProperties": [
+        "/properties/ECSEndpoint"
     ],
     "properties": {
         "AutoScalingGroupProvider": {
@@ -492,8 +481,7 @@
     "createOnlyProperties": [
         "/properties/AutoScalingGroupProvider/AutoScalingGroupArn",
         "/properties/Name",
-        "/properties/ClusterName",
-        "/properties/ManagedInstancesProvider/InstanceLaunchTemplate/CapacityOptionType"
+        "/properties/ClusterName"
     ],
     "propertyTransform": {
         "/properties/AutoScalingGroupProvider/AutoScalingGroupArn": "$split(AutoScalingGroupProvider.AutoScalingGroupArn, \"autoScalingGroupName\/\")[-1] $OR $split(AutoScalingGroupArn, \"autoScalingGroupName\/\")[-1]"
@@ -504,7 +492,11 @@
         "tagUpdatable": true,
         "cloudFormationSystemTags": true,
         "tagProperty": "/properties/Tags",
-        "permissions": ["ecs:TagResource", "ecs:UntagResource", "ecs:ListTagsForResource"]
+        "permissions": [
+            "ecs:TagResource",
+            "ecs:UntagResource",
+            "ecs:ListTagsForResource"
+        ]
     },
     "handlers": {
         "create": {
@@ -512,13 +504,17 @@
                 "autoscaling:CreateOrUpdateTags",
                 "ecs:CreateCapacityProvider",
                 "ecs:DescribeCapacityProviders",
-                "ecs:TagResource"
+                "ecs:TagResource",
+                "ecs:PutClusterCapacityProviders",
+                "iam:CreateServiceLinkedRole",
+                "iam:PassRole"
             ]
         },
         "delete": {
             "permissions": [
                 "ecs:DescribeCapacityProviders",
-                "ecs:DeleteCapacityProvider"
+                "ecs:DeleteCapacityProvider",
+                "ecs:PutClusterCapacityProviders"
             ]
         },
         "read": {
@@ -531,8 +527,10 @@
                 "ecs:UpdateCapacityProvider",
                 "ecs:DescribeCapacityProviders",
                 "ecs:ListTagsForResource",
+                "ecs:PutClusterCapacityProviders",
                 "ecs:TagResource",
-                "ecs:UntagResource"
+                "ecs:UntagResource",
+                "iam:PassRole"
             ]
         },
         "list": {
