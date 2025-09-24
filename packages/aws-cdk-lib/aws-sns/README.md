@@ -45,9 +45,9 @@ const topic = new sns.Topic(this, 'MyTopic', {
     name: 'MyDataProtectionPolicy',
     description: 'Policy to protect sensitive data',
     identifiers: [
-      sns.DataIdentifier.CREDITCARDNUMBER,
-      sns.DataIdentifier.EMAILADDRESS,
-      sns.DataIdentifier.PHONENUMBER_US,
+      sns.DataIdentifier.CREDIT_CARD_NUMBER,
+      sns.DataIdentifier.EMAIL_ADDRESS,
+      sns.DataIdentifier.phoneNumber('US'),
       // Add custom data identifiers
       new sns.CustomDataIdentifier('MyCustomDataIdentifier', 'CustomRegex-\\d{3}-\\d{3}-\\d{4}'),
     ],
@@ -57,22 +57,31 @@ const topic = new sns.Topic(this, 'MyTopic', {
 
 ### Available Data Identifiers
 
-The CDK provides over 90 managed data identifiers for common sensitive data types:
+The CDK provides access to all AWS managed data identifiers through static properties for common types and factory methods for regional identifiers:
 
 ```ts
-// Common identifiers
-sns.DataIdentifier.EMAILADDRESS
-sns.DataIdentifier.CREDITCARDNUMBER
-sns.DataIdentifier.SSN_US
-sns.DataIdentifier.PHONENUMBER_US
+// Common non-regional identifiers
+sns.DataIdentifier.EMAIL_ADDRESS
+sns.DataIdentifier.CREDIT_CARD_NUMBER
 sns.DataIdentifier.ADDRESS
-sns.DataIdentifier.AWSSECRETKEY
+sns.DataIdentifier.AWS_SECRET_KEY
+sns.DataIdentifier.IP_ADDRESS
+sns.DataIdentifier.NAME
 
-// International identifiers
-sns.DataIdentifier.DRIVERSLICENSE_GB
-sns.DataIdentifier.PASSPORTNUMBER_CA
-sns.DataIdentifier.BANKACCOUNTNUMBER_DE
-// ... and many more
+// Regional identifiers using factory methods
+sns.DataIdentifier.driversLicense('US')
+sns.DataIdentifier.driversLicense('GB')
+sns.DataIdentifier.passportNumber('CA')
+sns.DataIdentifier.phoneNumber('DE')
+sns.DataIdentifier.bankAccountNumber('FR')
+sns.DataIdentifier.socialSecurityNumber('US')
+sns.DataIdentifier.taxId('GB')
+sns.DataIdentifier.nationalId('DE')
+
+// Any AWS managed identifier using the managed() method
+sns.DataIdentifier.managed('NhsNumber-GB')
+sns.DataIdentifier.managed('ElectoralRollNumber-GB')
+sns.DataIdentifier.managed('MedicareBeneficiaryNumber-US')
 
 // Custom identifiers with regex patterns
 new sns.CustomDataIdentifier('EmployeeId', 'EMP-[0-9]{6}')
@@ -92,10 +101,50 @@ declare const bucket: s3.Bucket;
 
 const topic = new sns.Topic(this, 'MyTopic', {
   dataProtectionPolicy: new sns.DataProtectionPolicy({
-    identifiers: [sns.DataIdentifier.CREDITCARDNUMBER],
+    identifiers: [sns.DataIdentifier.CREDIT_CARD_NUMBER],
     logGroupAuditDestination: logGroup,
     s3BucketAuditDestination: bucket,
     deliveryStreamNameAuditDestination: 'my-delivery-stream',
+  }),
+});
+```
+
+### Comprehensive Example
+
+Here's a comprehensive example showing different types of data identifiers:
+
+```ts
+const topic = new sns.Topic(this, 'ComprehensiveTopic', {
+  dataProtectionPolicy: new sns.DataProtectionPolicy({
+    name: 'ComprehensiveDataProtectionPolicy',
+    description: 'Policy protecting multiple data types',
+    identifiers: [
+      // Common non-regional identifiers
+      sns.DataIdentifier.EMAIL_ADDRESS,
+      sns.DataIdentifier.CREDIT_CARD_NUMBER,
+      sns.DataIdentifier.ADDRESS,
+      sns.DataIdentifier.AWS_SECRET_KEY,
+      
+      // Regional identifiers using factory methods
+      sns.DataIdentifier.driversLicense('US'),
+      sns.DataIdentifier.driversLicense('GB'),
+      sns.DataIdentifier.phoneNumber('US'),
+      sns.DataIdentifier.phoneNumber('DE'),
+      sns.DataIdentifier.bankAccountNumber('FR'),
+      sns.DataIdentifier.socialSecurityNumber('US'),
+      sns.DataIdentifier.taxId('GB'),
+      sns.DataIdentifier.passportNumber('CA'),
+      
+      // Any AWS managed identifier
+      sns.DataIdentifier.managed('NhsNumber-GB'),
+      sns.DataIdentifier.managed('ElectoralRollNumber-GB'),
+      
+      // Custom identifiers
+      new sns.CustomDataIdentifier('EmployeeId', 'EMP-[0-9]{6}'),
+      new sns.CustomDataIdentifier('ProjectCode', 'PROJ-[A-Z]{2}-[0-9]{4}'),
+    ],
+    logGroupAuditDestination: logGroup,
+    s3BucketAuditDestination: bucket,
   }),
 });
 ```

@@ -953,7 +953,7 @@ describe('Topic', () => {
     test('specify dataProtectionPolicy', () => {
       const stack = new cdk.Stack();
       const dataProtectionPolicy = new sns.DataProtectionPolicy({
-        identifiers: [sns.DataIdentifier.EMAILADDRESS, sns.DataIdentifier.CREDITCARDNUMBER],
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS, sns.DataIdentifier.CREDIT_CARD_NUMBER],
       });
 
       new sns.Topic(stack, 'MyTopic', {
@@ -1008,7 +1008,7 @@ describe('Topic', () => {
     ])('DataProtectionPolicy with %s', (_, props, expectedName, expectedDescription) => {
       const stack = new cdk.Stack();
       const dataProtectionPolicy = new sns.DataProtectionPolicy({
-        identifiers: [sns.DataIdentifier.EMAILADDRESS],
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
         ...props,
       });
 
@@ -1029,7 +1029,7 @@ describe('Topic', () => {
       const stack = new cdk.Stack();
       const dataProtectionPolicy = new sns.DataProtectionPolicy({
         identifiers: [
-          sns.DataIdentifier.EMAILADDRESS,
+          sns.DataIdentifier.EMAIL_ADDRESS,
           new sns.CustomDataIdentifier('MyCustomId', '[0-9]{3}-[0-9]{2}-[0-9]{4}'),
         ],
       });
@@ -1071,9 +1071,9 @@ describe('Topic', () => {
     });
 
     test.each([
-      ['DataIdentifier', sns.DataIdentifier.EMAILADDRESS, 'EmailAddress'],
-      ['DataIdentifier with different type', sns.DataIdentifier.CREDITCARDNUMBER, 'CreditCardNumber'],
-      ['DataIdentifier with US suffix', sns.DataIdentifier.SSN_US, 'Ssn-US'],
+      ['DataIdentifier', sns.DataIdentifier.EMAIL_ADDRESS, 'EmailAddress'],
+      ['DataIdentifier with different type', sns.DataIdentifier.CREDIT_CARD_NUMBER, 'CreditCardNumber'],
+      ['DataIdentifier with factory method', sns.DataIdentifier.socialSecurityNumber('US'), 'Ssn-US'],
     ])('%s toString method', (_, identifier, expected) => {
       expect(identifier.toString()).toBe(expected);
     });
@@ -1122,7 +1122,7 @@ describe('Topic', () => {
     test.each([
       [
         'managed identifiers only',
-        [sns.DataIdentifier.EMAILADDRESS, sns.DataIdentifier.CREDITCARDNUMBER],
+        [sns.DataIdentifier.EMAIL_ADDRESS, sns.DataIdentifier.CREDIT_CARD_NUMBER],
         ['arn:aws:dataprotection::aws:data-identifier/EmailAddress', 'arn:aws:dataprotection::aws:data-identifier/CreditCardNumber'],
         undefined,
       ],
@@ -1135,15 +1135,15 @@ describe('Topic', () => {
       [
         'mixed identifiers',
         [
-          sns.DataIdentifier.EMAILADDRESS,
+          sns.DataIdentifier.EMAIL_ADDRESS,
           new sns.CustomDataIdentifier('CustomId', 'CUSTOM-[A-Z]{3}'),
         ],
         ['arn:aws:dataprotection::aws:data-identifier/EmailAddress', 'CustomId'],
         [{ 'Name': 'CustomId', 'Regex': 'CUSTOM-[A-Z]{3}' }],
       ],
       [
-        'multiple US identifiers',
-        [sns.DataIdentifier.SSN_US, sns.DataIdentifier.PHONENUMBER_US, sns.DataIdentifier.DRIVERSLICENSE_US],
+        'multiple factory method identifiers',
+        [sns.DataIdentifier.socialSecurityNumber('US'), sns.DataIdentifier.phoneNumber('US'), sns.DataIdentifier.driversLicense('US')],
         ['arn:aws:dataprotection::aws:data-identifier/Ssn-US', 'arn:aws:dataprotection::aws:data-identifier/PhoneNumber-US', 'arn:aws:dataprotection::aws:data-identifier/DriversLicense-US'],
         undefined,
       ],
@@ -1186,14 +1186,14 @@ describe('Topic', () => {
     test('DataProtectionPolicy with maximum identifiers', () => {
       const stack = new cdk.Stack();
       const identifiers = [
-        sns.DataIdentifier.EMAILADDRESS,
-        sns.DataIdentifier.CREDITCARDNUMBER,
-        sns.DataIdentifier.SSN_US,
-        sns.DataIdentifier.PHONENUMBER_US,
+        sns.DataIdentifier.EMAIL_ADDRESS,
+        sns.DataIdentifier.CREDIT_CARD_NUMBER,
+        sns.DataIdentifier.socialSecurityNumber('US'),
+        sns.DataIdentifier.phoneNumber('US'),
         sns.DataIdentifier.ADDRESS,
-        sns.DataIdentifier.AWSSECRETKEY,
-        sns.DataIdentifier.BANKACCOUNTNUMBER_US,
-        sns.DataIdentifier.DRIVERSLICENSE_US,
+        sns.DataIdentifier.AWS_SECRET_KEY,
+        sns.DataIdentifier.bankAccountNumber('US'),
+        sns.DataIdentifier.driversLicense('US'),
         new sns.CustomDataIdentifier('Custom1', 'regex1'),
         new sns.CustomDataIdentifier('Custom2', 'regex2'),
       ];
@@ -1289,7 +1289,7 @@ describe('Topic', () => {
 
     test('DataProtectionPolicy static type check method', () => {
       const dataProtectionPolicy = new sns.DataProtectionPolicy({
-        identifiers: [sns.DataIdentifier.EMAILADDRESS],
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
       });
 
       expect(sns.DataProtectionPolicy.isDataProtectionPolicy(dataProtectionPolicy)).toBe(true);
@@ -1303,7 +1303,7 @@ describe('Topic', () => {
       const dataProtectionPolicy = new sns.DataProtectionPolicy({
         name: 'TestPolicy',
         description: 'Test description',
-        identifiers: [sns.DataIdentifier.EMAILADDRESS],
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
       });
 
       new sns.Topic(stack, 'MyTopic', {
@@ -1338,7 +1338,7 @@ describe('Topic', () => {
     ])('DataProtectionPolicy with %s', (_, fifo, expectedProps) => {
       const stack = new cdk.Stack();
       const dataProtectionPolicy = new sns.DataProtectionPolicy({
-        identifiers: [sns.DataIdentifier.EMAILADDRESS],
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
       });
 
       new sns.Topic(stack, 'MyTopic', {
@@ -1362,7 +1362,7 @@ describe('Topic', () => {
       });
 
       const dataProtectionPolicy = new sns.DataProtectionPolicy({
-        identifiers: [sns.DataIdentifier.EMAILADDRESS],
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
         logGroupAuditDestination: logGroup,
       });
 
@@ -1388,7 +1388,7 @@ describe('Topic', () => {
       });
 
       const dataProtectionPolicy = new sns.DataProtectionPolicy({
-        identifiers: [sns.DataIdentifier.CREDITCARDNUMBER],
+        identifiers: [sns.DataIdentifier.CREDIT_CARD_NUMBER],
         s3BucketAuditDestination: bucket,
       });
 
@@ -1412,7 +1412,7 @@ describe('Topic', () => {
       const deliveryStreamName = 'audit-delivery-stream';
 
       const dataProtectionPolicy = new sns.DataProtectionPolicy({
-        identifiers: [sns.DataIdentifier.SSN_US],
+        identifiers: [sns.DataIdentifier.socialSecurityNumber('US')],
         deliveryStreamNameAuditDestination: deliveryStreamName,
       });
 
@@ -1442,7 +1442,7 @@ describe('Topic', () => {
       const deliveryStreamName = 'audit-delivery-stream';
 
       const dataProtectionPolicy = new sns.DataProtectionPolicy({
-        identifiers: [sns.DataIdentifier.EMAILADDRESS, sns.DataIdentifier.PHONENUMBER_US],
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS, sns.DataIdentifier.phoneNumber('US')],
         logGroupAuditDestination: logGroup,
         s3BucketAuditDestination: bucket,
         deliveryStreamNameAuditDestination: deliveryStreamName,
@@ -1473,7 +1473,7 @@ describe('Topic', () => {
     test('DataProtectionPolicy with no audit destinations has empty FindingsDestination', () => {
       const stack = new cdk.Stack();
       const dataProtectionPolicy = new sns.DataProtectionPolicy({
-        identifiers: [sns.DataIdentifier.EMAILADDRESS],
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
       });
 
       new sns.Topic(stack, 'MyTopic', {
@@ -1498,7 +1498,7 @@ describe('Topic', () => {
       });
 
       const dataProtectionPolicy = new sns.DataProtectionPolicy({
-        identifiers: [sns.DataIdentifier.EMAILADDRESS],
+        identifiers: [sns.DataIdentifier.EMAIL_ADDRESS],
         logGroupAuditDestination: invalidLogGroup,
       });
 
@@ -1523,6 +1523,43 @@ describe('Topic', () => {
       expect(() => new sns.CustomDataIdentifier('ValidName', '   ')).toThrow('Custom data identifier regex cannot be empty');
     });
 
+    test('DataIdentifier factory methods validate country codes', () => {
+      // Test valid country codes
+      expect(sns.DataIdentifier.driversLicense('US').name).toBe('DriversLicense-US');
+      expect(sns.DataIdentifier.phoneNumber('GB').name).toBe('PhoneNumber-GB');
+      expect(sns.DataIdentifier.bankAccountNumber('DE').name).toBe('BankAccountNumber-DE');
+      expect(sns.DataIdentifier.socialSecurityNumber('US').name).toBe('Ssn-US');
+      expect(sns.DataIdentifier.taxId('FR').name).toBe('TaxId-FR');
+      expect(sns.DataIdentifier.nationalId('IT').name).toBe('NationalIdentificationNumber-IT');
+      expect(sns.DataIdentifier.passportNumber('CA').name).toBe('PassportNumber-CA');
+
+      // Test invalid country codes
+      expect(() => sns.DataIdentifier.driversLicense('XX')).toThrow('DriversLicense not supported for country: XX');
+      expect(() => sns.DataIdentifier.phoneNumber('XX')).toThrow('PhoneNumber not supported for country: XX');
+      expect(() => sns.DataIdentifier.bankAccountNumber('XX')).toThrow('BankAccountNumber not supported for country: XX');
+      expect(() => sns.DataIdentifier.socialSecurityNumber('XX')).toThrow('Social Security Number not supported for country: XX');
+      expect(() => sns.DataIdentifier.taxId('XX')).toThrow('TaxId not supported for country: XX');
+      expect(() => sns.DataIdentifier.nationalId('XX')).toThrow('NationalIdentificationNumber not supported for country: XX');
+      expect(() => sns.DataIdentifier.passportNumber('XX')).toThrow('PassportNumber not supported for country: XX');
+
+      // Test case insensitive
+      expect(sns.DataIdentifier.driversLicense('us').name).toBe('DriversLicense-US');
+      expect(sns.DataIdentifier.phoneNumber('gb').name).toBe('PhoneNumber-GB');
+    });
+
+    test('DataIdentifier managed method validates input', () => {
+      // Test valid managed identifiers
+      expect(sns.DataIdentifier.managed('NhsNumber-GB').name).toBe('NhsNumber-GB');
+      expect(sns.DataIdentifier.managed('ElectoralRollNumber-GB').name).toBe('ElectoralRollNumber-GB');
+
+      // Test empty identifier name
+      expect(() => sns.DataIdentifier.managed('')).toThrow('AWS managed data identifier name cannot be empty');
+      expect(() => sns.DataIdentifier.managed('   ')).toThrow('AWS managed data identifier name cannot be empty');
+
+      // Test whitespace trimming
+      expect(sns.DataIdentifier.managed('  NhsNumber-GB  ').name).toBe('NhsNumber-GB');
+    });
+
     test('DataProtectionPolicy comprehensive integration test', () => {
       const stack = new cdk.Stack();
       const logGroup = new logs.LogGroup(stack, 'AuditLogGroup', {
@@ -1535,10 +1572,10 @@ describe('Topic', () => {
         description: 'Integration test with all features',
         identifiers: [
           // Managed identifiers
-          sns.DataIdentifier.EMAILADDRESS,
-          sns.DataIdentifier.CREDITCARDNUMBER,
-          sns.DataIdentifier.SSN_US,
-          sns.DataIdentifier.PHONENUMBER_US,
+          sns.DataIdentifier.EMAIL_ADDRESS,
+          sns.DataIdentifier.CREDIT_CARD_NUMBER,
+          sns.DataIdentifier.socialSecurityNumber('US'),
+          sns.DataIdentifier.phoneNumber('US'),
           // Custom identifiers
           new sns.CustomDataIdentifier('EmployeeId', 'EMP-[0-9]{6}'),
           new sns.CustomDataIdentifier('ProjectCode', 'PROJ-[A-Z]{3}-[0-9]{4}'),

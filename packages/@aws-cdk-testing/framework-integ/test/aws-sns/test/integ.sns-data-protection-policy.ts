@@ -87,7 +87,7 @@ class SNSDataProtectionPolicyInteg extends Stack {
 
     // Topic with basic DataProtectionPolicy
     const basicDataProtectionPolicy = new DataProtectionPolicy({
-      identifiers: [DataIdentifier.EMAILADDRESS, DataIdentifier.CREDITCARDNUMBER],
+      identifiers: [DataIdentifier.EMAIL_ADDRESS, DataIdentifier.CREDIT_CARD_NUMBER],
     });
 
     new Topic(this, 'TopicWithBasicDataProtectionPolicy', {
@@ -101,7 +101,7 @@ class SNSDataProtectionPolicyInteg extends Stack {
       name: 'CustomDataProtectionPolicy',
       description: 'Custom data protection policy for integration test',
       identifiers: [
-        DataIdentifier.EMAILADDRESS,
+        DataIdentifier.EMAIL_ADDRESS,
         new CustomDataIdentifier('SSN', '[0-9]{3}-[0-9]{2}-[0-9]{4}'),
       ],
     });
@@ -133,10 +133,10 @@ class SNSDataProtectionPolicyInteg extends Stack {
       name: 'ComprehensiveDataProtectionPolicy',
       description: 'Comprehensive policy with multiple identifier types',
       identifiers: [
-        DataIdentifier.EMAILADDRESS,
-        DataIdentifier.CREDITCARDNUMBER,
-        DataIdentifier.SSN_US,
-        DataIdentifier.PHONENUMBER_US,
+        DataIdentifier.EMAIL_ADDRESS,
+        DataIdentifier.CREDIT_CARD_NUMBER,
+        DataIdentifier.socialSecurityNumber('US'),
+        DataIdentifier.phoneNumber('US'),
         DataIdentifier.ADDRESS,
         new CustomDataIdentifier('EmployeeId', 'EMP-[0-9]{6}'),
         new CustomDataIdentifier('ProjectCode', 'PROJ-[A-Z]{2}-[0-9]{4}'),
@@ -160,8 +160,8 @@ class SNSDataProtectionPolicyInteg extends Stack {
       name: 'AuditDestinationPolicy',
       description: 'Policy with audit destinations for integration test',
       identifiers: [
-        DataIdentifier.EMAILADDRESS,
-        DataIdentifier.CREDITCARDNUMBER,
+        DataIdentifier.EMAIL_ADDRESS,
+        DataIdentifier.CREDIT_CARD_NUMBER,
       ],
       logGroupAuditDestination: auditLogGroup,
       s3BucketAuditDestination: auditBucket,
