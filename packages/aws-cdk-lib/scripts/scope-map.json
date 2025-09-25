@@ -164,6 +164,11 @@
       "namespace": "AWS::Bedrock"
     }
   ],
+  "aws-bedrockagentcore": [
+    {
+      "namespace": "AWS::BedrockAgentCore"
+    }
+  ],
   "aws-billing": [
     {
       "namespace": "AWS::Billing"
