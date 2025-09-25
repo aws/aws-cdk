@@ -96,7 +96,7 @@
      "NetworkMode": "PUBLIC"
     },
     "Tags": {
-     "Environment": "Production",
+     "Environment": "Dev",
      "Project": "AgentCore",
      "Team": "AI/ML"
     }
