@@ -23,7 +23,10 @@
        {
         "EventType": "viewer-request",
         "FunctionARN": {
-         "Ref": "Function76856677"
+         "Fn::GetAtt": [
+          "Function76856677",
+          "FunctionARN"
+         ]
         }
        }
       ],
