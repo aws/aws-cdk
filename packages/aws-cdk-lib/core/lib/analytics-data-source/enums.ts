@@ -1763,6 +1763,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "r8g",
     "memory8-graviton4-nvme-drive",
     "r8gd",
+    "memory8-graviton4-high-network-bandwidth",
+    "r8gn",
     "compute3",
     "c3",
     "compute4",
