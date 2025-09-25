@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "9f38a7105224a65f13a48bb19a0c0161edcbe6e681d58efccf40086a682538a9": {
+      "displayName": "aws-cdk-bedrock-agentcore-code-interpreter-1 Template",
+      "source": {
+        "path": "aws-cdk-bedrock-agentcore-code-interpreter-1.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4002edc3": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9f38a7105224a65f13a48bb19a0c0161edcbe6e681d58efccf40086a682538a9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

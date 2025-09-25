@@ -598,6 +598,33 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
     expect(resource.Properties).not.toHaveProperty('RecordingConfig');
   });
 
+  test('Should have recording disabled by default when not provided', () => {
+    app = new App();
+    stack = new Stack(app, 'TestStack');
+
+    const browser = new BrowserCustom(stack, 'TestBrowser', {
+      browserCustomName: 'test_browser',
+      networkConfiguration: {
+        networkMode: BrowserNetworkMode.PUBLIC,
+      },
+      // No recording config provided - should default to disabled
+    });
+
+    app.synth();
+    template = Template.fromStack(stack);
+
+    // Verify that recordingConfig is undefined (disabled by default)
+    expect(browser.recordingConfig).toBeUndefined();
+
+    // Verify that the CloudFormation template does not include RecordingConfig
+    const browserResource = template.findResources('AWS::BedrockAgentCore::BrowserCustom');
+    const resourceId = Object.keys(browserResource)[0];
+    const resource = browserResource[resourceId];
+
+    // Should not have RecordingConfig property when not provided
+    expect(resource.Properties).not.toHaveProperty('RecordingConfig');
+  });
+
   test('Should validate CloudFormation template structure', () => {
     app = new App();
     stack = new Stack(app, 'TestStack');
