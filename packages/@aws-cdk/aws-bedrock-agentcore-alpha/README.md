@@ -28,8 +28,12 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
 
 - [Browser Custom tool](#browser)
   - [Browser properties](#browser-properties)
+  - [Browser Network modes](#browser-network-modes)
+  - [Basic Browser Creation](#basic-browser-creation)
 - [Code Interpreter Custom tool](#code-interpreter)
   - [Code Interpreter properties](#code-interpreter-properties)
+  - [Code Interpreter Network Modes](#code-interpreter-network-modes)
+  - [Basic Code Interpreter Creation](#basic-code-interpreter-creation)
 
 ## Browser
 
@@ -39,17 +43,24 @@ Additional information about the browser tool can be found in the [official docu
 
 ### Browser Network modes
 
+The Browser construct supports the following network modes:
 
+1. **Public Network Mode** (`BrowserNetworkMode.PUBLIC`) - Default
+
+   - Allows internet access for web browsing and external API calls
+   - Suitable for scenarios where agents need to interact with publicly available websites
+   - Enables full web browsing capabilities
+   - VPC mode is not supported with this option
 
 ### Browser Properties
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `browserCustomName` | `string` | Yes | The name of the browser |
-| `description` | `string` | No | Optional description for the browser |
-| `networkConfiguration` | `BrowserNetworkConfiguration` | No | Network configuration for browser |
-| `recordingConfig` | `RecordingConfig` | No | Recording configuration for browser |
-| `executionRole` | `iam.IRole` | No | The IAM role that provides permissions for the browser to access AWS services |
+| `browserCustomName` | `string` | Yes | The name of the browser. Must start with a letter and can be up to 48 characters long. Pattern: `[a-zA-Z][a-zA-Z0-9_]{0,47}` |
+| `description` | `string` | No | Optional description for the browser. Can have up to 200 characters |
+| `networkConfiguration` | `BrowserNetworkConfiguration` | No | Network configuration for browser. Defaults to PUBLIC network mode |
+| `recordingConfig` | `RecordingConfig` | No | Recording configuration for browser. Defaults to no recording |
+| `executionRole` | `iam.IRole` | No | The IAM role that provides permissions for the browser to access AWS services. A new role will be created if not provided |
 | `tags` | `{ [key: string]: string }` | No | Tags to apply to the browser resource |
 
 ### Basic Browser Creation
@@ -211,10 +222,10 @@ The Code Interpreter construct supports two network modes:
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `codeInterpreterCustomName` | `string` | Yes | The name of the code interpreter |
-| `description` | `string` | No | Optional description for the code interpreter |
-| `executionRole` | `iam.IRole` | No | The IAM role that provides permissions for the code interpreter to access AWS services |
-| `networkConfiguration` | `CodeInterpreterNetworkConfiguration` | No | Network configuration for code interpreter |
+| `codeInterpreterCustomName` | `string` | Yes | The name of the code interpreter. Must start with a letter and can be up to 48 characters long. Pattern: `[a-zA-Z][a-zA-Z0-9_]{0,47}` |
+| `description` | `string` | No | Optional description for the code interpreter. Can have up to 200 characters |
+| `executionRole` | `iam.IRole` | No | The IAM role that provides permissions for the code interpreter to access AWS services. A new role will be created if not provided |
+| `networkConfiguration` | `CodeInterpreterNetworkConfiguration` | No | Network configuration for code interpreter. Defaults to PUBLIC network mode |
 | `tags` | `{ [key: string]: string }` | No | Tags to apply to the code interpreter resource |
 
 ### Basic Code Interpreter Creation
