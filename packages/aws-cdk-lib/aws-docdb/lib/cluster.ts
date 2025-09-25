@@ -779,7 +779,6 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
     this.cluster.vpcSecurityGroupIds.push(...securityGroups.map(sg => sg.securityGroupId));
   }
-
 }
 
 /**
