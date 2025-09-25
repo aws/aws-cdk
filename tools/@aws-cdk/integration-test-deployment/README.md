@@ -10,7 +10,7 @@ This tool is used by the [Integration Test Deployment workflow](../../../.github
 
 ## Features
 
-- **Automatic Change Detection**: Filters through the changed file to detect the integration tests
+- **Automatic Change Detection**: Filters through the changed files to detect the integration tests
 - **AWS Environment Management**: Integrates with AWS Atmosphere for temporary AWS account allocation
 - **Isolated Testing**: Each test run gets its own AWS environment with proper credentials
 - **Cleanup**: Automatically releases AWS resources after test completion
@@ -52,6 +52,20 @@ export CDK_ATMOSPHERE_POOL="your-pool-name"
 # Run the tool
 yarn --cwd tools/@aws-cdk/integration-test-deployment/ integration-test-deployment
 ```
+
+## Deployment Options
+
+This tool supports two deployment modes:
+
+### 1. Atmosphere Mode (CI/CD)
+Uses AWS Atmosphere to automatically provision temporary AWS credentials and isolated test environments. This mode requires special OIDC permissions and is primarily used in CI/CD pipelines.
+
+**Limitations**: Cannot be run locally due to Atmosphere's authentication requirements.
+
+### 2. Local Mode (Development)
+Run the `deployIntegrationTests` function directly using your own AWS credentials. This allows local testing against your AWS account.
+
+**Requirements**: Valid AWS credentials must be provided via function parameters
 
 ## How It Works
 
