@@ -3,28 +3,14 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP, STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY } from 'aws-cdk-lib/cx-api';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /*
  * Creates a state machine with a task state to run a job with ECS on Fargate
- * using a task definition provided by the previous state
- *
- * Stack verification steps:
- * The generated State Machine can be executed from the CLI (or Step Functions console)
- * and runs with an execution status of `Succeeded`.
- *
- * -- aws stepfunctions start-execution --state-machine-arn <state-machine-arn-from-output> provides execution arn
- * -- aws stepfunctions describe-execution --execution-arn <state-machine-arn-from-output> returns a status of `Succeeded`
+ * using a task definition ARN provided by the previous state
  */
-const app = new cdk.App({
-  postCliContext: {
-    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
-  },
-});
+const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-sfn-tasks-ecs-fargate-run-tasktask-def');
-stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
-stack.node.setContext(STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY, false);
 
 const cluster = new ecs.Cluster(stack, 'FargateCluster');
 
@@ -33,6 +19,7 @@ const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
   memoryLimitMiB: 512,
   cpu: 256,
 });
+
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
   memoryLimitMiB: 256,
@@ -69,8 +56,38 @@ new cdk.CfnOutput(stack, 'stateMachineArn', {
   value: sm.stateMachineArn,
 });
 
-new IntegTest(app, 'SfnTasksEcsFargateRunTaskTest', {
+const testCase = new IntegTest(app, 'SfnTasksEcsFargateRunTaskTest', {
   testCases: [stack],
+});
+
+testCase.assertions
+  .awsApiCall('StepFunctions', 'describeStateMachine', {
+    stateMachineArn: sm.stateMachineArn,
+  })
+  .expect(ExpectedResult.objectLike({ status: 'ACTIVE' }))
+  .waitForAssertions({
+    interval: cdk.Duration.seconds(10),
+    totalTimeout: cdk.Duration.minutes(5),
+  });
+
+// Start an execution
+const start = testCase.assertions.awsApiCall('StepFunctions', 'startExecution', {
+  stateMachineArn: sm.stateMachineArn,
+});
+
+// describe the results of the execution
+const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecution', {
+  executionArn: start.getAttString('executionArn'),
+  includedData: 'METADATA_ONLY',
+});
+start.next(describe);
+
+// Assert the step function execution finished with a status of SUCCEEDED
+describe.expect(ExpectedResult.objectLike({
+  status: 'SUCCEEDED',
+})).waitForAssertions({
+  interval: cdk.Duration.seconds(10),
+  totalTimeout: cdk.Duration.minutes(5),
 });
 
 app.synth();
