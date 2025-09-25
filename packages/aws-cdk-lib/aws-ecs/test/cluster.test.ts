@@ -2994,9 +2994,9 @@ describe('cluster', () => {
         instanceRequirements: {
           vCpuCountMin: 2,
           vCpuCountMax: 8,
-          memoryMiBMin: cdk.Size.gibibytes(4),
-          memoryMiBMax: cdk.Size.gibibytes(16),
-          cpuManufacturers: [ecs.CpuManufacturer.INTEL, ecs.CpuManufacturer.AMD],
+          memoryMin: cdk.Size.gibibytes(4),
+          memoryMax: cdk.Size.gibibytes(16),
+          cpuManufacturers: [ec2.CpuManufacturer.INTEL, ec2.CpuManufacturer.AMD],
         },
       });
 
@@ -3067,7 +3067,7 @@ describe('cluster', () => {
         infrastructureRole,
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
-        propagateTags: ecs.PropagateMITags.CAPACITY_PROVIDER,
+        propagateTags: ecs.PropagateManagedInstancesTags.CAPACITY_PROVIDER,
       });
 
       // THEN
@@ -3096,29 +3096,6 @@ describe('cluster', () => {
           PropagateTags: 'CAPACITY_PROVIDER',
         },
       });
-    });
-
-    test('throws when EC2 instance profile is not provided', () => {
-      // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'test');
-      const vpc = new ec2.Vpc(stack, 'Vpc');
-
-      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
-        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
-        managedPolicies: [
-          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
-        ],
-      });
-
-      // THEN
-      expect(() => {
-        new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
-          infrastructureRole,
-          ec2InstanceProfile: undefined as any,
-          subnets: vpc.privateSubnets,
-        });
-      }).toThrow('EC2 instance profile is required.');
     });
 
     test('throws when subnets are not provided', () => {

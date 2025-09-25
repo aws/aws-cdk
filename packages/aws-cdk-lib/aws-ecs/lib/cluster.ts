@@ -3,9 +3,10 @@ import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
 import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
-import { InstanceRequirementsRequest, renderInstanceRequirements } from './managed-instances-requirements';
+import { renderInstanceRequirements } from './managed-instances-requirements';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
+import { InstanceRequirementsConfig } from '../../aws-ec2';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
@@ -615,7 +616,7 @@ export class Cluster extends Resource implements ICluster {
       return;
     }
     // Set the cluster name on the capacity provider
-    provider.associateWithCluster(this.clusterName);
+    provider.bind(this);
     this._clusterScopedCapacityProviderNames.push(provider.capacityProviderName);
   }
 
@@ -1545,24 +1546,9 @@ export enum InstanceMonitoring {
 }
 
 /**
- * The capacity option type for EC2 instances.
- */
-export enum CapacityOptionType {
-  /**
-   * On-demand instances
-   */
-  ON_DEMAND = 'ON_DEMAND',
-
-  /**
-   * Spot instances
-   */
-  SPOT = 'SPOT',
-}
-
-/**
  * Propagate tags for Managed Instances.
  */
-export enum PropagateMITags {
+export enum PropagateManagedInstancesTags {
   /**
    * Propagate tags from the capacity provider
    */
@@ -1579,9 +1565,9 @@ export enum PropagateMITags {
  */
 export interface ManagedInstancesCapacityProviderProps {
   /**
-   * The name of the capacity provider. If a name is specified,
-   * it cannot start with `aws`, `ecs`, or `fargate`. If no name is specified,
-   * a default name in the CFNStackName-CFNResourceName-RandomString format is used.
+   * The name of the capacity provider.
+   * If a name is specified, it cannot start with `aws`, `ecs`, or `fargate`.
+   * If no name is specified, a default name in the CFNStackName-CFNResourceName-RandomString format is used.
    * If the stack name starts with `aws`, `ecs`, or `fargate`, a unique resource name
    * is generated that starts with `cp-`.
    *
@@ -1590,66 +1576,77 @@ export interface ManagedInstancesCapacityProviderProps {
   readonly capacityProviderName?: string;
 
   /**
-   * The infrastructure role.
+   * The IAM role that ECS uses to manage the infrastructure for the capacity provider.
+   * This role is used by ECS to perform actions such as launching and terminating instances,
+   * managing Auto Scaling Groups, and other infrastructure operations required for the
+   * managed instances capacity provider.
    *
-   * @default - A new role will be created with the AmazonECSInfrastructureRolePolicyForLoadBalancers managed policy
+   * @default - A new role will be created with the AmazonECSInfrastructureRolePolicyForManagedInstances managed policy
    */
   readonly infrastructureRole?: iam.IRole;
 
   /**
-   * The EC2 instance profile.
+   * The EC2 instance profile that will be attached to instances launched by this capacity provider.
+   * This instance profile must contain the necessary IAM permissions for ECS container instances
+   * to register with the cluster and run tasks. At minimum, it should include permissions for
+   * ECS agent communication, ECR image pulling, and CloudWatch logging.
    */
   readonly ec2InstanceProfile: iam.IInstanceProfile;
 
   /**
-   * The subnets (required and should be non-empty).
+   * The VPC subnets where EC2 instances will be launched.
+   * This array must be non-empty and should contain subnets from the VPC where you want
+   * the managed instances to be deployed.
    */
   readonly subnets: ec2.ISubnet[];
 
   /**
-   * The security groups (optional).
-   * Defaults to the default SG of VPC to which the above subnets belong.
+   * The security groups to associate with the launched EC2 instances.
+   * These security groups control the network traffic allowed to and from the instances.
+   * If not specified, the default security group of the VPC containing the subnets will be used.
    *
    * @default - default security group of the VPC
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-   * Task volume storage size.
+   * The size of the task volume storage attached to each instance.
+   * This storage is used for container images, container logs, and temporary files.
+   * Larger storage may be needed for workloads with large container images or
+   * applications that generate significant temporary data.
    *
    * @default Size.gibibytes(80)
    */
   readonly taskVolumeStorage?: Size;
 
   /**
-   * The monitoring configuration (optional).
+   * The CloudWatch monitoring configuration for the EC2 instances.
+   * Determines the granularity of CloudWatch metrics collection for the instances.
+   * Detailed monitoring incurs additional costs but provides better observability.
    *
-   * @default - none
+   * @default - no enhanced monitoring (basic monitoring only)
    */
   readonly monitoring?: InstanceMonitoring;
 
   /**
-   * The capacity option type (optional).
+   * The instance requirements configuration for EC2 instance selection.
+   * This allows you to specify detailed requirements for instance selection including
+   * vCPU count ranges, memory ranges, CPU manufacturers (Intel, AMD, AWS Graviton),
+   * instance generations, network performance requirements, and many other criteria.
+   * ECS will automatically select appropriate instance types that meet these requirements.
    *
-   * @default - none
+   * @default - no specific instance requirements, ECS will choose appropriate instances
    */
-  readonly capacityOptionType?: CapacityOptionType;
+  readonly instanceRequirements?: InstanceRequirementsConfig;
 
   /**
-   * The instance requirements for the Fargate Managed Instances.
-   * This allows you to specify detailed requirements for instance selection
-   * including vCPU count, memory, CPU manufacturers, and many other criteria.
+   * Specifies whether to propagate tags from the capacity provider to the launched instances.
+   * When set to CAPACITY_PROVIDER, tags applied to the capacity provider resource will be
+   * automatically applied to all EC2 instances launched by this capacity provider.
    *
-   * @default - no instance requirements specified
+   * @default PropagateManagedInstancesTags.NONE - no tag propagation
    */
-  readonly instanceRequirements?: InstanceRequirementsRequest;
-
-  /**
-   * Specifies whether to propagate the tags from the capacity provider to the instances.
-   *
-   * @default - no tag propagation
-   */
-  readonly propagateTags?: PropagateMITags;
+  readonly propagateTags?: PropagateManagedInstancesTags;
 }
 
 /**
@@ -1679,12 +1676,7 @@ export class ManagedInstancesCapacityProvider extends Construct {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    // Validate required properties
-    if (!props.ec2InstanceProfile) {
-      throw new ValidationError('EC2 instance profile is required.', this);
-    }
-
-    if (!props.subnets || props.subnets.length === 0) {
+    if (props.subnets.length === 0) {
       throw new ValidationError('Subnets are required and should be non-empty.', this);
     }
 
@@ -1754,8 +1746,8 @@ export class ManagedInstancesCapacityProvider extends Construct {
    * Associates the capacity provider with the specified cluster.
    * This method is called by the cluster when adding the capacity provider.
    */
-  public associateWithCluster(clusterName: string): void {
-    this.capacityProvider.clusterName = clusterName;
+  public bind(cluster: ICluster): void {
+    this.capacityProvider.clusterName = cluster.clusterName;
   }
 }
 

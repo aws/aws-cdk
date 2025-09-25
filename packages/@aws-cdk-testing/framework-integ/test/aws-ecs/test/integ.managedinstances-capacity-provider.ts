@@ -54,12 +54,12 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'Mana
   ec2InstanceProfile: instanceProfile,
   subnets: vpc.privateSubnets,
   securityGroups: [fmiSecurityGroup],
-  propagateTags: ecs.PropagateMITags.CAPACITY_PROVIDER,
+  propagateTags: ecs.PropagateManagedInstancesTags.CAPACITY_PROVIDER,
   instanceRequirements: {
     vCpuCountMin: 1,
-    memoryMiBMin: cdk.Size.gibibytes(2),
-    cpuManufacturers: [ecs.CpuManufacturer.INTEL],
-    acceleratorManufacturers: [ecs.AcceleratorManufacturer.NVIDIA],
+    memoryMin: cdk.Size.gibibytes(2),
+    cpuManufacturers: [ec2.CpuManufacturer.INTEL],
+    acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
   },
 });
 
