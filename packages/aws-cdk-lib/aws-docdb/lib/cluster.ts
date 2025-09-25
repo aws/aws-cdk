@@ -116,6 +116,8 @@ export interface DatabaseClusterProps {
   /**
    * What type of instance to start for the replicas.
    * Required for provisioned clusters, not applicable for serverless clusters.
+   *
+   * @default None
    */
   readonly instanceType?: ec2.InstanceType;
 
@@ -128,6 +130,8 @@ export interface DatabaseClusterProps {
   /**
    * ServerlessV2 scaling configuration.
    * When specified, the cluster will be created as a serverless cluster.
+   *
+   * @default None
    */
   readonly serverlessV2ScalingConfiguration?: ServerlessV2ScalingConfiguration;
 
@@ -586,7 +590,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     // Validate engine version for serverless clusters: https://docs.aws.amazon.com/documentdb/latest/developerguide/docdb-serverless-limitations.html
     if (isServerless && props.engineVersion !== undefined && Number(props.engineVersion.split('.')[0]) < MIN_ENGINE_VERSION_FOR_SERVERLESS) {
-        throw new ValidationError(`DocumentDB serverless requires engine version 5.0.0 or higher, got '${props.engineVersion}'`, this);
+      throw new ValidationError(`DocumentDB serverless requires engine version 5.0.0 or higher, got '${props.engineVersion}'`, this);
     }
 
     // Create the DocDB cluster
