@@ -37,6 +37,7 @@ export * as aws_backupgateway from './aws-backupgateway';
 export * as aws_batch from './aws-batch';
 export * as aws_bcmdataexports from './aws-bcmdataexports';
 export * as aws_bedrock from './aws-bedrock';
+export * as aws_bedrockagentcore from './aws-bedrockagentcore';
 export * as aws_billingconductor from './aws-billingconductor';
 export * as aws_budgets from './aws-budgets';
 export * as aws_cassandra from './aws-cassandra';
