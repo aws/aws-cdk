@@ -1,6 +1,131 @@
 import { UnscopedValidationError } from '../../core';
 
 /**
+ * Bare metal support requirements for EC2 instances.
+ *
+ * Controls whether selected instance types must, may, or must not
+ * be bare metal variants (i.e., instances that run directly on
+ * physical hardware without a hypervisor).
+ */
+export enum BareMetal {
+  /**
+   * Bare metal instance types are allowed, but non-bare-metal
+   * (virtualized) types may also be selected.
+   */
+  INCLUDED = 'included',
+
+  /**
+   * Only bare metal instance types are allowed.
+   * Non-bare-metal types will be excluded from selection.
+   */
+  REQUIRED = 'required',
+
+  /**
+   * Bare metal instance types are disallowed.
+   * Only non-bare-metal types may be selected.
+   */
+  EXCLUDED = 'excluded',
+}
+
+/**
+ * Burstable CPU performance requirements for EC2 instances.
+ *
+ * Controls whether selected instance types must, may, or must not
+ * support burstable vCPU performance (e.g., T3, T4g families).
+ */
+export enum BurstablePerformance {
+  /**
+   * Burstable-performance instance types are allowed, but
+   * non-burstable types may also be selected.
+   */
+  INCLUDED = 'included',
+
+  /**
+   * Only burstable-performance instance types are allowed.
+   * Non-burstable types will be excluded from selection.
+   */
+  REQUIRED = 'required',
+
+  /**
+   * Burstable-performance instance types are disallowed.
+   * Only non-burstable types may be selected.
+   */
+  EXCLUDED = 'excluded',
+}
+
+/**
+ * CPU manufacturers supported by EC2 instances.
+ *
+ * Restricts the acceptable CPU vendor for selected instance types.
+ */
+export enum CpuManufacturer {
+  /** Intel CPUs (e.g., Xeon families). */
+  INTEL = 'intel',
+
+  /** AMD CPUs (e.g., EPYC families). */
+  AMD = 'amd',
+
+  /** AWS-designed CPUs (e.g., Graviton families). */
+  AWS = 'amazon-web-services',
+
+  /** Apple CPUs (e.g., M1, M2). */
+  APPLE = 'apple',
+}
+
+/**
+ * Instance generation categories for EC2.
+ *
+ * Determines whether the instance type must belong to the latest
+ * (current) generation or to an older (previous) generation.
+ */
+export enum InstanceGeneration {
+  /** Current generation instances (latest families). */
+  CURRENT = 'current',
+
+  /** Previous generation instances (older families). */
+  PREVIOUS = 'previous',
+}
+
+/**
+ * Local storage support requirements for EC2 instances.
+ *
+ * Controls whether selected instance types must, may, or must not
+ * include directly attached local storage (instance store).
+ */
+export enum LocalStorage {
+  /**
+   * Instance types with local storage are allowed, but types without
+   * local storage may also be selected.
+   */
+  INCLUDED = 'included',
+
+  /**
+   * Only instance types with local storage are allowed.
+   * Types without local storage will be excluded.
+   */
+  REQUIRED = 'required',
+
+  /**
+   * Instance types with local storage are disallowed.
+   * Only types without local storage may be selected.
+   */
+  EXCLUDED = 'excluded',
+}
+
+/**
+ * Types of local storage available for EC2 instances.
+ *
+ * Specifies the physical medium used for local (instance store) storage.
+ */
+export enum LocalStorageType {
+  /** Hard disk drive storage. */
+  HDD = 'hdd',
+
+  /** Solid state drive storage. */
+  SSD = 'ssd',
+}
+
+/**
  * What class and generation of instance to use
  *
  * We have both symbolic and concrete enums for every type.
