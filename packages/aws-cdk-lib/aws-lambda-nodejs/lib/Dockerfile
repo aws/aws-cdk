@@ -9,8 +9,12 @@ RUN npm install --global yarn@1.22.5
 # Install pnpm
 RUN npm install --global pnpm@7.33.7
 
-# Install bun
-RUN npm install --global bun@1.1.30
+# Install bun using official installer instead of npm (fixes ARM64 compatibility)
+# CDK's original: RUN npm install --global bun@1.1.30
+# Issue: @oven/bun-linux-x64-baseline npm package doesn't exist for ARM64
+# Solution: Use official installer that downloads correct platform binary
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.30" && \
+    ln -s /root/.bun/bin/bun /usr/local/bin/bun
 
 # Install typescript
 RUN npm install --global typescript
