@@ -938,7 +938,7 @@ export class Repository extends RepositoryBase {
 
     const filterCount = exclusionFilters?.length;
 
-    if (filterCount && (filterCount < 1 || filterCount > 5)) {
+    if (filterCount !== undefined && (filterCount < 1 || filterCount > 5)) {
       throw new ValidationError(`imageTagMutabilityExclusionFilters must contain between 1 and 5 filters, got ${filterCount}.`, this);
     }
 
