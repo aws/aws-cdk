@@ -926,14 +926,6 @@ export class Repository extends RepositoryBase {
       TagMutability.MUTABLE_WITH_EXCLUSION,
     ];
 
-    if (exclusionFilters !== undefined) {
-      const filterCount = exclusionFilters.length;
-
-      if (filterCount < 1 || filterCount > 5) {
-        throw new ValidationError(`imageTagMutabilityExclusionFilters must contain between 1 and 5 filters, got ${filterCount}.`, this);
-      }
-    }
-
     const requiresExclusion = tagMutability && EXCLUSION_REQUIRED_TAG_MUTABILITY.includes(tagMutability);
     const hasExclusionFilters = !!exclusionFilters;
 
@@ -942,6 +934,14 @@ export class Repository extends RepositoryBase {
         `imageTagMutability must be 'IMMUTABLE_WITH_EXCLUSION' or 'MUTABLE_WITH_EXCLUSION' when imageTagMutabilityExclusionFilters is provided, got: ${tagMutability}.`,
         this,
       );
+    }
+
+    if (exclusionFilters !== undefined) {
+      const filterCount = exclusionFilters.length;
+
+      if (filterCount < 1 || filterCount > 5) {
+        throw new ValidationError(`imageTagMutabilityExclusionFilters must contain between 1 and 5 filters, got ${filterCount}.`, this);
+      }
     }
 
     if (requiresExclusion && !hasExclusionFilters) {
@@ -1165,7 +1165,7 @@ export class ImageTagMutabilityExclusionFilter {
     private readonly filterType: string,
     private readonly filterValue: string,
   ) {
-    if (!filterValue || filterValue.length === 0) {
+    if (!filterValue) {
       throw new UnscopedValidationError('Pattern cannot be empty');
     }
     if (filterValue.length > 128) {
