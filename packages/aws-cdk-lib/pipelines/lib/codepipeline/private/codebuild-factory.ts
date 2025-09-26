@@ -458,6 +458,7 @@ function mergeBuildEnvironments(a?: codebuild.BuildEnvironment, b?: codebuild.Bu
       ...b.environmentVariables,
     },
     privileged: b.privileged ?? a.privileged,
+    dockerServer: b.dockerServer ?? a.dockerServer,
   };
 }
 
