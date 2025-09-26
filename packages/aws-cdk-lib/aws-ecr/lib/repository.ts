@@ -929,11 +929,8 @@ export class Repository extends RepositoryBase {
     if (exclusionFilters !== undefined) {
       const filterCount = exclusionFilters.length;
 
-      if (filterCount === 0) {
-        throw new ValidationError('At least one exclusion filter must be specified when imageTagMutabilityExclusionFilters is provided.', this);
-      }
-      if (filterCount > 5) {
-        throw new ValidationError(`Cannot specify more than 5 exclusion filters, got ${filterCount}.`, this);
+      if (filterCount < 1 || filterCount > 5) {
+        throw new ValidationError(`imageTagMutabilityExclusionFilters must contain between 1 and 5 filters, got ${filterCount}.`, this);
       }
     }
 
@@ -941,17 +938,10 @@ export class Repository extends RepositoryBase {
     const hasExclusionFilters = !!exclusionFilters;
 
     if (hasExclusionFilters && !requiresExclusion) {
-      if (!tagMutability) {
-        throw new ValidationError(
-          'imageTagMutability must be specified when imageTagMutabilityExclusionFilters is provided.',
-          this,
-        );
-      } else {
-        throw new ValidationError(
-          `imageTagMutability must be 'IMMUTABLE_WITH_EXCLUSION' or 'MUTABLE_WITH_EXCLUSION' when imageTagMutabilityExclusionFilters is provided, got: ${tagMutability}.`,
-          this,
-        );
-      }
+      throw new ValidationError(
+        `imageTagMutability must be 'IMMUTABLE_WITH_EXCLUSION' or 'MUTABLE_WITH_EXCLUSION' when imageTagMutabilityExclusionFilters is provided, got: ${tagMutability}.`,
+        this,
+      );
     }
 
     if (requiresExclusion && !hasExclusionFilters) {

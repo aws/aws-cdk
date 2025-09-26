@@ -1454,7 +1454,7 @@ describe('repository', () => {
               ecr.ImageTagMutabilityExclusionFilter.wildcard('dev-*'),
             ],
           });
-        }).toThrow('imageTagMutability must be specified when imageTagMutabilityExclusionFilters is provided');
+        }).toThrow('imageTagMutability must be \'IMMUTABLE_WITH_EXCLUSION\' or \'MUTABLE_WITH_EXCLUSION\' when imageTagMutabilityExclusionFilters is provided, got: undefined.');
       });
 
       test.each([
@@ -1491,7 +1491,7 @@ describe('repository', () => {
             imageTagMutability: ecr.TagMutability.MUTABLE_WITH_EXCLUSION,
             imageTagMutabilityExclusionFilters: [],
           });
-        }).toThrow('At least one exclusion filter must be specified when imageTagMutabilityExclusionFilters is provided');
+        }).toThrow('imageTagMutabilityExclusionFilters must contain between 1 and 5 filters, got 0.');
       });
 
       test('validates maximum filter count', () => {
@@ -1504,7 +1504,7 @@ describe('repository', () => {
             imageTagMutability: ecr.TagMutability.MUTABLE_WITH_EXCLUSION,
             imageTagMutabilityExclusionFilters: filters,
           });
-        }).toThrow('Cannot specify more than 5 exclusion filters, got 6');
+        }).toThrow('imageTagMutabilityExclusionFilters must contain between 1 and 5 filters, got 6.');
       });
     });
   });
