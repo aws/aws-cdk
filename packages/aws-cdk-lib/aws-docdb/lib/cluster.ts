@@ -503,13 +503,13 @@ export class DatabaseCluster extends DatabaseClusterBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    // Determine if this is a serverless cluster
+    // Validate exactly one of instanceType or serverlessV2ScalingConfiguration is provided
+    if (!props.instanceType && !props.serverlessV2ScalingConfiguration) {
+      throw new ValidationError('Either instanceType (for provisioned clusters) or serverlessV2ScalingConfiguration (for serverless clusters) must be specified', this);
+    }
     const isServerless = !!props.serverlessV2ScalingConfiguration;
     if (isServerless && props.instanceType) {
-      throw new ValidationError('Cannot specify instanceType for serverless clusters', this);
-    }
-    if (!isServerless && !props.instanceType) {
-      throw new ValidationError('instanceType is required for provisioned clusters', this);
+      throw new ValidationError('Cannot specify both instanceType and serverlessV2ScalingConfiguration', this);
     }
 
     this.vpc = props.vpc;

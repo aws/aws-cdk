@@ -1318,7 +1318,7 @@ describe('DatabaseCluster', () => {
             maxCapacity: 1,
           },
         });
-      }).toThrow('Cannot specify instanceType for serverless clusters');
+      }).toThrow('Cannot specify both instanceType and serverlessV2ScalingConfiguration');
     });
 
     test('provisioned cluster requires instanceType', () => {
@@ -1334,7 +1334,7 @@ describe('DatabaseCluster', () => {
           },
           vpc,
         });
-      }).toThrow('instanceType is required for provisioned clusters');
+      }).toThrow('Either instanceType (for provisioned clusters) or serverlessV2ScalingConfiguration (for serverless clusters) must be specified');
     });
 
     test('serverless cluster with all configuration options', () => {
