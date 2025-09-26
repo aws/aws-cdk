@@ -1626,6 +1626,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ECR_PUBLIC",
     "ECR"
   ],
+  "IncludeDetail": [
+    "FULL",
+    "NONE"
+  ],
   "IncludeExecutionData": [
     "ALL"
   ],
@@ -1759,6 +1763,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "r8g",
     "memory8-graviton4-nvme-drive",
     "r8gd",
+    "memory8-graviton4-high-network-bandwidth",
+    "r8gn",
     "compute3",
     "c3",
     "compute4",
@@ -2256,6 +2262,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "bottom",
     "right",
     "hidden"
+  ],
+  "Level": [
+    "INFO",
+    "ERROR",
+    "TRACE",
+    "OFF"
   ],
   "LicenseModel": [
     "license-included",
@@ -3602,7 +3614,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "TagMutability": [
     "MUTABLE",
-    "IMMUTABLE"
+    "IMMUTABLE",
+    "IMMUTABLE_WITH_EXCLUSION",
+    "MUTABLE_WITH_EXCLUSION"
   ],
   "TagOperation": [
     "STRINGEQUALS",
