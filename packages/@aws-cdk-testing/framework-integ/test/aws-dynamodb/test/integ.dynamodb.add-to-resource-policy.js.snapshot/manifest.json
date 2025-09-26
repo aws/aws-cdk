@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "resource-policy-stack.assets": {
+    "add-to-resource-policy-test-stack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "resource-policy-stack.assets.json",
+        "file": "add-to-resource-policy-test-stack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "resource-policy-stack": {
+    "add-to-resource-policy-test-stack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "resource-policy-stack.template.json",
+        "templateFile": "add-to-resource-policy-test-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/12dfe1edf07578c7dac3da48535fa690c0a0ab96999c342385c7e0a8eadba186.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cd9c63111d91fd1b2f1428793fbb64374db7c9eddb53b1a96feea5933be52faa.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "resource-policy-stack.assets"
+          "add-to-resource-policy-test-stack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,35 +31,10 @@
         }
       },
       "dependencies": [
-        "resource-policy-stack.assets"
+        "add-to-resource-policy-test-stack.assets"
       ],
       "metadata": {
-        "/resource-policy-stack/TableTest1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "partitionKey": {
-                "name": "*",
-                "type": "S"
-              },
-              "removalPolicy": "destroy",
-              "resourcePolicy": "*"
-            }
-          }
-        ],
-        "/resource-policy-stack/TableTest1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TableTest143E55AA2"
-          }
-        ],
-        "/resource-policy-stack/TableTest1/ScalingRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/resource-policy-stack/TableTest2": [
+        "/add-to-resource-policy-test-stack/WildcardTable": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -71,46 +46,86 @@
             }
           }
         ],
-        "/resource-policy-stack/TableTest2/Resource": [
+        "/add-to-resource-policy-test-stack/WildcardTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TableTest21D137FC9"
+            "data": "WildcardTableE075CD4D"
           }
         ],
-        "/resource-policy-stack/TableTest2/ScalingRole": [
+        "/add-to-resource-policy-test-stack/WildcardTable/ScalingRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/resource-policy-stack/BootstrapVersion": [
+        "/add-to-resource-policy-test-stack/ScopedTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "tableName": "*",
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "removalPolicy": "destroy"
+            }
+          },
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "ScopedTableC019D4A1"
+            }
+          }
+        ],
+        "/add-to-resource-policy-test-stack/ScopedTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScopedTableC019D4A1"
+          }
+        ],
+        "/add-to-resource-policy-test-stack/ScopedTable/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/add-to-resource-policy-test-stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/resource-policy-stack/CheckBootstrapVersion": [
+        "/add-to-resource-policy-test-stack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "TestTable5769773A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestTable5769773A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
-      "displayName": "resource-policy-stack"
+      "displayName": "add-to-resource-policy-test-stack"
     },
-    "resourcepolicyintegtestDefaultTestDeployAssert9778837B.assets": {
+    "addtoresourcepolicyintegtestDefaultTestDeployAssert0D97EAEA.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "resourcepolicyintegtestDefaultTestDeployAssert9778837B.assets.json",
+        "file": "addtoresourcepolicyintegtestDefaultTestDeployAssert0D97EAEA.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "resourcepolicyintegtestDefaultTestDeployAssert9778837B": {
+    "addtoresourcepolicyintegtestDefaultTestDeployAssert0D97EAEA": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "resourcepolicyintegtestDefaultTestDeployAssert9778837B.template.json",
+        "templateFile": "addtoresourcepolicyintegtestDefaultTestDeployAssert0D97EAEA.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -119,7 +134,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "resourcepolicyintegtestDefaultTestDeployAssert9778837B.assets"
+          "addtoresourcepolicyintegtestDefaultTestDeployAssert0D97EAEA.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -128,23 +143,23 @@
         }
       },
       "dependencies": [
-        "resourcepolicyintegtestDefaultTestDeployAssert9778837B.assets"
+        "addtoresourcepolicyintegtestDefaultTestDeployAssert0D97EAEA.assets"
       ],
       "metadata": {
-        "/resource-policy-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/add-to-resource-policy-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/resource-policy-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/add-to-resource-policy-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "resource-policy-integ-test/DefaultTest/DeployAssert"
+      "displayName": "add-to-resource-policy-integ-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

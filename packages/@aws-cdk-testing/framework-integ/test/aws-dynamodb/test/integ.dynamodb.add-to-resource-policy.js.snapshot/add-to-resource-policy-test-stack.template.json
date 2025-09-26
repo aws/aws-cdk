@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "TableTest143E55AA2": {
+  "WildcardTableE075CD4D": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
     "AttributeDefinitions": [
@@ -23,7 +23,11 @@
      "PolicyDocument": {
       "Statement": [
        {
-        "Action": "dynamodb:*",
+        "Action": [
+         "dynamodb:GetItem",
+         "dynamodb:PutItem",
+         "dynamodb:Query"
+        ],
         "Effect": "Allow",
         "Principal": {
          "AWS": {
@@ -53,18 +57,18 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "TableTest21D137FC9": {
+  "ScopedTableC019D4A1": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
     "AttributeDefinitions": [
      {
-      "AttributeName": "PK",
+      "AttributeName": "id",
       "AttributeType": "S"
      }
     ],
     "KeySchema": [
      {
-      "AttributeName": "PK",
+      "AttributeName": "id",
       "KeyType": "HASH"
      }
     ],
@@ -76,7 +80,10 @@
      "PolicyDocument": {
       "Statement": [
        {
-        "Action": "dynamodb:*",
+        "Action": [
+         "dynamodb:GetItem",
+         "dynamodb:Query"
+        ],
         "Effect": "Allow",
         "Principal": {
          "AWS": {
@@ -87,17 +94,24 @@
             {
              "Ref": "AWS::Partition"
             },
-            ":iam::127311923021:root"
+            ":iam::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":root"
            ]
           ]
          }
         },
-        "Resource": "*"
+        "Resource": {
+         "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/my-explicit-scoped-table"
+        }
        }
       ],
       "Version": "2012-10-17"
      }
-    }
+    },
+    "TableName": "my-explicit-scoped-table"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
