@@ -1680,11 +1680,11 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
   securityGroups: [new ec2.SecurityGroup(this, 'MISecurityGroup', { vpc })],
   instanceRequirements: {
     vCpuCountMin: 1,
-    memoryMiBMin: Size.gibibytes(2),
-    cpuManufacturers: [ecs.CpuManufacturer.INTEL],
-    acceleratorManufacturers: [ecs.AcceleratorManufacturer.NVIDIA],
+    memoryMin: Size.gibibytes(2),
+    cpuManufacturers: [ec2.CpuManufacturer.INTEL],
+    acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
   },
-  propagateTags: ecs.PropagateMITags.CAPACITY_PROVIDER,
+  propagateTags: ecs.PropagateManagedInstancesTags.CAPACITY_PROVIDER,
 });
 
 // Add the capacity provider to the cluster
@@ -1725,30 +1725,30 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
     // Required: CPU and memory constraints
     vCpuCountMin: 2,
     vCpuCountMax: 8,
-    memoryMiBMin: Size.gibibytes(4),
-    memoryMiBMax: Size.gibibytes(32),
+    memoryMin: Size.gibibytes(4),
+    memoryMax: Size.gibibytes(32),
     
     // CPU preferences
-    cpuManufacturers: [ecs.CpuManufacturer.INTEL, ecs.CpuManufacturer.AMD],
-    instanceGenerations: [ecs.InstanceGeneration.CURRENT],
+    cpuManufacturers: [ec2.CpuManufacturer.INTEL, ec2.CpuManufacturer.AMD],
+    instanceGenerations: [ec2.InstanceGeneration.CURRENT],
     
     // Instance type filtering
     allowedInstanceTypes: ['m5.*', 'c5.*'],
     excludedInstanceTypes: ['t2.micro', 't2.small'],
     
     // Performance characteristics
-    burstablePerformance: ecs.BurstablePerformance.EXCLUDED,
-    bareMetal: ecs.BareMetal.EXCLUDED,
+    burstablePerformance: ec2.BurstablePerformance.EXCLUDED,
+    bareMetal: ec2.BareMetal.EXCLUDED,
     
     // Accelerator requirements (for ML/AI workloads)
-    acceleratorTypes: [ecs.AcceleratorType.GPU],
-    acceleratorManufacturers: [ecs.AcceleratorManufacturer.NVIDIA],
-    acceleratorNames: [ecs.AcceleratorName.T4, ecs.AcceleratorName.V100],
+    acceleratorTypes: [ec2.AcceleratorType.GPU],
+    acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
+    acceleratorNames: [ec2.AcceleratorName.T4, ec2.AcceleratorName.V100],
     acceleratorCountMin: 1,
     
     // Storage requirements
-    localStorage: ecs.LocalStorage.REQUIRED,
-    localStorageTypes: [ecs.LocalStorageType.SSD],
+    localStorage: ec2.LocalStorage.REQUIRED,
+    localStorageTypes: [ec2.LocalStorageType.SSD],
     totalLocalStorageGBMin: 100,
     
     // Network requirements
