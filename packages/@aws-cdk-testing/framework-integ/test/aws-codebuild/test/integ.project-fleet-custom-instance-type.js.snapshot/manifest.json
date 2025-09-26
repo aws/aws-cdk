@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "AttributeBasedComputeFleetIntegStack0.assets": {
+    "CustomInstanceTypeComputeFleetIntegStack0.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "AttributeBasedComputeFleetIntegStack0.assets.json",
+        "file": "CustomInstanceTypeComputeFleetIntegStack0.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "AttributeBasedComputeFleetIntegStack0": {
+    "CustomInstanceTypeComputeFleetIntegStack0": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "AttributeBasedComputeFleetIntegStack0.template.json",
+        "templateFile": "CustomInstanceTypeComputeFleetIntegStack0.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/089508bb504b5082360eee91eedbf067227b226d8d75b484e5019fa5ea1800a1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3ed7a6c9d307c6bf5f25efdc6d941a2eaa31744214cb980bb0dbc564770cef62.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "AttributeBasedComputeFleetIntegStack0.assets"
+          "CustomInstanceTypeComputeFleetIntegStack0.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,29 +31,27 @@
         }
       },
       "dependencies": [
-        "AttributeBasedComputeFleetIntegStack0.assets"
+        "CustomInstanceTypeComputeFleetIntegStack0.assets"
       ],
       "metadata": {
-        "/AttributeBasedComputeFleetIntegStack0/MyFleet": [
+        "/CustomInstanceTypeComputeFleetIntegStack0/MyFleet": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "baseCapacity": "*",
-              "computeType": "ATTRIBUTE_BASED_COMPUTE",
-              "computeConfiguration": {
-                "machineType": "GENERAL"
-              },
+              "computeType": "*",
+              "computeConfiguration": {},
               "environmentType": "LINUX_CONTAINER"
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack0/MyFleet/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack0/MyFleet/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFleet1E628396"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack0/MyProject": [
+        "/CustomInstanceTypeComputeFleetIntegStack0/MyProject": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -72,7 +70,7 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack0/MyProject/Role": [
+        "/CustomInstanceTypeComputeFleetIntegStack0/MyProject/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -116,19 +114,19 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack0/MyProject/Role/ImportRole": [
+        "/CustomInstanceTypeComputeFleetIntegStack0/MyProject/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack0/MyProject/Role/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack0/MyProject/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProjectRole9BBE5233"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack0/MyProject/Role/DefaultPolicy": [
+        "/CustomInstanceTypeComputeFleetIntegStack0/MyProject/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -166,61 +164,61 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack0/MyProject/Role/DefaultPolicy/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack0/MyProject/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProjectRoleDefaultPolicyB19B7C29"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack0/MyProject/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack0/MyProject/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProject39F7B0AE"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack0/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
+        "/CustomInstanceTypeComputeFleetIntegStack0/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefMyProject39F7B0AE1CE3CA42"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack0/BootstrapVersion": [
+        "/CustomInstanceTypeComputeFleetIntegStack0/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack0/CheckBootstrapVersion": [
+        "/CustomInstanceTypeComputeFleetIntegStack0/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "AttributeBasedComputeFleetIntegStack0"
+      "displayName": "CustomInstanceTypeComputeFleetIntegStack0"
     },
-    "AttributeBasedComputeFleetIntegStack1.assets": {
+    "CustomInstanceTypeComputeFleetIntegStack1.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "AttributeBasedComputeFleetIntegStack1.assets.json",
+        "file": "CustomInstanceTypeComputeFleetIntegStack1.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "AttributeBasedComputeFleetIntegStack1": {
+    "CustomInstanceTypeComputeFleetIntegStack1": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "AttributeBasedComputeFleetIntegStack1.template.json",
+        "templateFile": "CustomInstanceTypeComputeFleetIntegStack1.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/beb3ad666baa0d0d9864b95b16bb48cfad390464446b3f75af5528f2508815bc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a6efe80cd9cff113cf836e7d94613c58ed224ac3e80e6bf4ea8e0612f27f2bf1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "AttributeBasedComputeFleetIntegStack1.assets"
+          "CustomInstanceTypeComputeFleetIntegStack1.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -229,31 +227,29 @@
         }
       },
       "dependencies": [
-        "AttributeBasedComputeFleetIntegStack1.assets"
+        "CustomInstanceTypeComputeFleetIntegStack1.assets"
       ],
       "metadata": {
-        "/AttributeBasedComputeFleetIntegStack1/MyFleet": [
+        "/CustomInstanceTypeComputeFleetIntegStack1/MyFleet": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "baseCapacity": "*",
-              "computeType": "ATTRIBUTE_BASED_COMPUTE",
+              "computeType": "*",
               "computeConfiguration": {
-                "machineType": "GENERAL",
-                "vCpu": "*",
                 "disk": "*"
               },
               "environmentType": "LINUX_CONTAINER"
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack1/MyFleet/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack1/MyFleet/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFleet1E628396"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack1/MyProject": [
+        "/CustomInstanceTypeComputeFleetIntegStack1/MyProject": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -272,7 +268,7 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack1/MyProject/Role": [
+        "/CustomInstanceTypeComputeFleetIntegStack1/MyProject/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -316,19 +312,19 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack1/MyProject/Role/ImportRole": [
+        "/CustomInstanceTypeComputeFleetIntegStack1/MyProject/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack1/MyProject/Role/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack1/MyProject/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProjectRole9BBE5233"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack1/MyProject/Role/DefaultPolicy": [
+        "/CustomInstanceTypeComputeFleetIntegStack1/MyProject/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -366,61 +362,61 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack1/MyProject/Role/DefaultPolicy/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack1/MyProject/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProjectRoleDefaultPolicyB19B7C29"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack1/MyProject/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack1/MyProject/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProject39F7B0AE"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack1/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
+        "/CustomInstanceTypeComputeFleetIntegStack1/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefMyProject39F7B0AE1CE3CA42"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack1/BootstrapVersion": [
+        "/CustomInstanceTypeComputeFleetIntegStack1/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack1/CheckBootstrapVersion": [
+        "/CustomInstanceTypeComputeFleetIntegStack1/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "AttributeBasedComputeFleetIntegStack1"
+      "displayName": "CustomInstanceTypeComputeFleetIntegStack1"
     },
-    "AttributeBasedComputeFleetIntegStack2.assets": {
+    "CustomInstanceTypeComputeFleetIntegStack2.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "AttributeBasedComputeFleetIntegStack2.assets.json",
+        "file": "CustomInstanceTypeComputeFleetIntegStack2.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "AttributeBasedComputeFleetIntegStack2": {
+    "CustomInstanceTypeComputeFleetIntegStack2": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "AttributeBasedComputeFleetIntegStack2.template.json",
+        "templateFile": "CustomInstanceTypeComputeFleetIntegStack2.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/95179a59f8b76fdd4856b7f195f7a83eb5e99e0241aacc3dd366cfcd3f4eeca3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aeb69d7bf9c07ae422396a1c7658c5146780ffc186fc0336023c8f9f959e7aae.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "AttributeBasedComputeFleetIntegStack2.assets"
+          "CustomInstanceTypeComputeFleetIntegStack2.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -429,10 +425,10 @@
         }
       },
       "dependencies": [
-        "AttributeBasedComputeFleetIntegStack2.assets"
+        "CustomInstanceTypeComputeFleetIntegStack2.assets"
       ],
       "metadata": {
-        "/AttributeBasedComputeFleetIntegStack2/Vpc": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Vpc": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -441,13 +437,13 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/Vpc/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/Vpc/PublicSubnet1": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Vpc/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -483,43 +479,43 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/Vpc/PublicSubnet1/Subnet": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/Vpc/PublicSubnet1/RouteTable": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/Vpc/PublicSubnet1/DefaultRoute": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/Vpc/PublicSubnet1/EIP": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1EIPD7E02669"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/Vpc/PublicSubnet1/NATGateway": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/Vpc/PrivateSubnet1": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Vpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -547,56 +543,54 @@
             "data": {}
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/Vpc/PrivateSubnet1/Subnet": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/Vpc/PrivateSubnet1/RouteTable": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableB2C5B500"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Vpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/Vpc/IGW": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcIGWD7BA715C"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/Vpc/VPCGW": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyFleet": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/MyFleet": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "baseCapacity": "*",
-              "computeType": "ATTRIBUTE_BASED_COMPUTE",
-              "computeConfiguration": {
-                "machineType": "GENERAL"
-              },
+              "computeType": "*",
+              "computeConfiguration": {},
               "environmentType": "LINUX_CONTAINER"
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyFleet/SecurityGroup": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/MyFleet/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -604,13 +598,13 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyFleet/SecurityGroup/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/MyFleet/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFleetSecurityGroupBB89CD85"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyFleet/Role": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/MyFleet/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -654,19 +648,19 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyFleet/Role/ImportRole": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/MyFleet/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyFleet/Role/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/MyFleet/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFleetRole17822BBE"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyFleet/Role/DefaultPolicy": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/MyFleet/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -704,19 +698,19 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyFleet/Role/DefaultPolicy/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/MyFleet/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFleetRoleDefaultPolicy615307E1"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyFleet/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/MyFleet/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFleet1E628396"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyProject": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/MyProject": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -735,7 +729,7 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyProject/Role": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/MyProject/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -779,19 +773,19 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyProject/Role/ImportRole": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/MyProject/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyProject/Role/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/MyProject/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProjectRole9BBE5233"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyProject/Role/DefaultPolicy": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/MyProject/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -829,61 +823,61 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyProject/Role/DefaultPolicy/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/MyProject/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProjectRoleDefaultPolicyB19B7C29"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyProject/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/MyProject/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProject39F7B0AE"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefMyProject39F7B0AE1CE3CA42"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/BootstrapVersion": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/CheckBootstrapVersion": [
+        "/CustomInstanceTypeComputeFleetIntegStack2/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "AttributeBasedComputeFleetIntegStack2"
+      "displayName": "CustomInstanceTypeComputeFleetIntegStack2"
     },
-    "AttributeBasedComputeFleetIntegStack3.assets": {
+    "CustomInstanceTypeComputeFleetIntegStack3.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "AttributeBasedComputeFleetIntegStack3.assets.json",
+        "file": "CustomInstanceTypeComputeFleetIntegStack3.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "AttributeBasedComputeFleetIntegStack3": {
+    "CustomInstanceTypeComputeFleetIntegStack3": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "AttributeBasedComputeFleetIntegStack3.template.json",
+        "templateFile": "CustomInstanceTypeComputeFleetIntegStack3.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c3770e3e0c3c9677a2fadf340e3c15cffd5d4c6016b130971594111ff05eff03.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/84a97fb262fe8b0f516a3691283f459f5a47ba8e9c6cb4ac1d2fd56b66c1719f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "AttributeBasedComputeFleetIntegStack3.assets"
+          "CustomInstanceTypeComputeFleetIntegStack3.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -892,10 +886,10 @@
         }
       },
       "dependencies": [
-        "AttributeBasedComputeFleetIntegStack3.assets"
+        "CustomInstanceTypeComputeFleetIntegStack3.assets"
       ],
       "metadata": {
-        "/AttributeBasedComputeFleetIntegStack3/Vpc": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -903,13 +897,13 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/PublicSubnet1": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -945,43 +939,43 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/PublicSubnet1/Subnet": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/PublicSubnet1/RouteTable": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/PublicSubnet1/DefaultRoute": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/PublicSubnet1/EIP": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1EIPD7E02669"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/PublicSubnet1/NATGateway": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/PrivateSubnet1": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1009,79 +1003,79 @@
             "data": {}
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/PrivateSubnet1/Subnet": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/PrivateSubnet1/RouteTable": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableB2C5B500"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/IGW": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcIGWD7BA715C"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/VPCGW": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/RestrictDefaultSecurityGroupCustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/LatestNodeRuntimeMap": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/LatestNodeRuntimeMap": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
             "data": true
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/SecurityGroup0": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/SecurityGroup0": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1090,13 +1084,13 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/SecurityGroup0/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/SecurityGroup0/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecurityGroup0C33D8C57"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/SecurityGroup1": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/SecurityGroup1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1105,26 +1099,24 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/SecurityGroup1/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/SecurityGroup1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecurityGroup1F554B36F"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/MyFleet": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/MyFleet": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "baseCapacity": "*",
-              "computeType": "ATTRIBUTE_BASED_COMPUTE",
-              "computeConfiguration": {
-                "machineType": "GENERAL"
-              },
+              "computeType": "*",
+              "computeConfiguration": {},
               "environmentType": "LINUX_CONTAINER"
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/MyFleet/Role": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/MyFleet/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1168,19 +1160,19 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/MyFleet/Role/ImportRole": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/MyFleet/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/MyFleet/Role/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/MyFleet/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFleetRole17822BBE"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/MyFleet/Role/DefaultPolicy": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/MyFleet/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1218,19 +1210,19 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/MyFleet/Role/DefaultPolicy/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/MyFleet/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFleetRoleDefaultPolicy615307E1"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/MyFleet/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/MyFleet/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFleet1E628396"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/MyProject": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/MyProject": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1249,7 +1241,7 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/MyProject/Role": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/MyProject/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1293,19 +1285,19 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/MyProject/Role/ImportRole": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/MyProject/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/MyProject/Role/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/MyProject/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProjectRole9BBE5233"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/MyProject/Role/DefaultPolicy": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/MyProject/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1343,67 +1335,67 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/MyProject/Role/DefaultPolicy/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/MyProject/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProjectRoleDefaultPolicyB19B7C29"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/MyProject/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/MyProject/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProject39F7B0AE"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Exports/Output{\"Fn::GetAtt\":[\"MyFleet1E628396\",\"Arn\"]}": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Exports/Output{\"Fn::GetAtt\":[\"MyFleet1E628396\",\"Arn\"]}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputFnGetAttMyFleet1E628396Arn64216BDA"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefMyProject39F7B0AE1CE3CA42"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/BootstrapVersion": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/CheckBootstrapVersion": [
+        "/CustomInstanceTypeComputeFleetIntegStack3/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "AttributeBasedComputeFleetIntegStack3"
+      "displayName": "CustomInstanceTypeComputeFleetIntegStack3"
     },
-    "AttributeBasedComputeFleetIntegTestDefaultTestDeployAssertDD94353E.assets": {
+    "CustomInstanceTypeComputeFleetIntegTestDefaultTestDeployAssert3E1A7644.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "AttributeBasedComputeFleetIntegTestDefaultTestDeployAssertDD94353E.assets.json",
+        "file": "CustomInstanceTypeComputeFleetIntegTestDefaultTestDeployAssert3E1A7644.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "AttributeBasedComputeFleetIntegTestDefaultTestDeployAssertDD94353E": {
+    "CustomInstanceTypeComputeFleetIntegTestDefaultTestDeployAssert3E1A7644": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "AttributeBasedComputeFleetIntegTestDefaultTestDeployAssertDD94353E.template.json",
+        "templateFile": "CustomInstanceTypeComputeFleetIntegTestDefaultTestDeployAssert3E1A7644.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6060dda5b7e106998ae5d833bd346fbd4856ddd6b40eae9c403420059178787b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/328d3eeed7bb53073fccf4cbd02f7852b2b87ca9e818c12980adc1aa71cb23e1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "AttributeBasedComputeFleetIntegTestDefaultTestDeployAssertDD94353E.assets"
+          "CustomInstanceTypeComputeFleetIntegTestDefaultTestDeployAssert3E1A7644.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -1412,14 +1404,14 @@
         }
       },
       "dependencies": [
-        "AttributeBasedComputeFleetIntegStack3",
-        "AttributeBasedComputeFleetIntegStack0",
-        "AttributeBasedComputeFleetIntegStack1",
-        "AttributeBasedComputeFleetIntegStack2",
-        "AttributeBasedComputeFleetIntegTestDefaultTestDeployAssertDD94353E.assets"
+        "CustomInstanceTypeComputeFleetIntegStack3",
+        "CustomInstanceTypeComputeFleetIntegStack0",
+        "CustomInstanceTypeComputeFleetIntegStack1",
+        "CustomInstanceTypeComputeFleetIntegStack2",
+        "CustomInstanceTypeComputeFleetIntegTestDefaultTestDeployAssert3E1A7644.assets"
       ],
       "metadata": {
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildlistFleets/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildlistFleets/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1433,37 +1425,37 @@
             "data": "*"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildlistFleets/Default/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildlistFleets/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodebuildlistFleets"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildlistFleets/AssertionResults": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildlistFleets/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallCodebuildlistFleets"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1477,13 +1469,13 @@
             "data": "*"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62/Default/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1497,67 +1489,67 @@
             "data": "*"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6/Default/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6/WaitFor/IsCompleteProvider/Invoke": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6/WaitFor/IsCompleteProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6WaitForIsCompleteProviderInvokeB0B1C0DE"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6/WaitFor/TimeoutProvider/Invoke": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6/WaitFor/TimeoutProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6WaitForTimeoutProviderInvoke495E7707"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6/WaitFor/Role": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6/WaitFor/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6WaitForRole5811CC1A"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6/WaitFor/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6/WaitFor/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6WaitForEC8862E9"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6/AssertionResults": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallCodeBuildbatchGetBuildsed2bebde751d035f33ccc96cc7ae75e6"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce621/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce621/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1571,13 +1563,13 @@
             "data": "*"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce621/Default/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce621/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce621"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1591,43 +1583,43 @@
             "data": "*"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/Default/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/WaitFor/IsCompleteProvider/Invoke": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/WaitFor/IsCompleteProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516WaitForIsCompleteProviderInvoke4EF142D2"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/WaitFor/TimeoutProvider/Invoke": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/WaitFor/TimeoutProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516WaitForTimeoutProviderInvoke11E4D647"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/WaitFor/Role": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/WaitFor/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516WaitForRole0A79F0D3"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/WaitFor/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/WaitFor/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516WaitForAEBEEA78"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/AssertionResults": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce622/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce622/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1641,13 +1633,13 @@
             "data": "*"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce622/Default/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce622/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce622"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1661,43 +1653,43 @@
             "data": "*"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551/Default/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551/WaitFor/IsCompleteProvider/Invoke": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551/WaitFor/IsCompleteProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551WaitForIsCompleteProviderInvokeD7C1BCF6"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551/WaitFor/TimeoutProvider/Invoke": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551/WaitFor/TimeoutProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551WaitForTimeoutProviderInvoke4F490F16"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551/WaitFor/Role": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551/WaitFor/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551WaitForRoleEF75C37C"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551/WaitFor/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551/WaitFor/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551WaitForC1534391"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551/AssertionResults": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallCodeBuildbatchGetBuilds2ac108864f8b4e038681f1f8ad2b7551"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce623/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce623/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1711,13 +1703,13 @@
             "data": "*"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce623/Default/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce623/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce623"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1731,56 +1723,56 @@
             "data": "*"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75/Default/Default": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75/WaitFor/IsCompleteProvider/Invoke": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75/WaitFor/IsCompleteProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75WaitForIsCompleteProviderInvokeBD82918E"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75/WaitFor/TimeoutProvider/Invoke": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75/WaitFor/TimeoutProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75WaitForTimeoutProviderInvokeBEEB527D"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75/WaitFor/Role": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75/WaitFor/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75WaitForRole99029649"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75/WaitFor/Resource": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75/WaitFor/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75WaitFor08F932EE"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75/AssertionResults": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallCodeBuildbatchGetBuilds662fa8ab2584a89a2004ebea7174ca75"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert"
+      "displayName": "CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
