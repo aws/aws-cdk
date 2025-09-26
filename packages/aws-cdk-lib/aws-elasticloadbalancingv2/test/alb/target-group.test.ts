@@ -71,6 +71,81 @@ describe('tests', () => {
     expect(() => app.synth()).toThrow(/port\/protocol should not be specified for Lambda targets/);
   });
 
+  test('ApplicationTargetGroup shows warning when protocol not specified', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN - Create ApplicationTargetGroup without protocol but with port
+    new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      vpc,
+      port: 80, // Providing port satisfies the "at least one of port or protocol" requirement
+      // protocol is missing - this should generate a warning
+    });
+
+    // THEN - Should synthesize successfully but show warning
+    const assembly = app.synth();
+    const stackArtifact = assembly.getStackByName(stack.stackName);
+    const warnings = stackArtifact.messages.filter(m => m.level === 'warning');
+    expect(warnings.some(w => w.entry.data.includes('ApplicationTargetGroup protocol not specified'))).toBe(true);
+  });
+
+  test('ApplicationTargetGroup with protocol should not throw validation error', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN - Create ApplicationTargetGroup with protocol
+    new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      vpc,
+      port: 80,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+    });
+
+    // THEN - Should not throw
+    expect(() => app.synth()).not.toThrow();
+  });
+
+  test('ApplicationTargetGroup with Lambda target does not require protocol', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN - Create ApplicationTargetGroup for Lambda without protocol
+    new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      targetType: elbv2.TargetType.LAMBDA,
+      // protocol is missing but should be allowed for Lambda
+    });
+
+    // THEN - Should not throw
+    expect(() => app.synth()).not.toThrow();
+  });
+
+  test('ApplicationTargetGroup requires protocol even when targets added later', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN - Create ApplicationTargetGroup without protocol but with port, then add non-Lambda target
+    const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      vpc,
+      port: 80, // Providing port satisfies the "at least one of port or protocol" requirement
+      // protocol is missing - this should generate a warning
+    });
+
+    // Add a non-Lambda target
+    tg.addTarget(new elbv2.InstanceTarget('i-1234'));
+
+    // THEN - Should synthesize successfully but show warning
+    const assembly = app.synth();
+    const stackArtifact = assembly.getStackByName(stack.stackName);
+    const warnings = stackArtifact.messages.filter(m => m.level === 'warning');
+    expect(warnings.some(w => w.entry.data.includes('ApplicationTargetGroup protocol not specified'))).toBe(true);
+  });
+
   test('Can add self-registering target to imported TargetGroup', () => {
     // GIVEN
     const vpc = new ec2.Vpc(stack, 'Vpc');
