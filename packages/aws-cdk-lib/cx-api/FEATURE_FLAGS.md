@@ -107,6 +107,7 @@ Flags come in three types:
 | [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | 2.205.0 | new default |
 | [@aws-cdk/aws-signer:signingProfileNamePassedToCfn](#aws-cdkaws-signersigningprofilenamepassedtocfn) | Pass signingProfileName to CfnSigningProfile | 2.212.0 | fix |
 | [@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener](#aws-cdkaws-ecs-patternssecgroupsdisablesimplicitopenlistener) | Disable implicit openListener when custom security groups are provided | 2.214.0 | new default |
+| [@aws-cdk/aws-route53-patters:useDistribution](#aws-cdkaws-route53-pattersusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -197,7 +198,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
-    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true
+    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
+    "@aws-cdk/aws-route53-patters:useDistribution": true
   }
 }
 ```
@@ -2275,6 +2277,24 @@ override this behavior.
 | 2.214.0 | `false` | `true` |
 
 **Compatibility with old behavior:** You can pass `openListener: true` explicitly to maintain the old behavior.
+
+
+### @aws-cdk/aws-route53-patters:useDistribution
+
+*Use the `Distribution` resource instead of `CloudFrontWebDistribution`*
+
+Flag type: New default behavior
+
+Enable this feature flag to use the new `Distribution` resource instead
+of the deprecated `CloudFrontWebDistribution` construct.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Define a `CloudFrontWebDistribution` explicitly
 
 
 <!-- END details -->
