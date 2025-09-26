@@ -577,6 +577,26 @@ const fleet = new codebuild.Fleet(this, 'MyFleet', {
 });
 ```
 
+### Fleet overflow behavior
+
+When your builds exceed the capacity of your fleet, you can specify how CodeBuild should handle the overflow builds by setting the `overflowBehavior` property:
+
+```ts
+const fleet = new codebuild.Fleet(this, 'Fleet', {
+  computeType: codebuild.FleetComputeType.MEDIUM,
+  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  baseCapacity: 1,
+  overflowBehavior: codebuild.FleetOverflowBehavior.ON_DEMAND,
+});
+```
+
+The available overflow behaviors are:
+
+- `QUEUE` (default): Overflow builds wait for existing fleet instances to become available
+- `ON_DEMAND`: Overflow builds run on CodeBuild on-demand instances
+
+Note: If you set overflow behavior to `ON_DEMAND` for a VPC-connected fleet, ensure your VPC settings allow access to public AWS services.
+
 ## Logs
 
 CodeBuild lets you specify an S3 Bucket, CloudWatch Log Group or both to receive logs from your projects.
