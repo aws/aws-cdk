@@ -936,12 +936,10 @@ export class Repository extends RepositoryBase {
       );
     }
 
-    if (exclusionFilters !== undefined) {
-      const filterCount = exclusionFilters.length;
+    const filterCount = exclusionFilters?.length;
 
-      if (filterCount < 1 || filterCount > 5) {
-        throw new ValidationError(`imageTagMutabilityExclusionFilters must contain between 1 and 5 filters, got ${filterCount}.`, this);
-      }
+    if (filterCount && (filterCount < 1 || filterCount > 5)) {
+      throw new ValidationError(`imageTagMutabilityExclusionFilters must contain between 1 and 5 filters, got ${filterCount}.`, this);
     }
 
     if (requiresExclusion && !hasExclusionFilters) {
