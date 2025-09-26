@@ -99,6 +99,15 @@ export interface ClusterProps {
   readonly instanceType?: ec2.InstanceType;
 
   /**
+   * Whether to use an Express Broker.
+   * When set to true, the cluster will be created with Express Brokers.
+   * When this is set to true, instanceType must also be specified.
+   *
+   * @default false
+   */
+  readonly express?: boolean;
+
+  /**
    * The AWS security groups to associate with the elastic network interfaces in order to specify who can
    * connect to and communicate with the Amazon MSK cluster.
    *
@@ -502,8 +511,26 @@ export class Cluster extends ClusterBase {
       throw new core.ValidationError('EBS volume size should be in the range 1-16384', this);
     }
 
+    if (props.express) {
+      if (!props.instanceType) {
+        throw new core.ValidationError('`instanceType` must also be specified when `express` is true.', this);
+      }
+      if (props.ebsStorageInfo) {
+        throw new core.ValidationError('`ebsStorageInfo` is not supported when `express` is true.', this);
+      }
+      if (props.storageMode) {
+        throw new core.ValidationError('`storageMode` is not supported when `express` is true.', this);
+      }
+      if (props.logging) {
+        throw new core.ValidationError('`logging` is not supported when `express` is true.', this);
+      }
+      if (subnetSelection.subnets.length < 3) {
+        throw new core.ValidationError(`Express cluster requires at least 3 subnets, got ${subnetSelection.subnets.length}`, this);
+      }
+    }
+
     const instanceType = props.instanceType
-      ? this.mskInstanceType(props.instanceType)
+      ? this.mskInstanceType(props.instanceType, props.express)
       : this.mskInstanceType(
         ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
       );
@@ -598,7 +625,7 @@ export class Cluster extends ClusterBase {
         },
       }));
     }
-    const loggingInfo = {
+    const loggingInfo = props.express ? undefined : {
       brokerLogs: {
         cloudWatchLogs: {
           enabled:
@@ -678,7 +705,7 @@ export class Cluster extends ClusterBase {
         securityGroups: this.connections.securityGroups.map(
           (group) => group.securityGroupId,
         ),
-        storageInfo: {
+        storageInfo: props.express ? undefined : {
           ebsStorageInfo: {
             volumeSize: volumeSize,
           },
@@ -691,7 +718,7 @@ export class Cluster extends ClusterBase {
       configurationInfo: props.configurationInfo,
       enhancedMonitoring: props.monitoring?.clusterMonitoringLevel,
       openMonitoring: openMonitoring,
-      storageMode: props.storageMode,
+      storageMode: props.express ? undefined : props.storageMode,
       loggingInfo: loggingInfo,
       clientAuthentication,
     });
@@ -706,8 +733,9 @@ export class Cluster extends ClusterBase {
     });
   }
 
-  private mskInstanceType(instanceType: ec2.InstanceType): string {
-    return `kafka.${instanceType.toString()}`;
+  private mskInstanceType(instanceType: ec2.InstanceType, express?:boolean): string {
+    const prefix = express ? 'express.' : 'kafka.';
+    return `${prefix}${instanceType.toString()}`;
   }
 
   /**
