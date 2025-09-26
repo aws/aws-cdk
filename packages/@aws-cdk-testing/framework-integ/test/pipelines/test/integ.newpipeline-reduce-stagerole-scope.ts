@@ -53,8 +53,11 @@ class PipelineStack extends Stack {
       dockerEnabledForSynth: true,
       codeBuildDefaults: {
         buildEnvironment: {
-          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0,
+          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2023_5,
           computeType: codebuild.ComputeType.SMALL,
+          dockerServer: {
+            computeType: codebuild.DockerServerComputeType.SMALL,
+          },
         },
         cache: codebuild.Cache.local(codebuild.LocalCacheMode.DOCKER_LAYER),
       },
