@@ -10,32 +10,32 @@ import { IResource, Resource, Duration } from 'aws-cdk-lib/core';
  */
 export enum CacheEngine {
   /**
-   * Valkey engine, latest version available
+   * Valkey engine, latest major version available, minor version is selected automatically
    * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   VALKEY_LATEST = 'valkey',
   /**
-   * Valkey engine, version 7
+   * Valkey engine, major version 7, minor version is selected automatically
    * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   VALKEY_7 = 'valkey_7',
   /**
-   * Valkey engine, version 8
+   * Valkey engine, major version 8, minor version is selected automatically
    * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   VALKEY_8 = 'valkey_8',
   /**
-   * Redis engine, latest version available
+   * Redis engine, latest major version available, minor version is selected automatically
    * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   REDIS_LATEST = 'redis',
   /**
-   * Redis engine, version 7
+   * Redis engine, major version 7, minor version is selected automatically
    * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   REDIS_7 = 'redis_7',
   /**
-   * Memcached engine, latest version available
+   * Memcached engine, latest major version available, minor version is selected automatically
    * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   MEMCACHED_LATEST = 'memcached',

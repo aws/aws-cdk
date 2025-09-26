@@ -557,20 +557,24 @@
     "NoPasswordRequired": false,
     "UserId": "user",
     "UserName": "user"
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "UserGroupC755C9ED": {
    "Type": "AWS::ElastiCache::UserGroup",
    "Properties": {
     "Engine": "valkey",
-    "UserGroupId": "awscdkserverlesscacheusergroup05d9de9b",
+    "UserGroupId": "usergroup",
     "UserIds": [
      "user"
     ]
    },
    "DependsOn": [
     "User00B015A1"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "Cache18F6EE16": {
    "Type": "AWS::ElastiCache::ServerlessCache",
@@ -582,7 +586,7 @@
       "Unit": "GB"
      },
      "ECPUPerSecond": {
-      "Maximum": 1000,
+      "Maximum": 2000,
       "Minimum": 1000
      }
     },
@@ -601,7 +605,7 @@
       ]
      }
     ],
-    "ServerlessCacheName": "serverelessCache",
+    "ServerlessCacheName": "serverlesscache",
     "SnapshotRetentionLimit": 2,
     "SubnetIds": [
      {
@@ -611,11 +615,13 @@
       "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
      }
     ],
-    "UserGroupId": "awscdkserverlesscacheusergroup05d9de9b"
+    "UserGroupId": "usergroup"
    },
    "DependsOn": [
     "UserGroupC755C9ED"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {

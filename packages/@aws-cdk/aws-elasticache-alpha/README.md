@@ -50,8 +50,13 @@ serverlessCache.connections.allowDefaultPortFrom(instance);
 
 ### Cache usage limits
 
-You can choose to configure a maximum usage on both cache data storage and ECPU/second for your cache to control cache costs.
-Doing so will ensure that your cache usage never exceeds the configured maximum.
+You can configure usage limits on both cache data storage and ECPU/second for your cache to control costs and ensure predictable performance.
+
+**Configuration options:**
+
+* **Maximum limits**: Ensure your cache usage never exceeds the configured maximum
+* **Minimum limits**: Reserve a baseline level of resources for consistent performance
+* **Both**: Define a range where your cache usage will operate
 
 For more infomation, see [Setting scaling limits to manage costs](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Scaling.html#Pre-Scaling).
 
@@ -130,6 +135,13 @@ const serverlessCache = new elasticache.ServerlessCache(this, 'ServerlessCache',
   vpc,
 });
 ```
+
+### Encryption at rest
+
+At-rest encryption is always enabled for Serverless Cache. There are two encryption options:
+
+* **Default**: When no `kmsKey` is specified (left as `undefined`), AWS owned KMS keys are used automatically
+* **Customer Managed Key**: Create a KMS key first, then pass it to the cache via the `kmsKey` property
 
 ### Customer Managed Key for encryption at rest
 

@@ -1,4 +1,4 @@
-import { Template } from 'aws-cdk-lib/assertions';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import { SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Stack, Size } from 'aws-cdk-lib';
@@ -70,6 +70,18 @@ describe('serverless cache', () => {
             Maximum: 1_000,
           },
         },
+      });
+    });
+
+    test('create serverless cache with VALKEY_LATEST enigne', () => {
+      new ServerlessCache(stack, 'Cache', {
+        vpc,
+        engine: CacheEngine.VALKEY_LATEST,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElastiCache::ServerlessCache', {
+        Engine: 'valkey',
+        MajorEngineVersion: Match.absent(),
       });
     });
   });
