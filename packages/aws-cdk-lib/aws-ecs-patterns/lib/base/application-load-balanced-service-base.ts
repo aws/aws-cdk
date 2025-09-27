@@ -519,7 +519,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       open: props.openListener ?? defaultOpenListener,
       sslPolicy: props.sslPolicy,
     });
-    this.targetGroup = this.listener.addTargets('ECS', targetProps);
+    // Include publicLoadBalancer in target group ID to force replacement when switching between public/private
+    const targetGroupId = internetFacing ? 'ECS' : 'ECSPrivate';
+    this.targetGroup = this.listener.addTargets(targetGroupId, targetProps);
 
     if (protocol === ApplicationProtocol.HTTPS) {
       if (props.certificate !== undefined) {

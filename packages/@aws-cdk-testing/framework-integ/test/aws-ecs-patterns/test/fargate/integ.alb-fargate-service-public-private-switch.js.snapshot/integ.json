@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ALBFargatePublicPrivateSwitchTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-alb-fargate-public-private-switch"
+      ],
+      "assertionStack": "ALBFargatePublicPrivateSwitchTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ALBFargatePublicPrivateSwitchTestDefaultTestDeployAssert"
+    }
+  }
+}
