@@ -92,7 +92,7 @@ export class TraceExporting {
   /** Configuration for trace context propagation */
   public static readonly OTEL_PROPAGATORS = 'OTEL_PROPAGATORS';
   /** Supported propagation formats for Application Signals */
-  public static readonly OTEL_PROPAGATORS_APPLICATION_SIGNALS = 'tracecontext,baggage,b3,xray';
+  public static readonly OTEL_PROPAGATORS_APPLICATION_SIGNALS = 'tracecontext,baggage,xray';
 }
 
 /**
