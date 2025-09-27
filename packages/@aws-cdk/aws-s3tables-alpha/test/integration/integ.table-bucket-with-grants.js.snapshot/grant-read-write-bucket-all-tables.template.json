@@ -20,7 +20,7 @@
         "s3tables:CreateTable",
         "s3tables:DeleteNamespace",
         "s3tables:Get*",
-        "s3tables:ListNamespace",
+        "s3tables:ListNamespaces",
         "s3tables:ListTables",
         "s3tables:PutTableBucketMaintenanceConfiguration",
         "s3tables:PutTableData",
