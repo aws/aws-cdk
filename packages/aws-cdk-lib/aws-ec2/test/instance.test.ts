@@ -988,7 +988,7 @@ test('associate public IP address with instance and no public subnet', () => {
       sourceDestCheck: false,
       associatePublicIpAddress: true,
     });
-  }).toThrow("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
+  }).toThrow("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC } or { subnetType: SubnetType.PUBLIC, subnetGroupName: 'YourGroupName' })");
 });
 
 test('specify ebs optimized instance', () => {
