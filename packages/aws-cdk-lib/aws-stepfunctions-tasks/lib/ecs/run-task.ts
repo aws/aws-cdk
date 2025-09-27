@@ -361,8 +361,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       throw new ValidationError('Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.', this);
     }
 
-    if ((this.props.taskDefinition !== undefined && this.props.taskDefinitionInput !== undefined) ||
-      (this.props.taskDefinition === undefined && this.props.taskDefinitionInput === undefined)) {
+    if (!this.hasProvidedOneOfTaskDefinitionOrTaskDefinitionInput()) {
       throw new ValidationError('Exactly one of \'taskDefinition\' or \'taskDefinitionInput\' must be provided.', this);
     }
 
@@ -408,7 +407,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       }
     }
 
-    this.taskPolicies = this.makePolicyStatements();
+    this.taskPolicies = this.makePolicyStatements(props.taskDefinition, props.taskDefinitionInput);
   }
 
   /**
@@ -437,6 +436,12 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         EnableExecuteCommand: this.props.enableExecuteCommand,
       }, queryLanguage),
     };
+  }
+
+  private hasProvidedOneOfTaskDefinitionOrTaskDefinitionInput(): boolean {
+    const hasOnlyProvidedTaskDefinition = this.props.taskDefinition !== undefined && this.props.taskDefinitionInput === undefined;
+    const hasOnlyProvidedTaskDefinitionInput = this.props.taskDefinition === undefined && this.props.taskDefinitionInput !== undefined;
+    return hasOnlyProvidedTaskDefinition || hasOnlyProvidedTaskDefinitionInput;
   }
 
   private configureAwsVpcNetworking() {
@@ -469,19 +474,20 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     }
   }
 
-  private makeEcsPolicyStatements(): iam.PolicyStatement[] {
+  private makeEcsPolicyStatements(taskDefinition: ecs.TaskDefinition | undefined,
+    taskDefinitionInput: sfn.TaskInput | undefined): iam.PolicyStatement[] {
     const policyStatements: Array<iam.PolicyStatement> = [];
 
-    if (this.props.taskDefinition !== undefined) {
+    if (taskDefinition !== undefined) {
       policyStatements.push(
         new iam.PolicyStatement({
           actions: ['ecs:RunTask'],
           resources: [cdk.FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY)
-            ? this.getTaskDefinitionArn(this.props.taskDefinition)
-            : this.getTaskDefinitionFamilyArn(this.props.taskDefinition) + ':*'],
+            ? this.getTaskDefinitionArn(taskDefinition)
+            : this.getTaskDefinitionFamilyArn(taskDefinition) + ':*'],
         }),
       );
-    } else if (this.props.taskDefinitionInput !== undefined) {
+    } else if (taskDefinitionInput !== undefined) {
       policyStatements.push(
         new iam.PolicyStatement({
           actions: ['ecs:RunTask'],
@@ -506,15 +512,16 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     return policyStatements;
   }
 
-  private makeIamPassRolePolicyStatements(): iam.PolicyStatement[] {
+  private makeIamPassRolePolicyStatements(taskDefinition: ecs.TaskDefinition | undefined,
+    taskDefinitionInput: sfn.TaskInput | undefined): iam.PolicyStatement[] {
     const policyStatements: Array<iam.PolicyStatement> = [];
 
-    if (this.props.taskDefinition !== undefined) {
+    if (taskDefinition !== undefined) {
       // Need to be able to pass both Task and Execution role
       const rolesRequiringPassRole = new Array<iam.IRole>();
-      rolesRequiringPassRole.push(this.props.taskDefinition.taskRole);
-      if (this.props.taskDefinition.executionRole) {
-        rolesRequiringPassRole.push(this.props.taskDefinition.executionRole);
+      rolesRequiringPassRole.push(taskDefinition.taskRole);
+      if (taskDefinition.executionRole) {
+        rolesRequiringPassRole.push(taskDefinition.executionRole);
       }
       policyStatements.push(
         new iam.PolicyStatement({
@@ -522,7 +529,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
           resources: rolesRequiringPassRole.map((r) => r.roleArn),
         }),
       );
-    } else if (this.props.taskDefinitionInput !== undefined) {
+    } else if (taskDefinitionInput !== undefined) {
       // Need to be able to pass both task and execution role
       const rolesRequiringPassRole = new Array<iam.IRole>();
       if (this.props.taskRole !== undefined) {
@@ -571,10 +578,11 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     return policyStatements;
   }
 
-  private makePolicyStatements(): iam.PolicyStatement[] {
+  private makePolicyStatements(taskDefinition: ecs.TaskDefinition | undefined,
+    taskDefinitionInput: sfn.TaskInput | undefined): iam.PolicyStatement[] {
     return [
-      ...this.makeEcsPolicyStatements(),
-      ...this.makeIamPassRolePolicyStatements(),
+      ...this.makeEcsPolicyStatements(taskDefinition, taskDefinitionInput),
+      ...this.makeIamPassRolePolicyStatements(taskDefinition, taskDefinitionInput),
       ...this.makeEventBridgePolicyStatements(),
     ];
   }
