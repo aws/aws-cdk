@@ -1,4 +1,5 @@
 import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnVPCPeeringConnection, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
+import { IRole } from 'aws-cdk-lib/aws-iam';
 import { Construct, IDependable } from 'constructs';
 import { Annotations, Duration, FeatureFlags, IResource, Resource, Tags, ValidationError } from 'aws-cdk-lib/core';
 import { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
@@ -188,11 +189,11 @@ export interface VPCPeeringConnectionOptions {
   readonly acceptorVpc: IVpcV2;
 
   /**
-   * The role arn created in the acceptor account.
+   * The role created in the acceptor account for cross-account peering.
    *
-   * @default - no peerRoleArn needed if not cross account connection
+   * @default - no peerRole needed if not cross account connection
    */
-  readonly peerRoleArn?: string;
+  readonly peerRole?: IRole;
 
   /**
    * The resource name of the peering connection.
@@ -200,6 +201,16 @@ export interface VPCPeeringConnectionOptions {
    * @default - peering connection provisioned without any name
    */
   readonly vpcPeeringConnectionName?: string;
+}
+
+/**
+ * Attributes to import an existing VPC peering connection.
+ */
+export interface VpcPeeringConnectionAttributes {
+  /**
+   * The ID of the VPC peering connection.
+   */
+  readonly vpcPeeringConnectionId: string;
 }
 
 /**
@@ -509,6 +520,28 @@ export class NatGateway extends Resource implements IRouteTarget {
 export class VPCPeeringConnection extends Resource implements IRouteTarget {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-ec2-alpha.VPCPeeringConnection';
+
+  /**
+   * Import an existing VPC peering connection.
+   */
+  public static fromAttributes(scope: Construct, id: string, attrs: VpcPeeringConnectionAttributes): VPCPeeringConnection {
+    /**
+     * Internal class to allow users to import VPC peering connection
+     * @internal
+     */
+    class ImportedVPCPeeringConnection extends Resource implements IRouteTarget {
+      public readonly routerType: RouterType = RouterType.VPC_PEERING_CONNECTION;
+      public readonly routerTargetId: string;
+
+      constructor(construct: Construct, constructId: string, vpcPeeringConnectionId: string) {
+        super(construct, constructId);
+        this.routerTargetId = vpcPeeringConnectionId;
+      }
+    }
+
+    return new ImportedVPCPeeringConnection(scope, id, attrs.vpcPeeringConnectionId) as any;
+  }
+
   /**
    * The type of router used in the route.
    */
@@ -533,12 +566,12 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
 
     const isCrossAccount = props.requestorVpc.ownerAccountId !== props.acceptorVpc.ownerAccountId;
 
-    if (!isCrossAccount && props.peerRoleArn) {
-      throw new ValidationError('peerRoleArn is not needed for same account peering', this);
+    if (!isCrossAccount && props.peerRole) {
+      throw new ValidationError('peerRole is not needed for same account peering', this);
     }
 
-    if (isCrossAccount && !props.peerRoleArn) {
-      throw new ValidationError('Cross account VPC peering requires peerRoleArn', this);
+    if (isCrossAccount && !props.peerRole) {
+      throw new ValidationError('Cross account VPC peering requires peerRole', this);
     }
 
     const overlap = this.validateVpcCidrOverlap(props.requestorVpc, props.acceptorVpc);
@@ -554,7 +587,7 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
       peerVpcId: props.acceptorVpc.vpcId,
       peerOwnerId: props.acceptorVpc.ownerAccountId,
       peerRegion: props.acceptorVpc.region,
-      peerRoleArn: isCrossAccount ? props.peerRoleArn : undefined,
+      peerRoleArn: isCrossAccount ? props.peerRole?.roleArn : undefined,
     });
 
     this.routerTargetId = this.resource.attrId;

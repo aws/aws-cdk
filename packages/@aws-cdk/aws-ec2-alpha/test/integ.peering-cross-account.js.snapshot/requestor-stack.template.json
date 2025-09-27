@@ -13,6 +13,9 @@
       "Value": "requestor-stack/requestorVpcCrossAccount"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "requestor-stack/requestorVpcCrossAccount/Resource"
    }
   },
   "requestorVpcCrossAccountacceptorAccountCrossRegionPeeringVPCPeeringConnection3605B6B0": {
@@ -20,7 +23,12 @@
    "Properties": {
     "PeerOwnerId": "234567890123",
     "PeerRegion": "us-east-1",
-    "PeerRoleArn": "arn:aws:iam::916743627080:role/VpcPeeringRole",
+    "PeerRoleArn": {
+     "Fn::GetAtt": [
+      "CrossAccountPeerRole9F5D4837",
+      "Arn"
+     ]
+    },
     "PeerVpcId": "vpc-09b9235d8a3195ba3",
     "Tags": [
      {
@@ -34,6 +42,83 @@
       "VpcId"
      ]
     }
+   },
+   "Metadata": {
+    "aws:cdk:path": "requestor-stack/requestorVpcCrossAccount/acceptorAccountCrossRegionPeering/VPCPeeringConnection"
+   }
+  },
+  "CrossAccountPeerRole9F5D4837": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::234567890123:root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role for cross-account VPC peering",
+    "RoleName": "VpcPeeringRole"
+   },
+   "Metadata": {
+    "aws:cdk:path": "requestor-stack/CrossAccountPeerRole/Resource"
+   }
+  },
+  "CrossAccountPeerRoleDefaultPolicy4FFB7A01": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ec2:AcceptVpcPeeringConnection",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2:us-east-1:123456789012:vpc/",
+          {
+           "Fn::GetAtt": [
+            "requestorVpcCrossAccount6372A252",
+            "VpcId"
+           ]
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CrossAccountPeerRoleDefaultPolicy4FFB7A01",
+    "Roles": [
+     {
+      "Ref": "CrossAccountPeerRole9F5D4837"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "requestor-stack/CrossAccountPeerRole/DefaultPolicy/Resource"
    }
   },
   "RouteTableE1378006": {
@@ -45,6 +130,9 @@
       "VpcId"
      ]
     }
+   },
+   "Metadata": {
+    "aws:cdk:path": "requestor-stack/RouteTable/RouteTable"
    }
   },
   "RouteTablevpcPeeringRoute2C93DAB3": {
@@ -66,7 +154,19 @@
    },
    "DependsOn": [
     "requestorVpcCrossAccountacceptorAccountCrossRegionPeeringVPCPeeringConnection3605B6B0"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:path": "requestor-stack/RouteTable/vpcPeeringRoute/Route"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/22OQQ6CMBREz+L+91O7cWvkAqQatqaUrxZKSyhITNO7G0SNC1dvZjbzOHLkm6jmwHTdMmsqjMdR6RbUHM6RtMCYX1xZ5LCiIBqMu+beOdKj8W7ZpZ9GOqnK0rclMKrDKP1nswSFt0Y/lrqmlEBS8NOgKcH+7ZAtJC2Ysv1NYSx7XYqDCgSvBH8dfgTW9wTO14RNyO6C43aHfNMEY9gwudF0hHLlExMd6Hb/AAAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "requestor-stack/CDKMetadata/Default"
+   }
   }
  },
  "Parameters": {

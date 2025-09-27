@@ -523,6 +523,25 @@ describe('Vpc V2 with full control', () => {
     });
   });
 
+  test('createRequestorPeerRole creates a restricted role for requestor side', () => {
+    myVpc.createRequestorPeerRole('123456789012');
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123456789012:root']] },
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      RoleName: 'RequestorVpcPeeringRole',
+    });
+  });
+
   test('createPeeringConnection establishes connection between 2 VPCs', () => {
     const acceptorVpc = new vpc.VpcV2(stack, 'TestAcceptorVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),

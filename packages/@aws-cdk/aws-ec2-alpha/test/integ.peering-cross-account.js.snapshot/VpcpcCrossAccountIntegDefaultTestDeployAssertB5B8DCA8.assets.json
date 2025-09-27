@@ -1,16 +1,16 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "e162343cc010090c0d9e12d9c9cdaf789d2c35ca0d5bad1a213eec1b2656b3c5": {
       "displayName": "VpcpcCrossAccountIntegDefaultTestDeployAssertB5B8DCA8 Template",
       "source": {
         "path": "VpcpcCrossAccountIntegDefaultTestDeployAssertB5B8DCA8.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-9a627a1c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "e162343cc010090c0d9e12d9c9cdaf789d2c35ca0d5bad1a213eec1b2656b3c5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

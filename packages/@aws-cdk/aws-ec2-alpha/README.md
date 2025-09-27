@@ -330,7 +330,7 @@ const peeringConnection = vpcA.createPeeringConnection('sameAccountCrossRegionPe
 
 For cross-account connections, the acceptor account needs an IAM role that grants the requestor account permission to initiate the connection. Create a new IAM role in the acceptor account using method `createAcceptorVpcRole` to provide the necessary permissions. 
 
-Once role is created in account, provide role arn for field `peerRoleArn` under method `createPeeringConnection`
+Once the role is created in the acceptor account, provide the role object for the `peerRole` field under method `createPeeringConnection`:
 
 ```ts
 const stack = new Stack();
@@ -339,13 +339,15 @@ const acceptorVpc = new VpcV2(this, 'VpcA', {
   primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
 });
 
-const acceptorRoleArn = acceptorVpc.createAcceptorVpcRole('000000000000'); // Requestor account ID
+const acceptorRole = acceptorVpc.createAcceptorVpcRole('000000000000'); // Requestor account ID
 ```
 
 After creating an IAM role in the acceptor account, we can initiate the peering connection request from the requestor VPC. Import acceptorVpc to the stack using `fromVpcV2Attributes` method, it is recommended to specify owner account id of the acceptor VPC in case of cross account peering connection, if acceptor VPC is hosted in different region provide region value for import as well.
 The following code snippet demonstrates how to set up VPC peering between two VPCs in different AWS accounts using CDK:
 
 ```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+
 const stack = new Stack();
 
 const acceptorVpc = VpcV2.fromVpcV2Attributes(this, 'acceptorVpc', {
@@ -355,7 +357,9 @@ const acceptorVpc = VpcV2.fromVpcV2Attributes(this, 'acceptorVpc', {
       ownerAccountId: '111111111111',
     });
 
-const acceptorRoleArn = 'arn:aws:iam::111111111111:role/VpcPeeringRole';
+// Import the role created in the acceptor account
+const acceptorRole = iam.Role.fromRoleArn(this, 'AcceptorRole', 
+  'arn:aws:iam::111111111111:role/VpcPeeringRole');
 
 const requestorVpc = new VpcV2(this, 'VpcB', {
   primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
@@ -363,8 +367,42 @@ const requestorVpc = new VpcV2(this, 'VpcB', {
 
 const peeringConnection = requestorVpc.createPeeringConnection('crossAccountCrossRegionPeering', {
   acceptorVpc: acceptorVpc,
-  peerRoleArn: acceptorRoleArn,
+  peerRole: acceptorRole,
 });
+```
+
+### Importing Existing VPC Peering Connections
+
+You can import an existing VPC peering connection using the `fromAttributes` static method. This is useful when you need to reference a peering connection that was created outside of your CDK stack for routing purposes:
+
+```ts
+const myVpc = new VpcV2(this, 'MyVpc', {
+  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+});
+
+const existingPeeringConnection = VPCPeeringConnection.fromAttributes(this, 'ExistingPeering', {
+  vpcPeeringConnectionId: 'pcx-12345678',
+});
+
+// Use the imported peering connection as a route target
+const routeTable = new RouteTable(this, 'RouteTable', {
+  vpc: myVpc,
+});
+
+routeTable.addRoute('PeeringRoute', '10.0.0.0/16', { gateway: existingPeeringConnection });
+```
+
+### Creating Requestor-Side Peering Roles
+
+For cross-account peering scenarios, you can also create a role on the requestor side using the `createRequestorPeerRole` method. This is useful when you need to set up the role infrastructure from the requestor account:
+
+```ts
+const requestorVpc = new VpcV2(this, 'RequestorVpc', {
+  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+});
+
+// Create a role that can be assumed by the acceptor account
+const requestorRole = requestorVpc.createRequestorPeerRole('111111111111'); // Acceptor account ID
 ```
 
 ### Route Table Configuration

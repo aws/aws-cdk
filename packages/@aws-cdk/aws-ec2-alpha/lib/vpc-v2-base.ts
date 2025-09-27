@@ -648,6 +648,31 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   }
 
   /**
+   * Creates peering connection role for requestor VPC
+   */
+  public createRequestorPeerRole(acceptorAccountId: string): Role {
+    const peeringRole = new Role(this, 'RequestorVpcPeeringRole', {
+      assumedBy: new AccountPrincipal(acceptorAccountId),
+      roleName: 'RequestorVpcPeeringRole',
+      description: 'Restrictive role for VPC peering from requestor side',
+    });
+
+    peeringRole.addToPolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ['ec2:CreateVpcPeeringConnection'],
+      resources: [`arn:${Aws.PARTITION}:ec2:${this.region}:${this.ownerAccountId}:vpc/${this.vpcId}`],
+    }));
+
+    peeringRole.addToPolicy(new PolicyStatement({
+      actions: ['ec2:CreateVpcPeeringConnection'],
+      effect: Effect.ALLOW,
+      resources: [`arn:${Aws.PARTITION}:ec2:${this.region}:${this.ownerAccountId}:vpc-peering-connection/*`],
+    }));
+
+    return peeringRole;
+  }
+
+  /**
    * Creates a peering connection
    */
   public createPeeringConnection(id: string, options: VPCPeeringConnectionOptions): VPCPeeringConnection {

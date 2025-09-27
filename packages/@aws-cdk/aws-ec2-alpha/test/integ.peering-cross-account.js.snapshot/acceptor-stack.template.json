@@ -13,6 +13,9 @@
       "Value": "acceptor-stack/acceptorVpc"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "acceptor-stack/acceptorVpc/Resource"
    }
   },
   "acceptorVpcVpcPeeringRoleF389E47A": {
@@ -24,7 +27,18 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "AWS": "arn:aws:iam::12345678:root"
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::123456789012:root"
+          ]
+         ]
+        }
        }
       }
      ],
@@ -38,6 +52,9 @@
       "Value": "acceptor-stack/acceptorVpc"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "acceptor-stack/acceptorVpc/VpcPeeringRole/Resource"
    }
   },
   "acceptorVpcVpcPeeringRoleDefaultPolicyE79C72D0": {
@@ -114,6 +131,9 @@
       "Ref": "acceptorVpcVpcPeeringRoleF389E47A"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "acceptor-stack/acceptorVpc/VpcPeeringRole/DefaultPolicy/Resource"
    }
   },
   "requestorVpcSameAccountF27E91F7": {
@@ -129,6 +149,9 @@
       "Value": "acceptor-stack/requestorVpcSameAccount"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "acceptor-stack/requestorVpcSameAccount/Resource"
    }
   },
   "requestorVpcSameAccountsameAccountPeeringVPCPeeringConnection4E07C8CD": {
@@ -154,6 +177,18 @@
       "VpcId"
      ]
     }
+   },
+   "Metadata": {
+    "aws:cdk:path": "acceptor-stack/requestorVpcSameAccount/sameAccountPeering/VPCPeeringConnection"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/23NwQ6CMBAE0G/x3i61F68m/ADBhKupy6oLZUsoSEzTfzeIR09vJplkDBgwh+TWqLHttecbpMvssFdujddEaCGVd2mqUu1URBPLowwihDMHyYrdAKkOnrbJ1yp4xvdW95SzqimGZULK6vw7KzYJrXZ+fDpIzYiNVX8vspLQEnSxeFkDxxOYQxeZ9bTIzANBvfsBL33OSM0AAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "acceptor-stack/CDKMetadata/Default"
    }
   }
  },
