@@ -37,6 +37,69 @@ describe('When synthesizing a stack containing an EndpointConfig', () => {
     // THEN
     expect(when).toThrow(/Must configure at least 1 production variant/);
   });
+
+  test('with both instance and serverless variants in constructor, an exception is thrown', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+
+    // WHEN
+    const when = () => new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      instanceProductionVariants: [{
+        variantName: 'instance-variant',
+        model,
+      }],
+      serverlessProductionVariant: {
+        variantName: 'serverless-variant',
+        model,
+        maxConcurrency: 10,
+        memorySizeInMB: 1024,
+      },
+    });
+
+    // THEN
+    expect(when).toThrow(/Cannot specify both instanceProductionVariants and serverlessProductionVariant/);
+  });
+
+  test('with serverless variant, synthesizes correctly', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      serverlessProductionVariant: {
+        variantName: 'serverless-variant',
+        model,
+        maxConcurrency: 10,
+        memorySizeInMB: 2048,
+        provisionedConcurrency: 5,
+      },
+    });
+
+    // WHEN
+    const template = app.synth().getStackByName(stack.stackName).template;
+
+    // THEN
+    const endpointConfigResource = Object.values(template.Resources).find((resource: any) =>
+      resource.Type === 'AWS::SageMaker::EndpointConfig',
+    );
+    expect(endpointConfigResource).toEqual({
+      Type: 'AWS::SageMaker::EndpointConfig',
+      Properties: {
+        ProductionVariants: [{
+          InitialVariantWeight: 1,
+          ModelName: 'model',
+          VariantName: 'serverless-variant',
+          ServerlessConfig: {
+            MaxConcurrency: 10,
+            MemorySizeInMB: 2048,
+            ProvisionedConcurrency: 5,
+          },
+        }],
+      },
+    });
+  });
 });
 
 describe('When adding a production variant to an EndpointConfig', () => {
@@ -87,6 +150,173 @@ describe('When adding a production variant to an EndpointConfig', () => {
 
     // THEN
     expect(when).toThrow(/There is already a Production Variant with name 'variant'/);
+  });
+
+  test('instance variant when serverless variant exists, an exception is thrown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      serverlessProductionVariant: {
+        variantName: 'serverless-variant',
+        model,
+        maxConcurrency: 10,
+        memorySizeInMB: 1024,
+      },
+    });
+
+    // WHEN
+    const when = () => endpointConfig.addInstanceProductionVariant({ variantName: 'instance-variant', model });
+
+    // THEN
+    expect(when).toThrow(/Cannot add instance production variant when serverless production variant is already configured/);
+  });
+});
+
+describe('When adding a serverless production variant to an EndpointConfig', () => {
+  test('with invalid maxConcurrency, an exception is thrown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig');
+
+    // WHEN
+    const when = () =>
+      endpointConfig.addServerlessProductionVariant({
+        variantName: 'serverless-variant',
+        model,
+        maxConcurrency: 0,
+        memorySizeInMB: 1024,
+      });
+
+    // THEN
+    expect(when).toThrow(/Invalid Serverless Production Variant Props: maxConcurrency must be between 1 and 200/);
+  });
+
+  test('with invalid memorySizeInMB, an exception is thrown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig');
+
+    // WHEN
+    const when = () =>
+      endpointConfig.addServerlessProductionVariant({
+        variantName: 'serverless-variant',
+        model,
+        maxConcurrency: 10,
+        memorySizeInMB: 1500,
+      });
+
+    // THEN
+    expect(when).toThrow(/Invalid Serverless Production Variant Props: memorySizeInMB must be one of: 1024, 2048, 3072, 4096, 5120, 6144 MB/);
+  });
+
+  test('with provisionedConcurrency greater than maxConcurrency, an exception is thrown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig');
+
+    // WHEN
+    const when = () =>
+      endpointConfig.addServerlessProductionVariant({
+        variantName: 'serverless-variant',
+        model,
+        maxConcurrency: 10,
+        memorySizeInMB: 1024,
+        provisionedConcurrency: 15,
+      });
+
+    // THEN
+    expect(when).toThrow(/Invalid Serverless Production Variant Props: provisionedConcurrency cannot be greater than maxConcurrency/);
+  });
+
+  test('with negative variant weight, an exception is thrown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig');
+
+    // WHEN
+    const when = () =>
+      endpointConfig.addServerlessProductionVariant({
+        variantName: 'serverless-variant',
+        model,
+        maxConcurrency: 10,
+        memorySizeInMB: 1024,
+        initialVariantWeight: -1,
+      });
+
+    // THEN
+    expect(when).toThrow(/Invalid Serverless Production Variant Props: Cannot have negative variant weight/);
+  });
+
+  test('when instance variants exist, an exception is thrown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      instanceProductionVariants: [{ variantName: 'instance-variant', model }],
+    });
+
+    // WHEN
+    const when = () =>
+      endpointConfig.addServerlessProductionVariant({
+        variantName: 'serverless-variant',
+        model,
+        maxConcurrency: 10,
+        memorySizeInMB: 1024,
+      });
+
+    // THEN
+    expect(when).toThrow(/Cannot add serverless production variant when instance production variants are already configured/);
+  });
+
+  test('when serverless variant already exists, an exception is thrown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      serverlessProductionVariant: {
+        variantName: 'first-serverless',
+        model,
+        maxConcurrency: 10,
+        memorySizeInMB: 1024,
+      },
+    });
+
+    // WHEN
+    const when = () =>
+      endpointConfig.addServerlessProductionVariant({
+        variantName: 'second-serverless',
+        model,
+        maxConcurrency: 5,
+        memorySizeInMB: 2048,
+      });
+
+    // THEN
+    expect(when).toThrow(/Cannot add more than one serverless production variant per endpoint configuration/);
+  });
+
+  test('with valid properties, succeeds', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig');
+
+    // WHEN
+    const when = () =>
+      endpointConfig.addServerlessProductionVariant({
+        variantName: 'serverless-variant',
+        model,
+        maxConcurrency: 10,
+        memorySizeInMB: 2048,
+        provisionedConcurrency: 5,
+      });
+
+    // THEN
+    expect(when).not.toThrow();
   });
 });
 
