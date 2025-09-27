@@ -558,6 +558,18 @@ const zoneFromAttributes = route53.PublicHostedZone.fromPublicHostedZoneAttribut
 const zoneFromId = route53.PublicHostedZone.fromPublicHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
 ```
 
+You can import a Private Hosted Zone with `PrivateHostedZone.fromPrivateHostedZoneId` and `PrivateHostedZone.fromPrivateHostedZoneAttributes` methods:
+
+```ts
+const privateZoneFromAttributes = route53.PrivateHostedZone.fromPrivateHostedZoneAttributes(this, 'MyPrivateZone', {
+  zoneName: 'example.local',
+  hostedZoneId: 'ZOJJZC49E0EPZ',
+});
+
+// Does not know zoneName  
+const privateZoneFromId = route53.PrivateHostedZone.fromPrivateHostedZoneId(this, 'MyPrivateZone', 'ZOJJZC49E0EPZ');
+```
+
 You can use `CrossAccountZoneDelegationRecord` on imported Hosted Zones with the `grantDelegation` method:
 
 ```ts
