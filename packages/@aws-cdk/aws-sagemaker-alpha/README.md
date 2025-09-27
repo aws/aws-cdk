@@ -214,6 +214,32 @@ const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
 });
 ```
 
+#### Container Startup Health Check Timeout
+
+You can specify a timeout value for your inference container to pass health check by configuring
+the `containerStartupHealthCheckTimeout` property. This is useful when your model takes longer
+to initialize and you want to avoid premature health check failures:
+
+```typescript
+import * as cdk from 'aws-cdk-lib';
+import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
+
+declare const model: sagemaker.Model;
+
+const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
+  instanceProductionVariants: [
+    {
+      model: model,
+      variantName: 'my-variant',
+      containerStartupHealthCheckTimeout: cdk.Duration.minutes(5), // 5 minutes timeout
+    },
+  ]
+});
+```
+
+The timeout value must be between 60 seconds and 1 hour (3600 seconds). If not specified, 
+Amazon SageMaker uses the default timeout behavior.
+
 ### Endpoint
 
 When you create an endpoint from an `EndpointConfig`, Amazon SageMaker launches the ML compute
