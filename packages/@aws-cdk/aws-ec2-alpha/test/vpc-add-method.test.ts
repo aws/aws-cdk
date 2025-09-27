@@ -538,7 +538,41 @@ describe('Vpc V2 with full control', () => {
         ],
         Version: '2012-10-17',
       },
-      RoleName: 'RequestorVpcPeeringRole',
+
+    });
+
+    // Verify that no hardcoded role name is set (CDK auto-generates unique names)
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', Match.not({
+      RoleName: Match.anyValue(),
+    }));
+
+    // Verify the policy has proper conditions for security
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'ec2:CreateVpcPeeringConnection',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ec2:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':vpc/', { 'Fn::GetAtt': [Match.stringLikeRegexp('TestVpc.*'), 'VpcId'] }]],
+            },
+          },
+          {
+            Action: 'ec2:CreateVpcPeeringConnection',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ec2:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':vpc-peering-connection/*']],
+            },
+            Condition: {
+              StringEquals: {
+                'ec2:RequesterVpc': {
+                  'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ec2:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':vpc/', { 'Fn::GetAtt': [Match.stringLikeRegexp('TestVpc.*'), 'VpcId'] }]],
+                },
+              },
+            },
+          },
+        ],
+      },
     });
   });
 

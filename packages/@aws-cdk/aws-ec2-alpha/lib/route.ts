@@ -209,6 +209,10 @@ export interface VPCPeeringConnectionOptions {
 export interface VpcPeeringConnectionAttributes {
   /**
    * The ID of the VPC peering connection.
+   *
+   * Must be a valid VPC peering connection ID starting with 'pcx-'.
+   *
+   * @example 'pcx-12345678'
    */
   readonly vpcPeeringConnectionId: string;
 }
@@ -523,8 +527,13 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
 
   /**
    * Import an existing VPC peering connection.
+   *
+   * @param scope The scope in which to define this construct
+   * @param id The scoped construct ID
+   * @param attrs The attributes of the VPC peering connection to import
+   * @returns An imported VPC peering connection that can be used as a route target
    */
-  public static fromAttributes(scope: Construct, id: string, attrs: VpcPeeringConnectionAttributes): VPCPeeringConnection {
+  public static fromAttributes(scope: Construct, id: string, attrs: VpcPeeringConnectionAttributes): IRouteTarget {
     /**
      * Internal class to allow users to import VPC peering connection
      * @internal
@@ -535,11 +544,17 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
 
       constructor(construct: Construct, constructId: string, vpcPeeringConnectionId: string) {
         super(construct, constructId);
+
+        // Add validation
+        if (!vpcPeeringConnectionId || !vpcPeeringConnectionId.startsWith('pcx-')) {
+          throw new Error('VPC Peering Connection ID must be a valid ID starting with "pcx-"');
+        }
+
         this.routerTargetId = vpcPeeringConnectionId;
       }
     }
 
-    return new ImportedVPCPeeringConnection(scope, id, attrs.vpcPeeringConnectionId) as any;
+    return new ImportedVPCPeeringConnection(scope, id, attrs.vpcPeeringConnectionId);
   }
 
   /**
@@ -571,7 +586,7 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
     }
 
     if (isCrossAccount && !props.peerRole) {
-      throw new ValidationError('Cross account VPC peering requires peerRole', this);
+      throw new ValidationError('Cross account VPC peering requires peerRole. Use createAcceptorVpcRole() or createRequestorPeerRole() to create the required role.', this);
     }
 
     const overlap = this.validateVpcCidrOverlap(props.requestorVpc, props.acceptorVpc);

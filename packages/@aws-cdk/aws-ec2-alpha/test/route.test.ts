@@ -684,7 +684,7 @@ describe('VPCPeeringConnection', () => {
         requestorVpc: vpcA,
         acceptorVpc: vpcB,
       });
-    }).toThrow(/Cross account VPC peering requires peerRole/);
+    }).toThrow(/Cross account VPC peering requires peerRole. Use createAcceptorVpcRole\(\) or createRequestorPeerRole\(\) to create the required role./);
   });
 
   test('Throws error when peerRole is provided for same account peering', () => {
@@ -722,6 +722,20 @@ describe('VPCPeeringConnection', () => {
 
     expect(importedConnection.routerType).toBe(RouterType.VPC_PEERING_CONNECTION);
     expect(importedConnection.routerTargetId).toBe('pcx-12345678');
+  });
+
+  test('fromAttributes validates VPC peering connection ID format', () => {
+    expect(() => {
+      route.VPCPeeringConnection.fromAttributes(stackA, 'InvalidConnection', {
+        vpcPeeringConnectionId: 'invalid-id',
+      });
+    }).toThrow('VPC Peering Connection ID must be a valid ID starting with "pcx-"');
+
+    expect(() => {
+      route.VPCPeeringConnection.fromAttributes(stackA, 'EmptyConnection', {
+        vpcPeeringConnectionId: '',
+      });
+    }).toThrow('VPC Peering Connection ID must be a valid ID starting with "pcx-"');
   });
 
   test('CIDR block overlap with primary CIDR block should throw error', () => {
