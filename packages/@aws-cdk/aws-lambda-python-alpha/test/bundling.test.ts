@@ -592,7 +592,7 @@ test('Bundling a function with uv dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        "rsync -rLv --exclude='.python-version' /asset-input/ /asset-output/python && cd /asset-output/python && uv export --frozen --no-emit-workspace --no-dev --no-editable -o requirements.txt && uv pip install -r requirements.txt --target /asset-output/python",
+        "rsync -rLv --exclude='.python-version' /asset-input/ /asset-output/python && cd /asset-output/python && uv export --frozen --no-emit-workspace --no-dev --no-editable -o requirements.txt && uv pip install --no-deps -r requirements.txt --target /asset-output/python",
       ],
     }),
   }));
