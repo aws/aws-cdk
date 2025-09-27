@@ -11,6 +11,7 @@ import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
+import * as cdk from '../../core';
 import { ArnFormat, Lazy, Stack, Token, Annotations, ValidationError, AssumptionError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -60,6 +61,16 @@ export interface AnomalyDetectionAlarmProps extends CreateAlarmOptionsBase {
    * @default LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD
    */
   readonly comparisonOperator?: ComparisonOperator;
+
+  /**
+   * The period over which the anomaly detection band's statistics are applied.
+   * This period is passed into the underlying math expression.
+   *
+   * This period overrides the period set in the metric used.
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly period?: cdk.Duration;
 }
 
 /**
@@ -639,8 +650,9 @@ export class AnomalyDetectionAlarm extends Alarm {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudwatch.AnomalyDetectionAlarm';
 
   constructor(scope: Construct, id: string, props: AnomalyDetectionAlarmProps) {
+    const { period, ...alarmProps } = props;
     super(scope, id, {
-      ...props,
+      ...alarmProps,
       comparisonOperator: props.comparisonOperator ?? ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
       metric: Metric.anomalyDetectionFor(props),
       threshold: Alarm.ANOMALY_DETECTION_NO_THRESHOLD,
