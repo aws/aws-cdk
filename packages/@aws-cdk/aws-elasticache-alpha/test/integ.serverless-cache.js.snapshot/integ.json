@@ -1,0 +1,17 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-serverless-cache-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-serverless-cache"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "aws-cdk-serverless-cache-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkserverlesscacheintegDefaultTestDeployAssert7BD34438"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
